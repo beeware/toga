@@ -9,6 +9,7 @@ from PIL import Image
 import toga
 from toga import Font
 from toga.colors import (
+    BLACK,
     CORNFLOWERBLUE,
     GOLDENROD,
     REBECCAPURPLE,
@@ -340,7 +341,17 @@ async def test_paths(canvas, probe):
     canvas.context.move_to(160, 160)
     canvas.context.stroke(RED)
 
-    await probe.redraw("Pair of triangles should be drawn")
+    # A path is not cleared after being stroked or filled.
+    canvas.context.move_to(20, 10)
+    canvas.context.line_to(60, 10)
+    canvas.context.stroke(color=CORNFLOWERBLUE, line_width=10)
+    canvas.context.move_to(60, 10)
+    canvas.context.line_to(100, 10)
+    canvas.context.fill(color=REBECCAPURPLE)
+    canvas.context.line_to(140, 10)
+    canvas.context.stroke()
+
+    await probe.redraw("Pair of triangles and a black line should be drawn")
     assert_reference(probe, "paths", threshold=0.04)
 
 
@@ -557,6 +568,33 @@ async def test_stroke(canvas, probe):
     assert_reference(probe, "stroke", threshold=0.02)
 
 
+async def test_stroke_and_fill(canvas, probe):
+    "A shape drawn with primitives can be stroked and filled."
+    # Draw a closed path
+    canvas.context.begin_path()
+    canvas.context.move_to(x=20, y=20)
+    canvas.context.line_to(x=100, y=20)
+    canvas.context.line_to(x=180, y=180)
+    canvas.context.line_to(x=100, y=180)
+    canvas.context.close_path()
+    canvas.context.stroke(color=REBECCAPURPLE)
+    canvas.context.fill(color=CORNFLOWERBLUE)
+
+    # Draw an open path inside it
+    canvas.context.begin_path()
+    # At the start of a path, line_to is equivalent to move_to.
+    canvas.context.line_to(x=50, y=40)
+    canvas.context.line_to(x=90, y=40)
+    canvas.context.line_to(x=150, y=160)
+    canvas.context.line_to(x=110, y=160)
+    canvas.context.fill(color=GOLDENROD, fill_rule=FillRule.EVENODD)
+    canvas.context.stroke(color=REBECCAPURPLE)
+
+    await probe.redraw("Stroke should be drawn")
+    # TODO: Check threshold after #4011
+    assert_reference(probe, "stroke_and_fill", threshold=0.02)
+
+
 async def test_closed_path_context(canvas, probe):
     "A closed path can be built with a context"
 
@@ -600,6 +638,23 @@ async def test_stroke_context(canvas, probe):
 
     await probe.redraw("Stroke should be drawn with context")
     assert_reference(probe, "stroke_context", threshold=0.02)
+
+
+async def test_stroke_and_fill_context(canvas, probe):
+    "A shape can be stroked and filled using contexts"
+
+    # Draw a filled parallelogram
+    with canvas.context.Fill(x=20, y=20, color=REBECCAPURPLE) as fill:
+        with fill.Stroke(
+            line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE
+        ) as path:
+            path.line_to(x=100, y=20)
+            path.line_to(x=180, y=180)
+            path.line_to(x=100, y=180)
+
+    await probe.redraw("Stroke and Fill should be drawn with context")
+    # TODO: Check threshold after #4011
+    assert_reference(probe, "stroke_and_fill_context", threshold=0.02)
 
 
 async def test_transforms(canvas, probe):
@@ -785,3 +840,58 @@ async def test_multiline_text(canvas, probe):
     # RMSE, as they are 100% edges; and due to minor font rendering discrepancies
     # and antialiasing introduced by image scaling, edges are the source of error.
     assert_reference(probe, "multiline_text", threshold=0.09)
+
+
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="may fail outside of a GitHub runner environment",
+)
+async def test_write_text_and_path(canvas, probe):
+    "Text doesn't affect the current path."
+
+    # Use fonts which look different from the system fonts on all platforms.
+    Font.register("Droid Serif", "resources/fonts/DroidSerif-Regular.ttf")
+
+    hello_text = "Hello"
+    hello_font = Font("Droid Serif", 24)
+    hello_size = canvas.measure_text(hello_text, hello_font)
+
+    with canvas.Fill(BLACK) as fill:
+        # start building a path
+        fill.begin_path()
+        fill.rect(
+            100 - (hello_size[0] // 2),
+            10,
+            hello_size[0],
+            hello_size[1],
+        )
+
+        # Draw some text independent of the path
+        # Uses fill color of black.
+        fill.write_text(
+            hello_text,
+            100 - (hello_size[0] // 2),
+            10,
+            font=hello_font,
+            baseline=Baseline.TOP,
+        )
+
+        # continue building the path
+        fill.move_to(
+            100 - (hello_size[0] // 2),
+            10,
+        )
+        fill.line_to(
+            100 + (hello_size[0] // 2),
+            10 + hello_size[1],
+        )
+
+        # now stroke the path, but *not* the text
+        fill.stroke(CORNFLOWERBLUE)
+
+        # start a new path so Fill context doesn't fill current path with black
+        fill.begin_path()
+
+    await probe.redraw("Text and path should be drawn independently")
+    # TODO: Check threshold after #4011
+    assert_reference(probe, "write_text_and_path", threshold=0.08)
