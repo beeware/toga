@@ -97,7 +97,11 @@ async def test_on_change_handler(widget, probe):
         ),
     ]:
         await probe.type_character(char)
-        await probe.redraw(f"Typed {char!r}")
+        # The 0.01s delay makes the test on macOS Tahoe
+        # much more reliable, as redrawing alone doesn't seem
+        # to propagate the events fast enough by virtue of
+        # Apple's implementation details.
+        await probe.redraw(f"Typed {char!r}", delay=0.01)
         assert widget.value == (None if value is None else Decimal(value))
         assert probe.value == probe_value
 

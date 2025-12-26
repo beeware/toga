@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from toga.colors import hsl, rgb
+    from toga.colors import ColorT
 
 from travertino.constants import (  # noqa: F401
     BOLD,
@@ -213,10 +213,8 @@ class Pack(BaseStyle):
     margin_bottom: int = validated_property(integer=True, initial=0)
     margin_left: int = validated_property(integer=True, initial=0)
 
-    color: rgb | hsl | str | None = validated_property(color=True)
-    background_color: rgb | hsl | str | None = validated_property(
-        TRANSPARENT, color=True
-    )
+    color: ColorT | None = validated_property(color=True)
+    background_color: ColorT | None = validated_property(TRANSPARENT, color=True)
 
     text_align: str | None = validated_property(LEFT, RIGHT, CENTER, JUSTIFY)
     text_direction: str | None = validated_property(RTL, LTR, initial=LTR)

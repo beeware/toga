@@ -46,6 +46,14 @@ class Widget(Node, PackMixin):
     _MIN_HEIGHT = 100
 
     DEBUG_LAYOUT_ENABLED = False
+    """Determines whether debug layout mode is enabled.
+
+    When enabled, container widgets use distinct background colors
+    to make the layout more visible and help identify issues during development.
+
+    See the [Debugging Your App][debug-layout] guide for more
+    information.
+    """
     _USE_DEBUG_BACKGROUND = False
     _debug_color_index = 0
 

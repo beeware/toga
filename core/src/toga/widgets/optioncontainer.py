@@ -151,12 +151,11 @@ class OptionItem:
     @icon.setter
     def icon(self, icon_or_name: IconContentT | None) -> None:
         if get_platform_factory().OptionContainer.uses_icons:
-            if icon_or_name is None:
-                icon = None
-            elif isinstance(icon_or_name, toga.Icon):
-                icon = icon_or_name
-            else:
-                icon = toga.Icon(icon_or_name)
+            match icon_or_name:
+                case toga.Icon() | None as icon:
+                    pass
+                case _:
+                    icon = toga.Icon(icon_or_name)
 
             if hasattr(self, "_icon"):
                 self._icon = icon
@@ -263,15 +262,16 @@ class OptionList:
             tab with a label matching that string will be returned.
         :raises ValueError: If no tab matching the value can be found.
         """
-        if isinstance(value, int):
-            return value
-        elif isinstance(value, OptionItem):
-            return value.index
-        else:
-            try:
-                return next(filter(lambda item: item.text == str(value), self)).index
-            except StopIteration as exc:
-                raise ValueError(f"No tab named {value!r}") from exc
+        match value:
+            case int():
+                return value
+            case OptionItem():
+                return value.index
+            case _:
+                try:
+                    return next(tab for tab in self if tab.text == str(value)).index
+                except StopIteration as exc:
+                    raise ValueError(f"No tab named {value!r}") from exc
 
     @overload
     def append(
@@ -423,26 +423,25 @@ class OptionContainer(Widget):
 
         if content is not None:
             for item in content:
-                if isinstance(item, OptionItem):
-                    self.content.append(item)
-                else:
-                    if len(item) == 2:
-                        text, widget = item
+                match item:
+                    case OptionItem():
+                        self.content.append(item)
+                        continue
+                    case text, widget:
                         icon = None
                         enabled = True
-                    elif len(item) == 3:
-                        text, widget, icon = item
+                    case text, widget, icon:
                         enabled = True
-                    elif len(item) == 4:
-                        text, widget, icon, enabled = item
-                    else:
+                    case text, widget, icon, enabled:
+                        pass
+                    case _:
                         raise ValueError(
                             "Content items must be an OptionItem instance, or "
                             "tuples of (title, widget), (title, widget, icon), or "
                             "(title, widget, icon, enabled)"
                         )
 
-                    self.content.append(text, widget, enabled=enabled, icon=icon)
+                self.content.append(text, widget, enabled=enabled, icon=icon)
 
         self.on_select = on_select
 
