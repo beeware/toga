@@ -28,7 +28,17 @@ class TogaSplitView(NSSplitView):
 
     @objc_method
     def applySplit(self) -> None:
-        if self.impl._split_proportion:
+        # Special-case the case where the frame is 0.  This could happen
+        # during layouts such as a SplitContainer in a secondary tab in
+        # an OptionContainer.
+        # All other dummy / incorrect but non-zero layouts does not matter,
+        # since Cocoa preserves the split proportion when changing bounds.
+        # However, you can't preserve 0/0 as a proportion.
+        if (
+            self.impl._split_proportion
+            and self.frame.size.width
+            and self.frame.size.height
+        ):
             if self.interface.direction == self.interface.VERTICAL:
                 position = self.impl._split_proportion * self.frame.size.width
             else:
