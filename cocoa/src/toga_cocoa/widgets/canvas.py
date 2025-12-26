@@ -211,7 +211,10 @@ class Canvas(Widget):
         core_graphics.CGContextSetRGBFillColor(
             draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
         )
-        core_graphics.CGContextDrawPath(draw_context, mode)
+        if not core_graphics.CGContextIsPathEmpty(draw_context):
+            path = core_graphics.CGContextCopyPath(draw_context)
+            core_graphics.CGContextDrawPath(draw_context, mode)
+            core_graphics.CGContextAddPath(draw_context, path)
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         core_graphics.CGContextSetLineWidth(draw_context, line_width)
@@ -225,7 +228,10 @@ class Canvas(Widget):
             )
         else:
             core_graphics.CGContextSetLineDash(draw_context, 0, None, 0)
-        core_graphics.CGContextDrawPath(draw_context, mode)
+        if not core_graphics.CGContextIsPathEmpty(draw_context):
+            path = core_graphics.CGContextCopyPath(draw_context)
+            core_graphics.CGContextDrawPath(draw_context, mode)
+            core_graphics.CGContextAddPath(draw_context, path)
 
     # Transformations
     def rotate(self, radians, draw_context, **kwargs):
