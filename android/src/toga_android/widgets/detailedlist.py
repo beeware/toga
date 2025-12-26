@@ -89,7 +89,7 @@ class DetailedListOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
 class DetailedListActionListener(dynamic_proxy(DialogInterface.OnClickListener)):
     def __init__(self, actions, row):
         super().__init__()
-        self.actions = weakref.proxy(actions)
+        self.actions = actions
         self.row = weakref.proxy(row)
 
     def onClick(self, dialog, which):
