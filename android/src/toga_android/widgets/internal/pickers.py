@@ -21,7 +21,7 @@ class TogaPickerClickListener(dynamic_proxy(View.OnClickListener)):
         # This is a defensive safety catch, just in case if the impl object
         # has already been collected, but the native widget is still
         # emitting an event to the listener.
-        except ReferenceError:
+        except ReferenceError:  # pragma: no cover
             pass
 
 

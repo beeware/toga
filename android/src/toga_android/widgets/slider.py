@@ -34,14 +34,14 @@ class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)
         try:
             self.impl.interface.on_press()
         # See above comment on catching ReferenceError.
-        except ReferenceError:
+        except ReferenceError:  # pragma: no cover
             pass
 
     def onStopTrackingTouch(self, native_seekbar):
         try:
             self.impl.interface.on_release()
         # See above comment on catching ReferenceError.
-        except ReferenceError:
+        except ReferenceError:  # pragma: no cover
             pass
 
 

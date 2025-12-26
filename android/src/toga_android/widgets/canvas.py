@@ -35,7 +35,7 @@ class DrawHandler(dynamic_proxy(IDrawHandler)):
         # This is a defensive safety catch, just in case if the impl object
         # has already been collected, but the native widget is still
         # emitting an event to the listener.
-        except ReferenceError:
+        except ReferenceError:  # pragma: no cover
             pass
 
 
@@ -58,7 +58,7 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
                 return False
             return True
         # See above comment on ignoring ReferenceError.
-        except ReferenceError:
+        except ReferenceError:  # pragma: no cover
             return True
 
 
