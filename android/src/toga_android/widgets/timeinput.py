@@ -16,10 +16,16 @@ class TimePickerListener(dynamic_proxy(TimePickerDialog.OnTimeSetListener)):
         self.impl = weakref.proxy(impl)
 
     def onTimeSet(self, view, hour, minute):
-        # Unlike DatePicker, TimePicker does not natively support a min or max. So the
-        # dialog allows the user to select any time, and we then clip the result by
-        # assigning it via the interface.
-        self.impl.interface.value = time(hour, minute)
+        try:
+            # Unlike DatePicker, TimePicker does not natively support a min or max. So
+            # the dialog allows the user to select any time, and we then clip the result
+            # by assigning it via the interface.
+            self.impl.interface.value = time(hour, minute)
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:  # pragma: no cover
+            pass
 
 
 class TimeInput(PickerBase, ContainedWidget):

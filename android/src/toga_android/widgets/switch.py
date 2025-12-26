@@ -17,7 +17,13 @@ class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListen
         self._impl = weakref.proxy(impl)
 
     def onCheckedChanged(self, _button, _checked):
-        self._impl.interface.on_change()
+        try:
+            self._impl.interface.on_change()
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:  # pragma: no cover
+            pass
 
 
 class Switch(TextViewWidget, ContainedWidget):

@@ -27,7 +27,13 @@ class TogaOnScrollListener(dynamic_proxy(View.OnScrollChangeListener)):
         self.impl = weakref.proxy(impl)
 
     def onScrollChange(self, view, new_x, new_y, old_x, old_y):
-        self.impl.interface.on_scroll()
+        try:
+            self.impl.interface.on_scroll()
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:  # pragma: no cover
+            pass
 
 
 class ScrollContainer(Widget, Container):
