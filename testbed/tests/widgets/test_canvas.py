@@ -891,4 +891,4 @@ async def test_write_text_and_path(canvas, probe):
         fill.begin_path()
 
     await probe.redraw("Text and path should be drawn independently")
-    assert_reference(probe, "write_text_and_path", threshold=0.08)
+    assert_reference(probe, "write_text_and_path", threshold=0.08)  # TODO: Check threshold after #4011
