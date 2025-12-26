@@ -263,7 +263,7 @@ def assert_reference(probe, reference, threshold=0.01):
     if path.exists():
         reference_image = Image.open(path)
 
-        total = sum(
+        total_error = sum(
             (diff / 255) ** 2
             for diff in chain.from_iterable(
                 ImageChops.difference(
@@ -272,7 +272,7 @@ def assert_reference(probe, reference, threshold=0.01):
                 ).getdata()
             )
         )
-        rmse = math.sqrt(total / (reference_image.width * reference_image.height * 4))
+        rmse = math.sqrt(total_error / 160_000)  # 200w * 200h * 4 bands
         # If the delta exceeds threshold, save the test image and fail the test.
         if rmse > threshold:
             save()
