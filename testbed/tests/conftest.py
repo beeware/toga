@@ -32,7 +32,7 @@ def skip_on_platforms(*platforms, reason=None, allow_module_level=False):
 # Use this for widgets or tests which are not supported on some backends,
 # but could be supported in the future.
 def skip_on_backends(*backends, reason=None, allow_module_level=False):
-    current_backend = toga.platform.get_platform_factory().__package__
+    current_backend = toga.backend
     if current_backend in backends:
         skip(
             reason or f"not yet implemented on {current_backend}",

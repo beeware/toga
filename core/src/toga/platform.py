@@ -110,3 +110,12 @@ def get_platform_factory() -> ModuleType:
             backend = matching_backends[0]
         factory = importlib.import_module(f"{backend.value}.factory")
     return factory
+
+
+def __getattr__(name):
+    if name == "backend":
+        global backend
+        backend = get_platform_factory().__package__
+        return backend
+    else:
+        raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None
