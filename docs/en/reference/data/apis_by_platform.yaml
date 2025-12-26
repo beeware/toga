@@ -134,7 +134,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   Switch:
     description: 'A clickable button with two stable states: True (on, checked); and False (off, unchecked). The button has a text label.'

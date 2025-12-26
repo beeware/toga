@@ -21,6 +21,7 @@ try:
     from .widgets.numberinput import NumberInput
     from .widgets.passwordinput import PasswordInput
     from .widgets.progressbar import ProgressBar
+    from .widgets.slider import Slider
     from .widgets.switch import Switch
     from .widgets.textinput import TextInput
     from .widgets.timeinput import TimeInput
@@ -58,6 +59,7 @@ __all__ = [
     "PasswordInput",
     "ProgressBar",
     "Switch",
+    "Slider",
     "TextInput",
     "TimeInput",
     "WebView",
