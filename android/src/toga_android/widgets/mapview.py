@@ -1,3 +1,4 @@
+import weakref
 from pathlib import Path
 
 from android.graphics import BitmapFactory
@@ -26,13 +27,19 @@ if OSMMapView is not None:  # pragma: no branch
     class TogaOnMarkerClickListener(dynamic_proxy(Marker.OnMarkerClickListener)):
         def __init__(self, map_impl):
             super().__init__()
-            self.map_impl = map_impl
+            self.map_impl = weakref.proxy(map_impl)
 
         def onMarkerClick(self, marker, map_view):
-            result = marker.onMarkerClickDefault(marker, map_view)
-            pin = self.map_impl.pins[marker]
-            self.map_impl.interface.on_select(pin=pin)
-            return result
+            try:
+                result = marker.onMarkerClickDefault(marker, map_view)
+                pin = self.map_impl.pins[marker]
+                self.map_impl.interface.on_select(pin=pin)
+                return result
+            # This is a defensive safety catch, just in case if the impl object
+            # has already been collected, but the native widget is still
+            # emitting an event to the listener.
+            except ReferenceError:  # pragma: no cover
+                return False
 
 
 class MapView(Widget):

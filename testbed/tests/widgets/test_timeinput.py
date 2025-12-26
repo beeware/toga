@@ -81,7 +81,6 @@ async def widget():
 
 test_cleanup = build_cleanup_test(
     toga.TimeInput,
-    xfail_platforms=("android",),
     skip_backends=("toga_gtk",),
 )
 

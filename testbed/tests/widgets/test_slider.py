@@ -42,7 +42,7 @@ def on_change(widget):
     return handler
 
 
-test_cleanup = build_cleanup_test(toga.Slider, xfail_platforms=("android",))
+test_cleanup = build_cleanup_test(toga.Slider)
 
 
 async def test_init(widget, probe):
