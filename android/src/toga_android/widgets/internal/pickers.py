@@ -1,3 +1,4 @@
+import weakref
 from abc import ABC, abstractmethod
 from decimal import ROUND_UP
 
@@ -12,10 +13,16 @@ from ..label import TextViewWidget
 class TogaPickerClickListener(dynamic_proxy(View.OnClickListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onClick(self, _):
-        self.impl._dialog.show()
+        try:
+            self.impl._dialog.show()
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:
+            pass
 
 
 class PickerBase(TextViewWidget, ABC):
