@@ -591,7 +591,8 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.context.stroke(color=REBECCAPURPLE)
 
     await probe.redraw("Stroke should be drawn")
-    assert_reference(probe, "stroke_and_fill", threshold=0.02)  # TODO: Check threshold after #4011
+    # TODO: Check threshold after #4011
+    assert_reference(probe, "stroke_and_fill", threshold=0.02)
 
 
 async def test_closed_path_context(canvas, probe):
@@ -652,7 +653,8 @@ async def test_stroke_and_fill_context(canvas, probe):
             path.line_to(x=100, y=180)
 
     await probe.redraw("Stroke and Fill should be drawn with context")
-    assert_reference(probe, "stroke_and_fill_context", threshold=0.02)  # TODO: Check threshold after #4011
+    # TODO: Check threshold after #4011
+    assert_reference(probe, "stroke_and_fill_context", threshold=0.02)
 
 
 async def test_transforms(canvas, probe):
@@ -891,4 +893,5 @@ async def test_write_text_and_path(canvas, probe):
         fill.begin_path()
 
     await probe.redraw("Text and path should be drawn independently")
-    assert_reference(probe, "write_text_and_path", threshold=0.08)  # TODO: Check threshold after #4011
+    # TODO: Check threshold after #4011
+    assert_reference(probe, "write_text_and_path", threshold=0.08)
