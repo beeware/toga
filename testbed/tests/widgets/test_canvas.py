@@ -109,7 +109,7 @@ def assert_pixel(image, x, y, color):
     assert image.getpixel((x, y)) == color
 
 
-test_cleanup = build_cleanup_test(toga.Canvas, xfail_platforms=("android",))
+test_cleanup = build_cleanup_test(toga.Canvas)
 
 
 async def test_resize(widget, probe, on_resize_handler):
