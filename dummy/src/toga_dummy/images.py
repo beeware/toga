@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from io import BytesIO
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import PIL.Image
+
+from toga.images import ImageLoadError
 
 from .utils import LoggedObject
 
@@ -32,20 +33,16 @@ class Image(LoggedObject):
     def __init__(
         self,
         interface: toga.Image,
-        path: Path = None,
         data: bytes = None,
         raw: BytesIO = None,
     ):
         super().__init__()
         self.interface = interface
-        if path:
-            self._action("load image file", path=path)
-            if path.is_file():
-                self.native = DummyImage(PIL.Image.open(path))
-            else:
-                self.native = DummyImage()
-        elif data:
+        if data:
             self._action("load image data", data=data)
+            # Test startswith to avoid Windows line-ending issues
+            if bytes(data).startswith(b"not an image"):
+                raise ImageLoadError
             self.native = DummyImage(PIL.Image.open(BytesIO(data)))
         else:
             self._action("load image from raw")

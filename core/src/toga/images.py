@@ -64,6 +64,10 @@ if TYPE_CHECKING:
     """
 
 
+class ImageLoadError(Exception):
+    """Raised when an image cannot be successfully loaded."""
+
+
 class ImageConverter(Protocol):
     """A class to convert between an externally defined image type and
     [`toga.Image`][].
@@ -159,13 +163,20 @@ class Image:
 
         # Any "lump of bytes" should be valid here.
         if isinstance(src, bytes | bytearray | memoryview):
-            self._impl = self.factory.Image(interface=self, data=src)
+            try:
+                self._impl = self.factory.Image(interface=self, data=src)
+            except ImageLoadError as exc:
+                raise ValueError("Unable to load image from data") from exc
 
         elif isinstance(src, str | Path):
             self._path = toga.App.app.paths.app / src
             if not self._path.is_file():
                 raise FileNotFoundError(f"Image file {self._path} does not exist")
-            self._impl = self.factory.Image(interface=self, path=self._path)
+            data = self._path.read_bytes()
+            try:
+                self._impl = self.factory.Image(interface=self, data=data)
+            except ImageLoadError as exc:
+                raise ValueError(f"Unable to load image from {self._path}") from exc
 
         elif isinstance(src, Image):
             self._impl = self.factory.Image(interface=self, data=src.data)

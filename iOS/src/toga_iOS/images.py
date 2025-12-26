@@ -1,6 +1,7 @@
 from ctypes import POINTER, c_char, cast
 from pathlib import Path
 
+from toga.images import ImageLoadError
 from toga_iOS.libs import (
     NSData,
     UIImage,
@@ -20,19 +21,15 @@ def nsdata_to_bytes(data: NSData) -> bytes:
 class Image:
     RAW_TYPE = UIImage
 
-    def __init__(self, interface, path=None, data=None, raw=None):
+    def __init__(self, interface, data=None, raw=None):
         self.interface = interface
 
-        if path:
-            self.native = UIImage.imageWithContentsOfFile(str(path))
-            if self.native is None:
-                raise ValueError(f"Unable to load image from {path}")
-        elif data:
+        if data:
             self.native = UIImage.imageWithData(
                 NSData.dataWithBytes(data, length=len(data))
             )
             if self.native is None:
-                raise ValueError("Unable to load image from data")
+                raise ImageLoadError
         else:
             self.native = raw
 

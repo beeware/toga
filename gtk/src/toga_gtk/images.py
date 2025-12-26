@@ -1,25 +1,21 @@
 from pathlib import Path
 
+from toga.images import ImageLoadError
 from toga_gtk.libs import GdkPixbuf, Gio, GLib
 
 
 class Image:
     RAW_TYPE = GdkPixbuf.Pixbuf
 
-    def __init__(self, interface, path=None, data=None, raw=None):
+    def __init__(self, interface, data=None, raw=None):
         self.interface = interface
 
-        if path:
-            try:
-                self.native = GdkPixbuf.Pixbuf.new_from_file(str(path))
-            except GLib.GError as exc:
-                raise ValueError(f"Unable to load image from {path}") from exc
-        elif data:
+        if data:
             try:
                 input_stream = Gio.MemoryInputStream.new_from_data(data, None)
                 self.native = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)
             except GLib.GError as exc:
-                raise ValueError("Unable to load image from data") from exc
+                raise ImageLoadError from exc
         else:
             self.native = raw
 
