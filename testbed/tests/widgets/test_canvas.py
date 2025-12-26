@@ -591,7 +591,7 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.context.stroke(color=REBECCAPURPLE)
 
     await probe.redraw("Stroke should be drawn")
-    assert_reference(probe, "stroke_and_fill", threshold=0.02)
+    assert_reference(probe, "stroke_and_fill", threshold=0.02)  # TODO: Check threshold after #4011
 
 
 async def test_closed_path_context(canvas, probe):
