@@ -73,7 +73,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   ImageView:
     description: A widget that displays an image.
