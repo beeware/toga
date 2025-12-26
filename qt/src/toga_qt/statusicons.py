@@ -1,3 +1,4 @@
+from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 
 import toga
@@ -43,9 +44,9 @@ class MenuStatusIcon(StatusIcon):
     def qt_on_activated(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:  # pragma: no cover
             # On KDE desktop click normally displays a tool window,
-            # we don't have one, so show menu instead
+            # we don't have one, so show menu instead at current mouse position.
             # Tests don't exercise this path.
-            self.native.activated.emit(QSystemTrayIcon.ActivationReason.Context)
+            self.submenu.exec(QCursor.pos())
 
     def create_menu(self):
         self.submenu = QMenu()
