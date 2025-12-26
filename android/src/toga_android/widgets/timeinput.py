@@ -1,3 +1,4 @@
+import weakref
 from datetime import time
 
 from android import R
@@ -12,7 +13,7 @@ from .internal.pickers import PickerBase
 class TimePickerListener(dynamic_proxy(TimePickerDialog.OnTimeSetListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onTimeSet(self, view, hour, minute):
         # Unlike DatePicker, TimePicker does not natively support a min or max. So the

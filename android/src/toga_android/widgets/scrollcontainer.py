@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_DOWN
 
 from android.view import Gravity, View
@@ -23,7 +24,7 @@ class TogaOnTouchListener(dynamic_proxy(View.OnTouchListener)):
 class TogaOnScrollListener(dynamic_proxy(View.OnScrollChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onScrollChange(self, view, new_x, new_y, old_x, old_y):
         self.impl.interface.on_scroll()
