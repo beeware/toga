@@ -214,7 +214,7 @@ class Pack(PackLogic):
     If 4 integers are provided, they will be used as the top, right, bottom and left
     margin, respectively.
     """
-    color: ColorT | None = validated_property(color=True)
+    color: ColorT | str | None = validated_property(color=True)
     """The foreground color for the object being rendered.
 
     **Allowed values:** a [color][toga.colors.ColorT] or `None`
@@ -223,7 +223,7 @@ class Pack(PackLogic):
 
     Some objects may not use the value.
     """
-    background_color: ColorT | None = validated_property(TRANSPARENT, color=True)
+    background_color: ColorT | str | None = validated_property(TRANSPARENT, color=True)
     """The background color for the object being rendered.
 
     **Allowed values:** a [color][toga.colors.ColorT], `"transparent"`, or `None`
