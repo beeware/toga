@@ -49,7 +49,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   DateInput:
     description: A widget to select a calendar date.
