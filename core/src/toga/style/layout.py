@@ -40,7 +40,7 @@ from toga.fonts import (
 )
 
 
-class PackMechanicsBase(BaseStyle):
+class PackLogic(BaseStyle):
     class Box(BaseBox):
         pass
 

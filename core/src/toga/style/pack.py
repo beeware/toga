@@ -48,7 +48,7 @@ from toga.fonts import (
 )
 
 from .compat import _alignment_property
-from .layout import PackMechanicsBase
+from .layout import PackLogic
 
 NOT_PROVIDED = object()
 
@@ -56,7 +56,7 @@ PACK = "pack"
 
 
 @dataclass(kw_only=True, repr=False)
-class Pack(PackMechanicsBase):
+class Pack(PackLogic):
     _doc_link = "[style properties](/reference/style/pack)"
 
     display: str = validated_property(PACK, NONE, initial=PACK)
