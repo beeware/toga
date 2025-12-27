@@ -46,11 +46,10 @@ class MenuStatusIcon(StatusIcon):
             # On KDE desktop click normally displays a tool window,
             # we don't have one, so show menu instead at current mouse position.
             # Tests don't exercise this path.
-            self.submenu.exec(QCursor.pos())
+            self.native.contextMenu().exec(QCursor.pos())
 
     def create_menu(self):
-        self.submenu = QMenu()
-        self.native.setContextMenu(self.submenu)
+        self.native.setContextMenu(QMenu())
 
 
 class StatusIconSet:
