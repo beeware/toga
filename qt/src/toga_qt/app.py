@@ -149,7 +149,10 @@ class App:
         self.interface.commands[Command.PREFERENCES].icon = icon
 
     def set_main_window(self, window):
-        pass
+        if window == toga.App.BACKGROUND:
+            self.native.setQuitOnLastWindowClosed(False)
+        else:
+            self.native.setQuitOnLastWindowClosed(True)
 
     ######################################################################
     # App resources
