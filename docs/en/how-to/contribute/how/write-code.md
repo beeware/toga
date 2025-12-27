@@ -170,20 +170,28 @@ To run the testbed app, install [Briefcase](https://briefcase.readthedocs.io/en/
 
 /// tab | Linux
 
-For testing the GTK backend:
+For testing the GTK3 backend:
 
 ```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
-(.venv) $ briefcase dev --app testbed --test
+(.venv) $ TOGA_BACKEND=toga_gtk briefcase dev --app testbed --test
 ```
 
-For testing the GTK 4 backend:
+For testing the GTK4 backend without libadwaita:
 
 ```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
-(.venv) $ TOGA_GTK=4 briefcase dev --app testbed --test
+(.venv) $ TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=None briefcase dev --app testbed --test
+```
+
+For testing the GTK4 backend with libadwaita:
+
+```console
+(.venv) $ python -m pip install briefcase
+(.venv) $ cd testbed
+(.venv) $ TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=Adw briefcase dev --app testbed --test
 ```
 
 For testing the Qt backend:
@@ -191,7 +199,7 @@ For testing the Qt backend:
 ```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
-(.venv) $ briefcase dev --app testbed-qt --test
+(.venv) $ TOGA_BACKEND=toga_qt briefcase dev --app testbed-qt --test
 ```
 
 The GTK4 and Qt backends are experimental and only partially implemented, so a lot of tests will be skipped; filling in the gaps for the missing widgets would be an extremely helpful contribution.
