@@ -2,7 +2,7 @@
 
 ## Usage
 
-When specifying colors for style properties such as [color][pack-color] and [background-color][background_color], or on widget APIs that use colors explicitly (such as any `color` arguments for the [`Canvas`](/reference/api/widgets/canvas.md) API), Toga will accept values in a [range of possible formats][toga.colors.ColorT].
+When specifying colors for style properties such as [color][toga.style.pack.Pack.color] and [background-color][toga.style.pack.Pack.background_color], or on widget APIs that use colors explicitly (such as any `color` arguments for the [`Canvas`](/reference/api/widgets/canvas.md) API), Toga will accept values in a [range of possible formats][toga.colors.ColorT].
 
 ## Reference
 
