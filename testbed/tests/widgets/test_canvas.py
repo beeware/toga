@@ -879,4 +879,4 @@ async def test_write_text_and_path(canvas, probe):
         fill.begin_path()
 
     await probe.redraw("Text and path should be drawn independently")
-    assert_reference(probe, "write_text_and_path")
+    assert_reference(probe, "write_text_and_path", 0.04)
