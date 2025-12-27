@@ -12,7 +12,7 @@ class CanvasProbe(SimpleProbe):
     native_class = TogaCanvas
 
     def reference_variant(self, reference):
-        if reference in {"multiline_text", "write_text"}:
+        if reference in {"multiline_text", "write_text", "write_text_and_path"}:
             return f"{reference}-qt"
         else:
             return reference
