@@ -60,23 +60,27 @@ class Pack(PackMechanicsBase):
     _doc_link = "[style properties](/reference/style/pack)"
 
     display: str = validated_property(PACK, NONE, initial=PACK)
-    """**Value:** `"pack"` or `"none"`
+    """Defines how to display the widget.
+
+    **Value:** `"pack"` or `"none"`
 
     **Initial value:** `"pack"`
 
-    Used to define how to display the widget. A value of `"pack"` will apply the pack
-    layout algorithm to this node and its descendants. A value of `"none"` removes the
-    widget from the layout entirely. Space will be allocated for the widget as if it
-    were there, but the widget itself will not be visible.
+    A value of `"pack"` will apply the pack layout algorithm to this node and its
+    descendants. A value of `"none"` removes the widget from the layout entirely. Space
+    will be allocated for the widget as if it were there, but the widget itself will
+    not be visible.
     """
     visibility: str = validated_property(VISIBLE, HIDDEN, initial=VISIBLE)
-    """**Value:** `"hidden"` or `"visible"`
+    """Defines whether the widget should be drawn.
+
+    **Value:** `"hidden"` or `"visible"`
 
     **Initial value:** `"visible"`
 
-    Used to define whether the widget should be drawn. A value of `"visible"` means the
-    widget will be displayed. A value of `"hidden"` removes the widget from view, but
-    allocates space for the widget as if it were still in the layout.
+    A value of `"visible"` means the widget will be displayed. A value of `"hidden"`
+    removes the widget from view, but allocates space for the widget as if it were
+    still in the layout.
 
     Any children of a hidden widget are implicitly removed from view.
 
@@ -85,79 +89,83 @@ class Pack(PackMechanicsBase):
     will also remain hidden, regardless of their visibility.
     """
     direction: str = validated_property(ROW, COLUMN, initial=ROW)
-    """**Value:** `"row"` or `"column"`
+    """The packing direction for children of the box.
+
+    **Value:** `"row"` or `"column"`
 
     **Initial value:** `"row"`
 
-    The packing direction for children of the box. A value of `"column"` indicates
-    children will be stacked vertically, from top to bottom. A value of `"row"`
-    indicates children will be packed horizontally; left-to-right if `text_direction`
-    is `"ltr"`, or right-to-left if `text_direction` is `"rtl"`.
+    A value of `"column"` indicates children will be stacked vertically, from top to
+    bottom. A value of `"row"` indicates children will be packed horizontally;
+    left-to-right if `text_direction` is `"ltr"`, or right-to-left if `text_direction`
+    is `"rtl"`.
     """
     align_items: str | None = validated_property(START, CENTER, END)
-    """**Value:** `"start"`, `"center"`, or `"end"`
+    """The alignment of this box's children along the cross axis.
+
+    **Value:** `"start"`, `"center"`, or `"end"`
 
     **Initial value:** `"start"`
 
     **Aliases:** `vertical_align_items` in a row, `horizontal_align_items` in a column
 
-    The alignment of this box's children along the cross axis. A row's cross axis is
-    vertical, so `"start"` aligns children to the top, while `"end"` aligns them to the
-    bottom. For columns, `"start"` is on the left if `text_direction` is `"ltr"`, and
-    the right if `rtl`.
+    A row's cross axis is vertical, so `"start"` aligns children to the top, while
+    `"end"` aligns them to the bottom. For columns, `"start"` is on the left if
+    `text_direction` is `"ltr"`, and the right if `rtl`.
     """
     justify_content: str | None = validated_property(START, CENTER, END, initial=START)
-    """**Value:** `"start"`, `"center"`, or `"end"`
+    """The alignment of this box's children along the main axis.
+
+    **Value:** `"start"`, `"center"`, or `"end"`
 
     **Initial value:** `"start"`
 
     **Aliases:** `horizontal_align_content` in a row, `vertical_align_content` in a
     column
 
-    The alignment of this box's children along the main axis. A column's main axis is
-    vertical, so `"start"` aligns children to the top, while `"end"` aligns them to the
-    bottom. For rows, `"start"` is on the left if `text_direction` is `"ltr"`, and the
-    right if `"rtl"`.
+    A column's main axis is vertical, so `"start"` aligns children to the top, while
+    `"end"` aligns them to the bottom. For rows, `"start"` is on the left if
+    `text_direction` is `"ltr"`, and the right if `"rtl"`.
 
     This property only has an effect if there is some free space in the main axis. For
     example, if any children have a non-zero `flex` value, then they will consume all
     the available space, and `justify_content` will make no difference to the layout.
     """
     gap: int = validated_property(integer=True, initial=0)
-    """**Value:** an integer
+    """The amount of space to allocate between adjacent children, in
+    [CSS pixels][css-units].
+
+    **Value:** an integer
 
     **Initial value:** `0`
-
-    The amount of space to allocate between adjacent children, in
-    [CSS pixels][css-units].
     """
     width: str | int = validated_property(NONE, integer=True, initial=NONE)
-    """**Value:** an integer or `"none"`
+    """A specified fixed width for the box, in [CSS pixels][css-units].
+
+    **Value:** an integer or `"none"`
 
     **Initial value:** `"none"`
-
-    Specify a fixed width for the box, in [CSS pixels][css-units].
 
     The final width for the box may be larger, if the children of the box cannot fit
     inside the specified space.
     """
     height: str | int = validated_property(NONE, integer=True, initial=NONE)
-    """**Value:** an integer or `"none"`
+    """A specified fixed height for the box, in [CSS pixels][css-units].
+
+    **Value:** an integer or `"none"`
 
     **Initial value:** `"none"`
-
-    Specify a fixed height for the box, in [CSS pixels][css-units].
 
     The final height for the box may be larger, if the children of the box cannot fit
     inside the specified space.
     """
     flex: float = validated_property(number=True, initial=0)
-    """**Value:** a floating-point number
+    """A weighting that is used to compare this box with its siblings when allocating
+    remaining space in a box.
+
+    **Value:** a floating-point number
 
     **Initial value:** `0.0`
-
-    A weighting that is used to compare this box with its siblings when allocating
-    remaining space in a box.
 
     Once fixed space allocations have been performed, this box will assume `flex /
     (sum of all flex for all siblings)` of all remaining available space in the
@@ -170,12 +178,13 @@ class Pack(PackMechanicsBase):
     margin_bottom: int = validated_property(integer=True, initial=0)
     """"""
     margin_left: int = validated_property(integer=True, initial=0)
-    """**Value:** an integer
+    """The amount of space to allocate outside the edge of the box, in
+    [CSS pixels][css-units].
+
+    **Value:** an integer
 
     **Initial value:** `0`
 
-    The amount of space to allocate outside the edge of the box, in
-    [CSS pixels][css-units].
     """
     margin: (
         int
@@ -184,15 +193,15 @@ class Pack(PackMechanicsBase):
         | tuple[int, int, int]
         | tuple[int, int, int, int]
     ) = directional_property("margin{}")
-    """**Value:** a tuple consisting of `(margin_top, margin_right, margin_bottom,
+    """A shorthand for setting the top, right, bottom and left margin with a single
+    declaration.
+
+    **Value:** a tuple consisting of `(margin_top, margin_right, margin_bottom,
     margin_left)`
 
     **Initial value:** `(0, 0, 0, 0)`
 
     **Accepts:** an integer or a sequence of 1–4 integers
-
-    A shorthand for setting the top, right, bottom and left margin with a single
-    declaration.
 
     If 1 integer is provided, that value will be used as the margin for all sides.
 
@@ -206,51 +215,53 @@ class Pack(PackMechanicsBase):
     margin, respectively.
     """
     color: ColorT | None = validated_property(color=True)
-    """**Value:** a [color][toga.colors.ColorT] or `None`
+    """The foreground color for the object being rendered.
+
+    **Value:** a [color][toga.colors.ColorT] or `None`
 
     **Initial value:** `None`; will use the system default
-
-    Set the foreground color for the object being rendered.
 
     Some objects may not use the value.
     """
     background_color: ColorT | None = validated_property(TRANSPARENT, color=True)
-    """**Value:** a [color][toga.colors.ColorT], `"transparent"`, or `None`
+    """The background color for the object being rendered.
+
+    **Value:** a [color][toga.colors.ColorT], `"transparent"`, or `None`
 
     **Initial value:** `None`; will use the system default
-
-    Set the background color for the object being rendered.
 
     Some objects may not use the value.
     """
     text_align: str | None = validated_property(LEFT, RIGHT, CENTER, JUSTIFY)
-    """**Value:** `"left"`, `"right"`, `"center"`, or `"justify"`
+    """The alignment of text in the object being rendered.
+
+    **Value:** `"left"`, `"right"`, `"center"`, or `"justify"`
 
     **Initial value:** `"left"` if `text_direction` is `"ltr"`; `"right"` if
     `text_direction` is `"rtl"`
 
-    Defines the alignment of text in the object being rendered.
     """
     text_direction: str | None = validated_property(RTL, LTR, initial=LTR)
-    """**Value:** `"rtl"` or `"ltr"`
+    """The natural direction of horizontal content.
+
+    **Value:** `"rtl"` or `"ltr"`
 
     **Initial value:** `"rtl"`
-
-    Defines the natural direction of horizontal content.
     """
     font_family: str | list[str] = list_property(
         *SYSTEM_DEFAULT_FONTS, string=True, initial=[SYSTEM]
     )
-    """**Value**: a list of strings
+    """A list defining possible font families, in order of preference.
+
+    **Value**: a list of strings
 
     **Initial value:** `["system"]`
 
     **Accepts:** a string or a sequence of strings
 
-    A list defining possible font families, in order of preference: the first item that
-    maps to a valid font will be used. If none can be resolved, the system font will be
-    used. Setting to a single string value is the same as setting to a list containing
-    that string as the only item.
+    The first item that maps to a valid font will be used. If none can be resolved, the
+    system font will be used. Setting to a single string value is the same as setting
+    to a list containing that string as the only item.
 
     A value of `"system"` indicates that whatever is a system-appropriate font should be
     used.
@@ -268,39 +279,39 @@ class Pack(PackMechanicsBase):
     default system font.
     """
     font_style: str = validated_property(*FONT_STYLES, initial=NORMAL)
-    """**Value:** `"normal"`, `"italic"`, or `"oblique"`
+    """The style of the font to be used.
+
+    **Value:** `"normal"`, `"italic"`, or `"oblique"`
 
     **Initial value:** `"normal"`
-
-    The style of the font to be used.
 
     **Note:** Windows and Android do not support the oblique font style. A request for
     an `"oblique"` font will be interpreted as `"italic"`.
     """
     font_variant: str = validated_property(*FONT_VARIANTS, initial=NORMAL)
-    """**Value:** `"normal"` or `"small_caps"`
+    """The variant of the font to be used.
+
+    **Value:** `"normal"` or `"small_caps"`
 
     **Initial value:** `"normal"`
-
-    The variant of the font to be used.
 
     **Note:** Windows and Android do not support the small caps variant. A request for a
     `"small_caps"` font will be interpreted as `"normal"`.
     """
     font_weight: str = validated_property(*FONT_WEIGHTS, initial=NORMAL)
-    """**Value:** `"normal"` or `"bold"`
+    """The weight of the font to be used.
+
+    **Value:** `"normal"` or `"bold"`
 
     **Initial value:** `"normal"`
-
-    The weight of the font to be used.
     """
     font_size: int = validated_property(integer=True, initial=SYSTEM_DEFAULT_FONT_SIZE)
-    """**Value:** an integer
+    """The size of the font to be used, in [CSS points][css-units].
+
+    **Value:** an integer
 
     **Initial value:** `-1`; will use the system default size. This is also stored as a
     constant named `SYSTEM_DEFAULT_FONT_SIZE`.
-
-    The size of the font to be used, in [CSS points][css-units].
     """
     font: (
         tuple[int, list[str] | str]
@@ -311,7 +322,9 @@ class Pack(PackMechanicsBase):
         optional=("font_style", "font_variant", "font_weight"),
         required=("font_size", "font_family"),
     )
-    """**Value:** a tuple consisting of `(font_style, font_variant, font_weight,
+    """A shorthand for simultaneously setting multiple properties of a font.
+
+    **Value:** a tuple consisting of `(font_style, font_variant, font_weight,
     font_size, font_family)`
 
     **Initial value:** `("normal", "normal", "normal", -1, ["system"])`
@@ -320,8 +333,7 @@ class Pack(PackMechanicsBase):
     by any combination and order of valid values for `font_style`, `font_variant`, and
     `font_weight`.
 
-    A shorthand for simultaneously setting the style, variant, weight, size, and family
-    of a font. Any of the three optional values (style, variant, and weight) not
+    Any of the three optional values (style, variant, and weight) not
     specified will be reset to `"normal"`.
     """
 
