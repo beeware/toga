@@ -15,6 +15,7 @@ try:
     from .widgets.box import Box
     from .widgets.button import Button
     from .widgets.dateinput import DateInput
+    from .widgets.detailedlist import DetailedList
     from .widgets.imageview import ImageView
     from .widgets.label import Label
     from .widgets.multilinetextinput import MultilineTextInput
@@ -49,6 +50,7 @@ __all__ = [
     "Command",
     "Button",
     "DateInput",
+    "DetailedList",
     "Font",
     "Container",
     "Box",

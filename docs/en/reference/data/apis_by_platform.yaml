@@ -65,7 +65,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   Divider:
     description: A separator used to visually distinguish two sections of content in a layout.

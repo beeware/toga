@@ -8,7 +8,7 @@ from PySide6.QtCore import (
     QSize,
     Qt,
 )
-from PySide6.QtGui import QAction, QCursor, QFont, QFontMetrics, QIcon, QPainter
+from PySide6.QtGui import QAction, QFont, QFontMetrics, QIcon, QPainter
 from PySide6.QtWidgets import QListView, QMenu, QStyle, QStyledItemDelegate
 from travertino.size import at_least
 
@@ -76,9 +76,8 @@ class ListSourceModel(QAbstractListModel):
     def item_changed(self, item):
         if self.source is None:
             return
-        self.dataChanged.emit(self.index(self.source.index(item)))
-        # Nothing to do, removal has already happened
-        self.endInsertRows()
+        index = self.index(self.source.index(item))
+        self.dataChanged.emit(index, index)
 
     def rowCount(
         self, parent: QModelIndex | QPersistentModelIndex = INVALID_INDEX
@@ -128,9 +127,9 @@ class DetailedListDelegate(QStyledItemDelegate):
         self.initStyleOption(options, index)
         painter.save()
 
-        title, subtitle = index.data(Qt.ItemDataRole.UserRole)
-        title = self.impl.interface.missing_value if title is None else title
-        subtitle = self.impl.interface.missing_value if subtitle is None else subtitle
+        title, subtitle = self.impl._format_missing(
+            index.data(Qt.ItemDataRole.UserRole)
+        )
 
         options.widget.style().drawControl(
             QStyle.ControlElement.CE_ItemViewItem, options, painter
@@ -154,10 +153,8 @@ class DetailedListDelegate(QStyledItemDelegate):
         base_size = super().sizeHint(options, index)
         self.initStyleOption(options, index)
 
-        title, subtitle = index.data(Qt.ItemDataRole.UserRole)
-        title = self.impl.interface.missing_value if title is MISSING else title
-        subtitle = (
-            self.impl.interface.missing_value if subtitle is MISSING else subtitle
+        title, subtitle = self.impl._format_missing(
+            index.data(Qt.ItemDataRole.UserRole)
         )
 
         title_metrics = QFontMetrics(options.font)
@@ -202,6 +199,7 @@ class DetailedList(Widget):
         self.native_delegate = DetailedListDelegate(self, parent=self.native)
         self.native.setItemDelegate(self.native_delegate)
         self.native.setSelectionMode(QListView.SelectionMode.SingleSelection)
+        self.native.selectionModel().selectionChanged.connect(self.qt_selection_changed)
 
         # Disable all actions by default.
         self.primary_action_enabled = False
@@ -211,41 +209,56 @@ class DetailedList(Widget):
         # Set up context menu
         self.native.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.native.customContextMenuRequested.connect(self.qt_context_menu)
+        self._menu = QMenu(self.native)
 
         self.native.show()
 
-    def qt_context_menu(self, pos):
+    def _format_missing(self, user_data):
+        return tuple(
+            x if x is not None else self.interface.missing_value for x in user_data
+        )
+
+    def _get_context_menu(self):
+        self._menu.clear()
         actions = []
-        if self.primary_action_enabled:
-            primary_action = QAction(self.interface._primary_action)
-            primary_action.triggered.connect(self.qt_primary_action)
-            actions.append(primary_action)
-        if self.secondary_action_enabled:
-            secondary_action = QAction(self.interface._secondary_action)
-            secondary_action.triggered.connect(self.qt_secondary_action)
-            actions.append(secondary_action)
+        # Primary and secondary actions only show when an item is selected
+        if self.native.selectedIndexes():
+            if self.primary_action_enabled:
+                primary_action = QAction(
+                    self.interface._primary_action, parent=self._menu
+                )
+                primary_action.triggered.connect(self.qt_primary_action)
+                actions.append(primary_action)
+            if self.secondary_action_enabled and self.native.selectedIndexes():
+                secondary_action = QAction(
+                    self.interface._secondary_action, parent=self._menu
+                )
+                secondary_action.triggered.connect(self.qt_secondary_action)
+                actions.append(secondary_action)
         if self.refresh_enabled:
-            refresh_action = QAction("Refresh")
+            refresh_action = QAction("Refresh", parent=self._menu)
             refresh_action.triggered.connect(self.qt_refresh_action)
             actions.append(refresh_action)
         if actions:
-            menu = QMenu(self.native)
-            menu.addActions(actions)
-            menu.exec(QCursor.pos())
-        else:
-            menu = None
-        # for testing
-        self._menu = menu
+            self._menu.addActions(actions)
+
+    def qt_selection_changed(self, selected, deselected):
+        self.interface.on_select()
+
+    def qt_context_menu(self, pos):
+        self._get_context_menu()
+        if not self._menu.isEmpty():
+            self._menu.exec()
 
     def qt_primary_action(self, checked):
-        index = self.native.selectionModel().currentIndex()
-        row = self.interface.data[index.row()]
-        self.interface.on_primary_action(row=row)
+        row = self.get_selection()
+        row_data = self.interface.data[row]
+        self.interface.on_primary_action(row=row_data)
 
     def qt_secondary_action(self, checked):
-        index = self.native.selectionModel().currentIndex()
-        row = self.interface.data[index.row()]
-        self.interface.on_secondary_action(row=row)
+        row = self.get_selection()
+        row_data = self.interface.data[row]
+        self.interface.on_secondary_action(row=row_data)
 
     def qt_refresh_action(self, checked):
         self.interface.on_refresh()
@@ -283,7 +296,7 @@ class DetailedList(Widget):
 
     def get_selection(self):
         indexes = self.native.selectedIndexes()
-        return indexes[0].row() if len(indexes) == 0 else None
+        return indexes[0].row() if len(indexes) != 0 else None
 
     def scroll_to_row(self, row):
         index = self.native.model().index(row, 0, QModelIndex())
