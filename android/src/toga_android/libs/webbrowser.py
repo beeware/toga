@@ -19,5 +19,6 @@ class AndroidBrowser:
         MainActivity.singletonThis.startActivity(intent)
         return True
 
+
 # Register the browser as soon as this file is imported
 webbrowser.register("android", None, AndroidBrowser(), preferred=True)
