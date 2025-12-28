@@ -3,7 +3,7 @@
 <!-- rumdl-disable MD007 -->
 
 - [Tutorials](tutorial/index.md)
-    - ./tutorial/*
+    - tutorial/*
 - [How-to Guides](how-to/index.md)
     - [Contributing to Toga](how-to/contribute/index.md)
         - [First-time contributors](how-to/contribute/first-time-contributors.md)
@@ -37,63 +37,64 @@
     - Internal How-to guides
         - [How to cut a Toga release](how-to/internal/release.md)
 - [Topic guides](topics/index.md)
-    - ./topics/*
+    - topics/*
 - [Reference](reference/index.md)
     - [API Reference](reference/api/index.md)
-        - [App](./reference/api/app.md)
-        - [Window](./reference/api/window.md)
-        - [MainWindow](./reference/api/mainwindow.md)
-        - [DocumentWindow](./reference/api/documentwindow.md)
-        - Containers
-            - ./reference/api/containers/*
-        - Hardware
-            - ./reference/api/hardware/*
-        - Resources
-            - ./reference/api/resources/*
+        - Application components
+            <!-- Specify order of the window classes, then let rest be alphabetical -->
+            - [App](reference/api/application/app.md)
+            - [Window](reference/api/application/window.md)
+            - [MainWindow](reference/api/application/mainwindow.md)
+            - [DocumentWindow](reference/api/application/documentwindow.md)
+            - reference/api/application/*
         - Widgets
-            - [ActivityIndicator](./reference/api/widgets/activityindicator.md)
-            - [Button](./reference/api/widgets/button.md)
-            - [Canvas](./reference/api/widgets/canvas.md)
-            - [DateInput](./reference/api/widgets/dateinput.md)
-            - [DetailedList](./reference/api/widgets/detailedlist.md)
-            - [Divider](./reference/api/widgets/divider.md)
-            - [ImageView](./reference/api/widgets/imageview.md)
-            - [Label](./reference/api/widgets/label.md)
-            - [MapView](./reference/api/widgets/mapview.md)
-            - [MultilineTextInput](./reference/api/widgets/multilinetextinput.md)
-            - [NumberInput](./reference/api/widgets/numberinput.md)
-            - [PasswordInput](./reference/api/widgets/passwordinput.md)
-            - [ProgressBar](./reference/api/widgets/progressbar.md)
-            - [Selection](./reference/api/widgets/selection.md)
-            - [Slider](./reference/api/widgets/slider.md)
-            - [Switch](./reference/api/widgets/switch.md)
-            - [Table](./reference/api/widgets/table.md)
-            - [TextInput](./reference/api/widgets/textinput.md)
-            - [TimeInput](./reference/api/widgets/timeinput.md)
-            - [Tree](./reference/api/widgets/tree.md)
-            - [WebView](./reference/api/widgets/webview.md)
-            - [Widget](./reference/api/widgets/widget.md)
-        - [Constants](./reference/api/constants.md)
-        - [Keys](./reference/api/keys.md)
-        - [Types](./reference/api/types.md)
+            <!-- If these are autolisted, TextInput is at the bottom since it's a directory. -->
+            - [ActivityIndicator](reference/api/widgets/activityindicator.md)
+            - [Button](reference/api/widgets/button.md)
+            - [Canvas](reference/api/widgets/canvas.md)
+            - [DateInput](reference/api/widgets/dateinput.md)
+            - [DetailedList](reference/api/widgets/detailedlist.md)
+            - [Divider](reference/api/widgets/divider.md)
+            - [ImageView](reference/api/widgets/imageview.md)
+            - [Label](reference/api/widgets/label.md)
+            - [MapView](reference/api/widgets/mapview.md)
+            - [MultilineTextInput](reference/api/widgets/multilinetextinput.md)
+            - [NumberInput](reference/api/widgets/numberinput.md)
+            - [PasswordInput](reference/api/widgets/passwordinput.md)
+            - [ProgressBar](reference/api/widgets/progressbar.md)
+            - [Selection](reference/api/widgets/selection.md)
+            - [Slider](reference/api/widgets/slider.md)
+            - [Switch](reference/api/widgets/switch.md)
+            - [Table](reference/api/widgets/table.md)
+            - [TextInput](reference/api/widgets/textinput/index.md)
+                - [Validators](reference/api/widgets/textinput/validators.md)
+            - [TimeInput](reference/api/widgets/timeinput.md)
+            - [Tree](reference/api/widgets/tree.md)
+            - [WebView](reference/api/widgets/webview.md)
+            - [Widget](reference/api/widgets/widget.md)
+            - Container widgets
+                - reference/api/widgets/containers/*
+        - Style
+            - reference/api/style/*
+        - Resources
+            - reference/api/resources/*
+        - Data sources
+            - reference/api/sources/*
+        - Constants and types
+            - reference/api/constants_types/*
+        - Hardware
+            - reference/api/hardware/*
     - [Supported Platforms](reference/platforms/index.md)
-        - [macOS](./reference/platforms/macOS.md)
-        - [Windows](./reference/platforms/windows.md)
-        - [Linux](./reference/platforms/linux/index.md)
-            - [GTK](./reference/platforms/linux/gtk.md)
-            - [Qt](./reference/platforms/linux/qt.md)
-        - [Android](./reference/platforms/android.md)
-        - [iOS](./reference/platforms/iOS.md)
-        - [Web](./reference/platforms/web.md)
-        - [Terminal](./reference/platforms/terminal.md)
-        - [Testing](./reference/platforms/testing.md)
-    - [Toga APIs by platform](reference/widgets_by_platform.md)
-    - Style
-        - [The Pack Style Engine](reference/style/pack.md)
-    - Plugins
-        - [Image Format Plugins](reference/plugins/image_formats.md)
-    - Toga's internals
-        - [Architecture](reference/internals/architecture.md)
+        - [macOS](reference/platforms/macOS.md)
+        - [Windows](reference/platforms/windows.md)
+        - [Linux](reference/platforms/linux/index.md)
+            - [GTK](reference/platforms/linux/gtk.md)
+            - [Qt](reference/platforms/linux/qt.md)
+        - [Android](reference/platforms/android.md)
+        - [iOS](reference/platforms/iOS.md)
+        - [Web](reference/platforms/web.md)
+        - [Terminal](reference/platforms/terminal.md)
+        - [Testing](reference/platforms/testing.md)
 - [About Toga](about/index.md)
     - [Why Toga?](about/philosophy.md)
     - [FAQ](about/faq.md)

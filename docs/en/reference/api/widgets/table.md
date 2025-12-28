@@ -44,7 +44,7 @@ row = table.data[0]
 print(f"{row.name}, who is age {row.age}, is from {row.planet}")
 ```
 
--8<- "reference/api/widgets/table-accessors.md"
+-8<- "snippets/accessors.md"
 
 If you want to use different attributes, you can override them by providing an `accessors` argument. In this example, the table will use "Name" as the visible header, but internally, the attribute "character" will be used:
 
@@ -66,7 +66,7 @@ row = table.data[0]
 print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 ```
 
--8<- "reference/api/widgets/table-values.md"
+-8<- "snippets/accessor-values.md"
 
 ## Notes
 

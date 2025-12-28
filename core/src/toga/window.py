@@ -613,9 +613,9 @@ class Window:
         :param format: Format to provide. Defaults to [`Image`][toga.images.Image]; also
             supports [`PIL.Image.Image`][] if Pillow is installed, as well as any image
             types defined by installed
-            [image format plugins](/reference/plugins/image_formats.md).
+            [image format plugins](/reference/api/resources/image/image-format-plugins.md).
         :returns: An image containing the window content, in the format requested.
-        """
+        """  # noqa: E501
         return Image(self._impl.get_image_data()).as_format(format)
 
     async def dialog(
@@ -623,7 +623,8 @@ class Window:
     ) -> dialogs.DialogResultT:
         """Display a dialog to the user, modal to this window.
 
-        :param dialog: The [toga.Window.dialog](/reference/api/resources/dialogs.md) to
+        :param dialog: The
+            [toga.Window.dialog](/reference/api/application/dialogs.md) to
             display to the user.
         :returns: The result of the dialog.
         """

@@ -1,4 +1,4 @@
-# Data Sources { #data-sources }
+# Data Sources { #sources }
 
 Most widgets in a user interface will need to interact with data - either displaying it, or providing a way to manipulate it.
 
@@ -10,9 +10,9 @@ Toga encourages this separation through the use of data sources. Instead of dire
 
 There are three built-in data source types in Toga:
 
-- [Value Sources](/reference/api/resources/sources/value_source.md): For managing a single value. A ValueSource has a single attribute, (by default, `value`), which is what will be rendered for display purposes.
-- [List Sources](/reference/api/resources/sources/list_source.md): For managing a list of items, each of which has one or more values. List data sources support the data manipulation methods you'd expect of a [`list`][], and return [`Row`][toga.sources.Row] objects. The attributes of each [`Row`][toga.sources.Row] object are the values that should be displayed.
-- [Tree Sources](/reference/api/resources/sources/tree_source.md): For managing a hierarchy of items, each of which has one or more values. Tree data sources also behave like a [`list`][], except that each item returned is a [`Node`][toga.sources.Node]. The attributes of the [`Node`][toga.sources.Node] are the values that should be displayed; a [`Node`][toga.sources.Node] also has children, accessible using the [`list`][] interface on the [`Node`][toga.sources.Node].
+- [Value Sources](/reference/api/sources/valuesource.md): For managing a single value. A ValueSource has a single attribute, (by default, `value`), which is what will be rendered for display purposes.
+- [List Sources](/reference/api/sources/listsource.md): For managing a list of items, each of which has one or more values. List data sources support the data manipulation methods you'd expect of a [`list`][], and return [`Row`][toga.sources.Row] objects. The attributes of each [`Row`][toga.sources.Row] object are the values that should be displayed.
+- [Tree Sources](/reference/api/sources/treesource.md): For managing a hierarchy of items, each of which has one or more values. Tree data sources also behave like a [`list`][], except that each item returned is a [`Node`][toga.sources.Node]. The attributes of the [`Node`][toga.sources.Node] are the values that should be displayed; a [`Node`][toga.sources.Node] also has children, accessible using the [`list`][] interface on the [`Node`][toga.sources.Node].
 
 Although Toga provides these built-in data sources, in general, *you shouldn't use them directly*. Toga's data sources are wrappers around Python's primitive collection types -[`list`][], [`dict`][], and so on. While this is useful for quick demonstrations, or to visualize simple data, more complex applications should define their own [custom data sources][custom-data-sources].
 

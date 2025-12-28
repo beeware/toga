@@ -1,4 +1,6 @@
-{{ component_header("Validators") }}
+# Validators
+
+Utilities to verify text input.
 
 ## Usage
 
