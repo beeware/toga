@@ -129,7 +129,9 @@ plugins:
     # Files that shouldn't be in the sitemap
     glob:
       - snippets/*
-      - SUMMARY.md
+      # Unfortunately, excluding the nav file from the sitemap prevents literate-nav
+      # from working.
+      # - SUMMARY.md
   redirects:
     redirect_maps:
       # These were never linked to, but they are in the sitemap for 0.5.3.
@@ -137,7 +139,7 @@ plugins:
       reference/api/widgets/table-values.md: reference/api/widgets/table.md
       reference/platforms/linux/gtk-prerequisites.md: reference/platforms/linux/index.md
       reference/platforms/linux/qt-prerequisites.md: reference/platforms/linux/index.md
-      SUMMARY.md: index.md
+      # SUMMARY.md: index.md
 
       # Contribution guide
       how-to/contribute/code.md: how-to/contribute/index.md
