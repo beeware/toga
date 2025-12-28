@@ -15,6 +15,7 @@ from toga.command import Group, Separator
 from toga.dialogs import InfoDialog
 
 from .libs import events
+from .libs import webbrowser
 from .screens import Screen as ScreenImpl
 
 
