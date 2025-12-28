@@ -9,6 +9,7 @@ APIs
 App
 AppKit
 AppleTV
+approximative
 apps
 async
 asyncio
@@ -102,6 +103,7 @@ Monetization
 MultilineTextInput
 MultilineTextInputs
 namespace
+natively
 NumberInput
 NumberInput's
 NumLock
@@ -120,11 +122,13 @@ PNG
 POSIX
 Postel's
 pre
+preliminarily
 prepending
 prereqs
 programmatically
 ProgressBar
 PRs
+pseudocode
 px
 PyCon
 Pygame
@@ -137,7 +141,9 @@ PyScript
 PySide
 pytest
 pythonic
+Pythonically
 Qt's
+QtAsyncio
 QuickLook
 Quickstart
 radiusx
@@ -146,6 +152,7 @@ README
 Refactored
 rehint
 rehinted
+reimplementing
 RemoteCommand
 Ren
 resizable
@@ -158,6 +165,7 @@ sandboxed
 scalable
 ScrollContainer
 scrollable
+scrollbar
 scrollers
 ScrollLock
 SDK
