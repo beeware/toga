@@ -1,4 +1,4 @@
-# Image Format Plugins
+# Image format plugins
 
 ## Usage
 
