@@ -1,0 +1,1 @@
+Added an Android webbrowser handler so webbrowser.open() works correctly on Android.
