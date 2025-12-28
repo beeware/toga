@@ -48,7 +48,7 @@
             - [DocumentWindow](reference/api/application/documentwindow.md)
             - reference/api/application/*
         - Widgets
-            <!-- If these are autolisted, TextInput is at the bottom since it's a directory. -->
+            <!-- If these are auto-listed, TextInput is at the bottom since it's a directory. -->
             - [ActivityIndicator](reference/api/widgets/activityindicator.md)
             - [Button](reference/api/widgets/button.md)
             - [Canvas](reference/api/widgets/canvas.md)
