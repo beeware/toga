@@ -8,7 +8,7 @@ class WebViewProbe(SimpleProbe):
     content_supports_url = True
     javascript_supports_exception = True
     supports_on_load = True
-    supports_on_navigation_starting = False
+    supports_on_navigation_starting = True
 
     @property
     def has_focus(self):

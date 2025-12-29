@@ -26,7 +26,7 @@ class OnWebViewLoadHandler(Protocol):
 
 
 class OnNavigationStartingHandler(Protocol):
-    def __call__(self, widget: WebView, url: str, **kwargs: Any) -> True:
+    def __call__(self, widget: WebView, url: str, **kwargs: Any) -> bool:
         """A handler to invoke when the WebView is requesting permission to navigate or
         redirect to a different URI.
 
@@ -134,7 +134,7 @@ class WebView(Widget):
         return `True` if navigation to the given URL is permitted, or `False`
         if navigation to the URL should be blocked.
 
-        **Note:** This is currently only supported on Android and Windows.
+        **Note:** This is not currently supported on GTK.
         """
         return self._on_navigation_starting
 
