@@ -6,6 +6,8 @@ from ..probe import BaseProbe
 
 
 class SimpleProbe(BaseProbe, FontMixin):
+    invalid_size_while_hidden = False
+
     async def redraw(self, message=None, delay=0):
         self.native.repaint()
         await super().redraw(message=message, delay=delay)

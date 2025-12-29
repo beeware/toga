@@ -13,11 +13,18 @@ class Widget:
         self.create()
         self.native.hide()
         self._hidden = True
-        self._default_background_color = toga_color(
-            self.native.palette().color(self.native.backgroundRole())
-        )
+
+        # if not hasattr(self, "_background_color_role"):
+        self._background_color_role = self.native.backgroundRole()
+        # if not hasattr(self, "_foreground_color_role"):
+        self._foreground_color_role = self.native.foregroundRole()
+        if not hasattr(self, "_default_background_color"):
+            self._default_background_color = toga_color(
+                self.native.palette().color(self._background_color_role)
+            )
+        # if not hasattr(self, "_default_foreground_color"):
         self._default_foreground_color = toga_color(
-            self.native.palette().color(self.native.foregroundRole())
+            self.native.palette().color(self._foreground_color_role)
         )
 
     @property
@@ -95,14 +102,14 @@ class Widget:
         if color is None:
             color = self._default_foreground_color
         palette = self.native.palette()
-        palette.setColor(self.native.foregroundRole(), native_color(color))
+        palette.setColor(self._foreground_color_role, native_color(color))
         self.native.setPalette(palette)
 
     def set_background_color(self, color):
         if color is None:
             color = self._default_background_color
         palette = self.native.palette()
-        palette.setColor(self.native.backgroundRole(), native_color(color))
+        palette.setColor(self._background_color_role, native_color(color))
         self.native.setPalette(palette)
 
     def set_font(self, font):

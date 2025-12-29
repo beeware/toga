@@ -148,7 +148,7 @@ def test_function_handler_with_cleanup():
     }
 
     # Cleanup method was invoked
-    cleanup.assert_called_once_with(obj, 42)
+    cleanup.assert_called_once_with(obj, 42, "arg1", "arg2", kwarg1=3, kwarg2=4)
 
 
 def test_function_handler_with_cleanup_error(capsys):
@@ -177,7 +177,7 @@ def test_function_handler_with_cleanup_error(capsys):
     }
 
     # Cleanup method was invoked
-    cleanup.assert_called_once_with(obj, 42)
+    cleanup.assert_called_once_with(obj, 42, "arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Evidence of the handler cleanup error is in the log.
     assert (
@@ -439,7 +439,7 @@ async def test_coroutine_handler_with_cleanup():
     }
 
     # Cleanup method was invoked
-    cleanup.assert_called_once_with(obj, 42)
+    cleanup.assert_called_once_with(obj, 42, "arg1", "arg2", kwarg1=3, kwarg2=4)
 
 
 async def test_coroutine_handler_with_cleanup_error(capsys):
@@ -471,7 +471,7 @@ async def test_coroutine_handler_with_cleanup_error(capsys):
     }
 
     # Cleanup method was invoked
-    cleanup.assert_called_once_with(obj, 42)
+    cleanup.assert_called_once_with(obj, 42, "arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Evidence of the handler cleanup error is in the log.
     assert (

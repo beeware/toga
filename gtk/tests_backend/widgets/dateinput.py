@@ -33,7 +33,9 @@ class DateTimeInputProbe(SimpleProbe, ABC):
 class DateInputProbe(DateTimeInputProbe):
     def __init__(self, widget):
         super().__init__(widget)
-        self.minimum_required_height = 236
+        # Normally for GTK4, 236 is required but libadwaita applies
+        # custom stylesheets, bloating it to 243.
+        self.minimum_required_height = 243
 
     def py_value(self, native_value):
         if GTK_VERSION >= (4, 0, 0):
