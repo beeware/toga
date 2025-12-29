@@ -14,18 +14,18 @@ class Widget:
         self.native.hide()
         self._hidden = True
 
-        if not hasattr(self, "_background_color_role"):
-            self._background_color_role = self.native.backgroundRole()
-        if not hasattr(self, "_foreground_color_role"):
-            self._foreground_color_role = self.native.foregroundRole()
+        # if not hasattr(self, "_background_color_role"):
+        self._background_color_role = self.native.backgroundRole()
+        # if not hasattr(self, "_foreground_color_role"):
+        self._foreground_color_role = self.native.foregroundRole()
         if not hasattr(self, "_default_background_color"):
             self._default_background_color = toga_color(
                 self.native.palette().color(self._background_color_role)
             )
-        if not hasattr(self, "_default_foreground_color"):
-            self._default_foreground_color = toga_color(
-                self.native.palette().color(self._foreground_color_role)
-            )
+        # if not hasattr(self, "_default_foreground_color"):
+        self._default_foreground_color = toga_color(
+            self.native.palette().color(self._foreground_color_role)
+        )
 
     @property
     def container(self):
