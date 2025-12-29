@@ -10,6 +10,7 @@ from .libs import (
     GTK_VERSION,
     IS_WAYLAND,
     TOGA_DEFAULT_STYLES,
+    Adw,
     Gdk,
     Gio,
     GLib,
@@ -34,17 +35,20 @@ class App:
         self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
-        # *Note* -- the coverage may be inaccurate if GTK3 is used with
-        # a newer version of glib or if GTK4 is used with an older version
-        # of glib.  On local runs, coverage errors here can be safely
-        # ignored if the version of software is as described above.
-        if GLIB_VERSION < (2, 74, 0):  # pragma: no-cover-if-gtk4
-            self.native = Gtk.Application(
+        if Adw is None:  # pragma: no-cover-unless-plain-gtk
+            Application = Gtk.Application
+        else:  # pragma: no-cover-unless-libadwaita
+            Application = Adw.Application
+        # *Note* -- the coverage may be inaccurate on older
+        # glib versions; it is safe to ignore when running
+        # locally.
+        if GLIB_VERSION < (2, 74, 0):  # pragma: no cover
+            self.native = Application(
                 application_id=self.interface.app_id,
                 flags=Gio.ApplicationFlags.FLAGS_NONE,
             )
-        else:  # pragma: no-cover-if-gtk3
-            self.native = Gtk.Application(
+        else:
+            self.native = Application(
                 application_id=self.interface.app_id,
                 flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
             )

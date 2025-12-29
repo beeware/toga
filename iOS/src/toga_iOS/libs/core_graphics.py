@@ -171,6 +171,13 @@ core_graphics.CGContextShowTextAtPoint.argtypes = [
 core_graphics.CGContextTranslateCTM.restype = c_void_p
 core_graphics.CGContextTranslateCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
 
+CGPathRef = c_void_p
+register_preferred_encoding(b"^{__CGPath=}", CGPathRef)
+core_graphics.CGContextCopyPath.restype = CGPathRef
+core_graphics.CGContextCopyPath.argtypes = [CGContextRef]
+core_graphics.CGContextAddPath.restype = c_void_p
+core_graphics.CGContextAddPath.argtypes = [CGContextRef, CGPathRef]
+
 ######################################################################
 # CGEventTypes.h
 kCGImageAlphaNone = 0

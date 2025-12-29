@@ -176,7 +176,6 @@ class Canvas(Widget):
             }.get(fill_rule, Path.FillType.WINDING)
         )
         canvas.drawPath(path, draw_paint)
-        path.reset()
 
     def stroke(self, color, line_width, line_dash, path, canvas, **kwargs):
         draw_paint = Paint()
@@ -190,7 +189,6 @@ class Canvas(Widget):
             draw_paint.setPathEffect(DashPathEffect(line_dash, 0))
 
         canvas.drawPath(path, draw_paint)
-        path.reset()
 
     # Transformations
 

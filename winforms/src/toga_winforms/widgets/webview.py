@@ -98,6 +98,10 @@ class WebView(Widget):
         self.native.EnsureCoreWebView2Async(None)
         self.native.DefaultBackgroundColor = Color.Transparent
 
+        # attribute to store the URL allowed by user interaction or
+        # user on_navigation_starting handler
+        self._allowed_url = None
+
     # Any non-trivial use of the WebView requires the CoreWebView2 object to be
     # initialized, which is asynchronous. Since most of this class's methods are not
     # asynchronous, they cannot handle this using `await`. Instead, they add a callable
@@ -134,6 +138,10 @@ class WebView(Widget):
             settings.IsStatusBarEnabled = debug
             settings.IsSwipeNavigationEnabled = False
             settings.IsZoomControlEnabled = True
+
+            self.native.CoreWebView2.NavigationStarting += WeakrefCallable(
+                self.winforms_navigation_starting
+            )
 
             for task in self.pending_tasks:
                 task()
@@ -178,6 +186,28 @@ class WebView(Widget):
             self.loaded_future.set_result(None)
             self.loaded_future = None
 
+    def winforms_navigation_starting(self, sender, event):
+        if self.interface.on_navigation_starting._raw:
+            # check URL permission
+            if self._allowed_url == "about:blank" or self._allowed_url == event.Uri:
+                # URL is allowed by user code
+                allow = True
+            else:
+                # allow the URL only once
+                self._allowed_url = None
+                result = self.interface.on_navigation_starting(url=event.Uri)
+                if isinstance(result, bool):
+                    # on_navigation_starting handler is synchronous
+                    allow = result
+                else:
+                    # on_navigation_starting handler is asynchronous
+                    # deny navigation until the user defined on_navigation_starting
+                    # coroutine has completed.
+                    allow = False
+            if not allow:
+                # Deny navigation
+                event.Cancel = True
+
     def get_url(self):
         source = self.native.Source
         if source is None:  # pragma: nocover
@@ -188,6 +218,9 @@ class WebView(Widget):
 
     @requires_initialization
     def set_url(self, value, future=None):
+        if self.interface.on_navigation_starting._raw:
+            # mark URL as being allowed
+            self._allowed_url = value
         self.loaded_future = future
         if value is None:
             self.set_content("about:blank", "")
@@ -196,6 +229,9 @@ class WebView(Widget):
 
     @requires_initialization
     def set_content(self, root_url, content):
+        if self.interface.on_navigation_starting._raw:
+            # mark URL as being allowed
+            self._allowed_url = "about:blank"
         # There appears to be no way to pass the root_url.
         self.native.NavigateToString(content)
 
