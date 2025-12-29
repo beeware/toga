@@ -402,7 +402,7 @@ jobs:
             sleep 1
           briefcase-run-prefix: 'DISPLAY=:99'
           setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed"
+          app-user-data-path: "$HOME/.local/share/testbed-qt"
 
         - backend: "linux-wayland-qt"
           platform: "linux"
@@ -432,7 +432,7 @@ jobs:
             sleep 1
           briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
           setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed"
+          app-user-data-path: "$HOME/.local/share/testbed-qt"
 
         - backend: "textual-linux"
           platform: "linux"
