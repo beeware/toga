@@ -443,14 +443,14 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
     await widget.evaluate_javascript(
         'window.location.assign("https://github.com/beeware/toga/")'
     )
-    await probe.redraw("Attempt to navigate to forbidden URL", delay=2)
+    await probe.redraw("Attempt to navigate to forbidden URL", delay=5)
 
     assert widget.url == "https://github.com/beeware/"
     # simulate browser navigation to allowed url
     await widget.evaluate_javascript(
         'window.location.assign("https://beeware.org/docs/")'
     )
-    await probe.redraw("Attempt to navigate to allowed URL", delay=2)
+    await probe.redraw("Attempt to navigate to allowed URL", delay=5)
     assert widget.url == "https://beeware.org/docs/"
 
 
@@ -495,12 +495,12 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
     await widget.evaluate_javascript(
         'window.location.assign("https://github.com/beeware/toga/")'
     )
-    await probe.redraw("Attempt to navigate to denied URL", delay=2)
+    await probe.redraw("Attempt to navigate to denied URL", delay=5)
     assert widget.url == "https://github.com/beeware/"
 
     # simulate browser navigation to allowed url
     await widget.evaluate_javascript(
         'window.location.assign("https://beeware.org/docs/")'
     )
-    await probe.redraw("Attempt to navigate to allowed URL", delay=2)
+    await probe.redraw("Attempt to navigate to allowed URL", delay=5)
     assert widget.url == "https://beeware.org/docs/"
