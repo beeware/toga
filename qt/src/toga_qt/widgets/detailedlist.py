@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 from typing import Any
 
@@ -15,6 +16,8 @@ from travertino.size import at_least
 from toga.sources import ListSource
 
 from .base import Widget
+
+logger = logging.getLogger(__name__)
 
 ICON_SIZE = 32
 
@@ -45,7 +48,7 @@ def icon_formatter(row, accessors):
 class ListSourceModel(QAbstractListModel):
     """Qt list model that wraps a ListSource."""
 
-    source: ListSource
+    source: ListSource | None
     formatters: dict[int, Callable[[object, list[str]], object]]
 
     def __init__(self, source, formatters, **kwargs):
@@ -74,13 +77,20 @@ class ListSourceModel(QAbstractListModel):
         self.endRemoveRows()
 
     def item_changed(self, item):
-        index = self.index(self.source.index(item))
-        self.dataChanged.emit(index, index)
+        if self.source is not None:  # pragma: no branch
+            index = self.index(self.source.index(item))
+            self.dataChanged.emit(index, index)
 
     def rowCount(
         self, parent: QModelIndex | QPersistentModelIndex = INVALID_INDEX
     ) -> int:
-        return len(self.source)
+        # this could call out to end-user data sources, so could fail.
+        try:
+            if self.source is not None:
+                return len(self.source)
+        except Exception:
+            logger.exception("Could not get data length.")  # pragma: no cover
+        return 0
 
     def data(
         self,
@@ -88,19 +98,21 @@ class ListSourceModel(QAbstractListModel):
         /,
         role: int = Qt.ItemDataRole.DisplayRole,
     ) -> Any:
-        # Sanity checks that should not occur in normal operation
         # Return empty data if index is invalid.
         if not index.isValid():  # pragma: no cover
             return None
-        if index.row() >= len(self.source):  # pragma: no cover
-            return None
+        # this could call out to end-user data sources, so could fail.
+        try:
+            row = index.row()
+            if self.source is None or row >= len(self.source):  # pragma: no cover
+                return None
 
-        value = self.source[index.row()]
-        if role in self.formatters:
-            result = self.formatters[role](value, self.source._accessors)
-            return result
-        else:
-            return None
+            value = self.source[row]
+            if role in self.formatters:
+                return self.formatters[role](value, self.source._accessors)
+        except Exception:
+            logger.exception("Could not get data for row {row}")
+        return None
 
     def headerData(
         self,
@@ -212,6 +224,8 @@ class DetailedList(Widget):
         self.native.show()
 
     def _format_missing(self, user_data):
+        if user_data is None:
+            user_data = (None, None)
         return tuple(
             x if x is not None else self.interface.missing_value for x in user_data
         )
