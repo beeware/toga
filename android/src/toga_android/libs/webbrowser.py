@@ -6,7 +6,7 @@ from org.beeware.android import MainActivity
 
 
 class AndroidBrowser:
-    def open(self, url, new=0, autoraise=True):
+    def open(self, url, new=0, autoraise=True):  # pragma: no cover
         # Create the Intent to view the URL
         intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
 
@@ -20,5 +20,10 @@ class AndroidBrowser:
         return True
 
 
-# Register the browser as soon as this file is imported
-webbrowser.register("android", None, AndroidBrowser(), preferred=True)
+def register_webbrowser():
+    webbrowser.register(
+        "android",
+        None,
+        AndroidBrowser(),
+        preferred=True,
+    )
