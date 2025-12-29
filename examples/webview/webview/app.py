@@ -28,6 +28,11 @@ class WebViewApp(toga.App):
     def on_webview_load(self, widget, **kwargs):
         self.label.text = "www loaded!"
 
+    async def on_navigate_js(self, widget, **kwargs):
+        await self.webview.evaluate_javascript(
+            'window.location.assign("https://github.com/beeware/toga/")'
+        )
+
     def on_navigation_starting_sync(self, widget, url, **kwargs):
         # By default, on_navigation_starting_async is enabled
         # To use this synchronous handler here, make a code edit below where
@@ -92,6 +97,7 @@ class WebViewApp(toga.App):
                         toga.Button("load URL", on_press=self.on_load_url),
                         toga.Button("clear URL", on_press=self.on_clear_url),
                         toga.Button("get URL", on_press=self.on_get_url),
+                        toga.Button("JS navigate", on_press=self.on_navigate_js),
                     ],
                 ),
                 toga.Box(
