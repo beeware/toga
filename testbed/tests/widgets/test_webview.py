@@ -10,7 +10,6 @@ import pytest
 import toga
 from toga.style import Pack
 
-from ..conftest import skip_on_platforms
 from .conftest import build_cleanup_test, safe_create
 from .properties import (  # noqa: F401
     test_flex_widget_size,
@@ -403,7 +402,8 @@ async def test_on_navigation_starting_sync_no_handler(widget, probe, on_load):
 
 
 async def test_on_navigation_starting_sync(widget, probe, on_load):
-    skip_on_platforms("iOS", "macOS", "linux")
+    if not probe.supports_on_navigation_starting:
+        pytest.skip("Platform doesn't support on_navigation_starting")
 
     def handler(widget, **kwargs):
         url = kwargs.get("url", None)
@@ -455,7 +455,8 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
 
 
 async def test_on_navigation_starting_async(widget, probe, on_load):
-    skip_on_platforms("iOS", "macOS", "linux")
+    if not probe.supports_on_navigation_starting:
+        pytest.skip("Platform doesn't support on_navigation_starting")
 
     async def simulated_question_dialog(url):
         await asyncio.sleep(1)
