@@ -6,6 +6,41 @@ gtk_version = "4.0" if os.getenv("TOGA_GTK") == "4" else "3.0"
 gi.require_version("Gdk", gtk_version)
 gi.require_version("Gtk", gtk_version)
 
+# no-covering because we cannot test all DE and TOGA_GTKLIB variables in CI
+# Detect the GTK DE-specific library to be used.  The TOGA_GTKLIB value will
+# be prioritized, or, if no GTK4 library is specified, falls back to detecting
+# with desktop environment.
+if gtk_version == "4.0":  # pragma: no cover
+    if os.getenv("TOGA_GTKLIB") == "Adw":
+        gtklib = "Adw"
+    elif os.getenv("TOGA_GTKLIB") == "None":
+        gtklib = None
+    elif os.getenv("TOGA_GTKLIB", "") == "":
+        # No TOGA_GTKLIB specified; autodetect from DE
+        if "GNOME" in os.getenv("XDG_CURRENT_DESKTOP", "").split(":"):
+            gtklib = "Adw"
+        else:
+            gtklib = None
+    else:
+        # Fallback -- a specified TOGA_GTKLIB that is unsupported; use no GTK lib
+        # integration for now since libadwaita would look out of place on DEs with
+        # other libs (that we currently don't support).
+        print(
+            f"WARNING: Unsupported TOGA_GTKLIB value {os.getenv('TOGA_GTKLIB', '')!r}. "
+            f"Supported values are: 'Adw', 'None'.  Defaulting to 'None'."
+        )
+        gtklib = None
+else:  # pragma: no-cover-if-gtk4
+    gtklib = None
+
+if gtklib == "Adw":  # pragma: no-cover-unless-libadwaita
+    gi.require_version("Adw", "1")
+    from gi.repository import Adw  # noqa: E402, F401
+# elif is used here, because explicit is better than implicit as a defensive
+# practice.
+elif gtklib is None:  # pragma: no-cover-unless-plain-gtk  # pragma: no branch
+    Adw = None
+
 from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
 from gi.repository import (  # noqa: E402, F401
     Gdk,
@@ -25,9 +60,18 @@ GTK_VERSION: tuple[int, int, int] = (
 
 GLIB_VERSION: tuple[int, int, int] = (
     GLib.MAJOR_VERSION,
-    GLib.MAJOR_VERSION,
-    GLib.MAJOR_VERSION,
+    GLib.MINOR_VERSION,
+    GLib.MICRO_VERSION,
 )
+
+if Adw:  # pragma: no-cover-unless-libadwaita
+    ADW_VERSION: tuple[int, int, int] = (
+        Adw.get_major_version(),
+        Adw.get_minor_version(),
+        Adw.get_micro_version(),
+    )
+else:  # pragma: no-cover-unless-plain-gtk
+    ADW_VERSION = None
 
 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     default_display = Gdk.Screen.get_default()
