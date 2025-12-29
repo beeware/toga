@@ -11,8 +11,8 @@ class AndroidBrowser:
         intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
 
         # Android requires the 'New Task' flag if launching from a non-Activity context.
-        # Since we are launching from the main activity context, we probably don't need it,
-        # but it doesn't hurt to include it to be safe.
+        # Since we are launching from the main activity context, we probably don't need
+        # it, but it doesn't hurt to include it to be safe.
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         # Launch the intent
