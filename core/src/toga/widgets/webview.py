@@ -134,7 +134,7 @@ class WebView(Widget):
         return `True` if navigation to the given URL is permitted, or `False`
         if navigation to the URL should be blocked.
 
-        **Note:** This is not currently supported on GTK.
+        **Note:** This is not currently supported on GTK or Qt.
         """
         return self._on_navigation_starting
 
