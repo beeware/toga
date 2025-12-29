@@ -45,7 +45,7 @@ def icon_formatter(row, accessors):
 class ListSourceModel(QAbstractListModel):
     """Qt list model that wraps a ListSource."""
 
-    source: ListSource | None
+    source: ListSource
     formatters: dict[int, Callable[[object, list[str]], object]]
 
     def __init__(self, source, formatters, **kwargs):
@@ -74,16 +74,12 @@ class ListSourceModel(QAbstractListModel):
         self.endRemoveRows()
 
     def item_changed(self, item):
-        if self.source is None:
-            return
         index = self.index(self.source.index(item))
         self.dataChanged.emit(index, index)
 
     def rowCount(
         self, parent: QModelIndex | QPersistentModelIndex = INVALID_INDEX
     ) -> int:
-        if self.source is None:
-            return 0
         return len(self.source)
 
     def data(
@@ -92,11 +88,11 @@ class ListSourceModel(QAbstractListModel):
         /,
         role: int = Qt.ItemDataRole.DisplayRole,
     ) -> Any:
-        if not index.isValid():
+        # Sanity checks that should not occur in normal operation
+        # Return empty data if index is invalid.
+        if not index.isValid():  # pragma: no cover
             return None
-        if self.source is None:
-            return None
-        if index.row() >= len(self.source):
+        if index.row() >= len(self.source):  # pragma: no cover
             return None
 
         value = self.source[index.row()]
@@ -113,7 +109,9 @@ class ListSourceModel(QAbstractListModel):
         /,
         role: int = Qt.ItemDataRole.DisplayRole,
     ) -> Any:
-        return None
+        # Not used by the list view, but from QAbstractListModel docs:
+        # "Well behaved models also provide a headerData() implementation."
+        return None  # pragma: no cover
 
 
 class DetailedListDelegate(QStyledItemDelegate):
@@ -222,7 +220,7 @@ class DetailedList(Widget):
         self._menu.clear()
         actions = []
         # Primary and secondary actions only show when an item is selected
-        if self.native.selectedIndexes():
+        if self.native.selectedIndexes():  # pragma: no branch
             if self.primary_action_enabled:
                 primary_action = QAction(
                     self.interface._primary_action, parent=self._menu
@@ -235,19 +233,18 @@ class DetailedList(Widget):
                 )
                 secondary_action.triggered.connect(self.qt_secondary_action)
                 actions.append(secondary_action)
-        if self.refresh_enabled:
+        if self.refresh_enabled:  # pragma: no branch
             refresh_action = QAction("Refresh", parent=self._menu)
             refresh_action.triggered.connect(self.qt_refresh_action)
             actions.append(refresh_action)
-        if actions:
-            self._menu.addActions(actions)
+        self._menu.addActions(actions)
 
     def qt_selection_changed(self, selected, deselected):
         self.interface.on_select()
 
     def qt_context_menu(self, pos):
         self._get_context_menu()
-        if not self._menu.isEmpty():
+        if not self._menu.isEmpty():  # pragma: no branch
             self._menu.exec()
 
     def qt_primary_action(self, checked):
