@@ -218,7 +218,7 @@ class WebView(Widget):
 
     @requires_initialization
     def set_url(self, value, future=None):
-        if self.interface.on_navigation_starting:
+        if self.interface.on_navigation_starting._raw:
             # mark URL as being allowed
             self._allowed_url = value
         self.loaded_future = future
@@ -229,7 +229,7 @@ class WebView(Widget):
 
     @requires_initialization
     def set_content(self, root_url, content):
-        if self.interface.on_navigation_starting:
+        if self.interface.on_navigation_starting._raw:
             # mark URL as being allowed
             self._allowed_url = "about:blank"
         # There appears to be no way to pass the root_url.
