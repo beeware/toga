@@ -1,5 +1,5 @@
-import webbrowser
 import asyncio
+import webbrowser
 
 import toga
 from toga.constants import COLUMN, ROW
@@ -101,11 +101,8 @@ class WebViewApp(toga.App):
                         toga.Button("load URL", on_press=self.on_load_url),
                         toga.Button("clear URL", on_press=self.on_clear_url),
                         toga.Button("get URL", on_press=self.on_get_url),
-<<<<<<< HEAD
                         toga.Button("open browser", on_press=self.on_open_browser),
-=======
                         toga.Button("JS navigate", on_press=self.on_navigate_js),
->>>>>>> main
                     ],
                 ),
                 toga.Box(
