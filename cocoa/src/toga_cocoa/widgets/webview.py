@@ -221,8 +221,6 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
 
 
 class WebView(Widget):
-    SUPPORTS_ON_NAVIGATION_STARTING = True
-
     def create(self):
         self.native = TogaWebView.alloc().init()
         self.native.interface = self.interface

@@ -402,7 +402,7 @@ async def test_on_navigation_starting_sync_no_handler(widget, probe, on_load):
 
 
 async def test_on_navigation_starting_sync(widget, probe, on_load):
-    if not probe.supports_on_navigation_starting:
+    if not getattr(widget, "SUPPORTS_ON_NAVIGATION_STARTING", True):
         pytest.skip("Platform doesn't support on_navigation_starting")
 
     # Allow navigation to any beeware.org URL.
@@ -453,7 +453,7 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
 
 
 async def test_on_navigation_starting_async(widget, probe, on_load):
-    if not probe.supports_on_navigation_starting:
+    if not getattr(widget, "SUPPORTS_ON_NAVIGATION_STARTING", True):
         pytest.skip("Platform doesn't support on_navigation_starting")
 
     async def handler(widget, url, **kwargs):
