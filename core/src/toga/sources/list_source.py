@@ -176,7 +176,7 @@ class ListSource(Source):
         """
         row = self._create_row(value)
         self._data[index] = row
-        self.notify("insert", index=index, item=row)
+        self.notify("change", item=row)
 
     def clear(self) -> None:
         """Clear all data from the data source."""
