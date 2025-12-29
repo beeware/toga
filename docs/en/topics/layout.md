@@ -2,7 +2,7 @@
 
 One of the major tasks of a GUI framework is to determine where each widget will be displayed within the application window. This determination must be made when a window is initially displayed, and every time the window changes size (or, on mobile devices, changes orientation).
 
-Layout in Toga is performed using a style engine. Toga provides a [built-in style engine called Pack](/reference/style/pack.md); however, other style engines can be used. Every widget keeps a style object, and it is this style object that is used to perform layout operations.
+Layout in Toga is performed using a style engine. Toga provides a [built-in style engine called Pack](/reference/api/style/pack.md); however, other style engines can be used. Every widget keeps a style object, and it is this style object that is used to perform layout operations.
 
 Each widget can also report an "intrinsic" size - this is the size of the widget, as reported by the underlying GUI library. The intrinsic size is a width and height; each dimension can be fixed, or specified as a minimum. For example, a button may have a fixed intrinsic height, but a minimum intrinsic width (indicating that there is a minimum size the button can be, but it can stretch to assume any larger size). This intrinsic size is computed when the widget is first displayed; if fundamental properties of the widget ever change (e.g., changing the text or font size on a button), the widget needs to be rehinted, which re-calculates the intrinsic size, and invalidates any layout.
 

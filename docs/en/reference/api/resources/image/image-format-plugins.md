@@ -1,4 +1,6 @@
-# Image Format Plugins
+# Image format plugins
+
+Extensions that enable Toga to understand additional image formats.
 
 ## Usage
 

@@ -28,7 +28,7 @@ Most testing occurs with GTK 3.24 as this is the version that has shipped with a
 
 The system packages that provide GTK must be installed manually:
 
--8<- "reference/platforms/linux/gtk-prerequisites.md"
+-8<- "snippets/gtk-prerequisites.md"
 
 Toga has experimental support for GTK 4. GTK 4 support requires a Linux distribution that provides `libgirepository 2.0`. This means it is not possible to use the GTK 4 backend on Debian 11, Debian 12, Ubuntu 22.04, or any other older Debian-based distribution.
 

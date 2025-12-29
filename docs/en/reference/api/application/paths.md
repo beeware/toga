@@ -1,4 +1,4 @@
-{{ component_header("App paths") }}
+{{ component_header("Paths") }}
 
 ## Usage
 

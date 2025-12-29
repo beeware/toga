@@ -1,4 +1,4 @@
-{{ component_header("Location services") }}
+{{ component_header("Location") }}
 
 ## Usage
 

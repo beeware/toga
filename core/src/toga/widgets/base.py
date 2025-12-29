@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 StyleT = TypeVar("StyleT", bound=BaseStyle)
 """
 A type describing a style object. By default, this will be
-[Pack](/reference/style/pack.md), but Toga allows for other style representations.
+[Pack](/reference/api/style/pack.md), but Toga allows for other style representations.
 """
 PackMixin = style_mixin(Pack)
 

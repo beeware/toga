@@ -1,6 +1,6 @@
 # About Toga
 
-Want to know more about the Toga project, it's history, and plans for the future? That's what you'll find here!
+Want to know more about the Toga project, its history, and plans for the future? That's what you'll find here!
 
 * [Why Toga?](philosophy.md) - The purpose and concepts behind the choice to create Toga.
 * [Frequently asked questions](faq.md) - Answers to common questions about using Toga.

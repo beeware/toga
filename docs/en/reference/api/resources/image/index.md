@@ -35,7 +35,7 @@ my_pil_image = PIL.Image.new("L", (30, 30))
 my_toga_image = toga.Image(my_pil_image)
 ```
 
-You can also tell Toga how to convert from (and to) other classes that represent images via [image format plugin][image-format-plugins].
+You can also tell Toga how to convert from (and to) other classes that represent images via [image format plugins](image-format-plugins.md).
 
 ## Notes
 

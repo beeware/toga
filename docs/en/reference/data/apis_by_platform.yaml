@@ -1,38 +1,70 @@
-Core application components:
-  path: ''
+Application components:
+  path: application
 
   App:
-    description: The top-level representation of an application.
+    description: The top-level application object.
     display: table
     beta:
       - web
       - textual
 
   Window:
-    description: An operating system-managed container of widgets.
+    description: A system-managed container of widgets.
     beta:
       - web
       - textual
 
   MainWindow:
-    description: A window that can use the full set of window-level user interface elements.
+    description: A window that can use all window-level user interface elements.
     beta:
       - web
       - textual
 
   DocumentWindow:
-    description: A window that can be used as the main interface to a document-based app.
+    description: A window bound to a [Document](/reference/api/resources/document.md) instance.
     unsupported:
       - iOS
       - android
       - web
       - textual
 
-General widgets:
-  path: widgets
+  Command:
+    description: App functionality invoked from menus or toolbars.
+    display: table
+    unsupported:
+      - iOS
+      - web
+      - textual
 
+  Dialogs:
+    description: Short-lived windows asking the user for input.
+    display: table
+    beta:
+      - web
+      - textual
+      - qt
+
+  Paths:
+    description: Provides platform-appropriate filesystem locations.
+    display: table
+    beta:
+      - textual
+    unsupported:
+      - web
+
+  Status icons:
+    description: Icons representing status in the system tray while the app isn't visible.
+    file_name: status-icons
+    unsupported:
+      - iOS
+      - android
+      - web
+      - textual
+      - qt
+
+Widgets:
   ActivityIndicator:
-    description: A small animated indicator showing activity on a task of indeterminate length, usually rendered as a "spinner" animation.
+    description: An indicator of activity on a task, usually rendered as a "spinner".
     beta:
       - web
     unsupported:
@@ -59,7 +91,7 @@ General widgets:
       - textual
 
   DetailedList:
-    description: An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.
+    description: An ordered list with an icon, heading, and text for each item.
     beta:
       - winforms
     unsupported:
@@ -68,7 +100,7 @@ General widgets:
       - qt
 
   Divider:
-    description: A separator used to visually distinguish two sections of content in a layout.
+    description: A visual separator.
     beta:
       - web
     unsupported:
@@ -76,13 +108,13 @@ General widgets:
       - qt
 
   ImageView:
-    description: A widget that displays an image.
+    description: Displays an [Image](/reference/api/resources/image/index.md).
     unsupported:
       - web
       - textual
 
   Label:
-    description: A text label for annotating forms or interfaces.
+    description: A text label.
     beta:
       - web
       - textual
@@ -95,7 +127,7 @@ General widgets:
       - qt
 
   MultilineTextInput:
-    description: A scrollable panel that allows for the display and editing of multiple lines of text.
+    description: A scrollable panel for displaying and editing multiple lines of text.
     unsupported:
       - web
       - textual
@@ -107,21 +139,21 @@ General widgets:
       - textual
 
   PasswordInput:
-    description: A widget to allow the entry of a password. Any value typed by the user will be obscured, allowing the user to see the number of characters they have typed, but not the actual characters.
+    description: For entering a password; obscures entered text.
     beta:
       - web
     unsupported:
       - textual
 
   ProgressBar:
-    description: A horizontal bar to visualize task progress. The task being monitored can be of known or indeterminate length.
+    description: A horizontal bar to visualize task progress.
     beta:
       - web
     unsupported:
       - textual
 
   Selection:
-    description: A widget to select a single option from a list of alternatives.
+    description: Allows a single choice from a list.
     beta:
       - web
     unsupported:
@@ -129,7 +161,7 @@ General widgets:
       - qt
 
   Slider:
-    description: A widget for selecting a value within a range. The range is shown as a horizontal line, and the selected value is shown as a draggable marker.
+    description: A marker draggable along a line to select from within a range.
     beta:
       - web
     unsupported:
@@ -137,14 +169,14 @@ General widgets:
       - qt
 
   Switch:
-    description: 'A clickable button with two stable states: True (on, checked); and False (off, unchecked). The button has a text label.'
+    description: A labeled button with an on and off state.
     beta:
       - web
     unsupported:
       - textual
 
   Table:
-    description: A widget for displaying columns of tabular data.
+    description: Displays columns of tabular data.
     beta:
       - android
     unsupported:
@@ -154,20 +186,20 @@ General widgets:
       - qt
 
   TextInput:
-    description: A widget for the display and editing of a single line of text.
+    description: Allows editing of a single line of text.
     beta:
       - web
       - textual
 
   TimeInput:
-    description: A widget to select a clock time.
+    description: For selecting a clock time.
     beta:
       - web
     unsupported:
       - gtk
 
   Tree:
-    description: A widget for displaying a hierarchical tree of tabular data.
+    description: Displays a hierarchical tree of tabular data.
     unsupported:
       - winforms
       - iOS
@@ -183,17 +215,17 @@ General widgets:
       - textual
 
   Widget:
-    description: The abstract base class of all widgets. This class should not be be instantiated directly.
+    description: The abstract base class of all widgets.
     beta:
       - web
       - textual
     display: table
 
-Layout widgets:
-  path: containers
+Container widgets:
+  path: widgets/containers
 
   Box:
-    description: A generic container for other widgets. Used to construct layouts.
+    description: A container for laying out other widgets.
     beta:
       - web
       - textual
@@ -223,40 +255,14 @@ Layout widgets:
       - textual
       - qt
 
-Resources:
-  path: resources
-
-  App paths:
-    description: A mechanism for obtaining platform-appropriate filesystem locations for an application.
-    display: table
-    path: resources/app_paths.md
-    beta:
-      - textual
-    unsupported:
-      - web
-
-  Command:
-    description: A representation of app functionality that the user can invoke from menus or toolbars.
-    display: table
-    unsupported:
-      - iOS
-      - web
-      - textual
-
-  Color:
-    description: A representation of a color.
+Style:
+  Pack:
+    description: Toga's style and layout engine.
     display: hide
 
-  Dialogs:
-    description: Short-lived windows asking the user for input.
-    display: table
-    beta:
-      - web
-      - textual
-      - qt
-
+Resources:
   Document:
-    description: A representation of a file on disk that will be displayed in one or more windows.
+    description: Represents file on disk that will be displayed in one or more windows.
     display: table
     unsupported:
       - iOS
@@ -267,15 +273,13 @@ Resources:
   Font:
     description: A representation of a font.
     display: table
-    path: resources/fonts.md
     unsupported:
       - web
       - textual
 
   Icon:
-    description: A small, square image used to provide easily identifiable visual context to a widget.
+    description: A small, image for providing context to a widget.
     display: table
-    path: resources/icons.md
     beta:
       - textual
     unsupported:
@@ -284,48 +288,45 @@ Resources:
   Image:
     description: Graphical content of arbitrary size.
     display: table
-    path: resources/images.md
     unsupported:
       - web
       - textual
 
-  Status icons:
-    description: Icons that appear in the system tray for representing app status
-      while the app isn't visible.
-    unsupported:
-      - iOS
-      - android
-      - web
-      - textual
-      - qt
+Data sources:
+  path: sources
 
   Source:
     description: A base class for data source implementations.
     display: hide
-    path: resources/sources/source.md
 
   ListSource:
     description: A data source describing an ordered list of data.
     display: hide
-    path: resources/sources/list_source.md
 
   TreeSource:
     description: A data source describing an ordered hierarchical tree of data.
     display: hide
-    path: resources/sources/tree_source.md
 
   ValueSource:
     description: A data source describing a single value.
     display: hide
-    path: resources/sources/value_source.md
 
-  Validators:
-    description: Mechanisms for validating that input meets a given set of criteria.
+Constants and types:
+  path: constants_types
+
+  Color:
+    description: A representation of a color.
+    display: hide
+
+  Constants:
+    description: Symbolic constants used by various APIs.
+    display: hide
+
+  Types:
+    description: Utility data structures used by Toga APIs.
     display: hide
 
 Hardware:
-  path: hardware
-
   Camera:
     description: A sensor that can capture photos and/or video.
     display: table
@@ -336,10 +337,13 @@ Hardware:
       - textual
       - qt
 
-  Location services:
+  Keys:
+    description: Symbolic representation of keys used for keyboard shortcuts.
+    display: hide
+
+  Location:
     description: A sensor that can capture the geographical location of the device.
     display: table
-    path: hardware/location.md
     unsupported:
       - winforms
       - web
@@ -349,22 +353,6 @@ Hardware:
   Screen:
     description: A representation of a screen attached to a device.
     display: table
-    path: hardware/screens.md
     beta:
       - web
       - textual
-
-Other:
-  path: ''
-
-  Constants:
-    description: Symbolic constants used by various APIs.
-    display: hide
-
-  Keys:
-    description: Symbolic representation of keys used for keyboard shortcuts.
-    display: hide
-
-  Types:
-    description: Utility data structures used by Toga APIs.
-    display: hide
