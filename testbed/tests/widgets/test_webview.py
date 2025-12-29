@@ -405,12 +405,9 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
     if not probe.supports_on_navigation_starting:
         pytest.skip("Platform doesn't support on_navigation_starting")
 
-    def handler(widget, **kwargs):
-        url = kwargs.get("url", None)
-        allow = True
-        if not url.startswith("https://beeware.org/"):
-            allow = False
-        return allow
+    # Allow navigation to any beeware.org URL.
+    def handler(widget, url, **kwargs):
+        return url.startswith("https://beeware.org/")
 
     widget.on_navigation_starting = handler
     # test static content can be set
@@ -438,19 +435,20 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
         content=ANY,
         on_load=on_load,
     )
-    await asyncio.sleep(1)
+
     assert widget.url == "https://github.com/beeware/"
     # simulate browser navigation to denied url
     await widget.evaluate_javascript(
         'window.location.assign("https://github.com/beeware/toga/")'
     )
-    await asyncio.sleep(2)
+    await probe.redraw("Attempt to navigate to forbidden URL", delay=1)
+
     assert widget.url == "https://github.com/beeware/"
     # simulate browser navigation to allowed url
     await widget.evaluate_javascript(
         'window.location.assign("https://beeware.org/docs/")'
     )
-    await asyncio.sleep(2)
+    await probe.redraw("Attempt to navigate to allowed URL", delay=1)
     assert widget.url == "https://beeware.org/docs/"
 
 
@@ -458,16 +456,8 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
     if not probe.supports_on_navigation_starting:
         pytest.skip("Platform doesn't support on_navigation_starting")
 
-    async def simulated_question_dialog(url):
-        await asyncio.sleep(1)
-        allow = True
-        if not url.startswith("https://beeware.org/"):
-            allow = False
-        return allow
-
-    async def handler(widget, **kwargs):
-        url = kwargs.get("url", None)
-        return await simulated_question_dialog(url)
+    async def handler(widget, url, **kwargs):
+        return url.startswith("https://beeware.org/")
 
     widget.on_navigation_starting = handler
     # test static content can be set
@@ -495,17 +485,19 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
         content=ANY,
         on_load=on_load,
     )
-    await asyncio.sleep(1)
+
     assert widget.url == "https://github.com/beeware/"
+
     # simulate browser navigation to denied url
     await widget.evaluate_javascript(
         'window.location.assign("https://github.com/beeware/toga/")'
     )
-    await asyncio.sleep(2)
+    await probe.redraw("Attempt to navigate to denied URL", delay=1)
     assert widget.url == "https://github.com/beeware/"
+
     # simulate browser navigation to allowed url
     await widget.evaluate_javascript(
         'window.location.assign("https://beeware.org/docs/")'
     )
-    await asyncio.sleep(2)
+    await probe.redraw("Attempt to navigate to allowed URL", delay=1)
     assert widget.url == "https://beeware.org/docs/"
