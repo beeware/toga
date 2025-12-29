@@ -8,6 +8,8 @@ from toga_cocoa.libs import (
     NSMakeRect,
     NSNoBorder,
     NSNotificationCenter,
+    NSScrollElasticityAllowed,
+    NSScrollElasticityNone,
     NSScrollView,
     NSScrollViewDidEndLiveScrollNotification,
     NSScrollViewDidLiveScrollNotification,
@@ -30,6 +32,10 @@ class TogaScrollView(NSScrollView):
         # the size of the document content (assuming there is a document)
         if self.interface._content:
             self.interface._content.refresh()
+
+    @objc_method
+    def wantsForwardedScrollEventsForAxis_(self, axis: int) -> None:
+        return True
 
 
 class ScrollContainer(Widget):
@@ -77,7 +83,7 @@ class ScrollContainer(Widget):
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Force realization of the
         # new layout, and then refresh the content.
-        self.interface.window._impl.native.layoutIfNeeded()
+        self.native.layoutSubtreeIfNeeded()
         self.native.refreshContent()
 
     def content_refreshed(self, container):
@@ -101,6 +107,9 @@ class ScrollContainer(Widget):
 
     def set_vertical(self, value):
         self.native.hasVerticalScroller = value
+        self.native.verticalScrollElasticity = (
+            NSScrollElasticityAllowed if value else NSScrollElasticityNone
+        )
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:
@@ -115,6 +124,9 @@ class ScrollContainer(Widget):
 
     def set_horizontal(self, value):
         self.native.hasHorizontalScroller = value
+        self.native.horizontalScrollElasticity = (
+            NSScrollElasticityAllowed if value else NSScrollElasticityNone
+        )
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:
