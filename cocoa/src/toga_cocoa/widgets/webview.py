@@ -1,6 +1,13 @@
 from http.cookiejar import Cookie, CookieJar
 
-from rubicon.objc import ObjCBlock, objc_id, objc_method, objc_property, py_from_ns
+from rubicon.objc import (
+    NSInteger,
+    ObjCBlock,
+    objc_id,
+    objc_method,
+    objc_property,
+    py_from_ns,
+)
 from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
@@ -13,6 +20,7 @@ from ..libs import (
     NSModalResponseOK,
     NSOpenPanel,
     NSURLRequest,
+    WKNavigationResponsePolicy,
     WKUIDelegate,
     WKWebView,
 )
@@ -72,7 +80,49 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     impl = objc_property(object, weak=True)
 
     @objc_method
-    def webView_didFinishNavigation_(self, navigation) -> None:
+    def webView_decidePolicyForNavigationAction_decisionHandler_(
+        self,
+        webview,
+        navigationAction,
+        decisionHandler,
+    ) -> None:
+        _decision_handler = ObjCBlock(decisionHandler, None, NSInteger)
+        if (
+            str(navigationAction.request.URL) == self.impl._allowed_url
+            or self.impl.interface.on_navigation_starting._raw is None
+        ):
+            # If URL is pre-approved, or there's no navigation handler,
+            # allow the navigation.
+            _decision_handler(WKNavigationResponsePolicy.Allow)
+            self.impl._allowed_url = None
+        else:
+            url = str(navigationAction.request.URL)
+            allow = self.impl.interface.on_navigation_starting(url=url)
+            if isinstance(allow, bool | None):
+                # on_navigation_starting handler is synchronous
+                if allow:
+                    decision = WKNavigationResponsePolicy.Allow
+                else:
+                    decision = WKNavigationResponsePolicy.Cancel
+
+                _decision_handler(decision)
+            else:
+                # on_navigation_starting handler is asynchronous. Attach a completion
+                # handler so that when the async handler completes, the webView
+                # decision handler is invoked.
+
+                def on_navigation_decision(future):
+                    if future.result():
+                        decision = WKNavigationResponsePolicy.Allow
+                    else:
+                        decision = WKNavigationResponsePolicy.Cancel
+
+                    ObjCBlock(decisionHandler, None, NSInteger)(decision)
+
+                allow.add_done_callback(on_navigation_decision)
+
+    @objc_method
+    def webView_didFinishNavigation_(self, webView, navigation) -> None:
         # It's possible for this handler to be invoked *after* the interface/impl object
         # has been destroyed. If the interface/impl doesn't exist there's no handler to
         # invoke either, so ignore the edge case. This can't be reproduced reliably, so
@@ -189,6 +239,10 @@ class WebView(Widget):
 
         self.loaded_future = None
 
+        # Store any URL that has been the subject of a direct navigation request,
+        # as these have been pre-approved for navigation
+        self._allowed_url = None
+
         # Add the layout constraints
         self.add_constraints()
 
@@ -197,6 +251,10 @@ class WebView(Widget):
         return None if url == "about:blank" else url
 
     def set_url(self, value, future=None):
+        if self.interface.on_navigation_starting._raw:
+            # mark URL as being allowed
+            self._allowed_url = value
+
         if value:
             request = NSURLRequest.requestWithURL(NSURL.URLWithString(value))
         else:
@@ -206,6 +264,9 @@ class WebView(Widget):
         self.native.loadRequest(request)
 
     def set_content(self, root_url, content):
+        if self.interface.on_navigation_starting._raw:
+            # mark URL as being allowed
+            self._allowed_url = root_url
         self.native.loadHTMLString(content, baseURL=NSURL.URLWithString(root_url))
 
     def get_user_agent(self):
