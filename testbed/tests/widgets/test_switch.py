@@ -16,12 +16,8 @@ from .properties import (  # noqa: F401
     test_text_width_change,
 )
 
-# GTK doesn't accept focus; Qt does.
-# Switches can't be given focus on mobile.
-if (
-    toga.platform.current_platform == "linux"
-    and toga.platform.get_platform_factory().__package__ == "toga_gtk"
-) or toga.platform.current_platform in {"android", "iOS"}:
+# Switches can't be given focus on mobile or GTK.
+if toga.backend in {"toga_gtk", "toga_android", "toga_iOS"}:
     from .properties import test_focus_noop  # noqa: F401
 else:
     from .properties import test_focus  # noqa: F401
