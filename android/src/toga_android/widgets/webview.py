@@ -25,23 +25,30 @@ class ReceiveString(dynamic_proxy(ValueCallback)):
 
 
 class WebView(Widget):
-    SUPPORTS_ON_WEBVIEW_LOAD = False
     ON_NAVIGATION_CONFIG_MISSING_ERROR = (
         "Can't add a WebView.on_navigation_starting handler; Have you added chaquopy."
+        'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
+        "`build_gradle_extra_content` section of pyproject.toml?"
+    )
+    ON_LOAD_CONFIG_MISSING_ERROR = (
+        "Can't add a WebView.on_webview_load handler; Have you added chaquopy."
         'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
         "`build_gradle_extra_content` section of pyproject.toml?"
     )
 
     def create(self):
         self.native = A_WebView(self._native_activity)
+        self.loaded_future = None
         try:
             from .internal.webview import TogaWebClient
 
             self.SUPPORTS_ON_NAVIGATION_STARTING = True
+            self.SUPPORTS_ON_WEBVIEW_LOAD = True
             client = TogaWebClient(self)
         except NoClassDefFoundError:  # pragma: no cover
             # Briefcase configuration hasn't declared a static proxy
             self.SUPPORTS_ON_NAVIGATION_STARTING = False
+            self.SUPPORTS_ON_WEBVIEW_LOAD = False
             client = WebViewClient()
 
         # Set a WebViewClient so that new links open in this activity,
@@ -66,12 +73,8 @@ class WebView(Widget):
     def set_url(self, value, future=None):
         if value is None:
             value = "about:blank"
+        self.loaded_future = future
         self.native.loadUrl(value)
-
-        # Detecting when the load is complete requires subclassing WebViewClient
-        # (https://github.com/beeware/toga/issues/1020).
-        if future:
-            future.set_result(None)
 
     def set_content(self, root_url, content):
         # There is a loadDataWithBaseURL method, but it's inconsistent about whether

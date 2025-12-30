@@ -1,7 +1,8 @@
 import weakref
 
 from android.webkit import WebResourceRequest, WebView as A_WebView, WebViewClient
-from java import Override, jboolean, static_proxy
+from java import Override, jboolean, jvoid, static_proxy
+from java.lang import String as jstring
 
 
 class TogaWebClient(static_proxy(WebViewClient)):
@@ -27,3 +28,12 @@ class TogaWebClient(static_proxy(WebViewClient)):
                 # the user defined on_navigation_starting coroutine has completed.
                 allow = False
         return not allow
+
+    @Override(jvoid, [A_WebView, jstring])
+    def onPageFinished(self, webview, url):
+        if self.webview_impl.interface.on_webview_load:
+            self.webview_impl.interface.on_webview_load()
+
+        if self.webview_impl.loaded_future:
+            self.webview_impl.loaded_future.set_result(None)
+            self.webview_impl.loaded_future = None
