@@ -16,18 +16,15 @@ from .libs import (
 #######################################################################################
 
 
-class TogaMonitoringView(UIView):
+class TogaContainerView(UIView):
     container = objc_property(object, weak=True)
 
     @objc_method
     def layoutSubviews(self):
         send_super(__class__, self, "layoutSubviews")
         if self.container.on_native_layout:
-            print(self, self.frame)
             self.container.on_native_layout(self.container)
 
-
-class TogaContainerView(TogaMonitoringView):
     @objc_method
     def safeAreaInsetsDidChange(self):
         send_super(__class__, self, "safeAreaInsetsDidChange")
@@ -243,14 +240,6 @@ class NavigationContainer(Container):
         self.content_controller = UIViewController.alloc().init()
         self.controller = UINavigationController.alloc().initWithRootViewController(
             self.content_controller
-        )
-
-        self._monitoring_view = TogaMonitoringView.alloc().init()
-        self._monitoring_view.container = self
-        self.controller.navigationBar.addSubview(self._monitoring_view)
-        self._monitoring_view.frame = self.controller.navigationBar.bounds
-        self._monitoring_view.autoResizingMask = (
-            UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
         )
 
         # Set the controller's view to be the root content widget
