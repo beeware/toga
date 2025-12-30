@@ -33,6 +33,7 @@ class Window:
 
         # Set up a container for the window's content
         self.create_container()
+        self.last_refreshed_size = (0, 0)
 
         # Set the size of the content to the size of the window
         self.container.native.frame = self.native.bounds
@@ -52,7 +53,10 @@ class Window:
 
     def create_container(self):
         # RootContainer provides a titlebar for the window.
-        self.container = RootContainer(on_refresh=self.content_refreshed)
+        self.container = RootContainer(
+            on_refresh=self.content_refreshed,
+            on_native_layout=self.content_native_layout,
+        )
 
     ######################################################################
     # Window properties
@@ -95,6 +99,27 @@ class Window:
                 f"exceeds available space "
                 f"{(self.container.width, self.container.height)}"
             )
+
+    def check_for_resize(self, container):
+        if (container.width, container.height) != self.last_refreshed_size:
+            self.last_refreshed_size = (container.width, container.height)
+            self.interface.on_resize()
+            self.interface.content.refresh()
+
+    def content_native_layout(self, container):
+        status_bar_height = (
+            self.native.windowScene.statusBarManager.statusBarFrame.size.height
+        )
+        # On iPadOS, the status bar height may not always be in the
+        # window of the application.  This can be detected by seeing if
+        # the status bar height is influencing the safe area insets of
+        # the container, as iPadOS window corners are smaller than the
+        # top status bar.
+        if container.native.safeAreaInsets.top >= status_bar_height:
+            container.top_inset = status_bar_height
+        else:
+            container.top_inset = 0
+        self.check_for_resize(container)
 
     def set_content(self, widget):
         self.container.content = widget
@@ -234,7 +259,21 @@ class Window:
 class MainWindow(Window):
     def create_container(self):
         # NavigationContainer provides a titlebar for the window.
-        self.container = NavigationContainer(on_refresh=self.content_refreshed)
+        self.container = NavigationContainer(
+            on_refresh=self.content_refreshed,
+            on_native_layout=self.content_native_layout,
+        )
+
+    def content_native_layout(self, container):
+        # Instead of manually computing the geometry at the top,
+        # this check is used because iOS's algorithms to place the
+        # navigation bar at an appropriate height appears to be
+        # a mystery...
+        container.top_inset = (
+            container.controller.navigationBar.frame.origin.y
+            + container.controller.navigationBar.frame.size.height
+        )
+        self.check_for_resize(container)
 
     def create_toolbar(self):
         # No toolbar handling at present

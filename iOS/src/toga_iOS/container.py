@@ -1,5 +1,6 @@
+from rubicon.objc import objc_method, objc_property, send_super
+
 from .libs import (
-    UIApplication,
     UINavigationController,
     UIView,
     UIViewAutoresizing,
@@ -15,16 +16,39 @@ from .libs import (
 #######################################################################################
 
 
+class TogaMonitoringView(UIView):
+    container = objc_property(object, weak=True)
+
+    @objc_method
+    def layoutSubviews(self):
+        send_super(__class__, self, "layoutSubviews")
+        if self.container.on_native_layout:
+            print(self, self.frame)
+            self.container.on_native_layout(self.container)
+
+
+class TogaContainerView(TogaMonitoringView):
+    @objc_method
+    def safeAreaInsetsDidChange(self):
+        send_super(__class__, self, "safeAreaInsetsDidChange")
+        if self.container.on_native_layout:
+            self.container.on_native_layout(self.container)
+
+
 class BaseContainer:
-    def __init__(self, content=None, on_refresh=None):
+    def __init__(self, content=None, on_refresh=None, on_native_layout=None):
         """A base class for iOS containers.
 
         :param content: The widget impl that is the container's initial content.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param on_native_layout: The callback to be notified when the container's native
+            widget has finished laying out, i.e. when native values such as size
+            *may* have changed.
         """
         self._content = content
         self.on_refresh = on_refresh
+        self.on_native_layout = on_native_layout
 
     @property
     def content(self):
@@ -52,7 +76,9 @@ class BaseContainer:
 
 
 class Container(BaseContainer):
-    def __init__(self, content=None, layout_native=None, on_refresh=None):
+    def __init__(
+        self, content=None, layout_native=None, on_refresh=None, on_native_layout=None
+    ):
         """
         :param content: The widget impl that is the container's initial content.
         :param layout_native: The native widget that should be used to provide size
@@ -62,15 +88,26 @@ class Container(BaseContainer):
             the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param on_native_layout: The callback to be notified when the container's native
+            widget has finished laying out, i.e. when native values such as size
+            *may* have changed.
         """
-        super().__init__(content=content, on_refresh=on_refresh)
-        self.native = UIView.alloc().init()
+        super().__init__(
+            content=content, on_refresh=on_refresh, on_native_layout=on_native_layout
+        )
+        self.native = TogaContainerView.alloc().init()
+        self.native.container = self
         self.native.translatesAutoresizingMaskIntoConstraints = True
         self.native.autoresizingMask = (
             UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
         )
 
         self.layout_native = self.native if layout_native is None else layout_native
+
+        self.top_inset = 0
+        self.left_inset = 0
+        self.bottom_inset = 0
+        self.right_inset = 0
 
     def __del__(self):
         # Mark the contained native object as explicitly None so that the
@@ -79,15 +116,13 @@ class Container(BaseContainer):
 
     @property
     def width(self):
-        return self.layout_native.bounds.size.width
+        return self.layout_native.bounds.size.width - self.left_inset - self.right_inset
 
     @property
     def height(self):
-        return self.layout_native.bounds.size.height - self.top_offset
-
-    @property
-    def top_offset(self):
-        return 0
+        return (
+            self.layout_native.bounds.size.height - self.top_inset - self.bottom_inset
+        )
 
 
 class ControlledContainer(Container):
@@ -96,6 +131,7 @@ class ControlledContainer(Container):
         content=None,
         layout_native=None,
         on_refresh=None,
+        on_native_layout=None,
     ):
         """
         :param content: The widget impl that is the container's initial content.
@@ -106,11 +142,15 @@ class ControlledContainer(Container):
             rendered, the source of the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param on_native_layout: The callback to be notified when the container's native
+            widget has finished laying out, i.e. when native values such as size
+            *may* have changed.
         """
         super().__init__(
             content=content,
             layout_native=layout_native,
             on_refresh=on_refresh,
+            on_native_layout=on_native_layout,
         )
 
         # Construct a ViewController that provides a navigation bar, and
@@ -128,6 +168,7 @@ class RootContainer(Container):
         content=None,
         layout_native=None,
         on_refresh=None,
+        on_native_layout=None,
     ):
         """A bare content container.
 
@@ -141,11 +182,15 @@ class RootContainer(Container):
             rendered, the source of the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param on_native_layout: The callback to be notified when the container's native
+            widget has finished laying out, i.e. when native values such as size
+            *may* have changed.
         """
         super().__init__(
             content=content,
             layout_native=layout_native,
             on_refresh=on_refresh,
+            on_native_layout=on_native_layout,
         )
 
         # Construct a UIViewController to hold the root content
@@ -153,11 +198,6 @@ class RootContainer(Container):
 
         # Set the controller's view to be the root content widget
         self.controller.view = self.native
-
-    # The testbed app won't instantiate a simple app, so we can't test these properties
-    @property
-    def top_offset(self):  # pragma: no cover
-        return UIApplication.sharedApplication.statusBarFrame.size.height
 
     @property
     def title(self):  # pragma: no cover
@@ -174,6 +214,7 @@ class NavigationContainer(Container):
         content=None,
         layout_native=None,
         on_refresh=None,
+        on_native_layout=None,
     ):
         """A top level container that provides a navigation/title bar.
 
@@ -185,11 +226,15 @@ class NavigationContainer(Container):
             rendered, the source of the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param on_native_layout: The callback to be notified when the container's native
+            widget has finished laying out, i.e. when native values such as size
+            *may* have changed.
         """
         super().__init__(
             content=content,
             layout_native=layout_native,
             on_refresh=on_refresh,
+            on_native_layout=on_native_layout,
         )
 
         # Construct a NavigationController that provides a navigation bar, and
@@ -200,15 +245,16 @@ class NavigationContainer(Container):
             self.content_controller
         )
 
+        self._monitoring_view = TogaMonitoringView.alloc().init()
+        self._monitoring_view.container = self
+        self.controller.navigationBar.addSubview(self._monitoring_view)
+        self._monitoring_view.frame = self.controller.navigationBar.bounds
+        self._monitoring_view.autoResizingMask = (
+            UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
+        )
+
         # Set the controller's view to be the root content widget
         self.content_controller.view = self.native
-
-    @property
-    def top_offset(self):
-        return (
-            UIApplication.sharedApplication.statusBarFrame.size.height
-            + self.controller.navigationBar.frame.size.height
-        )
 
     @property
     def title(self):
