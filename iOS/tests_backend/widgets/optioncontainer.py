@@ -9,6 +9,7 @@ class OptionContainerProbe(SimpleProbe):
     disabled_tab_selectable = False
     max_tabs = None
     more_option_is_stateful = True
+    supports_content_based_rehint = False
 
     @property
     def width(self):

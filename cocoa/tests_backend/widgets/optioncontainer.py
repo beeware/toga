@@ -9,6 +9,7 @@ class OptionContainerProbe(SimpleProbe):
     native_class = NSTabView
     max_tabs = None
     disabled_tab_selectable = False
+    supports_content_based_rehint = True
 
     @property
     def width(self):

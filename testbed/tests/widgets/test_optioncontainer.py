@@ -6,7 +6,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, SEAGREEN
 from toga.style.pack import Pack
 
-from .conftest import build_cleanup_test, safe_create, skip_on_platforms
+from .conftest import build_cleanup_test, safe_create
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -95,14 +95,8 @@ async def test_content_size_rehint(
 ):
     """The OptionContainer should rehint to minimum size of all widgets plus necessary
     decors, and should automatically rehint upon the addition of new tabs."""
-    skip_on_platforms(
-        "iOS",
-        "android",
-        "windows",
-        reason="Accurate OptionContainer hinting is not yet"
-        "implemented on this platform",
-    )
-    old_main_window_size = main_window.size
+    if not probe.supports_content_based_rehint:
+        pytest.skip("Accurate rehinting not yet implemented on this platform")
     main_window.size = (300, 300)
     await main_window_probe.redraw("Main window size should be 300x300")
 
@@ -114,21 +108,14 @@ async def test_content_size_rehint(
     # GTK implementation.
     await probe.redraw("Tab 3's size should be explicitly set to 500x600", delay=1)
 
-    try:
-        assert main_window.size.width >= 500
-        assert main_window.size.height > 600
-        assert probe.width >= 500
-        assert probe.height > 600
-        # Asserting content1 for content size because content3, by virtue of not being
-        # selected, may have an invalid size.
-        assert content1_probe.width == 500
-        assert content1_probe.height == 600
-    finally:
-        del content3.width
-        del content3.height
-        await probe.redraw("Cleanup: Removing width and height requirements", delay=1)
-        main_window.size = old_main_window_size
-        await probe.redraw("Cleanup: Resizing window")
+    assert main_window.size.width >= 500
+    assert main_window.size.height > 600
+    assert probe.width >= 500
+    assert probe.height > 600
+    # Asserting content1 for content size because content3, by virtue of not being
+    # selected, may have an invalid size.
+    assert content1_probe.width == 500
+    assert content1_probe.height == 600
 
 
 async def test_select_tab(

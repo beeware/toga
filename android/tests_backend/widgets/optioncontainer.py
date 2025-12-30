@@ -7,6 +7,7 @@ from .base import SimpleProbe
 class OptionContainerProbe(SimpleProbe):
     native_class = LinearLayout
     disabled_tab_selectable = False
+    supports_content_based_rehint = False
     max_tabs = 5
 
     def __init__(self, widget):

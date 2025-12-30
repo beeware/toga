@@ -29,7 +29,7 @@ class SplitContainer(Widget):
         if (
             self._split_proportion
             and width >= self.interface._MIN_WIDTH
-            and height > self.interface._MIN_HEIGHT
+            and height >= self.interface._MIN_HEIGHT
         ):
             if self.interface.direction == self.interface.VERTICAL:
                 position = int(self._split_proportion * width)
