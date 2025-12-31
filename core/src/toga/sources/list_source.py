@@ -90,9 +90,6 @@ class Row(Generic[T]):
             if self._source is not None:
                 self._source.notify("change", item=self)
 
-    def __getattr__(self, attr: str) -> T:
-        return super().__getattr__(attr)
-
     def __delattr__(self, attr: str) -> None:
         """Remove an attribute from the Row object, notifying the source of the change.
 
