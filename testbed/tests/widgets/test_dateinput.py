@@ -45,6 +45,7 @@ def values():
         date(1960, 12, 31),
         date(2020, 2, 29),  # Leap day
         date(2100, 1, 1),
+        date(3742, 1, 1),
         date(8999, 12, 31),
     ]
 
@@ -163,7 +164,7 @@ async def test_min(widget, probe, initial_value, min_value, values, normalize):
     if probe.supports_limits:
         assert probe.min_value == normalize(min_value)
 
-    for min in values:
+    for min in values + [None]:
         widget.min = min
         assert widget.min == normalize(min)
 
