@@ -117,7 +117,7 @@ class Table(Widget):
                 self.native_table.remove_column(column)
             self._create_columns()
 
-            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._accessors)
+            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface.accessors)
             self.store = Gtk.ListStore(*types)
 
             for i, row in enumerate(self.interface.data):

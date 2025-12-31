@@ -109,7 +109,7 @@ class Table(Widget):
             TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
-        for col_index in range(len(self.interface._accessors)):
+        for col_index in range(len(self.interface.accessors)):
             text_view = TextView(self._native_activity)
             text_view.setText(self.interface.headings[col_index])
             set_textview_font(
@@ -144,7 +144,7 @@ class Table(Widget):
         table_row.setLongClickable(True)
         table_row.setOnLongClickListener(TogaOnLongClickListener(impl=self))
         table_row.setId(row_index)
-        for col_index in range(len(self.interface._accessors)):
+        for col_index in range(len(self.interface.accessors)):
             text_view = TextView(self._native_activity)
             text_view.setText(self.get_data_value(row_index, col_index))
             set_textview_font(
@@ -165,7 +165,7 @@ class Table(Widget):
     def get_data_value(self, row_index, col_index):
         value = getattr(
             self.interface.data[row_index],
-            self.interface._accessors[col_index],
+            self.interface.accessors[col_index],
             None,
         )
         if isinstance(value, toga.Widget):
