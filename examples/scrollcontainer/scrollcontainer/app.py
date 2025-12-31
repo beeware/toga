@@ -41,9 +41,14 @@ class ScrollContainerApp(toga.App):
             value=True,
             on_change=lambda widget: self.update_content(),
         )
+        self.nested_switch = toga.Switch(
+            "Nested",
+            value=False,
+            on_change=lambda widget: self.update_content(),
+        )
         main_box.add(
             toga.Box(children=[self.hswitch, self.vswitch]),
-            toga.Box(children=[self.wide_switch, self.tall_switch]),
+            toga.Box(children=[self.wide_switch, self.tall_switch, self.nested_switch]),
         )
 
         self.inner_box = toga.Box(
@@ -110,7 +115,12 @@ class ScrollContainerApp(toga.App):
         height = 30 if self.tall_switch.value else 2
         for x in range(height):
             label_text = f"Label {x}"
-            self.inner_box.add(Item(width, label_text))
+            if self.nested_switch.value:
+                self.inner_box.add(
+                    toga.ScrollContainer(content=Item(width, label_text)),
+                )
+            else:
+                self.inner_box.add(Item(width, label_text))
 
     def on_scroll(self, scroller):
         self.hswitch.text = "Horizontal " + (
