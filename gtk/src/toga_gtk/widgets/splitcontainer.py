@@ -12,7 +12,8 @@ class SplitContainer(Widget):
     def create(self):
         self.native = Gtk.Paned()
         self.native.set_wide_handle(True)
-        self.native.connect("size-allocate", self.gtk_on_size_allocate)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.connect("size-allocate", self.gtk_on_size_allocate)
 
         self.sub_containers = [TogaContainer(), TogaContainer()]
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
