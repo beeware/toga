@@ -107,7 +107,7 @@ async def test_value(widget, probe, normalize, assert_none_value, values, on_cha
     "The value can be changed"
     assert_none_value(widget.value)
 
-    for expected in values:
+    for expected in values + [None]:
         widget.value = expected
         actual = widget.value
         if expected is None:
