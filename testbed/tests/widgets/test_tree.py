@@ -880,3 +880,35 @@ async def test_cell_widget(widget, probe):
         # we just won't have widgets in the cells.
         probe.assert_cell_content((0, 0), 2, "MISSING!")
         probe.assert_cell_content((0, 1), 2, "MISSING!")
+
+    # Now try *adding* a cell with a widget
+    if probe.supports_widgets:
+        warning_check = contextlib.nullcontext()
+    else:
+        warning_check = pytest.warns(
+            match=".* does not support the use of widgets in cells"
+        )
+
+    with warning_check:
+        widget.data[0].append(
+            {
+                # Normal text,
+                "a": f"A{50}",
+                "b": f"B{50}",
+                # Toga widgets.
+                "c": toga.Button(f"C{50}"),
+            }
+        )
+
+    await probe.expand_tree()
+    await probe.redraw("Tree has data with widgets")
+
+    probe.assert_cell_content((0, 50), 0, "A0")
+    probe.assert_cell_content((0, 50), 1, "B0")
+
+    if probe.supports_widgets:
+        probe.assert_cell_content((0, 50), 2, widget=widget.data[0][0].c)
+    else:
+        # If the platform doesn't support cell widgets, the test should still *run* -
+        # we just won't have widgets in the cells.
+        probe.assert_cell_content((0, 50), 2, "MISSING!")
