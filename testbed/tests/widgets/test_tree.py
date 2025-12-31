@@ -903,11 +903,11 @@ async def test_cell_widget(widget, probe):
     await probe.expand_tree()
     await probe.redraw("Tree has data with widgets")
 
-    probe.assert_cell_content((0, 50), 0, "A0")
-    probe.assert_cell_content((0, 50), 1, "B0")
+    probe.assert_cell_content((0, 50), 0, "A50")
+    probe.assert_cell_content((0, 50), 1, "B50")
 
     if probe.supports_widgets:
-        probe.assert_cell_content((0, 50), 2, widget=widget.data[0][0].c)
+        probe.assert_cell_content((0, 50), 2, widget=widget.data[0][50].c)
     else:
         # If the platform doesn't support cell widgets, the test should still *run* -
         # we just won't have widgets in the cells.
