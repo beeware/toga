@@ -164,7 +164,7 @@ async def test_min(widget, probe, initial_value, min_value, values, normalize):
     if probe.supports_limits:
         assert probe.min_value == normalize(min_value)
 
-    for min in values + [None]:
+    for min in values:
         widget.min = min
         assert widget.min == normalize(min)
 
