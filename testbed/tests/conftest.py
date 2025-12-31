@@ -117,6 +117,9 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     )
 
     yield
+
+    # Reset the window state and size.
+    main_window.state = WindowState.NORMAL
     main_window.size = original_size
 
 
