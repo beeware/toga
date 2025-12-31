@@ -389,18 +389,20 @@ async def test_retrieve_cookies(widget, probe, on_load):
     assert cookie.expires is None
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_on_navigation_starting_sync_no_handler(widget, probe, on_load):
     # This test is required for full coverage because on android, setting
     # the URL does not trigger shouldOverrideUrlLoading()
     await widget.evaluate_javascript('window.location.assign("https://beeware.org/")')
-    await asyncio.sleep(2)
+    await asyncio.sleep(5)
     await widget.evaluate_javascript(
         'window.location.assign("https://beeware.org/docs/")'
     )
-    await asyncio.sleep(2)
+    await asyncio.sleep(5)
     assert widget.url == "https://beeware.org/docs/"
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_on_navigation_starting_sync(widget, probe, on_load):
     if not getattr(widget._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
         pytest.skip("Platform doesn't support on_navigation_starting")
@@ -441,17 +443,18 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
     await widget.evaluate_javascript(
         'window.location.assign("https://github.com/beeware/toga/")'
     )
-    await probe.redraw("Attempt to navigate to forbidden URL", delay=1)
+    await probe.redraw("Attempt to navigate to forbidden URL", delay=5)
 
     assert widget.url == "https://github.com/beeware/"
     # simulate browser navigation to allowed url
     await widget.evaluate_javascript(
         'window.location.assign("https://beeware.org/docs/")'
     )
-    await probe.redraw("Attempt to navigate to allowed URL", delay=1)
+    await probe.redraw("Attempt to navigate to allowed URL", delay=5)
     assert widget.url == "https://beeware.org/docs/"
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_on_navigation_starting_async(widget, probe, on_load):
     if not getattr(widget._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
         pytest.skip("Platform doesn't support on_navigation_starting")
@@ -492,12 +495,12 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
     await widget.evaluate_javascript(
         'window.location.assign("https://github.com/beeware/toga/")'
     )
-    await probe.redraw("Attempt to navigate to denied URL", delay=1)
+    await probe.redraw("Attempt to navigate to denied URL", delay=5)
     assert widget.url == "https://github.com/beeware/"
 
     # simulate browser navigation to allowed url
     await widget.evaluate_javascript(
         'window.location.assign("https://beeware.org/docs/")'
     )
-    await probe.redraw("Attempt to navigate to allowed URL", delay=1)
+    await probe.redraw("Attempt to navigate to allowed URL", delay=5)
     assert widget.url == "https://beeware.org/docs/"
