@@ -1,7 +1,40 @@
 import pytest
 
+from toga.icons import Icon
 from toga.sources.accessors import to_accessor
 from toga.sources.columns import AccessorColumn
+from toga.sources.list_source import Row
+from toga.widgets.label import Label
+
+
+class ValueWithIcon:
+    def __init__(self, icon, text):
+        self.icon = icon
+        self.text = text
+
+    def __str__(self):
+        return str(self.text)
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, type(self))
+            and self.text == other.text
+            and self.icon == other.icon
+        )
+
+
+class ValueWithoutIcon:
+    def __init__(self, text):
+        self.text = text
+
+    def __str__(self):
+        return str(self.text)
+
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and self.text == other.text
+
+
+LABEL_WIDGET = Label("Test")
 
 
 @pytest.mark.parametrize(
@@ -72,3 +105,80 @@ def test_columns_from_headings_and_accessors_failure():
         ValueError, match="Cannot create columns without either headings or accessors."
     ):
         AccessorColumn.columns_from_headings_and_accessors(None, None)
+
+
+@pytest.mark.parametrize(
+    "row, value, text, icon, widget",
+    [
+        (Row(), None, None, None, None),
+        (Row(y=1), None, None, None, None),
+        (Row(x=1), 1, "1", None, None),
+        (Row(x="test"), "test", "test", None, None),
+        (Row(x=(None, "test")), (None, "test"), "test", None, None),
+        (Row(x=(None, 1)), (None, 1), "1", None, None),
+        (Row(x=(None, None)), (None, None), None, None, None),
+        (
+            Row(x=(Icon.DEFAULT_ICON, "test")),
+            (Icon.DEFAULT_ICON, "test"),
+            "test",
+            Icon.DEFAULT_ICON,
+            None,
+        ),
+        (
+            Row(x=(Icon.DEFAULT_ICON, 1)),
+            (Icon.DEFAULT_ICON, 1),
+            "1",
+            Icon.DEFAULT_ICON,
+            None,
+        ),
+        (
+            Row(x=(Icon.DEFAULT_ICON, None)),
+            (Icon.DEFAULT_ICON, None),
+            None,
+            Icon.DEFAULT_ICON,
+            None,
+        ),
+        (
+            Row(x=ValueWithIcon(Icon.DEFAULT_ICON, "test")),
+            ValueWithIcon(Icon.DEFAULT_ICON, "test"),
+            "test",
+            Icon.DEFAULT_ICON,
+            None,
+        ),
+        (
+            Row(x=ValueWithIcon(Icon.DEFAULT_ICON, 1)),
+            ValueWithIcon(Icon.DEFAULT_ICON, 1),
+            "1",
+            Icon.DEFAULT_ICON,
+            None,
+        ),
+        (
+            Row(x=ValueWithoutIcon("test")),
+            ValueWithoutIcon("test"),
+            "test",
+            None,
+            None,
+        ),
+        (
+            Row(x=ValueWithoutIcon(1)),
+            ValueWithoutIcon(1),
+            "1",
+            None,
+            None,
+        ),
+        (
+            Row(x=LABEL_WIDGET),
+            LABEL_WIDGET,
+            None,
+            None,
+            LABEL_WIDGET,
+        ),
+    ],
+)
+def test_accessor_column_values(row, value, text, icon, widget):
+    column = AccessorColumn(None, "x")
+
+    assert column.value(row) == value
+    assert column.text(row) == text
+    assert column.icon(row) == icon
+    assert column.widget(row) == widget

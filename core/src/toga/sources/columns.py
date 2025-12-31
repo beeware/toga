@@ -1,12 +1,17 @@
 from abc import abstractmethod
 from collections.abc import Iterable
-from typing import Protocol, runtime_checkable
+from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 
+from ..icons import Icon
+from ..widgets.base import Widget
 from .accessors import build_accessors, to_accessor
+from .list_source import Row
+
+Value = TypeVar("Value", covariant=True)
 
 
 @runtime_checkable
-class Column(Protocol):
+class Column(Protocol, Generic[Value]):
     """Protocol that Column types must adhere to."""
 
     @property
@@ -20,8 +25,33 @@ class Column(Protocol):
     def accessor(self) -> str:
         """The accessor for this column."""
 
+    @abstractmethod
+    def value(self, row: Any) -> Value | None:
+        """Get a value from the row of a Source.
 
-class AccessorColumn(Column):
+        :param row: A row object from the underlying Source.
+        :returns: The value associated with this column, or
+            None if no value.
+        """
+
+    @abstractmethod
+    def text(self, row: Any) -> str | None:
+        """Get the text to display for the row in this column.
+
+        :param row: A row object from the underlying Source.
+        :returns: The text to display, or None if no Text.
+        """
+
+    @abstractmethod
+    def icon(self, row: Any) -> Icon | None:
+        """Get the icon to display for the row in this column.
+
+        :param row: A row object from the underlying Source.
+        :returns: The icon to display, or None if no Icon.
+        """
+
+
+class AccessorColumn(Column[Value]):
     """This is a column which implements accessor semantics.
 
     This requires at least one of the heading and the accessor to be
@@ -51,6 +81,70 @@ class AccessorColumn(Column):
     @property
     def accessor(self):
         return self._accessor
+
+    def value(self, row: Row[Value]) -> Value | None:
+        """Get a value from the Row or Node of a ListSource or TreeSource.
+
+        :param row: A Row object from the underlying Source.
+        :returns: The value associated with this column's accessor, or
+            None if no value.
+        """
+        return getattr(row, self.accessor, None)
+
+    def text(self, row: Row[Value]) -> str | None:
+        """Get text from the Row or Node of a ListSource or TreeSource.
+
+        If the value is a tuple, the second item is assumed to be text.
+        If the value is not None, it is converted to a string by calling
+        str().
+
+        :param row: A row object from the underlying Source.
+        :returns: The text to associated with this column's accessor, or
+            None if no text.
+        """
+        value = self.value(row)
+        if isinstance(value, Widget):
+            return None
+        if isinstance(value, tuple):
+            value = value[1]
+        if value is not None:
+            value = str(value)
+        return value
+
+    def icon(self, row: Row[Value]) -> Icon | None:
+        """Get text from the Row or Node of a ListSource or TreeSource.
+
+        If the value is a tuple, the first item is assumed to be an Icon.
+        Otherwise if the item has an `icon` attribute, that is assumed to
+        be the icon.
+
+        :param row: A row object from the underlying Source.
+        :returns: The Icon to associated with this column's accessor, or
+            None if no Icon.
+        """
+        value = self.value(row)
+        if isinstance(value, Widget):
+            return None
+        if isinstance(value, tuple):
+            value = value[0]
+        else:
+            value = getattr(value, "icon", None)
+        return value
+
+    def widget(self, row: Row[Value]) -> Widget | None:
+        """Get a widget from the Row or Node of a ListSource or TreeSource.
+
+        If the value is a widget, it is returned, otherwise None is returned
+
+        :param row: A row object from the underlying Source.
+        :returns: The Widget to associated with this column's accessor, or
+            None if no Widget.
+        """
+        value = self.value(row)
+        if isinstance(value, Widget):
+            return value
+        else:
+            return None
 
     @classmethod
     def columns_from_headings_and_accessors(
