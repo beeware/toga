@@ -236,9 +236,8 @@ class Window:
         container_bounds = self.container.content.native.bounds
         image_bounds = NSRect(
             NSPoint(
-                container_bounds.origin.x * UIScreen.mainScreen.scale,
-                (container_bounds.origin.y + self.container.top_offset)
-                * UIScreen.mainScreen.scale,
+                self.container.left_inset * UIScreen.mainScreen.scale,
+                self.container.top_inset * UIScreen.mainScreen.scale,
             ),
             NSSize(
                 container_bounds.size.width * UIScreen.mainScreen.scale,
