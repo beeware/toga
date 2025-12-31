@@ -100,7 +100,7 @@ class DateInput(Widget):
         self.native.maxDate = native_date(value)
 
     def gtk_on_change(self, *_args):
-        if not self._suppress_signals:  # pragma: no-cover-if-gtk3
+        if self._suppress_signals:  # pragma: no-cover-if-gtk3
             return
         current_date = self.get_value()
         min_date = self.get_min_date()
