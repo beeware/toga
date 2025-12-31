@@ -14,6 +14,8 @@ class SplitContainer(Widget):
         self.native.set_wide_handle(True)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("size-allocate", self.gtk_on_size_allocate)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.sub_containers = [TogaContainer(), TogaContainer()]
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
