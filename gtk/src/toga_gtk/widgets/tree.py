@@ -36,7 +36,7 @@ class Tree(Widget):
             pass
 
     def _create_columns(self):
-        self.native_table.set_headers_visible(self.interface._show_headings)
+        self.native_tree.set_headers_visible(self.interface._show_headings)
         toga_columns = self.interface._columns
 
         for i, toga_column in enumerate(toga_columns):
