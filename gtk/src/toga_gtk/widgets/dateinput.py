@@ -53,7 +53,7 @@ class DateInput(Widget):
         self._suppress_signals = False
 
     @contextlib.contextmanager
-    def suppress_signals(self):
+    def suppress_signals(self):  # pragma: no-cover-if-gtk3
         self._suppress_signals = True
         yield
         self._suppress_signals = False
@@ -100,14 +100,15 @@ class DateInput(Widget):
         self.native.maxDate = native_date(value)
 
     def gtk_on_change(self, *_args):
-        if not self._suppress_signals:
-            current_date = self.get_value()
-            min_date = self.get_min_date()
-            max_date = self.get_max_date()
+        if not self._suppress_signals:  # pragma: no-cover-if-gtk3
+            return
+        current_date = self.get_value()
+        min_date = self.get_min_date()
+        max_date = self.get_max_date()
 
-            if current_date < min_date:
-                self.set_value(min_date)
-            elif current_date > max_date:
-                self.set_value(max_date)
+        if current_date < min_date:
+            self.set_value(min_date)
+        elif current_date > max_date:
+            self.set_value(max_date)
 
-            self.interface.on_change()
+        self.interface.on_change()
