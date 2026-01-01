@@ -1,7 +1,6 @@
 from rubicon.objc import SEL, NSPoint, at, objc_method, objc_property
 from travertino.size import at_least
 
-import toga
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -39,21 +38,11 @@ class TogaTable(NSTableView):
     @objc_method
     def tableView_viewForTableColumn_row_(self, table, column, row: int):
         data_row = self.interface.data[row]
-        col_identifier = str(column.identifier)
+        if (widget := column.toga_column.widget(data_row)) is not None:
+            return widget._impl.native
 
-        match value := getattr(data_row, col_identifier, None):
-            case toga.Widget():
-                # If the value is a widget itself, just draw the widget!
-                return value._impl.native
-            case icon, value:
-                # Allow for an (icon, value) tuple as the simple case for encoding an
-                # icon in a table cell. Otherwise, look for an icon attribute.
-                pass
-            case _:
-                icon = getattr(value, "icon", None)
-
-        if value is None:
-            value = self.interface.missing_value
+        icon = column.toga_column.icon(data_row)
+        text = column.toga_column.text(data_row, self.interface.missing_value)
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
@@ -65,7 +54,7 @@ class TogaTable(NSTableView):
             tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
-        tcv.setText(str(value))
+        tcv.setText(text)
         if icon:
             tcv.setImage(icon._impl.native)
         else:
@@ -145,15 +134,8 @@ class Table(Widget):
 
         # Create columns for the table
         self.columns = []
-        if self.interface.headings:
-            for index, (heading, accessor) in enumerate(
-                zip(self.interface.headings, self.interface.accessors, strict=False)
-            ):
-                self._insert_column(index, heading, accessor)
-        else:
-            self.native_table.setHeaderView(None)
-            for index, accessor in enumerate(self.interface.accessors):
-                self._insert_column(index, None, accessor)
+        for index, toga_column in enumerate(self.interface._columns):
+            self._insert_column(index, toga_column)
 
         self.native_table.delegate = self.native_table
         self.native_table.dataSource = self.native_table
@@ -225,8 +207,9 @@ class Table(Widget):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
-    def _insert_column(self, index, heading, accessor):
-        column = NSTableColumn.alloc().initWithIdentifier(accessor)
+    def _insert_column(self, index, toga_column):
+        column = NSTableColumn.alloc().initWithIdentifier(toga_column.accessor)
+        column.toga_column = toga_column
         column.minWidth = 16
 
         self.columns.insert(index, column)
@@ -234,11 +217,11 @@ class Table(Widget):
         if index != len(self.columns) - 1:
             self.native_table.moveColumn(len(self.columns) - 1, toColumn=index)
 
-        if heading is not None:
-            column.headerCell.stringValue = heading
+        if toga_column.heading is not None:
+            column.headerCell.stringValue = toga_column.heading
 
     def insert_column(self, index, heading, accessor):
-        self._insert_column(index, heading, accessor)
+        self._insert_column(index, self.interface._columns[index])
         self.native_table.sizeToFit()
 
     def remove_column(self, index):
