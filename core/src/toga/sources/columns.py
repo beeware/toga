@@ -39,6 +39,7 @@ class Column(Protocol, Generic[Value]):
         """Get the text to display for the row in this column.
 
         :param row: A row object from the underlying Source.
+        :param default: A default value if the text cannot be determined.
         :returns: The text to display, or None if no Text.
         """
 
