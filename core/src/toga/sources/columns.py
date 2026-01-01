@@ -105,10 +105,14 @@ class AccessorColumn(Column[Value]):
         match value := self.value(row):
             case Widget():
                 return None
+            case (_, None):
+                return None
             case (_, value):
-                return str(value) if value is not None else value
+                return str(value)
+            case None:
+                return None
             case _:
-                return str(value) if value is not None else value
+                return str(value)
 
     def icon(self, row: Row[Value]) -> Icon | None:
         """Get text from the Row or Node of a ListSource or TreeSource.
