@@ -111,7 +111,7 @@ test_cleanup = build_cleanup_test(toga.Canvas, xfail_platforms=("android",))
 
 
 async def test_resize(widget, probe, on_resize_handler):
-    "Resizing the widget causes on-resize events"
+    """Resizing the widget causes on-resize events"""
     # Make the canvas visible against window background.
     widget.style.background_color = CORNFLOWERBLUE
 
@@ -150,7 +150,7 @@ async def test_resize(widget, probe, on_resize_handler):
 
 
 async def test_press(canvas, probe, on_press_handler, on_release_handler):
-    "Press/release events trigger handlers"
+    """Press/release events trigger handlers"""
     await probe.mouse_press(20, 30)
     await probe.redraw("Press has been handled")
 
@@ -165,7 +165,7 @@ async def test_activate(
     on_release_handler,
     on_activate_handler,
 ):
-    "Activation events trigger handlers"
+    """Activation events trigger handlers"""
     await probe.mouse_activate(20, 30)
     await probe.redraw("Activate has been handled")
 
@@ -181,7 +181,7 @@ async def test_drag(
     on_drag_handler,
     on_release_handler,
 ):
-    "A drag event triggers a handler"
+    """A drag event triggers a handler"""
     await probe.mouse_drag(20, 40, 70, 90)
     await probe.redraw("Drag has been handled")
 
@@ -191,7 +191,7 @@ async def test_drag(
 
 
 async def test_alt_press(canvas, probe, on_alt_press_handler, on_alt_release_handler):
-    "An alternate press event triggers a handler"
+    """An alternate press event triggers a handler"""
     await probe.alt_mouse_press(20, 40)
     await probe.redraw("Alt press has been handled")
 
@@ -206,7 +206,7 @@ async def test_alt_drag(
     on_alt_drag_handler,
     on_alt_release_handler,
 ):
-    "A drag event triggers a handler"
+    """A drag event triggers a handler"""
     await probe.alt_mouse_drag(20, 40, 70, 90)
     await probe.redraw("Alternate drag has been handled")
 
@@ -216,7 +216,7 @@ async def test_alt_drag(
 
 
 async def test_image_data(canvas, probe):
-    "The canvas can be saved as an image"
+    """The canvas can be saved as an image"""
     with canvas.Stroke(x=0, y=0, color=RED) as stroke:
         stroke.line_to(x=200, y=200)
         stroke.move_to(x=200, y=0)
@@ -241,11 +241,10 @@ async def test_image_data(canvas, probe):
     )
 
 
-def assert_reference(probe, reference, threshold=0.01):
-    """Assert that the canvas currently matches a reference image, within an
-    RMS threshold"""
+def assert_reference(probe, reference, threshold=0.01, *, image=None):
+    """Assert that the canvas matches a reference image, within an RMS threshold"""
     # Get the canvas image.
-    image = probe.get_image()
+    image = probe.get_image() if image is None else image
     scaled_image = image.resize((200, 200))
 
     # Look for a platform-specific reference variant.
@@ -281,7 +280,7 @@ def assert_reference(probe, reference, threshold=0.01):
 
 
 async def test_transparency(canvas, probe):
-    "Transparency is preserved in captured images"
+    """Transparency is preserved in captured images"""
     canvas.style.background_color = TRANSPARENT
 
     # Draw a rectangle. move_to is implied
@@ -298,7 +297,7 @@ async def test_transparency(canvas, probe):
 
 
 async def test_paths(canvas, probe):
-    "A path can be drawn"
+    """A path can be drawn"""
 
     # A filled path closes automatically.
     canvas.context.begin_path()
@@ -343,7 +342,7 @@ async def test_paths(canvas, probe):
 
 
 async def test_bezier_curve(canvas, probe):
-    "A Bézier curve can be drawn"
+    """A Bézier curve can be drawn"""
 
     canvas.context.begin_path()
     canvas.context.move_to(100, 44)
@@ -360,7 +359,7 @@ async def test_bezier_curve(canvas, probe):
 
 
 async def test_quadratic_curve(canvas, probe):
-    "A quadratic curve can be drawn"
+    """A quadratic curve can be drawn"""
 
     canvas.context.begin_path()
     canvas.context.move_to(100, 20)
@@ -377,7 +376,7 @@ async def test_quadratic_curve(canvas, probe):
 
 
 async def test_arc(canvas, probe):
-    "An arc can be drawn"
+    """An arc can be drawn"""
     canvas.context.begin_path()
 
     # Face
@@ -416,7 +415,7 @@ async def test_arc(canvas, probe):
 
 
 async def test_ellipse(canvas, probe):
-    "An ellipse can be drawn"
+    """An ellipse can be drawn"""
 
     # Nucleus (filled circle)
     canvas.context.move_to(90, 100)
@@ -459,7 +458,7 @@ async def test_ellipse(canvas, probe):
 
 
 async def test_ellipse_path(canvas, probe):
-    "An elliptical arc can be connected to other segments of a path"
+    """An elliptical arc can be connected to other segments of a path"""
 
     context = canvas.context
     ellipse_args = {
@@ -496,7 +495,7 @@ async def test_ellipse_path(canvas, probe):
 
 
 async def test_rect(canvas, probe):
-    "A rectangle can be drawn"
+    """A rectangle can be drawn"""
 
     # Draw a rectangle. move_to is implied
     canvas.context.begin_path()
@@ -508,7 +507,7 @@ async def test_rect(canvas, probe):
 
 
 async def test_fill(canvas, probe):
-    "A fill can be drawn with primitives"
+    """A fill can be drawn with primitives"""
     # Draw a closed path
     canvas.context.begin_path()
     canvas.context.move_to(x=60, y=10)
@@ -532,7 +531,7 @@ async def test_fill(canvas, probe):
 
 
 async def test_stroke(canvas, probe):
-    "A stroke can be drawn with primitives"
+    """A stroke can be drawn with primitives"""
     # Draw a closed path
     canvas.context.begin_path()
     canvas.context.move_to(x=20, y=20)
@@ -556,7 +555,7 @@ async def test_stroke(canvas, probe):
 
 
 async def test_stroke_and_fill(canvas, probe):
-    "A shape drawn with primitives can be stroked and filled."
+    """A shape drawn with primitives can be stroked and filled."""
     # Draw a closed path
     canvas.context.begin_path()
     canvas.context.move_to(x=20, y=20)
@@ -582,7 +581,7 @@ async def test_stroke_and_fill(canvas, probe):
 
 
 async def test_closed_path_context(canvas, probe):
-    "A closed path can be built with a context"
+    """A closed path can be built with a context"""
 
     # Build a parallelogram path
     with canvas.context.ClosedPath(x=20, y=20) as path:
@@ -598,7 +597,7 @@ async def test_closed_path_context(canvas, probe):
 
 
 async def test_fill_context(canvas, probe):
-    "A fill path can be built with a context"
+    """A fill path can be built with a context"""
 
     # Build a filled parallelogram
     with canvas.context.Fill(x=20, y=20, color=REBECCAPURPLE) as path:
@@ -611,7 +610,7 @@ async def test_fill_context(canvas, probe):
 
 
 async def test_stroke_context(canvas, probe):
-    "A stroke can be drawn with a context"
+    """A stroke can be drawn with a context"""
     # Draw a thin line
     with canvas.context.Stroke(x=40, y=20, color=REBECCAPURPLE) as stroke:
         stroke.line_to(x=80, y=180)
@@ -627,7 +626,7 @@ async def test_stroke_context(canvas, probe):
 
 
 async def test_stroke_and_fill_context(canvas, probe):
-    "A shape can be stroked and filled using contexts"
+    """A shape can be stroked and filled using contexts"""
 
     # Draw a filled parallelogram
     with canvas.context.Fill(x=20, y=20, color=REBECCAPURPLE) as fill:
@@ -643,7 +642,7 @@ async def test_stroke_and_fill_context(canvas, probe):
 
 
 async def test_transforms(canvas, probe):
-    "Transforms can be applied"
+    """Transforms can be applied"""
 
     # Draw a rectangle after a horizontal translation
     canvas.context.translate(160, 20)
@@ -674,12 +673,55 @@ async def test_transforms(canvas, probe):
     assert_reference(probe, "transforms")
 
 
+def draw_square(context, color, offset=False):
+    offset = 15 if offset else 0
+    context.begin_path()
+    context.rect(10 + offset, 10 + offset, 40, 40)
+    context.fill(color=color)
+
+
+async def test_reset_transform(canvas, probe):
+    """Transform can be reset."""
+    ctx = canvas.context
+
+    # Top left
+    draw_square(ctx, BLACK)
+
+    # Top right
+    ctx.translate(110, 0)
+    draw_square(ctx, CORNFLOWERBLUE)
+
+    with ctx.Context() as subctx:
+        # Bottom right
+        subctx.translate(0, 110)
+        draw_square(subctx, GOLDENROD)
+
+        # Should reset to top left (true origin)
+        #
+        # But in current implementation, it exits this context and creates a new
+        # one, falling back to the top-right origin previously set.
+        subctx.reset_transform()
+        draw_square(subctx, REBECCAPURPLE, offset=True)
+
+    # Out of subcontext, should be back to top right
+    draw_square(ctx, RED, offset=True)
+
+    await probe.redraw("Transform can be reset")
+    assert_reference(probe, "reset_transform")
+
+    # On iOS and Cocoa, differing coordinate systems mean that resetting transform can
+    # potentially make the on-screen widget look different from the image saved
+    # directly from it. So test a screenshot as well, just to make sure.
+    screenshot = canvas.window.as_image(format=Image.Image).crop((0, 0, 200, 200))
+    assert_reference(probe, "reset_transform_screenshot", image=screenshot)
+
+
 @pytest.mark.xfail(
     condition=os.environ.get("RUNNING_IN_CI") != "true",
     reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
 )
 async def test_write_text(canvas, probe):
-    "Text can be measured and written"
+    """Text can be measured and written"""
 
     # Use fonts which look different from the system fonts on all platforms.
     Font.register("Droid Serif", "resources/fonts/DroidSerif-Regular.ttf")
@@ -762,7 +804,7 @@ async def test_write_text(canvas, probe):
     reason="may fail outside of a GitHub runner environment",
 )
 async def test_multiline_text(canvas, probe):
-    "Multiline text can be measured and written"
+    """Multiline text can be measured and written"""
 
     # Vertical guidelines
     X = [10, 75, 140]
@@ -830,7 +872,7 @@ async def test_multiline_text(canvas, probe):
     reason="may fail outside of a GitHub runner environment",
 )
 async def test_write_text_and_path(canvas, probe):
-    "Text doesn't affect the current path."
+    """Text doesn't affect the current path."""
 
     # Use fonts which look different from the system fonts on all platforms.
     Font.register("Droid Serif", "resources/fonts/DroidSerif-Regular.ttf")
