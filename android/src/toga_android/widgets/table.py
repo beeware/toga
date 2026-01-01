@@ -1,3 +1,5 @@
+from warnings import warn
+
 from android import R
 from android.graphics import Color, Rect, Typeface
 from android.view import Gravity, View
@@ -143,6 +145,11 @@ class Table(Widget):
         data_row = self.interface.data[row_index]
         missing_value = self.interface.missing_value
         for toga_column in self.interface._columns:
+            if toga_column.widget(data_row) is not None:
+                warn(
+                    "This backend does not support the use of widgets in cells",
+                    stacklevel=1,
+                )
             text_view = TextView(self._native_activity)
             text_view.setText(toga_column.text(data_row, missing_value))
             set_textview_font(
