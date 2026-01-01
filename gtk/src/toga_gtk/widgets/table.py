@@ -23,6 +23,13 @@ class TogaRow(GObject.Object):
             return missing_value
         return text
 
+    def warn_widget(self, toga_column):
+        if toga_column.widget(self.value) is not None:
+            warnings.warn(
+                "GTK does not support the use of widgets in cells",
+                stacklevel=2,
+            )
+
 
 class Table(Widget):
     def create(self):
@@ -117,11 +124,8 @@ class Table(Widget):
                     row.text(column, self.interface.missing_value),
                 ]
             )
-            if column.widget(row.value) is not None:
-                warnings.warn(
-                    "GTK does not support the use of widgets in cells",
-                    stacklevel=1,
-                )
+            # warn about widgets
+            row.warn_widget(column)
 
         self.store.insert(index, values)
 
@@ -131,11 +135,7 @@ class Table(Widget):
         for i, column in enumerate(self.interface._columns):
             row[i * 2 + 1] = row[0].icon(column)
             row[i * 2 + 2] = row[0].text(column, self.interface.missing_value)
-            if column.widget(row[0].value) is not None:
-                warnings.warn(
-                    "GTK does not support the use of widgets in cells",
-                    stacklevel=1,
-                )
+            row[0].warn_widget(column)
 
     def remove(self, index, item):
         del self.store[index]

@@ -1,5 +1,3 @@
-import warnings
-
 from travertino.size import at_least
 
 from ..libs import GTK_VERSION, GdkPixbuf, Gtk
@@ -101,11 +99,7 @@ class Tree(Widget):
                     row.text(column, self.interface.missing_value),
                 ]
             )
-            if column.widget(row.value) is not None:
-                warnings.warn(
-                    "GTK does not support the use of widgets in cells",
-                    stacklevel=1,
-                )
+            row[0].warn_widget(column)
 
         if parent is None:
             iter = None
@@ -122,11 +116,7 @@ class Tree(Widget):
         for i, column in enumerate(self.interface._columns):
             row[i * 2 + 1] = row[0].icon(column)
             row[i * 2 + 2] = row[0].text(column, self.interface.missing_value)
-            if column.widget(row[0].value) is not None:
-                warnings.warn(
-                    "GTK does not support the use of widgets in cells",
-                    stacklevel=1,
-                )
+            row[0].warn_widget(column)
 
     def remove(self, item, index, parent):
         del self.store[item._impl]
