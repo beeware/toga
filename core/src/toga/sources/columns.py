@@ -102,14 +102,13 @@ class AccessorColumn(Column[Value]):
         :returns: The text to associated with this column's accessor, or
             None if no text.
         """
-        value = self.value(row)
-        if isinstance(value, Widget):
-            return None
-        if isinstance(value, tuple):
-            value = value[1]
-        if value is not None:
-            value = str(value)
-        return value
+        match value := self.value(row):
+            case Widget():
+                return None
+            case (_, value):
+                return str(value) if value is not None else value
+            case _:
+                return str(value) if value is not None else value
 
     def icon(self, row: Row[Value]) -> Icon | None:
         """Get text from the Row or Node of a ListSource or TreeSource.
@@ -122,14 +121,13 @@ class AccessorColumn(Column[Value]):
         :returns: The Icon to associated with this column's accessor, or
             None if no Icon.
         """
-        value = self.value(row)
-        if isinstance(value, Widget):
-            return None
-        if isinstance(value, tuple):
-            value = value[0]
-        else:
-            value = getattr(value, "icon", None)
-        return value
+        match value := self.value(row):
+            case Widget():
+                return None
+            case (icon, _):
+                return icon
+            case _:
+                return getattr(value, "icon", None)
 
     def widget(self, row: Row[Value]) -> Widget | None:
         """Get a widget from the Row or Node of a ListSource or TreeSource.
@@ -140,8 +138,7 @@ class AccessorColumn(Column[Value]):
         :returns: The Widget to associated with this column's accessor, or
             None if no Widget.
         """
-        value = self.value(row)
-        if isinstance(value, Widget):
+        if isinstance(value := self.value(row), Widget):
             return value
         else:
             return None
