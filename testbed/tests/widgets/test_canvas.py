@@ -709,11 +709,12 @@ async def test_reset_transform(canvas, probe):
     await probe.redraw("Transform can be reset")
     assert_reference(probe, "reset_transform")
 
-    # On iOS and Cocoa, differing coordinate systems mean that resetting transform can
-    # potentially make the on-screen widget look different from the image saved
-    # directly from it. So test a screenshot as well, just to make sure.
-    screenshot = canvas.window.as_image(format=Image.Image).crop((0, 0, 200, 200))
-    assert_reference(probe, "reset_transform_screenshot", image=screenshot)
+    if probe.screenshot_reset_transform:
+        # On iOS and Cocoa, differing coordinate systems mean that resetting transform
+        # can potentially make the on-screen widget look different from the image saved
+        # directly from it. So test a screenshot as well, just to make sure.
+        screenshot = canvas.window.as_image(format=Image.Image).crop((0, 0, 200, 200))
+        assert_reference(probe, "reset_transform_screenshot", image=screenshot)
 
 
 @pytest.mark.xfail(
