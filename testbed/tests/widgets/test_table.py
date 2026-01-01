@@ -624,6 +624,21 @@ async def test_cell_widget(widget, probe):
         probe.assert_cell_content(0, 2, "MISSING!")
         probe.assert_cell_content(1, 2, "MISSING!")
 
+
+async def test_append_cell_widget(widget, probe):
+    # Set up with some regular rows
+    data = [
+        {
+            # Normal text,
+            "a": f"A{i}",
+            "b": f"B{i}",
+            # Toga widgets.
+            "c": f"C{i}",
+        }
+        for i in range(50)
+    ]
+    widget.data = data
+
     # Now try *adding* a row with a widget
     if probe.supports_widgets:
         warning_check = contextlib.nullcontext()
