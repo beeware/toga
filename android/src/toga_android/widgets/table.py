@@ -1,12 +1,8 @@
-from warnings import warn
-
 from android import R
 from android.graphics import Color, Rect, Typeface
 from android.view import Gravity, View
 from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
 from java import dynamic_proxy
-
-import toga
 
 from .base import Widget
 from .label import set_textview_font
@@ -84,7 +80,7 @@ class Table(Widget):
         self.table_layout.setStretchAllColumns(bool(self.interface.accessors))
 
         if source is not None:
-            if self.interface.headings is not None:
+            if self.interface._show_headings:
                 self.table_layout.addView(self.create_table_header())
             for row_index in range(len(source)):
                 table_row = self.create_table_row(row_index)
@@ -109,9 +105,9 @@ class Table(Widget):
             TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
-        for col_index in range(len(self.interface.accessors)):
+        for toga_column in self.interface._columns:
             text_view = TextView(self._native_activity)
-            text_view.setText(self.interface.headings[col_index])
+            text_view.setText(toga_column.heading)
             set_textview_font(
                 text_view,
                 self._font_impl,
@@ -144,9 +140,11 @@ class Table(Widget):
         table_row.setLongClickable(True)
         table_row.setOnLongClickListener(TogaOnLongClickListener(impl=self))
         table_row.setId(row_index)
-        for col_index in range(len(self.interface.accessors)):
+        data_row = self.interface.data[row_index]
+        missing_value = self.interface.missing_value
+        for toga_column in self.interface._columns:
             text_view = TextView(self._native_activity)
-            text_view.setText(self.get_data_value(row_index, col_index))
+            text_view.setText(toga_column.text(data_row, missing_value))
             set_textview_font(
                 text_view,
                 self._font_impl,
@@ -161,24 +159,6 @@ class Table(Widget):
             text_view.setLayoutParams(text_view_params)
             table_row.addView(text_view)
         return table_row
-
-    def get_data_value(self, row_index, col_index):
-        value = getattr(
-            self.interface.data[row_index],
-            self.interface.accessors[col_index],
-            None,
-        )
-        if isinstance(value, toga.Widget):
-            warn(
-                "This backend does not support the use of widgets in cells",
-                stacklevel=2,
-            )
-            value = None
-        if isinstance(value, tuple):  # TODO: support icons
-            value = value[1]
-        if value is None:
-            value = self.interface.missing_value
-        return str(value)
 
     def get_selection(self):
         selection = sorted(self.selection)
