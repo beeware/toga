@@ -134,6 +134,8 @@ class Table(Widget):
 
         # Create columns for the table
         self.columns = []
+        if not self.interface._show_headings:
+            self.native_table.setHeaderView(None)
         for index, toga_column in enumerate(self.interface._columns):
             self._insert_column(index, toga_column)
 
