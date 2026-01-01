@@ -1,4 +1,5 @@
 from rubicon.objc import (
+    SEL,
     Block,
     NSPoint,
     NSRect,
@@ -6,12 +7,16 @@ from rubicon.objc import (
     objc_id,
 )
 
+from toga.command import Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
 from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
     NSData,
+    UIBarButtonItem,
+    UIBarButtonItemStyle,
+    UIBarButtonSystemItem,
     UIColor,
     UIGraphicsImageRenderer,
     UIImage,
@@ -237,5 +242,35 @@ class MainWindow(Window):
         self.container = NavigationContainer(on_refresh=self.content_refreshed)
 
     def create_toolbar(self):
-        # No toolbar handling at present
-        pass
+        bar_items = []
+        for cmd in self.interface.toolbar:
+            if isinstance(cmd, Separator):
+                bar_items.append(
+                    UIBarButtonItem.initWithBarButtonSystemItem(
+                        UIBarButtonSystemItem.FixedSpace,
+                        target=None,
+                        action=None,
+                    )
+                )
+            elif cmd.icon:
+                bar_items.append(
+                    UIBarButtonItem.initWithImage(
+                        cmd.icon._impl.native,
+                        style=UIBarButtonItemStyle.Plain,
+                        target=cmd._impl.invoker,
+                        action=SEL("executeCommand:"),
+                    )
+                )
+            elif cmd.text:
+                bar_items.append(
+                    UIBarButtonItem.initWithTitle(
+                        cmd.text,
+                        style=UIBarButtonItemStyle.Plain,
+                        target=cmd._impl.invoker,
+                        action=SEL("executeCommand:"),
+                    )
+                )
+            else:  # pragma: no cover
+                pass
+
+        self.container.content_controller.navigationItem.rightBarButtonItems = bar_items
