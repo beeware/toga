@@ -182,3 +182,56 @@ def test_accessor_column_values(row, value, text, icon, widget):
     assert column.text(row) == text
     assert column.icon(row) == icon
     assert column.widget(row) == widget
+
+
+DEFAULT = "default"
+
+
+@pytest.mark.parametrize(
+    "row, text",
+    [
+        (Row(), DEFAULT),
+        (Row(y=1), DEFAULT),
+        (Row(x=1), "1"),
+        (Row(x="test"), "test"),
+        (Row(x=(None, "test")), "test"),
+        (Row(x=(None, 1)), "1"),
+        (Row(x=(None, None)), DEFAULT),
+        (
+            Row(x=(Icon.DEFAULT_ICON, "test")),
+            "test",
+        ),
+        (
+            Row(x=(Icon.DEFAULT_ICON, 1)),
+            "1",
+        ),
+        (
+            Row(x=(Icon.DEFAULT_ICON, None)),
+            DEFAULT,
+        ),
+        (
+            Row(x=ValueWithIcon(Icon.DEFAULT_ICON, "test")),
+            "test",
+        ),
+        (
+            Row(x=ValueWithIcon(Icon.DEFAULT_ICON, 1)),
+            "1",
+        ),
+        (
+            Row(x=ValueWithoutIcon("test")),
+            "test",
+        ),
+        (
+            Row(x=ValueWithoutIcon(1)),
+            "1",
+        ),
+        (
+            Row(x=LABEL_WIDGET),
+            DEFAULT,
+        ),
+    ],
+)
+def test_accessor_column_text_default(row, text):
+    column = AccessorColumn(None, "x")
+
+    assert column.text(row, DEFAULT) == text

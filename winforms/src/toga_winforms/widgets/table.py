@@ -32,11 +32,10 @@ class Table(Widget):
         self._first_item = 0
         self._pending_resize = True
 
-        headings = self._show_headings
         self.native.HeaderStyle = (
-            getattr(WinForms.ColumnHeaderStyle, "None")
-            if headings
-            else WinForms.ColumnHeaderStyle.Nonclickable
+            WinForms.ColumnHeaderStyle.Nonclickable
+            if self._show_headings
+            else getattr(WinForms.ColumnHeaderStyle, "None")
         )
 
         dataColumn = []
@@ -198,8 +197,9 @@ class Table(Widget):
     def _new_item(self, index):
         item = self._data[index]
 
+        missing_value = self.interface.missing_value
         lvi = WinForms.ListViewItem(
-            [column.text(item) for column in self._columns],
+            [column.text(item, missing_value) for column in self._columns],
         )
         if any(column.widget(item) is not None for column in self._columns):
             warn(

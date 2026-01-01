@@ -18,10 +18,7 @@ class TogaRow(GObject.Object):
         return None
 
     def text(self, toga_column, missing_value):
-        text = toga_column.text(self.value)
-        if text is None:
-            return missing_value
-        return text
+        return toga_column.text(self.value, missing_value)
 
     def warn_widget(self, toga_column):
         if toga_column.widget(self.value) is not None:

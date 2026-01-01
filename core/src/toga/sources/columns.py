@@ -35,7 +35,7 @@ class Column(Protocol, Generic[Value]):
         """
 
     @abstractmethod
-    def text(self, row: Any) -> str | None:
+    def text(self, row: Any, default: str | None = None) -> str | None:
         """Get the text to display for the row in this column.
 
         :param row: A row object from the underlying Source.
@@ -91,26 +91,29 @@ class AccessorColumn(Column[Value]):
         """
         return getattr(row, self.accessor, None)
 
-    def text(self, row: Row[Value]) -> str | None:
+    def text(self, row: Row[Value], default: str | None = None) -> str | None:
         """Get text from the Row or Node of a ListSource or TreeSource.
 
         If the value is a tuple, the second item is assumed to be text.
         If the value is not None, it is converted to a string by calling
         str().
+        If the value ends up being None, and a default is supplied, the default
+        is returned.
 
         :param row: A row object from the underlying Source.
+        :param default: A default value if the resulting value is otherwise None.
         :returns: The text to associated with this column's accessor, or
             None if no text.
         """
         match value := self.value(row):
             case Widget():
-                return None
+                return default
             case (_, None):
-                return None
+                return default
             case (_, value):
                 return str(value)
             case None:
-                return None
+                return default
             case _:
                 return str(value)
 
