@@ -99,7 +99,7 @@ class Tree(Widget):
                     row.text(column, self.interface.missing_value),
                 ]
             )
-            row[0].warn_widget(column)
+            row.warn_widget(column)
 
         if parent is None:
             iter = None
