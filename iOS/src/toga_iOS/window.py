@@ -106,7 +106,9 @@ class Window:
             self.interface.on_resize()
             self.interface.content.refresh()
 
-    def content_native_layout(self, container):
+    # The testbed won't instantiate a simple app, so we can't test this
+    # handler
+    def content_native_layout(self, container):  # pragma: no cover
         status_bar_height = (
             self.native.windowScene.statusBarManager.statusBarFrame.size.height
         )
