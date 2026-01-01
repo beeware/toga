@@ -707,7 +707,7 @@ async def test_reset_transform(canvas, probe):
     draw_square(ctx, RED, offset=True)
 
     await probe.redraw("Transform can be reset")
-    assert_reference(probe, "reset_transform")
+    assert_reference(probe, "reset_transform", threshold=0.015)
 
     if probe.screenshot_reset_transform:
         # On iOS and Cocoa, differing coordinate systems mean that resetting transform

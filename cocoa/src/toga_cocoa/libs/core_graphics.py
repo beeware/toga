@@ -35,8 +35,26 @@ class CGAffineTransform(Structure):
         ("ty", CGFloat),
     ]
 
+    def __eq__(self, other):
+        try:
+            return (
+                self.a == other.a
+                and self.b == other.b
+                and self.c == other.c
+                and self.d == other.d
+                and self.tx == other.tx
+                and self.ty == other.ty
+            )
+        except AttributeError:
+            return False
 
-core_graphics.CGAffineTransformIdentity = CGAffineTransform
+
+CGAffineTransformIdentity = CGAffineTransform.in_dll(
+    core_graphics, "CGAffineTransformIdentity"
+)
+
+core_graphics.CGAffineTransformConcat.argtypes = [CGAffineTransform, CGAffineTransform]
+core_graphics.CGAffineTransformConcat.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.argtypes = [CGAffineTransform]
 core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform
