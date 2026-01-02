@@ -431,8 +431,8 @@ class DrawImage(DrawingObject):
         self.image = image
         self.x = x
         self.y = y
-        self._width = width
-        self._height = height
+        self.width = width
+        self.height = height
 
     def __repr__(self) -> str:
         return (
