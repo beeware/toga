@@ -8,7 +8,6 @@ from android.graphics import (
     Matrix,
     Paint,
     Path,
-    Rect,
 )
 from android.view import MotionEvent, View
 from java import dynamic_proxy, jint
@@ -251,14 +250,17 @@ class Canvas(Widget):
 
     # Bitmaps
     def draw_image(self, image, x, y, width, height, canvas, **kwargs):
+        self.push_context(canvas)
         paint = Paint()
         paint.setAntiAlias(True)
+        self.translate(x, y, canvas)
+        self.scale(width / image.width, height / image.height, canvas)
         canvas.drawBitmap(
             image._impl.native,
-            Rect(0, 0, image.width, image.height),
-            Rect(x, y, width, height),
+            canvas.getMatrix(),
             paint,
         )
+        self.pop_context(canvas)
 
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(
