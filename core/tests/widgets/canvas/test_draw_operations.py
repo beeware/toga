@@ -722,28 +722,25 @@ def test_reset_transform(widget):
     [
         # Defaults
         (
-            {"image": Image(ABSOLUTE_FILE_PATH), "x": 10, "y": 20},
-            "<Image ABSOLUTE_FILE_PATH>, x=10, y=20",
+            {"x": 10, "y": 20},
+            "x=10, y=20, width=32, height=32",
             {
-                "image": Image(ABSOLUTE_FILE_PATH),
                 "x": 10,
                 "y": 20,
-                "width": 72,
-                "height": 72,
+                "width": 32,
+                "height": 32,
             },
         ),
         # Into rectangle
         (
             {
-                "image": Image(ABSOLUTE_FILE_PATH),
                 "x": 10,
                 "y": 20,
                 "width": 100,
                 "height": 50,
             },
-            "<Image ABSOLUTE_FILE_PATH>, x=10, y=20, width=100, height=50",
+            "x=10, y=20, width=100, height=50",
             {
-                "image": Image(ABSOLUTE_FILE_PATH),
                 "x": 10,
                 "y": 20,
                 "width": 100,
@@ -754,14 +751,16 @@ def test_reset_transform(widget):
 )
 def test_draw_image(widget, kwargs, args_repr, draw_kwargs):
     """A reset transform operation can be added."""
-    draw_op = widget.context.reset_transform()
+    image = Image(ABSOLUTE_FILE_PATH)
+    draw_op = widget.context.draw_image(image=image, **kwargs)
 
     assert_action_performed(widget, "redraw")
-    assert repr(draw_op) == f"DrawImage({args_repr})"
+    assert repr(draw_op) == f"DrawImage(image={image!r}, {args_repr})"
 
     # The first and last instructions push/pull the root context, and can be ignored.
+    draw_kwargs["image"] = image
     assert widget._impl.draw_instructions[1:-1] == [
-        ("draw image", draw_kwargs),
+        ("draw_image", draw_kwargs),
     ]
 
     # All the attributes can be retrieved.

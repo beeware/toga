@@ -434,6 +434,12 @@ class DrawImage(DrawingObject):
         self._width = width
         self._height = height
 
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(image={self.image!r}, x={self.x}, y={self.y}, "
+            f"width={self.width!r}, height={self.height})"
+        )
+
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.draw_image(
             self.image,
