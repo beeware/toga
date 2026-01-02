@@ -1,4 +1,3 @@
-import contextlib
 import datetime
 
 from travertino.size import at_least
