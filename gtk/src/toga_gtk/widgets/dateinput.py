@@ -68,7 +68,7 @@ class DateInput(Widget):
             self.native.select_month(month=month, year=year)
             self.native.select_day(day=day)
         else:  # pragma: no-cover-if-gtk3
-            # THe signal must be emitted manually on GTK4,
+            # The signal must be emitted manually on GTK4,
             # as no signal is emitted when switching between
             # years without changing date for some reason.
             with self.suppress_signals():
