@@ -2,6 +2,8 @@ from rubicon.objc import SEL, NSPoint, at, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
+from toga.keys import Key
+from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -119,8 +121,18 @@ class TogaTable(NSTableView):
     @objc_method
     def onDoubleClick_(self, sender) -> None:
         clicked = self.interface.data[self.clickedRow]
-
         self.interface.on_activate(row=clicked)
+
+    @objc_method
+    def performKeyEquivalent_(self, event) -> bool:
+        if self.impl.has_focus:
+            key = toga_key(event)
+            if key["key"] in {Key.ENTER, Key.NUMPAD_ENTER} and not key["modifiers"]:
+                row = self.interface._selection_single
+                if row is not None:
+                    self.interface.on_activate(row=row)
+                    return True
+        return False
 
 
 class Table(Widget):
@@ -165,6 +177,13 @@ class Table(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    @property
+    def has_focus(self):
+        return (
+            self.native.window is not None
+            and self.native.window.firstResponder == self.native_table
+        )
 
     def change_source(self, source):
         self.native_table.reloadData()
