@@ -52,12 +52,6 @@ class DateInput(Widget):
         self.native.connect("prev-year", self.gtk_on_change)
         self._suppress_signals = False
 
-    @contextlib.contextmanager
-    def suppress_signals(self):  # pragma: no-cover-if-gtk3
-        self._suppress_signals = True
-        yield
-        self._suppress_signals = False
-
     def get_value(self):
         return py_date(self.native.get_date())
 
@@ -70,9 +64,15 @@ class DateInput(Widget):
         else:  # pragma: no-cover-if-gtk3
             # The signal must be emitted manually on GTK4,
             # as no signal is emitted when switching between
-            # years without changing date for some reason.
-            with self.suppress_signals():
+            # years without changing date.  Emission of signals
+            # from programmatic changes is also undocumented
+            # behavior, as the docs specifies that the signals
+            # we connect to emits on user action only.
+            self._suppress_signals = True
+            try:
                 self.native.select_day(native_date(value))
+            finally:
+                self._suppress_signals = False
             self.gtk_on_change()
 
     def rehint(self):
