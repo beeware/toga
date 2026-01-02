@@ -95,6 +95,6 @@ One of the aims of Toga is to provide a rich, feature-driven approach to app dev
 - **Cloud data access** - Traditional apps store all their files locally; however, using cloud services or network resources is increasingly common, especially in mobile apps. However, accessing cloud-based files can be very complicated; Toga is in a position to provide a file-like API that abstracts accessing these APIs.
 - **QR code scanning** - The ability to scan QR codes and bar codes in an app, and return the encoded data.
 
-## Platforms
+## Platforms { #roadmap-platforms }
 
-Toga currently has good support for Cocoa on macOS, GTK on Linux, Winforms on Windows, iOS and Android. Proof-of-concept support exists for single page web apps and consoles. Support for a more modern Windows API would be desirable as well.
+Toga currently has good support for Cocoa on macOS, GTK on Linux, Winforms on Windows, iOS and Android. Proof-of-concept support exists for single page web apps, consoles, and KDE (Qt). Support for a more modern Windows API would be desirable as well.
