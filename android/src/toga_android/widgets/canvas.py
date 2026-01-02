@@ -251,10 +251,13 @@ class Canvas(Widget):
 
     # Bitmaps
     def draw_image(self, image, x, y, width, height, canvas, **kwargs):
+        paint = Paint()
+        paint.setAntiAlias(True)
         canvas.drawBitmap(
             image._impl.native,
             Rect(0, 0, image.width, image.height),
             Rect(x, y, width, height),
+            paint,
         )
 
     def get_image_data(self):

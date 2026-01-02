@@ -19,7 +19,7 @@ from System.Drawing.Drawing2D import (
     PixelOffsetMode,
     SmoothingMode,
 )
-from System.Drawing.Imaging import ImageFormat
+from System.Drawing.Imaging import Effect, ImageFormat
 from System.IO import MemoryStream
 
 from toga.colors import TRANSPARENT
@@ -364,7 +364,13 @@ class Canvas(Box):
         )
 
     def draw_image(self, image, x, y, width, height, draw_context, **kwargs):
-        draw_context.graphics.DrawImage(image._impl.native, x, y, width, height)
+        self.push_context(draw_context)
+        effect = Effect()
+        self.scale(width / image.width, height / image.height, draw_context)
+        draw_context.graphics.DrawImage(
+            image._impl.native, effect, transform=draw_context.matrix
+        )
+        self.pop_context(draw_context)
 
     def get_image_data(self):
         # Winforms backgrounds don't honor transparency, so the background that is
