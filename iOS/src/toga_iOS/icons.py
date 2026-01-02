@@ -27,6 +27,15 @@ class Icon:
         renderer = UIGraphicsImageRenderer.alloc().initWithSize(NSSize(size, size))
 
         def _resize(context: UIGraphicsImageRendererContext) -> None:
-            self.native.drawInRect(NSMakeRect(0, 0, size, size))
+            scale = min(size / self.native.size.width, size / self.native.size.height)
+
+            width = self.native.size.width * scale
+            height = self.native.size.height * scale
+
+            x = (size - width) / 2
+            y = (size - height) / 2
+
+            rect = NSMakeRect(x, y, width, height)
+            self.native.drawInRect(rect)
 
         return renderer.imageWithActions(Block(_resize, None, objc_id))

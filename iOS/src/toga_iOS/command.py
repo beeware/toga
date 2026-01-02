@@ -29,7 +29,7 @@ class Command:
     def __init__(self, interface):
         self.interface = interface
         self.native = []
-        self.invoker = TogaCommandInvoker()
+        self.invoker = TogaCommandInvoker.alloc().init()
         self.invoker.interface = self.interface
 
     @classmethod

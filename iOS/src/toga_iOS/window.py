@@ -243,34 +243,40 @@ class MainWindow(Window):
 
     def create_toolbar(self):
         bar_items = []
+        PROMINENT_COMMANDS = {"Done", "Save", "Submit"}
         for cmd in self.interface.toolbar:
             if isinstance(cmd, Separator):
                 bar_items.append(
-                    UIBarButtonItem.initWithBarButtonSystemItem(
+                    UIBarButtonItem.alloc().initWithBarButtonSystemItem(
                         UIBarButtonSystemItem.FixedSpace,
                         target=None,
                         action=None,
                     )
                 )
-            elif cmd.icon:
-                bar_items.append(
-                    UIBarButtonItem.initWithImage(
-                        cmd.icon._impl.native,
-                        style=UIBarButtonItemStyle.Plain,
+            else:
+                command_style = (
+                    UIBarButtonItemStyle.Prominent
+                    if cmd.text in PROMINENT_COMMANDS
+                    else UIBarButtonItemStyle.Plain
+                )
+                if cmd.icon:
+                    bar_item = UIBarButtonItem.alloc().initWithImage(
+                        cmd.icon._impl._as_size(30),
+                        style=command_style,
                         target=cmd._impl.invoker,
                         action=SEL("executeCommand:"),
                     )
-                )
-            elif cmd.text:
-                bar_items.append(
-                    UIBarButtonItem.initWithTitle(
+                else:
+                    bar_item = UIBarButtonItem.alloc().initWithTitle(
                         cmd.text,
-                        style=UIBarButtonItemStyle.Plain,
+                        style=command_style,
                         target=cmd._impl.invoker,
                         action=SEL("executeCommand:"),
                     )
-                )
-            else:  # pragma: no cover
-                pass
+                bar_item.title = cmd.text
+                bar_items.append(bar_item)
 
-        self.container.content_controller.navigationItem.rightBarButtonItems = bar_items
+        # iOS displays in reverse to added order.
+        self.container.content_controller.navigationItem.rightBarButtonItems = (
+            bar_items[::-1]
+        )
