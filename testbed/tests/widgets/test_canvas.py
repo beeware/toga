@@ -896,7 +896,12 @@ async def test_draw_image_in_rect(canvas, probe):
 
     image = TogaImage("resources/sample.png")
     canvas.context.begin_path()
-    canvas.context.draw_image(image, 10, 10, 144, 72)
+    canvas.context.translate(82, 46)
+    canvas.context.rotate(-pi / 6)
+    canvas.context.translate(-82, -46)
+    canvas.context.draw_image(image, 10, 10, 72, 144)
+    canvas.context.rect(10, 10, 72, 144)
+    canvas.context.stroke(REBECCAPURPLE)
 
     await probe.redraw("Image should be drawn")
-    assert_reference(probe, "draw_image", threshold=0.05)
+    assert_reference(probe, "draw_image_in_rect", threshold=0.05)
