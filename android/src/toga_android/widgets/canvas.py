@@ -250,17 +250,16 @@ class Canvas(Widget):
 
     # Bitmaps
     def draw_image(self, image, x, y, width, height, canvas, **kwargs):
-        self.push_context(canvas)
-        paint = Paint()
-        paint.setAntiAlias(True)
-        self.translate(x, y, canvas)
-        self.scale(width / image.width, height / image.height, canvas)
+        canvas.save()
+        canvas.translate(x, y)
+        canvas.scale(width / image.width, height / image.height)
         canvas.drawBitmap(
             image._impl.native,
-            canvas.getMatrix(),
-            paint,
+            0,
+            0,
+            None,
         )
-        self.pop_context(canvas)
+        canvas.restore()
 
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(

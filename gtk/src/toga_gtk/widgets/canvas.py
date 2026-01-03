@@ -390,6 +390,38 @@ class Canvas(Widget):
             metrics.line_height * len(widths),
         )
 
+    def draw_image(self, image, x, y, width, height, cairo_context):
+        pixbuf = image._impl.native
+        format = (
+            cairo.CAIRO_FORMAT_ARGB32
+            if pixbuf.get_has_alpha()
+            else cairo.CAIRO_FORMAT_RGB24
+        )
+        surface = cairo.ImageSurface.create(
+            format,
+            image.width,
+            image.height,
+        )
+        surface.set_source_pixbuf(pixbuf, 0, 0)
+
+        img_pattern = cairo.SurfacePattern(surface)
+        if width != image.width or height != image.height:
+            scaler = cairo.Matrix()
+            scaler.scale(image.width / float(width), image.height / float(height))
+            img_pattern.set_matrix(scaler)
+            img_pattern.set_filter(cairo.FILTER_BEST)
+
+        # save old path, create a new path to draw in, restore old path
+        old_path = cairo_context.copy_path()  # need to save the path
+        cairo_context.new_path()
+        cairo_context.save()
+        cairo_context.set_source(img_pattern)
+        cairo_context.rectangle(x, y, width, height)
+        cairo_context.fill()
+        cairo_context.restore()
+        cairo_context.new_path()
+        cairo_context.append_path(old_path)
+
     def get_image_data(self):
         width, height = self._size()
 

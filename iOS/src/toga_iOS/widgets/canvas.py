@@ -321,7 +321,7 @@ class Canvas(Widget):
         ui_image = image._impl.native
 
         # Have an UIImage, need a CGImage
-        cg_image = ui_image.CGImage()
+        cg_image = ui_image.CGImage
 
         # Quartz is flipped relative to data, so we:
         # - store the current state
