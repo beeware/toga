@@ -7,6 +7,7 @@ class OptionContainerProbe(SimpleProbe):
     native_class = TabControl
     max_tabs = None
     disabled_tab_selectable = True
+    supports_content_based_rehint = False
 
     def select_tab(self, index):
         self.native.SelectedIndex = index
