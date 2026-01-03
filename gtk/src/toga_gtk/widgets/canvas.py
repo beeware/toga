@@ -393,40 +393,40 @@ class Canvas(Widget):
     def draw_image(self, image, x, y, width, height, cairo_context):
         # get the image data into a Python buffer
         pixbuf = image._impl.native
-        pixels = bytearray(pixbuf.get_pixels())
+        # pixels = bytearray(pixbuf.get_pixels())
 
-        # Pixels seem to be in BGR, need in RGB
-        format = cairo.FORMAT_ARGB32 if pixbuf.get_has_alpha() else cairo.FORMAT_RGB24
-        if format == cairo.FORMAT_ARGB32:
-            blues = pixels[1::4]
-            reds = pixels[3::4]
-            pixels[1::4] = reds
-            pixels[3::4] = blues
-        else:
-            blues = pixels[::3]
-            reds = pixels[2::3]
-            pixels[::3] = reds
-            pixels[2::3] = blues
+        # #
+        # format = cairo.FORMAT_ARGB32 if pixbuf.get_has_alpha() else cairo.FORMAT_RGB24
+        # if format == cairo.FORMAT_ARGB32:
+        #     blues = pixels[0::4]
+        #     reds = pixels[2::4]
+        #     pixels[0::4] = reds
+        #     pixels[2::4] = blues
+        # else:
+        #     blues = pixels[::3]
+        #     reds = pixels[2::3]
+        #     pixels[::3] = reds
+        #     pixels[2::3] = blues
 
-        # Create a Cairo surface with the data
-        surface = cairo.ImageSurface.create_for_data(
-            pixels,
-            format,
-            image.width,
-            image.height,
-            pixbuf.get_rowstride(),
-        )
+        # # Create a Cairo surface with the data
+        # surface = cairo.ImageSurface.create_for_data(
+        #     pixels,
+        #     format,
+        #     image.width,
+        #     image.height,
+        #     pixbuf.get_rowstride(),
+        # )
 
-        # Create a pattern for filling.
-        img_pattern = cairo.SurfacePattern(surface)
+        # # Create a pattern for filling.
+        # img_pattern = cairo.SurfacePattern(surface)
 
-        # If the image will be stretched, apply a scaling matrix
-        # This code is originally from kiva.cairo
-        if width != image.width or height != image.height:
-            scaler = cairo.Matrix()
-            scaler.scale(image.width / width, image.height / height)
-            img_pattern.set_matrix(scaler)
-            img_pattern.set_filter(cairo.FILTER_BEST)
+        # # If the image will be stretched, apply a scaling matrix
+        # # This code is originally from kiva.cairo
+        # if width != image.width or height != image.height:
+        #     scaler = cairo.Matrix()
+        #     scaler.scale(image.width / width, image.height / height)
+        #     img_pattern.set_matrix(scaler)
+        #     img_pattern.set_filter(cairo.FILTER_BEST)
 
         # save old path, create a new path to draw in
         old_path = cairo_context.copy_path()
@@ -434,8 +434,12 @@ class Canvas(Widget):
         cairo_context.save()
 
         # set the fill pattern to the image pattern and fill the destination rectangle.
-        cairo_context.set_source(img_pattern)
-        cairo_context.rectangle(x, y, width, height)
+        # cairo_context.set_source(img_pattern)
+        Gdk.cairo_set_source_pixbuf(cairo_context, pixbuf, 0, 0)
+
+        cairo_context.translate(x, y)
+        cairo_context.scale(image.width / width, image.height / height)
+        cairo_context.rectangle(0, 0, width, height)
         cairo_context.fill()
 
         # restore the old path
