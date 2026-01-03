@@ -392,11 +392,7 @@ class Canvas(Widget):
 
     def draw_image(self, image, x, y, width, height, cairo_context):
         pixbuf = image._impl.native
-        format = (
-            cairo.CAIRO_FORMAT_ARGB32
-            if pixbuf.get_has_alpha()
-            else cairo.CAIRO_FORMAT_RGB24
-        )
+        format = cairo.FORMAT_ARGB32 if pixbuf.get_has_alpha() else cairo.FORMAT_RGB24
         surface = cairo.ImageSurface.create(
             format,
             image.width,

@@ -408,6 +408,10 @@ class Context(DrawingObject):
         of the image when it is rendered in the context, the image will be
         scaled to fit.
 
+        Drawing of images is performed with the current transformation matrix
+        applied, so the destination rectangle of the image will be rotated,
+        scaled and translated by any transformations which are currently applied.
+
         :param image: a Toga Image
         :param x: The x-coordinate of the bottom-left corner of the image when
             it is drawn.
@@ -415,11 +419,11 @@ class Context(DrawingObject):
             it is drawn.
         :param width: The width of the destination rectangle where the image
             will be drawn. The image will be scaled to fit the width. If the
-            width is None, the natural width of the image will be used and
+            width is omitted, the natural width of the image will be used and
             no scaling will be done.
         :param height: The height of the destination rectangle where the image
             will be drawn. The image will be scaled to fit the height. If the
-            height is None, the natural height of the image will be used and
+            height is omitted, the natural height of the image will be used and
             no scaling will be done.
         """
         draw_image = DrawImage(image, x, y, width, height)

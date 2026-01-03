@@ -365,7 +365,7 @@ class Canvas(Box):
 
     def draw_image(self, image, x, y, width, height, draw_context, **kwargs):
         draw_context.graphics.ResetTransform()
-        draw_context.graphics.Transform(draw_context.matrix)
+        draw_context.graphics.Transform = draw_context.matrix
         draw_context.graphics.DrawImage(image._impl.native, x, y, width, height)
         draw_context.graphics.ResetTransform()
 
