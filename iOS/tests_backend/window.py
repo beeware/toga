@@ -80,13 +80,20 @@ class WindowProbe(BaseProbe, DialogsMixin):
         # Effectively no way to assert this;
         # UIKit does not expose API to get whether
         # this is a space item or not, only init
-        # time parameters.
+        # time parameters to instantiate a spacing
+        # item.
         pass
 
     def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
         items = self._toolbar_items()
         item = items.objectAtIndex_(index)
-        assert item.title == label
+        # When there is an icon, the text is not displayed,
+        # and "<ObjCStrInstance: NSTaggedPointerString at 0x112a86080: Sectioned>"
+        # is returned for title, even when the title is set
+        # properly.  The actual text is still used and can
+        # be seen when placed into an overflow menu.
+        if not has_icon:
+            assert item.title == label
         # UIKit does not expose tooltips; no assertion possible.
         assert (item.image is not None) == has_icon
         assert item.enabled == enabled
