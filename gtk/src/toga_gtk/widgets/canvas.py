@@ -400,12 +400,12 @@ class Canvas(Widget):
             image.height,
             pixbuf.get_rowstride(),
         )
-        surface.set_source_pixbuf(pixbuf, 0, 0)
 
+        # This code originally from kiva.cairo
         img_pattern = cairo.SurfacePattern(surface)
         if width != image.width or height != image.height:
             scaler = cairo.Matrix()
-            scaler.scale(image.width / float(width), image.height / float(height))
+            scaler.scale(image.width / width, image.height / height)
             img_pattern.set_matrix(scaler)
             img_pattern.set_filter(cairo.FILTER_BEST)
 
