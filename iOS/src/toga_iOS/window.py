@@ -109,6 +109,9 @@ class Window:
     # The testbed won't instantiate a simple app, so we can't test this
     # handler
     def content_native_layout(self, container):  # pragma: no cover
+        # When status bar heights change, a relayout of the window will
+        # be triggered by the native layer, which is how we can catch this
+        # and use this value correctly here.
         status_bar_height = (
             self.native.windowScene.statusBarManager.statusBarFrame.size.height
         )
@@ -269,7 +272,9 @@ class MainWindow(Window):
         # Instead of manually computing the geometry at the top,
         # this check is used because iOS's algorithms to place the
         # navigation bar at an appropriate height appears to be
-        # a mystery...
+        # a mystery... also, when the navigation bar metrics change,
+        # a layout appears to be triggered in the innner subview,
+        # and that's how we can catch it.
         container.top_inset = (
             container.controller.navigationBar.frame.origin.y
             + container.controller.navigationBar.frame.size.height
