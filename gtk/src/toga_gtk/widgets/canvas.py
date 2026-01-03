@@ -398,7 +398,7 @@ class Canvas(Widget):
             format,
             image.width,
             image.height,
-            pixbuf.rowstride,
+            pixbuf.get_rowstride(),
         )
         surface.set_source_pixbuf(pixbuf, 0, 0)
 
