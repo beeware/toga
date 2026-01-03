@@ -391,31 +391,54 @@ class Canvas(Widget):
         )
 
     def draw_image(self, image, x, y, width, height, cairo_context):
+        # get the image data into a Python buffer
         pixbuf = image._impl.native
-        format = cairo.FORMAT_ARGB32 if pixbuf.get_has_alpha() else cairo.FORMAT_RGB24
+        pixels = bytearray(pixbuf.get_pixels())
+
+        # Pixels seem to be in BGR, need in RGB
+        format = cairo.FORMAT_ABGB32 if pixbuf.get_has_alpha() else cairo.FORMAT_RGB24
+        if format == cairo.FORMAT_ABGB32:
+            blues = pixels[1::4]
+            reds = pixels[3::4]
+            pixels[1::4] = reds
+            pixels[3::4] = blues
+        else:
+            blues = pixels[::3]
+            reds = pixels[2::3]
+            pixels[::3] = reds
+            pixels[2::3] = blues
+
+        # Create a Cairo surface with the data
         surface = cairo.ImageSurface.create_for_data(
-            bytearray(pixbuf.get_pixels()),
+            pixels,
             format,
             image.width,
             image.height,
             pixbuf.get_rowstride(),
         )
 
-        # This code originally from kiva.cairo
+        # Create a pattern for filling.
         img_pattern = cairo.SurfacePattern(surface)
+
+        # If the image will be stretched, apply a scaling matrix
+        # This code is originally from kiva.cairo
         if width != image.width or height != image.height:
             scaler = cairo.Matrix()
             scaler.scale(image.width / width, image.height / height)
             img_pattern.set_matrix(scaler)
             img_pattern.set_filter(cairo.FILTER_BEST)
 
-        # save old path, create a new path to draw in, restore old path
-        old_path = cairo_context.copy_path()  # need to save the path
+        # save old path, create a new path to draw in
+        old_path = cairo_context.copy_path()
         cairo_context.new_path()
         cairo_context.save()
+
+        # set the fill pattern to the image pattern and fill the destination rectangle.
         cairo_context.set_source(img_pattern)
         cairo_context.rectangle(x, y, width, height)
         cairo_context.fill()
+
+        # restore the old path
         cairo_context.restore()
         cairo_context.new_path()
         cairo_context.append_path(old_path)
