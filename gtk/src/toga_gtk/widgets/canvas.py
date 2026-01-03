@@ -394,7 +394,7 @@ class Canvas(Widget):
         pixbuf = image._impl.native
         format = cairo.FORMAT_ARGB32 if pixbuf.get_has_alpha() else cairo.FORMAT_RGB24
         surface = cairo.ImageSurface.create_for_data(
-            pixbuf.pixels,
+            pixbuf.get_pixels(),
             format,
             image.width,
             image.height,
