@@ -1,4 +1,5 @@
 import asyncio
+import webbrowser
 
 import toga
 from toga.constants import COLUMN, ROW
@@ -66,6 +67,9 @@ class WebViewApp(toga.App):
     def on_clear_url(self, widget, **kwargs):
         self.webview.url = None
 
+    def on_open_browser(self, widget, **kwargs):
+        webbrowser.open("https://github.com/beeware/toga")
+
     def on_set_content(self, widget, **kwargs):
         self.webview.set_content(
             "https://example.com",
@@ -97,6 +101,7 @@ class WebViewApp(toga.App):
                         toga.Button("load URL", on_press=self.on_load_url),
                         toga.Button("clear URL", on_press=self.on_clear_url),
                         toga.Button("get URL", on_press=self.on_get_url),
+                        toga.Button("open browser", on_press=self.on_open_browser),
                         toga.Button("JS navigate", on_press=self.on_navigate_js),
                     ],
                 ),
