@@ -46,9 +46,7 @@ def verify_font_sizes():
     return False, False
 
 
-test_cleanup = build_cleanup_test(
-    toga.MultilineTextInput, xfail_platforms=("android", "linux")
-)
+test_cleanup = build_cleanup_test(toga.MultilineTextInput, xfail_platforms=("linux",))
 
 
 async def test_scroll_position(widget, probe):

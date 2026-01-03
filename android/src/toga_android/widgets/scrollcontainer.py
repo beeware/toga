@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_DOWN
 
 from android.view import Gravity, View
@@ -23,10 +24,16 @@ class TogaOnTouchListener(dynamic_proxy(View.OnTouchListener)):
 class TogaOnScrollListener(dynamic_proxy(View.OnScrollChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onScrollChange(self, view, new_x, new_y, old_x, old_y):
-        self.impl.interface.on_scroll()
+        try:
+            self.impl.interface.on_scroll()
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:  # pragma: no cover
+            pass
 
 
 class ScrollContainer(Widget, Container):
