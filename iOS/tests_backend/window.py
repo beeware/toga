@@ -74,7 +74,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         return navigation_item.rightBarButtonItems
 
     def has_toolbar(self):
-        return self._toolbar_items().count() > 0
+        return len(self._toolbar_items()) > 0
 
     def assert_is_toolbar_separator(self, index, section=False):
         # Effectively no way to assert this;
