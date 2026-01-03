@@ -1,6 +1,6 @@
 import asyncio
 
-from toga_iOS.libs import UIApplication, UIWindow
+from toga_iOS.libs import UIApplication, UIBarButtonSystemItem, UIWindow
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -71,43 +71,28 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     def _toolbar_items(self):
         navigation_item = self.impl.container.content_controller.navigationItem
-        return navigation_item.rightBarButtonItems
+        return (
+            navigation_item.rightBarButtonItems.reverseObjectEnumerator().allObjects()
+        )
 
     def has_toolbar(self):
         return len(self._toolbar_items()) > 0
 
     def assert_is_toolbar_separator(self, index, section=False):
-        # Effectively no way to assert this;
-        # UIKit does not expose API to get whether
-        # this is a space item or not, only init
-        # time parameters to instantiate a spacing
-        # item.
-        pass
+        assert (
+            self._toolbar_items()[index].systemItem
+            == UIBarButtonSystemItem.FixedSpace.value
+        )
 
     def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
-        items = self._toolbar_items()
-        item = items.objectAtIndex_(index)
-        # When there is an icon, the text is not displayed,
-        # and "<ObjCStrInstance: NSTaggedPointerString at 0x112a86080: Sectioned>"
-        # is returned for title, even when the title is set
-        # properly.  The actual text is still used and can
-        # be seen when placed into an overflow menu.
-        if not has_icon:
-            assert item.title == label
-        # UIKit does not expose tooltips; no assertion possible.
+        item = self._toolbar_items()[index]
+        assert item.title == label
+        # # UIKit does not expose tooltips; no assertion possible.
         assert (item.image is not None) == has_icon
-        assert item.enabled == enabled
-        # No way to disable things on UIKit; do not check for it.
+        # # No way to disable things on UIKit; do not check for it.
 
     def press_toolbar_button(self, index):
-        items = self._toolbar_items()
-        item = items.objectAtIndex_(index)
-
-        target = item.target
-        action = item.action
-
-        assert target is not None, "Toolbar item has no target"
-        assert action is not None, "Toolbar item has no action"
-
-        # Simulate a tap
-        target.performSelector_(action)
+        item = self._toolbar_items()[index]
+        item.target.performSelectorOnMainThread(
+            item.action, withObject=item, waitUntilDone=True
+        )

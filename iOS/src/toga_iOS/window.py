@@ -241,19 +241,28 @@ class MainWindow(Window):
         # NavigationContainer provides a titlebar for the window.
         self.container = NavigationContainer(on_refresh=self.content_refreshed)
 
+    def _create_separator(self):
+        return UIBarButtonItem.alloc().initWithBarButtonSystemItem(
+            UIBarButtonSystemItem.FixedSpace,
+            target=None,
+            action=None,
+        )
+
     def create_toolbar(self):
         bar_items = []
         PROMINENT_COMMANDS = {"Done", "Save", "Submit"}
+        prev_group = None
         for cmd in self.interface.toolbar:
             if isinstance(cmd, Separator):
-                bar_items.append(
-                    UIBarButtonItem.alloc().initWithBarButtonSystemItem(
-                        UIBarButtonSystemItem.FixedSpace,
-                        target=None,
-                        action=None,
-                    )
-                )
+                bar_items.append(self._create_separator())
+                prev_group = None
             else:
+                if prev_group is not None and prev_group != cmd.group:
+                    bar_items.append(self._create_separator())
+                    prev_group = None
+                else:
+                    prev_group = cmd.group
+
                 command_style = (
                     UIBarButtonItemStyle.Prominent
                     if cmd.text in PROMINENT_COMMANDS

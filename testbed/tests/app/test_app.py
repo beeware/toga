@@ -83,7 +83,6 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
         has_icon=True,
         enabled=True,
     )
-
     # Remove the toolbar
     main_window.toolbar.clear()
     await main_window_probe.redraw("Main window has no toolbar")

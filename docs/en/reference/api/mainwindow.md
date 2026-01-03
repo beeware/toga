@@ -22,7 +22,7 @@ main_window.show()
 ## Notes
 
 - On iOS:
-  - Icons for toolbars should be alpha masks.
+  - The system only utilizes the alpha channel for icons in toolbars.
   - Toga does not currently provide mechanisms to access system icons, which iOS recommends, so icons should be iOS-compatible and used consistently within all scenes of your app.
   - On iOS 26+, icons in different sections will have their "liquid glass" panes separated; a short distance will be inserted in previous versions.
   - On iOS 26+, icons may also be moved to an overflow menu if there is not enough space to fit.  It is best to avoid overflowing menus, which do not exist automatically on older systems.
