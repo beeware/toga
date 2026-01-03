@@ -438,7 +438,7 @@ class Canvas(Widget):
 
         cairo_context.translate(x, y)
         cairo_context.scale(width / image.width, height / image.height)
-        cairo_context.rectangle(0, 0, width, height)
+        cairo_context.rectangle(0, 0, image.width, image.height)
         Gdk.cairo_set_source_pixbuf(cairo_context, pixbuf, 0, 0)
         cairo_context.fill()
 
