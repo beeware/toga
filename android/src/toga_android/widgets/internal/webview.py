@@ -8,6 +8,7 @@ from java.lang import String as jstring
 class TogaWebClient(static_proxy(WebViewClient)):
     def __init__(self, impl):
         super().__init__()
+        self._webview_impl = impl
         self._webview_impl_ref = weakref.ref(impl)
 
     @property
@@ -31,9 +32,9 @@ class TogaWebClient(static_proxy(WebViewClient)):
 
     @Override(jvoid, [A_WebView, jstring])
     def onPageFinished(self, webview, url):
-        if self.webview_impl.interface.on_webview_load:
-            self.webview_impl.interface.on_webview_load()
+        if self._webview_impl.interface.on_webview_load:
+            self._webview_impl.interface.on_webview_load()
 
-        if self.webview_impl.loaded_future:
-            self.webview_impl.loaded_future.set_result(None)
-            self.webview_impl.loaded_future = None
+        if self._webview_impl.loaded_future:
+            self._webview_impl.loaded_future.set_result(None)
+            self._webview_impl.loaded_future = None
