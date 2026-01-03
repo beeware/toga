@@ -9,6 +9,7 @@ from .base import SimpleProbe
 
 class CanvasProbe(SimpleProbe):
     native_class = Gtk.DrawingArea
+    screenshot_reset_transform = False
 
     def reference_variant(self, reference):
         if reference == "multiline_text":

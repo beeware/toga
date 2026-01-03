@@ -1,4 +1,5 @@
 from math import ceil
+from warnings import warn
 
 from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
@@ -7,6 +8,7 @@ from toga.colors import BLACK, TRANSPARENT, Color
 from toga.constants import Baseline, FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
+    CGAffineTransformIdentity,
     CGFloat,
     CGPathDrawingMode,
     CGRectMake,
@@ -38,6 +40,17 @@ class TogaCanvas(NSView):
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
         context = NSGraphicsContext.currentContext.CGContext
+
+        # Store this so we can restore the original if needed.
+        self.original_matrix = core_graphics.CGContextGetCTM(context)
+        self.using_standard_coords = self.original_matrix == CGAffineTransformIdentity
+        # If we're not in the normal coordinate space (presumably because we're
+        # rendering to a cache), save the inverse as well.
+        if not self.using_standard_coords:
+            self.inverse_original = core_graphics.CGAffineTransformInvert(
+                core_graphics.CGContextGetCTM(context)
+            )
+
         self.interface.context._draw(self.impl, draw_context=context)
 
     @objc_method
@@ -244,12 +257,39 @@ class Canvas(Widget):
         core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
 
     def reset_transform(self, draw_context, **kwargs):
-        # Restore the "clean" state of the graphics context.
-        core_graphics.CGContextRestoreGState(draw_context)
-        # CoreGraphics has a stack-based state representation,
-        # so ensure that there is a new, clean version of the "clean"
-        # state on the stack.
-        core_graphics.CGContextSaveGState(draw_context)
+        # Core Graphics has no built-in ability to assign to or reset the transformation
+        # matrix.
+        current = core_graphics.CGContextGetCTM(draw_context)
+
+        if current == self.native.original_matrix:
+            # No resetting necessary.
+            return
+
+        if self.native.using_standard_coords:
+            transform = current
+        else:
+            # The *original* transform matrix isn't the standard identity; this is
+            # probably because we're rendering to a cache. So we need to know the
+            # transform from what we started with.
+            transform = core_graphics.CGAffineTransformConcat(
+                current,
+                self.native.inverse_original,
+            )
+
+        inverse_transform = core_graphics.CGAffineTransformInvert(transform)
+        if inverse_transform == transform:
+            # When a matrix has no inverse, TransformInvert returns it unchanged.
+            warn(
+                (
+                    "No way to reset transform on macOS if current transform has no "
+                    "inverse. Did you scale to 0, perhaps?"
+                ),
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            return
+
+        core_graphics.CGContextConcatCTM(draw_context, inverse_transform)
 
     # Text
     def _render_string(self, text, font, **kwargs):

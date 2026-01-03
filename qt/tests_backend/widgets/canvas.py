@@ -10,6 +10,7 @@ from .base import SimpleProbe
 
 class CanvasProbe(SimpleProbe):
     native_class = TogaCanvas
+    screenshot_reset_transform = False
 
     def reference_variant(self, reference):
         if reference in {"multiline_text", "write_text", "write_text_and_path"}:
