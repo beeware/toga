@@ -64,8 +64,8 @@ class DateInput(Widget):
             # The signal must be emitted manually on GTK4,
             # as no signal is emitted when switching between
             # years without changing date.  Emission of signals
-            # from programmatic changes is also undocumented
-            # behavior, as the docs specifies that the signals
+            # on programmatic change in GTK4 is also undocumented
+            # behavior, as the docs implies that the signals
             # we connect to emits on user action only.
             self._suppress_signals = True
             try:
