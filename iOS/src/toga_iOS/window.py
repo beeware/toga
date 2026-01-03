@@ -260,6 +260,16 @@ class MainWindow(Window):
                     else UIBarButtonItemStyle.Plain
                 )
                 if cmd.icon:
+                    # 2025-01-02:  The documented size for a bar button item
+                    # is 20x20, however, that results in the icons being
+                    # displayed too small.  If you render Apple's SF Symbols
+                    # using native APIs, and then compare them to PNG exports
+                    # of SF Symbols rendered using _as_size(30), you'll find
+                    # that it is only then that they render a matching size.
+                    # The scaling part should be handled by the system according
+                    # to the documentation; but it is, in fact, not, and when
+                    # large icons are supplied, they widen the button and only
+                    # shows the centre of the image in a 20x20 region.
                     bar_item = UIBarButtonItem.alloc().initWithImage(
                         cmd.icon._impl._as_size(30),
                         style=command_style,
