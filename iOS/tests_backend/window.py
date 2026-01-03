@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from toga_iOS.libs import UIApplication, UIWindow
+from toga_iOS.libs import UIWindow
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
