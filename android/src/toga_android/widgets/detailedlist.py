@@ -8,15 +8,30 @@ from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from java import dynamic_proxy
 
+from .base import Widget
+
+
+def _resolve_theme_color(view, attr_id):
+    ctx = view.getContext()
+    ta = ctx.getTheme().obtainStyledAttributes([attr_id])
+    try:
+        if not ta.hasValue(0):
+            # CI's emulator theme always defines textColorPrimary/Secondary,
+            # so this path can't be exercised there.
+            raise RuntimeError(  # pragma: no cover
+                f"Required theme color attribute not found: {attr_id}"
+            )
+        return ta.getColor(0, 0)
+    finally:
+        ta.recycle()
+
+
 try:
     from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
 except ImportError:  # pragma: no cover
     # Import will fail if SwipeRefreshLayout is not listed in dependencies
     # No cover due to not being able to test in CI
     SwipeRefreshLayout = None
-
-
-from .base import Widget
 
 
 class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
@@ -180,15 +195,13 @@ class DetailedList(Widget):
         top_text = TextView(self._native_activity)
         top_text.setText(get_string(title))
         top_text.setTextSize(20.0)
-        top_text.setTextColor(
-            self._native_activity.getResources().getColor(R.color.black)
-        )
+        top_text.setTextColor(_resolve_theme_color(top_text, R.attr.textColorPrimary))
         bottom_text = TextView(self._native_activity)
-        bottom_text.setTextColor(
-            self._native_activity.getResources().getColor(R.color.black)
-        )
         bottom_text.setText(get_string(subtitle))
         bottom_text.setTextSize(16.0)
+        bottom_text.setTextColor(
+            _resolve_theme_color(bottom_text, R.attr.textColorSecondary)
+        )
         top_text_params = LinearLayout.LayoutParams(
             RelativeLayout.LayoutParams.WRAP_CONTENT,
             RelativeLayout.LayoutParams.MATCH_PARENT,
