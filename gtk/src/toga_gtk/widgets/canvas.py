@@ -396,8 +396,8 @@ class Canvas(Widget):
         pixels = bytearray(pixbuf.get_pixels())
 
         # Pixels seem to be in BGR, need in RGB
-        format = cairo.FORMAT_ABGB32 if pixbuf.get_has_alpha() else cairo.FORMAT_RGB24
-        if format == cairo.FORMAT_ABGB32:
+        format = cairo.FORMAT_ARGB32 if pixbuf.get_has_alpha() else cairo.FORMAT_RGB24
+        if format == cairo.FORMAT_ARGB32:
             blues = pixels[1::4]
             reds = pixels[3::4]
             pixels[1::4] = reds
