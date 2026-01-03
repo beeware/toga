@@ -391,55 +391,18 @@ class Canvas(Widget):
         )
 
     def draw_image(self, image, x, y, width, height, cairo_context):
-        # get the image data into a Python buffer
-        pixbuf = image._impl.native
-        # pixels = bytearray(pixbuf.get_pixels())
-
-        # #
-        # format = cairo.FORMAT_ARGB32 if pixbuf.get_has_alpha() else cairo.FORMAT_RGB24
-        # if format == cairo.FORMAT_ARGB32:
-        #     blues = pixels[0::4]
-        #     reds = pixels[2::4]
-        #     pixels[0::4] = reds
-        #     pixels[2::4] = blues
-        # else:
-        #     blues = pixels[::3]
-        #     reds = pixels[2::3]
-        #     pixels[::3] = reds
-        #     pixels[2::3] = blues
-
-        # # Create a Cairo surface with the data
-        # surface = cairo.ImageSurface.create_for_data(
-        #     pixels,
-        #     format,
-        #     image.width,
-        #     image.height,
-        #     pixbuf.get_rowstride(),
-        # )
-
-        # # Create a pattern for filling.
-        # img_pattern = cairo.SurfacePattern(surface)
-
-        # # If the image will be stretched, apply a scaling matrix
-        # # This code is originally from kiva.cairo
-        # if width != image.width or height != image.height:
-        #     scaler = cairo.Matrix()
-        #     scaler.scale(image.width / width, image.height / height)
-        #     img_pattern.set_matrix(scaler)
-        #     img_pattern.set_filter(cairo.FILTER_BEST)
-
         # save old path, create a new path to draw in
         old_path = cairo_context.copy_path()
         cairo_context.new_path()
         cairo_context.save()
 
-        # set the fill pattern to the image pattern and fill the destination rectangle.
-        # cairo_context.set_source(img_pattern)
-
+        # apply translation and scale so source rectangle maps to destination rectangle
         cairo_context.translate(x, y)
         cairo_context.scale(width / image.width, height / image.height)
+
+        # draw a filled rectangle with the pixmap as the source for the fill
         cairo_context.rectangle(0, 0, image.width, image.height)
-        Gdk.cairo_set_source_pixbuf(cairo_context, pixbuf, 0, 0)
+        Gdk.cairo_set_source_pixbuf(cairo_context, image._impl.native, 0, 0)
         cairo_context.fill()
 
         # restore the old path
