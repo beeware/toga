@@ -435,11 +435,11 @@ class Canvas(Widget):
 
         # set the fill pattern to the image pattern and fill the destination rectangle.
         # cairo_context.set_source(img_pattern)
-        Gdk.cairo_set_source_pixbuf(cairo_context, pixbuf, 0, 0)
 
         cairo_context.translate(x, y)
         cairo_context.scale(image.width / width, image.height / height)
         cairo_context.rectangle(0, 0, width, height)
+        Gdk.cairo_set_source_pixbuf(cairo_context, pixbuf, 0, 0)
         cairo_context.fill()
 
         # restore the old path
