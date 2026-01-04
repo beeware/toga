@@ -357,8 +357,18 @@ def test_change_source(widget, on_change_handler):
     # Clear the event history
     EventLog.reset()
 
+    # The implementation is a listener on the items
+    old_items = widget.items
+    assert widget._impl in old_items.listeners
+
     # Change the source of the data
     widget.items = ["new 1", "new 2"]
+
+    # The implementation is not a listener on the old items
+    assert widget._impl not in old_items.listeners
+
+    # The implementation is a listener on the new items
+    assert widget._impl in widget.items.listeners
 
     # The widget source has changed
     assert_action_performed(widget, "clear")
