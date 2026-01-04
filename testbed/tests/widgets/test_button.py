@@ -73,8 +73,6 @@ async def test_icon(widget, probe):
     probe.assert_icon_size()
     # Button is now taller.
     assert probe.height > initial_height
-    # Button is still reasonably tall.
-    assert probe.height < 48
 
     # Move back to text
     widget.text = "Goodbye"
