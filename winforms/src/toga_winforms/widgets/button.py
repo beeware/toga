@@ -1,7 +1,7 @@
 from decimal import ROUND_UP
 
-from System.Drawing import Bitmap, Size
 import System.Windows.Forms as WinForms
+from System.Drawing import Bitmap, Size
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
