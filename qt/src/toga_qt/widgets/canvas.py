@@ -261,9 +261,7 @@ class Canvas(Widget):
         draw_context.rotate(degrees(radians))
 
         # track transforms and adjust path
-        print("------->", self._transforms[-1])
         self._transforms[-1].rotateRadians(radians)
-        print("------->", self._transforms[-1])
         inverse = QTransform()
         inverse.rotateRadians(-radians)
         self._path = inverse.map(self._path)
