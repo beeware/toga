@@ -1,6 +1,7 @@
 from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
+from System.Drawing import Bitmap, Size
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
@@ -40,9 +41,22 @@ class Button(Widget):
     def set_icon(self, icon):
         self._icon = icon
         if icon:
-            self.native.Image = icon._impl.native.ToBitmap()
+            self.native.Image = Bitmap(
+                icon._impl.bitmap,
+                Size(self.scale_in(32), self.scale_in(32)),
+            )
         else:
             self.native.Image = None
+
+    # Refreshing could change icon DPI, which means that the
+    # icon should be reassigned by the new scale.
+    def refresh(self):
+        super().refresh()
+        if self._icon:
+            self.native.Image = Bitmap(
+                self._icon._impl.bitmap,
+                Size(self.scale_in(32), self.scale_in(32)),
+            )
 
     def set_background_color(self, color):
         super().set_background_color(
