@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from toga_iOS.libs import UIApplication, UIWindow
+from toga_iOS.libs import UIWindow
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -50,20 +50,12 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def content_size(self):
-        # Content height doesn't include the status bar or navigation bar.
-        return (
-            self.native.contentView.frame.size.width,
-            self.native.contentView.frame.size.height
-            - (
-                UIApplication.sharedApplication.statusBarFrame.size.height
-                + self.native.rootViewController.navigationBar.frame.size.height
-            ),
-        )
+        return (self.impl.container.width, self.impl.container.height)
 
     @property
     def top_bar_height(self):
         return (
-            UIApplication.sharedApplication.statusBarFrame.size.height
+            self.native.rootViewController.navigationBar.frame.origin.y
             + self.native.rootViewController.navigationBar.frame.size.height
         )
 

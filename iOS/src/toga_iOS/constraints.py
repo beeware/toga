@@ -68,6 +68,8 @@ class Constraints:
         #     f"UPDATE CONSTRAINTS {self.widget} in {self.container} "
         #     f"{width}x{height}@{x},{y}"
         # )
+        y += self.container.top_inset
+        x += self.container.left_inset
 
         if self.constraints_created:
             # We already have constraints set up; reuse them.
