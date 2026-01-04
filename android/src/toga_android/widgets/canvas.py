@@ -198,7 +198,7 @@ class Canvas(Widget):
         transform.setRotate(degrees(radians))
         self._transforms[-1].postConcat(transform)
 
-        transform.inverse()
+        transform.invert()
         path.transform(transform)
 
     def scale(self, sx, sy, canvas, path, **kwargs):
@@ -207,7 +207,7 @@ class Canvas(Widget):
         transform.setScale(sx, sy)
         self._transforms[-1].postConcat(transform)
 
-        transform.inverse()
+        transform.invert()
         path.transform(transform)
 
     def translate(self, tx, ty, canvas, path, **kwargs):
@@ -217,7 +217,7 @@ class Canvas(Widget):
         transform.setTranslate(tx, ty)
         self._transforms[-1].postConcat(transform)
 
-        transform.inverse()
+        transform.invert()
         path.transform(transform)
 
     def reset_transform(self, canvas, path, **kwargs):
