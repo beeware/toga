@@ -1,7 +1,7 @@
 import logging
 from math import ceil, cos, degrees, sin
 
-from PySide6.QtCore import QBuffer, QIODevice, QPointF, Qt
+from PySide6.QtCore import QBuffer, QIODevice, QPointF, QRectF, Qt
 from PySide6.QtGui import (
     QFontMetrics,
     QMouseEvent,
@@ -329,6 +329,10 @@ class Canvas(Widget):
 
         # reset state to how things were before translating
         draw_context.restore()
+
+    # Bitmap images
+    def draw_image(self, image, x, y, width, height, draw_context: QPainter, **kwargs):
+        draw_context.drawImage(QRectF(x, y, width, height), image._impl.native)
 
     def get_image_data(self):
         pixmap = self.native.grab()

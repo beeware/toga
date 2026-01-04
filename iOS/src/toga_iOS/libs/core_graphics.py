@@ -43,6 +43,15 @@ core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform
 core_graphics.CGAffineTransformMakeScale.argtypes = [CGFloat, CGFloat]
 
 ######################################################################
+# CGImage.h
+
+CGImageRef = c_void_p
+register_preferred_encoding(b"^{CGImage=}", CGImageRef)
+
+core_graphics.CGImageCreateWithImageInRect.argtypes = [CGImageRef, CGRect]
+core_graphics.CGImageCreateWithImageInRect.restype = CGImageRef
+
+######################################################################
 # CGContext.h
 CGContextRef = c_void_p
 register_preferred_encoding(b"^{__CGContext=}", CGContextRef)
@@ -170,6 +179,8 @@ core_graphics.CGContextShowTextAtPoint.argtypes = [
 ]
 core_graphics.CGContextTranslateCTM.restype = c_void_p
 core_graphics.CGContextTranslateCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
+core_graphics.CGContextDrawImage.restype = c_void_p
+core_graphics.CGContextDrawImage.argtypes = [CGContextRef, CGRect, CGImageRef]
 
 CGPathRef = c_void_p
 register_preferred_encoding(b"^{__CGPath=}", CGPathRef)
@@ -205,13 +216,3 @@ kCGBitmapByteOrder32Big = 4 << 12
 
 def CGRectMake(x, y, w, h):
     return CGRect(CGPoint(x, y), CGSize(w, h))
-
-
-######################################################################
-# CGImage.h
-
-CGImageRef = c_void_p
-register_preferred_encoding(b"^{CGImage=}", CGImageRef)
-
-core_graphics.CGImageCreateWithImageInRect.argtypes = [CGImageRef, CGRect]
-core_graphics.CGImageCreateWithImageInRect.restype = CGImageRef

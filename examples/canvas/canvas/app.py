@@ -33,6 +33,7 @@ ICE_CREAM = "ice cream"
 SMILE = "smile"
 SEA = "sea"
 STAR = "star"
+BEES_IMAGE = "bees"
 
 CONTINUOUS = "continuous"
 DASH_1_1 = "dash 1-1"
@@ -44,6 +45,9 @@ class CanvasApp(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(size=(750, 500))
+
+        # Bitmap image for display.
+        self.image = toga.Image("resources/pride-brutus.png")
 
         self.canvas = toga.Canvas(
             flex=1,
@@ -72,6 +76,7 @@ class CanvasApp(toga.App):
             SMILE: self.draw_smile,
             SEA: self.draw_sea,
             STAR: self.draw_star,
+            BEES_IMAGE: self.draw_image,
         }
         self.dash_patterns = {
             CONTINUOUS: None,
@@ -545,6 +550,14 @@ class CanvasApp(toga.App):
                     self.x_middle + radius * math.sin(i * rotation_angle),
                     self.y_middle - radius * math.cos(i * rotation_angle),
                 )
+
+    def draw_image(self, context, factor):
+        with context.Context() as ctx:
+            ctx.draw_image(
+                self.image,
+                self.x_middle - self.image.width / 2,
+                self.y_middle - self.image.height / 2,
+            )
 
     def draw_instructions(self, context, factor):
         text = """Instructions:

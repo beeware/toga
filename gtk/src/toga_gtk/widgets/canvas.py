@@ -390,6 +390,26 @@ class Canvas(Widget):
             metrics.line_height * len(widths),
         )
 
+    def draw_image(self, image, x, y, width, height, cairo_context):
+        # save old path, create a new path to draw in
+        old_path = cairo_context.copy_path()
+        cairo_context.new_path()
+        cairo_context.save()
+
+        # apply translation and scale so source rectangle maps to destination rectangle
+        cairo_context.translate(x, y)
+        cairo_context.scale(width / image.width, height / image.height)
+
+        # draw a filled rectangle with the pixmap as the source for the fill
+        cairo_context.rectangle(0, 0, image.width, image.height)
+        Gdk.cairo_set_source_pixbuf(cairo_context, image._impl.native, 0, 0)
+        cairo_context.fill()
+
+        # restore the old path
+        cairo_context.restore()
+        cairo_context.new_path()
+        cairo_context.append_path(old_path)
+
     def get_image_data(self):
         width, height = self._size()
 

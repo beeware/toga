@@ -363,6 +363,12 @@ class Canvas(Box):
             self._line_height(font, line_height) * len(sizes),
         )
 
+    def draw_image(self, image, x, y, width, height, draw_context, **kwargs):
+        draw_context.graphics.ResetTransform()
+        draw_context.graphics.Transform = draw_context.matrix
+        draw_context.graphics.DrawImage(image._impl.native, x, y, width, height)
+        draw_context.graphics.ResetTransform()
+
     def get_image_data(self):
         # Winforms backgrounds don't honor transparency, so the background that is
         # rendered to screen manually computes the blended color. However, we want the
