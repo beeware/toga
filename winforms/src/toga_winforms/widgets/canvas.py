@@ -277,14 +277,14 @@ class Canvas(Box):
             matrix.Multiply(transform)
         brush = SolidBrush(native_color(color))
         for path in draw_context.paths:
-            path = GraphicsPath()
-            path.AddPath(path)
-            path.Transform(matrix)
+            temp_path = GraphicsPath()
+            temp_path.AddPath(path)
+            temp_path.Transform(matrix)
             if fill_rule == FillRule.EVENODD:
-                path.FillMode = FillMode.Alternate
+                temp_path.FillMode = FillMode.Alternate
             else:  # Default to NONZERO
-                path.FillMode = FillMode.Winding
-            draw_context.graphics.FillPath(brush, path)
+                temp_path.FillMode = FillMode.Winding
+            draw_context.graphics.FillPath(brush, temp_path)
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         matrix = Matrix()
@@ -295,10 +295,10 @@ class Canvas(Box):
             pen.DashPattern = [ld / line_width for ld in line_dash]
 
         for path in draw_context.paths:
-            path = GraphicsPath()
-            path.AddPath(path)
-            path.Transform(matrix)
-            draw_context.graphics.DrawPath(pen, path)
+            temp_path = GraphicsPath()
+            temp_path.AddPath(path)
+            temp_path.Transform(matrix)
+            draw_context.graphics.DrawPath(pen, temp_path)
 
     # Transformations
 
