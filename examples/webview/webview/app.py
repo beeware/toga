@@ -26,7 +26,8 @@ class WebViewApp(toga.App):
         self.label.text = f"{result=!r}, {exception=!r}"
 
     def on_webview_load(self, widget, **kwargs):
-        self.label.text = "www loaded!"
+        self.label.text = f"Loaded: {widget.url}"
+        print(f"on_webview_load: {widget.url}")
 
     async def on_navigate_js(self, widget, **kwargs):
         await self.webview.evaluate_javascript(
