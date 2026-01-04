@@ -156,6 +156,16 @@ class UIInterfaceOrientation(Enum):
 UIBarButtonItem = ObjCClass("UIBarButtonItem")
 
 
+class UIBarButtonItemStyle(IntEnum):
+    Plain = 0
+    # iOS 26+
+    Prominent = 2
+    # Deprecated in iOS 8, replace by Plain
+    Bordered = 1
+    # Deprecated in iOS 26, replace by Prominent
+    Done = Prominent
+
+
 class UIBarButtonSystemItem(Enum):
     Done = 0
     Cancel = 1

@@ -1,4 +1,5 @@
 from rubicon.objc import (
+    SEL,
     Block,
     NSPoint,
     NSRect,
@@ -6,12 +7,16 @@ from rubicon.objc import (
     objc_id,
 )
 
+from toga.command import Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
 from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
     NSData,
+    UIBarButtonItem,
+    UIBarButtonItemStyle,
+    UIBarButtonSystemItem,
     UIColor,
     UIGraphicsImageRenderer,
     UIImage,
@@ -236,6 +241,66 @@ class MainWindow(Window):
         # NavigationContainer provides a titlebar for the window.
         self.container = NavigationContainer(on_refresh=self.content_refreshed)
 
+    def _create_separator(self):
+        return UIBarButtonItem.alloc().initWithBarButtonSystemItem(
+            UIBarButtonSystemItem.FixedSpace,
+            target=None,
+            action=None,
+        )
+
     def create_toolbar(self):
-        # No toolbar handling at present
-        pass
+        bar_items = []
+        PROMINENT_COMMANDS = {"Done", "Save", "Submit"}
+        prev_group = None
+        for cmd in self.interface.toolbar:
+            if isinstance(cmd, Separator):
+                bar_items.append(self._create_separator())
+                prev_group = None
+            else:
+                if prev_group is not None and prev_group != cmd.group:
+                    bar_items.append(self._create_separator())
+                    prev_group = None
+                else:
+                    prev_group = cmd.group
+
+                command_style = (
+                    UIBarButtonItemStyle.Prominent
+                    if cmd.text in PROMINENT_COMMANDS
+                    else UIBarButtonItemStyle.Plain
+                )
+                if cmd.icon:
+                    # 2025-01-02:  The documented size for a bar button item
+                    # is 20x20, however, that results in the icons being
+                    # displayed too small.  If you render an icon in Apple's
+                    # SF Symbols that is fairly square using native APIs,
+                    # and then compare them to PNG exports of SF Symbols
+                    # rendered using _as_size(30), you'll find that it is only
+                    # then that they render a matching size. (notes: 1, this is
+                    # illegal for production but permitted by markups per SF
+                    # Symbols' license, and 2, our icon handling doesn't scale pro-
+                    # portionally, so the icon chosen for this experiment must be
+                    # fairly square.)
+                    # The scaling part should also be handled by the system according
+                    # to the documentation; but it is, in fact, not, and when
+                    # large icons are supplied, they widen the button and only
+                    # shows the centre of the image in a 20x20 region.
+                    bar_item = UIBarButtonItem.alloc().initWithImage(
+                        cmd.icon._impl._as_size(30),
+                        style=command_style,
+                        target=cmd._impl.invoker,
+                        action=SEL("executeCommand:"),
+                    )
+                else:
+                    bar_item = UIBarButtonItem.alloc().initWithTitle(
+                        cmd.text,
+                        style=command_style,
+                        target=cmd._impl.invoker,
+                        action=SEL("executeCommand:"),
+                    )
+                bar_item.title = cmd.text
+                bar_items.append(bar_item)
+
+        # iOS displays in reverse to added order.
+        self.container.content_controller.navigationItem.rightBarButtonItems = (
+            bar_items[::-1]
+        )

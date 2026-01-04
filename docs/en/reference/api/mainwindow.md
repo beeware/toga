@@ -19,6 +19,18 @@ self.toga.App.main_window = main_window
 main_window.show()
 ```
 
+## Notes
+
+- On iOS:
+  - The system only utilizes the alpha channel for icons in toolbars.
+  - Toga does not currently provide mechanisms to access system icons, which iOS recommends, so icons should be iOS-compatible and used consistently within all scenes of your app.
+  - On iOS 26+, icons in different sections will have their "liquid glass" panes separated; a short distance will be inserted in previous versions.
+  - On iOS 26+, icons may also be moved to an overflow menu if there is not enough space to fit.  It is best to avoid overflowing menus, which do not exist automatically on older systems.
+  - Icons are preferred to text in toolbar menus; an icon will be shown if it is provided, else the text.  Icon and text will always have separated glass sections on iOS 26+.
+  - The iOS Human Interface Guidelines differentiate between normal and prominent actions.  Any command with a text of Done, Save, or Submit will be automatically promoted to a prominent action, which has a separate glass pane on iOS 26+.
+  - iOS toolbar commands cannot be [disabled][toga.Command.enabled]; setting that property has no effect on toolbar behavior.
+
+
 ## Reference
 
 ::: toga.MainWindow
