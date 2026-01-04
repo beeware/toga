@@ -43,7 +43,7 @@ class Button(Widget):
         if icon:
             self.native.Image = Bitmap(
                 icon._impl.bitmap,
-                Size(self.scale_in(32), self.scale_in(32),
+                Size(self.scale_in(32), self.scale_in(32)),
             )
         else:
             self.native.Image = None
