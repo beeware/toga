@@ -1,6 +1,10 @@
 from toga.sources import Row
+from toga.sources.columns import AccessorColumn
 
 from .table import Table
+
+# Columns to adapt DetailedList source to Table.
+COLUMNS = (AccessorColumn(None, "title"), AccessorColumn(None, "subtitle"))
 
 
 # Wrap a DetailedList source to make it compatible with a Table.
@@ -22,12 +26,12 @@ class TableSource:
 class DetailedList(Table):
     # The following methods are overridden from Table.
     @property
-    def _headings(self):
-        return None
+    def _show_headings(self):
+        return False
 
     @property
-    def _accessors(self):
-        return ("title", "subtitle")
+    def _columns(self):
+        return COLUMNS
 
     @property
     def _multiple_select(self):
