@@ -7,6 +7,7 @@
    the original is altered. Any changes should be made to the original.
   **********************************************************************
 -->
+
 # BeeWare Community Code of Conduct
 
 ## Our pledge <a name="our-pledge"></a>
