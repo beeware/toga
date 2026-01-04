@@ -1,5 +1,6 @@
 from decimal import ROUND_UP
 
+from System.Drawing import Bitmap, Size
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
@@ -40,7 +41,10 @@ class Button(Widget):
     def set_icon(self, icon):
         self._icon = icon
         if icon:
-            self.native.Image = icon._impl.native.ToBitmap()
+            self.native.Image = Bitmap(
+                icon._impl.bitmap,
+                Size(self.scale_in(32), self.scale_in(32),
+            )
         else:
             self.native.Image = None
 
