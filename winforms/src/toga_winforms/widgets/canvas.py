@@ -276,9 +276,10 @@ class Canvas(Box):
         for transform in draw_context.transforms:
             matrix.Multiply(transform)
         brush = SolidBrush(native_color(color))
+        brush.Transform(matrix)
         for path in draw_context.paths:
             temp_path = GraphicsPath()
-            temp_path.AddPath(path, False)
+            temp_path.AddPath(path, True)
             temp_path.Transform(matrix)
             if fill_rule == FillRule.EVENODD:
                 temp_path.FillMode = FillMode.Alternate
@@ -293,10 +294,11 @@ class Canvas(Box):
         pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
         if line_dash is not None:
             pen.DashPattern = [ld / line_width for ld in line_dash]
+        pen.Transform(matrix)
 
         for path in draw_context.paths:
             temp_path = GraphicsPath()
-            temp_path.AddPath(path, False)
+            temp_path.AddPath(path, True)
             temp_path.Transform(matrix)
             draw_context.graphics.DrawPath(pen, temp_path)
 
