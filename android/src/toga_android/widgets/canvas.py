@@ -28,8 +28,14 @@ class DrawHandler(dynamic_proxy(IDrawHandler)):
         self.interface = impl.interface
 
     def handleDraw(self, canvas):
-        self.impl.reset_transform(canvas)
-        self.interface.context._draw(self.impl, path=Path(), canvas=canvas)
+        self.impl._transforms = [Matrix()]
+        path = Path()
+        self.impl.reset_transform(canvas, path)
+        self.interface.context._draw(
+            self.impl,
+            path=path,
+            canvas=canvas,
+        )
 
 
 class TouchListener(dynamic_proxy(View.OnTouchListener)):
@@ -52,6 +58,8 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
 
 
 class Canvas(Widget):
+    _transforms: list[Matrix]
+
     def create(self):
         self.native = DrawHandlerView(self._native_activity)
         self.native.setDrawHandler(DrawHandler(self))
@@ -68,9 +76,11 @@ class Canvas(Widget):
 
     def push_context(self, canvas, **kwargs):
         canvas.save()
+        self._transforms.append(Matrix())
 
-    def pop_context(self, canvas, **kwargs):
+    def pop_context(self, canvas, path, **kwargs):
         canvas.restore()
+        path.transform(self._transforms.pop())
 
     # Basic paths
 
@@ -181,18 +191,43 @@ class Canvas(Widget):
 
     # Transformations
 
-    def rotate(self, radians, canvas, **kwargs):
+    def rotate(self, radians, canvas, path, **kwargs):
         canvas.rotate(degrees(radians))
 
-    def scale(self, sx, sy, canvas, **kwargs):
-        canvas.scale(sx, sy)
+        transform = Matrix()
+        transform.setRotate(degrees(radians))
+        self._transforms[-1].postConcat(transform)
 
-    def translate(self, tx, ty, canvas, **kwargs):
+        transform.inverse()
+        path.transform(transform)
+
+    def scale(self, sx, sy, canvas, path, **kwargs):
+        canvas.scale(sx, sy)
+        transform = Matrix()
+        transform.setScale(sx, sy)
+        self._transforms[-1].postConcat(transform)
+
+        transform.inverse()
+        path.transform(transform)
+
+    def translate(self, tx, ty, canvas, path, **kwargs):
         canvas.translate(tx, ty)
 
-    def reset_transform(self, canvas, **kwargs):
+        transform = Matrix()
+        transform.setTranslate(tx, ty)
+        self._transforms[-1].postConcat(transform)
+
+        transform.inverse()
+        path.transform(transform)
+
+    def reset_transform(self, canvas, path, **kwargs):
         canvas.setMatrix(None)
-        self.scale(self.dpi_scale, self.dpi_scale, canvas)
+
+        while self._transforms:
+            path.transform(self._transforms.pop())
+
+        self._transforms = [Matrix()]
+        self.scale(self.dpi_scale, self.dpi_scale, canvas, path)
 
     # Text
     def _line_height(self, paint, line_height):
