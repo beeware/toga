@@ -674,6 +674,27 @@ async def test_transforms(canvas, probe):
     assert_reference(probe, "transforms")
 
 
+async def test_transforms_mid_path(canvas, probe):
+    # draw a series of rotated rectangles
+    canvas.context.begin_path()
+    canvas.context.translate(100, 100)
+    for _ in range(12):
+        canvas.context.rect(50, 0, 10, 10)
+        canvas.context.rotate(math.pi / 6)
+    canvas.context.fill()
+
+    # draw a series of line segments
+    canvas.context.begin_path()
+    canvas.context.move_to(25, 0)
+    for _ in range(12):
+        canvas.context.line_to(25, 0)
+        canvas.context.rotate(math.pi / 6)
+    canvas.context.fill(CORNFLOWERBLUE)
+
+    await probe.redraw("Transforms can be applied")
+    assert_reference(probe, "transforms_mid_path")
+
+
 @pytest.mark.xfail(
     condition=os.environ.get("RUNNING_IN_CI") != "true",
     reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
