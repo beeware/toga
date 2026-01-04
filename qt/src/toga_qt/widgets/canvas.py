@@ -34,6 +34,7 @@ class TogaCanvas(QWidget):
         try:
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             self.impl.begin_path(painter)
+            self.impl._transforms = [QTransform()]
             self.interface.context._draw(self.impl, draw_context=painter)
         except Exception:  # pragma: no cover
             logger.exception("Error rendering Canvas.")
@@ -101,6 +102,7 @@ class TogaCanvas(QWidget):
 
 class Canvas(Widget):
     _path: QPainterPath
+    _transforms: list[QTransform]
 
     def create(self):
         self.native = TogaCanvas(self.interface, self)
@@ -115,9 +117,11 @@ class Canvas(Widget):
     # Context management
     def push_context(self, draw_context: QPainter, **kwargs):
         draw_context.save()
+        self._transforms.append(QTransform())
 
     def pop_context(self, draw_context: QPainter, **kwargs):
         draw_context.restore()
+        self._path = self._transforms.pop().map(self._path)
 
     # Basic paths
     def begin_path(self, draw_context: QPainter, **kwargs):
@@ -256,14 +260,39 @@ class Canvas(Widget):
     def rotate(self, radians, draw_context: QPainter, **kwargs):
         draw_context.rotate(degrees(radians))
 
+        # track transforms and adjust path
+        print("------->", self._transforms[-1])
+        self._transforms[-1].rotateRadians(radians)
+        print("------->", self._transforms[-1])
+        inverse = QTransform()
+        inverse.rotateRadians(-radians)
+        self._path = inverse.map(self._path)
+
     def scale(self, sx, sy, draw_context: QPainter, **kwargs):
         draw_context.scale(sx, sy)
+
+        # track transforms and adjust path
+        self._transforms[-1].scale(sx, sy)
+        inverse = QTransform()
+        inverse.scale(1 / sx, 1 / sy)
+        self._path = inverse.map(self._path)
 
     def translate(self, tx, ty, draw_context: QPainter, **kwargs):
         draw_context.translate(tx, ty)
 
+        # track transforms and adjust path
+        self._transforms[-1].translate(tx, ty)
+        inverse = QTransform()
+        inverse.scale(-tx, -ty)
+        self._path = inverse.map(self._path)
+
     def reset_transform(self, draw_context: QPainter, **kwargs):
         draw_context.resetTransform()
+
+        while self._transforms:
+            self._path = self._transforms.pop().map(self._path)
+
+        self._transforms = [QTransform()]
 
     # Text
     def _text_offsets(self, text, font, line_height):
