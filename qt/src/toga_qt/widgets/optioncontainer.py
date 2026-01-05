@@ -98,6 +98,4 @@ class OptionContainer(Widget):
             self.interface.intrinsic.height,
         )
         if prev_intrinsic_size != intrinsic_size:
-            asyncio.get_running_loop().call_soon_threadsafe(
-                self.interface.refresh
-            )  # pragma: no cover
+            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
