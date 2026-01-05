@@ -50,9 +50,16 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def content_size(self):
+        # As a test, assert that our content is not overlapping the top bar.
+        assert self.impl.container.content.native.frame.origin.y > self.top_bar_height
+        # Content height doesn't include the status bar or navigation bar.
         return (
-            self.impl.container.content.native.bounds.size.width,
-            self.impl.container.content.native.bounds.size.height,
+            self.native.contentView.frame.size.width,
+            self.native.contentView.frame.size.height
+            - (
+                self.native.rootViewController.navigationBar.frame.origin.y
+                + self.native.rootViewController.navigationBar.frame.size.height
+            ),
         )
 
     @property
