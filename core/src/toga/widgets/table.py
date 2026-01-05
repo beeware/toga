@@ -139,6 +139,9 @@ class Table(Widget):
 
     @data.setter
     def data(self, data: ListSourceT | Iterable | None) -> None:
+        if self._data is not None:
+            self._data.remove_listener(self._impl)
+
         if data is None:
             self._data = ListSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):
