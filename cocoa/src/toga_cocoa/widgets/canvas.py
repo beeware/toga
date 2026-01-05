@@ -344,14 +344,14 @@ class Canvas(Widget):
 
         # Quartz is flipped relative to data, so we:
         # - store the current state
-        # - translate to vertical middle of image
+        # - translate to bottom of the image
         # - flip vertical axis
-        # - draw image with bottom edge at -height/2
+        # - draw image at the new y-origin, with normal height
         # - restore state
         core_graphics.CGContextSaveGState(draw_context)
-        core_graphics.CGContextTranslateCTM(draw_context, 0, y + height / 2)
+        core_graphics.CGContextTranslateCTM(draw_context, 0, y + height)
         core_graphics.CGContextScaleCTM(draw_context, 1.0, -1.0)
-        rectangle = CGRectMake(x, -height / 2, width, height)
+        rectangle = CGRectMake(x, 0, width, height)
         core_graphics.CGContextDrawImage(draw_context, rectangle, cg_image)
         core_graphics.CGContextRestoreGState(draw_context)
 
