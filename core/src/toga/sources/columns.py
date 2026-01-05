@@ -7,17 +7,17 @@ from ..widgets.base import Widget
 from .accessors import build_accessors, to_accessor
 from .list_source import Row
 
-Value = TypeVar("Value", covariant=True)
+Value = TypeVar("Value", contravariant=False, covariant=False)
 
 
 @runtime_checkable
-class Column(Protocol, Generic[Value]):
+class ColumnT(Protocol, Generic[Value]):
     """Protocol that Column types must adhere to."""
 
     @property
     @abstractmethod
-    def heading(self) -> str | None:
-        """The heading text for this column, or None if no heading."""
+    def heading(self) -> str:
+        """The heading text for this column."""
 
     # This will eventually be removed from the Protocol
     @property
@@ -51,8 +51,17 @@ class Column(Protocol, Generic[Value]):
         :returns: The icon to display, or None if no Icon.
         """
 
+    def widget(self, row: Row[Value]) -> Widget | None:
+        """Get a widget from the Row or Node of a ListSource or TreeSource.
 
-class AccessorColumn(Column[Value]):
+        If the value is a widget, it is returned, otherwise None is returned
+
+        :param row: A row object from the underlying Source.
+        :returns: The Widget to use, or None if no Widget.
+        """
+
+
+class AccessorColumn(ColumnT[Value]):
     """This is a column which implements accessor semantics.
 
     This requires at least one of the heading and the accessor to be
@@ -77,7 +86,7 @@ class AccessorColumn(Column[Value]):
 
     @property
     def heading(self):
-        return self._heading
+        return self._heading if self._heading is not None else ""
 
     @property
     def accessor(self):
@@ -156,7 +165,7 @@ class AccessorColumn(Column[Value]):
         cls,
         headings: Iterable[str] | None = None,
         accessors: Iterable[str] | None = None,
-    ) -> list[Column]:
+    ) -> list[ColumnT]:
         """Get a list of columns from lists of headings and accessors.
 
         :param headings: A list of heading titles, or None if no headings.

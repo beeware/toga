@@ -52,10 +52,7 @@ class TogaTree(NSOutlineView):
         if item is None:
             # How many root elements are there?
             # If we're starting up, the source may not exist yet.
-            if self.interface.data is not None:
-                return len(self.interface.data)
-            else:
-                return 0
+            return len(getattr(self.interface, "data", ()))
         else:
             # How many children does this node have?
             return len(item.attrs["node"])

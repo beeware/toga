@@ -6,7 +6,7 @@ from typing import Any, Literal, Protocol
 import toga
 from toga.handlers import wrapped_handler
 from toga.sources import Node, Source, TreeSource, TreeSourceT
-from toga.sources.columns import AccessorColumn, Column
+from toga.sources.columns import AccessorColumn, ColumnT
 from toga.style import Pack
 
 from .base import Widget
@@ -75,6 +75,8 @@ class Tree(Widget):
             defined.
         :param kwargs: Initial style properties.
         """
+        self._data: TreeSourceT | TreeSource
+
         self._missing_value = missing_value or ""
         self._show_headings = headings is not None
         self._multiple_select = multiple_select
@@ -84,7 +86,7 @@ class Tree(Widget):
                 "Cannot create a tree without either headings or accessors."
             )
 
-        self._columns: list[Column] = (
+        self._columns: list[ColumnT] = (
             AccessorColumn.columns_from_headings_and_accessors(headings, accessors)
         )
 
@@ -97,7 +99,6 @@ class Tree(Widget):
         # Prime some properties that need to exist before the tree is created.
         self.on_select = None
         self.on_activate = None
-        self._data: TreeSourceT | TreeSource | None = None
 
         super().__init__(id, style, **kwargs)
 
@@ -140,7 +141,7 @@ class Tree(Widget):
 
     @data.setter
     def data(self, data: TreeSourceT | object | None) -> None:
-        if self._data is not None:
+        if hasattr(self, "_data"):
             self._data.remove_listener(self._impl)
 
         if data is None:
@@ -273,8 +274,7 @@ class Tree(Widget):
         if not self._show_headings:
             return None
         else:
-            headings = [column.heading for column in self._columns]
-            return [heading if heading is not None else "" for heading in headings]
+            return [column.heading for column in self._columns]
 
     @property
     def accessors(self) -> list[str]:

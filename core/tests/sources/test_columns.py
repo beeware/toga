@@ -1,7 +1,6 @@
 import pytest
 
 from toga.icons import Icon
-from toga.sources.accessors import to_accessor
 from toga.sources.columns import AccessorColumn
 from toga.sources.list_source import Row
 from toga.widgets.label import Label
@@ -38,15 +37,18 @@ LABEL_WIDGET = Label("Test")
 
 
 @pytest.mark.parametrize(
-    "heading, accessor", [("Heading", "name"), (None, "name"), ("Heading", None)]
+    "heading, accessor, heading_property, accessor_property",
+    [
+        ("Heading", "name", "Heading", "name"),
+        (None, "name", "", "name"),
+        ("Heading", None, "Heading", "heading"),
+    ],
 )
-def test_accessor_column(heading, accessor):
+def test_accessor_column(heading, accessor, heading_property, accessor_property):
     column = AccessorColumn(heading, accessor)
 
-    assert column.heading == heading
-    assert column.accessor == (
-        accessor if accessor is not None else to_accessor(heading)
-    )
+    assert column.heading == heading_property
+    assert column.accessor == accessor_property
 
 
 def test_accessor_column_failure():
@@ -96,7 +98,7 @@ def test_columns_from_headings_and_accessors_headings_none():
     accessors = ["first", "second", "third"]
     columns = AccessorColumn.columns_from_headings_and_accessors(None, accessors)
 
-    assert [column.heading for column in columns] == [None, None, None]
+    assert [column.heading for column in columns] == ["", "", ""]
     assert [column.accessor for column in columns] == accessors
 
 
