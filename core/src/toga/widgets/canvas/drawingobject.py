@@ -87,17 +87,17 @@ class DrawingObject(ABC):
         return f"{self.__class__.__name__}()"
 
     @abstractmethod
-    def _draw(self, impl: Any, **kwargs: Any) -> None: ...
+    def _draw(self, impl: Any) -> None: ...
 
 
 class BeginPath(DrawingObject):
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.begin_path(**kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.begin_path()
 
 
 class ClosePath(DrawingObject):
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.close_path(**kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.close_path()
 
 
 class Fill(DrawingObject):
@@ -116,8 +116,11 @@ class Fill(DrawingObject):
             f"fill_rule={self.fill_rule})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.fill(self.color, self.fill_rule, **kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.save()
+        impl.set_fill_style(self.color)
+        impl.fill(self.fill_rule)
+        impl.restore()
 
     @property
     def fill_rule(self) -> FillRule:
@@ -142,7 +145,7 @@ class Fill(DrawingObject):
 class Stroke(DrawingObject):
     def __init__(
         self,
-        color: ColorT | None = BLACK,
+        color: ColorT | None = None,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ):
@@ -157,8 +160,16 @@ class Stroke(DrawingObject):
             f"line_width={self.line_width}, line_dash={self.line_dash!r})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.stroke(self.color, self.line_width, self.line_dash, **kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.save()
+        if self.color:
+            impl.set_stroke_style(self.color)
+        if self.line_width:
+            impl.set_line_width(self.line_width)
+        if self.line_dash:
+            impl.set_line_dash(self.line_dash)
+        impl.stroke()
+        impl.restore()
 
     @property
     def color(self) -> Color:
@@ -196,8 +207,8 @@ class MoveTo(DrawingObject):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.move_to(self.x, self.y, **kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.move_to(self.x, self.y)
 
 
 class LineTo(DrawingObject):
@@ -208,8 +219,8 @@ class LineTo(DrawingObject):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.line_to(self.x, self.y, **kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.line_to(self.x, self.y)
 
 
 class BezierCurveTo(DrawingObject):
@@ -230,10 +241,8 @@ class BezierCurveTo(DrawingObject):
             f"x={self.x}, y={self.y})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.bezier_curve_to(
-            self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y, **kwargs
-        )
+    def _draw(self, impl: Any) -> None:
+        impl.bezier_curve_to(self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y)
 
 
 class QuadraticCurveTo(DrawingObject):
@@ -249,8 +258,8 @@ class QuadraticCurveTo(DrawingObject):
             f"(cpx={self.cpx}, cpy={self.cpy}, x={self.x}, y={self.y})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, **kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y)
 
 
 class Arc(DrawingObject):
@@ -288,7 +297,7 @@ class Arc(DrawingObject):
             f"endangle={self.endangle:.3f}, counterclockwise={self.counterclockwise})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
+    def _draw(self, impl: Any) -> None:
         impl.arc(
             self.x,
             self.y,
@@ -296,7 +305,6 @@ class Arc(DrawingObject):
             self.startangle,
             self.endangle,
             self.counterclockwise,
-            **kwargs,
         )
 
 
@@ -340,7 +348,7 @@ class Ellipse(DrawingObject):
             f"endangle={self.endangle:.3f}, counterclockwise={self.counterclockwise})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
+    def _draw(self, impl: Any) -> None:
         impl.ellipse(
             self.x,
             self.y,
@@ -350,7 +358,6 @@ class Ellipse(DrawingObject):
             self.startangle,
             self.endangle,
             self.counterclockwise,
-            **kwargs,
         )
 
 
@@ -367,8 +374,8 @@ class Rect(DrawingObject):
             f"width={self.width}, height={self.height})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.rect(self.x, self.y, self.width, self.height, **kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.rect(self.x, self.y, self.width, self.height)
 
 
 class WriteText(DrawingObject):
@@ -395,7 +402,7 @@ class WriteText(DrawingObject):
             f"line_height={self.line_height})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
+    def _draw(self, impl: Any) -> None:
         impl.write_text(
             str(self.text),
             self.x,
@@ -403,7 +410,6 @@ class WriteText(DrawingObject):
             self.font._impl,
             self.baseline,
             self.line_height,
-            **kwargs,
         )
 
     @property
@@ -425,8 +431,8 @@ class Rotate(DrawingObject):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(radians={self.radians:.3f})"
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.rotate(self.radians, **kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.rotate(self.radians)
 
 
 class Scale(DrawingObject):
@@ -437,8 +443,8 @@ class Scale(DrawingObject):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(sx={self.sx:.3f}, sy={self.sy:.3f})"
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.scale(self.sx, self.sy, **kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.scale(self.sx, self.sy)
 
 
 class Translate(DrawingObject):
@@ -449,10 +455,10 @@ class Translate(DrawingObject):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(tx={self.tx}, ty={self.ty})"
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.translate(self.tx, self.ty, **kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.translate(self.tx, self.ty)
 
 
 class ResetTransform(DrawingObject):
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.reset_transform(**kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.reset_transform()

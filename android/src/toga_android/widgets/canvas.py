@@ -28,8 +28,10 @@ class DrawHandler(dynamic_proxy(IDrawHandler)):
         self.interface = impl.interface
 
     def handleDraw(self, canvas):
-        self.impl.reset_transform(canvas)
-        self.interface.context._draw(self.impl, path=Path(), canvas=canvas)
+        self.impl.reset_transform()
+        self.impl.canvas = canvas
+        self.impl.path = Path()
+        self.interface.context._draw(self.impl)
 
 
 class TouchListener(dynamic_proxy(View.OnTouchListener)):
@@ -66,67 +68,46 @@ class Canvas(Widget):
 
     # Context management
 
-    def push_context(self, canvas, **kwargs):
-        canvas.save()
+    def save(self):
+        self.canvas.save()
 
-    def pop_context(self, canvas, **kwargs):
-        canvas.restore()
+    def restore(self):
+        self.canvas.restore()
 
     # Basic paths
 
-    def begin_path(self, path, **kwargs):
-        path.reset()
+    def begin_path(self):
+        self.path.reset()
 
-    def close_path(self, path, **kwargs):
-        path.close()
+    def close_path(self):
+        self.path.close()
 
-    def move_to(self, x, y, path, **kwargs):
-        path.moveTo(x, y)
+    def move_to(self, x, y):
+        self.path.moveTo(x, y)
 
-    def line_to(self, x, y, path, **kwargs):
-        self._ensure_subpath(x, y, path)
-        path.lineTo(x, y)
+    def line_to(self, x, y):
+        self._ensure_subpath(x, y)
+        self.path.lineTo(x, y)
 
-    def _ensure_subpath(self, x, y, path):
-        if path.isEmpty():
-            self.move_to(x, y, path)
+    def _ensure_subpath(self, x, y):
+        if self.path.isEmpty():
+            self.move_to(x, y)
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, path, **kwargs):
-        self._ensure_subpath(cp1x, cp1y, path)
-        path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self._ensure_subpath(cp1x, cp1y)
+        self.path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, path, **kwargs):
-        self._ensure_subpath(cpx, cpy, path)
-        path.quadTo(cpx, cpy, x, y)
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        self._ensure_subpath(cpx, cpy)
+        self.path.quadTo(cpx, cpy, x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, counterclockwise, path, **kwargs):
-        self.ellipse(
-            x,
-            y,
-            radius,
-            radius,
-            0,
-            startangle,
-            endangle,
-            counterclockwise,
-            path,
-            **kwargs,
-        )
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
 
     def ellipse(
-        self,
-        x,
-        y,
-        radiusx,
-        radiusy,
-        rotation,
-        startangle,
-        endangle,
-        counterclockwise,
-        path,
-        **kwargs,
+        self, x, y, radiusx, radiusy, rotation, startangle, endangle, counterclockwise
     ):
         matrix = Matrix()
         matrix.preTranslate(x, y)
@@ -141,32 +122,32 @@ class Canvas(Widget):
         )
         matrix.mapPoints(coords)
 
-        self.line_to(coords[0], coords[1], path, **kwargs)
+        self.line_to(coords[0], coords[1])
         i = 2
         while i < len(coords):
-            self.bezier_curve_to(*coords[i : i + 6], path, **kwargs)
+            self.bezier_curve_to(*coords[i : i + 6])
             i += 6
 
-    def rect(self, x, y, width, height, path, **kwargs):
-        path.addRect(x, y, x + width, y + height, Path.Direction.CW)
+    def rect(self, x, y, width, height):
+        self.path.addRect(x, y, x + width, y + height, Path.Direction.CW)
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, path, canvas, **kwargs):
+    def fill(self, color, fill_rule):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
         draw_paint.setStyle(Paint.Style.FILL)
         draw_paint.setColor(jint(native_color(color)))
 
-        path.setFillType(
+        self.path.setFillType(
             {
                 FillRule.EVENODD: Path.FillType.EVEN_ODD,
                 FillRule.NONZERO: Path.FillType.WINDING,
             }.get(fill_rule, Path.FillType.WINDING)
         )
-        canvas.drawPath(path, draw_paint)
+        self.canvas.drawPath(self.path, draw_paint)
 
-    def stroke(self, color, line_width, line_dash, path, canvas, **kwargs):
+    def stroke(self, color, line_width, line_dash):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
         draw_paint.setStyle(Paint.Style.STROKE)
@@ -177,22 +158,22 @@ class Canvas(Widget):
         if line_dash is not None:
             draw_paint.setPathEffect(DashPathEffect(line_dash, 0))
 
-        canvas.drawPath(path, draw_paint)
+        self.canvas.drawPath(self.path, draw_paint)
 
     # Transformations
 
-    def rotate(self, radians, canvas, **kwargs):
-        canvas.rotate(degrees(radians))
+    def rotate(self, radians):
+        self.canvas.rotate(degrees(radians))
 
-    def scale(self, sx, sy, canvas, **kwargs):
-        canvas.scale(sx, sy)
+    def scale(self, sx, sy):
+        self.canvas.scale(sx, sy)
 
-    def translate(self, tx, ty, canvas, **kwargs):
-        canvas.translate(tx, ty)
+    def translate(self, tx, ty):
+        self.canvas.translate(tx, ty)
 
-    def reset_transform(self, canvas, **kwargs):
-        canvas.setMatrix(None)
-        self.scale(self.dpi_scale, self.dpi_scale, canvas)
+    def reset_transform(self):
+        self.canvas.setMatrix(None)
+        self.scale(self.dpi_scale, self.dpi_scale, self.canvas)
 
     # Text
     def _line_height(self, paint, line_height):
@@ -205,11 +186,11 @@ class Canvas(Widget):
         paint = self._text_paint(font)
         sizes = [paint.measureText(line) for line in text.splitlines()]
         return (
-            max(size for size in sizes),
+            max(sizes),
             self._line_height(paint, line_height) * len(sizes),
         )
 
-    def write_text(self, text, x, y, font, baseline, line_height, canvas, **kwargs):
+    def write_text(self, text, x, y, font, baseline, line_height):
         lines = text.splitlines()
         paint = self._text_paint(font)
         scaled_line_height = self._line_height(paint, line_height)
@@ -230,15 +211,16 @@ class Canvas(Widget):
             # FILL_AND_STROKE doesn't allow separate colors, so we have to draw twice.
             draw_args = [line, x, top + (scaled_line_height * line_num), paint]
 
-            if (color := kwargs.get("fill_color")) is not None:
-                paint.setStyle(Paint.Style.FILL)
-                paint.setColor(jint(native_color(color)))
-                canvas.drawText(*draw_args)
-            if (color := kwargs.get("stroke_color")) is not None:
-                paint.setStyle(Paint.Style.STROKE)
-                paint.setStrokeWidth(kwargs["line_width"])
-                paint.setColor(jint(native_color(color)))
-                canvas.drawText(*draw_args)
+            self.canvas.drawText(*draw_args)
+            # if (color := kwargs.get("fill_color")) is not None:
+            #     paint.setStyle(Paint.Style.FILL)
+            #     paint.setColor(jint(native_color(color)))
+            #     canvas.drawText(*draw_args)
+            # if (color := kwargs.get("stroke_color")) is not None:
+            #     paint.setStyle(Paint.Style.STROKE)
+            #     paint.setStrokeWidth(kwargs["line_width"])
+            #     paint.setColor(jint(native_color(color)))
+            #     canvas.drawText(*draw_args)
 
     def _text_paint(self, font):
         # font.size applies the scale factor, and the canvas transformation matrix

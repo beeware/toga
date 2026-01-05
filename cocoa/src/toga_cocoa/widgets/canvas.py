@@ -37,8 +37,8 @@ class TogaCanvas(NSView):
 
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
-        context = NSGraphicsContext.currentContext.CGContext
-        self.interface.context._draw(self.impl, draw_context=context)
+        self.impl.context = NSGraphicsContext.currentContext.CGContext
+        self.interface.context._draw(self.impl)
 
     @objc_method
     def isFlipped(self) -> bool:
@@ -102,63 +102,65 @@ class Canvas(Widget):
             self.native.backgroundColor = native_color(color)
 
     # Context management
-    def push_context(self, draw_context, **kwargs):
-        core_graphics.CGContextSaveGState(draw_context)
+    def save(self):
+        core_graphics.CGContextSaveGState(self.context)
 
-    def pop_context(self, draw_context, **kwargs):
-        core_graphics.CGContextRestoreGState(draw_context)
+    def restore(self):
+        core_graphics.CGContextRestoreGState(self.context)
+
+    # Setting attributes
+    def set_fill_style(self, color):
+        core_graphics.CGContextSetRGBFillColor(
+            self.context, color.r / 255, color.g / 255, color.b / 255, color.a
+        )
+
+    def set_line_dash(self, line_dash):
+        core_graphics.CGContextSetLineDash(
+            self.context,
+            0,
+            (CGFloat * len(line_dash))(*line_dash),
+            len(line_dash),
+        )
+
+    def set_line_width(self, line_width):
+        core_graphics.CGContextSetLineWidth(self.context, line_width)
+
+    def set_stroke_style(self, color):
+        core_graphics.CGContextSetRGBStrokeColor(
+            self.context, color.r / 255, color.g / 255, color.b / 255, color.a
+        )
 
     # Basic paths
-    def begin_path(self, draw_context, **kwargs):
-        core_graphics.CGContextBeginPath(draw_context)
+    def begin_path(self):
+        core_graphics.CGContextBeginPath(self.context)
 
-    def close_path(self, draw_context, **kwargs):
-        core_graphics.CGContextClosePath(draw_context)
+    def close_path(self):
+        core_graphics.CGContextClosePath(self.context)
 
-    def move_to(self, x, y, draw_context, **kwargs):
-        core_graphics.CGContextMoveToPoint(draw_context, x, y)
+    def move_to(self, x, y):
+        core_graphics.CGContextMoveToPoint(self.context, x, y)
 
-    def line_to(self, x, y, draw_context, **kwargs):
-        self._ensure_subpath(x, y, draw_context)
-        core_graphics.CGContextAddLineToPoint(draw_context, x, y)
+    def line_to(self, x, y):
+        self._ensure_subpath(x, y)
+        core_graphics.CGContextAddLineToPoint(self.context, x, y)
 
-    def _ensure_subpath(self, x, y, draw_context):
-        if core_graphics.CGContextIsPathEmpty(draw_context):
-            self.move_to(x, y, draw_context)
+    def _ensure_subpath(self, x, y):
+        if core_graphics.CGContextIsPathEmpty(self.context):
+            self.move_to(x, y)
 
     # Basic shapes
 
-    def bezier_curve_to(
-        self,
-        cp1x,
-        cp1y,
-        cp2x,
-        cp2y,
-        x,
-        y,
-        draw_context,
-        **kwargs,
-    ):
-        self._ensure_subpath(cp1x, cp1y, draw_context)
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self._ensure_subpath(cp1x, cp1y)
         core_graphics.CGContextAddCurveToPoint(
-            draw_context, cp1x, cp1y, cp2x, cp2y, x, y
+            self.context, cp1x, cp1y, cp2x, cp2y, x, y
         )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
-        self._ensure_subpath(cpx, cpy, draw_context)
-        core_graphics.CGContextAddQuadCurveToPoint(draw_context, cpx, cpy, x, y)
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        self._ensure_subpath(cpx, cpy)
+        core_graphics.CGContextAddQuadCurveToPoint(self.context, cpx, cpy, x, y)
 
-    def arc(
-        self,
-        x,
-        y,
-        radius,
-        startangle,
-        endangle,
-        counterclockwise,
-        draw_context,
-        **kwargs,
-    ):
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
         # is actually counterclockwise
         if counterclockwise:
@@ -166,90 +168,63 @@ class Canvas(Widget):
         else:
             clockwise = 0
         core_graphics.CGContextAddArc(
-            draw_context, x, y, radius, startangle, endangle, clockwise
+            self.context, x, y, radius, startangle, endangle, clockwise
         )
 
     def ellipse(
-        self,
-        x,
-        y,
-        radiusx,
-        radiusy,
-        rotation,
-        startangle,
-        endangle,
-        counterclockwise,
-        draw_context,
-        **kwargs,
+        self, x, y, radiusx, radiusy, rotation, startangle, endangle, counterclockwise
     ):
-        core_graphics.CGContextSaveGState(draw_context)
-        self.translate(x, y, draw_context)
-        self.rotate(rotation, draw_context)
+        self.save()
+        self.translate(x, y)
+        self.rotate(rotation)
         if radiusx >= radiusy:
-            self.scale(1, radiusy / radiusx, draw_context)
-            self.arc(
-                0, 0, radiusx, startangle, endangle, counterclockwise, draw_context
-            )
+            self.scale(1, radiusy / radiusx)
+            self.arc(0, 0, radiusx, startangle, endangle, counterclockwise)
         else:
-            self.scale(radiusx / radiusy, 1, draw_context)
-            self.arc(
-                0, 0, radiusy, startangle, endangle, counterclockwise, draw_context
-            )
-        core_graphics.CGContextRestoreGState(draw_context)
+            self.scale(radiusx / radiusy, 1)
+            self.arc(0, 0, radiusy, startangle, endangle, counterclockwise)
+        self.restore()
 
-    def rect(self, x, y, width, height, draw_context, **kwargs):
+    def rect(self, x, y, width, height):
         rectangle = CGRectMake(x, y, width, height)
-        core_graphics.CGContextAddRect(draw_context, rectangle)
+        core_graphics.CGContextAddRect(self.context, rectangle)
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, draw_context, **kwargs):
+    def fill(self, fill_rule):
         if fill_rule == FillRule.EVENODD:
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)
-        core_graphics.CGContextSetRGBFillColor(
-            draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
-        )
-        if not core_graphics.CGContextIsPathEmpty(draw_context):
-            path = core_graphics.CGContextCopyPath(draw_context)
-            core_graphics.CGContextDrawPath(draw_context, mode)
-            core_graphics.CGContextAddPath(draw_context, path)
+        if not core_graphics.CGContextIsPathEmpty(self.context):
+            path = core_graphics.CGContextCopyPath(self.context)
+            core_graphics.CGContextDrawPath(self.context, mode)
+            core_graphics.CGContextAddPath(self.context, path)
 
-    def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        core_graphics.CGContextSetLineWidth(draw_context, line_width)
+    def stroke(self):
         mode = CGPathDrawingMode(kCGPathStroke)
-        core_graphics.CGContextSetRGBStrokeColor(
-            draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
-        )
-        if line_dash is not None:
-            core_graphics.CGContextSetLineDash(
-                draw_context, 0, (CGFloat * len(line_dash))(*line_dash), len(line_dash)
-            )
-        else:
-            core_graphics.CGContextSetLineDash(draw_context, 0, None, 0)
-        if not core_graphics.CGContextIsPathEmpty(draw_context):
-            path = core_graphics.CGContextCopyPath(draw_context)
-            core_graphics.CGContextDrawPath(draw_context, mode)
-            core_graphics.CGContextAddPath(draw_context, path)
+        if not core_graphics.CGContextIsPathEmpty(self.context):
+            path = core_graphics.CGContextCopyPath(self.context)
+            core_graphics.CGContextDrawPath(self.context, mode)
+            core_graphics.CGContextAddPath(self.context, path)
 
     # Transformations
-    def rotate(self, radians, draw_context, **kwargs):
-        core_graphics.CGContextRotateCTM(draw_context, radians)
+    def rotate(self, radians):
+        core_graphics.CGContextRotateCTM(self.context, radians)
 
-    def scale(self, sx, sy, draw_context, **kwargs):
-        core_graphics.CGContextScaleCTM(draw_context, sx, sy)
+    def scale(self, sx, sy):
+        core_graphics.CGContextScaleCTM(self.context, sx, sy)
 
-    def translate(self, tx, ty, draw_context, **kwargs):
-        core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
+    def translate(self, tx, ty):
+        core_graphics.CGContextTranslateCTM(self.context, tx, ty)
 
-    def reset_transform(self, draw_context, **kwargs):
+    def reset_transform(self):
         # Restore the "clean" state of the graphics context.
-        core_graphics.CGContextRestoreGState(draw_context)
+        core_graphics.CGContextRestoreGState(self.context)
         # CoreGraphics has a stack-based state representation,
         # so ensure that there is a new, clean version of the "clean"
         # state on the stack.
-        core_graphics.CGContextSaveGState(draw_context)
+        core_graphics.CGContextSaveGState(self.context)
 
     # Text
     def _render_string(self, text, font, **kwargs):
@@ -297,7 +272,7 @@ class Canvas(Widget):
             self._line_height(font, line_height) * len(sizes),
         )
 
-    def write_text(self, text, x, y, font, baseline, line_height, **kwargs):
+    def write_text(self, text, x, y, font, baseline, line_height):
         lines = text.splitlines()
         scaled_line_height = self._line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
@@ -315,7 +290,7 @@ class Canvas(Widget):
         for line_num, line in enumerate(lines):
             # Rounding minimizes differences between scale factors.
             origin = NSPoint(round(x), round(top) + (scaled_line_height * line_num))
-            rs = self._render_string(line, font, **kwargs)
+            rs = self._render_string(line, font)
 
             # "This method uses the baseline origin by default. If
             # NSStringDrawingUsesLineFragmentOrigin is not specified, the

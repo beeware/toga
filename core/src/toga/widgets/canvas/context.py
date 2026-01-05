@@ -51,11 +51,11 @@ class Context(DrawingObject):
         self._canvas = canvas
         self.drawing_objects: list[DrawingObject] = []
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.push_context(**kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.save()
         for obj in self.drawing_objects:
-            obj._draw(impl, **kwargs)
-        impl.pop_context(**kwargs)
+            obj._draw(impl)
+        impl.restore()
 
     ###########################################################################
     # Methods to keep track of the canvas, automatically redraw it
@@ -592,19 +592,19 @@ class ClosedPathContext(Context):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
+    def _draw(self, impl: Any) -> None:
         """Used by parent to draw all objects that are part of the context."""
-        impl.push_context(**kwargs)
-        impl.begin_path(**kwargs)
+        impl.save()
+        impl.begin_path()
         if self.x is not None and self.y is not None:
-            impl.move_to(x=self.x, y=self.y, **kwargs)
+            impl.move_to(x=self.x, y=self.y)
 
-        sub_kwargs = kwargs.copy()
+        # sub_kwargs = kwargs.copy()
         for obj in self.drawing_objects:
-            obj._draw(impl, **sub_kwargs)
+            obj._draw(impl)
 
-        impl.close_path(**kwargs)
-        impl.pop_context(**kwargs)
+        impl.close_path()
+        impl.restore()
 
 
 class FillContext(ClosedPathContext):
@@ -648,26 +648,27 @@ class FillContext(ClosedPathContext):
             f"color={self.color!r}, fill_rule={self.fill_rule})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.push_context(**kwargs)
-        impl.begin_path(**kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.save()
+        impl.set_fill_style(self.color)
+        impl.begin_path()
         if self.x is not None and self.y is not None:
-            impl.move_to(x=self.x, y=self.y, **kwargs)
+            impl.move_to(x=self.x, y=self.y)
 
-        sub_kwargs = kwargs.copy()
-        sub_kwargs.update(fill_color=self.color, fill_rule=self.fill_rule)
+        # sub_kwargs = kwargs.copy()
+        # sub_kwargs.update(fill_color=self.color, fill_rule=self.fill_rule)
         for obj in self.drawing_objects:
-            obj._draw(impl, **sub_kwargs)
+            obj._draw(impl)
 
         # Fill passes fill_rule to its children; but that is also a valid argument for
         # fill(), so if a fill context is a child of a fill context, there's an argument
         # collision. Duplicate the kwargs and explicitly overwrite to avoid the
         # collision.
-        draw_kwargs = kwargs.copy()
-        draw_kwargs.update(fill_rule=self.fill_rule)
-        impl.fill(self.color, **draw_kwargs)
+        # draw_kwargs = kwargs.copy()
+        # draw_kwargs.update(fill_rule=self.fill_rule)
+        impl.fill(self.fill_rule)
 
-        impl.pop_context(**kwargs)
+        impl.restore()
 
     @property
     def color(self) -> Color:
@@ -721,30 +722,39 @@ class StrokeContext(ClosedPathContext):
             f"line_width={self.line_width}, line_dash={self.line_dash!r})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.push_context(**kwargs)
-        impl.begin_path(**kwargs)
+    def _draw(self, impl: Any) -> None:
+        impl.save()
+        if self.color:
+            impl.set_stroke_style(self.color)
+        if self.line_width:
+            impl.set_line_width(self.line_width)
+        impl.set_line_width(self.line_width)
+        if self.line_dash:
+            impl.set_line_dash(self.line_dash)
+        impl.begin_path()
 
         if self.x is not None and self.y is not None:
-            impl.move_to(x=self.x, y=self.y, **kwargs)
+            impl.move_to(x=self.x, y=self.y)
 
-        sub_kwargs = kwargs.copy()
-        sub_kwargs["stroke_color"] = self.color
-        sub_kwargs["line_width"] = self.line_width
-        sub_kwargs["line_dash"] = self.line_dash
+        # sub_kwargs = kwargs.copy()
+        # sub_kwargs["stroke_color"] = self.color
+        # sub_kwargs["line_width"] = self.line_width
+        # sub_kwargs["line_dash"] = self.line_dash
         for obj in self.drawing_objects:
-            obj._draw(impl, **sub_kwargs)
+            obj._draw(impl)
 
         # Stroke passes line_width and line_dash to its children; but those two are also
         # valid arguments for stroke, so if a stroke context is a child of stroke
         # context, there's an argument collision. Duplicate the kwargs and explicitly
         # overwrite to avoid the collision
-        draw_kwargs = kwargs.copy()
-        draw_kwargs["line_width"] = self.line_width
-        draw_kwargs["line_dash"] = self.line_dash
-        impl.stroke(self.color, **draw_kwargs)
+        # draw_kwargs = kwargs.copy()
+        # draw_kwargs["line_width"] = self.line_width
+        # draw_kwargs["line_dash"] = self.line_dash
 
-        impl.pop_context(**kwargs)
+        # impl.set_color(self.color)
+        impl.stroke()
+
+        impl.restore()
 
     @property
     def color(self) -> Color:

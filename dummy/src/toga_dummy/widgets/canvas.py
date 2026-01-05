@@ -16,10 +16,10 @@ class Canvas(Widget):
         self.interface.context._draw(self, draw_instructions=self.draw_instructions)
 
     # Context management
-    def push_context(self, draw_instructions, **kwargs):
+    def save(self, draw_instructions, **kwargs):
         draw_instructions.append(("push context", kwargs))
 
-    def pop_context(self, draw_instructions, **kwargs):
+    def restore(self, draw_instructions, **kwargs):
         draw_instructions.append(("pop context", kwargs))
 
     # Basic paths

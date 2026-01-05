@@ -22,7 +22,7 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
-from toga.colors import TRANSPARENT
+from toga.colors import TRANSPARENT, rgb
 from toga.constants import Baseline, FillRule
 from toga.handlers import WeakrefCallable
 from toga.widgets.canvas import arc_to_bezier, sweepangle
@@ -30,12 +30,42 @@ from toga_winforms.colors import native_color
 
 from .box import Box
 
+BLACK = native_color(rgb(0, 0, 0))
+
+
+class State:
+    """Represents a canvas state; can be saved and restored.
+
+    WinForms has its own GraphicsState, which can track transformation, but it doesn't
+    manage fill or stroke styles, so we'd still have to handle those ourselves even if
+    we used it. And it would still need to be kept in a list.
+    """
+
+    def __init__(self, matrix, brush, pen):
+        self.matrix = matrix
+        self.brush = brush
+        self.pen = pen
+
+    @classmethod
+    def for_canvas(cls, canvas):
+        return cls(
+            matrix=Matrix(),
+            brush=SolidBrush(BLACK),
+            pen=Pen(BLACK, canvas.scale_in(2.0, rounding=None)),
+        )
+
+    def copy(self):
+        return type(self)(
+            matrix=self.matrix.Clone(),
+            brush=self.brush.Clone(),
+            pen=self.pen.Clone(),
+        )
+
 
 class WinformContext:
     def __init__(self):
         super().__init__()
         self.graphics = None
-        self.matrix = Matrix()
         self.clear_paths()
 
     def clear_paths(self):
@@ -93,12 +123,14 @@ class Canvas(Box):
     # would give incorrect results if it was semi-transparent. But we do paint it in
     # get_image_data.
     def winforms_paint(self, panel, event, *args):
-        context = WinformContext()
-        self.reset_transform(context)
-        context.graphics = event.Graphics
-        context.graphics.PixelOffsetMode = PixelOffsetMode.HighQuality
-        context.graphics.SmoothingMode = SmoothingMode.AntiAlias
-        self.interface.context._draw(self, draw_context=context)
+        self.states.clear()
+        self.state = State.for_canvas(self)
+
+        self.context = WinformContext()
+        self.context.graphics = event.Graphics
+        self.context.graphics.PixelOffsetMode = PixelOffsetMode.HighQuality
+        self.context.graphics.SmoothingMode = SmoothingMode.AntiAlias
+        self.interface.context._draw(self)
 
     def winforms_resize(self, *args):
         self.interface.on_resize(
@@ -146,41 +178,55 @@ class Canvas(Box):
 
     # Context management
 
-    def push_context(self, draw_context, **kwargs):
-        self.states.append(draw_context.matrix)
-        draw_context.matrix = draw_context.matrix.Clone()
+    def save(self):
+        self.states.append(self.state)
+        self.state = self.state.copy()
 
-    def pop_context(self, draw_context, **kwargs):
-        draw_context.matrix = self.states.pop()
+    def restore(self):
+        self.state = self.states.pop()
+
+    # Setting attributes
+
+    def set_fill_style(self, color):
+        self.state.brush.Color = native_color(color)
+
+    def set_line_dash(self, line_dash):
+        self.state.pen.DashPattern = [ld / self.state.pen.Width for ld in line_dash]
+
+    def set_line_width(self, line_width):
+        self.state.pen.Width = line_width
+
+    def set_stroke_style(self, color):
+        self.state.pen.Color = native_color(color)
 
     # Basic paths
 
-    def begin_path(self, draw_context, **kwargs):
-        draw_context.clear_paths()
+    def begin_path(self):
+        self.context.clear_paths()
 
     # We don't use current_path.CloseFigure, because that causes the dash pattern to
     # start on the last segment of the path rather than the first one.
-    def close_path(self, draw_context, **kwargs):
-        if draw_context.current_path.PointCount:
-            start = draw_context.current_path.PathPoints[0]
-            draw_context.current_path.AddLine(
-                draw_context.current_path.GetLastPoint(), start
+    def close_path(self):
+        if self.context.current_path.PointCount:
+            start = self.context.current_path.PathPoints[0]
+            self.context.current_path.AddLine(
+                self.context.current_path.GetLastPoint(), start
             )
-            self.move_to(start.X, start.Y, draw_context)
+            self.move_to(start.X, start.Y)
 
-    def move_to(self, x, y, draw_context, **kwargs):
-        draw_context.add_path(PointF(x, y))
+    def move_to(self, x, y):
+        self.context.add_path(PointF(x, y))
 
-    def line_to(self, x, y, draw_context, **kwargs):
-        draw_context.current_path.AddLine(
-            draw_context.get_last_point(x, y), PointF(x, y)
+    def line_to(self, x, y):
+        self.context.current_path.AddLine(
+            self.context.get_last_point(x, y), PointF(x, y)
         )
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, **kwargs):
-        draw_context.current_path.AddBezier(
-            draw_context.get_last_point(cp1x, cp1y),
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self.context.current_path.AddBezier(
+            self.context.get_last_point(cp1x, cp1y),
             PointF(cp1x, cp1y),
             PointF(cp2x, cp2y),
             PointF(x, y),
@@ -189,10 +235,10 @@ class Canvas(Box):
     # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
     # we can convert the single Quadratic control point into the
     # 2 control points required for the cubic Bézier.
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
-        last_point = draw_context.get_last_point(cpx, cpy)
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        last_point = self.context.get_last_point(cpx, cpy)
         x0, y0 = (last_point.X, last_point.Y)
-        draw_context.current_path.AddBezier(
+        self.context.current_path.AddBezier(
             last_point,
             PointF(
                 x0 + 2 / 3 * (cpx - x0),
@@ -213,8 +259,6 @@ class Canvas(Box):
         startangle,
         endangle,
         counterclockwise,
-        draw_context,
-        **kwargs,
     ):
         self.ellipse(
             x,
@@ -225,8 +269,6 @@ class Canvas(Box):
             startangle,
             endangle,
             counterclockwise,
-            draw_context,
-            **kwargs,
         )
 
     def ellipse(
@@ -239,8 +281,6 @@ class Canvas(Box):
         startangle,
         endangle,
         counterclockwise,
-        draw_context,
-        **kwargs,
     ):
         matrix = Matrix()
         matrix.Translate(x, y)
@@ -258,52 +298,47 @@ class Canvas(Box):
         )
         matrix.TransformPoints(points)
 
-        start = draw_context.start_point
-        if start and not draw_context.current_path.PointCount:
-            draw_context.current_path.AddLine(start, start)
-        draw_context.current_path.AddBeziers(points)
+        start = self.context.start_point
+        if start and not self.context.current_path.PointCount:
+            self.context.current_path.AddLine(start, start)
+        self.context.current_path.AddBeziers(points)
 
-    def rect(self, x, y, width, height, draw_context, **kwargs):
-        draw_context.add_path()
+    def rect(self, x, y, width, height):
+        self.context.add_path()
         rect = RectangleF(x, y, width, height)
-        draw_context.current_path.AddRectangle(rect)
-        draw_context.add_path()
+        self.context.current_path.AddRectangle(rect)
+        self.context.add_path()
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, draw_context, **kwargs):
-        brush = SolidBrush(native_color(color))
-        for path in draw_context.paths:
+    def fill(self, fill_rule):
+        for path in self.context.paths:
             if fill_rule == FillRule.EVENODD:
                 path.FillMode = FillMode.Alternate
             else:  # Default to NONZERO
                 path.FillMode = FillMode.Winding
-            path.Transform(draw_context.matrix)
-            draw_context.graphics.FillPath(brush, path)
+            path.Transform(self.state.matrix)
+            self.context.graphics.FillPath(self.state.brush, path)
 
-    def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
-        if line_dash is not None:
-            pen.DashPattern = [ld / line_width for ld in line_dash]
-
-        for path in draw_context.paths:
-            path.Transform(draw_context.matrix)
-            draw_context.graphics.DrawPath(pen, path)
+    def stroke(self):
+        for path in self.context.paths:
+            path.Transform(self.state.matrix)
+            self.context.graphics.DrawPath(self.state.pen, path)
 
     # Transformations
 
-    def rotate(self, radians, draw_context, **kwargs):
-        draw_context.matrix.Rotate(degrees(radians))
+    def rotate(self, radians):
+        self.state.matrix.Rotate(degrees(radians))
 
-    def scale(self, sx, sy, draw_context, **kwargs):
-        draw_context.matrix.Scale(sx, sy)
+    def scale(self, sx, sy):
+        self.state.matrix.Scale(sx, sy)
 
-    def translate(self, tx, ty, draw_context, **kwargs):
-        draw_context.matrix.Translate(tx, ty)
+    def translate(self, tx, ty):
+        self.state.matrix.Translate(tx, ty)
 
-    def reset_transform(self, draw_context, **kwargs):
-        draw_context.matrix.Reset()
-        self.scale(self.dpi_scale, self.dpi_scale, draw_context)
+    def reset_transform(self):
+        self.state.matrix.Reset()
+        self.scale(self.dpi_scale, self.dpi_scale)
 
     # Text
     def _line_height(self, font, line_height):
@@ -313,21 +348,16 @@ class Canvas(Box):
             # Get size in CSS pixels
             return (font.native.SizeInPoints * 96 / 72) * line_height
 
-    def write_text(
-        self, text, x, y, font, baseline, line_height, draw_context, **kwargs
-    ):
+    def write_text(self, text, x, y, font, baseline, line_height):
         # Writing text should not affect current path, so save current paths
-        current_paths = draw_context.paths
+        current_paths = self.context.paths
         # new path for text
-        draw_context.clear_paths()
-        self._text_path(text, x, y, font, baseline, line_height, draw_context)
-        for op in ["fill", "stroke"]:
-            if color := kwargs.pop(f"{op}_color", None):
-                getattr(self, op)(color, draw_context=draw_context, **kwargs)
+        self.context.clear_paths()
+        self._text_path(text, x, y, font, baseline, line_height)
         # restore previous current paths - this is a bit hacky
-        draw_context.paths = current_paths
+        self.context.paths = current_paths
 
-    def _text_path(self, text, x, y, font, baseline, line_height, draw_context):
+    def _text_path(self, text, x, y, font, baseline, line_height):
         lines = text.splitlines()
         scaled_line_height = self._line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
@@ -343,7 +373,7 @@ class Canvas(Box):
             top = y - font.metric("CellAscent")
 
         for line_num, line in enumerate(lines):
-            draw_context.current_path.AddString(
+            self.context.current_path.AddString(
                 line,
                 font.native.FontFamily,
                 font.native.Style.value__,

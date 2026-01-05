@@ -14,6 +14,7 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 from travertino.size import at_least
 
+from toga.colors import rgb
 from toga.constants import Baseline, FillRule
 from toga.widgets.canvas.geometry import arc_to_bezier, sweepangle
 
@@ -23,6 +24,9 @@ from .base import Widget
 logger = logging.getLogger(__name__)
 
 
+BLACK = native_color(rgb(0, 0, 0))
+
+
 class TogaCanvas(QWidget):
     def __init__(self, interface, impl):
         super().__init__()
@@ -30,18 +34,18 @@ class TogaCanvas(QWidget):
         self.impl = impl
 
     def paintEvent(self, event: QPaintEvent):
-        painter = QPainter(self)
+        self.impl.painter = QPainter(self)
         try:
-            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            self.impl.begin_path(painter)
-            self.interface.context._draw(self.impl, draw_context=painter)
+            self.impl.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            self.impl.begin_path()
+            self.interface.context._draw(self.impl)
         except Exception:  # pragma: no cover
             logger.exception("Error rendering Canvas.")
         finally:
             # we may have saved states that need to be unwound
             # shouldn't happen normally, but can if there is an exception
             # or if there is a bug where number of saves != number of restores
-            painter.end()
+            self.impl.painter.end()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         button = event.button()
@@ -99,6 +103,22 @@ class TogaCanvas(QWidget):
                 pass
 
 
+class PaintState:
+    """Doesn't need to track transform, only fill/stroke-related properties."""
+
+    def __init__(self, former_state=None):
+        if former_state:
+            self.fill_style = former_state.fill_style
+            self.pen = former_state.pen
+        else:
+            self.fill_style = BLACK
+            self.pen = QPen(BLACK)
+            self.pen.setCapStyle(Qt.PenCapStyle.FlatCap)
+            self.pen.setWidth(2.0)
+        # if line_dash is not None:
+        #     pen.setDashPattern([x / line_width for x in line_dash])
+
+
 class Canvas(Widget):
     _path: QPainterPath
 
@@ -106,6 +126,8 @@ class Canvas(Widget):
         self.native = TogaCanvas(self.interface, self)
 
     def redraw(self):
+        self.states = []
+        self.state = PaintState()
         self.native.update()
 
     def set_bounds(self, x, y, width, height):
@@ -113,24 +135,40 @@ class Canvas(Widget):
         self.interface.on_resize(width=width, height=height)
 
     # Context management
-    def push_context(self, draw_context: QPainter, **kwargs):
-        draw_context.save()
+    def save(self):
+        self.states.append(self.state)
+        self.state = PaintState(self.state)
+        self.painter.save()
 
-    def pop_context(self, draw_context: QPainter, **kwargs):
-        draw_context.restore()
+    def restore(self):
+        self.state = self.states.pop()
+        self.painter.restore()
+
+    # Setting attributes
+    def set_fill_style(self, color):
+        self.state.fill_style = native_color(color)
+
+    def set_line_dash(self, line_dash):
+        self.pen.setDashPattern([x / self.state.pen.Width for x in line_dash])
+
+    def set_line_width(self, line_width):
+        self.pen.Width = line_width
+
+    def set_stroke_style(self, color):
+        self.pen.Color = native_color(color)
 
     # Basic paths
-    def begin_path(self, draw_context: QPainter, **kwargs):
+    def begin_path(self):
         # QPainter doesn't have the notion of a "current path" so we need to track it.
         self._path = QPainterPath()
 
-    def close_path(self, draw_context: QPainter, **kwargs):
+    def close_path(self):
         self._path.closeSubpath()
 
-    def move_to(self, x, y, draw_context: QPainter, **kwargs):
+    def move_to(self, x, y):
         self._path.moveTo(x, y)
 
-    def line_to(self, x, y, draw_context, **kwargs):
+    def line_to(self, x, y):
         if self._path.elementCount() == 0:
             self._path.moveTo(x, y)
         else:
@@ -146,12 +184,10 @@ class Canvas(Widget):
         cp2y,
         x,
         y,
-        draw_context,
-        **kwargs,
     ):
         self._path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
+    def quadratic_curve_to(self, cpx, cpy, x, y):
         self._path.quadTo(cpx, cpy, x, y)
 
     def arc(
@@ -162,8 +198,6 @@ class Canvas(Widget):
         startangle,
         endangle,
         counterclockwise,
-        draw_context,
-        **kwargs,
     ):
         if self._path.elementCount() == 0:
             # if this is the first point of the path, don't draw a line
@@ -193,8 +227,6 @@ class Canvas(Widget):
         startangle,
         endangle,
         counterclockwise,
-        draw_context: QPainter,
-        **kwargs,
     ):
         # Draw the ellipse unrotated and at origin
         transform = QTransform()
@@ -224,46 +256,33 @@ class Canvas(Widget):
             cp1, cp2, end = points[i : i + 3]
             self._path.cubicTo(cp1, cp2, end)
 
-    def rect(self, x, y, width, height, draw_context, **kwargs):
+    def rect(self, x, y, width, height):
         self._path.addRect(x, y, width, height)
 
     # Drawing Paths
 
-    def _get_brush(self, fill_color, **kwargs):
-        return native_color(fill_color)
-
-    def _get_pen(self, stroke_color, line_width, line_dash=None, **kwargs):
-        pen = QPen()
-        pen.setBrush(self._get_brush(stroke_color))
-        pen.setCapStyle(Qt.PenCapStyle.FlatCap)
-        pen.setWidth(line_width)
-        if line_dash is not None:
-            pen.setDashPattern([x / line_width for x in line_dash])
-        return pen
-
-    def fill(self, color, fill_rule, draw_context: QPainter, **kwargs):
+    def fill(self, fill_rule):
         if fill_rule == FillRule.EVENODD:
             self._path.setFillRule(Qt.FillRule.OddEvenFill)
         else:
             self._path.setFillRule(Qt.FillRule.WindingFill)
-        draw_context.fillPath(self._path, self._get_brush(color))
+        self.painter.fillPath(self._path, self.state.fill_style)
 
-    def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        pen = self._get_pen(color, line_width, line_dash)
-        draw_context.strokePath(self._path, pen)
+    def stroke(self):
+        self.painter.strokePath(self._path, self.state.pen)
 
     # Transformations
-    def rotate(self, radians, draw_context: QPainter, **kwargs):
-        draw_context.rotate(degrees(radians))
+    def rotate(self, radians):
+        self.painter.rotate(degrees(radians))
 
-    def scale(self, sx, sy, draw_context: QPainter, **kwargs):
-        draw_context.scale(sx, sy)
+    def scale(self, sx, sy):
+        self.painter.scale(sx, sy)
 
-    def translate(self, tx, ty, draw_context: QPainter, **kwargs):
-        draw_context.translate(tx, ty)
+    def translate(self, tx, ty):
+        self.painter.translate(tx, ty)
 
-    def reset_transform(self, draw_context: QPainter, **kwargs):
-        draw_context.resetTransform()
+    def reset_transform(self):
+        self.painter.resetTransform()
 
     # Text
     def _text_offsets(self, text, font, line_height):
@@ -291,9 +310,7 @@ class Canvas(Widget):
         left, top, right, bottom, _ = self._text_offsets(text, font, line_height)
         return (right - left, bottom - top)
 
-    def write_text(
-        self, text, x, y, font, baseline, line_height, draw_context: QPainter, **kwargs
-    ):
+    def write_text(self, text, x, y, font, baseline, line_height):
         left_offset, top_offset, _, bottom_offset, scaled_line_height = (
             self._text_offsets(text, font, line_height)
         )
@@ -301,34 +318,29 @@ class Canvas(Widget):
         lines = text.splitlines()
         total_height = bottom_offset - top_offset
 
-        draw_context.save()
+        self.painter.save()
         # translate to target base point
-        draw_context.translate(x, y)
+        self.painter.translate(x, y)
 
         # adjust for alignment
         if baseline == Baseline.TOP:
-            draw_context.translate(-left_offset, -top_offset)
+            self.painter.translate(-left_offset, -top_offset)
         elif baseline == Baseline.MIDDLE:
-            draw_context.translate(-left_offset, -top_offset - (total_height / 2))
+            self.painter.translate(-left_offset, -top_offset - (total_height / 2))
         elif baseline == Baseline.BOTTOM:
-            draw_context.translate(-left_offset, -bottom_offset)
+            self.painter.translate(-left_offset, -bottom_offset)
         else:
             # Default to Baseline.ALPHABETIC
-            draw_context.translate(-left_offset, 0)
+            self.painter.translate(-left_offset, 0)
 
-        draw_context.setFont(font.native)
+        self.painter.setFont(font.native)
         path = QPainterPath()
         for line_num, line in enumerate(lines):
             y = scaled_line_height * line_num
             path.addText(0, y, font.native, line)
 
-        if "fill_color" in kwargs:
-            draw_context.fillPath(path, self._get_brush(**kwargs))
-        if "stroke_color" in kwargs:
-            draw_context.strokePath(path, self._get_pen(**kwargs))
-
         # reset state to how things were before translating
-        draw_context.restore()
+        self.painter.restore()
 
     def get_image_data(self):
         pixmap = self.native.grab()
