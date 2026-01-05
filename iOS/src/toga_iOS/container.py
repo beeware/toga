@@ -74,7 +74,11 @@ class BaseContainer:
 
 class Container(BaseContainer):
     def __init__(
-        self, content=None, layout_native=None, on_refresh=None, on_native_layout=None
+        self,
+        content=None,
+        layout_native=None,
+        on_refresh=None,
+        on_native_layout=None,
     ):
         """
         :param content: The widget impl that is the container's initial content.
