@@ -50,7 +50,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def content_size(self):
-        return (self.impl.container.width, self.impl.container.height)
+        return (
+            self.impl.container.content.native.bounds.width,
+            self.impl.container.content.native.bounds.height,
+        )
 
     @property
     def top_bar_height(self):
