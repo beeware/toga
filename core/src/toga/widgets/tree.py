@@ -140,6 +140,9 @@ class Tree(Widget):
 
     @data.setter
     def data(self, data: TreeSourceT | object | None) -> None:
+        if self._data is not None:
+            self._data.remove_listener(self._impl)
+
         if data is None:
             self._data = TreeSource(accessors=self._data_accessors, data=[])
         elif isinstance(data, Source):

@@ -13,6 +13,7 @@ from org.beeware.android import IPythonApp, MainActivity
 import toga
 from toga.command import Group, Separator
 from toga.dialogs import InfoDialog
+from toga_android.libs.webbrowser import register_webbrowser
 
 from .libs import events
 from .screens import Screen as ScreenImpl
@@ -214,6 +215,8 @@ class App:
         self._listener = None
 
         self.loop = events.AndroidEventLoop()
+
+        register_webbrowser()
 
     @property
     def native(self):

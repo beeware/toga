@@ -85,6 +85,9 @@ class Selection(Widget):
 
     @items.setter
     def items(self, items: ListSourceT | Iterable | None) -> None:
+        if getattr(self, "_items", None) is not None:
+            self._items.remove_listener(self._impl)
+
         if self._accessor is None:
             accessors = ["value"]
         else:
