@@ -177,16 +177,16 @@ class Table(Widget):
             return selection[0]
 
     def insert(self, index, item):
-        self.change_source(self.interface.data)
+        self.change_source(getattr(self.interface, "data", None))
 
     def clear(self):
-        self.change_source(self.interface.data)
+        self.change_source(getattr(self.interface, "data", None))
 
     def change(self, item):
-        self.change_source(self.interface.data)
+        self.change_source(getattr(self.interface, "data", None))
 
     def remove(self, index, item):
-        self.change_source(self.interface.data)
+        self.change_source(getattr(self.interface, "data", None))
 
     def scroll_to_row(self, index):
         if (index != 0) and (self.interface.headings is not None):
@@ -198,11 +198,11 @@ class Table(Widget):
         )
 
     def insert_column(self, index, heading, accessor):
-        self.change_source(self.interface.data)
+        self.change_source(getattr(self.interface, "data", None))
 
     def remove_column(self, index):
-        self.change_source(self.interface.data)
+        self.change_source(getattr(self.interface, "data", None))
 
     def set_font(self, font):
         self._font_impl = font._impl
-        self.change_source(self.interface.data)
+        self.change_source(getattr(self.interface, "data", None))

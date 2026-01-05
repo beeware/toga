@@ -33,7 +33,7 @@ class TogaTable(NSTableView):
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
-        return len(self.interface.data) if self.interface.data else 0
+        return len(getattr(self.interface, "data", ()))
 
     @objc_method
     def tableView_viewForTableColumn_row_(self, table, column, row: int):
