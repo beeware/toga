@@ -219,8 +219,7 @@ class Table(Widget):
         if index != len(self.columns) - 1:
             self.native_table.moveColumn(len(self.columns) - 1, toColumn=index)
 
-        if toga_column.heading is not None:
-            column.headerCell.stringValue = toga_column.heading
+        column.headerCell.stringValue = toga_column.heading
 
     def insert_column(self, index, heading, accessor):
         self._insert_column(index, self.interface._columns[index])
