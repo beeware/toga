@@ -101,7 +101,6 @@ class WebViewApp(toga.App):
                         toga.Button("load URL", on_press=self.on_load_url),
                         toga.Button("clear URL", on_press=self.on_clear_url),
                         toga.Button("get URL", on_press=self.on_get_url),
-                        toga.Button("open browser", on_press=self.on_open_browser),
                         toga.Button("JS navigate", on_press=self.on_navigate_js),
                     ],
                 ),
@@ -119,6 +118,7 @@ class WebViewApp(toga.App):
                     children=[
                         toga.Button("set agent", on_press=self.on_set_agent),
                         toga.Button("get agent", on_press=self.on_get_agent),
+                        toga.Button("open browser", on_press=self.on_open_browser),
                     ],
                 ),
             ],
