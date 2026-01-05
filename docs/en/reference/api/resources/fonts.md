@@ -12,7 +12,7 @@ from toga.style.pack import pack, SERIF, BOLD
 my_label = toga.Label("Hello World", font_family=SERIF, font_weight=BOLD)
 ```
 
-Toga provides a number of [built-in system fonts][pack-font-family]. Font sizes are specified in [CSS points][css-units]; the default size depends on the platform and the widget.
+Toga provides a number of [built-in system fonts][toga.style.pack.Pack.font_family]. Font sizes are specified in [CSS points][css-units]; the default size depends on the platform and the widget.
 
 If you want to use a custom font, the font file must be provided as part of your app's resources, and registered before first use:
 

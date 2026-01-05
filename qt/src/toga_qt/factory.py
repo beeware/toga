@@ -14,7 +14,9 @@ try:
     from .widgets.activityindicator import ActivityIndicator
     from .widgets.box import Box
     from .widgets.button import Button
+    from .widgets.canvas import Canvas
     from .widgets.dateinput import DateInput
+    from .widgets.divider import Divider
     from .widgets.imageview import ImageView
     from .widgets.label import Label
     from .widgets.multilinetextinput import MultilineTextInput
@@ -22,6 +24,7 @@ try:
     from .widgets.optioncontainer import OptionContainer
     from .widgets.passwordinput import PasswordInput
     from .widgets.progressbar import ProgressBar
+    from .widgets.slider import Slider
     from .widgets.switch import Switch
     from .widgets.textinput import TextInput
     from .widgets.timeinput import TimeInput
@@ -49,7 +52,9 @@ __all__ = [
     "MainWindow",
     "Command",
     "Button",
+    "Canvas",
     "DateInput",
+    "Divider",
     "Font",
     "Container",
     "Box",
@@ -60,6 +65,7 @@ __all__ = [
     "PasswordInput",
     "ProgressBar",
     "Switch",
+    "Slider",
     "TextInput",
     "TimeInput",
     "WebView",

@@ -55,10 +55,14 @@ class Box(Widget):
 
 
 def Row(*args, **kwargs):
-    """Shorthand for [`Box`][toga.Box] with its [pack-direction][] set to "row"."""
+    """Shorthand for [`Box`][toga.Box] with its
+    [text-direction][toga.style.pack.Pack.text_direction] set to "row".
+    """
     return Box(*args, direction="row", **kwargs)
 
 
 def Column(*args, **kwargs):
-    """Shorthand for [`Box`][toga.Box] with its [pack-direction][] set to "column"."""
+    """Shorthand for [`Box`][toga.Box] with its
+    [direction][toga.style.pack.Pack.direction] set to "column".
+    """
     return Box(*args, direction="column", **kwargs)

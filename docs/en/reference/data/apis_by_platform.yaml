@@ -49,7 +49,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   DateInput:
     description: A widget to select a calendar date.
@@ -73,7 +72,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   ImageView:
     description: A widget that displays an image.
@@ -134,7 +132,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   Switch:
     description: 'A clickable button with two stable states: True (on, checked); and False (off, unchecked). The button has a text label.'
@@ -296,7 +293,6 @@ Resources:
       - android
       - web
       - textual
-      - qt
 
   Source:
     description: A base class for data source implementations.

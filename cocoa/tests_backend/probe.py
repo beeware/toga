@@ -31,9 +31,10 @@ class BaseProbe:
     async def post_event(self, event, delay=None):
         self.window._impl.native.postEvent(event, atStart=False)
 
-        if delay:
+        if delay is not None:
             # Some widgets enter an internal runloop when processing certain events;
-            # this prevents
+            # this lets the internal runloop finish properly, since the onEvent approach
+            # of the *current* runloop will not work.
             await asyncio.sleep(delay)
         else:
             # Add another event to the queue behind the original event, to notify us

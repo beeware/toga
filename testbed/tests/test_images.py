@@ -15,15 +15,54 @@ def image_probe(app, image):
     return module.ImageProbe(app, image)
 
 
+def is_open(path: str):
+    """Test if any process currently has an open handle for a file with absolute path.
+
+    psutil is cross-platform for desktop, but it's not available on iOS, and this method
+    of testing doesn't work on Android.
+    """
+    import psutil
+
+    for proc in psutil.process_iter(["open_files"]):
+        try:
+            open_files = proc.open_files()
+        except psutil.AccessDenied:
+            # System process
+            continue
+
+        # Each "file" is a named tuple
+        if any(file.path == path for file in open_files):
+            return True
+
+    return False
+
+
 async def test_local_image(app):
-    "An image can be specified by filename"
+    """An image can be specified by filename"""
     image = toga.Image("resources/sample.png")
     assert image.width == 144
     assert image.height == 72
 
 
+async def test_closed_file_handle(app, app_probe):
+    """The local image file isn't left open once the Image is created."""
+    if not app_probe.supports_psutil:
+        pytest.skip("Platform doesn't support psutil-based open file detection.")
+
+    path = str(app.paths.app / "resources/sample.png")
+
+    # Confirm that testing file status works.
+    assert not is_open(path)
+    with open(path):  # noqa: ASYNC230
+        assert is_open(path)
+    assert not is_open(path)
+
+    _ = toga.Image(path)
+    assert not is_open(path)
+
+
 async def test_raw_image(app):
-    "An image can be created from the platform's raw representation"
+    """An image can be created from the platform's raw representation"""
     original = toga.Image("resources/sample.png")
 
     image = toga.Image(original._impl.native)
@@ -33,7 +72,7 @@ async def test_raw_image(app):
 
 
 async def test_bad_image_file(app):
-    "If a file isn't a loadable image, an error is raised"
+    """If a file isn't a loadable image, an error is raised"""
     with pytest.raises(
         ValueError,
         match=rf"Unable to load image from {re.escape(__file__)}",
@@ -42,7 +81,7 @@ async def test_bad_image_file(app):
 
 
 async def test_buffer_image(app):
-    "An image can be constructed from buffer data"
+    """An image can be constructed from buffer data"""
     # Generate an image using pillow
     pil_image = PIL_Image.new("RGBA", size=(110, 30))
     draw_context = PIL_ImageDraw.Draw(pil_image)
@@ -86,7 +125,7 @@ async def test_pil_raw_and_data_image(app):
 
 
 async def test_bad_image_data(app):
-    "If data isn't a valid image, an error is raised"
+    """If data isn't a valid image, an error is raised"""
     with pytest.raises(
         ValueError,
         match=r"Unable to load image from data",

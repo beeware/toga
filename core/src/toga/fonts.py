@@ -55,14 +55,14 @@ class Font(BaseFont):
         cases, fonts in Toga are controlled
         using the style properties linked below.
 
-        :param family: The [font family][pack-font-family].
-        :param size: The [font size][pack-font-size].
-        :param weight: The [font weight][pack-font-weight].
-        :param style: The [font style][pack-font-style].
-        :param variant: The [font variant][pack-font-variant].
+        :param family: The [font family][toga.style.pack.Pack.font_family].
+        :param size: The [font size][toga.style.pack.Pack.font_size].
+        :param weight: The [font weight][toga.style.pack.Pack.font_weight].
+        :param style: The [font style][toga.style.pack.Pack.font_style].
+        :param variant: The [font variant][toga.style.pack.Pack.font_variant].
 
         :raises UnknownFontError: If the font family requested corresponds to neither
-            one of the [built-in system fonts][pack-font-family], nor a
+            one of the [built-in system fonts][toga.style.pack.Pack.font_family], nor a
             user-registered font, nor (depending on platform) a font installed on the
             system.
         :raises ValueError: If a user-registered font is used, but the file specified
@@ -107,12 +107,12 @@ class Font(BaseFont):
     ) -> None:
         """Register a file-based font.
 
-        :param family: The [font family][pack-font-family].
+        :param family: The [font family][toga.style.pack.Pack.font_family].
         :param path: The path to the font file. This can be an absolute path, or a path
             relative to the module that defines your [`App`][toga.App] class.
-        :param weight: The [font weight][pack-font-weight].
-        :param style: The [font style][pack-font-style].
-        :param variant: The [font variant][pack-font-variant].
+        :param weight: The [font weight][toga.style.pack.Pack.font_weight].
+        :param style: The [font style][toga.style.pack.Pack.font_style].
+        :param variant: The [font variant][toga.style.pack.Pack.font_variant].
             relative to the module that defines your :any:`App` class.
 
         :raises ValueError: When the registered family has the same name as the standard

@@ -22,7 +22,7 @@ class CanvasProbe(SimpleProbe):
             return TRANSPARENT
 
     def reference_variant(self, reference):
-        if reference in {"multiline_text", "write_text"}:
+        if reference in {"multiline_text", "write_text", "write_text_and_path"}:
             # System font and default size is platform dependent.
             return f"{reference}-macOS"
         return reference
