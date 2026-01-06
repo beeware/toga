@@ -10,22 +10,6 @@ from java import dynamic_proxy
 
 from .base import Widget
 
-
-def _resolve_theme_color(view, attr_id):
-    ctx = view.getContext()
-    ta = ctx.getTheme().obtainStyledAttributes([attr_id])
-    try:
-        if not ta.hasValue(0):
-            # CI's emulator theme always defines textColorPrimary/Secondary,
-            # so this path can't be exercised there.
-            raise RuntimeError(  # pragma: no cover
-                f"Required theme color attribute not found: {attr_id}"
-            )
-        return ta.getColor(0, 0)
-    finally:
-        ta.recycle()
-
-
 try:
     from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
 except ImportError:  # pragma: no cover
@@ -121,10 +105,7 @@ class DetailedList(Widget):
                 "your app's dependencies."
             )
         # get the selection color from the current theme
-        attrs = [R.attr.colorControlHighlight]
-        typed_array = self._native_activity.obtainStyledAttributes(attrs)
-        self.color_selected = typed_array.getColor(0, 0)
-        typed_array.recycle()
+        self.color_selected = self.get_theme_color(R.attr.colorControlHighlight)
 
         self.native = self._refresh_layout = SwipeRefreshLayout(self._native_activity)
         self._refresh_layout.setOnRefreshListener(OnRefreshListener(self.interface))
@@ -195,13 +176,11 @@ class DetailedList(Widget):
         top_text = TextView(self._native_activity)
         top_text.setText(get_string(title))
         top_text.setTextSize(20.0)
-        top_text.setTextColor(_resolve_theme_color(top_text, R.attr.textColorPrimary))
+        top_text.setTextColor(self.get_theme_color(R.attr.textColorPrimary))
         bottom_text = TextView(self._native_activity)
         bottom_text.setText(get_string(subtitle))
         bottom_text.setTextSize(16.0)
-        bottom_text.setTextColor(
-            _resolve_theme_color(bottom_text, R.attr.textColorSecondary)
-        )
+        bottom_text.setTextColor(self.get_theme_color(R.attr.textColorSecondary))
         top_text_params = LinearLayout.LayoutParams(
             RelativeLayout.LayoutParams.WRAP_CONTENT,
             RelativeLayout.LayoutParams.MATCH_PARENT,

@@ -51,10 +51,7 @@ class Table(Widget):
 
     def create(self):
         # get the selection color from the current theme
-        attrs = [R.attr.colorControlHighlight]
-        typed_array = self._native_activity.obtainStyledAttributes(attrs)
-        self.color_selected = typed_array.getColor(0, 0)
-        typed_array.recycle()
+        self.color_selected = self.get_theme_color(R.attr.colorControlHighlight)
 
         # add vertical scroll view
         self.native = vscroll_view = ScrollView(self._native_activity)
