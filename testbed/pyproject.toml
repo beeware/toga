@@ -71,7 +71,7 @@ requires = [
     # However, it's needed for Linux but unavailable on Android, so until we only
     # support Python >= 3.13, we have no way to avoid causing a problem on one or the
     # other. So it lives here, in the desktop platform requirements sections for now.
-    "psutil==7.2.1",
+    "psutil==7.2.1 ; python_version < 3.13",
 ]
 test_sources = [
     "../cocoa/tests_backend",
