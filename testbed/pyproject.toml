@@ -11,6 +11,7 @@ test = [
     # before 3.13.
     "fonttools==4.61.1 ; python_version < '3.13' and sys.platform == 'linux'",
     "fonttools==4.61.1 ; python_version >= '3.13' and sys.platform == 'android'",
+    "psutil==7.2.1 ; python_version >= '3.13' and sys.platform in ['linux', 'darwin', 'win32']",
     "pillow==11.0.0",
     "pytest==9.0.2",
     "pytest-asyncio==1.3.0",
@@ -91,7 +92,7 @@ test_sources = [
 ]
 requires = [
     "../winforms",
-    "psutil==7.2.1",
+    "psutil==7.2.1 ; python_version < 3.13",
 ]
 
 # Mobile deployments
@@ -152,5 +153,5 @@ requires = [
     "../qt",
     "PySide6-Essentials~=6.10.0",
     "PySide6-Addons~=6.10.0",
-    "psutil==7.2.1",
+    "psutil==7.2.1 ; python_version < 3.13",
 ]
