@@ -79,7 +79,7 @@ class Widget:
 
     def set_bounds(self, x, y, width, height):
         # print("SET BOUNDS", self, x, y, width, height, self.container.top_offset)
-        self.constraints.update(x, y + self.container.top_offset, width, height)
+        self.constraints.update(x, y, width, height)
 
     def set_text_align(self, alignment):
         pass
