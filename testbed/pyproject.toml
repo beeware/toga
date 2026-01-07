@@ -83,7 +83,7 @@ test_sources = [
 ]
 requires = [
     "../gtk",
-    "psutil==7.2.1",
+    "psutil==7.2.1 ; python_version < 3.13",
 ]
 
 [tool.briefcase.app.testbed.windows]
