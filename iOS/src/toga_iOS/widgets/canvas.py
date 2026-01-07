@@ -194,54 +194,10 @@ class Context:
         core_graphics.CGContextSaveGState(self.ui_context)
 
     # Text
-    def _render_string(self, text, font, **kwargs):
-        textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = font.native
-
-        if "stroke_color" in kwargs:
-            textAttributes[NSStrokeColorAttributeName] = native_color(
-                kwargs["stroke_color"]
-            )
-
-            # Stroke width is expressed as a percentage of the font size, or a negative
-            # percentage to get both stroke and fill.
-            stroke_width = kwargs["line_width"] / font.native.pointSize * 100
-            if "fill_color" in kwargs:
-                stroke_width *= -1
-            textAttributes[NSStrokeWidthAttributeName] = stroke_width
-        if "fill_color" in kwargs:
-            textAttributes[NSForegroundColorAttributeName] = native_color(
-                kwargs["fill_color"]
-            )
-
-        text_string = NSAttributedString.alloc().initWithString(
-            text, attributes=textAttributes
-        )
-        return text_string
-
-    # Although the native API can measure and draw multi-line strings, this makes the
-    # line spacing depend on the scale factor, which messes up the tests.
-    def _line_height(self, font, line_height):
-        if line_height is None:
-            # descender is a negative number.
-            return ceil(font.native.ascender - font.native.descender)
-        else:
-            return font.native.pointSize * line_height
-
-    def measure_text(self, text, font, line_height):
-        # We need at least a fill color to render, but that won't change the size.
-        sizes = [
-            self._render_string(line, font, fill_color=Color.parse(BLACK)).size()
-            for line in text.splitlines()
-        ]
-        return (
-            ceil(max(size.width for size in sizes)),
-            self._line_height(font, line_height) * len(sizes),
-        )
 
     def write_text(self, text, x, y, font, baseline, line_height):
         lines = text.splitlines()
-        scaled_line_height = self._line_height(font, line_height)
+        scaled_line_height = _line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
 
         if baseline == Baseline.TOP:
@@ -257,7 +213,7 @@ class Context:
         for line_num, line in enumerate(lines):
             # Rounding minimizes differences between scale factors.
             origin = NSPoint(round(x), round(top) + (scaled_line_height * line_num))
-            rs = self._render_string(line, font)
+            rs = _render_string(line, font)
 
             # "This method uses the baseline origin by default. If
             # NSStringDrawingUsesLineFragmentOrigin is not specified, the
@@ -299,6 +255,42 @@ class TogaCanvas(UIView):
         self.interface.on_release(position.x, position.y)
 
 
+def _render_string(text, font, **kwargs):
+    textAttributes = NSMutableDictionary.alloc().init()
+    textAttributes[NSFontAttributeName] = font.native
+
+    if "stroke_color" in kwargs:
+        textAttributes[NSStrokeColorAttributeName] = native_color(
+            kwargs["stroke_color"]
+        )
+
+        # Stroke width is expressed as a percentage of the font size, or a negative
+        # percentage to get both stroke and fill.
+        stroke_width = kwargs["line_width"] / font.native.pointSize * 100
+        if "fill_color" in kwargs:
+            stroke_width *= -1
+        textAttributes[NSStrokeWidthAttributeName] = stroke_width
+    if "fill_color" in kwargs:
+        textAttributes[NSForegroundColorAttributeName] = native_color(
+            kwargs["fill_color"]
+        )
+
+    text_string = NSAttributedString.alloc().initWithString(
+        text, attributes=textAttributes
+    )
+    return text_string
+
+
+# Although the native API can measure and draw multi-line strings, this makes the
+# line spacing depend on the scale factor, which messes up the tests.
+def _line_height(font, line_height):
+    if line_height is None:
+        # descender is a negative number.
+        return ceil(font.native.ascender - font.native.descender)
+    else:
+        return font.native.pointSize * line_height
+
+
 class Canvas(Widget):
     def create(self):
         self.native = TogaCanvas.alloc().init()
@@ -320,6 +312,17 @@ class Canvas(Widget):
             self.native.backgroundColor = UIColor.clearColor
         else:
             self.native.backgroundColor = native_color(color)
+
+    def measure_text(self, text, font, line_height):
+        # We need at least a fill color to render, but that won't change the size.
+        sizes = [
+            _render_string(line, font, fill_color=Color.parse(BLACK)).size()
+            for line in text.splitlines()
+        ]
+        return (
+            ceil(max(size.width for size in sizes)),
+            _line_height(font, line_height) * len(sizes),
+        )
 
     def get_image_data(self):
         renderer = UIGraphicsImageRenderer.alloc().initWithSize(self.native.bounds.size)

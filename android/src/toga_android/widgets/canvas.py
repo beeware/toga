@@ -14,25 +14,58 @@ from java import dynamic_proxy, jint
 from java.io import ByteArrayOutputStream
 from org.beeware.android import DrawHandlerView, IDrawHandler
 
+from toga.colors import rgb
 from toga.constants import Baseline, FillRule
 from toga.widgets.canvas import arc_to_bezier, sweepangle
 
 from ..colors import native_color
 from .base import Widget
 
+BLACK = jint(native_color(rgb(0, 0, 0)))
+
 
 class Context:
-    def __init__(self, canvas):
-        self.android_canvas = canvas
+    def __init__(self, android_canvas, impl):
+        self.android_canvas = android_canvas
+        self.impl = impl
         self.path = Path()
+        self.states = []  # Only tracks stroke/fill
+
+        self.fill_paint = Paint()
+        self.fill_paint.setAntiAlias(True)
+        self.fill_paint.setStyle(Paint.Style.FILL)
+        self.fill_paint.setColor(BLACK)
+
+        self.stroke_paint = Paint()
+        self.stroke_paint.setAntiAlias(True)
+        self.stroke_paint.setStyle(Paint.Style.STROKE)
+        self.stroke_paint.setStrokeWidth(2.0)
+        self.stroke_paint.setColor(BLACK)
 
     # Context management
 
     def save(self):
         self.android_canvas.save()
+        self.states.append((self.fill_paint, self.stroke_paint))
+        self.fill_paint = Paint(self.fill_paint)
+        self.stroke_paint = Paint(self.stroke_paint)
 
     def restore(self):
         self.android_canvas.restore()
+        self.fill_paint, self.stroke_paint = self.states.pop()
+
+    # Setting attributes
+    def set_fill_style(self, color):
+        self.fill_paint.setColor(jint(native_color(color)))
+
+    def set_line_dash(self, line_dash):
+        self.stroke_paint.setPathEffect(DashPathEffect(line_dash, 0))
+
+    def set_line_width(self, line_width):
+        self.stroke_paint.setStrokeWidth(line_width)
+
+    def set_stroke_style(self, color):
+        self.stroke_paint.setColor(jint(native_color(color)))
 
     # Basic paths
 
@@ -93,32 +126,18 @@ class Context:
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule):
-        draw_paint = Paint()
-        draw_paint.setAntiAlias(True)
-        draw_paint.setStyle(Paint.Style.FILL)
-        draw_paint.setColor(jint(native_color(color)))
-
+    def fill(self, fill_rule):
         self.path.setFillType(
             {
                 FillRule.EVENODD: Path.FillType.EVEN_ODD,
                 FillRule.NONZERO: Path.FillType.WINDING,
             }.get(fill_rule, Path.FillType.WINDING)
         )
-        self.android_canvas.drawPath(self.path, draw_paint)
+        self.android_canvas.drawPath(self.path, self.fill_paint)
 
-    def stroke(self, color, line_width, line_dash):
-        draw_paint = Paint()
-        draw_paint.setAntiAlias(True)
-        draw_paint.setStyle(Paint.Style.STROKE)
-        draw_paint.setColor(jint(native_color(color)))
-
+    def stroke(self):
         # The stroke respects the canvas transform, so we don't need to scale it here.
-        draw_paint.setStrokeWidth(line_width)
-        if line_dash is not None:
-            draw_paint.setPathEffect(DashPathEffect(line_dash, 0))
-
-        self.android_canvas.drawPath(self.path, draw_paint)
+        self.android_canvas.drawPath(self.path, self.stroke_paint)
 
     # Transformations
 
@@ -133,27 +152,13 @@ class Context:
 
     def reset_transform(self):
         self.android_canvas.setMatrix(None)
-        self.scale(self.dpi_scale, self.dpi_scale, self.android_canvas)
+        self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
-    def _line_height(self, paint, line_height):
-        if line_height is None:
-            return paint.getFontSpacing()
-        else:
-            return paint.getTextSize() * line_height
-
-    def measure_text(self, text, font, line_height):
-        paint = self._text_paint(font)
-        sizes = [paint.measureText(line) for line in text.splitlines()]
-        return (
-            max(sizes),
-            self._line_height(paint, line_height) * len(sizes),
-        )
-
     def write_text(self, text, x, y, font, baseline, line_height):
         lines = text.splitlines()
-        paint = self._text_paint(font)
-        scaled_line_height = self._line_height(paint, line_height)
+        paint = self.impl._text_paint(font)
+        scaled_line_height = self.impl._line_height(paint, line_height)
         total_height = scaled_line_height * len(lines)
 
         # paint.ascent returns a negative number.
@@ -182,14 +187,6 @@ class Context:
             #     paint.setColor(jint(native_color(color)))
             #     canvas.drawText(*draw_args)
 
-    def _text_paint(self, font):
-        # font.size applies the scale factor, and the canvas transformation matrix
-        # will apply it again, so we need to cancel one of those with a scale_out.
-        paint = Paint()
-        paint.setTypeface(font.typeface())
-        paint.setTextSize(self.scale_out(font.size()))
-        return paint
-
 
 class DrawHandler(dynamic_proxy(IDrawHandler)):
     def __init__(self, impl):
@@ -198,7 +195,7 @@ class DrawHandler(dynamic_proxy(IDrawHandler)):
         self.interface = impl.interface
 
     def handleDraw(self, canvas):
-        self.interface.context._draw(Context(canvas))
+        self.interface.context._draw(Context(canvas, self.impl))
 
 
 class TouchListener(dynamic_proxy(View.OnTouchListener)):
@@ -232,6 +229,28 @@ class Canvas(Widget):
 
     def redraw(self):
         self.native.invalidate()
+
+    def measure_text(self, text, font, line_height):
+        paint = self._text_paint(font)
+        sizes = [paint.measureText(line) for line in text.splitlines()]
+        return (
+            max(sizes),
+            self._line_height(paint, line_height) * len(sizes),
+        )
+
+    def _line_height(self, paint, line_height):
+        if line_height is None:
+            return paint.getFontSpacing()
+        else:
+            return paint.getTextSize() * line_height
+
+    def _text_paint(self, font):
+        # font.size applies the scale factor, and the canvas transformation matrix
+        # will apply it again, so we need to cancel one of those with a scale_out.
+        paint = Paint()
+        paint.setTypeface(font.typeface())
+        paint.setTextSize(self.scale_out(font.size()))
+        return paint
 
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(
