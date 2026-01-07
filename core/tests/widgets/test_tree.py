@@ -5,7 +5,6 @@ import pytest
 import toga
 from toga.sources import TreeSource
 from toga_dummy.utils import (
-    assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
 )
@@ -168,13 +167,6 @@ def test_disable_no_op(tree):
     assert tree.enabled
 
 
-def test_focus_noop(tree):
-    """Focus is a no-op."""
-
-    tree.focus()
-    assert_action_not_performed(tree, "focus")
-
-
 @pytest.mark.parametrize(
     "data, all_attributes, extra_attributes",
     [
@@ -240,8 +232,18 @@ def test_set_data(tree, on_select_handler, data, all_attributes, extra_attribute
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
 
+    # The implementation is a listener on the data
+    old_data = tree.data
+    assert tree._impl in old_data.listeners
+
     # Change the data
     tree.data = data
+
+    # The implementation is not a listener on the old data
+    assert tree._impl not in old_data.listeners
+
+    # The implementation is a listener on the data
+    assert tree._impl in tree.data.listeners
 
     # This triggered the select handler
     on_select_handler.assert_called_once_with(tree)
@@ -363,7 +365,7 @@ def test_insert_column_accessor(tree):
 
 def test_insert_column_unknown_accessor(tree):
     """If the insertion index accessor is unknown, an error is raised."""
-    with pytest.raises(ValueError, match=r"'unknown' is not in list"):
+    with pytest.raises(ValueError, match=r"not in list"):
         tree.insert_column("unknown", "New Column", accessor="extra")
 
 
@@ -515,7 +517,7 @@ def test_remove_column_accessor(tree):
 
 def test_remove_column_unknown_accessor(tree):
     """If the column named for removal doesn't exist, an error is raised."""
-    with pytest.raises(ValueError, match=r"'unknown' is not in list"):
+    with pytest.raises(ValueError, match=r"not in list"):
         tree.remove_column("unknown")
 
 

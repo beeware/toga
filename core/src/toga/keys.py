@@ -166,8 +166,8 @@ class Key(Enum):
         Produces a single string definition.
 
         e.g.,
-        ``Toga.Key.MOD_1 + 'a'`` -> ``"<mod 1>a"``
-        ``Toga.Key.MOD_1 + Toga.Key.SHIFT + 'a'`` -> ``"<mod 1><shift>a"``
+        `Toga.Key.MOD_1 + 'a'` -> `"<mod 1>a"`
+        `Toga.Key.MOD_1 + Toga.Key.SHIFT + 'a'` -> `"<mod 1><shift>a"`
         """
         try:
             # Try Key + Key

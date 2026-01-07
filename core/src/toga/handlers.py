@@ -5,27 +5,25 @@ import inspect
 import sys
 import traceback
 import warnings
+import weakref
 from abc import ABC
 from collections.abc import Awaitable, Callable, Generator
-from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar, Union
+from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
     T = TypeVar("T")
 
     GeneratorReturnT = TypeVar("GeneratorReturnT")
     HandlerGeneratorReturnT: TypeAlias = Generator[
-        Union[float, None], object, GeneratorReturnT
+        float | None, object, GeneratorReturnT
     ]
 
     HandlerSyncT: TypeAlias = Callable[..., object]
     HandlerAsyncT: TypeAlias = Callable[..., Awaitable[object]]
     HandlerGeneratorT: TypeAlias = Callable[..., HandlerGeneratorReturnT[object]]
-    HandlerT: TypeAlias = Union[HandlerSyncT, HandlerAsyncT, HandlerGeneratorT]
+    HandlerT: TypeAlias = HandlerSyncT | HandlerAsyncT | HandlerGeneratorT
     WrappedHandlerT: TypeAlias = Callable[..., object]
 
 
@@ -89,7 +87,7 @@ async def handler_with_cleanup(
     else:
         if cleanup:
             try:
-                cleanup(interface, result)
+                cleanup(interface, result, *args, **kwargs)
             except Exception as e:
                 print("Error in async handler cleanup:", e, file=sys.stderr)
                 traceback.print_exc()
@@ -100,13 +98,13 @@ def simple_handler(fn: T, *args: object, **kwargs: object) -> T:
     """Wrap a function (with args and kwargs) so it can be used as a command handler.
 
     This essentially accepts and ignores the handler-related arguments (i.e., the
-    required ``command`` argument passed to handlers), so that you can use a method like
-    :meth:`~toga.App.about()` as a command handler.
+    required `command` argument passed to handlers), so that you can use a method like
+    [`App.about()`][toga.App.about] as a command handler.
 
     It can accept either a function or a coroutine. Arguments that will be passed to the
     function/coroutine are provided at the time the wrapper is defined. It is assumed
     that the mechanism invoking the handler will add no additional arguments other than
-    the ``command`` that is invoking the handler.
+    the `command` that is invoking the handler.
 
     :param fn: The callable to invoke as a handler.
     :param args: Positional arguments that should be passed to the invoked handler.
@@ -155,7 +153,7 @@ def wrapped_handler(
             return handler.native
 
         def _handler(*args: object, **kwargs: object) -> object:
-            if asyncio.iscoroutinefunction(handler):
+            if inspect.iscoroutinefunction(handler):
                 return asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
@@ -173,7 +171,7 @@ def wrapped_handler(
                     else:
                         try:
                             if cleanup:
-                                cleanup(interface, result)
+                                cleanup(interface, result, *args, **kwargs)
                             return result
                         except Exception as e:
                             print("Error in handler cleanup:", e, file=sys.stderr)
@@ -265,3 +263,26 @@ class AsyncResult(ABC):
 
 class PermissionResult(AsyncResult):
     RESULT_TYPE = "permission"
+
+
+class WeakrefCallable:
+    """
+    A wrapper for callable that holds a weak reference to it.
+
+    This is particularly useful when setting event or virtual function handlers,
+    to avoid cyclical reference cycles between Python and external runtimes
+    (e.g., .NET CLR or GI). Such cyclical references may not be detected either
+    by the Python garbage collector nor the external runtime's garbage collector,
+    potentially leading to memory leaks.
+    """
+
+    def __init__(self, function):
+        try:
+            self.ref = weakref.WeakMethod(function)
+        except TypeError:
+            self.ref = weakref.ref(function)
+
+    def __call__(self, *args, **kwargs):
+        function = self.ref()
+        if function:
+            return function(*args, **kwargs)

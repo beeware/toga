@@ -9,7 +9,12 @@ import pytest
 import toga
 from toga.style.pack import TOP
 
-from ..conftest import skip_on_platforms, xfail_on_platforms
+from ..conftest import (
+    skip_on_backends,
+    skip_on_platforms,
+    xfail_on_backends,
+    xfail_on_platforms,
+)
 from .probe import get_probe
 
 
@@ -120,29 +125,24 @@ def build_cleanup_test(
     kwargs=None,
     skip_platforms=(),
     xfail_platforms=(),
+    skip_backends=(),
+    xfail_backends=(),
 ):
     async def test_cleanup():
-        nonlocal args, kwargs
-
         skip_on_platforms(*skip_platforms)
         xfail_on_platforms(*xfail_platforms, reason="Leaks memory")
+        skip_on_backends(*skip_backends)
+        xfail_on_backends(*xfail_backends, reason="Leaks memory")
 
-        if args is None:
-            args = ()
-
-        if kwargs is None:
-            kwargs = {}
+        local_args = () if args is None else args
+        local_kwargs = {} if kwargs is None else kwargs
 
         with safe_create():
-            widget = widget_constructor(*args, **kwargs)
-
+            widget = widget_constructor(*local_args, **local_kwargs)
         ref = weakref.ref(widget)
-
-        # Args or kwargs may hold a backref to the widget itself, for example if they
-        # are widget content. Ensure that they are deleted before garbage collection.
-        del widget, args, kwargs
+        # Break potential reference cycles
+        del widget, local_args, local_kwargs
         gc.collect()
-
         assert ref() is None
 
     return test_cleanup

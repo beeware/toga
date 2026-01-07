@@ -39,10 +39,10 @@ exclude_lines = [
 no-cover-if-missing-setuptools_scm = "not is_installed('setuptools_scm')"
 no-cover-if-missing-PIL = "not is_installed('PIL')"
 no-cover-if-PIL-installed = "is_installed('PIL')"
+no-cover-if-lt-py312 = "sys_version_info < (3, 12) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
+no-cover-if-gte-py312 = "sys_version_info > (3, 12) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-lt-py311 = "sys_version_info < (3, 11) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-gte-py311 = "sys_version_info > (3, 11) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
-no-cover-if-lt-py310 = "sys_version_info < (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
-no-cover-if-gte-py310 = "sys_version_info > (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 
 [tool.ruff]
 exclude = [
@@ -92,10 +92,10 @@ known-first-party = [
 directory = "changes"
 package = "toga"
 package_dir = "core/src"
-filename = "docs/about/releases.rst"
-title_format = "{version} ({project_date})"
-issue_format = "`#{issue} <https://github.com/beeware/toga/issues/{issue}>`__"
-template = "changes/template.rst"
+filename = "docs/en/about/releases.md"
+title_format = "## {version} ({project_date})"
+issue_format = "[#{issue}](https://github.com/beeware/toga/issues/{issue})"
+template = "changes/template.md"
 type = [
     { directory = "feature", name = "Features", showcontent = true },
     { directory = "bugfix", name = "Bugfixes", showcontent = true },
@@ -108,3 +108,36 @@ type = [
 # We're not doing anything Python-related at the root level of the repo, but if this
 # declaration isn't here, tox commands run from the root directory raise a warning that
 # pyproject.toml doesn't contain a setuptools_scm section.
+
+[dependency-groups]
+# Extras used by developers *of* Toga are pinned to specific versions to
+# ensure environment consistency.
+pre-commit = [
+    "pre-commit == 4.3.0",
+]
+
+setuptools-scm = [
+    "setuptools_scm == 9.2.2",
+]
+
+towncrier = [
+    "towncrier==24.8.0",
+]
+
+tox-uv = [
+    "tox-uv == 1.28.0",
+]
+
+dev = [
+    {include-group = "pre-commit"},
+    {include-group = "tox-uv"},
+    {include-group = "setuptools-scm"}
+]
+
+# Docs are always built on a specific Python version; see RTD and tox config files,
+# and the docs contribution guide.
+docs = [
+    "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
+    "tabulate==0.9.0",
+    "PyYAML==6.0.3"
+]

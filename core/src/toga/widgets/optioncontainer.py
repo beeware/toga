@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Protocol, overload
 
@@ -11,10 +10,8 @@ from toga.platform import get_platform_factory
 from .base import StyleT, Widget
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
+
     from toga.icons import IconContentT
 
     OptionContainerContentT: TypeAlias = (
@@ -23,6 +20,17 @@ if TYPE_CHECKING:
         | tuple[str, Widget, IconContentT | None, bool]
         | toga.OptionItem
     )
+    """
+    An item of content to add to an [`OptionContainer`][toga.OptionContainer]. This
+    content can be:
+
+    - a 2-tuple, containing the title for the tab, and the content widget;
+    - a 3-tuple, containing the title, content widget, and
+      [icon][toga.icons.IconContentT] for the tab;
+    - a 4-tuple, containing the title, content widget, [icon][toga.icons.IconContentT]
+      for the tab, and enabled status; or
+    - an [`toga.OptionItem`][] instance.
+    """
 
 
 class OnSelectHandler(Protocol):
@@ -48,7 +56,8 @@ class OptionItem:
 
         :param text: The text label for the new tab.
         :param content: The content widget to use for the new tab.
-        :param icon: The :any:`icon content <IconContentT>` to use to represent the tab.
+        :param icon: The [icon content][toga.icons.IconContentT] to use to represent the
+            tab.
         :param enabled: Should the new tab be enabled?
         """
         if content is None:
@@ -77,7 +86,7 @@ class OptionItem:
     def interface(self) -> OptionContainer:
         """The OptionContainer that contains this tab.
 
-        Returns ``None`` if the tab isn't currently part of an OptionContainer.
+        Returns `None` if the tab isn't currently part of an OptionContainer.
         """
         return self._interface
 
@@ -129,10 +138,10 @@ class OptionItem:
     def icon(self) -> toga.Icon:
         """The Icon for the tab of content.
 
-        Can be specified as any valid :any:`icon content <IconContentT>`.
+        Can be specified as any valid [icon content][toga.icons.IconContentT].
 
         If the platform does not support the display of icons, this property
-        will return ``None`` regardless of any value provided.
+        will return `None` regardless of any value provided.
         """
         try:
             return self._icon
@@ -142,12 +151,11 @@ class OptionItem:
     @icon.setter
     def icon(self, icon_or_name: IconContentT | None) -> None:
         if get_platform_factory().OptionContainer.uses_icons:
-            if icon_or_name is None:
-                icon = None
-            elif isinstance(icon_or_name, toga.Icon):
-                icon = icon_or_name
-            else:
-                icon = toga.Icon(icon_or_name)
+            match icon_or_name:
+                case toga.Icon() | None as icon:
+                    pass
+                case _:
+                    icon = toga.Icon(icon_or_name)
 
             if hasattr(self, "_icon"):
                 self._icon = icon
@@ -158,7 +166,7 @@ class OptionItem:
     def index(self) -> int | None:
         """The index of the tab in the OptionContainer.
 
-        Returns ``None`` if the tab isn't currently part of an OptionContainer.
+        Returns `None` if the tab isn't currently part of an OptionContainer.
         """
         return self._index
 
@@ -211,7 +219,7 @@ class OptionList:
         return self._options[self.index(index)]
 
     def __delitem__(self, index: int | str | OptionItem) -> None:
-        """Same as :any:`remove`."""
+        """Same as [`remove`][toga.widgets.optioncontainer.OptionList.remove]."""
         self.remove(index)
 
     def remove(self, index: int | str | OptionItem) -> None:
@@ -248,20 +256,22 @@ class OptionList:
         """Find the index of the tab that matches the given value.
 
         :param value: The value to look for. An integer is returned as-is;
-            if an :any:`OptionItem` is provided, that item's index is returned;
+            if an [`OptionItem`][toga.widgets.optioncontainer.OptionItem] is provided,
+            that item's index is returned;
             any other value will be converted into a string, and the first
             tab with a label matching that string will be returned.
         :raises ValueError: If no tab matching the value can be found.
         """
-        if isinstance(value, int):
-            return value
-        elif isinstance(value, OptionItem):
-            return value.index
-        else:
-            try:
-                return next(filter(lambda item: item.text == str(value), self)).index
-            except StopIteration as exc:
-                raise ValueError(f"No tab named {value!r}") from exc
+        match value:
+            case int():
+                return value
+            case OptionItem():
+                return value.index
+            case _:
+                try:
+                    return next(tab for tab in self if tab.text == str(value)).index
+                except StopIteration as exc:
+                    raise ValueError(f"No tab named {value!r}") from exc
 
     @overload
     def append(
@@ -289,15 +299,19 @@ class OptionList:
     ) -> None:
         """Add a new tab of content to the OptionContainer.
 
-        The new tab can be specified as an existing :any:`OptionItem` instance, or by
-        specifying the full details of the new tab of content. If an :any:`OptionItem`
-        is provided, specifying ``content``, ``icon`` or ``enabled`` will raise an
+        The new tab can be specified as an existing
+        [`OptionItem`][toga.widgets.optioncontainer.OptionItem] instance, or by
+        specifying the full details of the new tab of content. If an
+        [`OptionItem`][toga.widgets.optioncontainer.OptionItem]
+        is provided, specifying `content`, `icon` or `enabled` will raise an
         error.
 
-        :param text_or_item: An :any:`OptionItem`; or, the text label for the new tab.
+        :param text_or_item: An [`OptionItem`][toga.widgets.optioncontainer.OptionItem];
+            or, the text label for the new tab.
         :param content: The content widget to use for the new tab.
-        :param icon: The :any:`icon content <IconContentT>` to use to represent the tab.
-        :param enabled: Should the new tab be enabled? (Default: ``True``)
+        :param icon: The [icon content][toga.icons.IconContentT] to use to represent the
+            tab.
+        :param enabled: Should the new tab be enabled? (Default: `True`)
         """
         self.insert(len(self), text_or_item, content, icon=icon, enabled=enabled)
 
@@ -330,16 +344,20 @@ class OptionList:
     ) -> None:
         """Insert a new tab of content to the OptionContainer at the specified index.
 
-        The new tab can be specified as an existing :any:`OptionItem` instance, or by
-        specifying the full details of the new tab of content. If an :any:`OptionItem`
-        is provided, specifying ``content``, ``icon`` or ``enabled`` will raise an
+        The new tab can be specified as an existing
+        [`OptionItem`][toga.widgets.optioncontainer.OptionItem] instance, or by
+        specifying the full details of the new tab of content. If an
+        [`OptionItem`][toga.widgets.optioncontainer.OptionItem]
+        is provided, specifying `content`, `icon` or `enabled` will raise an
         error.
 
         :param index: The index where the new tab should be inserted.
-        :param text_or_item: An :any:`OptionItem`; or, the text label for the new tab.
+        :param text_or_item: An [`OptionItem`][toga.widgets.optioncontainer.OptionItem];
+            or, the text label for the new tab.
         :param content: The content widget to use for the new tab.
-        :param icon: The :any:`icon content <IconContentT>` to use to represent the tab.
-        :param enabled: Should the new tab be enabled? (Default: ``True``)
+        :param icon: The [icon content][toga.icons.IconContentT] to use to represent the
+            tab.
+        :param enabled: Should the new tab be enabled? (Default: `True`)
         """
         if isinstance(text_or_item, OptionItem):
             if content is not None:
@@ -392,11 +410,12 @@ class OptionContainer(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param content: The initial :any:`OptionContainer content
-            <OptionContainerContentT>` to display in the OptionContainer.
-        :param on_select: Initial :any:`on_select` handler.
+        :param content: The initial
+            [OptionContainer content][toga.widgets.optioncontainer.OptionContainerContentT]
+            to display in the OptionContainer.
+        :param on_select: Initial [`on_select`][toga.OptionContainer.on_select] handler.
         :param kwargs: Initial style properties.
-        """
+        """  # noqa: E501
         self._content = OptionList(self)
         self.on_select = None
 
@@ -404,26 +423,25 @@ class OptionContainer(Widget):
 
         if content is not None:
             for item in content:
-                if isinstance(item, OptionItem):
-                    self.content.append(item)
-                else:
-                    if len(item) == 2:
-                        text, widget = item
+                match item:
+                    case OptionItem():
+                        self.content.append(item)
+                        continue
+                    case text, widget:
                         icon = None
                         enabled = True
-                    elif len(item) == 3:
-                        text, widget, icon = item
+                    case text, widget, icon:
                         enabled = True
-                    elif len(item) == 4:
-                        text, widget, icon, enabled = item
-                    else:
+                    case text, widget, icon, enabled:
+                        pass
+                    case _:
                         raise ValueError(
                             "Content items must be an OptionItem instance, or "
                             "tuples of (title, widget), (title, widget, icon), or "
                             "(title, widget, icon, enabled)"
                         )
 
-                    self.content.append(text, widget, enabled=enabled, icon=icon)
+                self.content.append(text, widget, enabled=enabled, icon=icon)
 
         self.on_select = on_select
 
@@ -453,10 +471,10 @@ class OptionContainer(Widget):
 
     @property
     def current_tab(self) -> OptionItem | None:
-        """The currently selected tab of content, or ``None`` if there are no tabs,
+        """The currently selected tab of content, or `None` if there are no tabs,
         or the OptionContainer is in a state where no tab is currently selected.
 
-        This property can also be set with an ``int`` index, or a ``str`` label.
+        This property can also be set with an `int` index, or a `str` label.
         """
         index = self._impl.get_current_tab_index()
         if index is None:

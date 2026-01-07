@@ -2,18 +2,19 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from math import pi
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from warnings import filterwarnings, warn
 
-from travertino.colors import Color
-
-from toga.colors import BLACK, color as parse_color
+from toga.colors import BLACK, Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
     Font,
 )
+
+if TYPE_CHECKING:
+    from toga.colors import ColorT
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
@@ -48,34 +49,39 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 
 
 class DrawingObject(ABC):
-    """A drawing operation in a :any:`Context`.
+    """A drawing operation in a [`Context`][toga.widgets.canvas.Context].
 
-    Every context drawing method creates a ``DrawingObject``, adds it to the context,
+    Every context drawing method creates a `DrawingObject`, adds it to the context,
     and returns it. Each argument passed to the method becomes a property of the
-    ``DrawingObject``, which can be modified as shown in the `Usage`_ section.
+    `DrawingObject`, which can be modified as shown in the [Usage][] section.
 
-    ``DrawingObjects`` can also be created manually, then added to a context using the
-    :meth:`~Context.append` or :meth:`~Context.insert` methods. Their constructors take
-    the same arguments as the corresponding :any:`Context` method, and their classes
-    have the same names, but capitalized:
+    `DrawingObjects` can also be created manually, then added to a context using the
+    [`append()`][toga.widgets.canvas.Context.append] or
+    [`insert()`][toga.widgets.canvas.Context.append] methods. Their constructors take
+    the same arguments as the corresponding [`Context`][toga.widgets.canvas.Context]
+    method, and their classes have the same names, but capitalized:
 
-    * :meth:`toga.widgets.canvas.Arc <Context.arc>`
-    * :meth:`toga.widgets.canvas.BeginPath <Context.begin_path>`
-    * :meth:`toga.widgets.canvas.BezierCurveTo <Context.bezier_curve_to>`
-    * :meth:`toga.widgets.canvas.ClosePath <Context.close_path>`
-    * :meth:`toga.widgets.canvas.Ellipse <Context.ellipse>`
-    * :meth:`toga.widgets.canvas.Fill <Context.fill>`
-    * :meth:`toga.widgets.canvas.LineTo <Context.line_to>`
-    * :meth:`toga.widgets.canvas.MoveTo <Context.move_to>`
-    * :meth:`toga.widgets.canvas.QuadraticCurveTo <Context.quadratic_curve_to>`
-    * :meth:`toga.widgets.canvas.Rect <Context.rect>`
-    * :meth:`toga.widgets.canvas.ResetTransform <Context.reset_transform>`
-    * :meth:`toga.widgets.canvas.Rotate <Context.rotate>`
-    * :meth:`toga.widgets.canvas.Scale <Context.scale>`
-    * :meth:`toga.widgets.canvas.Stroke <Context.stroke>`
-    * :meth:`toga.widgets.canvas.Translate <Context.translate>`
-    * :meth:`toga.widgets.canvas.WriteText <Context.write_text>`
-    """
+    * [`toga.widgets.canvas.Arc`][toga.widgets.canvas.Context.arc]
+    * [`toga.widgets.canvas.BeginPath`][toga.widgets.canvas.Context.begin_path]
+    * [`toga.widgets.canvas.BezierCurveTo`][toga.widgets.canvas.Context.bezier_curve_to]
+    * [`toga.widgets.canvas.ClosePath`][toga.widgets.canvas.Context.close_path]
+    * [`toga.widgets.canvas.Ellipse`][toga.widgets.canvas.Context.ellipse]
+    * [`toga.widgets.canvas.Fill`][toga.widgets.canvas.Context.fill]
+    * [`toga.widgets.canvas.LineTo`][toga.widgets.canvas.Context.line_to]
+    * [`toga.widgets.canvas.MoveTo`][toga.widgets.canvas.Context.move_to]
+    * [`toga.widgets.canvas.QuadraticCurveTo`][toga.widgets.canvas.Context.quadratic_curve_to]
+    * [`toga.widgets.canvas.Rect`][toga.widgets.canvas.Context.rect]
+    * [`toga.widgets.canvas.ResetTransform`][toga.widgets.canvas.Context.reset_transform]
+    * [`toga.widgets.canvas.Rotate`][toga.widgets.canvas.Context.rotate]
+    * [`toga.widgets.canvas.Scale`][toga.widgets.canvas.Context.scale]
+    * [`toga.widgets.canvas.Stroke`][toga.widgets.canvas.Context.stroke]
+    * [`toga.widgets.canvas.Translate`][toga.widgets.canvas.Context.translate]
+    * [`toga.widgets.canvas.WriteText`][toga.widgets.canvas.Context.write_text]
+    """  # noqa: E501
+
+    # Disable the line-too-long check as there is no way to properly render the list
+    # above with any given list item on multiple lines; an undesired space is added if
+    # the link content is split on two lines.
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
@@ -97,7 +103,7 @@ class ClosePath(DrawingObject):
 class Fill(DrawingObject):
     def __init__(
         self,
-        color: str = BLACK,
+        color: ColorT = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
         super().__init__()
@@ -126,17 +132,17 @@ class Fill(DrawingObject):
         return self._color
 
     @color.setter
-    def color(self, value: Color | str | None) -> None:
+    def color(self, value: ColorT | None) -> None:
         if value is None:
-            self._color = parse_color(BLACK)
+            self._color = Color.parse(BLACK)
         else:
-            self._color = parse_color(value)
+            self._color = Color.parse(value)
 
 
 class Stroke(DrawingObject):
     def __init__(
         self,
-        color: Color | str | None = BLACK,
+        color: ColorT | None = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ):
@@ -159,11 +165,11 @@ class Stroke(DrawingObject):
         return self._color
 
     @color.setter
-    def color(self, value: Color | str | None) -> None:
+    def color(self, value: ColorT | None) -> None:
         if value is None:
-            self._color = parse_color(BLACK)
+            self._color = Color.parse(BLACK)
         else:
-            self._color = parse_color(value)
+            self._color = Color.parse(value)
 
     @property
     def line_width(self) -> float:

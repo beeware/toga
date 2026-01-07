@@ -1,4 +1,5 @@
 import datetime
+from math import ceil
 
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
@@ -24,6 +25,13 @@ class TogaDatePicker(UIDatePicker):
     @objc_method
     def dateInputDidChange_(self, dateInput) -> None:
         self.interface.on_change()
+        # The width of the widget is dependent on the date being displayed. If the value
+        # changes, we also need to force the iOS widget to lay itself out again to
+        # ensure minimum size hints are accurate, and then trigger a Toga refresh to
+        # apply the new hints.
+        self.setNeedsLayout()
+        self.layoutIfNeeded()
+        self.interface.refresh()
 
 
 def py_date(native_date):
@@ -77,11 +85,11 @@ class DateInput(Widget):
 
     def set_value(self, value):
         self.native.date = native_date(value)
-        self.interface.on_change()
+        self.native.sendActionsForControlEvents(UIControlEventValueChanged)
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(ceil(fitting_size.width))
         self.interface.intrinsic.height = fitting_size.height
 
     def get_min_date(self):

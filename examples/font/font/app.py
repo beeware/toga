@@ -1,9 +1,8 @@
 import toga
 from toga.constants import BOLD, COLUMN, ITALIC, MONOSPACE, NORMAL, ROW
-from toga.style import Pack
 
 
-class ExampleFontExampleApp(toga.App):
+class FontApp(toga.App):
     textpanel = None
 
     # Button callback functions
@@ -31,7 +30,9 @@ class ExampleFontExampleApp(toga.App):
     def do_add_content(self, widget, **kwargs):
         new_lbl = toga.Label(
             "More Endor bold",
-            style=Pack(font_family="Endor", font_size=14, font_weight=BOLD),
+            font_family="Endor",
+            font_size=14,
+            font_weight=BOLD,
         )
         self.labels.add(new_lbl)
 
@@ -54,9 +55,16 @@ class ExampleFontExampleApp(toga.App):
             "Roboto", "resources/Roboto-BoldItalic.ttf", weight=BOLD, style=ITALIC
         )
 
+        button_style = {
+            "font_family": "awesome-free-solid",
+            "font_size": 14,
+            "width": 50,
+        }
+
         # Buttons
         btn_box1 = toga.Box(
-            style=Pack(direction=ROW, margin_bottom=10),
+            direction=ROW,
+            margin_bottom=10,
             children=[
                 toga.Button("Clear", on_press=self.do_clear),
                 toga.Button("Weight", on_press=self.do_weight),
@@ -68,87 +76,91 @@ class ExampleFontExampleApp(toga.App):
         btn1 = toga.Button(
             "Monospace",
             on_press=self.do_monospace_button,
-            style=Pack(font_family=MONOSPACE),
+            font_family=MONOSPACE,
         )
         btn2 = toga.Button(
             "\uf0c5",
             id="copy",
             on_press=self.do_icon_button,
-            style=Pack(font_family="awesome-free-solid", font_size=14, width=50),
+            **button_style,
         )
         btn3 = toga.Button(
             "\uf0ea",
             id="paste",
             on_press=self.do_icon_button,
-            style=Pack(font_family="awesome-free-solid", font_size=14, width=50),
+            **button_style,
         )
         btn4 = toga.Button(
             "\uf0a9",
             id="arrow-right",
             on_press=self.do_icon_button,
-            style=Pack(font_family="awesome-free-solid", font_size=14, width=50),
+            **button_style,
         )
         btn_box2 = toga.Box(
-            style=Pack(direction=ROW, margin_bottom=10),
+            direction=ROW,
+            margin_bottom=10,
             children=[btn1, btn2, btn3, btn4],
         )
 
         # Labels
-        lbl1 = toga.Label("Endor", style=Pack(font_family="Endor", font_size=14))
+        lbl1 = toga.Label("Endor", font_family="Endor", font_size=14)
         lbl2 = toga.Label(
             "Endor bold",
-            style=Pack(font_family="Endor", font_size=14, font_weight=BOLD),
+            font_family="Endor",
+            font_size=14,
+            font_weight=BOLD,
         )
         lbl3 = toga.Label(
             "Endor italic",
-            style=Pack(font_family="Endor", font_size=14, font_style=ITALIC),
+            font_family="Endor",
+            font_size=14,
+            font_style=ITALIC,
         )
         lbl4 = toga.Label(
             "Endor bold italic",
-            style=Pack(
-                font_family="Endor",
-                font_size=14,
-                font_weight=BOLD,
-                font_style=ITALIC,
-            ),
+            font_family="Endor",
+            font_size=14,
+            font_weight=BOLD,
+            font_style=ITALIC,
         )
         lbl5 = toga.Label(
             "Roboto",
-            style=Pack(font_family="Roboto", font_size=14),
+            font_family="Roboto",
+            font_size=14,
         )
         lbl6 = toga.Label(
             "Roboto bold",
-            style=Pack(font_family="Roboto", font_size=14, font_weight=BOLD),
+            font_family="Roboto",
+            font_size=14,
+            font_weight=BOLD,
         )
         lbl7 = toga.Label(
             "Roboto italic",
-            style=Pack(font_family="Roboto", font_size=14, font_style=ITALIC),
+            font_family="Roboto",
+            font_size=14,
+            font_style=ITALIC,
         )
         lbl8 = toga.Label(
             "Roboto bold italic",
-            style=Pack(
-                font_family="Roboto",
-                font_size=14,
-                font_weight=BOLD,
-                font_style=ITALIC,
-            ),
+            font_family="Roboto",
+            font_size=14,
+            font_weight=BOLD,
+            font_style=ITALIC,
         )
 
         unknown_style = {"font_family": "Unknown", "font_size": 14}
-        lbl_u = toga.Label("Unknown", style=Pack(**unknown_style))
-        lbl_ub = toga.Label(
-            "Unknown bold", style=Pack(font_weight=BOLD, **unknown_style)
-        )
-        lbl_ui = toga.Label(
-            "Unknown italic", style=Pack(font_style=ITALIC, **unknown_style)
-        )
+        lbl_u = toga.Label("Unknown", **unknown_style)
+        lbl_ub = toga.Label("Unknown bold", font_weight=BOLD, **unknown_style)
+        lbl_ui = toga.Label("Unknown italic", font_style=ITALIC, **unknown_style)
         lbl_ubi = toga.Label(
             "Unknown bold italic",
-            style=Pack(font_weight=BOLD, font_style=ITALIC, **unknown_style),
+            font_weight=BOLD,
+            font_style=ITALIC,
+            **unknown_style,
         )
 
         self.textpanel = toga.MultilineTextInput(
-            readonly=False, style=Pack(flex=1), placeholder="Ready."
+            readonly=False, flex=1, placeholder="Ready."
         )
 
         self.labels = toga.Box(
@@ -166,7 +178,7 @@ class ExampleFontExampleApp(toga.App):
                 lbl_ui,
                 lbl_ubi,
             ],
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
         )
         # Outermost box
         outer_box = toga.Box(
@@ -176,7 +188,9 @@ class ExampleFontExampleApp(toga.App):
                 self.labels,
                 self.textpanel,
             ],
-            style=Pack(flex=1, direction=COLUMN, margin=10),
+            flex=1,
+            direction=COLUMN,
+            margin=10,
         )
 
         # Add the content on the main window
@@ -187,9 +201,8 @@ class ExampleFontExampleApp(toga.App):
 
 
 def main():
-    return ExampleFontExampleApp("Font Example", "org.beeware.toga.examples.font")
+    return FontApp("Font Example", "org.beeware.toga.examples.font")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

@@ -8,7 +8,8 @@ from System.Drawing import (
 )
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT, rgba
+import toga.colors as colors
+from toga.colors import rgb
 from toga_winforms.colors import (
     native_color,
     toga_color,
@@ -162,19 +163,17 @@ class Widget(Scalable, ABC):
 
     def set_background_color(self, color):
         if self.interface.parent:
-            parent_color = toga_color(self.interface.parent._impl.native.BackColor).rgba
+            parent_color = toga_color(self.interface.parent._impl.native.BackColor)
         else:
-            parent_color = toga_color(SystemColors.Control).rgba
+            parent_color = toga_color(SystemColors.Control)
 
-        if color is None:
-            if self._default_background_color is TRANSPARENT:
-                requested_color = rgba(0, 0, 0, 0)
-            else:
-                requested_color = self._default_background_color.rgba
-        elif color is TRANSPARENT:
-            requested_color = rgba(0, 0, 0, 0)
-        else:
-            requested_color = color.rgba
+        match color, self._default_background_color:
+            case (colors.TRANSPARENT, _) | (None, colors.TRANSPARENT):
+                requested_color = rgb(0, 0, 0, 0)
+            case None, _:
+                requested_color = self._default_background_color.rgb
+            case _:
+                requested_color = color.rgb
 
         blended_color = requested_color.blend_over(parent_color)
         self.native.BackColor = native_color(blended_color)

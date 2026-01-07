@@ -5,7 +5,6 @@ from pytest import fixture
 
 import toga
 
-from ..conftest import skip_on_platforms
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -46,6 +45,7 @@ def values():
         date(1960, 12, 31),
         date(2020, 2, 29),  # Leap day
         date(2100, 1, 1),
+        date(3742, 1, 1),
         date(8999, 12, 31),
     ]
 
@@ -79,20 +79,17 @@ def assert_none_value(normalize):
 
 @fixture
 async def widget():
-    skip_on_platforms("linux")
     return toga.DateInput()
 
 
 test_cleanup = build_cleanup_test(
     toga.DateInput,
-    skip_platforms=("linux",),
     xfail_platforms=("android",),
 )
 
 
 async def test_init():
     "Properties can be set in the constructor"
-    skip_on_platforms("linux")
 
     value = date(1999, 12, 31)
     min = date(1999, 12, 30)

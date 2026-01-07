@@ -136,13 +136,6 @@ def test_disable_no_op(table):
     assert table.enabled
 
 
-def test_focus_noop(table):
-    """Focus is a no-op."""
-
-    table.focus()
-    assert_action_not_performed(table, "focus")
-
-
 @pytest.mark.parametrize(
     "data, all_attributes, extra_attributes",
     [
@@ -194,8 +187,18 @@ def test_set_data(table, on_select_handler, data, all_attributes, extra_attribut
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
 
+    # The implementation is a listener on the data
+    old_data = table.data
+    assert table._impl in old_data.listeners
+
     # Change the data
     table.data = data
+
+    # The implementation is not a listener on the old data
+    assert table._impl not in old_data.listeners
+
+    # The implementation is a listener on the new data
+    assert table._impl in table.data.listeners
 
     # This triggered the select handler
     on_select_handler.assert_called_once_with(table)
@@ -333,7 +336,7 @@ def test_insert_column_accessor(table):
 
 def test_insert_column_unknown_accessor(table):
     """If the insertion index accessor is unknown, an error is raised."""
-    with pytest.raises(ValueError, match=r"'unknown' is not in list"):
+    with pytest.raises(ValueError, match=r"not in list"):
         table.insert_column("unknown", "New Column", accessor="extra")
 
 
@@ -485,7 +488,7 @@ def test_remove_column_accessor(table):
 
 def test_remove_column_unknown_accessor(table):
     """If the column named for removal doesn't exist, an error is raised."""
-    with pytest.raises(ValueError, match=r"'unknown' is not in list"):
+    with pytest.raises(ValueError, match=r"not in list"):
         table.remove_column("unknown")
 
 

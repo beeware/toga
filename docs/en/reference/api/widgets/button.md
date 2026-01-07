@@ -1,0 +1,28 @@
+{{ component_header("Button", width=300) }}
+
+## Usage
+
+A button has a text label, or an icon (but not both). If an icon is specified, it will be resized to a size appropriate for the platform. A handler can be associated with button press events.
+
+```python
+import toga
+
+def my_callback(button):
+    # handle event
+    pass
+
+button = toga.Button("Click me", on_press=my_callback)
+
+icon_button = toga.Button(icon=toga.Icon("resources/my_icon"), on_press=my_callback)
+```
+
+## Notes
+
+- A background color of `TRANSPARENT` will be treated as a reset of the button to the default system color.
+- On macOS, the button text color cannot be set directly; any `color` style directive will be ignored. The text color is automatically selected by the platform to contrast with the background color of the button.
+
+## Reference
+
+::: toga.Button
+
+::: toga.widgets.button.OnPressHandler

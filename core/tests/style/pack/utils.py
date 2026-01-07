@@ -101,7 +101,9 @@ def _assert_layout(node, expected_layout):
         f"doesn't match expected {expected_n_children}"
     )
 
-    for child, sublayout in zip(node.children, expected_layout.get("children", [])):
+    for child, sublayout in zip(
+        node.children, expected_layout.get("children", []), strict=False
+    ):
         _assert_layout(child, sublayout)
 
 

@@ -51,17 +51,18 @@ class Font(BaseFont):
         """Construct a reference to a font.
 
         This class should be used when an API requires an explicit font reference (e.g.
-        :any:`Context.write_text`). In all other cases, fonts in Toga are controlled
+        [`Context.write_text`][toga.widgets.canvas.Context.write_text]). In all other
+        cases, fonts in Toga are controlled
         using the style properties linked below.
 
-        :param family: The :ref:`font family <pack-font-family>`.
-        :param size: The :ref:`font size <pack-font-size>`.
-        :param weight: The :ref:`font weight <pack-font-weight>`.
-        :param style: The :ref:`font style <pack-font-style>`.
-        :param variant: The :ref:`font variant <pack-font-variant>`.
+        :param family: The [font family][toga.style.pack.Pack.font_family].
+        :param size: The [font size][toga.style.pack.Pack.font_size].
+        :param weight: The [font weight][toga.style.pack.Pack.font_weight].
+        :param style: The [font style][toga.style.pack.Pack.font_style].
+        :param variant: The [font variant][toga.style.pack.Pack.font_variant].
 
         :raises UnknownFontError: If the font family requested corresponds to neither
-            one of the :ref:`built-in system fonts <pack-font-family>`, nor a
+            one of the [built-in system fonts][toga.style.pack.Pack.font_family], nor a
             user-registered font, nor (depending on platform) a font installed on the
             system.
         :raises ValueError: If a user-registered font is used, but the file specified
@@ -106,13 +107,30 @@ class Font(BaseFont):
     ) -> None:
         """Register a file-based font.
 
-        :param family: The :ref:`font family <pack-font-family>`.
+        :param family: The [font family][toga.style.pack.Pack.font_family].
         :param path: The path to the font file. This can be an absolute path, or a path
+            relative to the module that defines your [`App`][toga.App] class.
+        :param weight: The [font weight][toga.style.pack.Pack.font_weight].
+        :param style: The [font style][toga.style.pack.Pack.font_style].
+        :param variant: The [font variant][toga.style.pack.Pack.font_variant].
             relative to the module that defines your :any:`App` class.
-        :param weight: The :ref:`font weight <pack-font-weight>`.
-        :param style: The :ref:`font style <pack-font-style>`.
-        :param variant: The :ref:`font variant <pack-font-variant>`.
+
+        :raises ValueError: When the registered family has the same name as the standard
+            font families ``"cursive"``, ``"fantasy"``, ``"message"``, ``"monospace"``,
+            `"sans-serif"``, "serif", or "system".
         """
+        if family in (
+            CURSIVE,
+            FANTASY,
+            MESSAGE,
+            MONOSPACE,
+            SANS_SERIF,
+            SERIF,
+            SYSTEM,
+        ):
+            raise ValueError(
+                "Custom fonts cannot be registered with a built-in font family name"
+            )
         font_key = Font._registered_font_key(family, weight, style, variant)
         _REGISTERED_FONT_CACHE[font_key] = str(toga.App.app.paths.app / path)
 

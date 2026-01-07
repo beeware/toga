@@ -14,6 +14,8 @@ from .properties import toga_color
 
 
 class SimpleProbe(BaseProbe, FontMixin):
+    invalid_size_while_hidden = False
+
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app

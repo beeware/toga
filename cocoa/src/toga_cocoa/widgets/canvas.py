@@ -3,7 +3,7 @@ from math import ceil
 from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
 
-from toga.colors import BLACK, TRANSPARENT, color
+from toga.colors import BLACK, TRANSPARENT, Color
 from toga.constants import Baseline, FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
@@ -211,7 +211,10 @@ class Canvas(Widget):
         core_graphics.CGContextSetRGBFillColor(
             draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
         )
-        core_graphics.CGContextDrawPath(draw_context, mode)
+        if not core_graphics.CGContextIsPathEmpty(draw_context):
+            path = core_graphics.CGContextCopyPath(draw_context)
+            core_graphics.CGContextDrawPath(draw_context, mode)
+            core_graphics.CGContextAddPath(draw_context, path)
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         core_graphics.CGContextSetLineWidth(draw_context, line_width)
@@ -225,7 +228,10 @@ class Canvas(Widget):
             )
         else:
             core_graphics.CGContextSetLineDash(draw_context, 0, None, 0)
-        core_graphics.CGContextDrawPath(draw_context, mode)
+        if not core_graphics.CGContextIsPathEmpty(draw_context):
+            path = core_graphics.CGContextCopyPath(draw_context)
+            core_graphics.CGContextDrawPath(draw_context, mode)
+            core_graphics.CGContextAddPath(draw_context, path)
 
     # Transformations
     def rotate(self, radians, draw_context, **kwargs):
@@ -283,7 +289,7 @@ class Canvas(Widget):
     def measure_text(self, text, font, line_height):
         # We need at least a fill color to render, but that won't change the size.
         sizes = [
-            self._render_string(line, font, fill_color=color(BLACK)).size()
+            self._render_string(line, font, fill_color=Color.parse(BLACK)).size()
             for line in text.splitlines()
         ]
         return (

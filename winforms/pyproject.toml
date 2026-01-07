@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools==80.9.0",
-    "setuptools_scm==8.3.1",
+    "setuptools_scm==9.2.2",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -10,11 +10,12 @@ build-backend = "setuptools.build_meta"
 dynamic = ["version", "dependencies"]
 name = "toga-winforms"
 description = "A Windows backend for the Toga widget toolkit using the WinForms API."
-readme = "README.rst"
-requires-python = ">= 3.9"
+readme = "README.md"
+requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
-    "LICENSE"
+    "LICENSE",
+    "src/toga_winforms/libs/WebView2/LICENSE.md",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -25,22 +26,23 @@ maintainers = [
 keywords = [
     "gui",
     "widget",
-    "cross-platform",
+    "windows",
+    "winforms",
     "toga",
     "desktop",
-    "macOS",
-    "cocoa",
+    ".net",
+    "dotnet",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development",
     "Topic :: Software Development :: User Interfaces",
@@ -50,13 +52,18 @@ classifiers = [
 [project.urls]
 Homepage = "https://beeware.org/project/projects/libraries/toga/"
 Funding = "https://beeware.org/contributing/membership/"
-Documentation = "https://toga.readthedocs.io/"
+Documentation = "https://toga.beeware.org/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
-Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases.html"
+Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
 
 [project.entry-points."toga.backends"]
 windows = "toga_winforms"
+
+[tool.distutils.bdist_wheel]
+# This backend needs to be tagged `py3-none-win_arm64`. All the code in this backend is
+# pure Python, *but* it contains pre-compiled binary libraries to support WebView2.
+plat-name = "win_amd64"
 
 [tool.setuptools_scm]
 root = ".."

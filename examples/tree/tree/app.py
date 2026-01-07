@@ -2,7 +2,6 @@ from random import choice
 
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 bee_movies = [
     {
@@ -51,7 +50,7 @@ bee_movies = [
 ]
 
 
-class ExampleTreeApp(toga.App):
+class TreeApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget):
         node = widget.selection
@@ -65,17 +64,17 @@ class ExampleTreeApp(toga.App):
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
         item = choice(bee_movies)
-        if item["year"] >= 2000:
+        if year := item["year"] >= 2000:
             root = self.decade_2000s
-        elif item["year"] >= 1990:
+        elif year >= 1990:
             root = self.decade_1990s
-        elif item["year"] >= 1980:
+        elif year >= 1980:
             root = self.decade_1980s
-        elif item["year"] >= 1970:
+        elif year >= 1970:
             root = self.decade_1970s
-        elif item["year"] >= 1960:
+        elif year >= 1960:
             root = self.decade_1960s
-        elif item["year"] >= 1950:
+        elif year >= 1950:
             root = self.decade_1950s
         else:
             root = self.decade_1940s
@@ -92,12 +91,12 @@ class ExampleTreeApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # Label to show responses.
-        self.label = toga.Label("Ready.", style=Pack(margin=10))
+        self.label = toga.Label("Ready.", margin=10)
 
         self.tree = toga.Tree(
             headings=["Year", "Title", "Rating", "Genre"],
             on_select=self.on_select_handler,
-            style=Pack(flex=1),
+            flex=1,
             missing_value="?",
         )
 
@@ -124,24 +123,22 @@ class ExampleTreeApp(toga.App):
         )
 
         # Buttons
-        btn_style = Pack(flex=1, margin=10)
+        btn_style = {"flex": 1, "margin": 10}
         self.btn_insert = toga.Button(
-            "Insert Row", on_press=self.insert_handler, style=btn_style
+            "Insert Row", on_press=self.insert_handler, **btn_style
         )
         self.btn_remove = toga.Button(
-            "Remove Row", enabled=False, on_press=self.remove_handler, style=btn_style
+            "Remove Row", enabled=False, on_press=self.remove_handler, **btn_style
         )
         self.btn_box = toga.Box(
-            children=[self.btn_insert, self.btn_remove], style=Pack(direction=ROW)
+            children=[self.btn_insert, self.btn_remove], direction=ROW
         )
 
         # Outermost box
         outer_box = toga.Box(
             children=[self.btn_box, self.tree, self.label],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-            ),
+            flex=1,
+            direction=COLUMN,
         )
 
         # Add the content on the main window
@@ -152,9 +149,8 @@ class ExampleTreeApp(toga.App):
 
 
 def main():
-    return ExampleTreeApp("Tree", "org.beeware.toga.examples.tree")
+    return TreeApp("Tree", "org.beeware.toga.examples.tree")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

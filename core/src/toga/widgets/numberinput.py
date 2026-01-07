@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import re
-import sys
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
-from typing import TYPE_CHECKING, Any, Protocol, Union
+from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
@@ -11,12 +10,10 @@ from toga.handlers import wrapped_handler
 from .base import StyleT, Widget
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
-    NumberInputT: TypeAlias = Union[Decimal, int, float, str]
+    NumberInputT: TypeAlias = Decimal | int | float | str
+    """"""  # TODO: Update docstring content.
 
 # Implementation notes
 # ====================
@@ -72,7 +69,7 @@ def _clean_decimal_str(value: str) -> str:
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: NumberInput, **kwargs: Any) -> object:
+    def __call__(self, widget: NumberInput, **kwargs: Any) -> None:
         """A handler to invoke when the value is changed.
 
         :param widget: The NumberInput that was changed.
@@ -100,10 +97,10 @@ class NumberInput(Widget):
             applied to the widget.
         :param step: The amount that any increment/decrement operations will apply to
             the widget's current value.
-        :param min: If provided, :any:`value` will be guaranteed to be greater than or
-            equal to this minimum.
-        :param max: If provided, :any:`value` will be guaranteed to be less than or
-            equal to this maximum.
+        :param min: If provided, [`value`][toga.NumberInput.value] will be guaranteed to
+            be greater than or equal to this minimum.
+        :param max: If provided, [`value`][toga.NumberInput.value] will be guaranteed to
+            be less than or equal to this maximum.
         :param value: The initial value for the widget.
         :param readonly: Can the value of the widget be modified by the user?
         :param on_change: A handler that will be invoked when the value of the widget
@@ -137,7 +134,7 @@ class NumberInput(Widget):
 
         This only controls manual changes by the user (i.e., typing at the
         keyboard). Programmatic changes are permitted while the widget has
-        ``readonly`` enabled.
+        `readonly` enabled.
         """
         return self._impl.get_readonly()
 
@@ -170,9 +167,10 @@ class NumberInput(Widget):
     def min(self) -> Decimal | None:
         """The minimum bound for the widget's value.
 
-        Returns :any:`None` if there is no minimum bound.
+        Returns [`None`][] if there is no minimum bound.
 
-        When setting this property, the current :attr:`value` and :attr:`max` will be
+        When setting this property, the current [`value`][toga.NumberInput.value] and
+        [`max`][toga.NumberInput.max] will be
         clipped against the new minimum value.
         """
         return self._min
@@ -202,9 +200,10 @@ class NumberInput(Widget):
     def max(self) -> Decimal | None:
         """The maximum bound for the widget's value.
 
-        Returns :any:`None` if there is no maximum bound.
+        Returns [`None`][] if there is no maximum bound.
 
-        When setting this property, the current :attr:`value` and :attr:`min` will be
+        When setting this property, the current [`value`][toga.NumberInput.value] and
+        [`min`][toga.NumberInput.min] will be
         clipped against the new maximum value.
         """
         return self._max
@@ -233,7 +232,7 @@ class NumberInput(Widget):
     @property
     def value(self) -> Decimal | None:
         """Current value of the widget, rounded to the same number of decimal
-        places as :any:`step`, or ``None`` if no value has been set.
+        places as [`step`][toga.NumberInput.step], or `None` if no value has been set.
 
         If this property is set to a value outside of the min/max range, it will be
         clipped.

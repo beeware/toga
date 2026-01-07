@@ -99,3 +99,22 @@ async def test_scroll_position(widget, probe):
     # The scroll position back at the origin.
     # Due to scroll bounce etc, this might be slightly off 0
     assert probe.vertical_scroll_position == pytest.approx(0.0, abs=10)
+
+
+async def test_scroll_after_text_change(widget, probe):
+    "Scrolling works after the text has been modified."
+    # The scroll position is at the origin.
+    assert probe.vertical_scroll_position == pytest.approx(0, abs=1)
+
+    # Run a lot of text modifications followed by a scroll
+    for i in range(50):
+        widget.value += f"Line {i}\n"
+        widget.scroll_to_bottom()
+
+    await probe.wait_for_scroll_completion()
+    await probe.redraw(
+        "The document has been modified a lot and scrolled to the bottom"
+    )
+
+    scroll_offset = probe.document_height - probe.height
+    assert probe.vertical_scroll_position == pytest.approx(scroll_offset, abs=30)

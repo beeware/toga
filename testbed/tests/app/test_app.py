@@ -1,7 +1,16 @@
 from types import NoneType
 from unittest.mock import Mock
 
+import pytest
+
 import toga
+
+
+async def test_unsupported_widget(app):
+    """If a widget isn't implemented, the factory raises NotImplementedError."""
+    with pytest.raises(NotImplementedError) as exc:
+        _ = app.factory.NoSuchWidget
+    assert "backend doesn't implement NoSuchWidget" in str(exc)
 
 
 async def test_main_window_toolbar(app, main_window, main_window_probe):
@@ -216,12 +225,15 @@ async def test_menu_items(app, app_probe):
     )
 
 
-async def test_beep(app):
+async def test_beep(app, app_probe):
     """The machine can go Bing!"""
     # This isn't a very good test. It ensures coverage, which verifies that the method
     # can be invoked without raising an error, but there's no way to verify that the app
     # actually made a noise.
     app.beep()
+    # Qt's CI sometimes takes unnessacarily long to run the bell command.  Ensure there
+    # are no dangling tasks with a long delay.
+    await app_probe.redraw("Application has sounded bell", delay=5)
 
 
 async def test_screens(app, app_probe):
@@ -256,5 +268,8 @@ async def test_app_icon(app, app_probe):
     app_probe.assert_app_icon(None)
 
 
-async def test_dark_mode_state_read(app):
-    assert isinstance(app.dark_mode, (NoneType, bool))
+async def test_dark_mode_state_read(app, app_probe):
+    if app_probe.supports_dark_mode:
+        assert isinstance(app.dark_mode, bool)
+    else:
+        assert isinstance(app.dark_mode, NoneType)

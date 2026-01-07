@@ -1,3 +1,4 @@
+import os
 from http.cookiejar import CookieJar
 
 from travertino.size import at_least
@@ -11,6 +12,8 @@ from .base import Widget
 class WebView(Widget):
     """GTK WebView implementation."""
 
+    SUPPORTS_ON_NAVIGATION_STARTING = False
+
     def create(self):
         if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             raise RuntimeError("WebView isn't supported on GTK4 (yet!)")
@@ -19,9 +22,16 @@ class WebView(Widget):
             raise RuntimeError(
                 "Unable to import WebKit2. Ensure that the system package providing "
                 "WebKit2 and its GTK bindings have been installed. See "
-                "https://toga.readthedocs.io/en/stable/reference/api/widgets/mapview.html#system-requirements "  # noqa: E501
+                "https://toga.beeware.org/en/stable/reference/api/widgets/mapview#system-requirements "  # noqa: E501
                 "for details."
             )
+
+        # Access to SharedArrayBuffer is restricted by WebKit for security
+        # reasons. Although access *should* be determined by the serving page,
+        # access is *actually* controlled by an undocumented environment
+        # variable.
+        if os.getenv("JSC_useSharedArrayBuffer") is None:
+            os.environ["JSC_useSharedArrayBuffer"] = "1"
 
         self.native = WebKit2.WebView()
 

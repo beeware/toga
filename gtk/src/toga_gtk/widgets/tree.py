@@ -60,6 +60,9 @@ class Tree(Widget):
 
             self.native_tree.append_column(column)
 
+    def focus(self):
+        self.native_tree.grab_focus()
+
     def gtk_on_select(self, selection):
         self.interface.on_select()
 

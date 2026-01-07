@@ -8,6 +8,9 @@ from toga_cocoa.libs import (
     NSMakeRect,
     NSNoBorder,
     NSNotificationCenter,
+    NSScrollElasticityAllowed,
+    NSScrollElasticityAutomatic,
+    NSScrollElasticityNone,
     NSScrollView,
     NSScrollViewDidEndLiveScrollNotification,
     NSScrollViewDidLiveScrollNotification,
@@ -30,6 +33,12 @@ class TogaScrollView(NSScrollView):
         # the size of the document content (assuming there is a document)
         if self.interface._content:
             self.interface._content.refresh()
+
+    # This cannot be covered in CI because the function used to emit
+    # a scrolling event is unreliable.
+    @objc_method
+    def wantsForwardedScrollEventsForAxis_(self, axis: int) -> None:  # pragma: no cover
+        return True
 
 
 class ScrollContainer(Widget):
@@ -75,11 +84,10 @@ class ScrollContainer(Widget):
         super().set_bounds(x, y, width, height)
 
         # Setting the bounds changes the constraints, but that doesn't mean
-        # the constraints have been fully applied. Schedule a refresh to be done
-        # as soon as possible in the future
-        self.native.performSelector(
-            SEL("refreshContent"), withObject=None, afterDelay=0
-        )
+        # the constraints have been fully applied. Force realization of the
+        # new layout, and then refresh the content.
+        self.native.layoutSubtreeIfNeeded()
+        self.native.refreshContent()
 
     def content_refreshed(self, container):
         width = self.native.frame.size.width
@@ -97,6 +105,26 @@ class ScrollContainer(Widget):
 
         self.native.documentView.frame = NSMakeRect(0, 0, width, height)
 
+    def update_scroll_elasticity(self):
+        # If both horizontal and vertical scrolling
+        # is allowed, bounce horizontally only if
+        # the content is actually scrollable (aka. overflows)
+        # in that direction.  This mirrors the behavior
+        # in Finder.
+        if self.interface.horizontal:
+            self.native.horizontalScrollElasticity = (
+                NSScrollElasticityAllowed
+                if not self.interface.vertical
+                else NSScrollElasticityAutomatic
+            )
+        else:
+            self.native.horizontalScrollElasticity = NSScrollElasticityNone
+        self.native.verticalScrollElasticity = (
+            NSScrollElasticityAllowed
+            if self.interface.vertical
+            else NSScrollElasticityNone
+        )
+
     def get_vertical(self):
         return self.native.hasVerticalScroller
 
@@ -110,6 +138,7 @@ class ScrollContainer(Widget):
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.interface.on_scroll()
+        self.update_scroll_elasticity()
 
     def get_horizontal(self):
         return self.native.hasHorizontalScroller
@@ -124,6 +153,7 @@ class ScrollContainer(Widget):
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.interface.on_scroll()
+        self.update_scroll_elasticity()
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

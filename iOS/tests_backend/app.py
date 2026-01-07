@@ -15,6 +15,9 @@ from .probe import BaseProbe
 
 class AppProbe(BaseProbe, DialogsMixin):
     supports_key = False
+    supports_dark_mode = False
+    edit_menu_noop_enabled = False
+    supports_psutil = False
 
     def __init__(self, app):
         super().__init__()

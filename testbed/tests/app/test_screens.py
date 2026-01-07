@@ -21,23 +21,19 @@ async def test_origin(app):
     """The origin of the screens can be retrieved"""
     for screen in app.screens:
         origin = screen.origin
-        assert (
-            isinstance(origin, tuple)
-            and len(origin) == 2
-            and all(isinstance(val, int) for val in origin)
-        )
+        assert isinstance(origin, tuple)
+        assert len(origin) == 2
+        assert all(isinstance(val, int) for val in origin)
 
 
 async def test_size(app):
     """The size of the screens can be retrieved"""
     for screen in app.screens:
         size = screen.size
-        assert (
-            isinstance(size, tuple)
-            and len(size) == 2
-            # Check that neither the width or height is zero.
-            and all(isinstance(val, int) and val > 0 for val in size)
-        )
+        assert isinstance(size, tuple)
+        assert len(size) == 2
+        # Check that neither the width or height is zero.
+        assert all(isinstance(val, int) and val > 0 for val in size)
 
 
 async def test_as_image(app):

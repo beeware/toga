@@ -16,7 +16,12 @@ if TYPE_CHECKING:
     from toga.app import App
     from toga.window import Window
 
+
 StyleT = TypeVar("StyleT", bound=BaseStyle)
+"""
+A type describing a style object. By default, this will be
+[Pack](/reference/style/pack.md), but Toga allows for other style representations.
+"""
 PackMixin = style_mixin(Pack)
 
 
@@ -41,6 +46,14 @@ class Widget(Node, PackMixin):
     _MIN_HEIGHT = 100
 
     DEBUG_LAYOUT_ENABLED = False
+    """Determines whether debug layout mode is enabled.
+
+    When enabled, container widgets use distinct background colors
+    to make the layout more visible and help identify issues during development.
+
+    See the [Debugging Your App][debug-layout] guide for more
+    information.
+    """
     _USE_DEBUG_BACKGROUND = False
     _debug_color_index = 0
 
@@ -133,9 +146,11 @@ class Widget(Node, PackMixin):
     def tab_index(self) -> int | None:
         """The position of the widget in the focus chain for the window.
 
-        .. note::
+        /// note | Note
 
-            This is a beta feature. The ``tab_index`` API may change in the future.
+        This is a beta feature. The `tab_index` API may change in the future.
+
+        ///
         """
         return self._impl.get_tab_index()
 
@@ -307,8 +322,8 @@ class Widget(Node, PackMixin):
         When setting the window for a widget, all children of this widget will be
         recursively assigned to the same window.
 
-        If the widget has a value for :any:`window`, it *must* also have a value for
-        :any:`app`.
+        If the widget has a value for [`window`][toga.Widget.window], it *must* also
+        have a value for [`app`][toga.Widget.app].
         """
         return self._window
 

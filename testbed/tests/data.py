@@ -1,4 +1,4 @@
-from toga.colors import rgba
+from toga.colors import rgb
 
 
 # A test object that can be used as data
@@ -28,7 +28,7 @@ TEXTS = [
 COLORS = [
     # Avoid using (0, 0, 0, 0.0) as a test color,
     # as that is indistinguishable from the TRANSPARENT color
-    rgba(r, g, b, a)
+    rgb(r, g, b, a)
     for r, g, b, a in [
         # Black, gray, white,
         (0, 0, 0, 1.0),

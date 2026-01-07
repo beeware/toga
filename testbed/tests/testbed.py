@@ -113,23 +113,26 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         app.loop.call_soon_threadsafe(app.exit)
 
 
-if __name__ == "__main__":
+def main(main_package_name, backend_override=None):
     # Determine the toga backend. This replicates the behavior in toga/platform.py;
     # we can't use that module directly because we need to capture all the import
     # side effects as part of the coverage data.
-    try:
-        toga_backend = os.environ["TOGA_BACKEND"]
-    except KeyError:
-        if hasattr(sys, "getandroidapilevel"):
-            toga_backend = "toga_android"
-        else:
-            toga_backend = {
-                "darwin": "toga_cocoa",
-                "ios": "toga_iOS",
-                "linux": "toga_gtk",
-                "emscripten": "toga_web",
-                "win32": "toga_winforms",
-            }.get(sys.platform)
+    if backend_override is not None:
+        toga_backend = backend_override
+    else:
+        try:
+            toga_backend = os.environ["TOGA_BACKEND"]
+        except KeyError:
+            if hasattr(sys, "getandroidapilevel"):
+                toga_backend = "toga_android"
+            else:
+                toga_backend = {
+                    "darwin": "toga_cocoa",
+                    "ios": "toga_iOS",
+                    "linux": "toga_gtk",
+                    "emscripten": "toga_web",
+                    "win32": "toga_winforms",
+                }.get(sys.platform)
 
     # Start coverage tracking.
     # This needs to happen in the main thread, before the app has been created
@@ -149,6 +152,15 @@ if __name__ == "__main__":
             ),
             "no-cover-if-gtk4": "os_environ.get('TOGA_GTK', '') == '4'",
             "no-cover-if-gtk3": "os_environ.get('TOGA_GTK', '3') == '3'",
+            "no-cover-unless-plain-gtk4": (
+                "os_environ.get('TOGA_GTK', '') != '4' "
+                "or os_environ.get('TOGA_GTKLIB', '') != ''"
+            ),
+            "no-cover-unless-plain-gtk": "os_environ.get('TOGA_GTKLIB', '') != ''",
+            "no-cover-unless-libadwaita": (
+                "os_environ.get('TOGA_GTK', '') != '4' "
+                "or os_environ.get('TOGA_GTKLIB', '') != 'Adw'"
+            ),
         },
     )
     cov.start()
@@ -185,7 +197,7 @@ if __name__ == "__main__":
         report_coverage = True
 
     # Create the test app, starting the test suite as a background task
-    app = testbed.app.main()
+    app = testbed.app.main(main_package_name)
 
     thread = Thread(
         target=partial(
@@ -209,3 +221,7 @@ if __name__ == "__main__":
 
     # Start the test app
     app.main_loop()
+
+
+if __name__ == "__main__":
+    main("testbed")

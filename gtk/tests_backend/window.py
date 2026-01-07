@@ -1,9 +1,10 @@
 import asyncio
+import os
 
 import pytest
 
 from toga.constants import WindowState
-from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -13,25 +14,30 @@ class WindowProbe(BaseProbe, DialogsMixin):
     # GTK defers a lot of window behavior to the window manager, which means some
     # features either don't exist, or we can't guarantee they behave the way Toga would
     # like.
+    fullscreen_presentation_equal_size = True
+    maximize_fullscreen_presentation_equal_size = False
     if GTK_VERSION < (4, 0, 0):
         supports_closable = True
         supports_as_image = True
-        supports_focus = True
-    else:
-        supports_closable = False
-        supports_as_image = False
-        supports_focus = False
-    supports_minimizable = False
-    supports_move_while_hidden = False
-    supports_unminimize = False
-
-    if GTK_VERSION < (4, 0, 0):
+        # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
+        supports_focus = not (IS_WAYLAND and GTK_VERSION < (3, 24, 41))
         # Wayland mostly prohibits interaction with the larger windowing environment
         supports_minimize = not IS_WAYLAND
         supports_placement = not IS_WAYLAND
     else:
+        supports_closable = False
+        supports_as_image = False
+        supports_focus = False
         supports_minimize = False
         supports_placement = False
+        # When the test is run under xvfb + nested mutter, as in the CI, the window
+        # size of maximized state remains the same as in the fullscreen & presentation.
+        # However, this is not the case when test is run on a normal ubuntu system.
+        if os.environ.get("WAYLAND_DISPLAY") == "toga":
+            maximize_fullscreen_presentation_equal_size = True
+    supports_minimizable = False
+    supports_move_while_hidden = False
+    supports_unminimize = False
 
     def __init__(self, app, window):
         super().__init__()
@@ -39,7 +45,12 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.window = window
         self.impl = window._impl
         self.native = window._impl.native
-        assert isinstance(self.native, Gtk.Window)
+        if Adw is None:
+            assert isinstance(self.native, Gtk.Window)
+        else:
+            assert isinstance(self.native, Adw.Window) or isinstance(
+                self.native, Adw.ApplicationWindow
+            )
 
     async def wait_for_window(
         self,
@@ -57,6 +68,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 try:
                     assert self.instantaneous_state == state
                     assert self.window._impl._pending_state_transition is None
+                    if GTK_VERSION < (4, 0, 0) and IS_WAYLAND:
+                        if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+                            # Add a slight delay to ensure window properties like
+                            # `size` are updated according to the new state.
+                            await self.redraw(delay=0.2)
                     return
                 except AssertionError as e:
                     exception = e
@@ -69,7 +85,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
         # window state after closing the window is unreliable.
         pre_close_window_state = self.window.state
         self.window.close()
-        if pre_close_window_state in {WindowState.FULLSCREEN, WindowState.MINIMIZED}:
+        if pre_close_window_state in {
+            WindowState.PRESENTATION,
+            WindowState.FULLSCREEN,
+            WindowState.MINIMIZED,
+        }:
             delay = 0.5
         else:
             delay = 0.1

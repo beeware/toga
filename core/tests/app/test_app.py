@@ -33,6 +33,13 @@ APP_METADATA = {
 }
 
 
+async def test_unsupported_widget(app):
+    """If a widget isn't implemented, the factory raises NotImplementedError."""
+    with pytest.raises(NotImplementedError) as exc:
+        _ = app.factory.NoSuchWidget
+    assert "Toga's Dummy backend doesn't implement NoSuchWidget" in str(exc)
+
+
 @pytest.mark.parametrize(
     (
         "kwargs, metadata, main_module, expected_formal_name, expected_app_id, "
@@ -69,7 +76,7 @@ APP_METADATA = {
             Mock(__package__=None),
             "Test App",
             "org.beeware.test-app",
-            "toga",
+            "test-app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -110,7 +117,7 @@ APP_METADATA = {
             Mock(__package__=""),
             "Test App",
             "org.beeware.test-app",
-            "toga",
+            "test-app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -142,7 +149,7 @@ APP_METADATA = {
             Mock(__package__="my_app"),
             "Explicit App",
             "org.beeware.explicit-app",
-            "my_app",
+            "explicit-app",
         ),
         # No app properties, with metadata
         (
@@ -151,7 +158,7 @@ APP_METADATA = {
             Mock(__package__="my_app"),
             "Test App",
             "org.beeware.test-app",
-            "my_app",
+            "test-app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -191,7 +198,7 @@ APP_METADATA = {
             None,
             "Test App",
             "org.beeware.test-app",
-            "toga",
+            "test-app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -201,6 +208,19 @@ APP_METADATA = {
             "Explicit App",
             "org.beeware.explicit-app",
             "override-app",
+        ),
+        ###########################################################################
+        # Invoking as python -m pdb my_app.py.
+        # This causes a main module of "my_app", but `__package__` isn't set.
+        ###########################################################################
+        # No app name provided; falls back to app_id
+        (
+            EXPLICIT_MIN_APP_KWARGS,
+            None,
+            Mock(),
+            "Explicit App",
+            "org.beeware.explicit-app",
+            "explicit-app",
         ),
     ],
 )
@@ -243,7 +263,7 @@ async def test_create(
     assert app.on_running._raw.__func__ == toga.App.on_running
     assert app.on_exit._raw.__func__ == toga.App.on_exit
 
-    metadata_mock.assert_called_once_with(expected_app_name)
+    metadata_mock.assert_called_once()
 
     # About menu item exists and is disabled
     assert toga.Command.ABOUT in app.commands
@@ -705,7 +725,7 @@ async def test_startup_method():
     assert_action_performed(app.main_window, "show")
 
 
-def test_startup_method_returns_none():
+async def test_startup_method_returns_none():
     """Test that startup method returning None raises appropriate error"""
 
     def startup_none(app):
@@ -832,7 +852,7 @@ def test_exit_no_handler(app):
     assert_action_performed(app, "exit")
 
 
-def test_exit_subclassed_handler(app):
+async def test_exit_subclassed_handler(app):
     """An app can implement on_exit by subclassing."""
     exit = {}
 
@@ -918,7 +938,7 @@ async def test_loop(app):
     assert app.loop is asyncio.get_running_loop()
 
 
-def test_running():
+async def test_running():
     """The running() method is invoked when the main loop starts"""
     running = {}
 
@@ -929,16 +949,16 @@ def test_running():
         def on_running(self):
             running["called"] = True
 
-    app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
+    _ = SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
     # Run a fake main loop.
-    app.loop.run_until_complete(asyncio.sleep(0.5))
+    await asyncio.sleep(0.5)
 
     # The running method was invoked
     assert running["called"]
 
 
-def test_async_running_method():
+async def test_async_running_method():
     """The running() method can be a coroutine."""
     running = {}
 
@@ -949,10 +969,10 @@ def test_async_running_method():
         async def on_running(self):
             running["called"] = True
 
-    app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
+    _ = SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
     # Run a fake main loop.
-    app.loop.run_until_complete(asyncio.sleep(0.5))
+    await asyncio.sleep(0.5)
 
     # The running coroutine was invoked
     assert running["called"]

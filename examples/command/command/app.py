@@ -1,9 +1,8 @@
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 
-class ExampleTestCommandApp(toga.App):
+class TestCommandApp(toga.App):
     # Button callback functions
     def do_stuff(self, widget, **kwargs):
         self.textpanel.value += "Do stuff\n"
@@ -143,21 +142,20 @@ class ExampleTestCommandApp(toga.App):
         self.app.main_window.toolbar.add(cmd2, cmd5, cmd7)
 
         # Buttons
-        btn_style = Pack(flex=1)
-        btn_do_stuff = toga.Button("Do stuff", on_press=self.do_stuff, style=btn_style)
-        btn_clear = toga.Button("Clear", on_press=self.do_clear, style=btn_style)
-        btn_box = toga.Box(
-            children=[btn_do_stuff, btn_clear], style=Pack(direction=ROW)
-        )
+        btn_do_stuff = toga.Button("Do stuff", on_press=self.do_stuff, flex=1)
+        btn_clear = toga.Button("Clear", on_press=self.do_clear, flex=1)
+        btn_box = toga.Box(children=[btn_do_stuff, btn_clear], direction=ROW)
 
         self.textpanel = toga.MultilineTextInput(
-            readonly=False, style=Pack(flex=1), placeholder="Ready."
+            readonly=False, flex=1, placeholder="Ready."
         )
 
         # Outermost box
         outer_box = toga.Box(
             children=[btn_box, self.textpanel],
-            style=Pack(flex=1, direction=COLUMN, margin=10),
+            flex=1,
+            direction=COLUMN,
+            margin=10,
         )
 
         # Add the content on the main window
@@ -168,9 +166,8 @@ class ExampleTestCommandApp(toga.App):
 
 
 def main():
-    return ExampleTestCommandApp("Test Command", "org.beeware.toga.examples.command")
+    return TestCommandApp("Test Command", "org.beeware.toga.examples.command")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

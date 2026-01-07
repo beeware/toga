@@ -31,6 +31,10 @@ class TreeProbe(SimpleProbe):
         else:
             return None
 
+    @property
+    def has_focus(self):
+        return self.native.window.firstResponder == self.native_tree
+
     async def expand_tree(self):
         self.native_tree.expandItem(None, expandChildren=True)
         await asyncio.sleep(0.1)

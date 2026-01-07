@@ -1,21 +1,19 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.sources import Node, Source, TreeSource
+from toga.sources import Node, Source, TreeSource, TreeSourceT
 from toga.sources.accessors import build_accessors, to_accessor
 from toga.style import Pack
 
 from .base import Widget
 
-SourceT = TypeVar("SourceT", bound=Source)
-
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: Tree, **kwargs: Any) -> object:
+    def __call__(self, widget: Tree, **kwargs: Any) -> None:
         """A handler to invoke when the tree is selected.
 
         :param widget: The Tree that was selected.
@@ -24,7 +22,7 @@ class OnSelectHandler(Protocol):
 
 
 class OnActivateHandler(Protocol):
-    def __call__(self, widget: Tree, **kwargs: Any) -> object:
+    def __call__(self, widget: Tree, **kwargs: Any) -> None:
         """A handler to invoke when the tree is activated.
 
         :param widget: The Tree that was activated.
@@ -38,7 +36,7 @@ class Tree(Widget):
         headings: Iterable[str] | None = None,
         id: str | None = None,
         style: Pack | None = None,
-        data: SourceT | object | None = None,
+        data: TreeSourceT | object | None = None,
         accessors: Iterable[str] | None = None,
         multiple_select: bool = False,
         on_select: toga.widgets.tree.OnSelectHandler | None = None,
@@ -51,34 +49,34 @@ class Tree(Widget):
         :param headings: The column headings for the tree. Headings can only contain one
             line; any text after a newline will be ignored.
 
-            A value of :any:`None` will produce a table without headings.
+            A value of [`None`][] will produce a table without headings.
             However, if you do this, you *must* give a list of accessors.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param data: Initial :any:`data` to be displayed in the tree.
+        :param data: Initial [`data`][toga.Tree.data] to be displayed in the tree.
 
         :param accessors: Defines the attributes of the data source that will be used to
             populate each column. Must be either:
 
-            * ``None`` to derive accessors from the headings, as described above; or
-            * A list of the same size as ``headings``, specifying the accessors for each
-              heading. A value of :any:`None` will fall back to the default generated
+            * `None` to derive accessors from the headings, as described above; or
+            * A list of the same size as `headings`, specifying the accessors for each
+              heading. A value of [`None`][] will fall back to the default generated
               accessor; or
             * A dictionary mapping headings to accessors. Any missing headings will fall
               back to the default generated accessor.
 
         :param multiple_select: Does the tree allow multiple selection?
-        :param on_select: Initial :any:`on_select` handler.
-        :param on_activate: Initial :any:`on_activate` handler.
+        :param on_select: Initial [`on_select`][toga.Tree.on_select] handler.
+        :param on_activate: Initial [`on_activate`][toga.Tree.on_activate] handler.
         :param missing_value: The string that will be used to populate a cell when the
-            value provided by its accessor is :any:`None`, or the accessor isn't
+            value provided by its accessor is [`None`][], or the accessor isn't
             defined.
         :param kwargs: Initial style properties.
         """
         self._headings: list[str] | None
-        self._data: SourceT | TreeSource
+        self._data: TreeSourceT | TreeSource
 
         if headings is not None:
             self._headings = [heading.split("\n")[0] for heading in headings]
@@ -120,28 +118,28 @@ class Tree(Widget):
     def enabled(self, value: object) -> None:
         pass
 
-    def focus(self) -> None:
-        """No-op; Tree cannot accept input focus."""
-        pass
-
     @property
-    def data(self) -> SourceT | TreeSource:
+    def data(self) -> TreeSourceT | TreeSource:
         """The data to display in the tree.
 
         When setting this property:
 
-        * A :any:`Source` will be used as-is. It must either be a :any:`TreeSource`, or
+        * A [`Source`][toga.sources.Source] will be used as-is. It must either be a
+        [`TreeSource`][toga.sources.TreeSource], or
           a custom class that provides the same methods.
 
         * A value of None is turned into an empty TreeSource.
 
         * Otherwise, the value must be a dictionary or an iterable, which is copied
-          into a new TreeSource as shown :ref:`here <treesource-item>`.
+          into a new TreeSource as shown [here][treesource-item].
         """
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | object | None) -> None:
+    def data(self, data: TreeSourceT | object | None) -> None:
+        if self._data is not None:
+            self._data.remove_listener(self._impl)
+
         if data is None:
             self._data = TreeSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):
@@ -166,7 +164,7 @@ class Tree(Widget):
         selected.
 
         If multiple selection is *not* enabled, returns the selected Node object, or
-        :any:`None` if no node is currently selected.
+        [`None`][] if no node is currently selected.
         """
         return self._impl.get_selection()
 

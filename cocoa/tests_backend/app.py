@@ -24,6 +24,9 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = True
     supports_current_window_assignment = True
+    supports_dark_mode = True
+    edit_menu_noop_enabled = False
+    supports_psutil = True
 
     def __init__(self, app):
         super().__init__()
@@ -74,6 +77,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 (205, 226, 243, 255),
                 (211, 226, 243, 255),
                 (211, 230, 245, 255),
+                (214, 229, 243, 255),
             }
             mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
             assert mid_color in {
@@ -81,6 +85,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 (6, 204, 8, 255),
                 (14, 197, 8, 255),
                 (105, 192, 32, 255),
+                (92, 201, 61, 255),
             }
         else:
             # The default icon is transparent background, and brown in the center.
@@ -92,6 +97,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 (138, 107, 64, 255),
                 (138, 108, 64, 255),
                 (149, 119, 73, 255),
+                (144, 120, 80, 255),
             }
 
     def _menu_item(self, path):
@@ -187,14 +193,30 @@ class AppProbe(BaseProbe, DialogsMixin):
 
         self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
 
+    def _activate_menu_window_item(self, path):
+        item = self._menu_item(path)
+        # don't send the action if it's supposed to be grayed out
+        if self.app.current_window is None:
+            return
+        # To activate the window-related things in global app menu, we need
+        # call the native handler on the NSWindow instead of the
+        # NSApplicationDelegate.
+        send_message(
+            self.app.current_window._impl.native,
+            item.action,
+            self.app.current_window._impl.native,
+            restype=None,
+            argtypes=[objc_id],
+        )
+
     def activate_menu_close_window(self):
-        self._activate_menu_item(["File", "Close"])
+        self._activate_menu_window_item(["File", "Close"])
 
     def activate_menu_close_all_windows(self):
         self._activate_menu_item(["File", "Close All"])
 
     def activate_menu_minimize(self):
-        self._activate_menu_item(["Window", "Minimize"])
+        self._activate_menu_window_item(["Window", "Minimize"])
 
     def assert_dialog_in_focus(self, dialog):
         assert dialog._impl.native.window == self.app._impl.native.keyWindow, (
@@ -209,7 +231,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         menu = self._menu_item(path).submenu
 
         assert menu.numberOfItems == len(expected)
-        for item, title in zip(menu.itemArray, expected):
+        for item, title in zip(menu.itemArray, expected, strict=False):
             if title == "---":
                 assert item.isSeparatorItem
             else:

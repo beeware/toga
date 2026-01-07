@@ -1,10 +1,11 @@
-from unittest.mock import Mock
+from dataclasses import dataclass
+from unittest.mock import Mock, call
 
 import pytest
 
 from travertino.properties.choices import Choices
 
-from ..utils import apply_dataclass, mock_apply
+from ..utils import mock_apply
 from .style_classes import (
     VALUE1,
     VALUE2,
@@ -19,7 +20,7 @@ from .style_classes import (
 
 
 @mock_apply
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class MockedApplyStyle(BaseStyle):
     pass
 
@@ -49,12 +50,24 @@ def test_deprecated_class_methods():
 
 
 def test_deprecated_reapply():
-    """Reapply() is deprecated (but still calls apply()."""
+    """Reapply() is deprecated, and calls the old apply(name, value) signature."""
     style = Style()
     with pytest.warns(DeprecationWarning):
         style.reapply()
 
-    style.apply.assert_called_once_with()
+    # Applies all properties
+    assert sorted(style.apply.call_args_list) == [
+        call("different_values_prop", "value2"),
+        call("explicit_const", VALUE1),
+        call("explicit_none", None),
+        call("explicit_value", 0),
+        call("implicit", None),
+        call("list_prop", ["value2"]),
+        call("thing_bottom", 0),
+        call("thing_left", 0),
+        call("thing_right", 0),
+        call("thing_top", 0),
+    ]
 
 
 def test_deprecated_import():

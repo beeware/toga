@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 from pytest import approx
 
-from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
+from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, Color
 from toga.fonts import (
     BOLD,
     FANTASY,
@@ -86,6 +86,9 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
 
     if verify_focus_handlers:
         on_gain_handler.assert_not_called()
+
+        # Reset the mock so it can be tested again
+        on_lose_handler.reset_mock()
 
     other.focus()
     await probe.redraw("Focus has been lost")
@@ -255,7 +258,7 @@ async def test_placeholder_color(widget, probe):
     await probe.redraw("Value is set, color is red")
     assert probe.value == "Hello"
     assert not probe.placeholder_visible
-    assert_color(probe.color, named_color(RED))
+    assert_color(probe.color, Color.parse(RED))
 
     widget.value = ""
     await probe.redraw("Value is empty, placeholder is visible")
@@ -267,7 +270,7 @@ async def test_placeholder_color(widget, probe):
     await probe.redraw("Value is set, color is still red")
     assert probe.value == "Hello"
     assert not probe.placeholder_visible
-    assert_color(probe.color, named_color(RED))
+    assert_color(probe.color, Color.parse(RED))
 
 
 async def test_text_width_change(widget, probe):
@@ -368,7 +371,7 @@ async def test_color_reset(widget, probe):
     # Set the color to something different
     widget.style.color = RED
     await probe.redraw("Widget foreground color should be RED")
-    assert_color(probe.color, named_color(RED))
+    assert_color(probe.color, Color.parse(RED))
 
     # Reset the color, and check that it has been restored to the original
     del widget.style.color
@@ -392,7 +395,7 @@ async def test_background_color_reset(widget, probe):
     # Set the background color to something different
     widget.style.background_color = RED
     await probe.redraw("Widget background color should be RED")
-    assert_background_color(probe.background_color, named_color(RED))
+    assert_background_color(probe.background_color, Color.parse(RED))
 
     # Reset the background color, and check that it has been restored to the original
     del widget.style.background_color
@@ -526,7 +529,7 @@ async def test_flex_horizontal_widget_size(widget, probe):
     # Container is initially a non-flex row box.
     # Initial widget size is small (but non-zero), based on content size.
     probe.assert_width(1, 300)
-    probe.assert_height(1, 55)
+    probe.assert_height(1, getattr(probe, "minimum_required_height", 55))
     original_height = probe.height
 
     # Make the widget flexible; it will expand to fill horizontal space

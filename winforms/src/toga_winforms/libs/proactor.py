@@ -8,7 +8,7 @@ import System.Windows.Forms as WinForms
 from System import Action
 from System.Threading.Tasks import Task
 
-from .wrapper import WeakrefCallable
+from toga.handlers import WeakrefCallable
 
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
@@ -50,7 +50,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                 raise RuntimeError(
                     "Cannot run the event loop while another loop is running"
                 )
-            self._set_coroutine_origin_tracking(self._debug)
             self._thread_id = threading.get_ident()
             self._old_agen_hooks = sys.get_asyncgen_hooks()
             sys.set_asyncgen_hooks(
@@ -82,10 +81,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self._inner_loop = None
         WinForms.Application.Run(self.app.app_context)
 
-    def enqueue_tick(self):
-        # Queue a call to tick in 5ms.
+    def enqueue_tick(self, delay=5):
+        # Queue a call to tick in a specified delay.
         self.task = Action[Task](self.tick)
-        Task.Delay(5).ContinueWith(self.task)
+        Task.Delay(delay).ContinueWith(self.task)
 
     # This function doesn't report as covered because it runs on a
     # non-Python-created thread (see App.run_app). But it must actually be
@@ -142,8 +141,18 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             # Enqueue the next tick, and make sure there will be *something*
             # to be processed. If you don't ensure there is at least one
             # message on the queue, the select() call will block, locking
-            # the app.
-            self.enqueue_tick()
+            # the app.  Determine the delay of the tick by checking if
+            # there are events that can be processed sooner than 5ms, as
+            # we do not want to hold them back from being processed.
+            if self._ready:
+                delay = 0
+            elif self._scheduled:
+                first = self._scheduled[0]
+                ms_until = int(max(0, (first.when() - self.time()) * 1000))
+                delay = min(5, ms_until)
+            else:
+                delay = 5
+            self.enqueue_tick(delay=delay)
             self.call_soon(self._loop_self_reading)
 
             if self._inner_loop:

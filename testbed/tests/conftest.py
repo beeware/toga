@@ -29,12 +29,31 @@ def skip_on_platforms(*platforms, reason=None, allow_module_level=False):
         )
 
 
+# Use this for widgets or tests which are not supported on some backends,
+# but could be supported in the future.
+def skip_on_backends(*backends, reason=None, allow_module_level=False):
+    current_backend = toga.backend
+    if current_backend in backends:
+        skip(
+            reason or f"not yet implemented on {current_backend}",
+            allow_module_level=allow_module_level,
+        )
+
+
 # Use this for widgets or tests which are not supported on some platforms,
 # and will not be supported in the foreseeable future.
 def xfail_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
         skip(reason or f"not applicable on {current_platform}")
+
+
+# Use this for widgets or tests which are not supported on some backends,
+# and will not be supported in the foreseeable future.
+def xfail_on_backends(*backends, reason=None):
+    current_backend = toga.platform.get_platform_factory().__package__
+    if current_backend in backends:
+        skip(reason or f"not applicable on {current_backend}")
 
 
 # Use this for widgets or tests which trip up macOS privacy controls, and requires
@@ -154,8 +173,8 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
     closed: bool = False
 
     # Used by ensure_future.
-    def create_task(self, coro):
-        return ProxyTask(coro)
+    def create_task(self, coro, **kwargs):
+        return ProxyTask(coro, kwargs)
 
     def run_until_complete(self, future):
         if inspect.iscoroutine(future):
@@ -171,6 +190,16 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
         # underlying event loop will shut down its own async generators.
         pass
 
+    async def shutdown_default_executor(self, timeout=None):
+        # The proxy event loop doesn't need to shut anything down; the
+        # underlying event loop will shut down its own executor.
+        pass
+
+    def set_debug(self, enabled):
+        # The proxy event loop doesn't need to manage debug, but `set_debug()` is a
+        # required method on the loop.
+        pass
+
     def is_closed(self):
         return self.closed
 
@@ -181,6 +210,7 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
 @dataclass
 class ProxyTask:
     coro: object
+    kwargs: dict
 
     # Used by ensure_future.
     _source_traceback = None

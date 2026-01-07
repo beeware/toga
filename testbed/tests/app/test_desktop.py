@@ -242,6 +242,8 @@ async def test_app_level_menu_hide(app, app_probe, main_window, main_window_prob
     assert_window_on_show(initially_minimized_window, trigger_expected=False)
 
 
+# FULLSCREEN->MAXIMIZED known to be flaky on macOS - see #3295
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
     """The app can enter presentation mode."""
     bg_colors = (CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE, GOLDENROD)
@@ -531,9 +533,11 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
             assert app.current_window == main_window
 
         main_window.hide()
+        await main_window_probe.wait_for_window("Hiding main window")
         assert app.current_window is None
 
         main_window.show()
+        await main_window_probe.wait_for_window("Showing main window")
         assert app.current_window == main_window
     finally:
         main_window.show()
@@ -937,3 +941,23 @@ async def test_background_app(
     finally:
         app.main_window = main_window
         await app_probe.restore_standard_app()
+
+
+@pytest.mark.parametrize(
+    "action",
+    [
+        "Undo",
+        "Redo",
+        "Cut",
+        "Copy",
+        "Paste",
+    ],
+)
+async def test_edit_no_focus_noop(app_probe, action):
+    """Attempting to invoke edit actions with no focused widget should not error"""
+    # This test is for edit menus that enable even when they're no-op,
+    # because doing edit menus properly disabling is hard on some platforms.
+    if not app_probe.edit_menu_noop_enabled:
+        pytest.xfail("Platform does not have Edit menu that enables but no-ops")
+    app_probe.perform_edit_action(action)
+    # No exceptions

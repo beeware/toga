@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 import toga
 
 
@@ -125,3 +127,14 @@ def test_subclassed_as_deep_module():
     cwd = Path(__file__).parent / "testbed"
     output = run_app(["-m", "subclassed"], cwd=cwd)
     assert_paths(output, app_path=cwd / "subclassed", app_name="subclassed-app")
+
+
+@pytest.mark.parametrize(
+    "path_name",
+    ["toga", "app", "config", "data", "cache", "logs"],
+)
+def test_cant_reassign(app, path_name):
+    """App path attributes are read-only."""
+    # Theoretically, this could leak out of this test... but only if it fails!
+    with pytest.raises(AttributeError):
+        setattr(app.paths, path_name, "")

@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class OnPressHandler(Protocol):
-    def __call__(self, widget: Button, **kwargs: Any) -> object:
+    def __call__(self, widget: Button, **kwargs: Any) -> None:
         """A handler that will be invoked when a button is pressed.
 
         :param widget: The button that was pressed.
@@ -35,7 +35,7 @@ class Button(Widget):
 
         :param text: The text to display on the button.
         :param icon: The icon to display on the button. Can be specified as any valid
-            :any:`icon content <IconContentT>`.
+            [icon content][toga.icons.IconContentT].
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -69,9 +69,9 @@ class Button(Widget):
     def text(self) -> str:
         """The text displayed on the button.
 
-        ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
+        `None`, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
         interpreted and returned as an empty string. Any other object will be converted
-        to a string using ``str()``.
+        to a string using `str()`.
 
         Only one line of text can be displayed. Any content after the first newline will
         be ignored.
@@ -94,23 +94,26 @@ class Button(Widget):
             # after a line break (if provided)
             value = str(value).split("\n")[0]
 
-        self._impl.set_text(value)
+        # Set the icon first, so it is clear to implementations such as
+        # GTK4 that the text is explicitly set as nothing, instead of an
+        # artifact of clearing the icon.
         self._impl.set_icon(None)
+        self._impl.set_text(value)
         self.refresh()
 
     @property
     def icon(self) -> toga.Icon | None:
         """The icon displayed on the button.
 
-        Can be specified as any valid :any:`icon content <IconContentT>`.
+        Can be specified as any valid [icon content][toga.icons.IconContentT].
 
         If the button is currently displaying text, and an icon is assigned, the text
         will be replaced by the new icon.
 
-        If ``None`` is assigned as an icon, the button will become a text button with an
+        If `None` is assigned as an icon, the button will become a text button with an
         empty label.
 
-        Returns ``None`` if the button is currently displaying text.
+        Returns `None` if the button is currently displaying text.
         """
         return self._impl.get_icon()
 

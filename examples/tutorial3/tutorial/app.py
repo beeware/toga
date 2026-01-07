@@ -1,17 +1,13 @@
 import toga
-from toga.style.pack import CENTER, COLUMN, ROW, Pack
+from toga.constants import CENTER, COLUMN, ROW
 
 
 class Graze(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow()
 
-        self.webview = toga.WebView(
-            on_webview_load=self.on_webview_loaded, style=Pack(flex=1)
-        )
-        self.url_input = toga.TextInput(
-            value="https://beeware.org/", style=Pack(flex=1)
-        )
+        self.webview = toga.WebView(on_webview_load=self.on_webview_loaded, flex=1)
+        self.url_input = toga.TextInput(value="https://beeware.org/", flex=1)
 
         box = toga.Box(
             children=[
@@ -21,18 +17,17 @@ class Graze(toga.App):
                         toga.Button(
                             "Go",
                             on_press=self.load_page,
-                            style=Pack(width=50, margin_left=5),
+                            width=50,
+                            margin_left=5,
                         ),
                     ],
-                    style=Pack(
-                        direction=ROW,
-                        align_items=CENTER,
-                        margin=5,
-                    ),
+                    direction=ROW,
+                    align_items=CENTER,
+                    margin=5,
                 ),
                 self.webview,
             ],
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
         )
 
         self.main_window.content = box

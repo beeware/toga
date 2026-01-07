@@ -4,15 +4,18 @@ version = "0.0.1"
 
 [project.optional-dependencies]
 test = [
-    "coverage==7.9.2",
+    "coverage==7.13.1",
     "coverage-conditional-plugin == 0.9.0",
-    # fonttools is only needed by Android, but we need to use
-    # sys.platform == 'linux' as there's no dependency identifier
-    # that can target Android exclusively until 3.13 lands.
-    "fonttools==4.58.5 ; sys.platform == 'linux'",
+    # fonttools is only needed by Android, but we need to use sys.platform == 'linux'
+    # for < 3.13 there's no dependency identifier that can target Android exclusively
+    # before 3.13.
+    "fonttools==4.61.1 ; python_version < '3.13' and sys_platform == 'linux'",
+    "fonttools==4.61.1 ; python_version >= '3.13' and sys_platform == 'android'",
+    "psutil==7.2.1 ; python_version >= '3.13' and (sys_platform == 'linux' or sys_platform == 'darwin' or sys_platform == 'win32')",
     "pillow==11.0.0",
-    "pytest==8.4.1",
-    "pytest-asyncio==1.0.0",
+    "pytest==9.0.2",
+    "pytest-asyncio==1.3.0",
+    "pytest-retry==1.7.0",
 ]
 
 [tool.briefcase]
@@ -25,21 +28,6 @@ license-files = [
 ]
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
-
-[tool.briefcase.app.testbed]
-formal_name = "Toga Testbed"
-description = "A testbed for Toga visual tests"
-icon = "icons/testbed"
-sources = [
-    "src/testbed",
-]
-test_sources = [
-    "tests",
-]
-requires = [
-    "../travertino",
-    "../core",
-]
 
 # Some CI configurations (e.g., Textual) manually override `requires` to specify
 # installation via the wheels built as part of the CI run. Adding `--find-links` allows
@@ -56,10 +44,33 @@ permission.fine_location = "The testbed needs to exercise fine-grained geolocati
 permission.coarse_location = "The testbed needs to exercise coarse-grained geolocation services."
 permission.background_location = "The testbed needs to exercise capturing your location while in the background"
 
+
+formal_name = "Toga Testbed"
+description = "A testbed for Toga visual tests"
+icon = "icons/testbed"
+
+test_sources = [
+    "tests",
+]
+requires = [
+    "../travertino",
+    "../core",
+]
+
+[tool.briefcase.app.testbed]
+sources = [
+    "src/testbed",
+]
+
+
 [tool.briefcase.app.testbed.macOS]
 requires = [
     "../cocoa",
     "std-nslog~=1.0.0",
+    # psutil would ideally go only in test dependencies above, so Dependabot can see it.
+    # However, for Python < 3.13, we have no way to avoid trying to install it on
+    # Android.
+    "psutil==7.2.1 ; python_version < '3.13'",
 ]
 test_sources = [
     "../cocoa/tests_backend",
@@ -71,6 +82,7 @@ test_sources = [
 ]
 requires = [
     "../gtk",
+    "psutil==7.2.1 ; python_version < '3.13'",
 ]
 
 [tool.briefcase.app.testbed.windows]
@@ -79,6 +91,7 @@ test_sources = [
 ]
 requires = [
     "../winforms",
+    "psutil==7.2.1 ; python_version < '3.13'",
 ]
 
 # Mobile deployments
@@ -115,9 +128,29 @@ android.defaultConfig.python {
     // Pytest's assertion rewriting produces its own .pyc files.
     pyc.src = false
 }
+
+chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
 """
 
 [tool.briefcase.app.testbed.web]
 requires = [
     "../web"
+]
+
+[tool.briefcase.app.testbed-qt]
+formal_name = "Toga Testbed (Qt)"
+sources = [
+    "src/testbed_qt",
+    "src/testbed",
+]
+
+[tool.briefcase.app.testbed-qt.linux]
+test_sources = [
+    "../qt/tests_backend",
+]
+requires = [
+    "../qt",
+    "PySide6-Essentials~=6.10.0",
+    "PySide6-Addons~=6.10.0",
+    "psutil==7.2.1 ; python_version < '3.13'",
 ]

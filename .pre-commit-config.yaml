@@ -1,16 +1,15 @@
 exclude: "^(examples/.template)/"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-toml
       - id: check-yaml
       - id: check-case-conflict
-      - id: check-docstring-first
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.13
+    rev: v0.14.10
     hooks:
       - id: ruff-check
         args: [ --fix ]
@@ -21,3 +20,4 @@ repos:
     - id: codespell
       # remove toml extra once Python 3.10 is no longer supported
       additional_dependencies: ['.[toml]']
+      args: ["--skip=CODE_OF_CONDUCT.md"]

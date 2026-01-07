@@ -1,0 +1,83 @@
+[build-system]
+requires = [
+    "setuptools==80.9.0",
+    "setuptools_scm==9.2.2",
+    "setuptools_dynamic_dependencies==1.0.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version", "dependencies"]
+name = "toga-qt"
+description = "An Qt (KDE) backend for the Toga widget toolkit."
+readme = "README.md"
+requires-python = ">= 3.10"
+license = "BSD-3-Clause"
+license-files = [
+    "LICENSE"
+]
+authors = [
+    {name="Russell Keith-Magee", email="russell@keith-magee.com"},
+]
+maintainers = [
+    {name="BeeWare Team", email="team@beeware.org"},
+]
+keywords = [
+    "gui",
+    "widget",
+    "cross-platform",
+    "toga",
+    "desktop",
+    "qt",
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Software Development :: Widget Sets",
+]
+
+
+[project.entry-points."toga.backends"]
+linux = "toga_qt"
+
+[tool.setuptools_scm]
+root = ".."
+
+[tool.setuptools_dynamic_dependencies]
+dependencies = [
+    "qasync == 0.28.0",
+    "toga-core == {version}",
+]
+
+[project.optional-dependencies]
+pyside6-essentials = [
+    "PySide6-Essentials == 6.10.1",
+]
+pyside6 = [
+    "PySide6 == 6.10.1",
+]
+
+[tool.coverage.run]
+parallel = true
+branch = true
+relative_files = true
+
+# See notes in the root pyproject.toml file.
+source = ["src"]
+source_pkgs = ["toga_qt"]
+
+[tool.coverage.paths]
+source = [
+    "src/toga_qt",
+    "**/toga_qt",
+]
