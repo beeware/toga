@@ -11,7 +11,7 @@ test = [
     # before 3.13.
     "fonttools==4.61.1 ; python_version < '3.13' and sys_platform == 'linux'",
     "fonttools==4.61.1 ; python_version >= '3.13' and sys_platform == 'android'",
-    "psutil==7.2.1 ; python_version >= '3.13' and sys_platform in {'linux', 'darwin', 'win32'}",
+    "psutil==7.2.1 ; python_version >= '3.13' and (sys_platform == 'linux' or sys_platform == 'darwin' or sys_platform == 'win32')",
     "pillow==11.0.0",
     "pytest==9.0.2",
     "pytest-asyncio==1.3.0",
@@ -70,7 +70,7 @@ requires = [
     # psutil would ideally go only in test dependencies above, so Dependabot can see it.
     # However, for Python < 3.13, we have no way to avoid trying to install it on
     # Android.
-    "psutil==7.2.1 ; python_version < 3.13",
+    "psutil==7.2.1 ; python_version < '3.13'",
 ]
 test_sources = [
     "../cocoa/tests_backend",
@@ -82,7 +82,7 @@ test_sources = [
 ]
 requires = [
     "../gtk",
-    "psutil==7.2.1 ; python_version < 3.13",
+    "psutil==7.2.1 ; python_version < '3.13'",
 ]
 
 [tool.briefcase.app.testbed.windows]
@@ -91,7 +91,7 @@ test_sources = [
 ]
 requires = [
     "../winforms",
-    "psutil==7.2.1 ; python_version < 3.13",
+    "psutil==7.2.1 ; python_version < '3.13'",
 ]
 
 # Mobile deployments
