@@ -67,10 +67,9 @@ sources = [
 requires = [
     "../cocoa",
     "std-nslog~=1.0.0",
-    # psutil would ideally go in test dependencies above, so Dependabot can see it.
-    # However, it's needed for Linux but unavailable on Android, so until we only
-    # support Python >= 3.13, we have no way to avoid causing a problem on one or the
-    # other. So it lives here, in the desktop platform requirements sections for now.
+    # psutil would ideally go only in test dependencies above, so Dependabot can see it.
+    # However, for Python < 3.13, we have no way to avoid trying to install it on
+    # Android.
     "psutil==7.2.1 ; python_version < 3.13",
 ]
 test_sources = [
