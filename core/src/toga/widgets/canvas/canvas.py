@@ -101,9 +101,6 @@ class Canvas(Widget):
     def _create(self) -> Any:
         return self.factory.Canvas(interface=self)
 
-    def matrix(self):
-        self._impl.matrix()
-
     @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
