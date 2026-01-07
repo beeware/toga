@@ -152,5 +152,5 @@ requires = [
     "../qt",
     "PySide6-Essentials~=6.10.0",
     "PySide6-Addons~=6.10.0",
-    "psutil==7.2.1 ; python_version < 3.13",
+    "psutil==7.2.1 ; python_version < '3.13'",
 ]
