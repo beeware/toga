@@ -6,7 +6,7 @@ from math import pi
 from typing import TYPE_CHECKING, Any
 
 import toga
-from toga.colors import BLACK, Color
+from toga.colors import Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
 
@@ -51,11 +51,11 @@ class Context(DrawingObject):
         self._canvas = canvas
         self.drawing_objects: list[DrawingObject] = []
 
-    def _draw(self, impl: Any) -> None:
-        impl.save()
+    def _draw(self, context: Any) -> None:
+        context.save()
         for obj in self.drawing_objects:
-            obj._draw(impl)
-        impl.restore()
+            obj._draw(context)
+        context.restore()
 
     ###########################################################################
     # Methods to keep track of the canvas, automatically redraw it
@@ -315,7 +315,7 @@ class Context(DrawingObject):
 
     def fill(
         self,
-        color: ColorT = BLACK,
+        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> Fill:
         """Fill the current path.
@@ -337,8 +337,8 @@ class Context(DrawingObject):
 
     def stroke(
         self,
-        color: ColorT = BLACK,
-        line_width: float = 2.0,
+        color: ColorT | None = None,
+        line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> Stroke:
         """Draw the current path as a stroke.
@@ -481,7 +481,7 @@ class Context(DrawingObject):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT = BLACK,
+        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> Iterator[FillContext]:
         """Construct and yield a new `Fill` sub-context
@@ -521,8 +521,8 @@ class Context(DrawingObject):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT = BLACK,
-        line_width: float = 2.0,
+        color: ColorT | None = None,
+        line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> Iterator[StrokeContext]:
         """Construct and yield a new `Stroke` sub-context
@@ -592,19 +592,19 @@ class ClosedPathContext(Context):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
-    def _draw(self, impl: Any) -> None:
+    def _draw(self, context: Any) -> None:
         """Used by parent to draw all objects that are part of the context."""
-        impl.save()
-        impl.begin_path()
+        context.save()
+        context.begin_path()
         if self.x is not None and self.y is not None:
-            impl.move_to(x=self.x, y=self.y)
+            context.move_to(x=self.x, y=self.y)
 
         # sub_kwargs = kwargs.copy()
         for obj in self.drawing_objects:
-            obj._draw(impl)
+            obj._draw(context)
 
-        impl.close_path()
-        impl.restore()
+        context.close_path()
+        context.restore()
 
 
 class FillContext(ClosedPathContext):
@@ -635,7 +635,7 @@ class FillContext(ClosedPathContext):
         canvas: toga.Canvas,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT = BLACK,
+        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
         super().__init__(canvas=canvas, x=x, y=y)
@@ -648,17 +648,18 @@ class FillContext(ClosedPathContext):
             f"color={self.color!r}, fill_rule={self.fill_rule})"
         )
 
-    def _draw(self, impl: Any) -> None:
-        impl.save()
-        impl.set_fill_style(self.color)
-        impl.begin_path()
+    def _draw(self, context: Any) -> None:
+        context.save()
+        if self.color:
+            context.set_fill_style(self.color)
+        context.begin_path()
         if self.x is not None and self.y is not None:
-            impl.move_to(x=self.x, y=self.y)
+            context.move_to(x=self.x, y=self.y)
 
         # sub_kwargs = kwargs.copy()
         # sub_kwargs.update(fill_color=self.color, fill_rule=self.fill_rule)
         for obj in self.drawing_objects:
-            obj._draw(impl)
+            obj._draw(context)
 
         # Fill passes fill_rule to its children; but that is also a valid argument for
         # fill(), so if a fill context is a child of a fill context, there's an argument
@@ -666,19 +667,19 @@ class FillContext(ClosedPathContext):
         # collision.
         # draw_kwargs = kwargs.copy()
         # draw_kwargs.update(fill_rule=self.fill_rule)
-        impl.fill(self.fill_rule)
+        context.fill(self.fill_rule)
 
-        impl.restore()
+        context.restore()
 
     @property
-    def color(self) -> Color:
+    def color(self) -> Color | None:
         """The fill color."""
         return self._color
 
     @color.setter
     def color(self, value: ColorT | None) -> None:
         if value is None:
-            self._color = Color.parse(BLACK)
+            self._color = None
         else:
             self._color = Color.parse(value)
 
@@ -707,8 +708,8 @@ class StrokeContext(ClosedPathContext):
         canvas: toga.Canvas,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT | None = BLACK,
-        line_width: float = 2.0,
+        color: ColorT | None = None,
+        line_width: float | None = None,
         line_dash: list[float] | None = None,
     ):
         super().__init__(canvas=canvas, x=x, y=y)
@@ -722,26 +723,25 @@ class StrokeContext(ClosedPathContext):
             f"line_width={self.line_width}, line_dash={self.line_dash!r})"
         )
 
-    def _draw(self, impl: Any) -> None:
-        impl.save()
-        if self.color:
-            impl.set_stroke_style(self.color)
-        if self.line_width:
-            impl.set_line_width(self.line_width)
-        impl.set_line_width(self.line_width)
-        if self.line_dash:
-            impl.set_line_dash(self.line_dash)
-        impl.begin_path()
+    def _draw(self, context: Any) -> None:
+        context.save()
+        if self.color is not None:
+            context.set_stroke_style(self.color)
+        if self.line_width is not None:
+            context.set_line_width(self.line_width)
+        if self.line_dash is not None:
+            context.set_line_dash(self.line_dash)
+        context.begin_path()
 
         if self.x is not None and self.y is not None:
-            impl.move_to(x=self.x, y=self.y)
+            context.move_to(x=self.x, y=self.y)
 
         # sub_kwargs = kwargs.copy()
         # sub_kwargs["stroke_color"] = self.color
         # sub_kwargs["line_width"] = self.line_width
         # sub_kwargs["line_dash"] = self.line_dash
         for obj in self.drawing_objects:
-            obj._draw(impl)
+            obj._draw(context)
 
         # Stroke passes line_width and line_dash to its children; but those two are also
         # valid arguments for stroke, so if a stroke context is a child of stroke
@@ -751,19 +751,19 @@ class StrokeContext(ClosedPathContext):
         # draw_kwargs["line_width"] = self.line_width
         # draw_kwargs["line_dash"] = self.line_dash
 
-        # impl.set_color(self.color)
-        impl.stroke()
+        # context.set_color(self.color)
+        context.stroke()
 
-        impl.restore()
+        context.restore()
 
     @property
-    def color(self) -> Color:
+    def color(self) -> Color | None:
         """The color of the stroke."""
         return self._color
 
     @color.setter
     def color(self, value: object) -> None:
         if value is None:
-            self._color = Color.parse(BLACK)
+            self._color = None
         else:
             self._color = Color.parse(value)

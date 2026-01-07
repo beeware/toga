@@ -645,7 +645,7 @@ async def test_stroke_and_fill_context(canvas, probe):
 async def test_transforms(canvas, probe):
     "Transforms can be applied"
 
-    canvas._impl.save()
+    # canvas._impl.save()
     # Draw a rectangle after a horizontal translation
     canvas.context.translate(160, 20)
     canvas.context.rect(0, 0, 20, 60)
@@ -670,7 +670,7 @@ async def test_transforms(canvas, probe):
     canvas.context.scale(5, 2)
     canvas.context.rect(2, 2, 10, 10)
     canvas.context.fill()
-    canvas._impl.restore()
+    # canvas._impl.restore()
 
     await probe.redraw("Canvas should be drawn")
 

@@ -39,98 +39,56 @@ from toga_iOS.libs import (
 from toga_iOS.widgets.base import Widget
 
 
-class TogaCanvas(UIView):
-    interface = objc_property(object, weak=True)
-    impl = objc_property(object, weak=True)
-
-    @objc_method
-    def drawRect_(self, rect: CGRect) -> None:
-        self.impl.context = uikit.UIGraphicsGetCurrentContext()
-        self.interface.context._draw(self.impl)
-
-    @objc_method
-    def touchesBegan_withEvent_(self, touches, event) -> None:
-        position = touches.allObjects()[0].locationInView(self)
-        self.interface.on_press(position.x, position.y)
-
-    @objc_method
-    def touchesMoved_withEvent_(self, touches, event) -> None:
-        position = touches.allObjects()[0].locationInView(self)
-        self.interface.on_drag(position.x, position.y)
-
-    @objc_method
-    def touchesEnded_withEvent_(self, touches, event) -> None:
-        position = touches.allObjects()[0].locationInView(self)
-        self.interface.on_release(position.x, position.y)
-
-
-class Canvas(Widget):
-    def create(self):
-        self.native = TogaCanvas.alloc().init()
-        self.native.interface = self.interface
-        self.native.impl = self
-
-        # Add the layout constraints
-        self.add_constraints()
-
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        self.interface.on_resize(width=width, height=height)
-
-    def redraw(self):
-        self.native.setNeedsDisplay()
-
-    def set_background_color(self, color):
-        if color == TRANSPARENT or color is None:
-            self.native.backgroundColor = UIColor.clearColor
-        else:
-            self.native.backgroundColor = native_color(color)
+class Context:
+    def __init__(self):
+        self.ui_context = uikit.UIGraphicsGetCurrentContext()
+        self.set_line_width(2.0)
 
     # Context management
     def save(self):
-        core_graphics.CGContextSaveGState(self.context)
+        core_graphics.CGContextSaveGState(self.ui_context)
 
     def restore(self):
-        core_graphics.CGContextRestoreGState(self.context)
+        core_graphics.CGContextRestoreGState(self.ui_context)
 
     # Setting attributes
     def set_fill_style(self, color):
         core_graphics.CGContextSetRGBFillColor(
-            self.context, color.r / 255, color.g / 255, color.b / 255, color.a
+            self.ui_context, color.r / 255, color.g / 255, color.b / 255, color.a
         )
 
     def set_line_dash(self, line_dash):
         core_graphics.CGContextSetLineDash(
-            self.context,
+            self.ui_context,
             0,
             (CGFloat * len(line_dash))(*line_dash),
             len(line_dash),
         )
 
     def set_line_width(self, line_width):
-        core_graphics.CGContextSetLineWidth(self.context, line_width)
+        core_graphics.CGContextSetLineWidth(self.ui_context, line_width)
 
     def set_stroke_style(self, color):
         core_graphics.CGContextSetRGBStrokeColor(
-            self.context, color.r / 255, color.g / 255, color.b / 255, color.a
+            self.ui_context, color.r / 255, color.g / 255, color.b / 255, color.a
         )
 
     # Basic paths
     def begin_path(self):
-        core_graphics.CGContextBeginPath(self.context)
+        core_graphics.CGContextBeginPath(self.ui_context)
 
     def close_path(self):
-        core_graphics.CGContextClosePath(self.context)
+        core_graphics.CGContextClosePath(self.ui_context)
 
     def move_to(self, x, y):
-        core_graphics.CGContextMoveToPoint(self.context, x, y)
+        core_graphics.CGContextMoveToPoint(self.ui_context, x, y)
 
     def line_to(self, x, y):
         self._ensure_subpath(x, y)
-        core_graphics.CGContextAddLineToPoint(self.context, x, y)
+        core_graphics.CGContextAddLineToPoint(self.ui_context, x, y)
 
     def _ensure_subpath(self, x, y):
-        if core_graphics.CGContextIsPathEmpty(self.context):
+        if core_graphics.CGContextIsPathEmpty(self.ui_context):
             self.move_to(x, y)
 
     # Basic shapes
@@ -146,12 +104,12 @@ class Canvas(Widget):
     ):
         self._ensure_subpath(cp1x, cp1y)
         core_graphics.CGContextAddCurveToPoint(
-            self.context, cp1x, cp1y, cp2x, cp2y, x, y
+            self.ui_context, cp1x, cp1y, cp2x, cp2y, x, y
         )
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         self._ensure_subpath(cpx, cpy)
-        core_graphics.CGContextAddQuadCurveToPoint(self.context, cpx, cpy, x, y)
+        core_graphics.CGContextAddQuadCurveToPoint(self.ui_context, cpx, cpy, x, y)
 
     def arc(
         self,
@@ -169,7 +127,7 @@ class Canvas(Widget):
         else:
             clockwise = 0
         core_graphics.CGContextAddArc(
-            self.context, x, y, radius, startangle, endangle, clockwise
+            self.ui_context, x, y, radius, startangle, endangle, clockwise
         )
 
     def ellipse(
@@ -196,7 +154,7 @@ class Canvas(Widget):
 
     def rect(self, x, y, width, height):
         rectangle = CGRectMake(x, y, width, height)
-        core_graphics.CGContextAddRect(self.context, rectangle)
+        core_graphics.CGContextAddRect(self.ui_context, rectangle)
 
     # Drawing Paths
     def fill(self, fill_rule):
@@ -204,36 +162,36 @@ class Canvas(Widget):
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)
-        if not core_graphics.CGContextIsPathEmpty(self.context):
-            path = core_graphics.CGContextCopyPath(self.context)
-            core_graphics.CGContextDrawPath(self.context, mode)
-            core_graphics.CGContextAddPath(self.context, path)
+        if not core_graphics.CGContextIsPathEmpty(self.ui_context):
+            path = core_graphics.CGContextCopyPath(self.ui_context)
+            core_graphics.CGContextDrawPath(self.ui_context, mode)
+            core_graphics.CGContextAddPath(self.ui_context, path)
 
     def stroke(self):
         mode = CGPathDrawingMode(kCGPathStroke)
 
-        if not core_graphics.CGContextIsPathEmpty(self.context):
-            path = core_graphics.CGContextCopyPath(self.context)
-            core_graphics.CGContextDrawPath(self.context, mode)
-            core_graphics.CGContextAddPath(self.context, path)
+        if not core_graphics.CGContextIsPathEmpty(self.ui_context):
+            path = core_graphics.CGContextCopyPath(self.ui_context)
+            core_graphics.CGContextDrawPath(self.ui_context, mode)
+            core_graphics.CGContextAddPath(self.ui_context, path)
 
     # Transformations
     def rotate(self, radians):
-        core_graphics.CGContextRotateCTM(self.context, radians)
+        core_graphics.CGContextRotateCTM(self.ui_context, radians)
 
     def scale(self, sx, sy):
-        core_graphics.CGContextScaleCTM(self.context, sx, sy)
+        core_graphics.CGContextScaleCTM(self.ui_context, sx, sy)
 
     def translate(self, tx, ty):
-        core_graphics.CGContextTranslateCTM(self.context, tx, ty)
+        core_graphics.CGContextTranslateCTM(self.ui_context, tx, ty)
 
     def reset_transform(self):
         # Restore the "clean" state of the graphics context.
-        core_graphics.CGContextRestoreGState(self.context)
+        core_graphics.CGContextRestoreGState(self.ui_context)
         # CoreGraphics has a stack-based state representation,
         # so ensure that there is a new, clean version of the "clean"
         # state on the stack.
-        core_graphics.CGContextSaveGState(self.context)
+        core_graphics.CGContextSaveGState(self.ui_context)
 
     # Text
     def _render_string(self, text, font, **kwargs):
@@ -315,6 +273,53 @@ class Canvas(Widget):
             rs.drawWithRect(
                 NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
             )
+
+
+class TogaCanvas(UIView):
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
+    @objc_method
+    def drawRect_(self, rect: CGRect) -> None:
+        self.interface.context._draw(Context())
+
+    @objc_method
+    def touchesBegan_withEvent_(self, touches, event) -> None:
+        position = touches.allObjects()[0].locationInView(self)
+        self.interface.on_press(position.x, position.y)
+
+    @objc_method
+    def touchesMoved_withEvent_(self, touches, event) -> None:
+        position = touches.allObjects()[0].locationInView(self)
+        self.interface.on_drag(position.x, position.y)
+
+    @objc_method
+    def touchesEnded_withEvent_(self, touches, event) -> None:
+        position = touches.allObjects()[0].locationInView(self)
+        self.interface.on_release(position.x, position.y)
+
+
+class Canvas(Widget):
+    def create(self):
+        self.native = TogaCanvas.alloc().init()
+        self.native.interface = self.interface
+        self.native.impl = self
+
+        # Add the layout constraints
+        self.add_constraints()
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        self.interface.on_resize(width=width, height=height)
+
+    def redraw(self):
+        self.native.setNeedsDisplay()
+
+    def set_background_color(self, color):
+        if color == TRANSPARENT or color is None:
+            self.native.backgroundColor = UIColor.clearColor
+        else:
+            self.native.backgroundColor = native_color(color)
 
     def get_image_data(self):
         renderer = UIGraphicsImageRenderer.alloc().initWithSize(self.native.bounds.size)

@@ -21,58 +21,18 @@ from ..colors import native_color
 from .base import Widget
 
 
-class DrawHandler(dynamic_proxy(IDrawHandler)):
-    def __init__(self, impl):
-        super().__init__()
-        self.impl = impl
-        self.interface = impl.interface
-
-    def handleDraw(self, canvas):
-        self.impl.reset_transform()
-        self.impl.canvas = canvas
-        self.impl.path = Path()
-        self.interface.context._draw(self.impl)
-
-
-class TouchListener(dynamic_proxy(View.OnTouchListener)):
-    def __init__(self, impl):
-        super().__init__()
-        self.impl = impl
-        self.interface = impl.interface
-
-    def onTouch(self, canvas, event):
-        x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
-        if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
-            self.interface.on_press(x, y)
-        elif action == MotionEvent.ACTION_MOVE:
-            self.interface.on_drag(x, y)
-        elif action == MotionEvent.ACTION_UP:
-            self.interface.on_release(x, y)
-        else:  # pragma: no cover
-            return False
-        return True
-
-
-class Canvas(Widget):
-    def create(self):
-        self.native = DrawHandlerView(self._native_activity)
-        self.native.setDrawHandler(DrawHandler(self))
-        self.native.setOnTouchListener(TouchListener(self))
-
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        self.interface.on_resize(width=width, height=height)
-
-    def redraw(self):
-        self.native.invalidate()
+class Context:
+    def __init__(self, canvas):
+        self.android_canvas = canvas
+        self.path = Path()
 
     # Context management
 
     def save(self):
-        self.canvas.save()
+        self.android_canvas.save()
 
     def restore(self):
-        self.canvas.restore()
+        self.android_canvas.restore()
 
     # Basic paths
 
@@ -145,7 +105,7 @@ class Canvas(Widget):
                 FillRule.NONZERO: Path.FillType.WINDING,
             }.get(fill_rule, Path.FillType.WINDING)
         )
-        self.canvas.drawPath(self.path, draw_paint)
+        self.android_canvas.drawPath(self.path, draw_paint)
 
     def stroke(self, color, line_width, line_dash):
         draw_paint = Paint()
@@ -158,22 +118,22 @@ class Canvas(Widget):
         if line_dash is not None:
             draw_paint.setPathEffect(DashPathEffect(line_dash, 0))
 
-        self.canvas.drawPath(self.path, draw_paint)
+        self.android_canvas.drawPath(self.path, draw_paint)
 
     # Transformations
 
     def rotate(self, radians):
-        self.canvas.rotate(degrees(radians))
+        self.android_canvas.rotate(degrees(radians))
 
     def scale(self, sx, sy):
-        self.canvas.scale(sx, sy)
+        self.android_canvas.scale(sx, sy)
 
     def translate(self, tx, ty):
-        self.canvas.translate(tx, ty)
+        self.android_canvas.translate(tx, ty)
 
     def reset_transform(self):
-        self.canvas.setMatrix(None)
-        self.scale(self.dpi_scale, self.dpi_scale, self.canvas)
+        self.android_canvas.setMatrix(None)
+        self.scale(self.dpi_scale, self.dpi_scale, self.android_canvas)
 
     # Text
     def _line_height(self, paint, line_height):
@@ -211,7 +171,7 @@ class Canvas(Widget):
             # FILL_AND_STROKE doesn't allow separate colors, so we have to draw twice.
             draw_args = [line, x, top + (scaled_line_height * line_num), paint]
 
-            self.canvas.drawText(*draw_args)
+            self.android_canvas.drawText(*draw_args)
             # if (color := kwargs.get("fill_color")) is not None:
             #     paint.setStyle(Paint.Style.FILL)
             #     paint.setColor(jint(native_color(color)))
@@ -229,6 +189,49 @@ class Canvas(Widget):
         paint.setTypeface(font.typeface())
         paint.setTextSize(self.scale_out(font.size()))
         return paint
+
+
+class DrawHandler(dynamic_proxy(IDrawHandler)):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+        self.interface = impl.interface
+
+    def handleDraw(self, canvas):
+        self.interface.context._draw(Context(canvas))
+
+
+class TouchListener(dynamic_proxy(View.OnTouchListener)):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+        self.interface = impl.interface
+
+    def onTouch(self, canvas, event):
+        x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
+        if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
+            self.interface.on_press(x, y)
+        elif action == MotionEvent.ACTION_MOVE:
+            self.interface.on_drag(x, y)
+        elif action == MotionEvent.ACTION_UP:
+            self.interface.on_release(x, y)
+        else:  # pragma: no cover
+            return False
+        return True
+
+
+class Canvas(Widget):
+    def create(self):
+        self.native = DrawHandlerView(self._native_activity)
+        self.native.setDrawHandler(DrawHandler(self))
+        self.native.setOnTouchListener(TouchListener(self))
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        self.interface.on_resize(width=width, height=height)
+
+    def redraw(self):
+        self.native.invalidate()
 
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(
