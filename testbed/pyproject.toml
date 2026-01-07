@@ -9,9 +9,9 @@ test = [
     # fonttools is only needed by Android, but we need to use sys.platform == 'linux'
     # for < 3.13 there's no dependency identifier that can target Android exclusively
     # before 3.13.
-    "fonttools==4.61.1 ; python_version < '3.13' and sys.platform == 'linux'",
-    "fonttools==4.61.1 ; python_version >= '3.13' and sys.platform == 'android'",
-    "psutil==7.2.1 ; python_version >= '3.13' and sys.platform in ['linux', 'darwin', 'win32']",
+    "fonttools==4.61.1 ; python_version < '3.13' and sys_platform == 'linux'",
+    "fonttools==4.61.1 ; python_version >= '3.13' and sys_platform == 'android'",
+    "psutil==7.2.1 ; python_version >= '3.13' and sys_platform in {'linux', 'darwin', 'win32'}",
     "pillow==11.0.0",
     "pytest==9.0.2",
     "pytest-asyncio==1.3.0",
