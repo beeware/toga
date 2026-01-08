@@ -56,7 +56,11 @@ def test_missing_listener_method():
     """If a listener doesn't implement a notification method, the notification is
     ignored."""
     full_listener = Mock()
-    partial_listener = object()
+
+    class PartialListener:
+        pass
+
+    partial_listener = PartialListener()
     source = Source()
 
     source.add_listener(full_listener)

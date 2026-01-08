@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Protocol
+from weakref import ReferenceType, ref
 
 
 class Listener(Protocol):
@@ -37,7 +38,7 @@ class Source:
     notifications."""
 
     def __init__(self) -> None:
-        self._listeners: list[Listener] = []
+        self._listeners: list[ReferenceType[Listener]] = []
 
     @property
     def listeners(self) -> list[Listener]:
@@ -45,7 +46,11 @@ class Source:
 
         :returns: A list of objects that are listening to this data source.
         """
-        return self._listeners
+        return [
+            listener
+            for listener in (listener_ref() for listener_ref in self._listeners)
+            if listener is not None
+        ]
 
     def add_listener(self, listener: Listener) -> None:
         """Add a new listener to this data source.
@@ -55,15 +60,19 @@ class Source:
 
         :param listener: The listener to add
         """
-        if listener not in self._listeners:
-            self._listeners.append(listener)
+        listener_ref = ref(listener, self.remove_listener)
+        if listener_ref not in self._listeners:
+            self._listeners.append(listener_ref)
 
-    def remove_listener(self, listener: Listener) -> None:
+    def remove_listener(self, listener: Listener | ReferenceType[Listener]) -> None:
         """Remove a listener from this data source.
 
         :param listener: The listener to remove.
         """
-        self._listeners.remove(listener)
+        if not isinstance(listener, ref):
+            listener = ref(listener, self.remove_listener)
+        if listener in self._listeners:
+            self._listeners.remove(listener)
 
     def notify(self, notification: str, **kwargs: object) -> None:
         """Notify all listeners an event has occurred.
@@ -71,7 +80,10 @@ class Source:
         :param notification: The notification to emit.
         :param kwargs: The data associated with the notification.
         """
-        for listener in self._listeners:
+        for listener_ref in self._listeners:
+            listener = listener_ref()
+            if listener is None:
+                continue
             try:
                 method = getattr(listener, notification)
             except AttributeError:
