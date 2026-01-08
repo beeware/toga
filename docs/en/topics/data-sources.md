@@ -30,7 +30,7 @@ If any attribute of a [`ValueSource`][toga.sources.ValueSource], [`Row`][toga.so
 When you create a widget like Selection or Table, and provide a data source for that widget, the widget is automatically added as a listener on that source.
 
 Although widgets are the obvious listeners for a data source, almost *any* object can register as a listener. For example, a second data source might register as a listener to an initial source to implement a filtered source. When an item is added to the first data source, the second data source will be notified, and can choose whether to include the new item in its own data representation.
-The data source stores a weak reference to all the listeners, so you should ensure that your code keeps a reference to any custom listeners, and ideally you should call [`remove_listener`][toga.sources.Source.remove_listener`] when you no longer need that listener to get updates, such as when the data source you are interested in changes.
+The data source stores a weak reference to all the listeners, so you should ensure that your code keeps a reference to any custom listeners, and ideally you should call [`remove_listener`][toga.sources.Source.remove_listener] when you no longer need that listener to get updates, such as when the data source you are interested in changes.
 
 ## Custom data sources
 
