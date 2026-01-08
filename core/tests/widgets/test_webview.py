@@ -68,6 +68,19 @@ def test_create_with_content():
     )
 
 
+def test_create_with_large_content():
+    """Static large HTML content can be loaded into the page at instantiation time."""
+    large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
+    webview = toga.WebView(url="https://example.com", content=large_content)
+
+    assert_action_performed_with(
+        widget,
+        "set content",
+        root_url="https://example.com",
+        content=large_content,
+    )
+
+
 def test_webview_load_disabled(monkeypatch):
     """If the backend doesn't support on_webview_load, a warning is raised."""
     try:
@@ -195,6 +208,18 @@ def test_set_content(widget):
         "set content",
         root_url="https://example.com",
         content="<h1>Fancy page</h1>",
+    )
+
+
+def test_set_large_content(widget):
+    """Static large HTML content can be loaded into the page."""
+    large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
+    widget.set_content("https://example.com", large_content)
+    assert_action_performed_with(
+        widget,
+        "set content",
+        root_url="https://example.com",
+        content=large_content,
     )
 
 
