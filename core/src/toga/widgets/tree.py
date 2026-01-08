@@ -108,9 +108,7 @@ class Tree(Widget):
 
     def _connect_listeners(self):
         """Connect the data source to the implementation for updates while in layout."""
-        if isinstance(self._data, Source):
-            self._data.add_listener(self._impl)
-        # tell the implementation to update the displayed data
+        self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
 
     def _disconnect_listeners(self):
@@ -119,8 +117,7 @@ class Tree(Widget):
         This also ensures that when the app is completely done with the widget, it
         isn't kept alive by the connection to the Source.
         """
-        if isinstance(self._data, Source):
-            self._data.remove_listener(self._impl)
+        self._data.remove_listener(self._impl)
 
     @property
     def enabled(self) -> Literal[True]:
@@ -153,7 +150,7 @@ class Tree(Widget):
 
     @data.setter
     def data(self, data: TreeSourceT | object | None) -> None:
-        if isinstance(self._data, Source) and self.window is not None:
+        if self._data is not None and self.window is not None:
             # disable updates from the old data source
             self._data.remove_listener(self._impl)
 

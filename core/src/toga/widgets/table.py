@@ -155,7 +155,7 @@ class Table(Widget):
 
     @data.setter
     def data(self, data: ListSourceT | Iterable | None) -> None:
-        if isinstance(self._data, Source) and self.window is not None:
+        if self._data is not None and self.window is not None:
             # disable updates from the old data source
             self._data.remove_listener(self._impl)
 
