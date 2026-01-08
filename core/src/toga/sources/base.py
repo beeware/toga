@@ -35,7 +35,12 @@ class Listener(Protocol):
 
 class Source:
     """A base class for data sources, providing an implementation of data
-    notifications."""
+    notifications.
+
+    Source only keeps weak references to its listeners, so users of custom
+    listeners should insure that they keep a reference to their listeners
+    for as long as they need them.
+    """
 
     def __init__(self) -> None:
         self._listeners: list[ReferenceType[Listener]] = []
@@ -67,7 +72,7 @@ class Source:
     def remove_listener(self, listener: Listener | ReferenceType[Listener]) -> None:
         """Remove a listener from this data source.
 
-        :param listener: The listener to remove.
+        :param listener: The listener to remove or a weak reference to it.
         """
         if not isinstance(listener, ref):
             listener = ref(listener, self.remove_listener)
