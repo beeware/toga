@@ -42,6 +42,10 @@ class ListListener(ValueListener, Protocol):
         """All items have been removed from the data source."""
 
 
+# Alias for backwards compatibility.
+Listener = ListListener
+
+
 @runtime_checkable
 class TreeListener(ListListener, Protocol):
     """The protocol that must be implemented by objects that will act as a listener on a
