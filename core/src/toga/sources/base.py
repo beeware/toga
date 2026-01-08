@@ -15,7 +15,6 @@ class ValueListener(Protocol):
         """A change has occurred in an item.
 
         :param item: The data object that has changed.
-        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
@@ -30,7 +29,6 @@ class ListListener(ValueListener, Protocol):
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
-        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
     def remove(self, *, index: int, item: object) -> object:
@@ -38,7 +36,6 @@ class ListListener(ValueListener, Protocol):
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
-        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
     def clear(self) -> object:
@@ -58,7 +55,6 @@ class TreeListener(ListListener, Protocol):
         :param item: The data object that was added.
         :param parent: The parent of the data object that was added, or `None`
         if it is a root item.
-        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
     def remove(self, *, index: int, item: object, parent: object = None) -> object:
@@ -68,7 +64,6 @@ class TreeListener(ListListener, Protocol):
         :param item: The data object that was added.
         :param parent: The parent of the data object that was removed, or `None`
         if it is a root item.
-        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
