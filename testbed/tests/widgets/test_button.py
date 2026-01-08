@@ -54,14 +54,6 @@ async def test_text(widget, probe):
         assert probe.height == approx(initial_height, abs=2)
 
 
-async def test_large_icon(widget, probe):
-    """The button remains an appropriate size with a high-resolution
-    image"""
-    widget.icon = "resources/icons/huge"
-    await probe.redraw("Button now has a high-resolution image as icon")
-    probe.assert_icon_size()
-
-
 async def test_icon(widget, probe):
     """The button can be converted to an icon button and back"""
     # Initial button is a text button.
@@ -70,7 +62,7 @@ async def test_icon(widget, probe):
     probe.assert_no_icon()
     initial_height = probe.height
 
-    # Set an icon
+    # Set an icon. The icon image is bigger than 32x32, so it should be scaled
     widget.icon = "resources/icons/red"
     await probe.redraw("Button is now an icon button")
 
