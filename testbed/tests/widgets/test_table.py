@@ -627,4 +627,4 @@ async def test_cell_widget(widget, probe):
 
 def test_list_listener(widget):
     """Does the widget implement the ListListener API"""
-    assert isinstance(widget, ListListener)
+    assert isinstance(widget._impl, ListListener)

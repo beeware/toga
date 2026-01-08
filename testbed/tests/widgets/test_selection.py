@@ -315,4 +315,4 @@ async def test_resize_on_content_change(widget, probe):
 
 def test_list_listener(widget):
     """Does the widget implement the ListListener API"""
-    assert isinstance(widget, ListListener)
+    assert isinstance(widget._impl, ListListener)
