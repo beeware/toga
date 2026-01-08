@@ -118,7 +118,7 @@ class Tree(Widget):
             row[i * 2 + 1] = row[0].icon(accessor)
             row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
 
-    def remove(self, item, index, parent=None):
+    def remove(self, index, item, parent=None):
         del self.store[item._impl]
         item._impl = None
 

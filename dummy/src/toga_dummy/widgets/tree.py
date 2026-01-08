@@ -25,7 +25,7 @@ class Tree(Widget):
     def change(self, item):
         self._action("change node", item=item)
 
-    def remove(self, item, index, parent=None):
+    def remove(self, index, item, parent=None):
         self._action("remove node", parent=parent, index=index, item=item)
 
     def clear(self):
