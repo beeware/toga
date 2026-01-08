@@ -168,6 +168,22 @@ class Tree(Widget):
         """
         return self._impl.get_selection()
 
+    @property
+    def _selection_single(self) -> Node | None:
+        """The currently selected node of the tree.
+
+        Returns :any:`None` if no node is currently selected, or if multiple nodes are
+        selected.
+        """
+        selection = self.selection
+        if self.multiple_select:
+            if len(selection) == 1:
+                return selection[0]
+            else:
+                return None
+        else:
+            return selection
+
     def expand(self, node: Node | None = None) -> None:
         """Expand the specified node of the tree.
 

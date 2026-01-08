@@ -176,6 +176,22 @@ class Table(Widget):
         else:
             return self.data[selection]
 
+    @property
+    def _selection_single(self) -> Row | None:
+        """The currently selected row of the table.
+
+        Returns :any:`None` if no row is currently selected, or if multiple rows are
+        selected.
+        """
+        selection = self.selection
+        if self.multiple_select:
+            if len(selection) == 1:
+                return selection[0]
+            else:
+                return None
+        else:
+            return selection
+
     def scroll_to_top(self) -> None:
         """Scroll the view so that the top of the list (first row) is visible."""
         self.scroll_to_row(0)

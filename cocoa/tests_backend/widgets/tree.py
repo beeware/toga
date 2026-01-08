@@ -13,6 +13,7 @@ from .properties import toga_color
 class TreeProbe(SimpleProbe):
     native_class = NSScrollView
     supports_keyboard_shortcuts = True
+    supports_keyboard_boundary_shortcuts = False
     supports_widgets = True
 
     def __init__(self, widget):
@@ -184,3 +185,8 @@ class TreeProbe(SimpleProbe):
             delay=0.1,
             clickCount=2,
         )
+
+    async def select_first_row_keyboard(self):
+        # Use the keyboard to ensure first row is selected.
+        await self.type_character("<down>")
+        await self.type_character("<up>")

@@ -229,6 +229,7 @@ def test_single_selection(table, on_select_handler):
     """The current selection can be retrieved."""
     # Selection is initially empty
     assert table.selection is None
+    assert table._selection_single is None
     on_select_handler.assert_not_called()
 
     # Select an item
@@ -236,6 +237,9 @@ def test_single_selection(table, on_select_handler):
 
     # Selection returns a single row
     assert table.selection == table.data[1]
+
+    # _selection_single returns a single row
+    assert table._selection_single == table.data[1]
 
     # Selection handler was triggered
     on_select_handler.assert_called_once_with(table)
@@ -251,13 +255,30 @@ def test_multiple_selection(source, on_select_handler):
     )
     # Selection is initially empty
     assert table.selection == []
+    assert table._selection_single is None
     on_select_handler.assert_not_called()
 
     # Select an item
+    table._impl.simulate_selection([2])
+
+    # Selection returns a list of rows
+    assert table.selection == [table.data[2]]
+
+    # _selection_single a single item
+    assert table._selection_single is table.data[2]
+
+    # Selection handler was triggered
+    on_select_handler.assert_called_once_with(table)
+    on_select_handler.reset_mock()
+
+    # Select multiple items
     table._impl.simulate_selection([0, 2])
 
     # Selection returns a list of rows
     assert table.selection == [table.data[0], table.data[2]]
+
+    # _selection_single returns None
+    assert table._selection_single is None
 
     # Selection handler was triggered
     on_select_handler.assert_called_once_with(table)

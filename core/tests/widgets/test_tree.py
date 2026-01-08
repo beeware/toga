@@ -275,6 +275,7 @@ def test_single_selection(tree, on_select_handler):
     """The current selection can be retrieved."""
     # Selection is initially empty
     assert tree.selection is None
+    assert tree._selection_single is None
     on_select_handler.assert_not_called()
 
     # Select an item
@@ -282,6 +283,9 @@ def test_single_selection(tree, on_select_handler):
 
     # Selection returns a single row
     assert tree.selection == tree.data[0][1]
+
+    # _selection_single returns a single node
+    assert tree._selection_single == tree.data[0][1]
 
     # Selection handler was triggered
     on_select_handler.assert_called_once_with(tree)
@@ -297,13 +301,30 @@ def test_multiple_selection(source, on_select_handler):
     )
     # Selection is initially empty
     assert tree.selection == []
+    assert tree._selection_single is None
     on_select_handler.assert_not_called()
 
     # Select an item
+    tree._impl.simulate_selection([(1, 2, 1)])
+
+    # Selection returns a list of rows
+    assert tree.selection == [tree.data[1][2][1]]
+
+    # _selection_single returns a single item
+    assert tree._selection_single == tree.data[1][2][1]
+
+    # Selection handler was triggered
+    on_select_handler.assert_called_once_with(tree)
+    on_select_handler.reset_mock()
+
+    # Select multiple items
     tree._impl.simulate_selection([(0, 1), (1, 2, 1)])
 
     # Selection returns a list of rows
     assert tree.selection == [tree.data[0][1], tree.data[1][2][1]]
+
+    # _selection_single returns None
+    assert tree._selection_single is None
 
     # Selection handler was triggered
     on_select_handler.assert_called_once_with(tree)

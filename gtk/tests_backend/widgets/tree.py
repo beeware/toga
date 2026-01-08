@@ -104,3 +104,6 @@ class TreeProbe(SimpleProbe):
             Gtk.TreePath(row_path),
             self.native_tree.get_columns()[0],
         )
+
+    async def select_first_row_keyboard(self):
+        pytest.skip("test not implemented for this platform")
