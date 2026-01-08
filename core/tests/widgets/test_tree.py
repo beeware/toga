@@ -229,12 +229,23 @@ def test_disable_no_op(tree):
 def test_set_data(tree, on_select_handler, data, all_attributes, extra_attributes):
     """Data can be set from a variety of sources."""
 
+    # The implementation is not a listener on the data
+    old_data = tree.data
+    assert tree._impl not in old_data.listeners
+
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
+
+    # Connect a Window
+    tree.window = toga.Window()
 
     # The implementation is a listener on the data
     old_data = tree.data
     assert tree._impl in old_data.listeners
+
+    # This triggered the select handler
+    on_select_handler.assert_called_once_with(tree)
+    on_select_handler.reset_mock()
 
     # Change the data
     tree.data = data
@@ -247,6 +258,7 @@ def test_set_data(tree, on_select_handler, data, all_attributes, extra_attribute
 
     # This triggered the select handler
     on_select_handler.assert_called_once_with(tree)
+    on_select_handler.reset_mock()
 
     # A TreeSource has been constructed
     assert isinstance(tree.data, TreeSource)
@@ -269,6 +281,15 @@ def test_set_data(tree, on_select_handler, data, all_attributes, extra_attribute
         assert tree.data[0][0].other == "extra1"
         assert tree.data[0][1].other == "extra2"
         assert tree.data[0][2].other == "extra3"
+
+    # Disconnect the Window
+    tree.window = None
+
+    # The implementation is not a listener on the data
+    assert tree._impl not in tree.data.listeners
+
+    # The selection did't change
+    on_select_handler.assert_not_called()
 
 
 def test_single_selection(tree, on_select_handler):

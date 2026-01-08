@@ -199,12 +199,23 @@ def test_set_data(
 ):
     """Data can be set from a variety of sources."""
 
+    # The implementation is not a listener on the data
+    old_data = detailedlist.data
+    assert detailedlist._impl not in old_data.listeners
+
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
+
+    # Connect a Window
+    detailedlist.window = toga.Window()
 
     # The implementation is a listener on the data
     old_data = detailedlist.data
     assert detailedlist._impl in old_data.listeners
+
+    # This triggered the select handler
+    on_select_handler.assert_called_once_with(detailedlist)
+    on_select_handler.reset_mock()
 
     # Change the data
     detailedlist.data = data
@@ -217,6 +228,7 @@ def test_set_data(
 
     # This triggered the select handler
     on_select_handler.assert_called_once_with(detailedlist)
+    on_select_handler.reset_mock()
 
     # A ListSource has been constructed
     assert isinstance(detailedlist.data, ListSource)
@@ -243,6 +255,15 @@ def test_set_data(
         assert detailedlist.data[0].extra == "extra1"
         assert detailedlist.data[1].extra == "extra2"
         assert detailedlist.data[2].extra == "extra3"
+
+    # Disconnect the Window
+    detailedlist.window = None
+
+    # The implementation is not a listener on the data
+    assert detailedlist._impl not in detailedlist.data.listeners
+
+    # The selection did't change
+    on_select_handler.assert_not_called()
 
 
 def test_selection(detailedlist, on_select_handler):

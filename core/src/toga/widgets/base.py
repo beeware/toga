@@ -332,17 +332,35 @@ class Widget(Node, PackMixin):
         if self.window is not None and window is None:
             # If the widget is currently in the registry, but is being removed from a
             # window, remove the widget from the widget registry
+            self._disconnect_listeners()
             self.window.app.widgets._remove(self.id)
         elif self.window is None and window is not None:
             # If the widget is being assigned to a window for the first time, add it to
             # the widget registry
             window.app.widgets._add(self)
+            self._connect_listeners()
 
         self._window = window
         self._impl.set_window(window)
 
         for child in self.children:
             child.window = window
+
+    def _connect_listeners(self):
+        """Hook for subclasses to connect to data sources and refresh their display.
+
+        In particular, widgets which use Sources will want to (re-)connect any listeners
+        to their Sources.
+        """
+        pass
+
+    def _disconnect_listeners(self):
+        """Hook for subclasses to pause things which might trigger needless updates.
+
+        In particular, widgets which use Sources will want to remove any listeners to
+        their Sources.
+        """
+        pass
 
     @property
     def enabled(self) -> bool:

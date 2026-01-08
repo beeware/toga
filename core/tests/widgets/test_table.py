@@ -184,12 +184,23 @@ def test_disable_no_op(table):
 def test_set_data(table, on_select_handler, data, all_attributes, extra_attributes):
     """Data can be set from a variety of sources."""
 
+    # The implementation is not a listener on the data
+    old_data = table.data
+    assert table._impl not in old_data.listeners
+
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
+
+    # Connect a Window
+    table.window = toga.Window()
 
     # The implementation is a listener on the data
     old_data = table.data
     assert table._impl in old_data.listeners
+
+    # This triggered the select handler
+    on_select_handler.assert_called_once_with(table)
+    on_select_handler.reset_mock()
 
     # Change the data
     table.data = data
@@ -202,6 +213,7 @@ def test_set_data(table, on_select_handler, data, all_attributes, extra_attribut
 
     # This triggered the select handler
     on_select_handler.assert_called_once_with(table)
+    on_select_handler.reset_mock()
 
     # A ListSource has been constructed
     assert isinstance(table.data, ListSource)
@@ -223,6 +235,15 @@ def test_set_data(table, on_select_handler, data, all_attributes, extra_attribut
         assert table.data[0].extra == "extra1"
         assert table.data[1].extra == "extra2"
         assert table.data[2].extra == "extra3"
+
+    # Disconnect the Window
+    table.window = None
+
+    # The implementation is not a listener on the data
+    assert table._impl not in table.data.listeners
+
+    # The selection did't change
+    on_select_handler.assert_not_called()
 
 
 def test_single_selection(table, on_select_handler):

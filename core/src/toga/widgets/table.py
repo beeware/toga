@@ -108,6 +108,22 @@ class Table(Widget):
     def _create(self) -> Any:
         return self.factory.Table(interface=self)
 
+    def _connect_listeners(self):
+        """Connect the data source to the implementation for updates while in layout."""
+        if isinstance(self._data, Source):
+            self._data.add_listener(self._impl)
+        # tell the implementation to update the displayed data
+        self._impl.change_source(source=self._data)
+
+    def _disconnect_listeners(self):
+        """Disconnect the data source from the implementation while not in layout.
+
+        This also ensures that when the app is completely done with the widget, it
+        isn't kept alive by the connection to the Source.
+        """
+        if isinstance(self._data, Source):
+            self._data.remove_listener(self._impl)
+
     @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
@@ -139,7 +155,8 @@ class Table(Widget):
 
     @data.setter
     def data(self, data: ListSourceT | Iterable | None) -> None:
-        if self._data is not None:
+        if isinstance(self._data, Source) and self.window is not None:
+            # disable updates from the old data source
             self._data.remove_listener(self._impl)
 
         if data is None:
@@ -149,8 +166,10 @@ class Table(Widget):
         else:
             self._data = ListSource(accessors=self._accessors, data=data)
 
-        self._data.add_listener(self._impl)
-        self._impl.change_source(source=self._data)
+        if self.window is not None:
+            # enable updates from the new data source and refresh
+            self._data.add_listener(self._impl)
+            self._impl.change_source(source=self._data)
 
     @property
     def multiple_select(self) -> bool:
