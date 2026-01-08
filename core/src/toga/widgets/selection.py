@@ -112,7 +112,7 @@ class Selection(Widget):
         # Clear the widget, and insert all the data rows
         self._impl.clear()
         for index, item in enumerate(self.items):
-            self._impl.insert(index=index, item=item)
+            self._impl.insert(index, item)
 
         # Restore the original change handler and trigger it.
         self._on_change = orig_on_change
