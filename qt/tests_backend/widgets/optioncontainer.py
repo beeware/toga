@@ -8,6 +8,9 @@ class OptionContainerProbe(SimpleProbe):
     max_tabs = None
     disabled_tab_selectable = True
 
+    def assert_supports_content_based_rehint(self):
+        pass
+
     def select_tab(self, index):
         self.native.setCurrentIndex(index)
 
