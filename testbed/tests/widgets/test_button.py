@@ -62,7 +62,7 @@ async def test_icon(widget, probe):
     probe.assert_no_icon()
     initial_height = probe.height
 
-    # Set an icon
+    # Set an icon. The icon image is bigger than 32x32, so it should be scaled
     widget.icon = "resources/icons/red"
     await probe.redraw("Button is now an icon button")
 
