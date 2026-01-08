@@ -91,22 +91,29 @@ def assert_tab_text(tab, expected):
 
 
 async def test_content_size_rehint(
-    widget, probe, content1, content1_probe, content3, main_window, main_window_probe
+    widget,
+    probe,
+    content1,
+    content1_probe,
+    content3,
+    main_window,
+    main_window_probe,
 ):
     """The OptionContainer should rehint to minimum size of all widgets plus necessary
     decors, and should automatically rehint upon the addition of new tabs."""
-    if not probe.supports_content_based_rehint:
-        pytest.skip("Accurate rehinting not yet implemented on this platform")
+    probe.assert_supports_content_based_rehint()
     main_window.size = (300, 300)
     await main_window_probe.redraw("Main window size should be 300x300")
 
     content3.width = 500
     content3.height = 600
-    # 1 seconds to allow events to propagate properly, since the refreshment happens
-    # across multiple event loop iterations.
-    # 1 second is chosen because some CI machines can be notoriously slow with our
-    # GTK implementation.
-    await probe.redraw("Tab 3's size should be explicitly set to 500x600", delay=1)
+
+    # Wait for size of content to change. Use content1 because content3 is not selected,
+    # and as a result, may not have a valid size.
+    await probe.redraw(
+        "Tab 3's size should be explicitly set to 500x600",
+        wait_for=lambda: content1_probe.width == 500 and content1_probe.height == 600,
+    )
 
     assert main_window.size.width >= 500
     assert main_window.size.height > 600

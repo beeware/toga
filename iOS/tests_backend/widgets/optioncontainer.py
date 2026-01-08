@@ -1,3 +1,5 @@
+import pytest
+
 from toga_iOS.libs import UITabBarController
 
 from .base import SimpleProbe
@@ -9,7 +11,6 @@ class OptionContainerProbe(SimpleProbe):
     disabled_tab_selectable = False
     max_tabs = None
     more_option_is_stateful = True
-    supports_content_based_rehint = False
 
     @property
     def width(self):
@@ -18,6 +19,9 @@ class OptionContainerProbe(SimpleProbe):
     @property
     def height(self):
         return self.native.frame.size.height
+
+    def assert_supports_content_based_rehint(self):
+        pytest.skip("Content-based rehinting not yet supported on this platform")
 
     def select_tab(self, index):
         # Can't select a disabled tab, so make the call a no-op.

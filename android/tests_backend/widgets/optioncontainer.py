@@ -1,3 +1,4 @@
+import pytest
 from android.widget import LinearLayout
 from com.google.android.material.bottomnavigation import BottomNavigationView
 
@@ -7,13 +8,15 @@ from .base import SimpleProbe
 class OptionContainerProbe(SimpleProbe):
     native_class = LinearLayout
     disabled_tab_selectable = False
-    supports_content_based_rehint = False
     max_tabs = 5
 
     def __init__(self, widget):
         super().__init__(widget)
         self.native_navigationview = widget._impl.native_navigationview
         assert isinstance(self.native_navigationview, BottomNavigationView)
+
+    def assert_supports_content_based_rehint(self):
+        pytest.skip("Content-based rehinting not yet supported on this platform")
 
     def select_tab(self, index):
         item = self.native_navigationview.getMenu().getItem(index)

@@ -1,3 +1,4 @@
+import pytest
 from System.Windows.Forms import TabControl
 
 from .base import SimpleProbe
@@ -7,7 +8,9 @@ class OptionContainerProbe(SimpleProbe):
     native_class = TabControl
     max_tabs = None
     disabled_tab_selectable = True
-    supports_content_based_rehint = False
+
+    def assert_supports_content_based_rehint(self):
+        pytest.skip("Content-based rehinting not yet supported on this platform")
 
     def select_tab(self, index):
         self.native.SelectedIndex = index

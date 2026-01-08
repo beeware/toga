@@ -9,10 +9,12 @@ class OptionContainerProbe(SimpleProbe):
     native_class = Gtk.Notebook
     max_tabs = None
     disabled_tab_selectable = False
-    supports_content_based_rehint = True
 
     if GTK_VERSION >= (4, 0, 0):
         pytest.skip("GTK4 doesn't support option containers yet")
+
+    def assert_supports_content_based_rehint(self):
+        pass
 
     def select_tab(self, index):
         # Can't select a tab that isn't visible.
