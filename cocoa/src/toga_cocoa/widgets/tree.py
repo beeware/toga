@@ -219,7 +219,7 @@ class Tree(Widget):
     def change_source(self, source):
         self.native_tree.reloadData()
 
-    def insert(self, *, index: int, item: object, parent: object = None):
+    def insert(self, parent, index, item):
         index_set = NSIndexSet.indexSetWithIndex(index)
         self.native_tree.insertItemsAtIndexes(
             index_set,
@@ -227,10 +227,10 @@ class Tree(Widget):
             withAnimation=NSTableViewAnimation.SlideDown.value,
         )
 
-    def change(self, *, item: object):
+    def change(self, item):
         self.native_tree.reloadItem(node_impl(item))
 
-    def remove(self, *, index: int, item: object, parent: object = None):
+    def remove(self, parent, index, item):
         try:
             index = self.native_tree.childIndexForItem(item._impl)
             index_set = NSIndexSet.indexSetWithIndex(index)

@@ -128,7 +128,7 @@ class Table(Widget):
         else:  # pragma: no-cover-if-gtk3
             pass
 
-    def insert(self, *, index: int, item: object):
+    def insert(self, index, item):
         row = TogaRow(item)
         values = [row]
         for accessor in self.interface.accessors:
@@ -141,14 +141,14 @@ class Table(Widget):
 
         self.store.insert(index, values)
 
-    def change(self, *, item: object):
+    def change(self, item):
         index = self.interface.data.index(item)
         row = self.store[index]
         for i, accessor in enumerate(self.interface.accessors):
             row[i * 2 + 1] = row[0].icon(accessor)
             row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
 
-    def remove(self, *, index: int, item: object):
+    def remove(self, index, item):
         del self.store[index]
 
     def clear(self):

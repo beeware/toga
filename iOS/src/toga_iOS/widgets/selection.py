@@ -127,7 +127,7 @@ class Selection(Widget):
         # Get rid of focus to force the user to re-open the selection
         self.native_picker.resignFirstResponder()
 
-    def change(self, *, item: object):
+    def change(self, item):
         index = self.interface.items.index(item)
         if self.native_picker.selectedRowInComponent(0) == index:
             self.native.text = self.interface._title_for_item(item)
@@ -138,7 +138,7 @@ class Selection(Widget):
         # Changing the item text can change the layout size
         self.interface.refresh()
 
-    def remove(self, *, index: int, item: object):
+    def remove(self, index, item):
         selection_change = self.native_picker.selectedRowInComponent(0) == index
 
         # Get rid of focus to force the user to re-open the selection
@@ -153,7 +153,7 @@ class Selection(Widget):
         self.native_picker.resignFirstResponder()
         self._reset_selection()
 
-    def select_item(self, *, index: int, item: object):
+    def select_item(self, index, item):
         if item is not None:
             self.native.text = self.interface._title_for_item(item)
             self.native_picker.selectRow(index, inComponent=0, animated=False)

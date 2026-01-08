@@ -6,17 +6,17 @@ class Selection(Widget):
         self._action("create Selection")
         self._items = []
 
-    def insert(self, *, index: int, item: object):
+    def insert(self, index, item):
         self._action("insert item", index=index, item=item)
         self._items.insert(index, item)
         # If this is the first item to be inserted, it should be selected.
         if len(self._items) == 1:
             self.simulate_selection(self._items[0])
 
-    def change(self, *, item: object):
+    def change(self, item):
         self._action("change item", item=item)
 
-    def remove(self, *, index: int, item: object):
+    def remove(self, index, item):
         self._action("remove item", index=index, item=item)
         del self._items[index]
 

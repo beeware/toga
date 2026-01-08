@@ -256,13 +256,13 @@ class Table(Widget):
         self.native.VirtualListSize = len(self._data)
         self._cache = []
 
-    def insert(self, *, index: int, item: object):
+    def insert(self, index, item):
         self.update_data()
 
-    def change(self, *, item: object):
+    def change(self, item):
         self.update_data()
 
-    def remove(self, *, index: int, item: object):
+    def remove(self, index, item):
         self.update_data()
 
     def clear(self):

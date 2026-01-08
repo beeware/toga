@@ -189,16 +189,16 @@ class Table(Widget):
         else:
             return selection[0]
 
-    def insert(self, *, index: int, item: object):
+    def insert(self, index, item):
         self.change_source(self.interface.data)
 
     def clear(self):
         self.change_source(self.interface.data)
 
-    def change(self, *, item: object):
+    def change(self, item):
         self.change_source(self.interface.data)
 
-    def remove(self, *, index: int, item: object):
+    def remove(self, index, item):
         self.change_source(self.interface.data)
 
     def scroll_to_row(self, index):

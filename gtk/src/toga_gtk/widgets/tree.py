@@ -91,7 +91,7 @@ class Tree(Widget):
         else:  # pragma: no-cover-if-gtk3
             pass
 
-    def insert(self, *, index: int, item: object, parent: object = None):
+    def insert(self, parent, index, item):
         row = TogaRow(item)
         values = [row]
         for accessor in self.interface.accessors:
@@ -112,13 +112,13 @@ class Tree(Widget):
         for i, child in enumerate(item):
             self.insert(item, i, child)
 
-    def change(self, *, item: object):
+    def change(self, item):
         row = self.store[item._impl]
         for i, accessor in enumerate(self.interface.accessors):
             row[i * 2 + 1] = row[0].icon(accessor)
             row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
 
-    def remove(self, *, index: int, item: object, parent: object = None):
+    def remove(self, item, index, parent):
         del self.store[item._impl]
         item._impl = None
 

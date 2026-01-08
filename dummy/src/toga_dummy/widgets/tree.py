@@ -19,13 +19,13 @@ class Tree(Widget):
         self._action("change source", source=source)
         self.interface.on_select()
 
-    def insert(self, *, index: int, item: object, parent: object = None):
+    def insert(self, parent, index, item):
         self._action("insert node", parent=parent, index=index, item=item)
 
-    def change(self, *, item: object):
+    def change(self, item):
         self._action("change node", item=item)
 
-    def remove(self, *, index: int, item: object, parent: object = None):
+    def remove(self, parent, item, index):
         self._action("remove node", parent=parent, index=index, item=item)
 
     def clear(self):
