@@ -1,53 +1,93 @@
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Generic, Protocol, TypeVar, runtime_checkable
+
+ListenerT = TypeVar("ListenerT")
 
 
-class Listener(Protocol):
+@runtime_checkable
+class ValueListener(Protocol):
     """The protocol that must be implemented by objects that will act as a listener on a
-    data source.
+    value data source.
     """
 
-    def change(self, item: object) -> object:
+    def change(self, *, item: object) -> object:
         """A change has occurred in an item.
 
         :param item: The data object that has changed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
-    def insert(self, index: int, item: object) -> object:
+
+@runtime_checkable
+class ListListener(ValueListener, Protocol):
+    """The protocol that must be implemented by objects that will act as a listener on a
+    list data source.
+    """
+
+    def insert(self, *, index: int, item: object) -> object:
         """An item has been added to the data source.
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
-    def remove(self, index: int, item: object) -> object:
+    def remove(self, *, index: int, item: object) -> object:
         """An item has been removed from the data source.
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
     def clear(self) -> object:
         """All items have been removed from the data source."""
 
 
-class Source:
+@runtime_checkable
+class TreeListener(ListListener, Protocol):
+    """The protocol that must be implemented by objects that will act as a listener on a
+    tree data source.
+    """
+
+    def insert(self, *, index: int, item: object, parent: object = None) -> object:
+        """An item has been added to the data source.
+
+        :param index: The 0-index position in the data.
+        :param item: The data object that was added.
+        :param parent: The parent of the data object that was added, or `None`
+        if it is a root item.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+    def remove(self, *, index: int, item: object, parent: object = None) -> object:
+        """An item has been removed from the data source.
+
+        :param index: The 0-index position in the data.
+        :param item: The data object that was added.
+        :param parent: The parent of the data object that was removed, or `None`
+        if it is a root item.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
+class Source(Generic[ListenerT]):
     """A base class for data sources, providing an implementation of data
     notifications."""
 
     def __init__(self) -> None:
-        self._listeners: list[Listener] = []
+        self._listeners: list[ListenerT] = []
 
     @property
-    def listeners(self) -> list[Listener]:
+    def listeners(self) -> list[ListenerT]:
         """The listeners of this data source.
 
         :returns: A list of objects that are listening to this data source.
         """
         return self._listeners
 
-    def add_listener(self, listener: Listener) -> None:
+    def add_listener(self, listener: ListenerT) -> None:
         """Add a new listener to this data source.
 
         If the listener is already registered on this data source, the request to add is
@@ -58,7 +98,7 @@ class Source:
         if listener not in self._listeners:
             self._listeners.append(listener)
 
-    def remove_listener(self, listener: Listener) -> None:
+    def remove_listener(self, listener: ListenerT) -> None:
         """Remove a listener from this data source.
 
         :param listener: The listener to remove.

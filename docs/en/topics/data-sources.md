@@ -18,7 +18,9 @@ Although Toga provides these built-in data sources, in general, *you shouldn't u
 
 ### Listeners
 
-Data sources communicate using a [`Listener`][toga.sources.Listener] interface. When any significant event occurs to the data source, all listeners will be notified. This includes:
+Data sources communicate using a `Listener` interface which specifies the methods a listener object should implement to handle particular change notifications. Each type of Source has a corresponding Listener interface: [`ValueListener`][toga.sources.base.ValueListener], [`ListListener`][toga.sources.base.ListListener] and [`TreeListener`][toga.sources.base.TreeListener].
+
+When any significant event occurs to the data source, all listeners will be notified. This includes:
 
 - Adding a new item
 - Removing an existing item
@@ -31,8 +33,10 @@ When you create a widget like Selection or Table, and provide a data source for 
 
 Although widgets are the obvious listeners for a data source, *any* object can register as a listener. For example, a second data source might register as a listener to an initial source to implement a filtered source. When an item is added to the first data source, the second data source will be notified, and can choose whether to include the new item in its own data representation.
 
+Listeners only have to implement the methods that they need for their functionality: missing methods will be ignored. It is strongly recommended that methods on custom listeners include a `**kwargs` parameter to ensure compatibility against future additional changes to the listener interfaces which may introduce new parameters.
+
 ## Custom data sources
 
 A custom data source enables you to provide a data manipulation API that makes sense for your application. For example, if you were writing an application to display files on a file system, you shouldn't just build a dictionary of files, and use that to construct a [`TreeSource`][toga.sources.TreeSource]. Instead, you should write your own `FileSystemSource` that reflects the files on the file system. Your file system data source doesn't need to expose `insert()` or `remove()` methods - because the end user doesn't need an interface to "insert" files into your file system. However, you might have a `create_empty_file()` method that creates a new file in the file system and adds a representation to the data tree.
 
-Custom data sources are also required to emit notifications whenever notable events occur. This allows the widgets rendering the data source to respond to changes in data. If a data source doesn't emit notifications, widgets may not reflect changes in data. Toga provides a [`Source`][source] base class for custom data source implementations. This base class implements the notification API.
+Custom data sources are also required to emit notifications whenever notable events occur. This allows the widgets rendering the data source to respond to changes in data. To be used as a data source for a particular widget type, the custom data source must emit compatible notifications. If a data source doesn't emit notifications, widgets may not reflect changes in data.  Toga provides a [`Source`][source] base class for custom data source implementations. This base class implements the notification API.

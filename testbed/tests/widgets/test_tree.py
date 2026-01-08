@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.sources import TreeSource
+from toga.sources import TreeListener, TreeSource
 from toga.style.pack import Pack
 
 from ..conftest import skip_on_platforms
@@ -880,3 +880,8 @@ async def test_cell_widget(widget, probe):
         # we just won't have widgets in the cells.
         probe.assert_cell_content((0, 0), 2, "MISSING!")
         probe.assert_cell_content((0, 1), 2, "MISSING!")
+
+
+def test_tree_listener(widget):
+    """Does the widget implement the ListListener API"""
+    assert isinstance(widget, TreeListener)
