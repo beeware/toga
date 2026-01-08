@@ -185,8 +185,8 @@ class WebView(Widget):
             )
 
     def winforms_navigation_completed(self, sender, args):
-        if os.path.exists(str(self._large_content_filepath)):
-            os.remove(str(self._large_content_filepath))
+        if os.path.exists(self._large_content_filepath):
+            os.remove(self._large_content_filepath)
             self._large_content_filepath = None
         self.interface.on_webview_load()
 
