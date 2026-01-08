@@ -169,7 +169,7 @@ class Table(Widget):
     def change_source(self, source):
         self.native_table.reloadData()
 
-    def insert(self, index, item):
+    def insert(self, *, index: int, item: object):
         # set parent = None if inserting to the root item
         index_set = NSIndexSet.indexSetWithIndex(index)
 
@@ -177,7 +177,7 @@ class Table(Widget):
             index_set, withAnimation=NSTableViewAnimation.EffectNone
         )
 
-    def change(self, item):
+    def change(self, *, item: object):
         row_index = self.interface.data.index(item)
         row_indexes = NSIndexSet.indexSetWithIndex(row_index)
         column_indexes = NSIndexSet.indexSetWithIndexesInRange(
@@ -188,7 +188,7 @@ class Table(Widget):
             row_indexes, columnIndexes=column_indexes
         )
 
-    def remove(self, index, item):
+    def remove(self, *, index: int, item: object):
         indexes = NSIndexSet.indexSetWithIndex(index)
         self.native_table.removeRowsAtIndexes(
             indexes, withAnimation=NSTableViewAnimation.EffectNone

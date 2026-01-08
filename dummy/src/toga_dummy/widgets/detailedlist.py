@@ -9,13 +9,13 @@ class DetailedList(Widget):
         self._action("change source", source=source)
         self.interface.on_select()
 
-    def insert(self, index, item):
+    def insert(self, *, index: int, item: object):
         self._action("insert item", index=index, item=item)
 
-    def change(self, item):
+    def change(self, *, item: object):
         self._action("change item", item=item)
 
-    def remove(self, index, item):
+    def remove(self, *, index: int, item: object):
         self._action("remove item", index=index, item=item)
 
     def clear(self):

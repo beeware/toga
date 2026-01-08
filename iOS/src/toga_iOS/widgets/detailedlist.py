@@ -194,13 +194,13 @@ class DetailedList(Widget):
     def change_source(self, source):
         self.native.reloadData()
 
-    def insert(self, index, item):
+    def insert(self, *, index: int, item: object):
         self.native.reloadData()
 
-    def change(self, item):
+    def change(self, *, item: object):
         self.native.reloadData()
 
-    def remove(self, item, index):
+    def remove(self, *, index: int, item: object):
         self.native.reloadData()
 
     def clear(self):

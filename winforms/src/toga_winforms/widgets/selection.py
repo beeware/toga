@@ -40,14 +40,14 @@ class Selection(Widget):
         self.native.Items.Clear()
         self.on_change()
 
-    def insert(self, index, item):
+    def insert(self, *, index: int, item: object):
         self.native.Items.Insert(index, self.interface._title_for_item(item))
 
         # WinfForm.ComboBox does not select the first item, so it's done here.
         if self.native.SelectedIndex == -1:
             self.native.SelectedIndex = 0
 
-    def change(self, item):
+    def change(self, *, item: object):
         index = self.interface._items.index(item)
         with self.suspend_notifications():
             self.insert(index, item)
@@ -56,7 +56,7 @@ class Selection(Widget):
         # Changing the item text can change the layout size.
         self.interface.refresh()
 
-    def remove(self, index, item):
+    def remove(self, *, index: int, item: object):
         selection_change = self.get_selected_index() == index
         self.native.Items.RemoveAt(index)
 

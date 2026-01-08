@@ -243,17 +243,17 @@ class DetailedList(Widget):
         for item in source:
             self.store.append(self.row_factory(item))
 
-    def insert(self, index, item):
+    def insert(self, *, index: int, item: object):
         self.hide_actions()
         item_impl = self.row_factory(item)
         self.store.insert(index, item_impl)
         self.native_detailedlist.show_all()
         self.update_refresh_button()
 
-    def change(self, item):
+    def change(self, *, item: object):
         item._impl.update(self.interface, item)
 
-    def remove(self, item, index):
+    def remove(self, *, index: int, item: object):
         self.hide_actions()
         self.store.remove(index)
         self.update_refresh_button()
