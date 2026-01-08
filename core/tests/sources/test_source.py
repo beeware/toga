@@ -1,6 +1,7 @@
 from unittest.mock import Mock
+from weakref import ref
 
-from toga.sources import Source
+from toga.sources import Listener, Source
 
 
 def test_notify():
@@ -51,6 +52,10 @@ def test_notify():
     listener1.message5.assert_called_once_with()
     listener2.message5.assert_not_called()
 
+    # remove listener2 again should not error
+    source.remove_listener(listener2)
+    assert source.listeners == [listener1]
+
 
 def test_missing_listener_method():
     """If a listener doesn't implement a notification method, the notification is
@@ -76,10 +81,11 @@ def test_missing_listener_method():
 def test_deleted_listener():
     """If a listener is deleted it should be removed from the source."""
 
-    class Listener:
+    class MyListener(Listener):
         pass
 
-    listener = Listener()
+    listener = MyListener()
+    listener_ref = ref(listener)
     source = Source()
 
     source.add_listener(listener)
@@ -89,3 +95,7 @@ def test_deleted_listener():
     del listener
 
     assert source.listeners == []
+
+    # if we try to remove the weakref, no errors
+    # this protects against certain race conditions
+    source.remove_listener(listener_ref)
