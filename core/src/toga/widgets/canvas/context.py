@@ -650,6 +650,7 @@ class FillContext(ClosedPathContext):
 
     def _draw(self, context: Any) -> None:
         context.save()
+        context.in_fill = True  # Backwards compatibility for Toga <= 0.5.3
         if self.color:
             context.set_fill_style(self.color)
         context.begin_path()
@@ -668,7 +669,7 @@ class FillContext(ClosedPathContext):
         # draw_kwargs = kwargs.copy()
         # draw_kwargs.update(fill_rule=self.fill_rule)
         context.fill(self.fill_rule)
-
+        context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
         context.restore()
 
     @property
@@ -725,6 +726,7 @@ class StrokeContext(ClosedPathContext):
 
     def _draw(self, context: Any) -> None:
         context.save()
+        context.in_stroke = True  # Backwards compatibility for Toga <= 0.5.3
         if self.color is not None:
             context.set_stroke_style(self.color)
         if self.line_width is not None:
@@ -754,6 +756,7 @@ class StrokeContext(ClosedPathContext):
         # context.set_color(self.color)
         context.stroke()
 
+        context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
         context.restore()
 
     @property

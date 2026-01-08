@@ -1,3 +1,6 @@
+from collections.abc import Sequence
+from copy import copy
+from dataclasses import dataclass
 from math import ceil
 
 from rubicon.objc import (
@@ -39,23 +42,43 @@ from toga_iOS.libs import (
 from toga_iOS.widgets.base import Widget
 
 
+@dataclass(slots=True)
+class State:
+    # Core graphics holds onto its own state, which works great, except we need to hold
+    # onto these values in order to fill or stroke text.
+    fill_style: Color = Color.parse(BLACK)
+    line_dash: Sequence[float] = ()
+    line_width: float = 2.0
+    stroke_style: Color = Color.parse(BLACK)
+
+
 class Context:
     def __init__(self):
         self.ui_context = uikit.UIGraphicsGetCurrentContext()
+        self.states = []
+        self.state = State()
         self.set_line_width(2.0)
+
+        # Backwards compatibility for Toga <= 0.5.3
+        self.in_fill = False
+        self.in_stroke = False
 
     # Context management
     def save(self):
         core_graphics.CGContextSaveGState(self.ui_context)
+        self.states.append(self.state)
+        self.state = copy(self.state)
 
     def restore(self):
         core_graphics.CGContextRestoreGState(self.ui_context)
+        self.state = self.states.pop()
 
     # Setting attributes
     def set_fill_style(self, color):
         core_graphics.CGContextSetRGBFillColor(
             self.ui_context, color.r / 255, color.g / 255, color.b / 255, color.a
         )
+        self.state.fill_style = color
 
     def set_line_dash(self, line_dash):
         core_graphics.CGContextSetLineDash(
@@ -64,14 +87,17 @@ class Context:
             (CGFloat * len(line_dash))(*line_dash),
             len(line_dash),
         )
+        self.state.line_dash = line_dash
 
     def set_line_width(self, line_width):
         core_graphics.CGContextSetLineWidth(self.ui_context, line_width)
+        self.state.line_width = line_width
 
     def set_stroke_style(self, color):
         core_graphics.CGContextSetRGBStrokeColor(
             self.ui_context, color.r / 255, color.g / 255, color.b / 255, color.a
         )
+        self.state.stroke_style = color
 
     # Basic paths
     def begin_path(self):
@@ -213,7 +239,16 @@ class Context:
         for line_num, line in enumerate(lines):
             # Rounding minimizes differences between scale factors.
             origin = NSPoint(round(x), round(top) + (scaled_line_height * line_num))
-            rs = _render_string(line, font)
+            kwargs = {}
+            if self.in_fill:
+                kwargs |= {"fill_style": self.state.fill_style}
+            if self.in_stroke:
+                kwargs |= {
+                    "stroke_style": self.state.stroke_style,
+                    "line_width": self.state.line_width,
+                    # Current implementation doesn't respect line dash; should this?
+                }
+            rs = _render_string(line, font, **kwargs)
 
             # "This method uses the baseline origin by default. If
             # NSStringDrawingUsesLineFragmentOrigin is not specified, the
@@ -255,25 +290,21 @@ class TogaCanvas(UIView):
         self.interface.on_release(position.x, position.y)
 
 
-def _render_string(text, font, **kwargs):
+def _render_string(text, font, fill_style=None, stroke_style=None, line_width=2.0):
     textAttributes = NSMutableDictionary.alloc().init()
     textAttributes[NSFontAttributeName] = font.native
 
-    if "stroke_color" in kwargs:
-        textAttributes[NSStrokeColorAttributeName] = native_color(
-            kwargs["stroke_color"]
-        )
-
+    if stroke_style:
+        textAttributes[NSStrokeColorAttributeName] = native_color(stroke_style)
         # Stroke width is expressed as a percentage of the font size, or a negative
         # percentage to get both stroke and fill.
-        stroke_width = kwargs["line_width"] / font.native.pointSize * 100
-        if "fill_color" in kwargs:
+        stroke_width = line_width / font.native.pointSize * 100
+        if fill_style:
             stroke_width *= -1
         textAttributes[NSStrokeWidthAttributeName] = stroke_width
-    if "fill_color" in kwargs:
-        textAttributes[NSForegroundColorAttributeName] = native_color(
-            kwargs["fill_color"]
-        )
+
+    if fill_style:
+        textAttributes[NSForegroundColorAttributeName] = native_color(fill_style)
 
     text_string = NSAttributedString.alloc().initWithString(
         text, attributes=textAttributes
@@ -316,7 +347,7 @@ class Canvas(Widget):
     def measure_text(self, text, font, line_height):
         # We need at least a fill color to render, but that won't change the size.
         sizes = [
-            _render_string(line, font, fill_color=Color.parse(BLACK)).size()
+            _render_string(line, font, fill_style=Color.parse(BLACK)).size()
             for line in text.splitlines()
         ]
         return (
