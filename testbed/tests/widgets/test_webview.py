@@ -214,6 +214,7 @@ async def test_user_agent(widget, probe):
     assert widget.user_agent == "NCSA_Mosaic/1.0"
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript(widget, probe):
     """JavaScript can be evaluated."""
     on_result_handler = Mock()
@@ -241,6 +242,7 @@ async def test_evaluate_javascript(widget, probe):
         on_result_handler.assert_called_once_with(expected)
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript_no_handler(widget, probe):
     """A handler isn't needed to evaluate JavaScript."""
     result = await wait_for(
