@@ -80,10 +80,7 @@ class Source:
         :param notification: The notification to emit.
         :param kwargs: The data associated with the notification.
         """
-        for listener_ref in self._listeners:
-            listener = listener_ref()
-            if listener is None:
-                continue
+        for listener in self.listeners:
             try:
                 method = getattr(listener, notification)
             except AttributeError:

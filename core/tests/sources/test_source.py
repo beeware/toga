@@ -71,3 +71,21 @@ def test_missing_listener_method():
     source.notify("message1")
 
     full_listener.message1.assert_called_once_with()
+
+
+def test_deleted_listener():
+    """If a listener is deleted it should be removed from the source."""
+
+    class Listener:
+        pass
+
+    listener = Listener()
+    source = Source()
+
+    source.add_listener(listener)
+    assert source.listeners == [listener]
+
+    # drop our reference to listener
+    del listener
+
+    assert source.listeners == []
