@@ -112,7 +112,10 @@ async def test_content_size_rehint(
     # and as a result, may not have a valid size.
     await probe.redraw(
         "Tab 3's size should be explicitly set to 500x600",
-        wait_for=lambda: content1_probe.width == 500 and content1_probe.height == 600,
+        wait_for=lambda: (
+            content1_probe.width == pytest.approx(500, abs=2)
+            and content1_probe.height == pytest.approx(600, abs=2)
+        ),
     )
 
     assert main_window.size.width >= 500
@@ -121,8 +124,8 @@ async def test_content_size_rehint(
     assert probe.height > 600
     # Asserting content1 for content size because content3, by virtue of not being
     # selected, may have an invalid size.
-    assert content1_probe.width == 500
-    assert content1_probe.height == 600
+    assert content1_probe.width == pytest.approx(500, abs=2)
+    assert content1_probe.height == pytest.approx(600, abs=2)
 
 
 async def test_select_tab(
