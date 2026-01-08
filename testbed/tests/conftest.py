@@ -108,8 +108,10 @@ def main_window(app):
 
 @fixture(autouse=True)
 async def window_cleanup(app, app_probe, main_window, main_window_probe):
-    # Ensure that at the end of every test, all windows that aren't the
-    # main window have been closed and deleted. This needs to be done in
+    original_size = main_window.size
+
+    # Ensure that at the beginning of every test, all windows that aren't
+    # the main window have been closed and deleted. This needs to be done in
     # 2 passes because we can't modify the list while iterating over it.
     kill_list = []
     for window in app.windows:
@@ -132,6 +134,12 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     await main_window_probe.wait_for_window(
         "Resetting main_window", state=WindowState.NORMAL
     )
+
+    yield
+
+    # Reset the window state and size.
+    main_window.state = WindowState.NORMAL
+    main_window.size = original_size
 
 
 @fixture(scope="session")
