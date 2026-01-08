@@ -67,7 +67,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     def assert_text_align(self, expected):
         assert self.text_align == expected
 
-    async def redraw(self, message=None, delay=0):
+    async def redraw(self, message=None, delay=0, wait_for=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a widget repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()
@@ -76,7 +76,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         # and all constraints have been evaluated.
         CATransaction.flush()
 
-        await super().redraw(message=message, delay=delay)
+        await super().redraw(message=message, delay=delay, wait_for=wait_for)
 
     @property
     def enabled(self):
