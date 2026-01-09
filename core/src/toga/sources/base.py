@@ -3,15 +3,16 @@ from __future__ import annotations
 from typing import Generic, Protocol, TypeVar, runtime_checkable
 
 ListenerT = TypeVar("ListenerT")
+ItemT = TypeVar("ItemT", contravariant=True)
 
 
 @runtime_checkable
-class ValueListener(Protocol):
+class ValueListener(Protocol, Generic[ItemT]):
     """The protocol that must be implemented by objects that will act as a listener on a
     value data source.
     """
 
-    def change(self, *, item: object) -> object:
+    def change(self, *, item: ItemT) -> None:
         """A change has occurred in an item.
 
         :param item: The data object that has changed.
@@ -19,26 +20,26 @@ class ValueListener(Protocol):
 
 
 @runtime_checkable
-class ListListener(ValueListener, Protocol):
+class ListListener(ValueListener[ItemT], Protocol, Generic[ItemT]):
     """The protocol that must be implemented by objects that will act as a listener on a
     list data source.
     """
 
-    def insert(self, *, index: int, item: object) -> object:
+    def insert(self, *, index: int, item: ItemT) -> None:
         """An item has been added to the data source.
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
         """
 
-    def remove(self, *, index: int, item: object) -> object:
+    def remove(self, *, index: int, item: ItemT) -> None:
         """An item has been removed from the data source.
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
         """
 
-    def clear(self) -> object:
+    def clear(self) -> None:
         """All items have been removed from the data source."""
 
 
@@ -47,12 +48,12 @@ Listener = ListListener
 
 
 @runtime_checkable
-class TreeListener(ListListener, Protocol):
+class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
     """The protocol that must be implemented by objects that will act as a listener on a
     tree data source.
     """
 
-    def insert(self, *, index: int, item: object, parent: object = None) -> object:
+    def insert(self, *, index: int, item: object, parent: ItemT | None = None) -> None:
         """An item has been added to the data source.
 
         :param index: The 0-index position in the data.
@@ -61,7 +62,7 @@ class TreeListener(ListListener, Protocol):
         if it is a root item.
         """
 
-    def remove(self, *, index: int, item: object, parent: object = None) -> object:
+    def remove(self, *, index: int, item: object, parent: ItemT | None = None) -> None:
         """An item has been removed from the data source.
 
         :param index: The 0-index position in the data.
