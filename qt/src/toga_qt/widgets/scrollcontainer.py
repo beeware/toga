@@ -13,7 +13,7 @@ class TogaScrollArea(QScrollArea):
         self.interface = interface
         super().__init__(*args, **kwargs)
 
-    def wheelEvent(self, event):
+    def wheelEvent(self, event):  # pragma: no cover
         if event.type() == QEvent.Type.Wheel:
             # Constrain mouse wheel scrolling (or trackpad scrolling)
             # Only scroll in allowed directions.
