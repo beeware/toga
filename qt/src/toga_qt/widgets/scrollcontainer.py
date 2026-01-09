@@ -160,6 +160,5 @@ class ScrollContainer(Widget):
             width = max(self.interface.content.layout.min_width, width)
         if self.interface.vertical:
             height = max(self.interface.content.layout.min_height, height)
-        print(width, height)
 
         self.document_container.native.setMinimumSize(width, height)
