@@ -98,8 +98,9 @@ class ListSourceModel(QAbstractListModel):
         /,
         role: int = Qt.ItemDataRole.DisplayRole,
     ) -> Any:
-        # Return empty data if index is invalid.
-        if index.isValid():
+        # Return empty data if index is invalid, shouldn't happen in normal operation
+        # but checking prevents crashes
+        if index.isValid():  # pragma: no branch
             # this could call out to end-user data sources, so could fail.
             try:
                 row = index.row()
@@ -113,7 +114,9 @@ class ListSourceModel(QAbstractListModel):
                 logger.exception("Could not get data for row {row}")
         if role == Qt.ItemDataRole.UserRole:
             # Our user data should always be a tuple of two values.
-            return (None, None)
+            # Shouldn't reach this in normal operation, but will if there
+            # is an error in a user data source.
+            return (None, None)  # pragma: no cover
         else:
             return None
 
