@@ -88,8 +88,8 @@ class ListSourceModel(QAbstractListModel):
         try:
             if self.source is not None:
                 return len(self.source)
-        except Exception:
-            logger.exception("Could not get data length.")  # pragma: no cover
+        except Exception:  # pragma: no cover
+            logger.exception("Could not get data length.")
         return 0
 
     def data(
@@ -99,20 +99,23 @@ class ListSourceModel(QAbstractListModel):
         role: int = Qt.ItemDataRole.DisplayRole,
     ) -> Any:
         # Return empty data if index is invalid.
-        if not index.isValid():  # pragma: no cover
-            return None
-        # this could call out to end-user data sources, so could fail.
-        try:
-            row = index.row()
-            if self.source is None or row >= len(self.source):  # pragma: no cover
-                return None
+        if index.isValid():
+            # this could call out to end-user data sources, so could fail.
+            try:
+                row = index.row()
+                if self.source is None or row >= len(self.source):  # pragma: no cover
+                    return None
 
-            value = self.source[row]
-            if role in self.formatters:
-                return self.formatters[role](value, self.source._accessors)
-        except Exception:
-            logger.exception("Could not get data for row {row}")
-        return None
+                value = self.source[row]
+                if role in self.formatters:
+                    return self.formatters[role](value, self.source._accessors)
+            except Exception:  # pragma: no cover
+                logger.exception("Could not get data for row {row}")
+        if role == Qt.ItemDataRole.UserRole:
+            # Our user data should always be a tuple of two values.
+            return (None, None)
+        else:
+            return None
 
     def headerData(
         self,
@@ -224,8 +227,6 @@ class DetailedList(Widget):
         self.native.show()
 
     def _format_missing(self, user_data):
-        if user_data is None:
-            user_data = (None, None)
         return tuple(
             x if x is not None else self.interface.missing_value for x in user_data
         )
