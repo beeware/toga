@@ -4,7 +4,7 @@ How-to guides are recipes that take the user through steps in key subjects. They
 
 ## [Contributing to Toga](contribute/index.md)
 
-There are lots of ways to contribute to Toga. Here are some guides to getting started with the contribution process.
+* [Contributing to Toga](contribute/index.md) - The many ways you can contribute to Toga, including what you can do and how to do it.
 
 ## Internal guides
 

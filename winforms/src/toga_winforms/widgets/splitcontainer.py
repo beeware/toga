@@ -30,7 +30,11 @@ class SplitContainer(Widget):
         super().set_bounds(x, y, width, height)
 
         force_refresh = False
-        if self.pending_position:
+        # Discard invalid layouts here, and wait until the height
+        # has been properly computed to apply the split.  This is
+        # necessary as a 0/0 proportion cannot be preserved in the
+        # native layer.
+        if self.pending_position and width and height:
             self.set_position(self.pending_position)
             self.pending_position = None
             force_refresh = True  # Content has changed

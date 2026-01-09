@@ -117,7 +117,10 @@ class GoodMovieSource(Source):
 class TableSourceApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget, **kwargs):
-        row = widget.selection
+        if isinstance(widget, toga.Table):
+            row = widget.selection
+        else:
+            row = widget.value
         self.label.text = (
             f"You selected row: {row.title}" if row is not None else "No row selected"
         )
@@ -165,6 +168,19 @@ class TableSourceApp(toga.App):
 
         tablebox = toga.Box(children=[self.table1, self.table2], flex=1)
 
+        # Create a Selection that is also using the data source
+        self.selection = toga.Selection(
+            items=self.table2.data,
+            accessor="title",
+            on_change=self.on_select_handler,
+            flex=1,
+        )
+        selection_label = toga.Label("Choose a movie:", flex=0.5)
+        selection_box = toga.Box(
+            children=[selection_label, self.selection],
+            direction=ROW,
+        )
+
         # Buttons
         btn_insert = toga.Button("Insert Row", on_press=self.insert_handler, flex=1)
         btn_delete = toga.Button("Delete Row", on_press=self.delete_handler, flex=1)
@@ -173,7 +189,7 @@ class TableSourceApp(toga.App):
 
         # Most outer box
         outer_box = toga.Box(
-            children=[btn_box, tablebox, self.label],
+            children=[btn_box, tablebox, selection_box, self.label],
             flex=1,
             direction=COLUMN,
             margin=10,

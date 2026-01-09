@@ -37,6 +37,8 @@ webview.set_content("https://example.com", "<html>...</html>")
 
 - On macOS 13.3 (Ventura) and later, the content inspector for your app can be opened by running Safari, [enabling the developer tools](https://support.apple.com/en-au/guide/safari/sfri20948/mac), and selecting your app's window from the "Develop" menu.  On macOS versions prior to Ventura, the content inspector is not enabled by default, and is only available when your code is packaged as a full macOS app (e.g., with Briefcase). To enable debugging, run:  > ```console > $ defaults write com.example.appname WebKitDeveloperExtras -bool true > ``` > > Substituting `com.example.appname` with the bundle ID for your > packaged app.
 
+- On Android, use of the `on_navigation_starting` handler requires adding `chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")` to the `build_gradle_extra_content` section of your app's `pyproject.toml` configuration.
+
 ## Reference
 
 ::: toga.WebView
