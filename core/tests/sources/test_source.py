@@ -96,6 +96,8 @@ def test_deleted_listener():
 
     assert source.listeners == []
 
-    # if we try to remove the weakref, no errors
-    # this protects against certain race conditions
-    source.remove_listener(listener_ref)
+    # if we try to remove the weakref later, no errors
+    # this shouldn't happen in normal usage, but might if
+    # something grabs references to the weakrefs inside the
+    # source
+    source._remove_deleted(listener_ref)

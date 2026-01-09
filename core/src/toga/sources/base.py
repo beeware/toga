@@ -65,19 +65,22 @@ class Source:
 
         :param listener: The listener to add
         """
-        listener_ref = ref(listener, self.remove_listener)
+        listener_ref = ref(listener, self._remove_deleted)
         if listener_ref not in self._listeners:
             self._listeners.append(listener_ref)
 
-    def remove_listener(self, listener: Listener | ReferenceType[Listener]) -> None:
+    def remove_listener(self, listener: Listener) -> None:
         """Remove a listener from this data source.
 
-        :param listener: The listener to remove or a weak reference to it.
+        :param listener: The listener to remove.
         """
-        if not isinstance(listener, ref):
-            listener = ref(listener, self.remove_listener)
-        if listener in self._listeners:
-            self._listeners.remove(listener)
+        listener_ref = ref(listener)
+        try:
+            # weakrefs are equal if alive and underlying objects are equal
+            self._listeners.remove(listener_ref)
+        except ValueError:
+            # already gone
+            pass
 
     def notify(self, notification: str, **kwargs: object) -> None:
         """Notify all listeners an event has occurred.
@@ -93,3 +96,11 @@ class Source:
 
             if method:
                 method(**kwargs)
+
+    def _remove_deleted(self, listener_ref: ReferenceType[Listener]) -> None:
+        """Remove a garbage-collected listener from this data source."""
+        try:
+            self._listeners.remove(listener_ref)
+        except ValueError:
+            # already gone
+            pass
