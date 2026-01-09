@@ -37,8 +37,6 @@ class TogaScrollArea(QScrollArea):
                 event.modifiers(),
                 event.phase(),
                 event.inverted(),
-                # event.source(),
-                # Qt.MouseEventSource.MouseEventNotSynthesized,
                 device=event.device(),
             )
         # continue doing whatever we were going to do.
