@@ -2,6 +2,20 @@
 
 These instructions are different on almost every version of Linux and Unix; here are some of the common alternatives:
 
+/// admonition | Using a specific Python Version
+
+By default `python3` is used. For specific python version (e.g., 3.12) replace the following:
+
+* **Ubuntu/Debian:** `python3-dev` to `python3.12-dev`
+
+* **Fedora/OpenSUSE:** `python3-devel` to `python3.12-devel`
+
+* **Arch/Manjaro/FreeBSD:** `python3` to `python312`
+
+As for Arch/Manjaro/FreeBSD the python development libraries are included as part of `python3`.
+
+///
+
 ### Ubuntu 24.04+ / Debian 13+
 
 ```console
