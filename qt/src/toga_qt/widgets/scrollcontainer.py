@@ -1,5 +1,4 @@
-from PySide6.QtCore import QEvent, Qt
-from PySide6.QtGui import QWheelEvent
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QScrollArea
 from travertino.constants import TRANSPARENT
 from travertino.size import at_least
@@ -8,44 +7,9 @@ from ..container import Container
 from .base import Widget
 
 
-class TogaScrollArea(QScrollArea):
-    def __init__(self, interface, *args, **kwargs):
-        self.interface = interface
-        super().__init__(*args, **kwargs)
-
-    def wheelEvent(self, event):  # pragma: no cover
-        if event.type() == QEvent.Type.Wheel:
-            # Constrain mouse wheel scrolling (or trackpad scrolling)
-            # Only scroll in allowed directions.
-            angle_delta = event.angleDelta()
-            pixel_delta = event.pixelDelta()
-            if not self.interface.horizontal:
-                # zero out x delta
-                angle_delta.setX(0)
-                pixel_delta.setX(0)
-            if not self.interface.vertical:
-                # zero out y delta
-                angle_delta.setY(0)
-                pixel_delta.setY(0)
-            # Can't modify an event, so need to create new one.
-            event = QWheelEvent(
-                event.position(),
-                event.globalPosition(),
-                pixel_delta,
-                angle_delta,
-                event.buttons(),
-                event.modifiers(),
-                event.phase(),
-                event.inverted(),
-                device=event.device(),
-            )
-        # continue doing whatever we were going to do.
-        super().wheelEvent(event)
-
-
 class ScrollContainer(Widget):
     def create(self):
-        self.native = TogaScrollArea(self.interface)
+        self.native = QScrollArea()
 
         self.native.setAutoFillBackground(True)
         # Background is not autofilled by default; but since we're
@@ -58,7 +22,6 @@ class ScrollContainer(Widget):
             on_refresh=self.content_refreshed,
         )
         self.native.setWidget(self.document_container.native)
-        self.native.setWidgetResizable(True)
         self.document_container.native.show()
 
         self.native.verticalScrollBar().valueChanged.connect(self.qt_on_changed)
@@ -159,4 +122,6 @@ class ScrollContainer(Widget):
         if self.interface.vertical:
             height = max(self.interface.content.layout.min_height, height)
 
-        self.document_container.native.setMinimumSize(width, height)
+        self.document_container.native.setFixedSize(width, height)
+        self.document_container.native.updateGeometry()
+        self.native.viewport().adjustSize()
