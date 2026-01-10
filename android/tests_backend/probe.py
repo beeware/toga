@@ -7,6 +7,8 @@ from java import dynamic_proxy
 from org.beeware.android import MainActivity
 from pytest import approx
 
+import toga
+
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
     def __init__(self):
@@ -78,7 +80,7 @@ class BaseProbe:
         else:
             raise ValueError(f"Couldn't find dialog button '{caption}'")
 
-    async def redraw(self, message=None, delay=0):
+    async def redraw(self, message=None, delay=0, wait_for=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         self.root_view.requestLayout()
         try:
@@ -88,12 +90,21 @@ class BaseProbe:
         except asyncio.TimeoutError:
             print("Redraw timed out")
 
-        if self.app.run_slow:
+        # If we're running slow, or we have a wait condition,
+        # wait for at least a second
+        if self.app.run_slow or wait_for:
             delay = max(delay, 1)
 
-        if delay:
+        if delay or wait_for:
             print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(delay)
+            if toga.App.app.run_slow or wait_for is None:
+                await asyncio.sleep(delay)
+            else:
+                delta = 0.1
+                interval = 0.0
+                while not wait_for() and interval < delay:
+                    await asyncio.sleep(delta)
+                    interval += delta
 
     def assert_image_size(self, image_size, size, screen):
         # Sizes are approximate because of scaling inconsistencies.

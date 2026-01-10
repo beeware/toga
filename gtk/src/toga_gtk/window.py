@@ -9,7 +9,7 @@ from toga.types import Position, Size
 from toga.window import _initial_position
 
 from .container import TogaContainer
-from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk
+from .libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, GLib, Gtk
 
 if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
     from toga.handlers import WeakrefCallable
@@ -81,28 +81,44 @@ class Window:
         # Decorator when resizable == False
         self.native.set_resizable(self.interface.resizable)
 
-        # The GTK window's content is the layout; any user content is placed into the
-        # container, which is the bottom widget in the layout. The toolbar(if required)
-        # will be added at the top of the layout.
-        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-
-        # Because expand and fill are True, the container will fill the available space,
-        # and will get a size_allocate callback if the window is resized.
+        # Because expand and fill are later set to True, the container will fill the
+        # available space, and will get a size_allocate callback if the window is
+        # resized.
         self.container = TogaContainer()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # The GTK window's content is the layout; any user content is placed into
+            # the container, which is the bottom widget in the layout. The toolbar (if
+            # required) will be added at the top of the layout.
+            self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
             self.native.add(self.layout)
         else:  # pragma: no-cover-if-gtk3
             self.container.set_valign(Gtk.Align.FILL)
             self.container.set_vexpand(True)
-            self.layout.append(self.container)
-            self.native.set_child(self.layout)
+            if Adw is not None:  # pragma: no-cover-unless-libadwaita
+                # libadwaita requires the use of a "toolbar view" for adding top and
+                # bottom bars, including any top bars and toolbars.
+                self.toolbar_view = Adw.ToolbarView()
+                self.headerbar = Adw.HeaderBar()
+                self.toolbar_view.add_top_bar(self.headerbar)
+                self.toolbar_view.set_content(self.container)
+                self.native.set_content(self.toolbar_view)
+            else:  # pragma: no-cover-unless-plain-gtk4
+                # The GTK window's content is the layout; any user content is placed
+                # into the container, which is the bottom widget in the layout. The
+                # toolbar (if required) will be added at the top of the layout.
+                self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+                self.layout.append(self.container)
+                self.native.set_child(self.layout)
 
     def create(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native = Gtk.Window()
         else:  # pragma: no-cover-if-gtk3
-            self.native = create_toga_native(Gtk.Window)()
+            if Adw is not None:
+                self.native = create_toga_native(Adw.Window)()
+            else:
+                self.native = create_toga_native(Gtk.Window)()
 
     ######################################################################
     # Native event handlers
@@ -489,7 +505,10 @@ class MainWindow(Window):
             self.toolbar_items = {}
             self.toolbar_separators = set()
         else:  # pragma: no-cover-if-gtk3
-            self.native = create_toga_native(Gtk.ApplicationWindow)()
+            if Adw is not None:
+                self.native = create_toga_native(Adw.ApplicationWindow)()
+            else:
+                self.native = create_toga_native(Gtk.ApplicationWindow)()
 
     def create_menus(self):
         # GTK menus are handled at the app level

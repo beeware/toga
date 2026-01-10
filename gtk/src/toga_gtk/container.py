@@ -126,6 +126,8 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             self.min_width = 100
             self.min_height = 100
 
+            self.on_recompute = None
+
             self.dpi = 96
             self.baseline_dpi = self.dpi
 
@@ -218,6 +220,9 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
                 self.min_width = self._content.interface.layout.min_width
                 self.min_height = self._content.interface.layout.min_height
 
+            if self.on_recompute:
+                self.on_recompute(self)
+
 else:  # pragma: no-cover-if-gtk4
 
     class TogaContainer(Gtk.Fixed):
@@ -231,6 +236,8 @@ else:  # pragma: no-cover-if-gtk4
             self._content = None
             self.min_width = 100
             self.min_height = 100
+
+            self.on_recompute = None
 
             self.dpi = 96
             self.baseline_dpi = self.dpi
@@ -320,6 +327,9 @@ else:  # pragma: no-cover-if-gtk4
 
                 self.min_width = self._content.interface.layout.min_width
                 self.min_height = self._content.interface.layout.min_height
+
+            if self.on_recompute:
+                self.on_recompute(self)
 
         def do_get_preferred_width(self):
             """Return (recomputing if necessary) the preferred width for the container.
