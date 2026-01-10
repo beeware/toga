@@ -13,6 +13,7 @@ from .properties import toga_color
 
 class CanvasProbe(SimpleProbe):
     native_class = NSView
+    screenshot_reset_transform = True
 
     @property
     def background_color(self):
