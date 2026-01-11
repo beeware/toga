@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 from pytest import approx
 
+import toga
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, Color
 from toga.fonts import (
     BOLD,
@@ -103,6 +104,11 @@ async def test_focus_noop(widget, probe, other, other_probe):
     "The widget cannot be given focus"
     other.focus()
     await probe.redraw("A separate widget should be given focus")
+    # temporary debugging hack
+    if not probe.has_focus and not other_probe.has_focus and toga.backend == "toga_qt":
+        from PySide6.QtWidgets import QApplication
+
+        print(QApplication.focusWidget())
     assert not probe.has_focus
     assert other_probe.has_focus
 
