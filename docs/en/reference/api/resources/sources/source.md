@@ -8,6 +8,10 @@ Source isn't useful on its own; it is a base class for data source implementatio
 
 ## Reference
 
-::: toga.sources.Listener
+::: toga.sources.ValueListener
+
+::: toga.sources.ListListener
+
+::: toga.sources.TreeListener
 
 ::: toga.sources.Source

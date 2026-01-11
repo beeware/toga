@@ -84,14 +84,14 @@ class Tree(Widget):
             self.store = Gtk.TreeStore(*types)
 
             for i, row in enumerate(self.interface.data):
-                self.insert(None, i, row)
+                self.insert(parent=None, index=i, item=row)
 
             self.native_tree.set_model(self.store)
             self.refresh()
         else:  # pragma: no-cover-if-gtk3
             pass
 
-    def insert(self, parent, index, item):
+    def insert(self, index, item, parent=None):
         row = TogaRow(item)
         values = [row]
         for accessor in self.interface.accessors:
@@ -110,7 +110,7 @@ class Tree(Widget):
         item._impl = self.store.insert(iter, index, values)
 
         for i, child in enumerate(item):
-            self.insert(item, i, child)
+            self.insert(parent=item, index=i, item=child)
 
     def change(self, item):
         row = self.store[item._impl]
@@ -118,7 +118,7 @@ class Tree(Widget):
             row[i * 2 + 1] = row[0].icon(accessor)
             row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
 
-    def remove(self, item, index, parent):
+    def remove(self, index, item, parent=None):
         del self.store[item._impl]
         item._impl = None
 
