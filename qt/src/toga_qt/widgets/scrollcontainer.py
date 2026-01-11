@@ -1,10 +1,21 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEvent, QObject, Qt
 from PySide6.QtWidgets import QScrollArea
 from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from ..container import Container
 from .base import Widget
+
+
+class ViewportMonitor(QObject):
+    def __init__(self, impl):
+        self.impl = impl
+        super().__init__()
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Resize:
+            self.impl.qt_viewport_resize()
+        return super().eventFilter(obj, event)
 
 
 class ScrollContainer(Widget):
@@ -23,9 +34,15 @@ class ScrollContainer(Widget):
         )
         self.native.setWidget(self.document_container.native)
         self.document_container.native.show()
+        self.monitor = ViewportMonitor(self)
+        self.native.viewport().installEventFilter(self.monitor)
 
         self.native.verticalScrollBar().valueChanged.connect(self.qt_on_changed)
         self.native.horizontalScrollBar().valueChanged.connect(self.qt_on_changed)
+
+    def qt_viewport_resize(self):
+        if self.interface.content is not None:
+            self.interface.content.refresh()
 
     def qt_on_changed(self, *args):
         self.interface.on_scroll()
@@ -83,45 +100,14 @@ class ScrollContainer(Widget):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        if self.interface.content is not None:
-            self.interface.content.refresh()
-
     def content_refreshed(self, container):
-        # get sizes of decorations - assume horizontal / vertical symmetry
-        scroll_size = self.native.horizontalScrollBar().height()
-        margins = self.native.contentsMargins()
-        margin_size = margins.left() + margins.right()
+        width = self.native.viewport().width()
+        height = self.native.viewport().height()
 
-        # get size of area inside
-        # (can't use viewport, as it may be out of date about scrollbar visibility)
-        size = self.native.size()
-        area_width = size.width() - margin_size
-        area_height = size.height() - margin_size
-
-        # get the minimum size of the content
-        content_width = self.interface.content.layout.min_width
-        content_height = self.interface.content.layout.min_height
-
-        # start with available area
-        height = area_height
-        width = area_width
-
-        # If we will get a scrollbar adjust height and width
-        if content_width > area_width and self.interface.horizontal:
-            # remove space for scrollbar
-            height -= scroll_size
-        if content_height > area_height and self.interface.vertical:
-            # remove space for scrollbar
-            width -= scroll_size
-
-        # If we can scroll, grab the extra space
         if self.interface.horizontal:
-            width = max(self.interface.content.layout.min_width, width)
+            width = max(self.interface.content.layout.width, width)
+
         if self.interface.vertical:
-            height = max(self.interface.content.layout.min_height, height)
+            height = max(self.interface.content.layout.height, height)
 
         self.document_container.native.setFixedSize(width, height)
-        self.document_container.native.updateGeometry()
-        self.native.viewport().adjustSize()
