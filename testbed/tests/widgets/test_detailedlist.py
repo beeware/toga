@@ -75,9 +75,7 @@ async def widget(
     )
 
 
-test_cleanup = build_cleanup_test(
-    toga.DetailedList, xfail_platforms=("android", "linux")
-)
+test_cleanup = build_cleanup_test(toga.DetailedList, xfail_platforms=("linux",))
 
 
 async def test_scroll(widget, probe):

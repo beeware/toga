@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_UP
 
 from android.view import View
@@ -13,10 +14,16 @@ from .label import TextViewWidget
 class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self._impl = impl
+        self._impl = weakref.proxy(impl)
 
     def onCheckedChanged(self, _button, _checked):
-        self._impl.interface.on_change()
+        try:
+            self._impl.interface.on_change()
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:  # pragma: no cover
+            pass
 
 
 class Switch(TextViewWidget, ContainedWidget):

@@ -1,3 +1,4 @@
+import weakref
 from datetime import date, datetime, time
 
 from android import R
@@ -20,13 +21,19 @@ def native_date(py_date):
 class DatePickerListener(dynamic_proxy(DatePickerDialog.OnDateSetListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onDateSet(self, view, year, month_0, day):
-        # It should be impossible for the dialog to return an out-of-range value in
-        # normal use, but it can happen in the testbed, so go via the interface to clip
-        # the value.
-        self.impl.interface.value = date(year, month_0 + 1, day)
+        try:
+            # It should be impossible for the dialog to return an out-of-range value in
+            # normal use, but it can happen in the testbed, so go via the interface to
+            # clip the value.
+            self.impl.interface.value = date(year, month_0 + 1, day)
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:  # pragma: no cover
+            pass
 
 
 class DateInput(PickerBase, ContainedWidget):

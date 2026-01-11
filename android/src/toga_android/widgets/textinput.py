@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_UP
 
 from android.text import InputType, TextWatcher
@@ -14,13 +15,19 @@ from .label import TextViewWidget
 class TogaTextWatcher(dynamic_proxy(TextWatcher)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def beforeTextChanged(self, _charSequence, _start, _count, _after):
         pass
 
     def afterTextChanged(self, _editable):
-        self.impl._on_change()
+        try:
+            self.impl._on_change()
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:  # pragma: no cover
+            pass
 
     def onTextChanged(self, _charSequence, _start, _before, _count):
         pass
@@ -29,31 +36,39 @@ class TogaTextWatcher(dynamic_proxy(TextWatcher)):
 class TogaKeyListener(dynamic_proxy(View.OnKeyListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onKey(self, _view, _key, _event):
-        event_info = toga_key(_event)
-        if event_info is None:
-            pass  # pragma: nocover
-        else:
-            key_pressed = event_info["key"].value
-            if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and (
-                int(_event.getAction()) == 1
-            ):
-                self.impl._on_confirm()
-        return False
+        try:
+            event_info = toga_key(_event)
+            if event_info is None:
+                pass  # pragma: nocover
+            else:
+                key_pressed = event_info["key"].value
+                if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and (
+                    int(_event.getAction()) == 1
+                ):
+                    self.impl._on_confirm()
+            return False
+        # See above comment on ignoring ReferenceError.
+        except ReferenceError:  # pragma: no cover
+            return False
 
 
 class TogaFocusListener(dynamic_proxy(View.OnFocusChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onFocusChange(self, view, has_focus):
-        if has_focus:
-            self.impl._on_gain_focus()
-        else:
-            self.impl._on_lose_focus()
+        try:
+            if has_focus:
+                self.impl._on_gain_focus()
+            else:
+                self.impl._on_lose_focus()
+        # See above comment on ignoring ReferenceError.
+        except ReferenceError:  # pragma: no cover
+            pass
 
 
 class TextInput(ContainedWidget, TextViewWidget):

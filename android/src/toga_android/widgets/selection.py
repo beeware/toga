@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_UP
 
 from android import R
@@ -11,13 +12,23 @@ from toga_android.widgets.base import ContainedWidget
 class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onItemSelected(self, parent, view, position, id):
-        self.impl.on_change(position)
+        try:
+            self.impl.on_change(position)
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:  # pragma: no cover
+            pass
 
     def onNothingSelected(self, parent):
-        self.impl.on_change(None)
+        try:
+            self.impl.on_change(None)
+        # See above comment on ignoring ReferenceError.
+        except ReferenceError:  # pragma: no cover
+            pass
 
 
 class Selection(ContainedWidget):
