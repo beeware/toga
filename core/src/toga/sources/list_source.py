@@ -90,9 +90,6 @@ class Row(Generic[T]):
             if self._source is not None:
                 self._source.notify("change", item=self)
 
-    def __getattr__(self, attr: str) -> T:
-        return super().__getattr__(attr)
-
     def __delattr__(self, attr: str) -> None:
         """Remove an attribute from the Row object, notifying the source of the change.
 
@@ -176,7 +173,7 @@ class ListSource(Source):
         """
         row = self._create_row(value)
         self._data[index] = row
-        self.notify("insert", index=index, item=row)
+        self.notify("change", item=row)
 
     def clear(self) -> None:
         """Clear all data from the data source."""

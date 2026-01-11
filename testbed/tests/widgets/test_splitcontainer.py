@@ -104,6 +104,28 @@ async def test_set_content(
     assert content2_probe.width == pytest.approx(probe.width / 2, abs=20)
 
 
+async def test_zero_size_split_preserve(
+    widget,
+    probe,
+    content1,
+    content1_probe,
+    content2,
+    content2_probe,
+):
+    """In cases where a widget's initial layout is incorrect and leads to
+    zero size, split proportions are still preserved"""
+    widget.width = 0
+    await probe.redraw("Widget width set to 0")
+    widget.content = [(content1, 1), (content2, 2)]
+    await probe.wait_for_split()
+    await probe.redraw("33.33/66.67 split applied")
+    del widget.width
+    await probe.wait_for_split()
+    await probe.redraw("Widget should now have nonzero size")
+    assert content1_probe.width == approx(probe.width * 1 / 3, abs=20)
+    assert content2_probe.width == approx(probe.width * 2 / 3, abs=20)
+
+
 async def test_set_direction(
     widget,
     probe,

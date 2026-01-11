@@ -92,7 +92,7 @@ def test_tuples():
     assert source[1].val1 == "new element"
     assert source[1].val2 == 999
 
-    listener.insert.assert_called_once_with(index=1, item=source[1])
+    listener.change.assert_called_once_with(item=source[1])
 
 
 def test_list():
@@ -125,7 +125,7 @@ def test_list():
     assert source[1].val1 == "new element"
     assert source[1].val2 == 999
 
-    listener.insert.assert_called_once_with(index=1, item=source[1])
+    listener.change.assert_called_once_with(item=source[1])
 
 
 def test_dict():
@@ -158,7 +158,7 @@ def test_dict():
     assert source[1].val1 == "new element"
     assert source[1].val2 == 999
 
-    listener.insert.assert_called_once_with(index=1, item=source[1])
+    listener.change.assert_called_once_with(item=source[1])
 
 
 def test_flat_list():

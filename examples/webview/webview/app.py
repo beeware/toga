@@ -1,4 +1,5 @@
 import asyncio
+import webbrowser
 
 import toga
 from toga.constants import COLUMN, ROW
@@ -26,7 +27,8 @@ class WebViewApp(toga.App):
         self.label.text = f"{result=!r}, {exception=!r}"
 
     def on_webview_load(self, widget, **kwargs):
-        self.label.text = "www loaded!"
+        self.label.text = f"Loaded: {widget.url}"
+        print(f"on_webview_load: {widget.url}")
 
     async def on_navigate_js(self, widget, **kwargs):
         await self.webview.evaluate_javascript(
@@ -65,6 +67,9 @@ class WebViewApp(toga.App):
 
     def on_clear_url(self, widget, **kwargs):
         self.webview.url = None
+
+    def on_open_browser(self, widget, **kwargs):
+        webbrowser.open("https://github.com/beeware/toga")
 
     def on_set_content(self, widget, **kwargs):
         self.webview.set_content(
@@ -114,6 +119,7 @@ class WebViewApp(toga.App):
                     children=[
                         toga.Button("set agent", on_press=self.on_set_agent),
                         toga.Button("get agent", on_press=self.on_get_agent),
+                        toga.Button("open browser", on_press=self.on_open_browser),
                     ],
                 ),
             ],
