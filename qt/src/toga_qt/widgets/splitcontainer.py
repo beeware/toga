@@ -1,5 +1,6 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QSplitter
+from PySide6.QtGui import QColor, QPalette
+from PySide6.QtWidgets import QSizePolicy, QSplitter
 from travertino.size import at_least
 
 from ..container import Container
@@ -9,12 +10,30 @@ from .base import Widget
 class SplitContainer(Widget):
     def create(self):
         self.native = QSplitter()
+        self.native.setOrientation(Qt.Orientation.Vertical)
+        self.native.splitterMoved.connect(self.qt_splitter_moved)
 
-        self.sub_containers = [Container(), Container()]
-        self.native.addWidget(self.sub_containers[0].native)
-        self.native.addWidget(self.sub_containers[1].native)
+        self.sub_containers = [
+            Container(on_refresh=self.content_refreshed),
+            Container(on_refresh=self.content_refreshed),
+        ]
+        for container in self.sub_containers:
+            self.native.addWidget(container.native)
+            container.native.show()
+            container.native.setSizePolicy(
+                QSizePolicy(
+                    QSizePolicy.Policy.Expanding,
+                    QSizePolicy.Policy.Expanding,
+                )
+            )
+            palette = container.native.palette()
+            palette.setColor(QPalette.ColorRole.Window, QColor(255, 0, 0))
+            container.native.setPalette(palette)
 
         self._split_proportion = 0.5
+
+    def qt_splitter_moved(self, pos, index):
+        self.rehint()
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
@@ -37,9 +56,21 @@ class SplitContainer(Widget):
                     int(self._split_proportion * height),
                     height - int(self._split_proportion * height),
                 ]
-
+            print(sizes)
+            print(width)
             self.native.setSizes(sizes)
             self._split_proportion = None
+        for container in self.sub_containers:
+            if container.content:
+                container.content.interface.refresh()
+
+    def content_refreshed(self, container):
+        print(container)
+        container.native.setMinimumSize(
+            container.content.interface.layout.min_width,
+            container.content.interface.layout.min_height,
+        )
+        self.rehint()
 
     def set_content(self, content, flex):
         # Clear any existing content
@@ -51,17 +82,20 @@ class SplitContainer(Widget):
             self.sub_containers[position].content = widget
 
         # We now know the initial positions of the split. However, we can't *set* the
-        # because GTK requires a pixel position, and the widget isn't visible yet. So -
+        # because Qt requires a pixel position, and the widget isn't visible yet. So -
         # store the split; and when we do our first layout, apply that proportion.
+        print(flex)
         self._split_proportion = flex[0] / sum(flex)
 
     def get_direction(self):
+        # Qt uses the orientation of the layout, not the handle
         if self.native.orientation() == Qt.Orientation.Vertical:
-            return self.interface.VERTICAL
-        else:
             return self.interface.HORIZONTAL
+        else:
+            return self.interface.VERTICAL
 
     def set_direction(self, value):
+        # Qt uses the orientation of the layout, not the handle
         if value == self.interface.VERTICAL:
             self.native.setOrientation(Qt.Orientation.Horizontal)
         else:
@@ -78,8 +112,8 @@ class SplitContainer(Widget):
             min_width = self.interface._MIN_WIDTH
             min_height = 0
             for sub_container in self.sub_containers:
-                min_width = max(min_width, sub_container.min_width)
-                min_height += sub_container.min_height
+                min_width = max(min_width, sub_container.native.minimumSize().width())
+                min_height += sub_container.native.minimumSize().height()
 
             min_height = max(min_height, self.interface._MIN_HEIGHT) + SPLITTER_WIDTH
         else:
@@ -90,13 +124,42 @@ class SplitContainer(Widget):
             min_width = 0
             min_height = self.interface._MIN_HEIGHT
             for sub_container in self.sub_containers:
-                min_width += sub_container.min_width
-                min_height = max(min_height, sub_container.min_height)
+                min_width += sub_container.native.minimumSize().width()
+                min_height = max(
+                    min_height, sub_container.native.minimumSize().height()
+                )
 
             min_width = max(min_width, self.interface._MIN_WIDTH) + SPLITTER_WIDTH
 
         self.interface.intrinsic.width = at_least(min_width)
         self.interface.intrinsic.height = at_least(min_height)
+
+        # self.native.setMinimumSize(min_width, min_height)
+        # self.native.updateGeometry()
+
+        print(self.native.sizeHint(), self.native.size())
+
+        print(
+            [
+                container.content.native.isVisible()
+                for container in self.sub_containers
+                if container.content is not None
+            ]
+        )
+        print(
+            [
+                container.content.native.parent()
+                for container in self.sub_containers
+                if container.content is not None
+            ]
+        )
+        print(min_width, min_height)
+
+        print(
+            self.native.isVisible(),
+            self.native.parent(),
+            self.native.parent().parent() if self.native.parent() is not None else None,
+        )
 
         # size = self.native.sizeHint()
         # self.interface.intrinsic.width = at_least(
