@@ -44,6 +44,7 @@ In this example, when `my_sync_handler` is triggered, a dialog will be created, 
 ## Notes  { #dialog-notes }
 
 - On macOS, app-modal dialogs will *not* prevent the user from interacting with the rest of the app.
+- On Linux (Qt), the `SelectFilderDialog` does not support multiple selection.
 
 ## Reference
 

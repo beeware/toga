@@ -248,7 +248,6 @@ Resources:
     beta:
       - web
       - textual
-      - qt
 
   Document:
     description: A representation of a file on disk that will be displayed in one or more windows.
