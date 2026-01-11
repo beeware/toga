@@ -22,14 +22,15 @@ class TogaWebClient(static_proxy(WebViewClient)):
                     # on_navigation_starting handler is synchronous
                     allow = result
                 else:
-                    # on_navigation_starting handler is asynchronous. Deny navigation until
-                    # the user defined on_navigation_starting coroutine has completed.
+                    # on_navigation_starting handler is asynchronous. Deny navigation
+                    # until the user defined on_navigation_starting coroutine has
+                    # completed.
                     allow = False
         # This is a defensive safety catch, just in case if the impl object
         # has already been collected, but the native widget is still
         # emitting an event to the listener.
         except ReferenceError:  # pragma: no cover
-            pass            
+            pass
         return not allow
 
     @Override(jvoid, [A_WebView, jstring])
@@ -43,7 +44,7 @@ class TogaWebClient(static_proxy(WebViewClient)):
         except ReferenceError:  # pragma: no cover
             pass
 
-        try: 
+        try:
             if self.impl.loaded_future:
                 self.impl.loaded_future.set_result(None)
                 self.impl.loaded_future = None
