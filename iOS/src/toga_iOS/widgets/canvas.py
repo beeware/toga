@@ -267,6 +267,26 @@ class Context:
                 NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
             )
 
+    # Images
+    def draw_image(self, image, x, y, width, height):
+        ui_image = image._impl.native
+
+        # Have an UIImage, need a CGImage
+        cg_image = ui_image.CGImage
+
+        # Quartz is flipped relative to data, so we:
+        # - store the current state
+        # - translate to bottom of the image
+        # - flip vertical axis
+        # - draw image at the new y-origin, with normal height
+        # - restore state
+        core_graphics.CGContextSaveGState(self.ui_context)
+        core_graphics.CGContextTranslateCTM(self.ui_context, 0, y + height)
+        core_graphics.CGContextScaleCTM(self.ui_context, 1.0, -1.0)
+        rectangle = CGRectMake(x, 0, width, height)
+        core_graphics.CGContextDrawImage(self.ui_context, rectangle, cg_image)
+        core_graphics.CGContextRestoreGState(self.ui_context)
+
 
 class TogaCanvas(UIView):
     interface = objc_property(object, weak=True)

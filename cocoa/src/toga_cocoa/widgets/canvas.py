@@ -235,6 +235,29 @@ class Context:
                 NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
             )
 
+    # Images
+    def draw_image(self, image, x, y, width, height):
+        ns_image = image._impl.native
+
+        # Have an NSImage, need a CGImage
+        ns_rectangle = NSRect(NSPoint(0, 0), NSSize(width, height))
+        cg_image = ns_image.CGImageForProposedRect(
+            ns_rectangle, context=self.cg_context, hints=None
+        )
+
+        # Quartz is flipped relative to data, so we:
+        # - store the current state
+        # - translate to bottom of the image
+        # - flip vertical axis
+        # - draw image at the new y-origin, with normal height
+        # - restore state
+        core_graphics.CGContextSaveGState(self.cg_context)
+        core_graphics.CGContextTranslateCTM(self.cg_context, 0, y + height)
+        core_graphics.CGContextScaleCTM(self.cg_context, 1.0, -1.0)
+        rectangle = CGRectMake(x, 0, width, height)
+        core_graphics.CGContextDrawImage(self.cg_context, rectangle, cg_image)
+        core_graphics.CGContextRestoreGState(self.cg_context)
+
 
 def _render_string(text, font, fill_style=None, stroke_style=None, line_width=2.0):
     textAttributes = NSMutableDictionary.alloc().init()

@@ -1,7 +1,7 @@
 import logging
 from math import ceil, cos, degrees, sin
 
-from PySide6.QtCore import QBuffer, QIODevice, QPointF, Qt
+from PySide6.QtCore import QBuffer, QIODevice, QPointF, QRectF, Qt
 from PySide6.QtGui import (
     QFontMetrics,
     QMouseEvent,
@@ -221,6 +221,10 @@ class Context:
 
         # reset state to how things were before translating
         self.restore()
+
+    # Bitmap images
+    def draw_image(self, image, x, y, width, height):
+        self.painter.drawImage(QRectF(x, y, width, height), image._impl.native)
 
 
 class TogaCanvas(QWidget):

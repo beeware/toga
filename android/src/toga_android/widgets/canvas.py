@@ -210,6 +210,19 @@ class Context:
             if self.in_stroke:
                 self.android_canvas.drawText(*draw_args, stroke)
 
+    # Bitmaps
+    def draw_image(self, image, x, y, width, height):
+        self.android_canvas.save()
+        self.android_canvas.translate(x, y)
+        self.android_canvas.scale(width / image.width, height / image.height)
+        self.android_canvas.drawBitmap(
+            image._impl.native,
+            0,
+            0,
+            None,
+        )
+        self.android_canvas.restore()
+
 
 class DrawHandler(dynamic_proxy(IDrawHandler)):
     def __init__(self, impl):

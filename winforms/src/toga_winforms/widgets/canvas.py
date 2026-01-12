@@ -288,6 +288,12 @@ class Context:
                 self.impl.string_format,
             )
 
+    def draw_image(self, image, x, y, width, height):
+        self.graphics.ResetTransform()
+        self.graphics.Transform = self.state.matrix
+        self.graphics.DrawImage(image._impl.native, x, y, width, height)
+        self.graphics.ResetTransform()
+
 
 class Canvas(Box):
     def create(self):

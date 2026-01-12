@@ -12,6 +12,7 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
     Font,
 )
+from toga.images import Image
 
 if TYPE_CHECKING:
     from toga.colors import ColorT
@@ -425,6 +426,58 @@ class WriteText(DrawingObject):
             self._font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
         else:
             self._font = value
+
+
+class DrawImage(DrawingObject):
+    def __init__(
+        self,
+        image: Image,
+        x: float = 0.0,
+        y: float = 0.0,
+        width: float | None = None,
+        height: float | None = None,
+    ):
+        self.image = image
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(image={self.image!r}, x={self.x}, y={self.y}, "
+            f"width={self.width!r}, height={self.height})"
+        )
+
+    def _draw(self, impl: Any, **kwargs: Any) -> None:
+        impl.draw_image(
+            self.image,
+            self.x,
+            self.y,
+            self.width,
+            self.height,
+            **kwargs,
+        )
+
+    @property
+    def width(self) -> float:
+        if self._width is None:
+            return self.image.width
+        return self._width
+
+    @width.setter
+    def width(self, value: float | None):
+        self._width = value
+
+    @property
+    def height(self) -> float:
+        if self._height is None:
+            return self.image.height
+        return self._height
+
+    @height.setter
+    def height(self, value: float | None):
+        self._height = value
 
 
 class Rotate(DrawingObject):

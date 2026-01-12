@@ -194,6 +194,26 @@ class Context:
             self.cairo_context.move_to(x, top + (metrics.line_height * line_num))
             PangoCairo.layout_line_path(self.cairo_context, layout.get_line(0))
 
+    def draw_image(self, image, x, y, width, height):
+        # save old path, create a new path to draw in
+        old_path = self.cairo_context.copy_path()
+        self.cairo_context.new_path()
+        self.cairo_context.save()
+
+        # apply translation and scale so source rectangle maps to destination rectangle
+        self.cairo_context.translate(x, y)
+        self.cairo_context.scale(width / image.width, height / image.height)
+
+        # draw a filled rectangle with the pixmap as the source for the fill
+        self.cairo_context.rectangle(0, 0, image.width, image.height)
+        Gdk.cairo_set_source_pixbuf(self.cairo_context, image._impl.native, 0, 0)
+        self.cairo_context.fill()
+
+        # restore the old path
+        self.cairo_context.restore()
+        self.cairo_context.new_path()
+        self.cairo_context.append_path(old_path)
+
 
 class Canvas(Widget):
     def create(self):

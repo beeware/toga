@@ -205,6 +205,15 @@ class Canvas(Widget):
 
     # Image
 
+    def draw_image(self, image, x, y, width, height, draw_instructions, **kwargs):
+        """Draw an Image into the context."""
+        draw_instructions.append(
+            (
+                "draw_image",
+                dict(image=image, x=x, y=y, width=width, height=height, **kwargs),
+            )
+        )
+
     def get_image_data(self):
         """Return the Toga logo as the "native" image."""
         self._action("get image data")
