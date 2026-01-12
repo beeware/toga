@@ -449,15 +449,8 @@ class DrawImage(DrawingObject):
             f"width={self.width!r}, height={self.height})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.draw_image(
-            self.image,
-            self.x,
-            self.y,
-            self.width,
-            self.height,
-            **kwargs,
-        )
+    def _draw(self, context: Any) -> None:
+        context.draw_image(self.image, self.x, self.y, self.width, self.height)
 
     @property
     def width(self) -> float:

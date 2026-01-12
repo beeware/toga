@@ -642,7 +642,6 @@ class ClosedPathContext(Context):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        # sub_kwargs = kwargs.copy()
         for obj in self.drawing_objects:
             obj._draw(context)
 
