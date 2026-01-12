@@ -750,7 +750,7 @@ def test_reset_transform(widget):
     ],
 )
 def test_draw_image(widget, kwargs, args_repr, draw_kwargs):
-    """A reset transform operation can be added."""
+    """An image can be drawn."""
     image = Image(ABSOLUTE_FILE_PATH)
     draw_op = widget.context.draw_image(image=image, **kwargs)
 
