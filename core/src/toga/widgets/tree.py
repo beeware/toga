@@ -92,7 +92,7 @@ class Tree(Widget):
 
         # The accessors used for ad-hoc TreeSources may have more than just column
         # accessors.
-        self._data_accessors: list[str] = (
+        self._data_accessor_order: list[str] = (
             self.accessors if accessors is None else list(accessors)
         )
 
@@ -145,11 +145,11 @@ class Tree(Widget):
             self._data.remove_listener(self._impl)
 
         if data is None:
-            self._data = TreeSource(accessors=self._data_accessors, data=[])
+            self._data = TreeSource(accessors=self._data_accessor_order, data=[])
         elif isinstance(data, Source):
             self._data = data
         else:
-            self._data = TreeSource(accessors=self._data_accessors, data=data)
+            self._data = TreeSource(accessors=self._data_accessor_order, data=data)
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
