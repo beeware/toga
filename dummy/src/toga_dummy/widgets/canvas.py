@@ -165,6 +165,17 @@ class Context:
             )
         )
 
+    # Image
+
+    def draw_image(self, image, x, y, width, height):
+        """Draw an Image into the context."""
+        self.impl.draw_instructions.append(
+            (
+                "draw_image",
+                {"image": image, "x": x, "y": y, "width": width, "height": height},
+            )
+        )
+
 
 class Canvas(Widget):
     def create(self):
@@ -202,17 +213,6 @@ class Canvas(Widget):
                 height = lines * line_height_factor * int(font.interface.size * 1.5)
 
         return width, height
-
-    # Image
-
-    def draw_image(self, image, x, y, width, height, draw_instructions, **kwargs):
-        """Draw an Image into the context."""
-        draw_instructions.append(
-            (
-                "draw_image",
-                dict(image=image, x=x, y=y, width=width, height=height, **kwargs),
-            )
-        )
 
     def get_image_data(self):
         """Return the Toga logo as the "native" image."""

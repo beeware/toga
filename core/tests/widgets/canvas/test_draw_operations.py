@@ -773,7 +773,7 @@ def test_reset_transform(widget):
         ),
     ],
 )
-def test_draw_image(widget, kwargs, args_repr, draw_kwargs):
+def test_draw_image(app, widget, kwargs, args_repr, draw_kwargs):
     """An image can be drawn."""
     image = Image(ABSOLUTE_FILE_PATH)
     draw_op = widget.context.draw_image(image=image, **kwargs)
