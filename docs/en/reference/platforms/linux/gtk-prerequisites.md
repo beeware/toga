@@ -2,21 +2,9 @@
 
 These instructions are different on almost every version of Linux and Unix; here are some of the common alternatives:
 
-/// admonition | Using a specific Python Version
-
-By default `python3` is used. For specific python version (e.g., 3.12) replace the following:
-
-* **Ubuntu/Debian:** `python3-dev` to `python3.12-dev`
-
-* **Fedora/OpenSUSE:** `python3-devel` to `python3.12-devel`
-
-* **Arch/Manjaro/FreeBSD:** `python3` to `python312`
-
-As for Arch/Manjaro/FreeBSD the python development libraries are included as part of `python3`.
-
-///
-
 ### Ubuntu 24.04+ / Debian 13+
+
+For specific python version (e.g., 3.12) replace `python3-dev` to `python3.12-dev`.
 
 ```console
 (venv) $ sudo apt update
@@ -24,6 +12,10 @@ As for Arch/Manjaro/FreeBSD the python development libraries are included as par
 ```
 
 ### Ubuntu 22.04 / Debian 11, 12
+
+For specific python version (e.g., 3.12) replace `python3-dev` to `python3.12-dev`.
+
+If you are using an additional Python version from Deadsnakes or a similar third‑party repository, you must also install the corresponding pythonX.Y-dev package for that interpreter.
 
 ```console
 (venv) $ sudo apt update
@@ -34,11 +26,15 @@ If you're running on Ubuntu 22.04, Debian 11 or Debian 12, you'll also need to a
 
 ### Fedora 41+
 
+For specific python version (e.g., 3.12) replace `python3-devel` to `python3.12-devel`.
+
 ```console
 (venv) $ sudo dnf install git gcc make pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel gtk3 libcanberra-gtk3
 ```
 
 ### Arch / Manjaro
+
+For specific python version (e.g., 3.12) replace `python3` to `python312`.
 
 ```console
 (venv) $ sudo pacman -Syu git base-devel pkgconf python3 gobject-introspection cairo gtk3 libcanberra
@@ -46,11 +42,15 @@ If you're running on Ubuntu 22.04, Debian 11 or Debian 12, you'll also need to a
 
 ### OpenSUSE Tumbleweed
 
+For specific python version (e.g., 3.12) replace `python3-devel` to `python3.12-devel`.
+
 ```console
 (venv) $ sudo zypper install git patterns-devel-base-devel_basis pkgconf-pkg-config python3-devel gobject-introspection-devel cairo-devel gtk3 'typelib(Gtk)=3.0' libcanberra-gtk3-module
 ```
 
 ### FreeBSD
+
+For specific python version (e.g., 3.12) replace `python3` to `python312`.
 
 ```console
 (venv) $ sudo pkg update

@@ -4,6 +4,8 @@ These instructions are different on almost every version of Linux and Unix, in a
 
 ### Ubuntu 24.04 / Debian 11+
 
+For specific python version (e.g., 3.12) replace `python3-dev` to `python3.12-dev`.
+
 /// tab | Wayland
 
 ```console
@@ -34,6 +36,8 @@ These instructions are different on almost every version of Linux and Unix, in a
 Fedora's packaging of some Qt and KDE-related packages lists incorrect dependency versions; installing certain packages that updates KWin or related things may brick your system.  Therefore, it is highly recommended, as a general precaution, to upgrade all packages following the installation of these components.
 
 ///
+
+For specific python version (e.g., 3.12) replace `python3-devel` to `python3.12-devel`.
 
 /// tab | Wayland
 
