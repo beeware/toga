@@ -24,6 +24,7 @@ try:
     from .widgets.optioncontainer import OptionContainer
     from .widgets.passwordinput import PasswordInput
     from .widgets.progressbar import ProgressBar
+    from .widgets.scrollcontainer import ScrollContainer
     from .widgets.slider import Slider
     from .widgets.switch import Switch
     from .widgets.textinput import TextInput
@@ -64,6 +65,7 @@ __all__ = [
     "OptionContainer",
     "PasswordInput",
     "ProgressBar",
+    "ScrollContainer",
     "Switch",
     "Slider",
     "TextInput",

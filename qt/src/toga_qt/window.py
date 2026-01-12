@@ -92,7 +92,7 @@ class Window:
         # Note:  KDE's default theme does not respond to minimize button
         # window hints, so minimizable cannot be implemented.
 
-        self.native.resizeEvent = self.resizeEvent
+        self.container.native.resizeEvent = self.resizeEvent
         self.toolbar_native = None
 
     def qt_close_event(self, event):
