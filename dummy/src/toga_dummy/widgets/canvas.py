@@ -63,12 +63,7 @@ class Context:
         self.impl.draw_instructions.append(
             (
                 "quadratic curve to",
-                {
-                    "cpx": cpx,
-                    "cpy": cpy,
-                    "x": x,
-                    "y": y,
-                },
+                {"cpx": cpx, "cpy": cpy, "x": x, "y": y},
             )
         )
 
@@ -88,7 +83,15 @@ class Context:
         )
 
     def ellipse(
-        self, x, y, radiusx, radiusy, rotation, startangle, endangle, counterclockwise
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
     ):
         self.impl.draw_instructions.append(
             (
@@ -110,12 +113,7 @@ class Context:
         self.impl.draw_instructions.append(
             (
                 "rect",
-                {
-                    "x": x,
-                    "y": y,
-                    "width": width,
-                    "height": height,
-                },
+                {"x": x, "y": y, "width": width, "height": height},
             )
         )
 
@@ -142,15 +140,7 @@ class Context:
 
     # Text
 
-    def write_text(
-        self,
-        text,
-        x,
-        y,
-        font,
-        baseline,
-        line_height,
-    ):
+    def write_text(self, text, x, y, font, baseline, line_height):
         self.impl.draw_instructions.append(
             (
                 "write text",

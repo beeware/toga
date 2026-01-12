@@ -700,17 +700,9 @@ class FillContext(ClosedPathContext):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        # sub_kwargs = kwargs.copy()
-        # sub_kwargs.update(fill_color=self.color, fill_rule=self.fill_rule)
         for obj in self.drawing_objects:
             obj._draw(context)
 
-        # Fill passes fill_rule to its children; but that is also a valid argument for
-        # fill(), so if a fill context is a child of a fill context, there's an argument
-        # collision. Duplicate the kwargs and explicitly overwrite to avoid the
-        # collision.
-        # draw_kwargs = kwargs.copy()
-        # draw_kwargs.update(fill_rule=self.fill_rule)
         context.fill(self.fill_rule)
         context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
         context.restore()
@@ -781,22 +773,9 @@ class StrokeContext(ClosedPathContext):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        # sub_kwargs = kwargs.copy()
-        # sub_kwargs["stroke_color"] = self.color
-        # sub_kwargs["line_width"] = self.line_width
-        # sub_kwargs["line_dash"] = self.line_dash
         for obj in self.drawing_objects:
             obj._draw(context)
 
-        # Stroke passes line_width and line_dash to its children; but those two are also
-        # valid arguments for stroke, so if a stroke context is a child of stroke
-        # context, there's an argument collision. Duplicate the kwargs and explicitly
-        # overwrite to avoid the collision
-        # draw_kwargs = kwargs.copy()
-        # draw_kwargs["line_width"] = self.line_width
-        # draw_kwargs["line_dash"] = self.line_dash
-
-        # context.set_color(self.color)
         context.stroke()
 
         context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
