@@ -1,8 +1,8 @@
 from functools import partial
 
 from PySide6.QtCore import QBuffer, QEvent, QIODevice, Qt, QTimer
-from PySide6.QtGui import QAction, QResizeEvent, QWindowStateChangeEvent
-from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QToolBar
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMainWindow, QMenu, QToolBar
 
 from toga.command import Separator
 from toga.constants import WindowState
@@ -58,8 +58,12 @@ class Window:
         if self._changeeventid != changeeventid:
             return
         if self._pending_state_transition:
-            self._apply_state(self._pending_state_transition)
+            # The pending state transition should be cleared *first*,
+            # as _apply_state may initiate another state transition
+            # depending on if transitioning to Maximized.
+            state = self._pending_state_transition
             self._pending_state_transition = None
+            self._apply_state(state)
         self._state_lock = False
 
     def __init__(self, interface, title, position, size):
@@ -92,7 +96,8 @@ class Window:
         # Note:  KDE's default theme does not respond to minimize button
         # window hints, so minimizable cannot be implemented.
 
-        self.native.resizeEvent = self.resizeEvent
+        self.container.native.resizeEvent = self.qt_container_resize
+        self.native.resizeEvent = self.qt_resize
         self.toolbar_native = None
 
     def qt_close_event(self, event):
@@ -160,8 +165,10 @@ class Window:
     def set_size(self, size):
         self.native.resize(size[0], size[1])
 
-    def resizeEvent(self, event):
+    def qt_resize(self, event):
         self.interface.on_resize()
+
+    def qt_container_resize(self, event):
         if self.interface.content:
             self.interface.content.refresh()
 
@@ -234,15 +241,11 @@ class Window:
             self._state_lock = True
             self._changeeventid += 1
             QTimer.singleShot(100, partial(self._clear_pending, self._changeeventid))
+
         self._apply_state(state)
 
     def _apply_state(self, state):
         current_state = self.get_window_state()
-        current_native_state = self.native.windowState()
-        if (
-            current_state == WindowState.MINIMIZED and not IS_WAYLAND
-        ):  # pragma: no-cover-if-linux-wayland
-            self.native.showNormal()
         if current_state == state:
             self._pending_state_transition = None
             return
@@ -252,6 +255,17 @@ class Window:
             self.native.menuBar().show()
             del self._before_presentation_mode_screen
             self._in_presentation_mode = False
+
+        # Go through normal first with maximized.
+        # On Wayland, this will retrigger MAXIMIZED transition later
+        # using a pending state transition.
+        if state != WindowState.NORMAL and current_state != WindowState.NORMAL:
+            if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+                self._pending_state_transition = state
+                state = WindowState.NORMAL
+                self._state_lock = True
+            else:  # pragma: no-cover-if-linux-wayland
+                self._apply_state(WindowState.NORMAL)
 
         if state == WindowState.MAXIMIZED:
             self.native.showMaximized()
@@ -265,16 +279,6 @@ class Window:
 
         elif state == WindowState.FULLSCREEN:
             self.native.showFullScreen()
-            if current_state == WindowState.PRESENTATION:
-                # Fullscreen->Presentation doesn't register as a state change or
-                # size change.
-                QApplication.sendEvent(
-                    self.native,
-                    QWindowStateChangeEvent(current_native_state),
-                )
-                QApplication.sendEvent(
-                    self.native, QResizeEvent(self.native.size(), self.native.size())
-                )
 
         elif state == WindowState.PRESENTATION:
             self._before_presentation_mode_screen = self.interface.screen
@@ -287,20 +291,9 @@ class Window:
             # presentation mode
             self._in_presentation_mode = True
             self.native.showFullScreen()
-            if current_state == WindowState.FULLSCREEN:
-                # Presentation->Fullscreen doesn't register as a state change or
-                # size change.
-                QApplication.sendEvent(
-                    self.native, QWindowStateChangeEvent(current_native_state)
-                )
-                QApplication.sendEvent(
-                    self.native, QResizeEvent(self.native.size(), self.native.size())
-                )
 
         else:
             self.native.showNormal()
-
-        QApplication.processEvents()
 
     def get_image_data(self):
         pixmap = self.container.native.grab()
