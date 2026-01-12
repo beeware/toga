@@ -9,9 +9,7 @@ from toga.constants import WindowState
 from toga.types import Position, Size
 
 from .container import Container
-from .libs import (
-    IS_WAYLAND,
-)
+from .libs import IS_WAYLAND
 from .screens import Screen as ScreenImpl
 
 
