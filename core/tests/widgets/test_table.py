@@ -437,7 +437,7 @@ def test_insert_column_no_headings(source):
         table,
         "insert column",
         index=1,
-        heading=None,
+        heading="",
         accessor="extra",
     )
     assert table.headings is None
