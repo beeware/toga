@@ -22,8 +22,8 @@ class ColumnT(Protocol, Generic[Value]):
     # This will eventually be removed from the Protocol
     @property
     @abstractmethod
-    def accessor(self) -> str:
-        """The accessor for this column."""
+    def id(self) -> str:
+        """An id for this column that can be used by implementations."""
 
     @abstractmethod
     def value(self, row: Any) -> Value | None:
@@ -87,6 +87,10 @@ class AccessorColumn(ColumnT[Value]):
     @property
     def heading(self):
         return self._heading if self._heading is not None else ""
+
+    @property
+    def id(self):
+        return self._accessor
 
     @property
     def accessor(self):

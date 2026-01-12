@@ -210,7 +210,7 @@ class Table(Widget):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def _insert_column(self, index, toga_column):
-        column = NSTableColumn.alloc().initWithIdentifier(toga_column.accessor)
+        column = NSTableColumn.alloc().initWithIdentifier(toga_column.id)
         column.toga_column = toga_column
         column.minWidth = 16
 

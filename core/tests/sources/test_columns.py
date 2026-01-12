@@ -50,6 +50,7 @@ def test_accessor_column(heading, accessor, heading_property, accessor_property)
 
     assert column.heading == heading_property
     assert column.accessor == accessor_property
+    assert column.id == accessor_property
 
 
 def test_accessor_column_failure():

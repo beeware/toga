@@ -179,7 +179,7 @@ class Table(Widget):
         col = WinForms.ColumnHeader()
         if self._show_headings:
             col.Text = toga_column.heading
-        col.Name = toga_column.accessor
+        col.Name = toga_column.id
         return col
 
     def _resize_columns(self):
