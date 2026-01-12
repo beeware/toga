@@ -698,6 +698,7 @@ async def test_write_text(canvas, probe):
 
     hello_text = "Hello"
     hello_font = Font("Droid Serif", 12)
+    print(f"{hello_font = }")
     hello_size = canvas.measure_text(hello_text, hello_font)
 
     with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:

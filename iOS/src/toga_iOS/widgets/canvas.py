@@ -55,23 +55,25 @@ class State:
 class Context:
     def __init__(self):
         self.ui_context = uikit.UIGraphicsGetCurrentContext()
-        self.states = []
-        self.state = State()
+        self.states = [State()]
         self.set_line_width(2.0)
 
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
         self.in_stroke = False
 
+    @property
+    def state(self):
+        return self.states[-1]
+
     # Context management
     def save(self):
         core_graphics.CGContextSaveGState(self.ui_context)
-        self.states.append(self.state)
-        self.state = copy(self.state)
+        self.states.append(copy(self.state))
 
     def restore(self):
         core_graphics.CGContextRestoreGState(self.ui_context)
-        self.state = self.states.pop()
+        self.states.pop()
 
     # Setting attributes
     def set_fill_style(self, color):

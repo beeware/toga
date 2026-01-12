@@ -1,3 +1,4 @@
+from copy import copy
 from dataclasses import dataclass
 from io import BytesIO
 from math import ceil
@@ -5,6 +6,7 @@ from math import ceil
 from travertino.size import at_least
 
 from toga import Font
+from toga.colors import rgb
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.handlers import WeakrefCallable
@@ -20,6 +22,177 @@ from toga_gtk.libs import (
 )
 
 from .base import Widget
+
+BLACK = native_color(rgb(0, 0, 0))
+
+
+@dataclass(slots=True)
+class State:
+    # GTK doesn't track fill and stroke color separately.
+    fill_style: tuple = BLACK
+    stroke_style: tuple = BLACK
+
+
+class Context:
+    def __init__(self, impl, cairo_context):
+        self.impl = impl
+        self.cairo_context = cairo_context
+        self.original_transform_matrix = self.cairo_context.get_matrix()
+        self.states = [State()]
+
+        # Backwards compatibility for Toga <= 0.5.3
+        self.in_fill = False
+        self.in_stroke = False
+
+    # Context management
+    @property
+    def state(self):
+        return self.states[-1]
+
+    def save(self):
+        self.cairo_context.save()
+        self.states.append(copy(self.state))
+
+    def restore(self):
+        self.cairo_context.restore()
+        self.states.pop()
+
+    # Setting attributes
+    def set_fill_style(self, color):
+        self.state.fill_style = native_color(color)
+
+    def set_line_dash(self, line_dash):
+        self.cairo_context.set_dash(line_dash)
+
+    def set_line_width(self, line_width):
+        self.cairo_context.set_line_width(line_width)
+
+    def set_stroke_style(self, color):
+        self.state.stroke_style = native_color(color)
+
+    # Basic paths
+    def begin_path(self):
+        self.cairo_context.new_path()
+
+    def close_path(self):
+        self.cairo_context.close_path()
+
+    def move_to(self, x, y):
+        self.cairo_context.move_to(x, y)
+
+    def line_to(self, x, y):
+        self.cairo_context.line_to(x, y)
+
+    # Basic shapes
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self.cairo_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
+        # we can convert the single Quadratic control point into the
+        # 2 control points required for the cubic Bézier.
+        x0, y0 = self.cairo_context.get_current_point()
+        self.cairo_context.curve_to(
+            x0 + 2 / 3 * (cpx - x0),
+            y0 + 2 / 3 * (cpy - y0),
+            x + 2 / 3 * (cpx - x),
+            y + 2 / 3 * (cpy - y),
+            x,
+            y,
+        )
+
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        if counterclockwise:
+            self.cairo_context.arc_negative(x, y, radius, startangle, endangle)
+        else:
+            self.cairo_context.arc(x, y, radius, startangle, endangle)
+
+    def ellipse(
+        self, x, y, radiusx, radiusy, rotation, startangle, endangle, counterclockwise
+    ):
+        self.cairo_context.save()
+        self.cairo_context.translate(x, y)
+        self.cairo_context.rotate(rotation)
+        if radiusx >= radiusy:
+            self.cairo_context.scale(1, radiusy / radiusx)
+            self.arc(0, 0, radiusx, startangle, endangle, counterclockwise)
+        else:
+            self.cairo_context.scale(radiusx / radiusy, 1)
+            self.arc(0, 0, radiusy, startangle, endangle, counterclockwise)
+        self.cairo_context.identity_matrix()
+        self.cairo_context.restore()
+
+    def rect(self, x, y, width, height):
+        self.cairo_context.rectangle(x, y, width, height)
+
+    # Drawing Paths
+
+    def fill(self, fill_rule):
+        self.cairo_context.set_source_rgba(*self.state.fill_style)
+        if fill_rule == FillRule.EVENODD:
+            self.cairo_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+        else:
+            self.cairo_context.set_fill_rule(cairo.FILL_RULE_WINDING)
+
+        self.cairo_context.fill_preserve()
+
+    def stroke(self):
+        self.cairo_context.set_source_rgba(*self.state.stroke_style)
+        self.cairo_context.stroke_preserve()
+
+    # Transformations
+
+    def rotate(self, radians):
+        self.cairo_context.rotate(radians)
+
+    def scale(self, sx, sy):
+        self.cairo_context.scale(sx, sy)
+
+    def translate(self, tx, ty):
+        self.cairo_context.translate(tx, ty)
+
+    def reset_transform(self):
+        self.cairo_context.set_matrix(self.original_transform_matrix)
+
+    # Text
+    def write_text(self, text, x, y, font, baseline, line_height):
+        # Writing text should not affect current path, so save current path
+        current_path = self.cairo_context.copy_path()
+        # New path for text
+        self.cairo_context.new_path()
+        self._text_path(text, x, y, font, baseline, line_height)
+        if self.in_fill:
+            self.fill(FillRule.NONZERO)
+        if self.in_stroke:
+            self.stroke()
+        # Restore previous path
+        self.cairo_context.new_path()
+        self.cairo_context.append_path(current_path)
+
+    # No need to check whether Pango or PangoCairo are None, because if they were, the
+    # user would already have received an exception when trying to create a Font.
+    def _text_path(self, text, x, y, font, baseline, line_height):
+        pango_context = self.impl._pango_context(font)
+        metrics = self.impl._font_metrics(pango_context, line_height)
+        lines = text.splitlines()
+        total_height = metrics.line_height * len(lines)
+
+        if baseline == Baseline.TOP:
+            top = y + metrics.ascent
+        elif baseline == Baseline.MIDDLE:
+            top = y + metrics.ascent - (total_height / 2)
+        elif baseline == Baseline.BOTTOM:
+            top = y + metrics.ascent - total_height
+        else:
+            # Default to Baseline.ALPHABETIC
+            top = y
+
+        layout = Pango.Layout(pango_context)
+        for line_num, line in enumerate(lines):
+            layout.set_text(line)
+            self.cairo_context.move_to(x, top + (metrics.line_height * line_num))
+            PangoCairo.layout_line_path(self.cairo_context, layout.get_line(0))
 
 
 class Canvas(Widget):
@@ -78,8 +251,8 @@ class Canvas(Widget):
 
     if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4  # pragma: no branch
 
-        def gtk3_draw_callback(self, widget):
-            self.gtk_draw_callback(widget, *self._size())
+        def gtk3_draw_callback(self, widget, cairo_context):
+            self.gtk_draw_callback(widget, cairo_context, *self._size())
 
     def gtk_draw_callback(self, widget, cairo_context, width, height):
         """Creates a draw callback.
@@ -96,18 +269,17 @@ class Canvas(Widget):
             parse_css_color(sp.to_string().split(": ")[1].split(";")[0]) if sp else None
         )
         if bg:
-            self.context.set_source_rgba(
+            cairo_context.set_source_rgba(
                 255 * bg.r,
                 255 * bg.g,
                 255 * bg.b,
                 bg.a,
             )
-            self.context.rectangle(0, 0, width, height)
-            self.context.fill()
+            cairo_context.rectangle(0, 0, width, height)
+            cairo_context.fill()
 
-        self.original_transform_matrix = self.context.get_matrix()
-        self.context = cairo_context
-        self.interface.context._draw(self)
+        context = Context(self, cairo_context)
+        self.interface.context._draw(context)
 
     if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
 
@@ -183,172 +355,7 @@ class Canvas(Widget):
     def redraw(self):
         self.native.queue_draw()
 
-    # Context management
-    def save(self):
-        self.context.save()
-
-    def restore(self):
-        self.context.restore()
-
-    # Setting attributes
-    def set_fill_style(self, color):
-        # GTK doesn't track separate stroke and fill colors.
-        self._fill_style = native_color(color)
-
-    def set_line_dash(self, line_dash):
-        self.context.set_dash(line_dash)
-
-    def set_line_width(self, line_width):
-        self.context.set_line_width(line_width)
-
-    def set_stroke_style(self, color):
-        # GTK doesn't track separate stroke and fill colors.
-        self._stroke_style = native_color(color)
-
-    # Basic paths
-    def begin_path(self):
-        self.context.new_path()
-
-    def close_path(self):
-        self.context.close_path()
-
-    def move_to(self, x, y):
-        self.context.move_to(x, y)
-
-    def line_to(self, x, y):
-        self.context.line_to(x, y)
-
-    # Basic shapes
-
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self.context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
-
-    def quadratic_curve_to(self, cpx, cpy, x, y):
-        # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
-        # we can convert the single Quadratic control point into the
-        # 2 control points required for the cubic Bézier.
-        x0, y0 = self.context.get_current_point()
-        self.context.curve_to(
-            x0 + 2 / 3 * (cpx - x0),
-            y0 + 2 / 3 * (cpy - y0),
-            x + 2 / 3 * (cpx - x),
-            y + 2 / 3 * (cpy - y),
-            x,
-            y,
-        )
-
-    def arc(
-        self,
-        x,
-        y,
-        radius,
-        startangle,
-        endangle,
-        counterclockwise,
-    ):
-        if counterclockwise:
-            self.context.arc_negative(x, y, radius, startangle, endangle)
-        else:
-            self.context.arc(x, y, radius, startangle, endangle)
-
-    def ellipse(
-        self,
-        x,
-        y,
-        radiusx,
-        radiusy,
-        rotation,
-        startangle,
-        endangle,
-        counterclockwise,
-    ):
-        self.context.save()
-        self.context.translate(x, y)
-        self.context.rotate(rotation)
-        if radiusx >= radiusy:
-            self.context.scale(1, radiusy / radiusx)
-            self.arc(0, 0, radiusx, startangle, endangle, counterclockwise)
-        else:
-            self.context.scale(radiusx / radiusy, 1)
-            self.arc(0, 0, radiusy, startangle, endangle, counterclockwise)
-        self.context.identity_matrix()
-        self.context.restore()
-
-    def rect(self, x, y, width, height):
-        self.context.rectangle(x, y, width, height)
-
-    # Drawing Paths
-
-    def fill(self, fill_rule):
-        self.save()
-        self.context.set_source_rgba(*self._fill_style)
-
-        if fill_rule == FillRule.EVENODD:
-            self.context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
-        else:
-            self.context.set_fill_rule(cairo.FILL_RULE_WINDING)
-
-        self.context.fill_preserve()
-        self.restore()
-
-    def stroke(self):
-        self.save()
-        self.context.set_source_rgba(*self._stroke_style)
-
-        self.context.stroke_preserve()
-
-        self.restore()
-
-    # Transformations
-
-    def rotate(self, radians):
-        self.context.rotate(radians)
-
-    def scale(self, sx, sy):
-        self.context.scale(sx, sy)
-
-    def translate(self, tx, ty):
-        self.context.translate(tx, ty)
-
-    def reset_transform(self):
-        self.context.set_matrix(self.original_transform_matrix)
-
     # Text
-
-    def write_text(self, text, x, y, font, baseline, line_height):
-        # Writing text should not affect current path, so save current path
-        current_path = self.context.copy_path()
-        # New path for text
-        self.context.new_path()
-        self._text_path(text, x, y, font, baseline, line_height)
-
-        # Restore previous path
-        self.context.new_path()
-        self.context.append_path(current_path)
-
-    # No need to check whether Pango or PangoCairo are None, because if they were, the
-    # user would already have received an exception when trying to create a Font.
-    def _text_path(self, text, x, y, font, baseline, line_height):
-        pango_context = self._pango_context(font)
-        metrics = self._font_metrics(pango_context, line_height)
-        lines = text.splitlines()
-        total_height = metrics.line_height * len(lines)
-
-        if baseline == Baseline.TOP:
-            top = y + metrics.ascent
-        elif baseline == Baseline.MIDDLE:
-            top = y + metrics.ascent - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y + metrics.ascent - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y
-
-        layout = Pango.Layout(pango_context)
-        for line_num, line in enumerate(lines):
-            layout.set_text(line)
-            self.context.move_to(x, top + (metrics.line_height * line_num))
-            PangoCairo.layout_line_path(self.context, layout.get_line(0))
 
     def _pango_context(self, font):
         # TODO: detect the actual default family and size (see tests_backend/fonts.py).
@@ -394,7 +401,7 @@ class Canvas(Widget):
             widths.append(logical.width / Pango.SCALE)
 
         return (
-            ceil(max(width for width in widths)),
+            ceil(max(widths)),
             metrics.line_height * len(widths),
         )
 
@@ -429,7 +436,7 @@ class Canvas(Widget):
         self.interface.intrinsic.width = at_least(height)
 
 
-@dataclass
+@dataclass(slots=True)
 class FontMetrics:
     ascent: float
     descent: float

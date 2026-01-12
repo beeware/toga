@@ -1,5 +1,7 @@
 import itertools
+from copy import deepcopy
 from math import degrees
+from typing import NamedTuple
 
 from android.graphics import (
     Bitmap,
@@ -24,48 +26,64 @@ from .base import Widget
 BLACK = jint(native_color(rgb(0, 0, 0)))
 
 
+class State(NamedTuple):
+    fill: Paint
+    stroke: Paint
+
+    def __deepcopy__(self, memo):
+        return type(self)(Paint(self.fill), Paint(self.stroke))
+
+
 class Context:
     def __init__(self, android_canvas, impl):
         self.android_canvas = android_canvas
         self.impl = impl
         self.path = Path()
-        self.states = []  # Only tracks stroke/fill
+        self.reset_transform()
 
-        self.fill_paint = Paint()
-        self.fill_paint.setAntiAlias(True)
-        self.fill_paint.setStyle(Paint.Style.FILL)
-        self.fill_paint.setColor(BLACK)
+        # Backwards compatibility for Toga <= 0.5.3
+        self.in_fill = False
+        self.in_stroke = False
 
-        self.stroke_paint = Paint()
-        self.stroke_paint.setAntiAlias(True)
-        self.stroke_paint.setStyle(Paint.Style.STROKE)
-        self.stroke_paint.setStrokeWidth(2.0)
-        self.stroke_paint.setColor(BLACK)
+        fill = Paint()
+        fill.setAntiAlias(True)
+        fill.setStyle(Paint.Style.FILL)
+        fill.setColor(BLACK)
+
+        stroke = Paint()
+        stroke.setAntiAlias(True)
+        stroke.setStyle(Paint.Style.STROKE)
+        stroke.setStrokeWidth(2.0)
+        stroke.setColor(BLACK)
+
+        self.states = [State(fill, stroke)]
+
+    @property
+    def state(self):
+        return self.states[-1]
 
     # Context management
 
     def save(self):
         self.android_canvas.save()
-        self.states.append((self.fill_paint, self.stroke_paint))
-        self.fill_paint = Paint(self.fill_paint)
-        self.stroke_paint = Paint(self.stroke_paint)
+        self.states.append(deepcopy(self.state))
 
     def restore(self):
         self.android_canvas.restore()
-        self.fill_paint, self.stroke_paint = self.states.pop()
+        self.states.pop()
 
     # Setting attributes
     def set_fill_style(self, color):
-        self.fill_paint.setColor(jint(native_color(color)))
+        self.state.fill.setColor(jint(native_color(color)))
 
     def set_line_dash(self, line_dash):
-        self.stroke_paint.setPathEffect(DashPathEffect(line_dash, 0))
+        self.state.stroke.setPathEffect(DashPathEffect(line_dash, 0))
 
     def set_line_width(self, line_width):
-        self.stroke_paint.setStrokeWidth(line_width)
+        self.state.stroke.setStrokeWidth(line_width)
 
     def set_stroke_style(self, color):
-        self.stroke_paint.setColor(jint(native_color(color)))
+        self.state.stroke.setColor(jint(native_color(color)))
 
     # Basic paths
 
@@ -133,11 +151,11 @@ class Context:
                 FillRule.NONZERO: Path.FillType.WINDING,
             }.get(fill_rule, Path.FillType.WINDING)
         )
-        self.android_canvas.drawPath(self.path, self.fill_paint)
+        self.android_canvas.drawPath(self.path, self.state.fill)
 
     def stroke(self):
         # The stroke respects the canvas transform, so we don't need to scale it here.
-        self.android_canvas.drawPath(self.path, self.stroke_paint)
+        self.android_canvas.drawPath(self.path, self.state.stroke)
 
     # Transformations
 
@@ -172,20 +190,25 @@ class Context:
             # Default to Baseline.ALPHABETIC
             top = y
 
+        # Avoid mutating state
+        if self.in_fill:
+            fill = Paint(self.state.fill)
+            fill.setTypeface(font.typeface())
+            fill.setTextSize(self.impl.scale_out(font.size()))
+
+        if self.in_stroke:
+            stroke = Paint(self.state.stroke)
+            stroke.setTypeface(font.typeface())
+            stroke.setTextSize(self.impl.scale_out(font.size()))
+
         for line_num, line in enumerate(text.splitlines()):
             # FILL_AND_STROKE doesn't allow separate colors, so we have to draw twice.
-            draw_args = [line, x, top + (scaled_line_height * line_num), paint]
+            draw_args = (line, x, top + (scaled_line_height * line_num))
 
-            self.android_canvas.drawText(*draw_args)
-            # if (color := kwargs.get("fill_color")) is not None:
-            #     paint.setStyle(Paint.Style.FILL)
-            #     paint.setColor(jint(native_color(color)))
-            #     canvas.drawText(*draw_args)
-            # if (color := kwargs.get("stroke_color")) is not None:
-            #     paint.setStyle(Paint.Style.STROKE)
-            #     paint.setStrokeWidth(kwargs["line_width"])
-            #     paint.setColor(jint(native_color(color)))
-            #     canvas.drawText(*draw_args)
+            if self.in_fill:
+                self.android_canvas.drawText(*draw_args, fill)
+            if self.in_stroke:
+                self.android_canvas.drawText(*draw_args, stroke)
 
 
 class DrawHandler(dynamic_proxy(IDrawHandler)):
@@ -195,7 +218,8 @@ class DrawHandler(dynamic_proxy(IDrawHandler)):
         self.interface = impl.interface
 
     def handleDraw(self, canvas):
-        self.interface.context._draw(Context(canvas, self.impl))
+        context = Context(canvas, self.impl)
+        self.interface.context._draw(context)
 
 
 class TouchListener(dynamic_proxy(View.OnTouchListener)):
