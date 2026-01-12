@@ -35,7 +35,7 @@ class WinformContext:
     def __init__(self):
         super().__init__()
         self.graphics = None
-        self.matrix = Matrix()
+        self.transforms = [Matrix()]
         self.clear_paths()
 
     def clear_paths(self):
@@ -87,7 +87,6 @@ class Canvas(Box):
         self.native.MouseUp += WeakrefCallable(self.winforms_mouse_up)
         self.string_format = StringFormat.GenericTypographic
         self.dragging = False
-        self.states = []
 
     # The control automatically paints the background color, so painting it again here
     # would give incorrect results if it was semi-transparent. But we do paint it in
@@ -147,11 +146,12 @@ class Canvas(Box):
     # Context management
 
     def push_context(self, draw_context, **kwargs):
-        self.states.append(draw_context.matrix)
-        draw_context.matrix = draw_context.matrix.Clone()
+        draw_context.transforms.append(Matrix())
 
     def pop_context(self, draw_context, **kwargs):
-        draw_context.matrix = self.states.pop()
+        matrix = draw_context.transforms.pop()
+        for path in draw_context.paths:
+            path.Transform(matrix)
 
     # Basic paths
 
@@ -272,37 +272,67 @@ class Canvas(Box):
     # Drawing Paths
 
     def fill(self, color, fill_rule, draw_context, **kwargs):
+        matrix = Matrix()
+        for transform in draw_context.transforms:
+            matrix.Multiply(transform)
         brush = SolidBrush(native_color(color))
         for path in draw_context.paths:
+            temp_path = GraphicsPath()
+            temp_path.AddPath(path, True)
+            temp_path.Transform(matrix)
             if fill_rule == FillRule.EVENODD:
-                path.FillMode = FillMode.Alternate
+                temp_path.FillMode = FillMode.Alternate
             else:  # Default to NONZERO
-                path.FillMode = FillMode.Winding
-            path.Transform(draw_context.matrix)
-            draw_context.graphics.FillPath(brush, path)
+                temp_path.FillMode = FillMode.Winding
+            draw_context.graphics.FillPath(brush, temp_path)
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
+        matrix = Matrix()
+        for transform in draw_context.transforms:
+            matrix.Multiply(transform)
         pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
         if line_dash is not None:
             pen.DashPattern = [ld / line_width for ld in line_dash]
 
         for path in draw_context.paths:
-            path.Transform(draw_context.matrix)
-            draw_context.graphics.DrawPath(pen, path)
+            temp_path = GraphicsPath()
+            temp_path.AddPath(path, True)
+            temp_path.Transform(matrix)
+            draw_context.graphics.DrawPath(pen, temp_path)
 
     # Transformations
 
     def rotate(self, radians, draw_context, **kwargs):
-        draw_context.matrix.Rotate(degrees(radians))
+        draw_context.transforms[-1].Rotate(degrees(radians))
+
+        inverse = Matrix()
+        inverse.Rotate(-degrees(radians))
+        for path in draw_context.paths:
+            path.Transform(inverse)
 
     def scale(self, sx, sy, draw_context, **kwargs):
-        draw_context.matrix.Scale(sx, sy)
+        draw_context.transforms[-1].Scale(sx, sy)
+
+        inverse = Matrix()
+        inverse.Scale(1 / sx, 1 / sy)
+        for path in draw_context.paths:
+            path.Transform(inverse)
 
     def translate(self, tx, ty, draw_context, **kwargs):
-        draw_context.matrix.Translate(tx, ty)
+        draw_context.transforms[-1].Translate(tx, ty)
+
+        inverse = Matrix()
+        inverse.Translate(-tx, -ty)
+        for path in draw_context.paths:
+            path.Transform(inverse)
 
     def reset_transform(self, draw_context, **kwargs):
-        draw_context.matrix.Reset()
+        while draw_context.transforms:
+            transform = draw_context.transforms.pop()
+            for path in draw_context.paths:
+                path.Transform(transform)
+
+        draw_context.transforms = [Matrix()]
         self.scale(self.dpi_scale, self.dpi_scale, draw_context)
 
     # Text
