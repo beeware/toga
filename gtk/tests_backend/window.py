@@ -4,7 +4,7 @@ import os
 import pytest
 
 from toga.constants import WindowState
-from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -45,7 +45,12 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.window = window
         self.impl = window._impl
         self.native = window._impl.native
-        assert isinstance(self.native, Gtk.Window)
+        if Adw is None:
+            assert isinstance(self.native, Gtk.Window)
+        else:
+            assert isinstance(self.native, Adw.Window) or isinstance(
+                self.native, Adw.ApplicationWindow
+            )
 
     async def wait_for_window(
         self,

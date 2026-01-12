@@ -202,8 +202,18 @@ def test_set_data(
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
 
+    # The implementation is a listener on the data
+    old_data = detailedlist.data
+    assert detailedlist._impl in old_data.listeners
+
     # Change the data
     detailedlist.data = data
+
+    # The implementation is not a listener on the old data
+    assert detailedlist._impl not in old_data.listeners
+
+    # The implementation is a listener on the new data
+    assert detailedlist._impl in detailedlist.data.listeners
 
     # This triggered the select handler
     on_select_handler.assert_called_once_with(detailedlist)

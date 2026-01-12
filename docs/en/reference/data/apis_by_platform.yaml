@@ -60,7 +60,6 @@ Application components:
       - android
       - web
       - textual
-      - qt
 
 Widgets:
   ActivityIndicator:
@@ -81,7 +80,6 @@ Widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   DateInput:
     description: A widget to select a calendar date.
@@ -105,7 +103,6 @@ Widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   ImageView:
     description: Displays an [Image](/reference/api/resources/image/index.md).
@@ -166,7 +163,6 @@ Widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   Switch:
     description: A labeled button with an on and off state.
@@ -253,7 +249,6 @@ Container widgets:
     unsupported:
       - web
       - textual
-      - qt
 
 Style:
   Pack:

@@ -69,7 +69,7 @@ class JavaScriptHandler:
 
 
 class WebView(Widget):
-    """Qt WebView implementation."""
+    SUPPORTS_ON_NAVIGATION_STARTING = False
 
     def create(self):
         self._cookies = CookieJar()

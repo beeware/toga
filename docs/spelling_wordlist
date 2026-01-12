@@ -55,6 +55,8 @@ DOM
 dotfiles
 dp
 draggable
+elementaryOS
+elementaryOS's
 Embedder
 Flatpak
 Flexbox
@@ -89,6 +91,8 @@ iOS
 iterable
 KDE
 KWin
+libadwaita
+libhelium
 linters
 ListSource
 macOS
@@ -184,6 +188,8 @@ SwipeRefreshLayout
 taAppLister
 TableViews
 taRpnCalcTG
+tauOS
+tauOS's
 testbed
 TestPyPI
 TextInput

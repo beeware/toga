@@ -70,6 +70,7 @@ class ButtonApp(toga.App):
         button9 = toga.Button(
             icon=toga.Icon("resources/star"),
         )
+        print("WIDTH", button9._impl.native.Image.Width, button9._impl.scale_in(32))
 
         # Add components for the second row of the outer box
         inner_box2 = toga.Box(
