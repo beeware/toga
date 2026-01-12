@@ -1,8 +1,6 @@
 import asyncio
 
-import pytest
-
-from toga_iOS.libs import UIApplication, UIWindow
+from toga_iOS.libs import UIApplication, UIBarButtonSystemItem, UIWindow
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -71,5 +69,30 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def instantaneous_state(self):
         return self.impl.get_window_state(in_progress_state=False)
 
+    def _toolbar_items(self):
+        navigation_item = self.impl.container.content_controller.navigationItem
+        return (
+            navigation_item.rightBarButtonItems.reverseObjectEnumerator().allObjects()
+        )
+
     def has_toolbar(self):
-        pytest.skip("Toolbars not implemented on iOS")
+        return len(self._toolbar_items()) > 0
+
+    def assert_is_toolbar_separator(self, index, section=False):
+        assert (
+            self._toolbar_items()[index].systemItem
+            == UIBarButtonSystemItem.FixedSpace.value
+        )
+
+    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+        item = self._toolbar_items()[index]
+        assert item.title == label
+        # # UIKit does not expose tooltips; no assertion possible.
+        assert (item.image is not None) == has_icon
+        # # No way to disable things on UIKit; do not check for it.
+
+    def press_toolbar_button(self, index):
+        item = self._toolbar_items()[index]
+        item.target.performSelectorOnMainThread(
+            item.action, withObject=item, waitUntilDone=True
+        )
