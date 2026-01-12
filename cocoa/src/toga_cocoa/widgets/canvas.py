@@ -242,7 +242,7 @@ class Context:
         # Have an NSImage, need a CGImage
         ns_rectangle = NSRect(NSPoint(0, 0), NSSize(width, height))
         cg_image = ns_image.CGImageForProposedRect(
-            ns_rectangle, context=self.cg_context, hints=None
+            ns_rectangle, context=NSGraphicsContext.currentContext, hints=None
         )
 
         # Quartz is flipped relative to data, so we:
