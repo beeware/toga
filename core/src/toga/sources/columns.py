@@ -19,7 +19,6 @@ class ColumnT(Protocol, Generic[Value]):
     def heading(self) -> str:
         """The heading text for this column."""
 
-    # This will eventually be removed from the Protocol
     @property
     @abstractmethod
     def id(self) -> str:
