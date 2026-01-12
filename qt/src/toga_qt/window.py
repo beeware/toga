@@ -244,6 +244,7 @@ class Window:
 
     def _apply_state(self, state):
         current_state = self.get_window_state()
+        current_native_state = self.native.windowState()
         if current_state == state:
             self._pending_state_transition = None
             return
@@ -263,8 +264,10 @@ class Window:
         # is executed in rapid succession on X11 in different environments may
         # be unreliable, so we just directly switch and emit manually.
         if (
-            state != WindowState.NORMAL and current_state != WindowState.NORMAL
-            and {state, current_state} != {WindowState.FULLSCREEN, WindowState.PRESENTATION}
+            state != WindowState.NORMAL
+            and current_state != WindowState.NORMAL
+            and {state, current_state}
+            != {WindowState.FULLSCREEN, WindowState.PRESENTATION}
         ):
             if IS_WAYLAND:  # pragma: no-cover-if-linux-x
                 self._pending_state_transition = state
