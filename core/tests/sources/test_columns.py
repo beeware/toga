@@ -45,6 +45,7 @@ LABEL_WIDGET = Label("Test")
     ],
 )
 def test_accessor_column(heading, accessor, heading_property, accessor_property):
+    """An AccessorColumn can be created with a heading, and accessor, or both."""
     column = AccessorColumn(heading, accessor)
 
     assert column.heading == heading_property
@@ -52,8 +53,10 @@ def test_accessor_column(heading, accessor, heading_property, accessor_property)
 
 
 def test_accessor_column_failure():
+    """An AccessorColumn requires at least an heading or an accessor."""
     with pytest.raises(
-        ValueError, match="Cannot create a column without either headings or accessors"
+        ValueError,
+        match="Cannot create a column without either headings or accessors",
     ):
         AccessorColumn(None, None)
 
@@ -88,6 +91,7 @@ def test_accessor_column_failure():
     ],
 )
 def test_columns_from_headings_and_accessors(headings, overrides, accessors):
+    """Columns can be constructed with accessors derived from headings."""
     columns = AccessorColumn.columns_from_headings_and_accessors(headings, overrides)
 
     assert [column.heading for column in columns] == headings
@@ -95,6 +99,7 @@ def test_columns_from_headings_and_accessors(headings, overrides, accessors):
 
 
 def test_columns_from_headings_and_accessors_headings_none():
+    """Columns can be constructed without headings."""
     accessors = ["first", "second", "third"]
     columns = AccessorColumn.columns_from_headings_and_accessors(None, accessors)
 
@@ -103,8 +108,10 @@ def test_columns_from_headings_and_accessors_headings_none():
 
 
 def test_columns_from_headings_and_accessors_failure():
+    """Columns construction must provide headings or accessors."""
     with pytest.raises(
-        ValueError, match="Cannot create columns without either headings or accessors."
+        ValueError,
+        match="Cannot create columns without either headings or accessors.",
     ):
         AccessorColumn.columns_from_headings_and_accessors(None, None)
 
@@ -178,6 +185,7 @@ def test_columns_from_headings_and_accessors_failure():
     ],
 )
 def test_accessor_column_values(row, value, text, icon, widget):
+    """Values can be accessed from a row using a column."""
     column = AccessorColumn(None, "x")
 
     assert column.value(row) == value
@@ -234,6 +242,7 @@ DEFAULT = "default"
     ],
 )
 def test_accessor_column_text_default(row, text):
+    """Columns fall back to a default value when required."""
     column = AccessorColumn(None, "x")
 
     assert column.text(row, DEFAULT) == text
