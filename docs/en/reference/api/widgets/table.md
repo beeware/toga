@@ -66,6 +66,8 @@ row = table.data[0]
 print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 ```
 
+The set of known accessors and their order for creating rows from lists and tuples is determined at Table creation time and does not change even if columns are added or removed. This may result in missing data when adding a column with a new accessor. To avoid this problem either supply all possible accessors at Table construction time, supply the row data using dictionaries, or use a custom data source.
+
 -8<- "reference/api/widgets/table-values.md"
 
 ## Notes
@@ -74,7 +76,6 @@ print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 - macOS does not support changing the font used to render table content.
 - On Winforms, icons are only supported in the first column. On Android, icons are not supported at all.
 - The Android implementation is [not scalable](https://github.com/beeware/toga/issues/1392) beyond about 1,000 cells.
-- The set of known accessors and their order for creating rows from lists and tuples is determined at Table creation time and does not change even if columns are added or removed. This may result in missing data when adding a column with a new accessor. To avoid this problem either supply all possible accessors at Table construction time, supply the row data using dictionaries, or use a custom data source.
 
 ## Reference
 
