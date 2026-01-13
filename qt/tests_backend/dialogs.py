@@ -1,7 +1,7 @@
 import asyncio
 
 import pytest
-from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog, QMessageBox
 
 
 class DialogsMixin:
@@ -51,17 +51,45 @@ class DialogsMixin:
             pre_close_test_method=pre_close_test_method,
         )
 
-    def setup_question_dialog_result(self, dialog, result):
-        pytest.skip("Qt backend only implements info dialog so far")
+    def setup_question_dialog_result(self, dialog, result, pre_close_test_method=None):
+        self._setup_dialog_result(
+            dialog,
+            QMessageBox.StandardButton.Yes if result else QMessageBox.StandardButton.No,
+            pre_close_test_method=pre_close_test_method,
+        )
 
-    def setup_confirm_dialog_result(self, dialog, result):
-        pytest.skip("Qt backend only implements info dialog so far")
+    def setup_confirm_dialog_result(self, dialog, result, pre_close_test_method=None):
+        self._setup_dialog_result(
+            dialog,
+            QMessageBox.StandardButton.Ok
+            if result
+            else QMessageBox.StandardButton.Cancel,
+            pre_close_test_method=pre_close_test_method,
+        )
 
-    def setup_error_dialog_result(self, dialog):
-        pytest.skip("Qt backend only implements info dialog so far")
+    def setup_error_dialog_result(self, dialog, pre_close_test_method=None):
+        self._setup_dialog_result(
+            dialog,
+            QDialog.DialogCode.Accepted,
+            pre_close_test_method=pre_close_test_method,
+        )
 
-    def setup_stack_trace_dialog_result(self, dialog, result):
-        pytest.skip("Qt backend only implements info dialog so far")
+    def setup_stack_trace_dialog_result(
+        self, dialog, result, pre_close_test_method=None
+    ):
+        if result is None:
+            qt_result = QMessageBox.StandardButton.Ok
+        else:
+            qt_result = (
+                QMessageBox.StandardButton.Retry
+                if result
+                else QMessageBox.StandardButton.Cancel
+            )
+        self._setup_dialog_result(
+            dialog,
+            qt_result,
+            pre_close_test_method=pre_close_test_method,
+        )
 
     def setup_save_file_dialog_result(self, dialog, result):
         pytest.skip("Qt backend only implements info dialog so far")

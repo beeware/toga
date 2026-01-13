@@ -89,9 +89,11 @@ class ErrorDialog(MessageDialog):
 class StackTraceDialog(MessageDialog):
     def __init__(self, title, message, content, retry=False):
         if retry:
-            buttons = QMessageBox.StandardButton.Retry | QMessageBox.StandardButton.Quit
+            buttons = (
+                QMessageBox.StandardButton.Retry | QMessageBox.StandardButton.Cancel
+            )
         else:
-            buttons = (QMessageBox.StandardButton.Ok,)
+            buttons = QMessageBox.StandardButton.Ok
         super().__init__(
             title=title,
             message=message,
