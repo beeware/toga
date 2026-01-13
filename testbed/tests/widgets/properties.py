@@ -102,7 +102,7 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
 async def test_focus_noop(widget, probe, other, other_probe):
     "The widget cannot be given focus"
     other.focus()
-    await probe.redraw("A separate widget should be given focus")
+    await probe.redraw("A separate widget should be given focus", delay=1)
     assert not probe.has_focus
     assert other_probe.has_focus
 
