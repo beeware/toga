@@ -83,10 +83,6 @@ class AccessorColumn(ColumnT[Value]):
         return self._heading if self._heading is not None else ""
 
     @property
-    def id(self):
-        return self._accessor
-
-    @property
     def accessor(self):
         return self._accessor
 
