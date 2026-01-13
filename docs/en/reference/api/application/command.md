@@ -66,7 +66,7 @@ Each command has an [`id`][toga.Command.id] attribute. This is set when the comm
 
 These command IDs are also used to create *standard* commands. These are commands that are expected functionality in most applications, such as [`ABOUT`][toga.Command.ABOUT] and [`EXIT`][toga.Command.EXIT], as well as document management commands such as [`NEW`][toga.Command.NEW], [`OPEN`][toga.Command.OPEN] and [`SAVE`][toga.Command.SAVE].
 
-These commands are automatically added to your app, depending on platform requirements and app definition. For example, mobile apps won't have an Exit command as mobile apps don't have a concept of "exiting". Document management commands will be automatically added if your app defines [document types](../resources/document.md).
+These commands are automatically added to your app, depending on platform requirements and app definition. For example, mobile apps won't have an Exit command as mobile apps don't have a concept of "exiting". Document management commands will be automatically added if your app defines [document types](../data-representation/document.md).
 
 The label, shortcut, grouping and ordering of these commands is platform dependent. For example, on macOS, the [`EXIT`][toga.Command.EXIT] command will be labeled "Quit My App", and have a shortcut of Command-q; on Windows, the command will be labeled "Exit", and won't have a keyboard shortcut.
 

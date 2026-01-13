@@ -11,9 +11,8 @@
 	"Widgets",
 	"Container widgets",
 	"Style",
+	"Data representation",
 	"Resources",
-	"Data sources",
-	"Constants and types",
 	"Hardware",
 ] %}
 ## {{ category }} { .api-reference }

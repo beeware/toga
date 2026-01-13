@@ -21,7 +21,7 @@ Application components:
       - textual
 
   DocumentWindow:
-    description: A window bound to a [Document](/reference/api/resources/document.md) instance.
+    description: A window bound to a [Document](/reference/api/data-representation/document.md) instance.
     unsupported:
       - iOS
       - android
@@ -44,14 +44,6 @@ Application components:
       - textual
       - qt
 
-  Paths:
-    description: Provides platform-appropriate filesystem locations.
-    display: table
-    beta:
-      - textual
-    unsupported:
-      - web
-
   Status icons:
     description: Icons representing status in the system tray while the app isn't visible.
     file_name: status-icons
@@ -60,6 +52,7 @@ Application components:
       - android
       - web
       - textual
+
 
 Widgets:
   ActivityIndicator:
@@ -217,8 +210,9 @@ Widgets:
       - textual
     display: table
 
+
 Container widgets:
-  path: widgets/containers
+  path: containers
 
   Box:
     description: A container for laying out other widgets.
@@ -250,12 +244,22 @@ Container widgets:
       - web
       - textual
 
+
 Style:
   Pack:
     description: Toga's style and layout engine.
     display: hide
 
-Resources:
+
+Data representation:
+  Color:
+    description: A representation of a color.
+    display: hide
+
+  Constants:
+    description: Symbolic constants used by various APIs.
+    display: hide
+
   Document:
     description: Represents file on disk that will be displayed in one or more windows.
     display: table
@@ -265,6 +269,28 @@ Resources:
       - web
       - textual
 
+
+  Paths:
+    description: Provides platform-appropriate filesystem locations.
+    display: table
+    beta:
+      - textual
+    unsupported:
+      - web
+
+  Sources:
+    description: Abstractions of managed data.
+    display: hide
+
+  Types:
+    description: Utility data structures used by Toga APIs.
+    display: hide
+
+  Validators:
+    description: Mechanisms for validating that input meets a given set of criteria.
+    display: hide
+
+Resources:
   Font:
     description: A representation of a font.
     display: table
@@ -287,6 +313,7 @@ Resources:
       - web
       - textual
 
+
 Data sources:
   path: sources
 
@@ -304,21 +331,6 @@ Data sources:
 
   ValueSource:
     description: A data source describing a single value.
-    display: hide
-
-Constants and types:
-  path: constants_types
-
-  Color:
-    description: A representation of a color.
-    display: hide
-
-  Constants:
-    description: Symbolic constants used by various APIs.
-    display: hide
-
-  Types:
-    description: Utility data structures used by Toga APIs.
     display: hide
 
 Hardware:

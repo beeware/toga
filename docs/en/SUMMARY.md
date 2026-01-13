@@ -48,40 +48,25 @@
             - [DocumentWindow](reference/api/application/documentwindow.md)
             - reference/api/application/*
         - Widgets
-            <!-- If these are auto-listed, TextInput is at the bottom since it's a directory. -->
-            - [ActivityIndicator](reference/api/widgets/activityindicator.md)
-            - [Button](reference/api/widgets/button.md)
-            - [Canvas](reference/api/widgets/canvas.md)
-            - [DateInput](reference/api/widgets/dateinput.md)
-            - [DetailedList](reference/api/widgets/detailedlist.md)
-            - [Divider](reference/api/widgets/divider.md)
-            - [ImageView](reference/api/widgets/imageview.md)
-            - [Label](reference/api/widgets/label.md)
-            - [MapView](reference/api/widgets/mapview.md)
-            - [MultilineTextInput](reference/api/widgets/multilinetextinput.md)
-            - [NumberInput](reference/api/widgets/numberinput.md)
-            - [PasswordInput](reference/api/widgets/passwordinput.md)
-            - [ProgressBar](reference/api/widgets/progressbar.md)
-            - [Selection](reference/api/widgets/selection.md)
-            - [Slider](reference/api/widgets/slider.md)
-            - [Switch](reference/api/widgets/switch.md)
-            - [Table](reference/api/widgets/table.md)
-            - [TextInput](reference/api/widgets/textinput/index.md)
-                - [Validators](reference/api/widgets/textinput/validators.md)
-            - [TimeInput](reference/api/widgets/timeinput.md)
-            - [Tree](reference/api/widgets/tree.md)
-            - [WebView](reference/api/widgets/webview.md)
-            - [Widget](reference/api/widgets/widget.md)
-            - Container widgets
-                - reference/api/widgets/containers/*
+            - reference/api/widgets/*
+        - Container widgets
+            - reference/api/containers/*
         - Style
             - reference/api/style/*
+        - Data representation
+            <!-- If these are auto-listed, Sources is at the bottom since it's a directory. -->
+            - [Color](reference/api/data-representation/color.md)
+            - [Constants](reference/api/data-representation/constants.md)
+            - [Document](reference/api/data-representation/document.md)
+            - [Paths](reference/api/data-representation/paths.md)
+            - [Sources](reference/api/data-representation/sources/index.md)
+                - [ListSource](reference/api/data-representation/sources/listsource.md)
+                - [TreeSource](reference/api/data-representation/sources/treesource.md)
+                - [ValueSource](reference/api/data-representation/sources/valuesource.md)
+            - [Types](reference/api/data-representation/types.md)
+            - [Validators](reference/api/data-representation/validators.md)
         - Resources
             - reference/api/resources/*
-        - Data sources
-            - reference/api/sources/*
-        - Constants and types
-            - reference/api/constants_types/*
         - Hardware
             - reference/api/hardware/*
     - [Supported Platforms](reference/platforms/index.md)
