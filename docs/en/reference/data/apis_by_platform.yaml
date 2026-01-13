@@ -151,14 +151,14 @@ Widgets:
       - qt
 
   Slider:
-    description: A marker draggable along a line to select from within a range.
+    description: A draggable marker for selecting within a range.
     beta:
       - web
     unsupported:
       - textual
 
   Switch:
-    description: A labeled button with an on and off state.
+    description: A labeled on/off button.
     beta:
       - web
     unsupported:
@@ -188,7 +188,7 @@ Widgets:
       - gtk
 
   Tree:
-    description: Displays a hierarchical tree of tabular data.
+    description: A hierarchical tree of tabular data.
     unsupported:
       - winforms
       - iOS

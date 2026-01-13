@@ -24,8 +24,13 @@
     min-width: unset;
 }
 
-.api-reference + .md-typeset__scrollwrap :is(th, td:first-of-type) {
+.api-reference + .md-typeset__scrollwrap :is(th, td:first-child) {
     font-size: 0.7rem;
+}
+
+/* Shrinl padding for the availability dots, to leave more room for description. */
+.api-reference + .md-typeset__scrollwrap :is(th, td):not(:first-child) {
+    padding: .15rem;
 }
 
 .component-name {
