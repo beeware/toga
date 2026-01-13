@@ -67,6 +67,10 @@ class Tree(Widget):
             * A dictionary mapping headings to accessors. Any missing headings will fall
               back to the default generated accessor.
 
+            The accessors are also passed to any `TreeSources` created by the Tree to
+            tell the source how to map lists and tuples to accessor values. This
+            ordering does not change even when columns are added or removed.
+
         :param multiple_select: Does the tree allow multiple selection?
         :param on_select: Initial [`on_select`][toga.Tree.on_select] handler.
         :param on_activate: Initial [`on_activate`][toga.Tree.on_activate] handler.

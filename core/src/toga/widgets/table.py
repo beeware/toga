@@ -69,6 +69,10 @@ class Table(Widget):
             * A dictionary mapping headings to accessors. Any missing headings will fall
               back to the default generated accessor.
 
+            The accessors are also passed to any `ListSources` created by the Table to
+            tell the source how to map lists and tuples to accessor values. This
+            ordering does not change even when columns are added or removed.
+
         :param multiple_select: Does the table allow multiple selection?
         :param on_select: Initial [`on_select`][toga.Table.on_select] handler.
         :param on_activate: Initial [`on_activate`][toga.Table.on_activate] handler.
