@@ -254,7 +254,7 @@ class Tree(Widget):
         self.native_tree.collapseItem(None, collapseChildren=True)
 
     def _insert_column(self, index, toga_column):
-        column = NSTableColumn.alloc().initWithIdentifier(toga_column.id)
+        column = NSTableColumn.alloc().initWithIdentifier(str(id(toga_column)))
         column.toga_column = toga_column
         column.minWidth = 16
 

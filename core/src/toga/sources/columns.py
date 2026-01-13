@@ -19,11 +19,6 @@ class ColumnT(Protocol, Generic[Value]):
     def heading(self) -> str:
         """The heading text for this column."""
 
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        """An id for this column that can be used by implementations."""
-
     @abstractmethod
     def value(self, row: Any) -> Value | None:
         """Get a value from the row of a Source.

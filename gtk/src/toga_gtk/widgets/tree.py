@@ -41,7 +41,7 @@ class Tree(Widget):
 
         for i, toga_column in enumerate(toga_columns):
             column = Gtk.TreeViewColumn(
-                toga_column.heading if toga_column.heading else toga_column.id
+                toga_column.heading if toga_column.heading else str(id(toga_column))
             )
             column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
             column.set_expand(True)
