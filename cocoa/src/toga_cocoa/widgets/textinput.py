@@ -197,7 +197,10 @@ class TextInput(Widget):
         self.error_label.font = font._impl.native
 
     def set_color(self, color):
-        self.native.textColor = native_color(color)
+        if color is None:
+            self.native.textColor = NSColor.controlTextColor
+        else:
+            self.native.textColor = native_color(color)
 
     def set_background_color(self, color):
         if color is TRANSPARENT:
