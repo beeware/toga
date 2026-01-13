@@ -86,6 +86,8 @@ node = tree.data[1][0]
 print(f"{node.character}, who is age {node.age}, is {node.status}")
 ```
 
+The set of known accessors and their order for creating nodes from lists and tuples is determined at Tree creation time and does not change even if columns are added or removed. This may result in missing data when adding a column with a new accessor. To avoid this problem either supply all possible accessors at Tree construction time, supply the node data using dictionaries, or use a custom data source.
+
 -8<- "reference/api/widgets/table-values.md"
 
 ## Notes
