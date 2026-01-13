@@ -1,4 +1,6 @@
-{{ component_header("ValueSource") }}
+# ValueSource
+
+foo
 
 ## Usage
 

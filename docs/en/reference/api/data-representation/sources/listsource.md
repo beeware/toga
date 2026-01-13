@@ -1,4 +1,6 @@
-{{ component_header("ListSource") }}
+# ListSource
+
+foo
 
 ## Usage
 

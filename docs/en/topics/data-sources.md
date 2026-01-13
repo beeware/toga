@@ -1,4 +1,4 @@
-# Data Sources { #sources }
+# Data Sources
 
 Most widgets in a user interface will need to interact with data - either displaying it, or providing a way to manipulate it.
 
@@ -35,4 +35,4 @@ Although widgets are the obvious listeners for a data source, *any* object can r
 
 A custom data source enables you to provide a data manipulation API that makes sense for your application. For example, if you were writing an application to display files on a file system, you shouldn't just build a dictionary of files, and use that to construct a [`TreeSource`][toga.sources.TreeSource]. Instead, you should write your own `FileSystemSource` that reflects the files on the file system. Your file system data source doesn't need to expose `insert()` or `remove()` methods - because the end user doesn't need an interface to "insert" files into your file system. However, you might have a `create_empty_file()` method that creates a new file in the file system and adds a representation to the data tree.
 
-Custom data sources are also required to emit notifications whenever notable events occur. This allows the widgets rendering the data source to respond to changes in data. If a data source doesn't emit notifications, widgets may not reflect changes in data. Toga provides a [`Source`][source] base class for custom data source implementations. This base class implements the notification API.
+Custom data sources are also required to emit notifications whenever notable events occur. This allows the widgets rendering the data source to respond to changes in data. If a data source doesn't emit notifications, widgets may not reflect changes in data. Toga provides a [`Source`][toga.sources.Source] base class for custom data source implementations. This base class implements the notification API.

@@ -1,4 +1,6 @@
-{{ component_header("TreeSource") }}
+# TreeSource
+
+foo
 
 ## Usage
 

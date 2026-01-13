@@ -15,7 +15,7 @@ Application components:
       - textual
 
   MainWindow:
-    description: A window that can use all window-level user interface elements.
+    description: A window that can use all window-level UI elements.
     beta:
       - web
       - textual
@@ -37,7 +37,7 @@ Application components:
       - textual
 
   Dialogs:
-    description: Short-lived windows asking the user for input.
+    description: Short-lived windows asking for user input.
     display: table
     beta:
       - web
@@ -45,7 +45,7 @@ Application components:
       - qt
 
   Status icons:
-    description: Icons representing status in the system tray while the app isn't visible.
+    description: Icons representing status while the app isn't visible.
     file_name: status-icons
     unsupported:
       - iOS
@@ -56,7 +56,7 @@ Application components:
 
 Widgets:
   ActivityIndicator:
-    description: An indicator of activity on a task, usually rendered as a "spinner".
+    description: An activity indicator for a task of indeterminate length.
     beta:
       - web
     unsupported:
@@ -91,7 +91,7 @@ Widgets:
       - qt
 
   Divider:
-    description: A visual separator.
+    description: A visual layout separator.
     beta:
       - web
     unsupported:
@@ -222,7 +222,7 @@ Container widgets:
     display: table
 
   ScrollContainer:
-    description: A container that can display a layout larger than the area of the container.
+    description: A container that can display a layout larger than its own area.
     beta:
       - web
     unsupported:
@@ -230,7 +230,7 @@ Container widgets:
       - qt
 
   SplitContainer:
-    description: A container that divides an area into two panels with a movable border.
+    description: A container divided into two panels with a movable border.
     unsupported:
       - iOS
       - android
@@ -239,7 +239,7 @@ Container widgets:
       - qt
 
   OptionContainer:
-    description: A container that can display multiple labeled tabs of content.
+    description: A container for displaying multiple labeled tabs of content.
     unsupported:
       - web
       - textual
@@ -261,14 +261,13 @@ Data representation:
     display: hide
 
   Document:
-    description: Represents file on disk that will be displayed in one or more windows.
+    description: Represents a file on disk that will be displayed in one or more windows.
     display: table
     unsupported:
       - iOS
       - android
       - web
       - textual
-
 
   Paths:
     description: Provides platform-appropriate filesystem locations.
@@ -299,7 +298,7 @@ Resources:
       - textual
 
   Icon:
-    description: A small, image for providing context to a widget.
+    description: A small image for providing context to a widget.
     display: table
     beta:
       - textual
@@ -313,25 +312,6 @@ Resources:
       - web
       - textual
 
-
-Data sources:
-  path: sources
-
-  Source:
-    description: A base class for data source implementations.
-    display: hide
-
-  ListSource:
-    description: A data source describing an ordered list of data.
-    display: hide
-
-  TreeSource:
-    description: A data source describing an ordered hierarchical tree of data.
-    display: hide
-
-  ValueSource:
-    description: A data source describing a single value.
-    display: hide
 
 Hardware:
   Camera:
