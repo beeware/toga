@@ -4,7 +4,7 @@
 |                        |                                                          |
 |------------------------|----------------------------------------------------------|
 | {{ partly_supported }} | Partly supported: functionality or testing is incomplete |
-| {{ fully_supported }}  | **Fully supported**                                      |
+| {{ fully_supported }}  | Fully supported                                          |
 
 {% for category in [
 	"Application components",
