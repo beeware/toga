@@ -227,7 +227,6 @@ Container widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   SplitContainer:
     description: A container divided into two panels with a movable border.
