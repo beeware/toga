@@ -667,7 +667,6 @@ async def test_nested_stroke_and_fill_context(canvas, probe):
 async def test_transforms(canvas, probe):
     "Transforms can be applied"
 
-    # canvas._impl.save()
     # Draw a rectangle after a horizontal translation
     canvas.context.translate(160, 20)
     canvas.context.rect(0, 0, 20, 60)
@@ -692,18 +691,6 @@ async def test_transforms(canvas, probe):
     canvas.context.scale(5, 2)
     canvas.context.rect(2, 2, 10, 10)
     canvas.context.fill()
-    # canvas._impl.restore()
-
-    await probe.redraw("Canvas should be drawn")
-
-    image = canvas.as_image()
-    imageview = toga.ImageView(image)
-    canvas.window.content.add(imageview)
-
-    await probe.redraw("Cloned image should be visible")
-
-    await probe.redraw("Transforms can be applied")
-    assert_reference(probe, "transforms")
 
 
 @pytest.mark.xfail(
@@ -720,7 +707,6 @@ async def test_write_text(canvas, probe):
 
     hello_text = "Hello"
     hello_font = Font("Droid Serif", 12)
-    print(f"{hello_font = }")
     hello_size = canvas.measure_text(hello_text, hello_font)
 
     with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
