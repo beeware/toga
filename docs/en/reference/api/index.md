@@ -9,7 +9,7 @@
 {% for category in [
 	"Application components",
 	"Widgets",
-	"Containers",
+	"Container widgets",
 	"Style",
 	"Data representation",
 	"Resources",

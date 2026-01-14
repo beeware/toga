@@ -49,7 +49,7 @@
             - reference/api/application/*
         - Widgets
             - reference/api/widgets/*
-        - Containers
+        - Container widgets
             - reference/api/containers/*
         - Style
             - reference/api/style/*

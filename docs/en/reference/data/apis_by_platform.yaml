@@ -211,7 +211,7 @@ Widgets:
     display: table
 
 
-Containers:
+Container widgets:
   path: containers
 
   Box:
