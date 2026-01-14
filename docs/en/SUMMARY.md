@@ -54,7 +54,6 @@
         - Style
             - reference/api/style/*
         - Data representation
-            <!-- If these are auto-listed, Sources is at the bottom since it's a directory. -->
             - [Color](reference/api/data-representation/color.md)
             - [Constants](reference/api/data-representation/constants.md)
             - [Document](reference/api/data-representation/document.md)

@@ -172,7 +172,6 @@ plugins:
       reference/style/pack.md: reference/api/style/pack.md
 
       # Data representation
-      # data-representation/color.md is a new addition since last release
       reference/api/constants.md: reference/api/data-representation/constants.md
       reference/api/resources/document.md: reference/api/data-representation/document.md
       reference/api/resources/app_paths.md: reference/api/data-representation/paths.md
