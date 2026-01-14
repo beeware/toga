@@ -1,7 +1,7 @@
 import os.path
 from pathlib import Path
-from warnings import warn
 
+from PySide6.QtCore import QDir
 from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 
@@ -31,7 +31,7 @@ class MessageDialog:
             self.native.setDetailedText(self.detail)
         self.native.setStandardButtons(self.buttons)
         self.native.finished.connect(self.qt_finished)
-        self.native.open()
+        self.native.show()
 
     def qt_finished(self, result):
         self.future.set_result(self._get_result(result))
@@ -116,6 +116,7 @@ class FileDialog:
         filename: str | None = None,
         initial_directory: Path | None = None,
         file_types: list[str] | None = None,
+        multiple_select: bool = False,
         accept_mode=QFileDialog.AcceptMode.AcceptOpen,
         file_mode=QFileDialog.FileMode.AnyFile,
     ) -> None:
@@ -123,9 +124,10 @@ class FileDialog:
         self.filename = filename
         self.initial_directory = initial_directory
         self.file_types = file_types
-        self.multiple_select = file_types
+        self.multiple_select = multiple_select
         self.file_mode = file_mode
         self.accept_mode = accept_mode
+        self.native = None
 
     def show(self, parent, future):
         self.future = future
@@ -135,7 +137,7 @@ class FileDialog:
             self.native = QFileDialog()
         self.native.setWindowTitle(self.title)
         if self.initial_directory is not None:
-            self.native.setDirectory(str(self.initial_directory))
+            self.native.setDirectory(QDir(str(self.initial_directory)))
         if self.filename:
             self.native.selectFile(self.filename)
             self.native.setDefaultSuffix(os.path.splitext(self.filename)[1])
@@ -148,6 +150,7 @@ class FileDialog:
         self.native.setAcceptMode(self.accept_mode)
         self.native.setFileMode(self.file_mode)
         self.native.finished.connect(self.qt_finished)
+        self.native.setOption(QFileDialog.Option.DontUseNativeDialog)
         self.native.open()
 
     def qt_finished(self, result):
@@ -157,7 +160,7 @@ class FileDialog:
 
     def _get_result(self, result):
         if result == QDialog.DialogCode.Accepted:
-            if self.native.fileMode() == QFileDialog.FileMode.ExistingFiles:
+            if self.multiple_select:
                 return [Path(file) for file in self.native.selectedFiles()]
             elif self.native.selectedFiles():
                 return Path(self.native.selectedFiles()[0])
@@ -200,6 +203,7 @@ class OpenFileDialog(FileDialog):
             title=title,
             initial_directory=initial_directory,
             file_types=file_types,
+            multiple_select=multiple_select,
             accept_mode=QFileDialog.AcceptMode.AcceptOpen,
             file_mode=file_mode,
         )
@@ -213,16 +217,11 @@ class SelectFolderDialog(FileDialog):
         file_types: list[str] | None = None,
         multiple_select: bool = False,
     ) -> None:
-        if multiple_select:
-            warn(
-                "Qt backend does not support multiple_selection of folders",
-                RuntimeWarning,
-                stacklevel=2,
-            )
         super().__init__(
             title=title,
             initial_directory=initial_directory,
             file_types=file_types,
+            multiple_select=multiple_select,
             accept_mode=QFileDialog.AcceptMode.AcceptOpen,
             file_mode=QFileDialog.FileMode.Directory,
         )
