@@ -100,7 +100,7 @@ class Window:
                 f"{(self.container.width, self.container.height)}"
             )
 
-    def check_for_resize(self, container):
+    def notify_resize(self, container):
         if (container.width, container.height) != self.last_refreshed_size:
             self.last_refreshed_size = (container.width, container.height)
             self.interface.on_resize()
@@ -124,7 +124,7 @@ class Window:
             container.top_inset = status_bar_height
         else:
             container.top_inset = 0
-        self.check_for_resize(container)
+        self.notify_resize(container)
 
     def set_content(self, widget):
         self.container.content = widget
@@ -279,7 +279,7 @@ class MainWindow(Window):
             container.controller.navigationBar.frame.origin.y
             + container.controller.navigationBar.frame.size.height
         )
-        self.check_for_resize(container)
+        self.notify_resize(container)
 
     def create_toolbar(self):
         # No toolbar handling at present

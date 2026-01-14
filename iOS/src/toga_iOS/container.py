@@ -94,7 +94,9 @@ class Container(BaseContainer):
             *may* have changed.
         """
         super().__init__(
-            content=content, on_refresh=on_refresh, on_native_layout=on_native_layout
+            content=content,
+            on_refresh=on_refresh,
+            on_native_layout=on_native_layout,
         )
         self.native = TogaContainerView.alloc().init()
         self.native.container = self
