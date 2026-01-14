@@ -39,7 +39,7 @@
 - [Topic guides](topics/index.md)
     - topics/*
 - [Reference](reference/index.md)
-    - [API Reference](reference/api/index.md)
+    - [API reference](reference/api/index.md)
         - Application components
             <!-- Specify order of the window classes, then let rest be alphabetical -->
             - [App](reference/api/application/app.md)
@@ -69,7 +69,7 @@
             - reference/api/resources/*
         - Hardware
             - reference/api/hardware/*
-    - [Supported Platforms](reference/platforms/index.md)
+    - [Supported platforms](reference/platforms/index.md)
         - [macOS](reference/platforms/macOS.md)
         - [Windows](reference/platforms/windows.md)
         - [Linux](reference/platforms/linux/index.md)

@@ -1,4 +1,4 @@
-# API Reference
+# API reference
 
 ## Key  {: id="api-status-key" }
 |                        |                                                          |
