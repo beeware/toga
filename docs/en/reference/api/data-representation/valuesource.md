@@ -2,7 +2,7 @@
 
 ## Usage
 
-Data sources are abstractions that allow you to define the data being managed by your application independent of the GUI representation of that data. For details on the use of data sources, see the [topic guide][topic-data-sources].
+Data sources are abstractions that allow you to define the data being managed by your application independent of the GUI representation of that data. For details on the use of data sources, see the [topic guide](/topics/data-sources.md).
 
 ValueSource is an wrapper around a single atomic value.
 
