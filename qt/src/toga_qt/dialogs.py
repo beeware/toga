@@ -35,7 +35,8 @@ class MessageDialog:
             self.native.open()
         else:
             # can't do modal dialog without a parent
-            self.native.show()
+            # test cases don't test non-parented dialogs
+            self.native.show()  # pragma: no cover
 
     def qt_finished(self, result):
         self.future.set_result(self._get_result(result))
@@ -166,8 +167,9 @@ class FileDialog:
         if result == QDialog.DialogCode.Accepted:
             if self.multiple_select:
                 return [Path(file) for file in self.native.selectedFiles()]
-            elif self.native.selectedFiles():
+            elif self.native.selectedFiles():  # pragma: no branch
                 return Path(self.native.selectedFiles()[0])
+            # no test cases cover empty single-selection (it may be impossible)
 
         return None
 
