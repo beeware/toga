@@ -11,7 +11,7 @@ text_input.value = "Jane Developer"
 
 The input can be provided a placeholder value - this is a value that will be displayed to the user as a prompt for appropriate content for the widget. This placeholder will only be displayed if the widget has no content; as soon as a value is provided (either by the user, or programmatically), the placeholder content will be hidden.
 
-The input can also be provided a list of [`validators`][]. A validator is a function that will be invoked whenever the content of the input changes. The function should return `None` if the current value of the input is valid; if the current value is invalid, it should return an error message. When `on_change` is invoked, the field will automatically be validated based on specified validators.
+The input can also be provided a list of [validators](../data-representation/validators.md). A validator is a function that will be invoked whenever the content of the input changes. The function should return `None` if the current value of the input is valid; if the current value is invalid, it should return an error message. When `on_change` is invoked, the field will automatically be validated based on specified validators.
 
 ## Notes
 
