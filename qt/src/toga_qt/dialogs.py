@@ -31,7 +31,11 @@ class MessageDialog:
             self.native.setDetailedText(self.detail)
         self.native.setStandardButtons(self.buttons)
         self.native.finished.connect(self.qt_finished)
-        self.native.show()
+        if parent is not None:
+            self.native.open()
+        else:
+            # can't do modal dialog without a parent
+            self.native.show()
 
     def qt_finished(self, result):
         self.future.set_result(self._get_result(result))
