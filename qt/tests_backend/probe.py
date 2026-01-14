@@ -48,9 +48,18 @@ class BaseProbe(DialogsMixin):
             QApplication.processEvents()
 
     def assert_image_size(self, image_size, size, screen):
-        window = toga.App.app.current_window or toga.App.app.main_window
+        target_window = None
+        for window in toga.App.app.windows:
+            if window.screen == screen:
+                target_window = window
+                break
+        # Unfortunately, no assertion is possible if there is
+        # no window on that screen, as getting devicePixelRatio is unreliable
+        # on QScreens with Wayland fractional scaling.
+        if target_window == None:
+            return
         assert [
-            s * window._impl.native.windowHandle().devicePixelRatio() for s in size
+            s * target_window._impl.native.windowHandle().devicePixelRatio() for s in size
         ] == approx(image_size, abs=1)
 
     async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
