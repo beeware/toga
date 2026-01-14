@@ -53,7 +53,7 @@ import toga
 
 table = toga.Table(
     headings=["Name", "Age"],
-    accessors={"Name", 'character'},
+    accessors={"Name": 'character'},
     data=[
         {"character": "Arthur Dent", "age": 42, "planet": "Earth"},
         {"character": "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
