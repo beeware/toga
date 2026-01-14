@@ -1,6 +1,9 @@
 # Reference
 
-This is the technical reference for public APIs provided by Toga.
+## [API reference](api/index.md)
 
-* [API reference](api/index.md) - Toga's API components listed by category.
-* [Supported platforms](platforms/index.md) - Details about supported platforms.
+Toga's API components, listed by category.
+
+## [Supported platforms](platforms/index.md)
+
+Details about the platforms that are supported by Toga.
