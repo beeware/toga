@@ -692,6 +692,9 @@ async def test_transforms(canvas, probe):
     canvas.context.rect(2, 2, 10, 10)
     canvas.context.fill()
 
+    await probe.redraw("Transforms can be applied")
+    assert_reference(probe, "transforms")
+
 
 @pytest.mark.xfail(
     condition=os.environ.get("RUNNING_IN_CI") != "true",
