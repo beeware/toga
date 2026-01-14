@@ -49,7 +49,7 @@
             - reference/api/application/*
         - Widgets
             - reference/api/widgets/*
-        - Container widgets
+        - Containers
             - reference/api/containers/*
         - Style
             - reference/api/style/*
@@ -59,10 +59,10 @@
             - [Constants](reference/api/data-representation/constants.md)
             - [Document](reference/api/data-representation/document.md)
             - [Paths](reference/api/data-representation/paths.md)
-            - [Sources](reference/api/data-representation/sources/index.md)
-                - [ListSource](reference/api/data-representation/sources/listsource.md)
-                - [TreeSource](reference/api/data-representation/sources/treesource.md)
-                - [ValueSource](reference/api/data-representation/sources/valuesource.md)
+            - [Source](reference/api/data-representation/source.md)
+            - [ListSource](reference/api/data-representation/listsource.md)
+            - [TreeSource](reference/api/data-representation/treesource.md)
+            - [ValueSource](reference/api/data-representation/valuesource.md)
             - [Types](reference/api/data-representation/types.md)
             - [Validators](reference/api/data-representation/validators.md)
         - Resources

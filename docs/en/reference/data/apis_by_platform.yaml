@@ -211,7 +211,7 @@ Widgets:
     display: table
 
 
-Container widgets:
+Containers:
   path: containers
 
   Box:
@@ -276,8 +276,20 @@ Data representation:
     unsupported:
       - web
 
-  Sources:
-    description: Abstractions of managed data.
+  Source:
+    description: Base abstraction of managed data.
+    display: hide
+
+  ListSource:
+    description: Abstractions of list-like managed data.
+    display: hide
+
+  TreeSource:
+    description: Abstractions of tree-like managed data.
+    display: hide
+
+  ValueSource:
+    description: Abstractions of managed atomic values.
     display: hide
 
   Types:
@@ -287,6 +299,7 @@ Data representation:
   Validators:
     description: Mechanisms for validating that input meets a given set of criteria.
     display: hide
+
 
 Resources:
   Font:
