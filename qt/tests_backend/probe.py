@@ -53,13 +53,14 @@ class BaseProbe(DialogsMixin):
             if window.screen == screen:
                 target_window = window
                 break
-        # Unfortunately, no assertion is possible if there is
-        # no window on that screen, as getting devicePixelRatio is unreliable
-        # on QScreens with Wayland fractional scaling.
-        if target_window == None:
+        # Unfortunately, no assertion is possible if there is no window
+        # on that screen, as getting devicePixelRatio is unreliable with
+        # QScreens on Wayland fractional scaling.
+        if target_window is None:
             return
         assert [
-            s * target_window._impl.native.windowHandle().devicePixelRatio() for s in size
+            s * target_window._impl.native.windowHandle().devicePixelRatio()
+            for s in size
         ] == approx(image_size, abs=1)
 
     async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
