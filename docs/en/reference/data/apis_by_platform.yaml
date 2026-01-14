@@ -53,6 +53,9 @@ Application components:
       - web
       - textual
 
+  Platform:
+    description: Details about the platform on which the app is running.
+    display: Table
 
 Widgets:
   ActivityIndicator:
