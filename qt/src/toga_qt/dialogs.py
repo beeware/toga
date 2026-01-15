@@ -104,6 +104,7 @@ class StackTraceDialog(MessageDialog):
             message=message,
             icon=QMessageBox.Icon.Critical,
             buttons=buttons,
+            detail=content,
         )
         self.retry = retry
 
