@@ -171,7 +171,6 @@ Widgets:
       - iOS
       - web
       - textual
-      - qt
 
   TextInput:
     description: Allows editing of a single line of text.
