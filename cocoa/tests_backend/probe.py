@@ -71,7 +71,7 @@ class BaseProbe:
             # for at least one iteration. `runUntilDate:None` does this.
             NSRunLoop.currentRunLoop.runUntilDate(None)
 
-    def assert_image_size(self, image_size, size, screen):
+    def assert_image_size(self, image_size, size, screen, window=None):
         # Screenshots are captured in native device resolution, not in CSS pixels.
         scale = int(screen._impl.native.backingScaleFactor)
         assert image_size == (size[0] * scale, size[1] * scale)
