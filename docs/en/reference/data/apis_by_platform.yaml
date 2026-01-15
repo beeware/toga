@@ -258,13 +258,6 @@ Data representation:
     description: Symbolic constants used by various APIs.
     display: hide
 
-  Dialogs:
-    description: Short-lived windows asking the user for input.
-    display: table
-    beta:
-      - web
-      - textual
-
   Document:
     description: Represents a file on disk that will be displayed in one or more windows.
     display: table
