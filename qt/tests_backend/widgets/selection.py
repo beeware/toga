@@ -1,4 +1,6 @@
+from PySide6.QtGui import QPalette
 from PySide6.QtWidgets import QComboBox
+from toga_qt.colors import toga_color
 
 from .base import SimpleProbe
 
@@ -23,3 +25,11 @@ class SelectionProbe(SimpleProbe):
 
     async def select_item(self):
         self.native.setCurrentIndex(1)
+
+    @property
+    def color(self):
+        return toga_color(self.native.palette().color(QPalette.ColorRole.ButtonText))
+
+    @property
+    def background_color(self):
+        return toga_color(self.native.palette().color(QPalette.ColorRole.Button))
