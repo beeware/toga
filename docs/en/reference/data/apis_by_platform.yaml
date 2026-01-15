@@ -148,7 +148,6 @@ Widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   Slider:
     description: A draggable marker for selecting within a range.
