@@ -141,7 +141,7 @@ So, how do we get the benefits of absolute paths, but ensure that the file can b
 
 ## App paths
 
-Toga includes an [app paths](/reference/api/resources/app_paths.md) feature that provides a selection of known locations on the user's computer. Provided as `pathlib.Path` objects, they are known-safe locations for reading and writing files, that are specific to each operating system. Each user running an application will have their own unique app paths.
+Toga includes an [app paths](/reference/api/data-representation/paths.md) feature that provides a selection of known locations on the user's computer. Provided as `pathlib.Path` objects, they are known-safe locations for reading and writing files, that are specific to each operating system. Each user running an application will have their own unique app paths.
 
 The read-only path location, `paths.app`, provides an anchor from the location of the app file.[^1] It can therefore be used to construct absolute paths based on the app file location within the package.
 

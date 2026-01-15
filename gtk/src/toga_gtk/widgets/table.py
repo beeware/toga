@@ -2,8 +2,6 @@ import warnings
 
 from travertino.size import at_least
 
-import toga
-
 from ..libs import GTK_VERSION, GdkPixbuf, GObject, Gtk
 from .base import Widget
 
@@ -13,34 +11,21 @@ class TogaRow(GObject.Object):
         super().__init__()
         self.value = value
 
-    def icon(self, attr):
-        data = getattr(self.value, attr, None)
-        if isinstance(data, tuple):
-            if data[0] is not None:
-                return data[0]._impl.native(16)
-            return None
-        else:
-            try:
-                return data.icon._impl.native(16)
-            except AttributeError:
-                return None
+    def icon(self, toga_column):
+        icon = toga_column.icon(self.value)
+        if icon is not None:
+            return icon._impl.native(16)
+        return None
 
-    def text(self, attr, missing_value):
-        data = getattr(self.value, attr, None)
-        if isinstance(data, toga.Widget):
+    def text(self, toga_column, missing_value):
+        return toga_column.text(self.value, missing_value)
+
+    def warn_widget(self, toga_column):
+        if toga_column.widget(self.value) is not None:
             warnings.warn(
                 "GTK does not support the use of widgets in cells",
                 stacklevel=2,
             )
-            text = None
-        elif isinstance(data, tuple):
-            text = data[1]
-        else:
-            text = data
-
-        if text is None:
-            return missing_value
-        return str(text)
 
 
 class Table(Widget):
@@ -73,15 +58,13 @@ class Table(Widget):
             pass
 
     def _create_columns(self):
-        if self.interface.headings:
-            headings = self.interface.headings
-            self.native_table.set_headers_visible(True)
-        else:
-            headings = self.interface.accessors
-            self.native_table.set_headers_visible(False)
+        self.native_table.set_headers_visible(self.interface._show_headings)
+        toga_columns = self.interface._columns
 
-        for i, heading in enumerate(headings):
-            column = Gtk.TreeViewColumn(heading)
+        for i, toga_column in enumerate(toga_columns):
+            column = Gtk.TreeViewColumn(
+                toga_column.heading if toga_column.heading else str(id(toga_column))
+            )
             column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
             column.set_expand(True)
             column.set_resizable(True)
@@ -117,7 +100,7 @@ class Table(Widget):
                 self.native_table.remove_column(column)
             self._create_columns()
 
-            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._accessors)
+            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._columns)
             self.store = Gtk.ListStore(*types)
 
             for i, row in enumerate(self.interface.data):
@@ -131,22 +114,25 @@ class Table(Widget):
     def insert(self, index, item):
         row = TogaRow(item)
         values = [row]
-        for accessor in self.interface.accessors:
+        for column in self.interface._columns:
             values.extend(
                 [
-                    row.icon(accessor),
-                    row.text(accessor, self.interface.missing_value),
+                    row.icon(column),
+                    row.text(column, self.interface.missing_value),
                 ]
             )
+            # warn about widgets
+            row.warn_widget(column)
 
         self.store.insert(index, values)
 
     def change(self, item):
         index = self.interface.data.index(item)
         row = self.store[index]
-        for i, accessor in enumerate(self.interface.accessors):
-            row[i * 2 + 1] = row[0].icon(accessor)
-            row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
+        for i, column in enumerate(self.interface._columns):
+            row[i * 2 + 1] = row[0].icon(column)
+            row[i * 2 + 2] = row[0].text(column, self.interface.missing_value)
+            row[0].warn_widget(column)
 
     def remove(self, index, item):
         del self.store[index]

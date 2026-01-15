@@ -56,7 +56,7 @@ node = tree.data[1][0]
 print(f"{node.name}, who is age {node.age}, is {node.status}")
 ```
 
--8<- "reference/api/widgets/table-accessors.md"
+-8<- "snippets/accessors.md"
 
 If you want to use different attributes, you can override them by providing an `accessors` argument. In this example, the tree will use "Name" as the visible header, but internally, the attribute "character" will be used:
 
@@ -86,7 +86,9 @@ node = tree.data[1][0]
 print(f"{node.character}, who is age {node.age}, is {node.status}")
 ```
 
--8<- "reference/api/widgets/table-values.md"
+The set of known accessors and their order for creating nodes from lists and tuples is determined at Tree creation time and does not change even if columns are added or removed. This may result in missing data when adding a column with a new accessor. To avoid this problem either supply all possible accessors at Tree construction time, supply the node data using dictionaries, or use a custom data source.
+
+-8<- "snippets/accessor-values.md"
 
 ## Notes
 

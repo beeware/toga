@@ -119,7 +119,7 @@ class BaseProbe(FontMixin):
         # background.
         SendKeys.SendWait(key_code)
 
-    def assert_image_size(self, image_size, size, screen):
+    def assert_image_size(self, image_size, size, screen, window=None):
         scale_factor = self.get_scale_factor(native_screen=screen._impl.native)
         assert image_size == (
             round(size[0] * scale_factor),

@@ -44,7 +44,7 @@ row = table.data[0]
 print(f"{row.name}, who is age {row.age}, is from {row.planet}")
 ```
 
--8<- "reference/api/widgets/table-accessors.md"
+-8<- "snippets/accessors.md"
 
 If you want to use different attributes, you can override them by providing an `accessors` argument. In this example, the table will use "Name" as the visible header, but internally, the attribute "character" will be used:
 
@@ -53,7 +53,7 @@ import toga
 
 table = toga.Table(
     headings=["Name", "Age"],
-    accessors={"Name", 'character'},
+    accessors={"Name": 'character'},
     data=[
         {"character": "Arthur Dent", "age": 42, "planet": "Earth"},
         {"character": "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
@@ -66,7 +66,9 @@ row = table.data[0]
 print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 ```
 
--8<- "reference/api/widgets/table-values.md"
+The set of known accessors and their order for creating rows from lists and tuples is determined at Table creation time and does not change even if columns are added or removed. This may result in missing data when adding a column with a new accessor. To avoid this problem either supply all possible accessors at Table construction time, supply the row data using dictionaries, or use a custom data source.
+
+-8<- "snippets/accessor-values.md"
 
 ## Notes
 
