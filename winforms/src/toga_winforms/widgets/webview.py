@@ -109,13 +109,12 @@ class WebView(Widget):
         self._large_content_files = []
 
     def __del__(self):
-        """ Cleaning up the cached files for large content """ 
+        """Cleaning up the cached files for large content"""
         for file_name in self._large_content_files:
             file_path = self._large_content_dir / file_name
             if os.path.exists(file_path):
                 os.remove(file_path)
         self._large_content_files = []
-
 
     # Any non-trivial use of the WebView requires the CoreWebView2 object to be
     # initialized, which is asynchronous. Since most of this class's methods are not
@@ -262,9 +261,9 @@ class WebView(Widget):
             self.native.NavigateToString(content)
 
     def get_large_content_file(self, root_url):
-        h = hashlib.new('sha1')
-        h.update(bytes(self.interface.id, 'utf-8'))
-        h.update(bytes(root_url, 'utf-8'))
+        h = hashlib.new("sha1")
+        h.update(bytes(self.interface.id, "utf-8"))
+        h.update(bytes(root_url, "utf-8"))
         return h.hexdigest() + ".html"
 
     def get_user_agent(self):
