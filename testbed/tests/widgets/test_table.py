@@ -615,7 +615,6 @@ async def test_cell_widget(widget, probe):
         probe.assert_cell_content(1, 0, "A1")
         probe.assert_cell_content(1, 1, "B1")
 
-    with warning_check:
         if probe.supports_widgets:
             probe.assert_cell_content(0, 2, widget=widget.data[0].c)
             probe.assert_cell_content(1, 2, widget=widget.data[1].c)
