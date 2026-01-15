@@ -61,11 +61,11 @@ class TableProbe(SimpleProbe):
 
     @property
     def max_scroll_position(self):
-        return self.native.verticalScrollBar().maximum()
+        return self.native.verticalScrollBar().maximum() * self.native.rowHeight(0)
 
     @property
     def scroll_position(self):
-        return self.native.verticalScrollBar().value()
+        return self.native.verticalScrollBar().value() * self.native.rowHeight(0)
 
     async def wait_for_scroll_completion(self):
         # No animation associated with scroll, so this is a no-op
