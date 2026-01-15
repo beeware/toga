@@ -49,7 +49,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   DateInput:
     description: A widget to select a calendar date.
@@ -57,7 +56,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   DetailedList:
     description: An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.
@@ -74,7 +72,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   ImageView:
     description: A widget that displays an image.
@@ -100,14 +97,12 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   NumberInput:
     description: A text input that is limited to numeric input.
     unsupported:
       - web
       - textual
-      - qt
 
   PasswordInput:
     description: A widget to allow the entry of a password. Any value typed by the user will be obscured, allowing the user to see the number of characters they have typed, but not the actual characters.
@@ -115,7 +110,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   ProgressBar:
     description: A horizontal bar to visualize task progress. The task being monitored can be of known or indeterminate length.
@@ -123,7 +117,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   Selection:
     description: A widget to select a single option from a list of alternatives.
@@ -138,7 +131,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   Switch:
     description: 'A clickable button with two stable states: True (on, checked); and False (off, unchecked). The button has a text label.'
@@ -169,7 +161,6 @@ General widgets:
       - web
     unsupported:
       - gtk
-      - qt
 
   Tree:
     description: A widget for displaying a hierarchical tree of tabular data.
@@ -186,7 +177,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   Widget:
     description: The abstract base class of all widgets. This class should not be be instantiated directly.
@@ -227,7 +217,6 @@ Layout widgets:
     unsupported:
       - web
       - textual
-      - qt
 
 Resources:
   path: resources
@@ -242,13 +231,16 @@ Resources:
       - web
 
   Command:
-    description: A representation of app functionality that the user can invoke from
-      menus or toolbars.
+    description: A representation of app functionality that the user can invoke from menus or toolbars.
     display: table
     unsupported:
       - iOS
       - web
       - textual
+
+  Color:
+    description: A representation of a color.
+    display: hide
 
   Dialogs:
     description: Short-lived windows asking the user for input.
@@ -274,7 +266,6 @@ Resources:
     unsupported:
       - web
       - textual
-      - qt
 
   Icon:
     description: A small, square image used to provide easily identifiable visual context to a widget.
@@ -301,7 +292,6 @@ Resources:
       - android
       - web
       - textual
-      - qt
 
   Source:
     description: A base class for data source implementations.

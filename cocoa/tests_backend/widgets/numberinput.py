@@ -17,6 +17,7 @@ from .properties import toga_color, toga_text_align
 class NumberInputProbe(SimpleProbe):
     native_class = NSView
     allows_invalid_value = True
+    allows_unchanged_updates = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -37,31 +38,37 @@ class NumberInputProbe(SimpleProbe):
         # Click a point on the middle line of the stepper horizontally, but very
         # slightly above the midpoint vertically. Remember Cocoa's coordinate
         # system is reversed.
-        await self.mouse_event(
-            NSEventType.LeftMouseDown,
-            self.native_stepper.convertPoint(
-                NSPoint(
-                    self.native_stepper.frame.size.width / 2,
-                    self.native_stepper.frame.size.height / 2 + 5,
-                ),
-                toView=None,
+        location = self.native_stepper.convertPoint(
+            NSPoint(
+                self.native_stepper.frame.size.width / 2,
+                self.native_stepper.frame.size.height / 2 + 5,
             ),
+            toView=None,
         )
+        # Send a mouse down and mouse up separately, as on macOS Tahoe, only
+        # sending a mouse down implies a hold which will press there infinitely.
+        # Do not wait to handle (but instead yield for) the first event, as
+        # handling that will wait forever as we keep pressing.
+        await self.mouse_event(NSEventType.LeftMouseDown, location, delay=0)
+        await self.mouse_event(NSEventType.LeftMouseUp, location)
 
     async def decrement(self):
         # Click a point on the middle line of the stepper horizontally, but very
         # slightly below the midpoint vertically. Remember Cocoa's coordinate
         # system is reversed.
-        await self.mouse_event(
-            NSEventType.LeftMouseDown,
-            self.native_stepper.convertPoint(
-                NSPoint(
-                    self.native_stepper.frame.size.width / 2,
-                    self.native_stepper.frame.size.height / 2 - 5,
-                ),
-                toView=None,
+        location = self.native_stepper.convertPoint(
+            NSPoint(
+                self.native_stepper.frame.size.width / 2,
+                self.native_stepper.frame.size.height / 2 - 5,
             ),
+            toView=None,
         )
+        # Send a mouse down and mouse up separately, as on macOS Tahoe, only
+        # sending a mouse down implies a hold which will press there infinitely.
+        # Do not wait to handle (but instead yield for) the first event, as
+        # handling that will wait forever as we keep pressing.
+        await self.mouse_event(NSEventType.LeftMouseDown, location, delay=0)
+        await self.mouse_event(NSEventType.LeftMouseUp, location)
 
     @property
     def color(self):

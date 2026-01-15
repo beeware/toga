@@ -1,1 +1,0 @@
-Static Positron apps now apply a Cross Origin Opener policy of `same-origin`, and a Cross Origin Embedder Policy of `require-corp`.

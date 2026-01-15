@@ -31,9 +31,10 @@ class BaseProbe:
     async def post_event(self, event, delay=None):
         self.window._impl.native.postEvent(event, atStart=False)
 
-        if delay:
+        if delay is not None:
             # Some widgets enter an internal runloop when processing certain events;
-            # this prevents
+            # this lets the internal runloop finish properly, since the onEvent approach
+            # of the *current* runloop will not work.
             await asyncio.sleep(delay)
         else:
             # Add another event to the queue behind the original event, to notify us
@@ -47,15 +48,24 @@ class BaseProbe:
             )
             await self.event_listener.event.wait()
 
-    async def redraw(self, message=None, delay=0):
+    async def redraw(self, message=None, delay=0, wait_for=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        if toga.App.app.run_slow:
-            # If we're running slow, wait for at least a second
+        # If we're running slow, or we have a wait condition,
+        # wait for at least a second
+        if toga.App.app.run_slow or wait_for:
             delay = max(1, delay)
 
-        if delay:
+        if delay or wait_for:
             print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(delay)
+            if toga.App.app.run_slow or wait_for is None:
+                await asyncio.sleep(delay)
+            else:
+                delta = 0.1
+                interval = 0.0
+                while not wait_for() and interval < delay:
+                    await asyncio.sleep(delta)
+                    interval += delta
+
         else:
             # Running at "normal" speed, we need to release to the event loop
             # for at least one iteration. `runUntilDate:None` does this.

@@ -25,6 +25,18 @@ class OnWebViewLoadHandler(Protocol):
         """
 
 
+class OnNavigationStartingHandler(Protocol):
+    def __call__(self, widget: WebView, url: str, **kwargs: Any) -> bool:
+        """A handler to invoke when the WebView is requesting permission to navigate or
+        redirect to a different URI.
+
+        :param widget: The WebView that has requested a new URI.
+        :param url: The URI that has been requested.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        :returns: True if navigation to the requested URL is allowed; False otherwise.
+        """
+
+
 class WebView(Widget):
     def __init__(
         self,
@@ -33,6 +45,7 @@ class WebView(Widget):
         url: str | None = None,
         content: str | None = None,
         user_agent: str | None = None,
+        on_navigation_starting: OnNavigationStartingHandler | None = None,
         on_webview_load: OnWebViewLoadHandler | None = None,
         **kwargs,
     ):
@@ -50,6 +63,9 @@ class WebView(Widget):
             value provided for the `url` argument will be ignored.
         :param user_agent: The user agent to use for web requests. If not
             provided, the default user agent for the platform will be used.
+        :param on_navigation_starting: A handler that will be invoked when the
+            web view is requesting permission to navigate or redirect
+            to a different URI.
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
         :param kwargs: Initial style properties.
@@ -60,6 +76,9 @@ class WebView(Widget):
 
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
+
+        # Set the handler for URL filtering
+        self.on_navigation_starting = on_navigation_starting
 
         # Load both content and root URL if it's provided by the user.
         # Otherwise, load the URL only.
@@ -107,6 +126,45 @@ class WebView(Widget):
         return await loaded_future
 
     @property
+    def on_navigation_starting(self) -> OnNavigationStartingHandler:
+        """A handler that will be invoked when the webview is requesting
+        permission to navigate or redirect to a different URI.
+
+        The handler will receive the requested URL as an argument. It should
+        return `True` if navigation to the given URL is permitted, or `False`
+        if navigation to the URL should be blocked.
+
+        **Note:** This is not currently supported on GTK or Qt.
+        """
+        return self._on_navigation_starting
+
+    @on_navigation_starting.setter
+    def on_navigation_starting(self, handler):
+        """Set the handler to invoke when the webview starts navigating."""
+        if handler:
+            if getattr(self._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
+
+                def cleanup(widget, result, url=None, **kwargs):
+                    if result is True:
+                        # navigate to the url
+                        self.url = url
+
+            else:
+                cleanup = None
+                try:
+                    # Some backends (e.g., Android) will dynamically disable
+                    # SUPPORTS_ON_NAVIGATION_STARTING based on configuration.
+                    # If that happens, display an appropriate error; fall back
+                    # to a simple "non implemented" otherwise.
+                    print(self._impl.ON_NAVIGATION_CONFIG_MISSING_ERROR)
+                except AttributeError:
+                    self.factory.not_implemented("WebView.on_navigation_starting")
+        else:
+            cleanup = None
+
+        self._on_navigation_starting = wrapped_handler(self, handler, cleanup=cleanup)
+
+    @property
     def on_webview_load(self) -> OnWebViewLoadHandler:
         """The handler to invoke when the web view finishes loading.
 
@@ -118,15 +176,20 @@ class WebView(Widget):
         indication that some change has occurred, not that a *specific* change has
         occurred, or that a specific change has been fully propagated into the
         rendered content.
-
-        **Note:** This is not currently supported on Android.
         """
         return self._on_webview_load
 
     @on_webview_load.setter
     def on_webview_load(self, handler: OnWebViewLoadHandler) -> None:
         if handler and not getattr(self._impl, "SUPPORTS_ON_WEBVIEW_LOAD", True):
-            self.factory.not_implemented("WebView.on_webview_load")
+            try:
+                # Some backends (e.g., Android) will dynamically disable
+                # SUPPORTS_ON_WEBVIEW_LOAD based on configuration.
+                # If that happens, display an appropriate error; fall back
+                # to a simple "non implemented" otherwise.
+                print(self._impl.ON_LOAD_CONFIG_MISSING_ERROR)
+            except AttributeError:
+                self.factory.not_implemented("WebView.on_webview_load")
 
         self._on_webview_load = wrapped_handler(self, handler)
 

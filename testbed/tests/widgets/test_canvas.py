@@ -1,21 +1,23 @@
 import math
 import os
+from itertools import chain
 from math import pi, radians
 from unittest.mock import Mock, call
 
 import pytest
-from PIL import Image
+from PIL import Image, ImageChops
 
 import toga
 from toga import Font
 from toga.colors import (
+    BLACK,
     CORNFLOWERBLUE,
     GOLDENROD,
     REBECCAPURPLE,
     RED,
     TRANSPARENT,
     WHITE,
-    rgba,
+    rgb,
 )
 from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
@@ -103,10 +105,6 @@ async def canvas(widget, probe, on_resize_handler):
     widget.style.width = 200
     widget.style.height = 200
     return widget
-
-
-def assert_pixel(image, x, y, color):
-    assert image.getpixel((x, y)) == color
 
 
 test_cleanup = build_cleanup_test(toga.Canvas, xfail_platforms=("android",))
@@ -243,7 +241,7 @@ async def test_image_data(canvas, probe):
     )
 
 
-def assert_reference(probe, reference, threshold=0.0):
+def assert_reference(probe, reference, threshold=0.01):
     """Assert that the canvas currently matches a reference image, within an
     RMS threshold"""
     # Get the canvas image.
@@ -262,21 +260,17 @@ def assert_reference(probe, reference, threshold=0.0):
         image.save(save_dir / f"{reference_variant}-full.png")
 
     # If a reference image exists, scale the image to the same size as the reference,
-    # and do an MSE comparison on every pixel in 0-1 RGBA colorspace.
+    # and do an MSE comparison on every pixel in 0-1 RGBa (premultiplied) colorspace.
     if path.exists():
         reference_image = Image.open(path)
 
-        total = 0.0
-        for y in range(reference_image.size[1]):
-            for x in range(reference_image.size[0]):
-                actual = scaled_image.getpixel((x, y))
-                expected = reference_image.getpixel((x, y))
+        difference = ImageChops.difference(
+            scaled_image.convert("RGBa"),
+            reference_image.convert("RGBa"),
+        ).getdata()
 
-                for act, exp in zip(actual, expected, strict=False):
-                    err = (act / 255) - (exp / 255)
-                    total += err * err
-
-        rmse = math.sqrt(total / (reference_image.size[0] * reference_image.size[1]))
+        total_error = sum((diff / 255) ** 2 for diff in chain.from_iterable(difference))
+        rmse = math.sqrt(total_error / 160_000)  # 200w * 200h * 4 bands
         # If the delta exceeds threshold, save the test image and fail the test.
         if rmse > threshold:
             save()
@@ -297,16 +291,10 @@ async def test_transparency(canvas, probe):
 
     canvas.context.begin_path()
     canvas.context.rect(x=60, y=60, width=120, height=120)
-    canvas.context.fill(color=rgba(0x33, 0x66, 0x99, 0.5))
+    canvas.context.fill(color=rgb(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
-    # 0.1 is a big threshold; it's equivalent to 400 pixels being 100% the wrong color.
-    # This occurs because pixel aliasing around the edge of the squares generates
-    # different colors due to image scaling and alpha blending differences on each
-    # platform. You could also generate 0.1 threshold error by moving the entire image 1
-    # px to the left. However, it's difficult to find a measure that passes the edge
-    # issue without also passing a translation error.
-    assert_reference(probe, "transparency", threshold=0.1)
+    assert_reference(probe, "transparency")
 
 
 async def test_paths(canvas, probe):
@@ -340,8 +328,18 @@ async def test_paths(canvas, probe):
     canvas.context.move_to(160, 160)
     canvas.context.stroke(RED)
 
-    await probe.redraw("Pair of triangles should be drawn")
-    assert_reference(probe, "paths", threshold=0.04)
+    # A path is not cleared after being stroked or filled.
+    canvas.context.move_to(20, 10)
+    canvas.context.line_to(60, 10)
+    canvas.context.stroke(color=CORNFLOWERBLUE, line_width=10)
+    canvas.context.move_to(60, 10)
+    canvas.context.line_to(100, 10)
+    canvas.context.fill(color=REBECCAPURPLE)
+    canvas.context.line_to(140, 10)
+    canvas.context.stroke()
+
+    await probe.redraw("Pair of triangles and a black line should be drawn")
+    assert_reference(probe, "paths", threshold=0.02)
 
 
 async def test_bezier_curve(canvas, probe):
@@ -358,7 +356,7 @@ async def test_bezier_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Heart should be drawn")
-    assert_reference(probe, "bezier_curve", threshold=0.05)
+    assert_reference(probe, "bezier_curve", threshold=0.03)
 
 
 async def test_quadratic_curve(canvas, probe):
@@ -375,7 +373,7 @@ async def test_quadratic_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Quote bubble should be drawn")
-    assert_reference(probe, "quadratic_curve", threshold=0.05)
+    assert_reference(probe, "quadratic_curve", threshold=0.03)
 
 
 async def test_arc(canvas, probe):
@@ -414,7 +412,7 @@ async def test_arc(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Smiley face should be drawn")
-    assert_reference(probe, "arc", threshold=0.06)
+    assert_reference(probe, "arc", threshold=0.03)
 
 
 async def test_ellipse(canvas, probe):
@@ -426,10 +424,12 @@ async def test_ellipse(canvas, probe):
     canvas.context.fill(color=RED)
 
     # Purple orbit
+    canvas.context.begin_path()
     canvas.context.ellipse(100, 100, 90, 20, rotation=pi * 3 / 4)
     canvas.context.stroke(color=REBECCAPURPLE)
 
     # Blue orbit (more than half a turn)
+    canvas.context.begin_path()
     canvas.context.ellipse(
         100,
         100,
@@ -443,6 +443,7 @@ async def test_ellipse(canvas, probe):
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
     # Yellow orbit (more than half a turn)
+    canvas.context.begin_path()
     canvas.context.ellipse(
         100,
         100,
@@ -454,7 +455,7 @@ async def test_ellipse(canvas, probe):
     canvas.context.stroke(color=GOLDENROD)
 
     await probe.redraw("Atom should be drawn")
-    assert_reference(probe, "ellipse", threshold=0.04)
+    assert_reference(probe, "ellipse", threshold=0.02)
 
 
 async def test_ellipse_path(canvas, probe):
@@ -491,7 +492,7 @@ async def test_ellipse_path(canvas, probe):
     context.stroke(CORNFLOWERBLUE)
 
     await probe.redraw("Broken ellipse with connected lines should be drawn")
-    assert_reference(probe, "ellipse_path", threshold=0.04)
+    assert_reference(probe, "ellipse_path", threshold=0.02)
 
 
 async def test_rect(canvas, probe):
@@ -503,7 +504,7 @@ async def test_rect(canvas, probe):
     canvas.context.fill(color=REBECCAPURPLE)
 
     await probe.redraw("Filled rectangle should be drawn")
-    assert_reference(probe, "rect", threshold=0.02)
+    assert_reference(probe, "rect")
 
 
 async def test_fill(canvas, probe):
@@ -527,7 +528,7 @@ async def test_fill(canvas, probe):
     canvas.context.fill(color=CORNFLOWERBLUE, fill_rule=FillRule.EVENODD)
 
     await probe.redraw("Stars should be drawn")
-    assert_reference(probe, "fill", threshold=0.02)
+    assert_reference(probe, "fill")
 
 
 async def test_stroke(canvas, probe):
@@ -551,7 +552,33 @@ async def test_stroke(canvas, probe):
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
     await probe.redraw("Stroke should be drawn")
-    assert_reference(probe, "stroke", threshold=0.02)
+    assert_reference(probe, "stroke")
+
+
+async def test_stroke_and_fill(canvas, probe):
+    "A shape drawn with primitives can be stroked and filled."
+    # Draw a closed path
+    canvas.context.begin_path()
+    canvas.context.move_to(x=20, y=20)
+    canvas.context.line_to(x=100, y=20)
+    canvas.context.line_to(x=180, y=180)
+    canvas.context.line_to(x=100, y=180)
+    canvas.context.close_path()
+    canvas.context.stroke(color=REBECCAPURPLE)
+    canvas.context.fill(color=CORNFLOWERBLUE)
+
+    # Draw an open path inside it
+    canvas.context.begin_path()
+    # At the start of a path, line_to is equivalent to move_to.
+    canvas.context.line_to(x=50, y=40)
+    canvas.context.line_to(x=90, y=40)
+    canvas.context.line_to(x=150, y=160)
+    canvas.context.line_to(x=110, y=160)
+    canvas.context.fill(color=GOLDENROD, fill_rule=FillRule.EVENODD)
+    canvas.context.stroke(color=REBECCAPURPLE)
+
+    await probe.redraw("Stroke should be drawn")
+    assert_reference(probe, "stroke_and_fill")
 
 
 async def test_closed_path_context(canvas, probe):
@@ -567,7 +594,7 @@ async def test_closed_path_context(canvas, probe):
     canvas.context.stroke(color=REBECCAPURPLE, line_width=5, line_dash=[20, 30])
 
     await probe.redraw("Closed path should be drawn with context")
-    assert_reference(probe, "closed_path_context", threshold=0.02)
+    assert_reference(probe, "closed_path_context")
 
 
 async def test_fill_context(canvas, probe):
@@ -580,7 +607,7 @@ async def test_fill_context(canvas, probe):
         path.line_to(x=100, y=180)
 
     await probe.redraw("Fill should be drawn with context")
-    assert_reference(probe, "fill_context", threshold=0.01)
+    assert_reference(probe, "fill_context")
 
 
 async def test_stroke_context(canvas, probe):
@@ -596,7 +623,23 @@ async def test_stroke_context(canvas, probe):
         stroke.line_to(x=120, y=180)
 
     await probe.redraw("Stroke should be drawn with context")
-    assert_reference(probe, "stroke_context", threshold=0.02)
+    assert_reference(probe, "stroke_context")
+
+
+async def test_stroke_and_fill_context(canvas, probe):
+    "A shape can be stroked and filled using contexts"
+
+    # Draw a filled parallelogram
+    with canvas.context.Fill(x=20, y=20, color=REBECCAPURPLE) as fill:
+        with fill.Stroke(
+            line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE
+        ) as path:
+            path.line_to(x=100, y=20)
+            path.line_to(x=180, y=180)
+            path.line_to(x=100, y=180)
+
+    await probe.redraw("Stroke and Fill should be drawn with context")
+    assert_reference(probe, "stroke_and_fill_context")
 
 
 async def test_transforms(canvas, probe):
@@ -608,16 +651,19 @@ async def test_transforms(canvas, probe):
     canvas.context.fill(color=CORNFLOWERBLUE)
 
     canvas.context.reset_transform()
+    canvas.context.begin_path()
     canvas.context.rotate(pi / 4)
     canvas.context.rect(200, 0, 20, 60)
     canvas.context.fill(color=REBECCAPURPLE)
 
     canvas.context.reset_transform()
+    canvas.context.begin_path()
     canvas.context.scale(2, 5)
     canvas.context.rect(10, 10, 10, 10)
     canvas.context.fill(color=GOLDENROD)
 
     canvas.context.reset_transform()
+    canvas.context.begin_path()
     canvas.context.translate(100, 60)
     canvas.context.rotate(pi / 7 * 4)
     canvas.context.scale(5, 2)
@@ -625,7 +671,7 @@ async def test_transforms(canvas, probe):
     canvas.context.fill()
 
     await probe.redraw("Transforms can be applied")
-    assert_reference(probe, "transforms", threshold=0.02)
+    assert_reference(probe, "transforms")
 
 
 @pytest.mark.xfail(
@@ -702,11 +748,13 @@ async def test_write_text(canvas, probe):
             )
 
     await probe.redraw("Text should be drawn")
-    # 0.07 is quite a high error threshold; it's equivalent to 196 pixels being
-    # 100% the wrong color. However, fonts are the worst case for evaluating with
-    # RMSE, as they are 100% edges; and due to minor font rendering discrepancies
-    # and antialiasing introduced by image scaling, edges are the source of error.
-    assert_reference(probe, "write_text", threshold=0.07)
+    # 0.035 is equivalent to 49 pixels out of 4,000 being 100% the wrong color
+    # (in premultiplied RGBa space). However, fonts are the worst case for evaluating
+    # with RMSE, as they are 100% edges; and due to minor font rendering discrepancies
+    # and antialiasing introduced by image scaling, edges are the source of error. Of
+    # note, though: Gtk on Wayland is the only backend that needs it set this high.
+    # Everything else falls below 0.02.
+    assert_reference(probe, "write_text", threshold=0.035)
 
 
 @pytest.mark.xfail(
@@ -774,8 +822,58 @@ async def test_multiline_text(canvas, probe):
             text_filler.write_text(text, left, y, font, baseline)
 
     await probe.redraw("Multiple text blocks should be drawn")
-    # 0.09 is quite a high error threshold; it's equivalent to 324 pixels being
-    # 100% the wrong color. However, fonts are the worst case for evaluating with
-    # RMSE, as they are 100% edges; and due to minor font rendering discrepancies
-    # and antialiasing introduced by image scaling, edges are the source of error.
-    assert_reference(probe, "multiline_text", threshold=0.09)
+    assert_reference(probe, "multiline_text")
+
+
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="may fail outside of a GitHub runner environment",
+)
+async def test_write_text_and_path(canvas, probe):
+    "Text doesn't affect the current path."
+
+    # Use fonts which look different from the system fonts on all platforms.
+    Font.register("Droid Serif", "resources/fonts/DroidSerif-Regular.ttf")
+
+    hello_text = "Hello"
+    hello_font = Font("Droid Serif", 24)
+    hello_size = canvas.measure_text(hello_text, hello_font)
+
+    with canvas.Fill(BLACK) as fill:
+        # start building a path
+        fill.begin_path()
+        fill.rect(
+            100 - (hello_size[0] // 2),
+            10,
+            hello_size[0],
+            hello_size[1],
+        )
+
+        # Draw some text independent of the path
+        # Uses fill color of black.
+        fill.write_text(
+            hello_text,
+            100 - (hello_size[0] // 2),
+            10,
+            font=hello_font,
+            baseline=Baseline.TOP,
+        )
+
+        # continue building the path
+        fill.move_to(
+            100 - (hello_size[0] // 2),
+            10,
+        )
+        fill.line_to(
+            100 + (hello_size[0] // 2),
+            10 + hello_size[1],
+        )
+
+        # now stroke the path, but *not* the text
+        fill.stroke(CORNFLOWERBLUE)
+
+        # start a new path so Fill context doesn't fill current path with black
+        fill.begin_path()
+
+    await probe.redraw("Text and path should be drawn independently")
+    assert_reference(probe, "write_text_and_path", 0.04)

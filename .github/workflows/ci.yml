@@ -94,12 +94,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6.0.0
+      uses: actions/setup-python@v6.1.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -108,7 +108,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Get Packages
-      uses: actions/download-artifact@v6.0.0
+      uses: actions/download-artifact@v7.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -125,7 +125,7 @@ jobs:
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@v6.0.0
       with:
         name: ${{ matrix.package }}-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "${{ matrix.package }}/.coverage.*"
@@ -146,12 +146,12 @@ jobs:
             tox-suffix: "-trav"
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v6.0.0
+      uses: actions/setup-python@v6.1.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -161,7 +161,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v6.0.0
+      uses: actions/download-artifact@v7.0.0
       with:
         pattern: ${{ matrix.package }}-coverage-data-*
         path: ${{ matrix.package }}
@@ -171,7 +171,7 @@ jobs:
       run: tox -e coverage${{ matrix.tox-suffix }}-html-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@v6.0.0
       if: failure()
       with:
         name: html-coverage-report
@@ -184,12 +184,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v6.0.0
+      uses: actions/setup-python@v6.1.0
       with:
         python-version: ${{ env.min_python_version }}
 
@@ -197,7 +197,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Get Package
-      uses: actions/download-artifact@v6.0.0
+      uses: actions/download-artifact@v7.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -222,6 +222,9 @@ jobs:
         - "linux-x11-gtk3"
         - "linux-wayland-gtk3"
         - "linux-wayland-gtk4"
+        - "linux-wayland-gtk4-adw"
+        - "linux-wayland-qt"
+        - "linux-x11-qt"
         - "android"
         - "iOS"
         - "textual-linux"
@@ -335,6 +338,38 @@ jobs:
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
+        - backend: "linux-wayland-gtk4-adw"
+          platform: "linux"
+          runs-on: "ubuntu-24.04"
+          env:
+            XDG_RUNTIME_DIR: "/tmp"
+          # The package list should be build on the same base as unix-prerequisites.md,
+          # and the BeeWare tutorial. Additional packages will be added for window
+          # management, and features such as web views and geolocation that aren't part
+          # of the default/tutorial environment.
+          pre-command: |
+            sudo apt update -y
+            sudo apt install -y --no-install-recommends \
+              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
+              gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
+              gir1.2-gtk-4.0 gir1.2-adw-1
+
+            # Start Virtual X Server
+            echo "Start X server..."
+            Xvfb :99 -screen 0 2048x1536x24 &
+            sleep 1
+
+            # Start Window Manager
+            echo "Start window manager..."
+            # mutter is being run inside a virtual X server because mutter's headless
+            # mode does not provide a Gdk.Display
+            DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
+              mutter --nested --wayland --no-x11 --wayland-display toga &
+            sleep 1
+          briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_GTK=4 TOGA_GTKLIB=Adw"
+          setup-python: false  # Use the system Python packages
+          app-user-data-path: "$HOME/.local/share/testbed"
+
         - backend: "linux-x11-qt"
           platform: "linux"
           runs-on: "ubuntu-24.04"
@@ -367,7 +402,7 @@ jobs:
             sleep 1
           briefcase-run-prefix: 'DISPLAY=:99'
           setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed"
+          app-user-data-path: "$HOME/.local/share/testbed-qt"
 
         - backend: "linux-wayland-qt"
           platform: "linux"
@@ -397,7 +432,7 @@ jobs:
             sleep 1
           briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
           setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed"
+          app-user-data-path: "$HOME/.local/share/testbed-qt"
 
         - backend: "textual-linux"
           platform: "linux"
@@ -463,12 +498,12 @@ jobs:
       uses: smorimoto/tune-github-hosted-runner-network@v1.0.0
 
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v6.0.0
+      uses: actions/setup-python@v6.1.0
       if: matrix.setup-python
       with:
         python-version: "3.12"
@@ -483,7 +518,7 @@ jobs:
         python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Get Packages
-      uses: actions/download-artifact@v6.0.0
+      uses: actions/download-artifact@v7.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -498,7 +533,7 @@ jobs:
           ${{ matrix.briefcase-run-args }} --app ${{ matrix.testbed-app }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@v6.0.0
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -511,7 +546,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@v6.0.0
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
@@ -548,17 +583,17 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v6.0.0
+      uses: actions/setup-python@v6.1.0
       with:
         python-version: "3.12"
 
     - name: Get Packages
-      uses: actions/download-artifact@v6.0.0
+      uses: actions/download-artifact@v7.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true

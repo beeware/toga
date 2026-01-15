@@ -47,6 +47,7 @@ dev
 dialogs
 Diataxis
 Django
+DLL
 DLLs
 DLNA
 DocumentWindow
@@ -54,6 +55,9 @@ DOM
 dotfiles
 dp
 draggable
+elementaryOS
+elementaryOS's
+Embedder
 Flatpak
 Flexbox
 FreeBSD
@@ -87,6 +91,8 @@ iOS
 iterable
 KDE
 KWin
+libadwaita
+libhelium
 linters
 ListSource
 macOS
@@ -111,6 +117,7 @@ OTF
 Pango
 parameterization
 PasswordInput
+PDB
 PIL
 platformer
 PNG
@@ -147,6 +154,7 @@ RemoteCommand
 Ren
 resizable
 reStructuredText
+RGB
 RGBA
 rumdl
 runtime
@@ -180,6 +188,8 @@ SwipeRefreshLayout
 taAppLister
 TableViews
 taRpnCalcTG
+tauOS
+tauOS's
 testbed
 TestPyPI
 TextInput

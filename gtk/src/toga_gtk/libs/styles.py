@@ -1,4 +1,4 @@
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import TRANSPARENT, rgb
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 
 from ..libs import GTK_VERSION
@@ -69,12 +69,6 @@ def get_font_css(value):
 
 def parse_css_color(native_string):
     """Parse a color from a GTK4 native RGB(A) CSS string."""
-    if native_string[:4] == "rgba":
-        native_string = native_string[4:]
-    if native_string[:3] == "rgb":
-        native_string = native_string[3:]
+    native_string = native_string.removeprefix("rgba").removeprefix("rgb")
     r, g, b, *a = map(float, native_string.strip("()").split(","))
-    if a:
-        return rgba(r, g, b, a[0])
-    else:
-        return rgba(r, g, b)
+    return rgb(r, g, b, a[0] if a else 1)

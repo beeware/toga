@@ -12,7 +12,7 @@ Names are spelled according to US English.
 
 Wherever possible, Toga exposes an object's state using property notation (e.g. `widget.property`) rather than getter or setter methods.
 
-Properties follow [Postel's Law](https://en.wikipedia.org/wiki/Robustness_principle) – for example, a widget's `text` property will accept any object when set, but will always return a string when when retrieved.
+Properties follow [Postel's Law](https://en.wikipedia.org/wiki/Robustness_principle) – for example, a widget's `text` property will accept any object when set, but will always return a string when retrieved.
 
 ## Constructors
 

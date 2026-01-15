@@ -12,7 +12,7 @@ def native_color(c):
         color = CACHE[c]
     except KeyError:
         color = UIColor.colorWithRed(
-            c.rgba.r / 255, green=c.rgba.g / 255, blue=c.rgba.b / 255, alpha=c.rgba.a
+            c.rgb.r / 255, green=c.rgb.g / 255, blue=c.rgb.b / 255, alpha=c.rgb.a
         )
         CACHE[c] = color
 

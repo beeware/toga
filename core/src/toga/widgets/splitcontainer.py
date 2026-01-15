@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
+import toga
 from toga.app import App
 from toga.constants import Direction
 from toga.window import Window
@@ -108,22 +109,20 @@ class SplitContainer(Widget):
         _content = []
         flex = []
         for item in content:
-            if isinstance(item, tuple):
-                if len(item) == 2:
-                    widget, flex_value = item
-                    if flex_value <= 0:
+            match item:
+                case toga.Widget() | None as widget:
+                    flex_value = 1
+                case toga.Widget() | None as widget, int() as flex_value:
+                    if flex_value <= 0:  # no-cover-if-lt-py311
                         raise ValueError(
                             "The flex value for an item in a SplitContainer must be >0"
                         )
-                else:
+                case _:
                     raise ValueError(
                         "An item in SplitContainer content must be a 2-tuple "
                         "containing the widget, and the flex weight to assign to that "
                         "widget."
                     )
-            else:
-                widget = item
-                flex_value = 1
 
             _content.append(widget)
             flex.append(flex_value)

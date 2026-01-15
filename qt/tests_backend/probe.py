@@ -17,6 +17,7 @@ SPECIAL_KEY_MAP = {
     "<esc>": Qt.Key_Escape,
     "'": Qt.Key_Apostrophe,
     '"': Qt.Key_QuoteDbl,
+    "<backspace>": Qt.Key_Backspace,
 }
 
 MODIFIER_MAP = {
@@ -27,13 +28,22 @@ MODIFIER_MAP = {
 
 
 class BaseProbe(DialogsMixin):
-    async def redraw(self, message=None, delay=0):
-        if toga.App.app.run_slow:
+    async def redraw(self, message=None, delay=0, wait_for=None):
+        # If we're running slow, or we have a wait condition,
+        # wait for at least a second
+        if toga.App.app.run_slow or wait_for:
             delay = max(1, delay)
 
-        if delay:
+        if delay or wait_for:
             print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(delay)
+            if toga.App.app.run_slow or wait_for is None:
+                await asyncio.sleep(delay)
+            else:
+                delta = 0.1
+                interval = 0.0
+                while not wait_for() and interval < delay:
+                    await asyncio.sleep(delta)
+                    interval += delta
         else:
             QApplication.processEvents()
 

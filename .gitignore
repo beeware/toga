@@ -33,18 +33,10 @@ pyvenv.cfg
 bin/
 lib/
 .ruff_cache/
-
-# Exclude briefcase packages from the examples dir.
-examples/*/macOS/
-examples/*/iOS/
-examples/*/linux/
-examples/*/android/
-examples/*/django/
-examples/*/windows/
-examples/*/web/
+.python-version
 
 # Memory Profiler
 mprofile_*.dat
 
-# Briefcase log files.
-briefcase.*.log
+# Briefcase
+.briefcase

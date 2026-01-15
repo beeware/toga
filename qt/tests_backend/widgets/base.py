@@ -6,9 +6,11 @@ from ..probe import BaseProbe
 
 
 class SimpleProbe(BaseProbe, FontMixin):
-    async def redraw(self, message=None, delay=0):
+    invalid_size_while_hidden = False
+
+    async def redraw(self, message=None, delay=0, wait_for=None):
         self.native.repaint()
-        await super().redraw(message=message, delay=delay)
+        await super().redraw(message=message, delay=delay, wait_for=wait_for)
 
     def __init__(self, widget):
         super().__init__()
@@ -46,6 +48,11 @@ class SimpleProbe(BaseProbe, FontMixin):
     @property
     def background_color(self):
         return toga_color(self.native.palette().color(self.native.backgroundRole()))
+
+    @property
+    def font(self):
+        # This is checking what we ask for, not what we get
+        return self.native.font()
 
     @property
     def hidden(self):

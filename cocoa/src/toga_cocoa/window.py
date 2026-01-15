@@ -363,8 +363,8 @@ class Window:
 
     def hide(self):
         self.native.orderOut(self.native)
-        # Cocoa doesn't provide a native window delegate notification that would
-        # be triggered when orderOut_ is called. So, trigger the event here instead.
+        # Cocoa doesn't provide a native window delegate notification that would be
+        # triggered when orderOut_ is called. So, trigger the event here instead.
         self.interface.on_hide()
 
     def get_visible(self):
@@ -372,9 +372,9 @@ class Window:
         # windows to be visible, so we need to override in that case. However,
         # minimization state is retained when the app as a whole is hidden; so we also
         # need to check for app-level hiding when overriding.
-        return bool(self.native.isVisible) or (
+        return self.native.isVisible or (
             self.get_window_state(in_progress_state=True) == WindowState.MINIMIZED
-            and not bool(self.interface.app._impl.native.isHidden())
+            and not self.interface.app._impl.native.isHidden()
         )
 
     ######################################################################
@@ -384,22 +384,22 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
-        if bool(self.container.native.isInFullScreenMode()):
+        if self.container.native.isInFullScreenMode():
             return WindowState.PRESENTATION
-        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
+        elif self.native.styleMask & NSWindowStyleMask.FullScreen:
             return WindowState.FULLSCREEN
-        elif bool(self.native.isZoomed):
+        elif self.native.isZoomed:
             return WindowState.MAXIMIZED
-        elif bool(self.native.isMiniaturized):
+        elif self.native.isMiniaturized:
             return WindowState.MINIMIZED
         else:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        # Since the requests to the OS for changing window states are non-blocking,
-        # if we are in the middle of processing a state, we need to store the
-        # user-requested state and apply the state when we have completed processing
-        # a transition. There are 2 types of callbacks:
+        # Since the requests to the OS for changing window states are non-blocking, if
+        # we are in the middle of processing a state, we need to store the
+        # user-requested state and apply the state when we have completed processing a
+        # transition. There are 2 types of callbacks:
         # * EnteredState:
         #   Here, we need to check if the current state is the same as the pending
         #   state.
@@ -407,15 +407,15 @@ class Window:
         #   -- If no: Apply NORMAL state, which will later apply the pending state
         #             when the state is NORMAL.
         # * ExitedState:
-        #   Here, since we are in NORMAL state, we just apply the pending state.
-        #   When we enter the user-requested pending state, then clear the pending
-        #   state variable and return.
+        #   Here, since we are in NORMAL state, we just apply the pending state. When we
+        #   enter the user-requested pending state, then clear the pending state
+        #   variable and return.
 
         if self._pending_state_transition:
             self._pending_state_transition = state
         else:
-            # If the app is in presentation mode, but this window isn't, then
-            # exit app presentation mode before setting the requested state.
+            # If the app is in presentation mode, but this window isn't, then exit app
+            # presentation mode before setting the requested state.
             if any(
                 window.state == WindowState.PRESENTATION and window != self.interface
                 for window in self.interface.app.windows
@@ -434,79 +434,77 @@ class Window:
 
         current_state = self.get_window_state()
         # Although same state check is done at the core, yet this is required
-        # Since, _apply_state() is called internally on the implementation
-        # side, after the completion of non-blocking APIs(setIsMiniaturized,
-        # toggleFullScreen), by the delegate. Then this same state check is
-        # used to terminate further processing.
+        # Since, _apply_state() is called internally on the implementation side, after
+        # the completion of non-blocking APIs(setIsMiniaturized, toggleFullScreen), by
+        # the delegate. Then this same state check is used to terminate further
+        # processing.
         if target_state == current_state:
             self._pending_state_transition = None
             return
 
-        elif target_state == WindowState.MAXIMIZED:
-            self.native.setIsZoomed(True)
-            # No need to check for other pending states,
-            # since this is fully applied at this point.
-            self._pending_state_transition = None
+        match current_state, target_state:
+            case _, WindowState.MAXIMIZED:
+                self.native.setIsZoomed(True)
+                # No need to check for other pending states, since this is fully applied
+                # at this point.
+                self._pending_state_transition = None
 
-        elif target_state == WindowState.MINIMIZED:
-            self.native.setIsMiniaturized(True)
+            case _, WindowState.MINIMIZED:
+                self.native.setIsMiniaturized(True)
 
-        elif target_state == WindowState.FULLSCREEN:
-            self.native.toggleFullScreen(self.native)
+            case _, WindowState.FULLSCREEN:
+                self.native.toggleFullScreen(self.native)
 
-        elif target_state == WindowState.PRESENTATION:
-            self._before_presentation_mode_screen = self.interface.screen
-            opts = NSMutableDictionary.alloc().init()
-            opts.setObject(
-                NSNumber.numberWithBool(True),
-                forKey="NSFullScreenModeAllScreens",
-            )
-            # The widgets are actually added to
-            # window._impl.container.native, instead of
-            # window.content._impl.native. And
-            # window._impl.native.contentView is
-            # window._impl.container.native. Hence,
-            # we need to go fullscreen on
-            # window._impl.container.native instead.
-            self.container.native.enterFullScreenMode(
-                self.interface.screen._impl.native, withOptions=opts
-            )
+            case _, WindowState.PRESENTATION:
+                self._before_presentation_mode_screen = self.interface.screen
+                opts = NSMutableDictionary.alloc().init()
+                opts.setObject(
+                    NSNumber.numberWithBool(True),
+                    forKey="NSFullScreenModeAllScreens",
+                )
+                # The widgets are actually added to window._impl.container.native,
+                # instead of window.content._impl.native. And
+                # window._impl.native.contentView is window._impl.container.native.
+                # Hence, we need to go fullscreen on window._impl.container.native
+                # instead.
+                self.container.native.enterFullScreenMode(
+                    self.interface.screen._impl.native, withOptions=opts
+                )
 
-            # Going presentation mode causes the window content
-            # to be re-homed in a NSFullScreenWindow;
-            # Teach the new parent window about its Toga representations.
-            self.container.native.window._impl = self
-            self.container.native.window.interface = self.interface
-            # Manually trigger the resize event as the original NSWindow's
-            # size remains unchanged, hence the windowDidResize_ would not
-            # be notified when the window goes into presentation mode.
-            self.interface.on_resize()
-            self.interface.content.refresh()
+                # Going presentation mode causes the window content to be re-homed in a
+                # NSFullScreenWindow; Teach the new parent window about its Toga
+                # representations.
+                self.container.native.window._impl = self
+                self.container.native.window.interface = self.interface
+                # Manually trigger the resize event as the original NSWindow's size
+                # remains unchanged, hence the windowDidResize_ would not be notified
+                # when the window goes into presentation mode.
+                self.interface.on_resize()
+                self.interface.content.refresh()
 
-            # No need to check for other pending states,
-            # since this is fully applied at this point.
-            self._pending_state_transition = None
+                # No need to check for other pending states, since this is fully applied
+                # at this point.
+                self._pending_state_transition = None
 
-        else:  # target_state == WindowState.NORMAL:
-            if current_state == WindowState.MAXIMIZED:
+            case WindowState.MAXIMIZED, WindowState.NORMAL:
                 self.native.setIsZoomed(False)
                 self._apply_state(self._pending_state_transition)
 
-            elif current_state == WindowState.MINIMIZED:
+            case WindowState.MINIMIZED, WindowState.NORMAL:
                 self.native.setIsMiniaturized(False)
 
-            elif current_state == WindowState.FULLSCREEN:
+            case WindowState.FULLSCREEN, WindowState.NORMAL:
                 self.native.toggleFullScreen(self.native)
 
-            else:  # current_state == WindowState.PRESENTATION:
+            case _:  # PRESENTATION -> NORMAL
                 opts = NSMutableDictionary.alloc().init()
                 opts.setObject(
                     NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
                 )
                 self.container.native.exitFullScreenModeWithOptions(opts)
-                # Manually trigger the resize event as the original NSWindow's
-                # size remains unchanged, hence the windowDidResize_ would not
-                # be notified when the window goes out of the presentation mode.
+                # Manually trigger the resize event as the original NSWindow's size
+                # remains unchanged, hence the windowDidResize_ would not be notified
+                # when the window goes out of the presentation mode.
                 self.interface.on_resize()
                 self.interface.content.refresh()
 

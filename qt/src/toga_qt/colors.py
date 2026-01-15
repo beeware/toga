@@ -1,11 +1,12 @@
 from PySide6.QtGui import QColor
-from travertino.colors import rgb
+
+from toga.colors import rgb
 
 
 def native_color(c):
     if c == "transparent":
         return QColor(0, 0, 0, 0)
-    return QColor(c.rgba.r, c.rgba.g, c.rgba.b, c.rgba.a * 255)
+    return QColor(c.rgb.r, c.rgb.g, c.rgb.b, c.rgb.a * 255)
 
 
 def toga_color(c):
