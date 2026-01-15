@@ -156,7 +156,6 @@ class FileDialog:
         self.native.setAcceptMode(self.accept_mode)
         self.native.setFileMode(self.file_mode)
         self.native.finished.connect(self.qt_finished)
-        self.native.setOption(QFileDialog.Option.DontUseNativeDialog)
         self.native.open()
 
     def qt_finished(self, result):
