@@ -25,6 +25,7 @@ try:
     from .widgets.passwordinput import PasswordInput
     from .widgets.progressbar import ProgressBar
     from .widgets.scrollcontainer import ScrollContainer
+    from .widgets.selection import Selection
     from .widgets.slider import Slider
     from .widgets.switch import Switch
     from .widgets.textinput import TextInput
@@ -34,7 +35,7 @@ try:
 except ModuleNotFoundError as exc:  # pragma: no cover
     if exc.name == "PySide6":
         raise ImportError(
-            "Cannot import PySide6.  Did you install toga-qt with the extra[pyside6]?"
+            "Cannot import PySide6.  Did you install toga-qt with the extra [pyside6]?"
         ) from exc
     else:
         raise
@@ -65,6 +66,7 @@ __all__ = [
     "OptionContainer",
     "PasswordInput",
     "ProgressBar",
+    "Selection",
     "ScrollContainer",
     "Switch",
     "Slider",
