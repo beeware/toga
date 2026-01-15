@@ -1,6 +1,6 @@
+import hashlib
 import json
 import os
-import uuid
 import webbrowser
 from http.cookiejar import Cookie, CookieJar
 
@@ -104,8 +104,18 @@ class WebView(Widget):
         # user on_navigation_starting handler
         self._allowed_url = None
 
-        # file for temporary storing content larger than 2 MB
-        self._large_content_filepath = None
+        # files for temporary storing content larger than 2 MB
+        self._large_content_dir = toga.App.app.paths.cache / "toga/webview"
+        self._large_content_files = []
+
+    def __del__(self):
+        """ Cleaning up the cached files for large content """ 
+        for file_name in self._large_content_files:
+            file_path = self._large_content_dir / file_name
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        self._large_content_files = []
+
 
     # Any non-trivial use of the WebView requires the CoreWebView2 object to be
     # initialized, which is asynchronous. Since most of this class's methods are not
@@ -185,11 +195,6 @@ class WebView(Widget):
             )
 
     def winforms_navigation_completed(self, sender, args):
-        if self._large_content_filepath and os.path.exists(
-            self._large_content_filepath
-        ):
-            os.remove(self._large_content_filepath)
-            self._large_content_filepath = None
         self.interface.on_webview_load()
 
         if self.loaded_future:
@@ -242,17 +247,25 @@ class WebView(Widget):
         if self.interface.on_navigation_starting._raw:
             # mark URL as being allowed
             self._allowed_url = "about:blank"
-        # There appears to be no way to pass the root_url.
-        if len(content) > 1500000:
+        if len(content) > 1572834:
             # according to the Microsoft documentation, the max content size is
-            # 2 MB, but in fact, the limit seems to be at 1.5 MB
-            file_name = str(uuid.uuid4()) + ".html"
-            self._large_content_filepath = toga.App.app.paths.cache / file_name
-            with open(self._large_content_filepath, "w") as f:
+            # 2 MB, but in fact, the limit seems to be at about 1.5 MB
+            os.mkdirs(self._large_content_dir, exist_ok=True)
+            file_name = self.get_large_content_file(root_url)
+            self._large_content_files.append(file_name)
+            file_path = self._large_content_dir / file_name
+            with open(file_path, "w") as f:
                 f.write(content)
-            self.set_url(self._large_content_filepath.as_uri())
+            self.set_url(file_path.as_uri())
         else:
+            # There appears to be no way to pass the root_url.
             self.native.NavigateToString(content)
+
+    def get_large_content_file(self, root_url):
+        h = hashlib.new('sha1')
+        h.update(bytes(self.interface.id, 'utf-8'))
+        h.update(bytes(root_url, 'utf-8'))
+        return h.hexdigest() + ".html"
 
     def get_user_agent(self):
         if self.corewebview2_available:
