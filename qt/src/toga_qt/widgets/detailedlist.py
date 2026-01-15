@@ -200,8 +200,6 @@ class DetailedList(Widget):
     def create(self):
         # Create the List widget
         self.native = QListView()
-        # this will need to be removed if keyboard interactions are needed later
-        self.native.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.native.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
 
         self.native_model = ListSourceModel(
