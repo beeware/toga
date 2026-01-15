@@ -3,92 +3,50 @@
 }
 
 /* Title for platform availability tables */
-.availability-title {
+#availability-title {
     text-align: center;
     font-weight: bold;
 }
 
 /* Style platform availability and widgets by platforms tables */
-.availability-title ~ .md-typeset__scrollwrap .md-typeset__table,
-.widgets_by_platform_key ~ .md-typeset__scrollwrap .md-typeset__table {
+:is(#availability-title, #api-status-key) + .md-typeset__scrollwrap {
     display: flex;
     flex-flow: nowrap column;
     align-items: center;
 }
 
-.availability-title ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th,
-.availability-title ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) tbody tr td {
-    padding: 0.2rem 0.6rem;
+#availability-title + .md-typeset__scrollwrap table :is(th, td),
+.api-reference + .md-typeset__scrollwrap :is(th, td:first-of-type) {
+    padding: 0.3rem 0.6rem;
 }
 
-.availability-title ~ .md-typeset__scrollwrap .md-typeset__table table,
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table,
-.widgets_by_platform_key ~ .md-typeset__scrollwrap .md-typeset__table table {
-    width: unset;
+:is(#availability-title, .api-reference) + .md-typeset__scrollwrap table th {
+    min-width: unset;
 }
 
-.availability-title ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th,
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th {
-    min-width: 3rem;
-}
-
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table thead tr th,
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table tbody tr td:first-of-type {
+.api-reference + .md-typeset__scrollwrap :is(th, td:first-child) {
     font-size: 0.7rem;
 }
 
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th:first-of-type {
-    min-width: 11rem;
+/* Shrinl padding for the availability dots, to leave more room for description. */
+.api-reference + .md-typeset__scrollwrap :is(th, td):not(:first-child) {
+    padding: .15rem;
 }
 
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th,
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) tbody tr td:first-of-type {
-    padding: 0.4em 0.63em;
-}
-
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) tbody tr td:not([align]):first-of-type {
-    text-align: left !important;
+.component-name {
     font-weight: bolder;
 }
 
-.availability-title ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th:not([align]),
-.availability-title ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) tbody tr td:not([align]),
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th:not([align]),
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) tbody tr td:not([align]) {
-    text-align: center !important;
+:is(#availability-title, .api-reference, #api-status-key) + .md-typeset__scrollwrap :is(th, td) {
     border: .05rem solid var(--md-typeset-table-color);
 }
 
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) tbody tr td {
-    vertical-align: middle;
-    padding: 0.4rem 0.5rem;
+#availability-title + .md-typeset__scrollwrap :is(th, td),
+.api-reference + .md-typeset__scrollwrap :is(th, td:not(:first-child)),
+#api-status-key + .md-typeset__scrollwrap td:first-child {
+    text-align: center !important;
 }
 
-.widgets_by_platform_key + .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th:first-of-type {
-    min-width: 2rem;
-}
-
-.widgets_by_platform_key + .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th + th,
-.widgets_by_platform_key + .md-typeset__scrollwrap .md-typeset__table table:not([class]) tbody tr td + td {
-    padding-left: 0.2rem;
-}
-
-/* API Reference tables */
-h2.api-reference + .md-typeset__scrollwrap .md-typeset__table table {
-    font-size: 0.73rem;
-}
-
-h2.api-reference + .md-typeset__scrollwrap .md-typeset__table th {
-    text-align: center;
-    padding: 0 0.25em;
-    background-color: light-dark(#e8e8e8, #313643);
-}
-
-h2.api-reference + .md-typeset__scrollwrap .md-typeset__table td {
-    padding: 0.2em 0.4em;
-    vertical-align: middle;
-}
-
-h2.api-reference + .md-typeset__scrollwrap .md-typeset__table td:first-of-type {
-    border-right: .05rem solid var(--md-typeset-table-color);
+#api-status-key + .md-typeset__scrollwrap th {
+    display: none;
 }

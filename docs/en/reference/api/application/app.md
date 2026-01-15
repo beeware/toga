@@ -90,7 +90,7 @@ Event handlers can be defined by subclassing [`toga.App`][] and overriding the e
 
 When you create an App instance, you can declare the type of documents that your app is able to manage by providing a value for `document_types`. When an app declares that it can manage document types, the app will automatically create file management menu items (such as New, Open and Save), and the app will process command line arguments, creating a [`toga.Document`][] instance for each argument matching a registered document type.
 
-For details on how to define and register document types, refer to [the documentation on document handling](resources/document.md).
+For details on how to define and register document types, refer to [the documentation on document handling](../data-representation/document.md).
 
 ## Notes
 

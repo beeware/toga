@@ -54,7 +54,7 @@ Deeper explorations of concepts and issues related to Toga usage.
 
 ## [Reference](reference/index.md)
 
-Technical documentation such as [Toga's API](reference/api/index.md), details on [platform support](reference/platforms/index.md), and other detailed reference information (including [overall architectural details](reference/internals/architecture.md)).
+Technical documentation such as [Toga's API](reference/api/index.md), details on [platform support](reference/platforms/index.md), and other detailed reference information (including [overall architectural details](topics/architecture.md)).
 
 ## [About Toga](about/index.md)
 

@@ -27,13 +27,9 @@ These instructions are different on almost every version of Linux and Unix, in a
 
 ///
 
+You can use [deadsnakes](https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa) (or a similar third-party source) to install a Python version other than the system default by replacing `python3-dev` with the `-dev` package matching the desired Python version. For example, to use Python 3.12, replace `python3-dev` with `python3.12-dev`.
+
 ### Fedora 41+
-
-/// warning | Requirement to Update System Packages
-
-Fedora's packaging of some Qt and KDE-related packages lists incorrect dependency versions; installing certain packages that updates KWin or related things may brick your system.  Therefore, it is highly recommended, as a general precaution, to upgrade all packages following the installation of these components.
-
-///
 
 /// tab | Wayland
 
@@ -58,5 +54,9 @@ Fedora's packaging of some Qt and KDE-related packages lists incorrect dependenc
 ```
 
 ///
+
+You can use a Python version other than the system default by replacing `python3-devel` with the `-devel` package matching the desired Python version. For example, to use Python 3.12, replace `python3-devel` with `python3.12-devel`.
+
+### Other distributions
 
 If you're not using one of these, you'll need to work out how to install the developer libraries for `python3`, [Qt's X11 dependencies](https://doc.qt.io/qt-6/linux-requirements.html), [Qt's Wayland dependencies](https://doc.qt.io/qt-6/wayland-requirements.html), and the executable ``canberra-gtk-play`` (and please let us know so we can improve this documentation!)

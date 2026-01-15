@@ -21,6 +21,7 @@ from toga.colors import (
 )
 from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
+from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM, Pack
 
 from .conftest import build_cleanup_test
@@ -877,3 +878,30 @@ async def test_write_text_and_path(canvas, probe):
 
     await probe.redraw("Text and path should be drawn independently")
     assert_reference(probe, "write_text_and_path", 0.04)
+
+
+async def test_draw_image_at_point(canvas, probe):
+    "Images can be drawn at a point."
+
+    image = TogaImage("resources/sample.png")
+    canvas.context.begin_path()
+    canvas.context.draw_image(image, 10, 10)
+
+    await probe.redraw("Image should be drawn")
+    assert_reference(probe, "draw_image", threshold=0.05)
+
+
+async def test_draw_image_in_rect(canvas, probe):
+    "Images can be drawn in a rectangle."
+
+    image = TogaImage("resources/sample.png")
+    canvas.context.begin_path()
+    canvas.context.translate(82, 46)
+    canvas.context.rotate(-pi / 6)
+    canvas.context.translate(-82, -46)
+    canvas.context.draw_image(image, 10, 10, 72, 144)
+    canvas.context.rect(10, 10, 72, 144)
+    canvas.context.stroke(REBECCAPURPLE)
+
+    await probe.redraw("Image should be drawn")
+    assert_reference(probe, "draw_image_in_rect", threshold=0.05)
