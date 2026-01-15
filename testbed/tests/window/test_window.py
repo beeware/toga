@@ -1330,4 +1330,5 @@ async def test_as_image(main_window, main_window_probe):
             screenshot.size,
             main_window_probe.content_size,
             screen=main_window.screen,
+            window=main_window,
         )
