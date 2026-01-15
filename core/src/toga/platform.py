@@ -33,6 +33,12 @@ def get_current_platform() -> str | None:
         return _TOGA_PLATFORMS.get(sys.platform)
 
 
+backend: str
+"""The name of the backend that is being used by Toga to implement
+platform-specific capabilities (e.g., `toga_cocoa`, `toga_gtk`).
+"""
+
+
 current_platform: str = get_current_platform()
 """A string identifier of the platform on which the application is currently running.
 One of:
