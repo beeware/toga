@@ -2,7 +2,9 @@ import os.path
 from pathlib import Path
 
 from PySide6.QtCore import QDir
-from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox, QTextEdit
+
+from toga.fonts import MONOSPACE, NORMAL, Font
 
 
 class MessageDialog:
@@ -29,6 +31,12 @@ class MessageDialog:
         self.native.setText(self.message)
         if self.detail is not None:
             self.native.setDetailedText(self.detail)
+            # Set detail text to monospaced, non-bold without line-wrap
+            detail_widget = self.native.findChild(QTextEdit)
+            if detail_widget is not None:
+                font = Font(MONOSPACE, detail_widget.font().pointSize(), weight=NORMAL)
+                detail_widget.setFont(font._impl.native)
+                detail_widget.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.native.setStandardButtons(self.buttons)
         self.native.finished.connect(self.qt_finished)
         if parent is not None:
