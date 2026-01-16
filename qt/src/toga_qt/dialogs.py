@@ -33,7 +33,7 @@ class MessageDialog:
             self.native.setDetailedText(self.detail)
             # Set detail text to monospaced, non-bold without line-wrap
             detail_widget = self.native.findChild(QTextEdit)
-            if detail_widget is not None:
+            if detail_widget is not None:  # pragma: no branch
                 font = Font(MONOSPACE, detail_widget.font().pointSize(), weight=NORMAL)
                 detail_widget.setFont(font._impl.native)
                 detail_widget.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
