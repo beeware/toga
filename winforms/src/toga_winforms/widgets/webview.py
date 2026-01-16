@@ -108,7 +108,7 @@ class WebView(Widget):
         self._large_content_dir = toga.App.app.paths.cache / "toga/webview"
         self._large_content_files = []
 
-    def __del__(self):
+    def __del__(self):  # pragma: nocover
         """Cleaning up the cached files for large content"""
         for file_name in self._large_content_files:
             file_path = self._large_content_dir / file_name
@@ -249,7 +249,7 @@ class WebView(Widget):
         if len(content) > 1572834:
             # according to the Microsoft documentation, the max content size is
             # 2 MB, but in fact, the limit seems to be at about 1.5 MB
-            os.mkdirs(self._large_content_dir, exist_ok=True)
+            os.makedirs(self._large_content_dir, exist_ok=True)
             file_name = self.get_large_content_file(root_url)
             self._large_content_files.append(file_name)
             file_path = self._large_content_dir / file_name

@@ -82,7 +82,7 @@ class WebViewApp(toga.App):
 
     def on_set_large_content(self, widget, **kwargs):
         # according to the Microsoft documentation, the max content size is
-        # 2 MB but in fact, the limit seems to be at 1.5 MB
+        # 2 MB but in fact, the limit seems to be at about 1.5 MB
         large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
         print(f"content length: {len(large_content)}")
         self.webview.set_content("https://example.com", large_content)
