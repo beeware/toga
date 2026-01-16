@@ -36,15 +36,13 @@ class Tree(Widget):
             pass
 
     def _create_columns(self):
-        if self.interface.headings:
-            headings = self.interface.headings
-            self.native_tree.set_headers_visible(True)
-        else:
-            headings = self.interface.accessors
-            self.native_tree.set_headers_visible(False)
+        self.native_tree.set_headers_visible(self.interface._show_headings)
+        toga_columns = self.interface._columns
 
-        for i, heading in enumerate(headings):
-            column = Gtk.TreeViewColumn(heading)
+        for i, toga_column in enumerate(toga_columns):
+            column = Gtk.TreeViewColumn(
+                toga_column.heading if toga_column.heading else str(id(toga_column))
+            )
             column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
             column.set_expand(True)
             column.set_resizable(True)
@@ -80,7 +78,7 @@ class Tree(Widget):
                 self.native_tree.remove_column(column)
             self._create_columns()
 
-            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._accessors)
+            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface.accessors)
             self.store = Gtk.TreeStore(*types)
 
             for i, row in enumerate(self.interface.data):
@@ -94,13 +92,14 @@ class Tree(Widget):
     def insert(self, index, item, parent=None):
         row = TogaRow(item)
         values = [row]
-        for accessor in self.interface.accessors:
+        for column in self.interface._columns:
             values.extend(
                 [
-                    row.icon(accessor),
-                    row.text(accessor, self.interface.missing_value),
+                    row.icon(column),
+                    row.text(column, self.interface.missing_value),
                 ]
             )
+            row.warn_widget(column)
 
         if parent is None:
             iter = None
@@ -114,9 +113,10 @@ class Tree(Widget):
 
     def change(self, item):
         row = self.store[item._impl]
-        for i, accessor in enumerate(self.interface.accessors):
-            row[i * 2 + 1] = row[0].icon(accessor)
-            row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
+        for i, column in enumerate(self.interface._columns):
+            row[i * 2 + 1] = row[0].icon(column)
+            row[i * 2 + 2] = row[0].text(column, self.interface.missing_value)
+            row[0].warn_widget(column)
 
     def remove(self, index, item, parent=None):
         del self.store[item._impl]

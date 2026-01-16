@@ -2,6 +2,8 @@
 
 ## Usage
 
+A Divider can be used to distinguish two sections of content in a layout.
+
 To separate two labels stacked vertically with a horizontal line:
 
 ```python
