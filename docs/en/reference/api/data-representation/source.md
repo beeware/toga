@@ -14,10 +14,4 @@ It can also be used by custom data source implementations.
 
 ## Reference
 
-::: toga.sources.ValueListener
-
-::: toga.sources.ListListener
-
-::: toga.sources.TreeListener
-
 ::: toga.sources.Source

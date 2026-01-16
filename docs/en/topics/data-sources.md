@@ -18,7 +18,7 @@ Although Toga provides these built-in data sources, in general, *you shouldn't u
 
 ### Listeners
 
-Data sources communicate using a `Listener` interface which specifies the methods a listener object should implement to handle particular change notifications. Each type of Source has a corresponding Listener interface: [`ValueListener`][toga.sources.base.ValueListener], [`ListListener`][toga.sources.base.ListListener] and [`TreeListener`][toga.sources.base.TreeListener].
+Data sources communicate using a `Listener` interface which specifies the methods a listener object should implement to handle particular change notifications. Each type of Source has a corresponding Listener interface: [`ValueListener`][toga.sources.ValueListener], [`ListListener`][toga.sources.ListListener] and [`TreeListener`][toga.sources.TreeListener].
 
 When any significant event occurs to the data source, all listeners will be notified. This includes:
 
