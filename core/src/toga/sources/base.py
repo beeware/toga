@@ -59,7 +59,7 @@ class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
         :param parent: The parent of the data object that was added, or `None`
-        if it is a root item.
+            if it is a root item.
         """
 
     def remove(self, *, index: int, item: object, parent: ItemT | None = None) -> None:
@@ -68,7 +68,7 @@ class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
         :param parent: The parent of the data object that was removed, or `None`
-        if it is a root item.
+            if it is a root item.
         """
 
 
