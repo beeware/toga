@@ -126,7 +126,15 @@ class Context:
         )
 
     def ellipse(
-        self, x, y, radiusx, radiusy, rotation, startangle, endangle, counterclockwise
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
     ):
         # Draw the ellipse unrotated and at origin
         transform = QTransform()

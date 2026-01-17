@@ -188,7 +188,15 @@ class Context:
         self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
 
     def ellipse(
-        self, x, y, radiusx, radiusy, rotation, startangle, endangle, counterclockwise
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
     ):
         matrix = Matrix()
         matrix.Translate(x, y)

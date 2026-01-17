@@ -109,7 +109,15 @@ class Context:
             self.native.arc(x, y, radius, startangle, endangle)
 
     def ellipse(
-        self, x, y, radiusx, radiusy, rotation, startangle, endangle, counterclockwise
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
     ):
         self.native.save()
         self.native.translate(x, y)
