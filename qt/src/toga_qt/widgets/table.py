@@ -140,12 +140,9 @@ class Table(Widget):
             # Hide the header
             self.native.horizontalHeader().hide()
 
-        self.native.horizontalHeader().setStretchLastSection(True)
-        self.native.horizontalHeader().setCascadingSectionResizes(True)
         self.native.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.Interactive
+            QHeaderView.ResizeMode.Stretch
         )
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
 
         self.native.selectionModel().selectionChanged.connect(self.qt_selection_changed)
         self.native.activated.connect(self.qt_activated)
@@ -188,16 +185,13 @@ class Table(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
 
     def insert_column(self, index, heading, accessor):
         self.native_model._columns.insert(index, self.interface._columns[index])
         self.native_model.beginInsertColumns(QModelIndex(), index, index)
         self.native_model.endInsertColumns()
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
 
     def remove_column(self, index):
         del self.native_model._columns[index]
         self.native_model.beginRemoveColumns(QModelIndex(), index, index)
         self.native_model.endRemoveColumns()
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
