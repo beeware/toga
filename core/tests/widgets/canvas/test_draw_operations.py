@@ -742,21 +742,30 @@ def test_reset_transform(widget):
 
 
 @pytest.mark.parametrize(
-    "kwargs, args_repr, draw_kwargs",
+    "kwargs, instructions, args_repr, draw_kwargs",
     [
         # Defaults
         (
             {"x": 10, "y": 20},
-            "x=10, y=20, width=32, height=32",
+            # When width and height aren't specified, the image's true dimensions are
+            # supplied to the backend.
+            {"x": 10, "y": 20, "width": 32, "height": 32},
+            "x=10, y=20, width=None, height=None",
             {
                 "x": 10,
                 "y": 20,
-                "width": 32,
-                "height": 32,
+                "width": None,
+                "height": None,
             },
         ),
         # Into rectangle
         (
+            {
+                "x": 10,
+                "y": 20,
+                "width": 100,
+                "height": 50,
+            },
             {
                 "x": 10,
                 "y": 20,
@@ -773,7 +782,7 @@ def test_reset_transform(widget):
         ),
     ],
 )
-def test_draw_image(app, widget, kwargs, args_repr, draw_kwargs):
+def test_draw_image(app, widget, kwargs, instructions, args_repr, draw_kwargs):
     """An image can be drawn."""
     image = Image(ABSOLUTE_FILE_PATH)
     draw_op = widget.context.draw_image(image=image, **kwargs)
@@ -782,13 +791,13 @@ def test_draw_image(app, widget, kwargs, args_repr, draw_kwargs):
     assert repr(draw_op) == f"DrawImage(image={image!r}, {args_repr})"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    draw_kwargs["image"] = image
+    instructions["image"] = image
     assert widget._impl.draw_instructions[1:-1] == [
-        ("draw_image", draw_kwargs),
+        ("draw_image", instructions),
     ]
 
     # All the attributes can be retrieved.
-    assert draw_op.image == draw_kwargs["image"]
+    assert draw_op.image == image
     assert draw_op.x == draw_kwargs["x"]
     assert draw_op.y == draw_kwargs["y"]
     assert draw_op.width == draw_kwargs["width"]

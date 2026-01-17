@@ -450,12 +450,16 @@ class DrawImage(DrawingObject):
         )
 
     def _draw(self, context: Any) -> None:
-        context.draw_image(self.image, self.x, self.y, self.width, self.height)
+        context.draw_image(
+            self.image,
+            self.x,
+            self.y,
+            self.width if self.width is not None else self.image.width,
+            self.height if self.height is not None else self.image.height,
+        )
 
     @property
     def width(self) -> float:
-        if self._width is None:
-            return self.image.width
         return self._width
 
     @width.setter
@@ -464,8 +468,6 @@ class DrawImage(DrawingObject):
 
     @property
     def height(self) -> float:
-        if self._height is None:
-            return self.image.height
         return self._height
 
     @height.setter
