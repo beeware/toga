@@ -72,9 +72,25 @@ def test_missing_listener_method():
 
 
 def test_deprecate_listener():
-    # Invoke the handler, and run until it is complete. Raises a deprecation warning.
+    import toga.sources.base
+
+    # Import Listener from toga.sources.base. Raises a deprecation warning.
     with pytest.warns(
         DeprecationWarning,
         match=r"The Listener protocol has been deprecated;",
     ):
-        from toga.sources.base import Listener  # noqa: F401
+        from toga.sources.base import Listener
+
+    assert Listener is toga.sources.base.ListListener
+
+    # "unimport" Listener
+    del toga.sources.base.Listener
+
+    # Import Listener from toga.sources.base. Raises a deprecation warning.
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"The Listener protocol has been deprecated;",
+    ):
+        from toga.sources import Listener
+
+    assert Listener is toga.sources.base.ListListener
