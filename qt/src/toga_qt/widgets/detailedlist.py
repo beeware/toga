@@ -90,7 +90,7 @@ class ListSourceModel(QAbstractListModel):
                 return len(self.source)
         except Exception:  # pragma: no cover
             logger.exception("Could not get data length.")
-        return 0
+        return 0  # pragma: no cover
 
     def data(
         self,
