@@ -187,8 +187,18 @@ def test_set_data(table, on_select_handler, data, all_attributes, extra_attribut
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
 
+    # The implementation is a listener on the data
+    old_data = table.data
+    assert table._impl in old_data.listeners
+
     # Change the data
     table.data = data
+
+    # The implementation is not a listener on the old data
+    assert table._impl not in old_data.listeners
+
+    # The implementation is a listener on the new data
+    assert table._impl in table.data.listeners
 
     # This triggered the select handler
     on_select_handler.assert_called_once_with(table)
@@ -427,7 +437,7 @@ def test_insert_column_no_headings(source):
         table,
         "insert column",
         index=1,
-        heading=None,
+        heading="",
         accessor="extra",
     )
     assert table.headings is None

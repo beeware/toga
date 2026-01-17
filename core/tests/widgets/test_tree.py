@@ -232,8 +232,18 @@ def test_set_data(tree, on_select_handler, data, all_attributes, extra_attribute
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
 
+    # The implementation is a listener on the data
+    old_data = tree.data
+    assert tree._impl in old_data.listeners
+
     # Change the data
     tree.data = data
+
+    # The implementation is not a listener on the old data
+    assert tree._impl not in old_data.listeners
+
+    # The implementation is a listener on the data
+    assert tree._impl in tree.data.listeners
 
     # This triggered the select handler
     on_select_handler.assert_called_once_with(tree)
@@ -456,7 +466,7 @@ def test_insert_column_no_headings(source):
         tree,
         "insert column",
         index=1,
-        heading=None,
+        heading="",
         accessor="extra",
     )
     assert tree.headings is None

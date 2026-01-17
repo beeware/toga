@@ -38,7 +38,7 @@ class Screen:
         :param format: Format to provide. Defaults to [`Image`][toga.images.Image]; also
             supports [`PIL.Image.Image`][] if Pillow is installed, as well as any image
             types defined by installed
-            [image format plugins](/reference/plugins/image_formats.md).
+            [image format plugins](/reference/api/resources/image/image-format-plugins.md).
         :returns: An image containing the screen content, in the format requested.
-        """
+        """  # noqa: E501
         return Image(self._impl.get_image_data()).as_format(format)

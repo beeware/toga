@@ -1,4 +1,5 @@
 import asyncio
+from functools import partial
 
 from ..container import TogaContainer
 from ..libs import GTK_VERSION, Gtk
@@ -30,6 +31,7 @@ class OptionContainer(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             sub_container = TogaContainer()
             sub_container.content = widget
+            sub_container.on_recompute = self.on_recompute
 
             self.sub_containers.insert(index, sub_container)
             self.native.insert_page(sub_container, Gtk.Label(label=text), index)
@@ -38,6 +40,11 @@ class OptionContainer(Widget):
             self.native.show_all()
         else:  # pragma: no-cover-if-gtk3
             pass
+
+    def on_recompute(self, container):
+        # If a child widget recomputes, rehint this parent
+        # widget the next time.
+        asyncio.get_running_loop().call_soon(partial(self.container.make_dirty, self))
 
     def remove_option(self, index):
         self.native.remove_page(index)

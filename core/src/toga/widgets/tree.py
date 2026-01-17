@@ -6,7 +6,7 @@ from typing import Any, Literal, Protocol
 import toga
 from toga.handlers import wrapped_handler
 from toga.sources import Node, Source, TreeSource, TreeSourceT
-from toga.sources.accessors import build_accessors, to_accessor
+from toga.sources.columns import AccessorColumn, ColumnT
 from toga.style import Pack
 
 from .base import Widget
@@ -67,6 +67,10 @@ class Tree(Widget):
             * A dictionary mapping headings to accessors. Any missing headings will fall
               back to the default generated accessor.
 
+            The accessors are also passed to any `TreeSources` created by the Tree to
+            tell the source how to map lists and tuples to accessor values. This
+            ordering does not change even when columns are added or removed.
+
         :param multiple_select: Does the tree allow multiple selection?
         :param on_select: Initial [`on_select`][toga.Tree.on_select] handler.
         :param on_activate: Initial [`on_activate`][toga.Tree.on_activate] handler.
@@ -75,26 +79,30 @@ class Tree(Widget):
             defined.
         :param kwargs: Initial style properties.
         """
-        self._headings: list[str] | None
         self._data: TreeSourceT | TreeSource
 
-        if headings is not None:
-            self._headings = [heading.split("\n")[0] for heading in headings]
-            self._accessors = build_accessors(self._headings, accessors)
-        elif accessors is not None:
-            self._headings = None
-            self._accessors = list(accessors)
-        else:
-            raise ValueError(
-                "Cannot create a tree without either headings or accessors"
-            )
-        self._multiple_select = multiple_select
         self._missing_value = missing_value or ""
+        self._show_headings = headings is not None
+        self._multiple_select = multiple_select
+
+        if headings is None and accessors is None:
+            raise ValueError(
+                "Cannot create a tree without either headings or accessors."
+            )
+
+        self._columns: list[ColumnT] = (
+            AccessorColumn.columns_from_headings_and_accessors(headings, accessors)
+        )
+
+        # The accessors used for ad-hoc TreeSources may have more than just column
+        # accessors.
+        self._data_accessor_order: list[str] = (
+            self.accessors if accessors is None else list(accessors)
+        )
 
         # Prime some properties that need to exist before the tree is created.
         self.on_select = None
         self.on_activate = None
-        self._data = None
 
         super().__init__(id, style, **kwargs)
 
@@ -137,12 +145,15 @@ class Tree(Widget):
 
     @data.setter
     def data(self, data: TreeSourceT | object | None) -> None:
+        if hasattr(self, "_data"):
+            self._data.remove_listener(self._impl)
+
         if data is None:
-            self._data = TreeSource(accessors=self._accessors, data=[])
+            self._data = TreeSource(accessors=self._data_accessor_order, data=[])
         elif isinstance(data, Source):
             self._data = data
         else:
-            self._data = TreeSource(accessors=self._accessors, data=data)
+            self._data = TreeSource(accessors=self._data_accessor_order, data=data)
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
@@ -205,7 +216,7 @@ class Tree(Widget):
             the tree. If not specified, an accessor will be derived from the
             heading.
         """
-        self.insert_column(len(self._accessors), heading, accessor=accessor)
+        self.insert_column(len(self._columns), heading, accessor=accessor)
 
     def insert_column(
         self,
@@ -223,27 +234,24 @@ class Tree(Widget):
             tree. If not specified, an accessor will be derived from the heading. An
             accessor *must* be specified if the tree doesn't have headings.
         """
-        if self._headings is None:
-            if accessor is None:
-                raise ValueError("Must specify an accessor on a tree without headings")
-            heading = None
-        elif not accessor:
-            accessor = to_accessor(heading)
+        if self._show_headings:
+            column = AccessorColumn(heading, accessor)
+        elif accessor is not None:
+            column = AccessorColumn(None, accessor)
+        else:
+            raise ValueError("Must specify an accessor on a tree without headings")
 
         if isinstance(index, str):
-            index = self._accessors.index(index)
+            index = self.accessors.index(index)
         else:
             # Re-interpret negative indices, and clip indices outside valid range.
             if index < 0:
-                index = max(len(self._accessors) + index, 0)
+                index = max(len(self._columns) + index, 0)
             else:
-                index = min(len(self._accessors), index)
+                index = min(len(self._columns), index)
 
-        if self._headings is not None:
-            self._headings.insert(index, heading)
-        self._accessors.insert(index, accessor)
-
-        self._impl.insert_column(index, heading, accessor)
+        self._columns.insert(index, column)
+        self._impl.insert_column(index, column.heading, column.accessor)
 
     def remove_column(self, column: int | str) -> None:
         """Remove a tree column.
@@ -253,28 +261,29 @@ class Tree(Widget):
         """
         if isinstance(column, str):
             # Column is a string; use as-is
-            index = self._accessors.index(column)
+            index = self.accessors.index(column)
         else:
             if column < 0:
-                index = len(self._accessors) + column
+                index = len(self._columns) + column
             else:
                 index = column
 
         # Remove column
-        if self._headings is not None:
-            del self._headings[index]
-        del self._accessors[index]
+        del self._columns[index]
         self._impl.remove_column(index)
 
     @property
     def headings(self) -> list[str] | None:
         """The column headings for the tree (read-only)"""
-        return self._headings
+        if not self._show_headings:
+            return None
+        else:
+            return [column.heading for column in self._columns]
 
     @property
     def accessors(self) -> list[str]:
         """The accessors used to populate the tree (read-only)"""
-        return self._accessors
+        return [column.accessor for column in self._columns]
 
     @property
     def missing_value(self) -> str:

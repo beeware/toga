@@ -6,7 +6,7 @@ from typing import Any, Literal, Protocol
 import toga
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource, ListSourceT, Row, Source
-from toga.sources.accessors import build_accessors, to_accessor
+from toga.sources.columns import AccessorColumn, ColumnT
 
 from .base import StyleT, Widget
 
@@ -61,11 +61,17 @@ class Table(Widget):
             populate each column. Must be either:
 
             * `None` to derive accessors from the headings, as described above; or
+
             * A list of the same size as `headings`, specifying the accessors for each
               heading. A value of [`None`][] will fall back to the default generated
               accessor; or
+
             * A dictionary mapping headings to accessors. Any missing headings will fall
               back to the default generated accessor.
+
+            The accessors are also passed to any `ListSources` created by the Table to
+            tell the source how to map lists and tuples to accessor values. This
+            ordering does not change even when columns are added or removed.
 
         :param multiple_select: Does the table allow multiple selection?
         :param on_select: Initial [`on_select`][toga.Table.on_select] handler.
@@ -75,28 +81,30 @@ class Table(Widget):
             defined.
         :param kwargs: Initial style properties.
         """
-        self._headings: list[str] | None
-        self._accessors: list[str]
         self._data: ListSourceT | ListSource
 
-        if headings is not None:
-            self._headings = [heading.split("\n")[0] for heading in headings]
-            self._accessors = build_accessors(self._headings, accessors)
-        elif accessors is not None:
-            self._headings = None
-            self._accessors = list(accessors)
-        else:
+        self._missing_value = missing_value or ""
+        self._show_headings = headings is not None
+        self._multiple_select = multiple_select
+
+        if headings is None and accessors is None:
             raise ValueError(
-                "Cannot create a table without either headings or accessors"
+                "Cannot create a table without either headings or accessors."
             )
 
-        self._multiple_select = multiple_select
-        self._missing_value = missing_value or ""
+        self._columns: list[ColumnT] = (
+            AccessorColumn.columns_from_headings_and_accessors(headings, accessors)
+        )
+
+        # The accessors used for ad-hoc TreeSources may have more than just column
+        # accessors.
+        self._data_accessor_order: list[str] = (
+            self.accessors if accessors is None else list(accessors)
+        )
 
         # Prime some properties that need to exist before the table is created.
         self.on_select = None
         self.on_activate = None
-        self._data = None
 
         super().__init__(id, style, **kwargs)
 
@@ -127,7 +135,7 @@ class Table(Widget):
         When setting this property:
 
         * A [`Source`][toga.sources.Source] will be used as-is. It must either be a
-        [`ListSource`][toga.sources.ListSource], or
+          [`ListSource`][toga.sources.ListSource], or
           a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
@@ -139,12 +147,15 @@ class Table(Widget):
 
     @data.setter
     def data(self, data: ListSourceT | Iterable | None) -> None:
+        if hasattr(self, "_data"):
+            self._data.remove_listener(self._impl)
+
         if data is None:
-            self._data = ListSource(accessors=self._accessors, data=[])
+            self._data = ListSource(accessors=self._data_accessor_order, data=[])
         elif isinstance(data, Source):
             self._data = data
         else:
-            self._data = ListSource(accessors=self._accessors, data=data)
+            self._data = ListSource(accessors=self._data_accessor_order, data=data)
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
@@ -212,7 +223,11 @@ class Table(Widget):
     def on_activate(self, handler: toga.widgets.table.OnActivateHandler) -> None:
         self._on_activate = wrapped_handler(self, handler)
 
-    def append_column(self, heading: str, accessor: str | None = None) -> None:
+    def append_column(
+        self,
+        heading: str | None = None,
+        accessor: str | None = None,
+    ) -> None:
         """Append a column to the end of the table.
 
         :param heading: The heading for the new column.
@@ -220,12 +235,12 @@ class Table(Widget):
             the table. If not specified, an accessor will be derived from the
             heading.
         """
-        self.insert_column(len(self._accessors), heading, accessor=accessor)
+        self.insert_column(len(self._columns), heading, accessor=accessor)
 
     def insert_column(
         self,
         index: int | str,
-        heading: str,
+        heading: str | None = None,
         accessor: str | None = None,
     ) -> None:
         """Insert an additional column into the table.
@@ -238,27 +253,24 @@ class Table(Widget):
             table. If not specified, an accessor will be derived from the heading. An
             accessor *must* be specified if the table doesn't have headings.
         """
-        if self._headings is None:
-            if accessor is None:
-                raise ValueError("Must specify an accessor on a table without headings")
-            heading = None
-        elif not accessor:
-            accessor = to_accessor(heading)
+        if self._show_headings:
+            column = AccessorColumn(heading, accessor)
+        elif accessor is not None:
+            column = AccessorColumn(None, accessor)
+        else:
+            raise ValueError("Must specify an accessor on a table without headings")
 
         if isinstance(index, str):
-            index = self._accessors.index(index)
+            index = self.accessors.index(index)
         else:
             # Re-interpret negative indices, and clip indices outside valid range.
             if index < 0:
-                index = max(len(self._accessors) + index, 0)
+                index = max(len(self._columns) + index, 0)
             else:
-                index = min(len(self._accessors), index)
+                index = min(len(self._columns), index)
 
-        if self._headings is not None:
-            self._headings.insert(index, heading)
-        self._accessors.insert(index, accessor)
-
-        self._impl.insert_column(index, heading, accessor)
+        self._columns.insert(index, column)
+        self._impl.insert_column(index, column.heading, column.accessor)
 
     def remove_column(self, column: int | str) -> None:
         """Remove a table column.
@@ -268,17 +280,15 @@ class Table(Widget):
         """
         if isinstance(column, str):
             # Column is a string; use as-is
-            index = self._accessors.index(column)
+            index = self.accessors.index(column)
         else:
             if column < 0:
-                index = len(self._accessors) + column
+                index = len(self._columns) + column
             else:
                 index = column
 
         # Remove column
-        if self._headings is not None:
-            del self._headings[index]
-        del self._accessors[index]
+        del self._columns[index]
         self._impl.remove_column(index)
 
     @property
@@ -286,12 +296,15 @@ class Table(Widget):
         """The column headings for the table, or None if there are no headings
         (read-only)
         """
-        return self._headings
+        if not self._show_headings:
+            return None
+        else:
+            return [column.heading for column in self._columns]
 
     @property
     def accessors(self) -> list[str]:
         """The accessors used to populate the table (read-only)"""
-        return self._accessors
+        return [column.accessor for column in self._columns]
 
     @property
     def missing_value(self) -> str:

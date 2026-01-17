@@ -799,7 +799,7 @@ class App:
     async def dialog(self, dialog: Dialog) -> Coroutine[None, None, Any]:
         """Display a dialog to the user in the app context.
 
-        :param dialog: The [dialog](/reference/api/resources/dialogs.md) to
+        :param dialog: The [dialog](/reference/api/application/dialogs.md) to
             display to the user.
         :returns: The result of the dialog.
         """
