@@ -83,6 +83,12 @@ def test_deprecate_listener():
 
     assert Listener is toga.sources.base.ListListener
 
+    with pytest.raises(
+        ImportError,
+        match=r"cannot import name 'NonExistent' from 'toga.sources.base'",
+    ):
+        from toga.sources.base import NonExistent  # noqa: F401
+
     # "unimport" Listener
     del toga.sources.base.Listener
 
@@ -94,3 +100,9 @@ def test_deprecate_listener():
         from toga.sources import Listener
 
     assert Listener is toga.sources.base.ListListener
+
+    with pytest.raises(
+        ImportError,
+        match=r"cannot import name 'NonExistent' from 'toga.sources'",
+    ):
+        from toga.sources import NonExistent  # noqa: F401
