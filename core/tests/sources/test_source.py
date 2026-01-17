@@ -77,4 +77,4 @@ def test_deprecate_listener():
         DeprecationWarning,
         match=r"The Listener protocol has been deprecated;",
     ):
-        pass
+        from toga.sources.base import Listener  # noqa: F401
