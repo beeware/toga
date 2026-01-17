@@ -1,6 +1,5 @@
 from .accessors import to_accessor  # noqa: F401
 from .base import (  # noqa: F401
-    Listener,
     ListListener,
     Source,
     TreeListener,
@@ -25,3 +24,14 @@ __all__ = [
     "ValueSource",
     "to_accessor",
 ]
+
+
+def __getattr__(name):
+    if name == "Listener":
+        # Alias for backwards compatibility.
+        global Listener
+        from .base import Listener
+
+        return Listener
+    else:
+        raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None

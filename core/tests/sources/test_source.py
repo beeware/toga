@@ -1,5 +1,7 @@
 from unittest.mock import Mock
 
+import pytest
+
 from toga.sources import Source
 
 
@@ -67,3 +69,12 @@ def test_missing_listener_method():
     source.notify("message1")
 
     full_listener.message1.assert_called_once_with()
+
+
+def test_deprecate_listener():
+    # Invoke the handler, and run until it is complete. Raises a deprecation warning.
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"The Listener protocol has been deprecated;",
+    ):
+        pass

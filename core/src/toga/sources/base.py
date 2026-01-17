@@ -43,10 +43,6 @@ class ListListener(ValueListener[ItemT], Protocol, Generic[ItemT]):
         """All items have been removed from the data source."""
 
 
-# Alias for backwards compatibility.
-Listener = ListListener
-
-
 @runtime_checkable
 class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
     """The protocol that must be implemented by objects that will act as a listener on a
@@ -119,3 +115,21 @@ class Source(Generic[ListenerT]):
 
             if method:
                 method(**kwargs)
+
+
+def __getattr__(name):
+    if name == "Listener":
+        import warnings
+
+        # Alias for backwards compatibility.
+        global Listener
+        Listener = ListListener
+        warnings.warn(
+            "The Listener protocol has been deprecated; "
+            "use ListListener or TreeListener instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return Listener
+    else:
+        raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None
