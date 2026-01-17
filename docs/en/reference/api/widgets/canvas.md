@@ -90,7 +90,7 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
 
 ::: toga.widgets.canvas.Context
 
-::: toga.widgets.canvas.DrawingObject
+::: toga.widgets.canvas.Action
 
 ::: toga.widgets.canvas.ClosedPathContext
 
