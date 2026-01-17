@@ -156,6 +156,7 @@ class Table(Widget):
 
     def change_source(self, source):
         self.native_model.set_source(source)
+        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
 
     # Listener Protocol implementation
 
@@ -185,13 +186,16 @@ class Table(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
 
     def insert_column(self, index, heading, accessor):
         self.native_model._columns.insert(index, self.interface._columns[index])
         self.native_model.beginInsertColumns(QModelIndex(), index, index)
         self.native_model.endInsertColumns()
+        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
 
     def remove_column(self, index):
         del self.native_model._columns[index]
         self.native_model.beginRemoveColumns(QModelIndex(), index, index)
         self.native_model.endRemoveColumns()
+        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
