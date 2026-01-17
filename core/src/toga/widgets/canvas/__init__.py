@@ -26,17 +26,17 @@ from .geometry import arc_to_bezier, sweepangle
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
-_deprecated_names = {"DrawingObject": "Action"}
+_deprecated_names = {"DrawingObject": Action}
 
 
 def __getattr__(name):
-    if new_name := _deprecated_names.get(name):
+    if cls := _deprecated_names.get(name):
         warnings.warn(
-            f"{name} has been renamed to {new_name}",
+            f"{name} has been renamed to {cls.__name__}",
             DeprecationWarning,
             stacklevel=2,
         )
-        return globals()[new_name]
+        return cls
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
