@@ -227,8 +227,6 @@ class DetailedList(Widget):
         self.native.customContextMenuRequested.connect(self.qt_context_menu)
         self._menu = QMenu(self.native)
 
-        self.native.show()
-
     def _format_missing(self, user_data):
         return tuple(
             x if x is not None else self.interface.missing_value for x in user_data
