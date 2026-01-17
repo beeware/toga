@@ -99,16 +99,6 @@ class Context:
         else:
             return PointF(default_x, default_y)
 
-    # def print_path(self, path=None):  # pragma: no cover
-    #     if path is None:
-    #         path = self.current_path
-    #     print(
-    #         "\n".join(
-    #             str((ptype, point.X, point.Y))
-    #             for ptype, point in zip(path.PathTypes, path.PathPoints, strict=False)
-    #         )
-    #     )
-
     # Context management
 
     @property
