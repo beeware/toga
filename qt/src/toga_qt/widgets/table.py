@@ -45,7 +45,7 @@ class TableSourceModel(QAbstractTableModel):
 
     def item_changed(self, item):
         if self._source is None:
-            return
+            return  # pragma: no cover
         self.dataChanged.emit(
             self.index(self._source.index(item), 0),
             self.index(self._source.index(item), len(self._columns)),
@@ -56,7 +56,7 @@ class TableSourceModel(QAbstractTableModel):
         parent: QModelIndex | QPersistentModelIndex = INVALID_INDEX,
     ) -> int:
         if self._source is None:
-            return 0
+            return 0  # pragma: no cover
         return len(self._source)
 
     def columnCount(
@@ -64,7 +64,7 @@ class TableSourceModel(QAbstractTableModel):
         parent: QModelIndex | QPersistentModelIndex = INVALID_INDEX,
     ) -> int:
         if self._columns is None:
-            return 0
+            return 0  # pragma: no cover
         return len(self._columns)
 
     def data(
@@ -74,16 +74,16 @@ class TableSourceModel(QAbstractTableModel):
         role: int = Qt.ItemDataRole.DisplayRole,
     ) -> Any:
         if not index.isValid():
-            return None
+            return None  # pragma: no cover
         source = self._source
         if source is None:
-            return None
+            return None  # pragma: no cover
         if (row_index := index.row()) >= len(source):
-            return None
+            return None  # pragma: no cover
 
         columns = self._columns
         if (column_index := index.column()) >= len(columns):
-            return None
+            return None  # pragma: no cover
 
         row = source[row_index]
         column = columns[column_index]
@@ -110,7 +110,7 @@ class TableSourceModel(QAbstractTableModel):
         if orientation == Qt.Orientation.Horizontal:
             columns = self._columns
             if section >= len(columns):
-                return None
+                return None  # pragma: no cover
             if role == Qt.ItemDataRole.DisplayRole:
                 return columns[section].heading
 
@@ -151,7 +151,7 @@ class Table(Widget):
         self.interface.on_select()
 
     def qt_activated(self, index):
-        if index.isValid():
+        if index.isValid():  # pragma: no branch
             self.interface.on_activate(row=self.interface.data[index.row()])
 
     def change_source(self, source):
