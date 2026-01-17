@@ -44,9 +44,9 @@ class State:
 class Context:
     _path: QPainterPath
 
-    def __init__(self, impl, painter):
+    def __init__(self, impl, native):
         self.impl = impl
-        self.painter = painter
+        self.native = native
         self.states = [State()]
 
         # Backwards compatibility for Toga <= 0.5.3
@@ -60,11 +60,11 @@ class Context:
     # Context management
     def save(self):
         self.states.append(State(self.state))
-        self.painter.save()
+        self.native.save()
 
     def restore(self):
         self.states.pop()
-        self.painter.restore()
+        self.native.restore()
 
     # Setting attributes
     def set_fill_style(self, color):
@@ -166,23 +166,23 @@ class Context:
             self._path.setFillRule(Qt.FillRule.OddEvenFill)
         else:
             self._path.setFillRule(Qt.FillRule.WindingFill)
-        self.painter.fillPath(self._path, self.state.fill_style)
+        self.native.fillPath(self._path, self.state.fill_style)
 
     def stroke(self):
-        self.painter.strokePath(self._path, self.state.stroke)
+        self.native.strokePath(self._path, self.state.stroke)
 
     # Transformations
     def rotate(self, radians):
-        self.painter.rotate(degrees(radians))
+        self.native.rotate(degrees(radians))
 
     def scale(self, sx, sy):
-        self.painter.scale(sx, sy)
+        self.native.scale(sx, sy)
 
     def translate(self, tx, ty):
-        self.painter.translate(tx, ty)
+        self.native.translate(tx, ty)
 
     def reset_transform(self):
-        self.painter.resetTransform()
+        self.native.resetTransform()
 
     # Text
     def write_text(self, text, x, y, font, baseline, line_height):
@@ -208,23 +208,23 @@ class Context:
             # Default to Baseline.ALPHABETIC
             self.translate(-left_offset, 0)
 
-        self.painter.setFont(font.native)
+        self.native.setFont(font.native)
         path = QPainterPath()
         for line_num, line in enumerate(lines):
             y = scaled_line_height * line_num
             path.addText(0, y, font.native, line)
 
         if self.in_fill:
-            self.painter.fillPath(path, self.state.fill_style)
+            self.native.fillPath(path, self.state.fill_style)
         if self.in_stroke:
-            self.painter.strokePath(path, self.state.stroke)
+            self.native.strokePath(path, self.state.stroke)
 
         # reset state to how things were before translating
         self.restore()
 
     # Bitmap images
     def draw_image(self, image, x, y, width, height):
-        self.painter.drawImage(QRectF(x, y, width, height), image._impl.native)
+        self.native.drawImage(QRectF(x, y, width, height), image._impl.native)
 
 
 class TogaCanvas(QWidget):

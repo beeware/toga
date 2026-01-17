@@ -47,7 +47,7 @@ class State:
 class Context:
     def __init__(self, impl):
         self.impl = impl
-        self.cg_context = NSGraphicsContext.currentContext.CGContext
+        self.native = NSGraphicsContext.currentContext.CGContext
         self.states = [State()]
         self.set_line_width(2.0)
 
@@ -61,23 +61,23 @@ class Context:
 
     # Context management
     def save(self):
-        core_graphics.CGContextSaveGState(self.cg_context)
+        core_graphics.CGContextSaveGState(self.native)
         self.states.append(copy(self.state))
 
     def restore(self):
-        core_graphics.CGContextRestoreGState(self.cg_context)
+        core_graphics.CGContextRestoreGState(self.native)
         self.states.pop()
 
     # Setting attributes
     def set_fill_style(self, color):
         core_graphics.CGContextSetRGBFillColor(
-            self.cg_context, color.r / 255, color.g / 255, color.b / 255, color.a
+            self.native, color.r / 255, color.g / 255, color.b / 255, color.a
         )
         self.state.fill_style = color
 
     def set_line_dash(self, line_dash):
         core_graphics.CGContextSetLineDash(
-            self.cg_context,
+            self.native,
             0,
             (CGFloat * len(line_dash))(*line_dash),
             len(line_dash),
@@ -85,31 +85,31 @@ class Context:
         self.state.line_dash = line_dash
 
     def set_line_width(self, line_width):
-        core_graphics.CGContextSetLineWidth(self.cg_context, line_width)
+        core_graphics.CGContextSetLineWidth(self.native, line_width)
         self.state.line_width = line_width
 
     def set_stroke_style(self, color):
         core_graphics.CGContextSetRGBStrokeColor(
-            self.cg_context, color.r / 255, color.g / 255, color.b / 255, color.a
+            self.native, color.r / 255, color.g / 255, color.b / 255, color.a
         )
         self.state.stroke_style = color
 
     # Basic paths
     def begin_path(self):
-        core_graphics.CGContextBeginPath(self.cg_context)
+        core_graphics.CGContextBeginPath(self.native)
 
     def close_path(self):
-        core_graphics.CGContextClosePath(self.cg_context)
+        core_graphics.CGContextClosePath(self.native)
 
     def move_to(self, x, y):
-        core_graphics.CGContextMoveToPoint(self.cg_context, x, y)
+        core_graphics.CGContextMoveToPoint(self.native, x, y)
 
     def line_to(self, x, y):
         self._ensure_subpath(x, y)
-        core_graphics.CGContextAddLineToPoint(self.cg_context, x, y)
+        core_graphics.CGContextAddLineToPoint(self.native, x, y)
 
     def _ensure_subpath(self, x, y):
-        if core_graphics.CGContextIsPathEmpty(self.cg_context):
+        if core_graphics.CGContextIsPathEmpty(self.native):
             self.move_to(x, y)
 
     # Basic shapes
@@ -117,12 +117,12 @@ class Context:
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
         self._ensure_subpath(cp1x, cp1y)
         core_graphics.CGContextAddCurveToPoint(
-            self.cg_context, cp1x, cp1y, cp2x, cp2y, x, y
+            self.native, cp1x, cp1y, cp2x, cp2y, x, y
         )
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         self._ensure_subpath(cpx, cpy)
-        core_graphics.CGContextAddQuadCurveToPoint(self.cg_context, cpx, cpy, x, y)
+        core_graphics.CGContextAddQuadCurveToPoint(self.native, cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
@@ -132,7 +132,7 @@ class Context:
         else:
             clockwise = 0
         core_graphics.CGContextAddArc(
-            self.cg_context, x, y, radius, startangle, endangle, clockwise
+            self.native, x, y, radius, startangle, endangle, clockwise
         )
 
     def ellipse(
@@ -151,7 +151,7 @@ class Context:
 
     def rect(self, x, y, width, height):
         rectangle = CGRectMake(x, y, width, height)
-        core_graphics.CGContextAddRect(self.cg_context, rectangle)
+        core_graphics.CGContextAddRect(self.native, rectangle)
 
     # Drawing Paths
 
@@ -160,35 +160,35 @@ class Context:
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)
-        if not core_graphics.CGContextIsPathEmpty(self.cg_context):
-            path = core_graphics.CGContextCopyPath(self.cg_context)
-            core_graphics.CGContextDrawPath(self.cg_context, mode)
-            core_graphics.CGContextAddPath(self.cg_context, path)
+        if not core_graphics.CGContextIsPathEmpty(self.native):
+            path = core_graphics.CGContextCopyPath(self.native)
+            core_graphics.CGContextDrawPath(self.native, mode)
+            core_graphics.CGContextAddPath(self.native, path)
 
     def stroke(self):
         mode = CGPathDrawingMode(kCGPathStroke)
-        if not core_graphics.CGContextIsPathEmpty(self.cg_context):
-            path = core_graphics.CGContextCopyPath(self.cg_context)
-            core_graphics.CGContextDrawPath(self.cg_context, mode)
-            core_graphics.CGContextAddPath(self.cg_context, path)
+        if not core_graphics.CGContextIsPathEmpty(self.native):
+            path = core_graphics.CGContextCopyPath(self.native)
+            core_graphics.CGContextDrawPath(self.native, mode)
+            core_graphics.CGContextAddPath(self.native, path)
 
     # Transformations
     def rotate(self, radians):
-        core_graphics.CGContextRotateCTM(self.cg_context, radians)
+        core_graphics.CGContextRotateCTM(self.native, radians)
 
     def scale(self, sx, sy):
-        core_graphics.CGContextScaleCTM(self.cg_context, sx, sy)
+        core_graphics.CGContextScaleCTM(self.native, sx, sy)
 
     def translate(self, tx, ty):
-        core_graphics.CGContextTranslateCTM(self.cg_context, tx, ty)
+        core_graphics.CGContextTranslateCTM(self.native, tx, ty)
 
     def reset_transform(self):
         # Restore the "clean" state of the graphics context.
-        core_graphics.CGContextRestoreGState(self.cg_context)
+        core_graphics.CGContextRestoreGState(self.native)
         # CoreGraphics has a stack-based state representation,
         # so ensure that there is a new, clean version of the "clean"
         # state on the stack.
-        core_graphics.CGContextSaveGState(self.cg_context)
+        core_graphics.CGContextSaveGState(self.native)
 
     # This whole method should probably be deprecated in favor of fill_text and
     # stroke_text.
@@ -252,12 +252,12 @@ class Context:
         # - flip vertical axis
         # - draw image at the new y-origin, with normal height
         # - restore state
-        core_graphics.CGContextSaveGState(self.cg_context)
-        core_graphics.CGContextTranslateCTM(self.cg_context, 0, y + height)
-        core_graphics.CGContextScaleCTM(self.cg_context, 1.0, -1.0)
+        core_graphics.CGContextSaveGState(self.native)
+        core_graphics.CGContextTranslateCTM(self.native, 0, y + height)
+        core_graphics.CGContextScaleCTM(self.native, 1.0, -1.0)
         rectangle = CGRectMake(x, 0, width, height)
-        core_graphics.CGContextDrawImage(self.cg_context, rectangle, cg_image)
-        core_graphics.CGContextRestoreGState(self.cg_context)
+        core_graphics.CGContextDrawImage(self.native, rectangle, cg_image)
+        core_graphics.CGContextRestoreGState(self.native)
 
 
 class TogaCanvas(NSView):

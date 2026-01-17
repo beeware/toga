@@ -35,8 +35,8 @@ class State(NamedTuple):
 
 
 class Context:
-    def __init__(self, android_canvas, impl):
-        self.android_canvas = android_canvas
+    def __init__(self, impl, native):
+        self.native = native
         self.impl = impl
         self.path = Path()
         self.reset_transform()
@@ -65,11 +65,11 @@ class Context:
     # Context management
 
     def save(self):
-        self.android_canvas.save()
+        self.native.save()
         self.states.append(deepcopy(self.state))
 
     def restore(self):
-        self.android_canvas.restore()
+        self.native.restore()
         self.states.pop()
 
     # Setting attributes
@@ -151,25 +151,25 @@ class Context:
                 FillRule.NONZERO: Path.FillType.WINDING,
             }.get(fill_rule, Path.FillType.WINDING)
         )
-        self.android_canvas.drawPath(self.path, self.state.fill)
+        self.native.drawPath(self.path, self.state.fill)
 
     def stroke(self):
         # The stroke respects the canvas transform, so we don't need to scale it here.
-        self.android_canvas.drawPath(self.path, self.state.stroke)
+        self.native.drawPath(self.path, self.state.stroke)
 
     # Transformations
 
     def rotate(self, radians):
-        self.android_canvas.rotate(degrees(radians))
+        self.native.rotate(degrees(radians))
 
     def scale(self, sx, sy):
-        self.android_canvas.scale(sx, sy)
+        self.native.scale(sx, sy)
 
     def translate(self, tx, ty):
-        self.android_canvas.translate(tx, ty)
+        self.native.translate(tx, ty)
 
     def reset_transform(self):
-        self.android_canvas.setMatrix(None)
+        self.native.setMatrix(None)
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
@@ -206,22 +206,22 @@ class Context:
             draw_args = (line, x, top + (scaled_line_height * line_num))
 
             if self.in_fill:
-                self.android_canvas.drawText(*draw_args, fill)
+                self.native.drawText(*draw_args, fill)
             if self.in_stroke:
-                self.android_canvas.drawText(*draw_args, stroke)
+                self.native.drawText(*draw_args, stroke)
 
     # Bitmaps
     def draw_image(self, image, x, y, width, height):
-        self.android_canvas.save()
-        self.android_canvas.translate(x, y)
-        self.android_canvas.scale(width / image.width, height / image.height)
-        self.android_canvas.drawBitmap(
+        self.native.save()
+        self.native.translate(x, y)
+        self.native.scale(width / image.width, height / image.height)
+        self.native.drawBitmap(
             image._impl.native,
             0,
             0,
             None,
         )
-        self.android_canvas.restore()
+        self.native.restore()
 
 
 class DrawHandler(dynamic_proxy(IDrawHandler)):
@@ -231,7 +231,7 @@ class DrawHandler(dynamic_proxy(IDrawHandler)):
         self.interface = impl.interface
 
     def handleDraw(self, canvas):
-        context = Context(canvas, self.impl)
+        context = Context(self.impl, canvas)
         self.interface.context._draw(context)
 
 

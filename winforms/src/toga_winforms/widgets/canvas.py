@@ -64,10 +64,10 @@ class State:
 
 
 class Context:
-    def __init__(self, impl, graphics):
-        self.graphics = graphics
-        self.graphics.PixelOffsetMode = PixelOffsetMode.HighQuality
-        self.graphics.SmoothingMode = SmoothingMode.AntiAlias
+    def __init__(self, impl, native):
+        self.native = native
+        self.native.PixelOffsetMode = PixelOffsetMode.HighQuality
+        self.native.SmoothingMode = SmoothingMode.AntiAlias
         self.begin_path()
         self.impl = impl
         self.states = [State.for_impl(self.impl)]
@@ -226,12 +226,12 @@ class Context:
             else:  # Default to NONZERO
                 path.FillMode = FillMode.Winding
             path.Transform(self.state.matrix)
-            self.graphics.FillPath(self.state.brush, path)
+            self.native.FillPath(self.state.brush, path)
 
     def stroke(self):
         for path in self.paths:
             path.Transform(self.state.matrix)
-            self.graphics.DrawPath(self.state.pen, path)
+            self.native.DrawPath(self.state.pen, path)
 
     # Transformations
 
@@ -289,10 +289,10 @@ class Context:
             )
 
     def draw_image(self, image, x, y, width, height):
-        self.graphics.ResetTransform()
-        self.graphics.Transform = self.state.matrix
-        self.graphics.DrawImage(image._impl.native, x, y, width, height)
-        self.graphics.ResetTransform()
+        self.native.ResetTransform()
+        self.native.Transform = self.state.matrix
+        self.native.DrawImage(image._impl.native, x, y, width, height)
+        self.native.ResetTransform()
 
 
 class Canvas(Box):

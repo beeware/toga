@@ -34,10 +34,10 @@ class State:
 
 
 class Context:
-    def __init__(self, impl, cairo_context):
+    def __init__(self, impl, native):
         self.impl = impl
-        self.cairo_context = cairo_context
-        self.original_transform_matrix = self.cairo_context.get_matrix()
+        self.native = native
+        self.original_transform_matrix = self.native.get_matrix()
         self.states = [State()]
 
         # Backwards compatibility for Toga <= 0.5.3
@@ -50,11 +50,11 @@ class Context:
         return self.states[-1]
 
     def save(self):
-        self.cairo_context.save()
+        self.native.save()
         self.states.append(copy(self.state))
 
     def restore(self):
-        self.cairo_context.restore()
+        self.native.restore()
         self.states.pop()
 
     # Setting attributes
@@ -62,38 +62,38 @@ class Context:
         self.state.fill_style = native_color(color)
 
     def set_line_dash(self, line_dash):
-        self.cairo_context.set_dash(line_dash)
+        self.native.set_dash(line_dash)
 
     def set_line_width(self, line_width):
-        self.cairo_context.set_line_width(line_width)
+        self.native.set_line_width(line_width)
 
     def set_stroke_style(self, color):
         self.state.stroke_style = native_color(color)
 
     # Basic paths
     def begin_path(self):
-        self.cairo_context.new_path()
+        self.native.new_path()
 
     def close_path(self):
-        self.cairo_context.close_path()
+        self.native.close_path()
 
     def move_to(self, x, y):
-        self.cairo_context.move_to(x, y)
+        self.native.move_to(x, y)
 
     def line_to(self, x, y):
-        self.cairo_context.line_to(x, y)
+        self.native.line_to(x, y)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self.cairo_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+        self.native.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
         # we can convert the single Quadratic control point into the
         # 2 control points required for the cubic Bézier.
-        x0, y0 = self.cairo_context.get_current_point()
-        self.cairo_context.curve_to(
+        x0, y0 = self.native.get_current_point()
+        self.native.curve_to(
             x0 + 2 / 3 * (cpx - x0),
             y0 + 2 / 3 * (cpy - y0),
             x + 2 / 3 * (cpx - x),
@@ -104,71 +104,71 @@ class Context:
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
         if counterclockwise:
-            self.cairo_context.arc_negative(x, y, radius, startangle, endangle)
+            self.native.arc_negative(x, y, radius, startangle, endangle)
         else:
-            self.cairo_context.arc(x, y, radius, startangle, endangle)
+            self.native.arc(x, y, radius, startangle, endangle)
 
     def ellipse(
         self, x, y, radiusx, radiusy, rotation, startangle, endangle, counterclockwise
     ):
-        self.cairo_context.save()
-        self.cairo_context.translate(x, y)
-        self.cairo_context.rotate(rotation)
+        self.native.save()
+        self.native.translate(x, y)
+        self.native.rotate(rotation)
         if radiusx >= radiusy:
-            self.cairo_context.scale(1, radiusy / radiusx)
+            self.native.scale(1, radiusy / radiusx)
             self.arc(0, 0, radiusx, startangle, endangle, counterclockwise)
         else:
-            self.cairo_context.scale(radiusx / radiusy, 1)
+            self.native.scale(radiusx / radiusy, 1)
             self.arc(0, 0, radiusy, startangle, endangle, counterclockwise)
-        self.cairo_context.identity_matrix()
-        self.cairo_context.restore()
+        self.native.identity_matrix()
+        self.native.restore()
 
     def rect(self, x, y, width, height):
-        self.cairo_context.rectangle(x, y, width, height)
+        self.native.rectangle(x, y, width, height)
 
     # Drawing Paths
 
     def fill(self, fill_rule):
-        self.cairo_context.set_source_rgba(*self.state.fill_style)
+        self.native.set_source_rgba(*self.state.fill_style)
         if fill_rule == FillRule.EVENODD:
-            self.cairo_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+            self.native.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
-            self.cairo_context.set_fill_rule(cairo.FILL_RULE_WINDING)
+            self.native.set_fill_rule(cairo.FILL_RULE_WINDING)
 
-        self.cairo_context.fill_preserve()
+        self.native.fill_preserve()
 
     def stroke(self):
-        self.cairo_context.set_source_rgba(*self.state.stroke_style)
-        self.cairo_context.stroke_preserve()
+        self.native.set_source_rgba(*self.state.stroke_style)
+        self.native.stroke_preserve()
 
     # Transformations
 
     def rotate(self, radians):
-        self.cairo_context.rotate(radians)
+        self.native.rotate(radians)
 
     def scale(self, sx, sy):
-        self.cairo_context.scale(sx, sy)
+        self.native.scale(sx, sy)
 
     def translate(self, tx, ty):
-        self.cairo_context.translate(tx, ty)
+        self.native.translate(tx, ty)
 
     def reset_transform(self):
-        self.cairo_context.set_matrix(self.original_transform_matrix)
+        self.native.set_matrix(self.original_transform_matrix)
 
     # Text
     def write_text(self, text, x, y, font, baseline, line_height):
         # Writing text should not affect current path, so save current path
-        current_path = self.cairo_context.copy_path()
+        current_path = self.native.copy_path()
         # New path for text
-        self.cairo_context.new_path()
+        self.native.new_path()
         self._text_path(text, x, y, font, baseline, line_height)
         if self.in_fill:
             self.fill(FillRule.NONZERO)
         if self.in_stroke:
             self.stroke()
         # Restore previous path
-        self.cairo_context.new_path()
-        self.cairo_context.append_path(current_path)
+        self.native.new_path()
+        self.native.append_path(current_path)
 
     # No need to check whether Pango or PangoCairo are None, because if they were, the
     # user would already have received an exception when trying to create a Font.
@@ -191,28 +191,28 @@ class Context:
         layout = Pango.Layout(pango_context)
         for line_num, line in enumerate(lines):
             layout.set_text(line)
-            self.cairo_context.move_to(x, top + (metrics.line_height * line_num))
-            PangoCairo.layout_line_path(self.cairo_context, layout.get_line(0))
+            self.native.move_to(x, top + (metrics.line_height * line_num))
+            PangoCairo.layout_line_path(self.native, layout.get_line(0))
 
     def draw_image(self, image, x, y, width, height):
         # save old path, create a new path to draw in
-        old_path = self.cairo_context.copy_path()
-        self.cairo_context.new_path()
-        self.cairo_context.save()
+        old_path = self.native.copy_path()
+        self.native.new_path()
+        self.native.save()
 
         # apply translation and scale so source rectangle maps to destination rectangle
-        self.cairo_context.translate(x, y)
-        self.cairo_context.scale(width / image.width, height / image.height)
+        self.native.translate(x, y)
+        self.native.scale(width / image.width, height / image.height)
 
         # draw a filled rectangle with the pixmap as the source for the fill
-        self.cairo_context.rectangle(0, 0, image.width, image.height)
-        Gdk.cairo_set_source_pixbuf(self.cairo_context, image._impl.native, 0, 0)
-        self.cairo_context.fill()
+        self.native.rectangle(0, 0, image.width, image.height)
+        Gdk.cairo_set_source_pixbuf(self.native, image._impl.native, 0, 0)
+        self.native.fill()
 
         # restore the old path
-        self.cairo_context.restore()
-        self.cairo_context.new_path()
-        self.cairo_context.append_path(old_path)
+        self.native.restore()
+        self.native.new_path()
+        self.native.append_path(old_path)
 
 
 class Canvas(Widget):
