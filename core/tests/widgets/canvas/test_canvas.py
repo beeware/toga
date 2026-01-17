@@ -208,4 +208,4 @@ def test_deprecated_names():
 
     # A completely bogus name still fails.
     with pytest.raises(ImportError):
-        pass
+        from toga.widgets.canvas import Nonexistent  # noqa: F401
