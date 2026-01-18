@@ -7,6 +7,7 @@ from java import dynamic_proxy
 
 from toga_android.widgets.base import ContainedWidget
 
+from .base import suppress_reference_error
 from .internal.pickers import PickerBase
 
 
@@ -24,16 +25,11 @@ class DatePickerListener(dynamic_proxy(DatePickerDialog.OnDateSetListener)):
         self.impl = weakref.proxy(impl)
 
     def onDateSet(self, view, year, month_0, day):
-        try:
+        with suppress_reference_error():
             # It should be impossible for the dialog to return an out-of-range value in
             # normal use, but it can happen in the testbed, so go via the interface to
             # clip the value.
             self.impl.interface.value = date(year, month_0 + 1, day)
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 class DateInput(PickerBase, ContainedWidget):

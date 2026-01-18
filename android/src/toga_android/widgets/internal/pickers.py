@@ -8,6 +8,7 @@ from java import dynamic_proxy
 from travertino.size import at_least
 
 from ..label import TextViewWidget
+from ..widget import suppress_reference_error
 
 
 class TogaPickerClickListener(dynamic_proxy(View.OnClickListener)):
@@ -16,13 +17,8 @@ class TogaPickerClickListener(dynamic_proxy(View.OnClickListener)):
         self.impl = weakref.proxy(impl)
 
     def onClick(self, _):
-        try:
+        with suppress_reference_error():
             self.impl._dialog.show()
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 class PickerBase(TextViewWidget, ABC):

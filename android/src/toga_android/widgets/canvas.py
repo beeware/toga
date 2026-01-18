@@ -19,7 +19,7 @@ from toga.constants import Baseline, FillRule
 from toga.widgets.canvas import arc_to_bezier, sweepangle
 
 from ..colors import native_color
-from .base import Widget
+from .base import Widget, suppress_reference_error
 
 
 class DrawHandler(dynamic_proxy(IDrawHandler)):
@@ -29,14 +29,9 @@ class DrawHandler(dynamic_proxy(IDrawHandler)):
         self.interface = weakref.proxy(impl.interface)
 
     def handleDraw(self, canvas):
-        try:
+        with suppress_reference_error():
             self.impl.reset_transform(canvas)
             self.interface.context._draw(self.impl, path=Path(), canvas=canvas)
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 class TouchListener(dynamic_proxy(View.OnTouchListener)):
@@ -46,7 +41,7 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
         self.interface = weakref.proxy(impl.interface)
 
     def onTouch(self, canvas, event):
-        try:
+        with suppress_reference_error():
             x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
             if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
                 self.interface.on_press(x, y)
@@ -56,10 +51,7 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
                 self.interface.on_release(x, y)
             else:  # pragma: no cover
                 return False
-            return True
-        # See above comment on ignoring ReferenceError.
-        except ReferenceError:  # pragma: no cover
-            return True
+        return True
 
 
 class Canvas(Widget):

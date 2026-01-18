@@ -17,7 +17,7 @@ except ImportError:  # pragma: no cover
     SwipeRefreshLayout = None
 
 
-from .base import Widget
+from .base import Widget, suppress_reference_error
 
 
 class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
@@ -27,14 +27,9 @@ class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
         self.row_number = row_number
 
     def onClick(self, _view):
-        try:
+        with suppress_reference_error():
             self.impl._set_selection(self.row_number)
             self.impl.interface.on_select()
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 @dataclass
@@ -52,7 +47,7 @@ class DetailedListOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
         self.row_number = row_number
 
     def onLongClick(self, _view):
-        try:
+        with suppress_reference_error():
             self.impl._set_selection(self.row_number)
             self.impl.interface.on_select()
 
@@ -80,10 +75,7 @@ class DetailedListOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
                     DetailedListActionListener(actions, row),
                 ).show()
 
-            return True
-        # See above comment on ignoring ReferenceError.
-        except ReferenceError:  # pragma: no cover
-            return True
+        return True
 
 
 class DetailedListActionListener(dynamic_proxy(DialogInterface.OnClickListener)):
@@ -93,11 +85,8 @@ class DetailedListActionListener(dynamic_proxy(DialogInterface.OnClickListener))
         self.row = weakref.proxy(row)
 
     def onClick(self, dialog, which):
-        try:
+        with suppress_reference_error():
             self.actions[which].handler(row=self.row)
-        # See above comment on ignoring ReferenceError.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 if SwipeRefreshLayout is not None:  # pragma: no cover
@@ -108,11 +97,8 @@ if SwipeRefreshLayout is not None:  # pragma: no cover
             self._interface = weakref.proxy(interface)
 
         def onRefresh(self):
-            try:
+            with suppress_reference_error():
                 self._interface.on_refresh()
-            # See above comment on ignoring ReferenceError.
-            except ReferenceError:  # pragma: no cover
-                pass
 
 
 class DetailedList(Widget):
