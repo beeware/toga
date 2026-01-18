@@ -99,7 +99,8 @@ class Window:
         # Exit if the app has already been told to exit;
         # closing an app should automatically close all windows
         # regardless of handler status.
-        if self.app._is_exiting:
+        # No-covered because exiting an app will terminate the testbed.
+        if self.app._is_exiting:  # pragma: no cover
             return
         if not self.prog_close:
             # Reject the event before the handler runs, if this is not a close
