@@ -71,6 +71,7 @@ class App:
         self.loop.call_soon_threadsafe(self.interface._startup)
 
         self.cursorhidden = False
+        self._is_exiting = False
 
     ######################################################################
     # Commands and menus
@@ -137,6 +138,7 @@ class App:
 
     # We can't call this under test conditions, because it would kill the test harness
     def exit(self):  # pragma: no cover
+        self._is_exiting = True
         self.native.quit()
 
     def main_loop(self):

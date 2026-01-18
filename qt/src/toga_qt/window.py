@@ -96,10 +96,20 @@ class Window:
         self.toolbar_native = None
 
     def qt_close_event(self, event):
+        # Exit if the app has already been told to exit;
+        # closing an app should automatically close all windows
+        # regardless of handler status.
+        if self.app._is_exiting:
+            return
         if not self.prog_close:
-            # Subtlety: If on_close approves the closing
-            # this handler doesn't get called again.  Therefore
-            # the event is always rejected.
+            # Reject the event before the handler runs, if this is not a close
+            # event that is already expected and approved.  on_close will then
+            # trigger closing programmatically if appropriate, which we keep
+            # track of to avoid ignoring it again.
+            # Note that this handler may not be called again if it is on_close
+            # that triggers the handling to close the window programmatically,
+            # but the behavior there is not a concern as we do not need to
+            # reject closes we've already accepted.
             event.ignore()
             if self.interface.closable:
                 self.interface.on_close()
@@ -182,6 +192,7 @@ class Window:
         self.native.move(position[0], position[1])
 
     def set_app(self, app):
+        self.app = app
         # All windows instantiated belongs to your only QApplication
         # and no need to explicitly set app, but the app icon needs to be
         # applied onto the window.
