@@ -11,13 +11,13 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import Font
 from toga.images import Image
 
-from .action import (
-    Action,
+from .drawingaction import (
     Arc,
     BeginPath,
     BezierCurveTo,
     ClosePath,
     DrawImage,
+    DrawingAction,
     Ellipse,
     Fill,
     LineTo,
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     from .canvas import Canvas
 
 
-class Context(Action):
+class Context(DrawingAction):
     """A drawing context for a canvas.
 
     You should not create a [`Context`][toga.widgets.canvas.Context] directly; instead,
@@ -51,7 +51,7 @@ class Context(Action):
         # kwargs used to support multiple inheritance
         super().__init__(**kwargs)
         self._canvas = canvas
-        self.drawing_objects: list[Action] = []
+        self.drawing_objects: list[DrawingAction] = []
 
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.push_context(**kwargs)
@@ -80,11 +80,11 @@ class Context(Action):
         """Returns the number of drawing objects that are in this context."""
         return len(self.drawing_objects)
 
-    def __getitem__(self, index: int) -> Action:
+    def __getitem__(self, index: int) -> DrawingAction:
         """Returns the drawing object at the given index."""
         return self.drawing_objects[index]
 
-    def append(self, obj: Action) -> None:
+    def append(self, obj: DrawingAction) -> None:
         """Append a drawing object to the context.
 
         :param obj: The drawing object to add to the context.
@@ -92,7 +92,7 @@ class Context(Action):
         self.drawing_objects.append(obj)
         self.redraw()
 
-    def insert(self, index: int, obj: Action) -> None:
+    def insert(self, index: int, obj: DrawingAction) -> None:
         """Insert a drawing object into the context at a specific index.
 
         :param index: The index at which the drawing object should be inserted.
@@ -101,7 +101,7 @@ class Context(Action):
         self.drawing_objects.insert(index, obj)
         self.redraw()
 
-    def remove(self, obj: Action) -> None:
+    def remove(self, obj: DrawingAction) -> None:
         """Remove a drawing object from the context.
 
         :param obj: The drawing object to remove.
@@ -122,7 +122,7 @@ class Context(Action):
         """Start a new path in the canvas context.
 
         :returns: The `BeginPath`
-            [`Action`][toga.widgets.canvas.Action] for the operation.
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         begin_path = BeginPath()
         self.append(begin_path)
@@ -137,7 +137,7 @@ class Context(Action):
         [`ClosedPath()`][toga.widgets.canvas.Context.ClosedPath] context manager.
 
         :returns: The `ClosePath`
-            [`Action`][toga.widgets.canvas.Action] for the operation.
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         close_path = ClosePath()
         self.append(close_path)
@@ -148,7 +148,7 @@ class Context(Action):
 
         :param x: The x coordinate of the new current point.
         :param y: The y coordinate of the new current point.
-        :returns: The `MoveTo` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `MoveTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         move_to = MoveTo(x, y)
@@ -160,7 +160,7 @@ class Context(Action):
 
         :param x: The x coordinate for the end point of the line segment.
         :param y: The y coordinate for the end point of the line segment.
-        :returns: The `LineTo` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `LineTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         line_to = LineTo(x, y)
@@ -190,7 +190,7 @@ class Context(Action):
         :param x: The x coordinate for the end point.
         :param y: The y coordinate for the end point.
         :returns: The `BezierCurveTo`
-            [`Action`][toga.widgets.canvas.Action] for the operation.
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
         self.append(bezier_curve_to)
@@ -217,7 +217,7 @@ class Context(Action):
         :param x: The x axis of the coordinate for the end point.
         :param y: The y axis of the coordinate for the end point.
         :returns: The `QuadraticCurveTo`
-            [`Action`][toga.widgets.canvas.Action] for the operation.
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
         self.append(quadratic_curve_to)
@@ -247,7 +247,7 @@ class Context(Action):
         :param counterclockwise: If true, the arc is swept counterclockwise. The default
             is clockwise.
         :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
-        :returns: The `Arc` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `Arc` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
@@ -284,7 +284,7 @@ class Context(Action):
         :param counterclockwise: If true, the arc is swept counterclockwise. The default
             is clockwise.
         :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
-        :returns: The `Ellipse` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `Ellipse` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         ellipse = Ellipse(
@@ -308,7 +308,7 @@ class Context(Action):
         :param y: The vertical coordinate of the top of the rectangle.
         :param width: The width of the rectangle.
         :param height: The height of the rectangle.
-        :returns: The `Rect` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `Rect` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         rect = Rect(x, y, width, height)
@@ -330,7 +330,7 @@ class Context(Action):
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
-        :returns: The `Fill` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         fill = Fill(color, fill_rule)
@@ -349,7 +349,7 @@ class Context(Action):
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
-        :returns: The `Stroke` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         stroke = Stroke(color, line_width, line_dash)
@@ -382,7 +382,7 @@ class Context(Action):
         :param baseline: Alignment of text relative to the Y coordinate.
         :param line_height: Height of the line box as a multiple of the font size
             when multiple lines are present.
-        :returns: The `WriteText` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `WriteText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         write_text = WriteText(text, x, y, font, baseline, line_height)
@@ -437,7 +437,7 @@ class Context(Action):
         """Add a rotation to the canvas context.
 
         :param radians: The angle to rotate clockwise in radians.
-        :returns: The `Rotate` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `Rotate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
         """
         rotate = Rotate(radians)
@@ -451,7 +451,7 @@ class Context(Action):
             image horizontally.
         :param sy: Scale factor for the Y dimension. A negative value flips the
             image vertically.
-        :returns: The `Scale` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `Scale` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
         """
         scale = Scale(sx, sy)
@@ -463,7 +463,7 @@ class Context(Action):
 
         :param tx: Translation for the X dimension.
         :param ty: Translation for the Y dimension.
-        :returns: The `Translate` [`Action`][toga.widgets.canvas.Action]
+        :returns: The `Translate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
         """
         translate = Translate(tx, ty)
@@ -474,7 +474,7 @@ class Context(Action):
         """Reset all transformations in the canvas context.
 
         :returns: A `ResetTransform`
-            [`Action`][toga.widgets.canvas.Action].
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
         reset_transform = ResetTransform()
         self.append(reset_transform)

@@ -5,9 +5,9 @@ from toga.colors import rgb
 from toga.constants import FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.widgets.canvas import (
-    Action,
     ClosedPathContext,
     Context,
+    DrawingAction,
     FillContext,
     StrokeContext,
 )
@@ -204,7 +204,7 @@ def test_deprecated_names():
     with pytest.warns(DeprecationWarning):
         from toga.widgets.canvas import DrawingObject
 
-    assert DrawingObject is Action
+    assert DrawingObject is DrawingAction
 
     # A completely bogus name still fails.
     with pytest.raises(ImportError):

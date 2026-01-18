@@ -49,14 +49,14 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 ######################################################################
 
 
-class Action(ABC):
+class DrawingAction(ABC):
     """A drawing operation in a [`Context`][toga.widgets.canvas.Context].
 
-    Every context drawing method creates a `Action`, adds it to the context,
+    Every context drawing method creates a `DrawingAction`, adds it to the context,
     and returns it. Each argument passed to the method becomes a property of the
-    `Action`, which can be modified as shown in the [Usage][] section.
+    `DrawingAction`, which can be modified as shown in the [Usage][] section.
 
-    `Actions` can also be created manually, then added to a context using the
+    `DrawingActions` can also be created manually, then added to a context using the
     [`append()`][toga.widgets.canvas.Context.append] or
     [`insert()`][toga.widgets.canvas.Context.append] methods. Their constructors take
     the same arguments as the corresponding [`Context`][toga.widgets.canvas.Context]
@@ -91,17 +91,17 @@ class Action(ABC):
     def _draw(self, impl: Any, **kwargs: Any) -> None: ...
 
 
-class BeginPath(Action):
+class BeginPath(DrawingAction):
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.begin_path(**kwargs)
 
 
-class ClosePath(Action):
+class ClosePath(DrawingAction):
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.close_path(**kwargs)
 
 
-class Fill(Action):
+class Fill(DrawingAction):
     def __init__(
         self,
         color: ColorT = BLACK,
@@ -140,7 +140,7 @@ class Fill(Action):
             self._color = Color.parse(value)
 
 
-class Stroke(Action):
+class Stroke(DrawingAction):
     def __init__(
         self,
         color: ColorT | None = BLACK,
@@ -189,7 +189,7 @@ class Stroke(Action):
         self._line_dash = value
 
 
-class MoveTo(Action):
+class MoveTo(DrawingAction):
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
@@ -201,7 +201,7 @@ class MoveTo(Action):
         impl.move_to(self.x, self.y, **kwargs)
 
 
-class LineTo(Action):
+class LineTo(DrawingAction):
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
@@ -213,7 +213,7 @@ class LineTo(Action):
         impl.line_to(self.x, self.y, **kwargs)
 
 
-class BezierCurveTo(Action):
+class BezierCurveTo(DrawingAction):
     def __init__(
         self, cp1x: float, cp1y: float, cp2x: float, cp2y: float, x: float, y: float
     ):
@@ -237,7 +237,7 @@ class BezierCurveTo(Action):
         )
 
 
-class QuadraticCurveTo(Action):
+class QuadraticCurveTo(DrawingAction):
     def __init__(self, cpx: float, cpy: float, x: float, y: float):
         self.cpx = cpx
         self.cpy = cpy
@@ -254,7 +254,7 @@ class QuadraticCurveTo(Action):
         impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, **kwargs)
 
 
-class Arc(Action):
+class Arc(DrawingAction):
     def __init__(
         self,
         x: float,
@@ -301,7 +301,7 @@ class Arc(Action):
         )
 
 
-class Ellipse(Action):
+class Ellipse(DrawingAction):
     def __init__(
         self,
         x: float,
@@ -355,7 +355,7 @@ class Ellipse(Action):
         )
 
 
-class Rect(Action):
+class Rect(DrawingAction):
     def __init__(self, x: float, y: float, width: float, height: float):
         self.x = x
         self.y = y
@@ -372,7 +372,7 @@ class Rect(Action):
         impl.rect(self.x, self.y, self.width, self.height, **kwargs)
 
 
-class WriteText(Action):
+class WriteText(DrawingAction):
     def __init__(
         self,
         text: str,
@@ -419,7 +419,7 @@ class WriteText(Action):
             self._font = value
 
 
-class DrawImage(Action):
+class DrawImage(DrawingAction):
     def __init__(
         self,
         image: Image,
@@ -471,7 +471,7 @@ class DrawImage(Action):
         self._height = value
 
 
-class Rotate(Action):
+class Rotate(DrawingAction):
     def __init__(self, radians: float):
         self.radians = radians
 
@@ -482,7 +482,7 @@ class Rotate(Action):
         impl.rotate(self.radians, **kwargs)
 
 
-class Scale(Action):
+class Scale(DrawingAction):
     def __init__(self, sx: float, sy: float):
         self.sx = sx
         self.sy = sy
@@ -494,7 +494,7 @@ class Scale(Action):
         impl.scale(self.sx, self.sy, **kwargs)
 
 
-class Translate(Action):
+class Translate(DrawingAction):
     def __init__(self, tx: float, ty: float):
         self.tx = tx
         self.ty = ty
@@ -506,6 +506,6 @@ class Translate(Action):
         impl.translate(self.tx, self.ty, **kwargs)
 
 
-class ResetTransform(Action):
+class ResetTransform(DrawingAction):
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.reset_transform(**kwargs)

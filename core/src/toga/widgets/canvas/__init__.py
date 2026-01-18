@@ -1,11 +1,13 @@
 import warnings
 
-from .action import (
-    Action,
+from .canvas import Canvas, OnResizeHandler, OnTouchHandler
+from .context import ClosedPathContext, Context, FillContext, StrokeContext
+from .drawingaction import (
     Arc,
     BeginPath,
     BezierCurveTo,
     ClosePath,
+    DrawingAction,
     Ellipse,
     Fill,
     LineTo,
@@ -19,14 +21,12 @@ from .action import (
     Translate,
     WriteText,
 )
-from .canvas import Canvas, OnResizeHandler, OnTouchHandler
-from .context import ClosedPathContext, Context, FillContext, StrokeContext
 from .geometry import arc_to_bezier, sweepangle
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
-_deprecated_names = {"DrawingObject": Action}
+_deprecated_names = {"DrawingObject": DrawingAction}
 
 
 def __getattr__(name):
@@ -45,7 +45,7 @@ __all__ = [
     "OnResizeHandler",
     "OnTouchHandler",
     # Actions,
-    "Action",
+    "DrawingAction",
     "Arc",
     "BeginPath",
     "BezierCurveTo",
