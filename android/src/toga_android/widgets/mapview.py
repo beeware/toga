@@ -20,7 +20,7 @@ except ImportError:  # pragma: no cover
 import toga
 from toga.types import LatLng
 
-from .base import Widget
+from .base import Widget, suppress_reference_error
 
 if OSMMapView is not None:  # pragma: no branch
 
@@ -30,16 +30,12 @@ if OSMMapView is not None:  # pragma: no branch
             self.map_impl = weakref.proxy(map_impl)
 
         def onMarkerClick(self, marker, map_view):
-            try:
+            result = False
+            with suppress_reference_error():
                 result = marker.onMarkerClickDefault(marker, map_view)
                 pin = self.map_impl.pins[marker]
                 self.map_impl.interface.on_select(pin=pin)
-                return result
-            # This is a defensive safety catch, just in case if the impl object
-            # has already been collected, but the native widget is still
-            # emitting an event to the listener.
-            except ReferenceError:  # pragma: no cover
-                return False
+            return result
 
 
 class MapView(Widget):

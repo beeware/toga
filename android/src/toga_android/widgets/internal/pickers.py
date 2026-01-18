@@ -7,8 +7,8 @@ from android.widget import EditText
 from java import dynamic_proxy
 from travertino.size import at_least
 
+from ..base import suppress_reference_error
 from ..label import TextViewWidget
-from ..widget import suppress_reference_error
 
 
 class TogaPickerClickListener(dynamic_proxy(View.OnClickListener)):

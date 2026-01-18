@@ -7,7 +7,8 @@ from android.widget import SeekBar
 from java import dynamic_proxy
 
 from toga.widgets.slider import IntSliderImpl
-from toga_android.widgets.base import ContainedWidget
+
+from .base import ContainedWidget, suppress_reference_error
 
 # Implementation notes
 # ====================
@@ -22,27 +23,16 @@ class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)
         self.impl = weakref.proxy(impl)
 
     def onProgressChanged(self, _view, _progress, _from_user):
-        try:
+        with suppress_reference_error():
             self.impl.on_change()
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
-        except ReferenceError:  # pragma: no cover
-            pass
 
     def onStartTrackingTouch(self, native_seekbar):
-        try:
+        with suppress_reference_error():
             self.impl.interface.on_press()
-        # See above comment on catching ReferenceError.
-        except ReferenceError:  # pragma: no cover
-            pass
 
     def onStopTrackingTouch(self, native_seekbar):
-        try:
+        with suppress_reference_error():
             self.impl.interface.on_release()
-        # See above comment on catching ReferenceError.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 class Slider(ContainedWidget, IntSliderImpl):

@@ -6,9 +6,8 @@ from android.view import Gravity, View
 from android.widget import EditText
 from java import dynamic_proxy
 
-from toga_android.keys import toga_key
-from toga_android.widgets.base import ContainedWidget
-
+from ..keys import toga_key
+from .base import ContainedWidget, suppress_reference_error
 from .label import TextViewWidget
 
 
@@ -21,13 +20,8 @@ class TogaTextWatcher(dynamic_proxy(TextWatcher)):
         pass
 
     def afterTextChanged(self, _editable):
-        try:
+        with suppress_reference_error():
             self.impl._on_change()
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
-        except ReferenceError:  # pragma: no cover
-            pass
 
     def onTextChanged(self, _charSequence, _start, _before, _count):
         pass
@@ -39,7 +33,7 @@ class TogaKeyListener(dynamic_proxy(View.OnKeyListener)):
         self.impl = weakref.proxy(impl)
 
     def onKey(self, _view, _key, _event):
-        try:
+        with suppress_reference_error():
             event_info = toga_key(_event)
             if event_info is None:
                 pass  # pragma: nocover
@@ -49,10 +43,7 @@ class TogaKeyListener(dynamic_proxy(View.OnKeyListener)):
                     int(_event.getAction()) == 1
                 ):
                     self.impl._on_confirm()
-            return False
-        # See above comment on ignoring ReferenceError.
-        except ReferenceError:  # pragma: no cover
-            return False
+        return False
 
 
 class TogaFocusListener(dynamic_proxy(View.OnFocusChangeListener)):
@@ -61,14 +52,11 @@ class TogaFocusListener(dynamic_proxy(View.OnFocusChangeListener)):
         self.impl = weakref.proxy(impl)
 
     def onFocusChange(self, view, has_focus):
-        try:
+        with suppress_reference_error():
             if has_focus:
                 self.impl._on_gain_focus()
             else:
                 self.impl._on_lose_focus()
-        # See above comment on ignoring ReferenceError.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 class TextInput(ContainedWidget, TextViewWidget):

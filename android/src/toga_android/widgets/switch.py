@@ -6,8 +6,7 @@ from android.widget import CompoundButton, Switch as A_Switch
 from java import dynamic_proxy
 from travertino.size import at_least
 
-from toga_android.widgets.base import ContainedWidget
-
+from .base import ContainedWidget, suppress_reference_error
 from .label import TextViewWidget
 
 
@@ -17,13 +16,8 @@ class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListen
         self._impl = weakref.proxy(impl)
 
     def onCheckedChanged(self, _button, _checked):
-        try:
+        with suppress_reference_error():
             self._impl.interface.on_change()
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 class Switch(TextViewWidget, ContainedWidget):

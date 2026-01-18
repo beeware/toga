@@ -5,8 +5,7 @@ from android import R
 from android.app import TimePickerDialog
 from java import dynamic_proxy
 
-from toga_android.widgets.base import ContainedWidget
-
+from .base import ContainedWidget, suppress_reference_error
 from .internal.pickers import PickerBase
 
 
@@ -16,16 +15,11 @@ class TimePickerListener(dynamic_proxy(TimePickerDialog.OnTimeSetListener)):
         self.impl = weakref.proxy(impl)
 
     def onTimeSet(self, view, hour, minute):
-        try:
+        with suppress_reference_error():
             # Unlike DatePicker, TimePicker does not natively support a min or max. So
             # the dialog allows the user to select any time, and we then clip the result
             # by assigning it via the interface.
             self.impl.interface.value = time(hour, minute)
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 class TimeInput(PickerBase, ContainedWidget):

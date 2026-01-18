@@ -22,7 +22,7 @@ from travertino.size import at_least
 import toga
 
 from ..container import Container
-from .base import Widget
+from .base import Widget, suppress_reference_error
 
 
 @dataclass
@@ -44,19 +44,13 @@ if NavigationBarView is not None:  # pragma: no branch
             self.impl = weakref.proxy(impl)
 
         def onNavigationItemSelected(self, item):
-            try:
+            with suppress_reference_error():
                 for index, option in enumerate(self.impl.options):
                     if option.menu_item == item:
                         self.impl.set_current_tab_index(index, programmatic=False)
                         return True
 
-                # You shouldn't be able to select an item that isn't isn't selectable.
-                return False  # pragma: no cover
-            # This is a defensive safety catch, just in case if the impl object
-            # has already been collected, but the native widget is still
-            # emitting an event to the listener.
-            except ReferenceError:  # pragma: no cover
-                return False
+            return False  # pragma: no cover
 
 
 class OptionContainer(Widget, Container):

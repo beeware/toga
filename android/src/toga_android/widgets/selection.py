@@ -6,7 +6,7 @@ from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
 from java import dynamic_proxy
 
-from toga_android.widgets.base import ContainedWidget
+from .base import ContainedWidget, suppress_reference_error
 
 
 class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListener)):
@@ -15,20 +15,12 @@ class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListene
         self.impl = weakref.proxy(impl)
 
     def onItemSelected(self, parent, view, position, id):
-        try:
+        with suppress_reference_error():
             self.impl.on_change(position)
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
-        except ReferenceError:  # pragma: no cover
-            pass
 
     def onNothingSelected(self, parent):
-        try:
+        with suppress_reference_error():
             self.impl.on_change(None)
-        # See above comment on ignoring ReferenceError.
-        except ReferenceError:  # pragma: no cover
-            pass
 
 
 class Selection(ContainedWidget):
