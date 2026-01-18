@@ -111,7 +111,7 @@ class WebView(Widget):
 
     def __del__(self):  # pragma: nocover
         """Cleaning up the cached files for large content"""
-        shutil.rmtree(self._large_content_dir)
+        shutil.rmtree(self._large_content_dir, ignore_errors=True)
 
     # Any non-trivial use of the WebView requires the CoreWebView2 object to be
     # initialized, which is asynchronous. Since most of this class's methods are not
