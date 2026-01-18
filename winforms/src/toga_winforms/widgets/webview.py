@@ -1,6 +1,6 @@
 import hashlib
 import json
-import os
+import shutil
 import webbrowser
 from http.cookiejar import Cookie, CookieJar
 
@@ -104,17 +104,14 @@ class WebView(Widget):
         # user on_navigation_starting handler
         self._allowed_url = None
 
-        # files for temporary storing content larger than 2 MB
-        self._large_content_dir = toga.App.app.paths.cache / "toga/webview"
-        self._large_content_files = []
+        # folder for temporary storing content larger than 2 MB
+        self._large_content_dir = (
+            toga.App.app.paths.cache / f"toga/webview-{self.interface.id}"
+        )
 
     def __del__(self):  # pragma: nocover
         """Cleaning up the cached files for large content"""
-        for file_name in self._large_content_files:
-            file_path = self._large_content_dir / file_name
-            if os.path.exists(file_path):
-                os.remove(file_path)
-        self._large_content_files = []
+        shutil.rmtree(self._large_content_dir)
 
     # Any non-trivial use of the WebView requires the CoreWebView2 object to be
     # initialized, which is asynchronous. Since most of this class's methods are not
@@ -249,9 +246,11 @@ class WebView(Widget):
         if len(content) > 1572834:
             # according to the Microsoft documentation, the max content size is
             # 2 MB, but in fact, the limit seems to be at about 1.5 MB
-            os.makedirs(self._large_content_dir, exist_ok=True)
-            file_name = self.get_large_content_file(root_url)
-            self._large_content_files.append(file_name)
+            self._large_content_dir.mkdir(parents=True, exist_ok=True)
+            h = hashlib.new("sha1")
+            h.update(bytes(self.interface.id, "utf-8"))
+            h.update(bytes(root_url, "utf-8"))
+            file_name = h.hexdigest() + ".html"
             file_path = self._large_content_dir / file_name
             with open(file_path, "w") as f:
                 f.write(content)
@@ -259,12 +258,6 @@ class WebView(Widget):
         else:
             # There appears to be no way to pass the root_url.
             self.native.NavigateToString(content)
-
-    def get_large_content_file(self, root_url):
-        h = hashlib.new("sha1")
-        h.update(bytes(self.interface.id, "utf-8"))
-        h.update(bytes(root_url, "utf-8"))
-        return h.hexdigest() + ".html"
 
     def get_user_agent(self):
         if self.corewebview2_available:

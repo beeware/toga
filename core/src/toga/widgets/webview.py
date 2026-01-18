@@ -87,6 +87,9 @@ class WebView(Widget):
         else:
             self.url = url
 
+    def __del__(self):  # pragma: nocover
+        del self._impl
+
     def _create(self) -> Any:
         return self.factory.WebView(interface=self)
 
