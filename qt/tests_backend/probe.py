@@ -47,10 +47,16 @@ class BaseProbe(DialogsMixin):
         else:
             QApplication.processEvents()
 
-    def assert_image_size(self, image_size, size, screen):
-        assert [s * screen._impl.native.devicePixelRatio() for s in size] == approx(
-            image_size, abs=1
-        )
+    def assert_image_size(self, image_size, size, screen, window=None):
+        if window is None:
+            # This is unreliable on Wayland; however, the only image
+            # size assertion without a window is testing the image of
+            # the whole screen, which is not supported on Wayland yet.
+            pixel_ratio = screen._impl.native.devicePixelRatio()
+        else:
+            pixel_ratio = window._impl.native.windowHandle().devicePixelRatio()
+
+        assert [s * pixel_ratio for s in size] == approx(image_size, abs=1)
 
     async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
         widget = QApplication.focusWidget()

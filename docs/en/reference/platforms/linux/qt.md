@@ -22,7 +22,7 @@ Most Qt testing occurs with Qt 6.10 as this is the version that is installable t
 
 The system packages that provide Qt must be installed manually:
 
--8<- "reference/platforms/linux/qt-prerequisites.md"
+-8<- "snippets/qt-prerequisites.md"
 
 ## Installation
 

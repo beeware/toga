@@ -2,7 +2,6 @@ from warnings import warn
 
 import System.Windows.Forms as WinForms
 
-import toga
 from toga.handlers import WeakrefCallable
 
 from .base import Widget
@@ -11,12 +10,12 @@ from .base import Widget
 class Table(Widget):
     # The following methods are overridden in DetailedList.
     @property
-    def _headings(self):
-        return self.interface.headings
+    def _show_headings(self):
+        return self.interface._show_headings
 
     @property
-    def _accessors(self):
-        return self.interface.accessors
+    def _columns(self):
+        return self.interface._columns
 
     @property
     def _multiple_select(self):
@@ -33,17 +32,15 @@ class Table(Widget):
         self._first_item = 0
         self._pending_resize = True
 
-        headings = self._headings
         self.native.HeaderStyle = (
-            getattr(WinForms.ColumnHeaderStyle, "None")
-            if headings is None
-            else WinForms.ColumnHeaderStyle.Nonclickable
+            WinForms.ColumnHeaderStyle.Nonclickable
+            if self._show_headings
+            else getattr(WinForms.ColumnHeaderStyle, "None")
         )
 
         dataColumn = []
-        for i, accessor in enumerate(self._accessors):
-            heading = None if headings is None else headings[i]
-            dataColumn.append(self._create_column(heading, accessor))
+        for column in self._columns:
+            dataColumn.append(self._create_column(column))
 
         self.native.FullRowSelect = True
         self.native.MultiSelect = self._multiple_select
@@ -113,7 +110,7 @@ class Table(Widget):
 
     def winforms_search_for_virtual_item(self, sender, e):
         if (
-            not e.IsTextSearch or not self._accessors or not self._data
+            not e.IsTextSearch or not self._columns or not self._data
         ):  # pragma: no cover
             # If this list is empty, or has no columns, or it's an unsupported search
             # type, there's no search to be done. These situation are difficult to
@@ -136,9 +133,7 @@ class Table(Widget):
             elif i >= len(self._data):
                 i = 0
             if (
-                self._item_text(self._data[i], self._accessors[0])[
-                    : len(e.Text)
-                ].lower()
+                self._columns[0].text(self._data[i])[: len(e.Text)].lower()
                 == e.Text.lower()
             ):
                 found_item = True
@@ -180,10 +175,11 @@ class Table(Widget):
             # that isn't guaranteed by the documentation.
             pass
 
-    def _create_column(self, heading, accessor):
+    def _create_column(self, toga_column):
         col = WinForms.ColumnHeader()
-        col.Text = heading
-        col.Name = accessor
+        if self._show_headings:
+            col.Text = toga_column.heading
+        col.Name = str(id(toga_column))
         return col
 
     def _resize_columns(self):
@@ -201,47 +197,25 @@ class Table(Widget):
     def _new_item(self, index):
         item = self._data[index]
 
-        def icon(attr):
-            val = getattr(item, attr, None)
-            icon = None
-            if isinstance(val, tuple):
-                if val[0] is not None:
-                    icon = val[0]
-            else:
-                try:
-                    icon = val.icon
-                except AttributeError:
-                    pass
-
-            return None if icon is None else icon._impl
-
+        missing_value = self.interface.missing_value
         lvi = WinForms.ListViewItem(
-            [self._item_text(item, attr) for attr in self._accessors],
+            [column.text(item, missing_value) for column in self._columns],
         )
-
-        # If the table has accessors, populate the icons for the table.
-        if self._accessors:
-            # TODO: ListView only has built-in support for one icon per row. One
-            # possible workaround is in https://stackoverflow.com/a/46128593.
-            icon = icon(self._accessors[0])
-            if icon is not None:
-                lvi.ImageIndex = self._image_index(icon)
-
-        return lvi
-
-    def _item_text(self, item, attr):
-        val = getattr(item, attr, None)
-        if isinstance(val, toga.Widget):
+        if any(column.widget(item) is not None for column in self._columns):
             warn(
                 "Winforms does not support the use of widgets in cells",
-                stacklevel=2,
+                stacklevel=1,
             )
-            val = None
-        if isinstance(val, tuple):
-            val = val[1]
-        if val is None:
-            val = self.interface.missing_value
-        return str(val)
+
+        # If the table has accessors, populate the icons for the table.
+        if self._columns:
+            # TODO: ListView only has built-in support for one icon per row. One
+            # possible workaround is in https://stackoverflow.com/a/46128593.
+            icon = self._columns[0].icon(item)
+            if icon is not None:
+                lvi.ImageIndex = self._image_index(icon._impl)
+
+        return lvi
 
     def _image_index(self, icon):
         images = self.native.SmallImageList.Images
@@ -286,6 +260,7 @@ class Table(Widget):
         self._resize_columns()
 
     def insert_column(self, index, heading, accessor):
-        self.native.Columns.Insert(index, self._create_column(heading, accessor))
+        column = self.interface._columns[index]
+        self.native.Columns.Insert(index, self._create_column(column))
         self.update_data()
         self._resize_columns()

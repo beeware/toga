@@ -9,9 +9,7 @@ from toga.constants import WindowState
 from toga.types import Position, Size
 
 from .container import Container
-from .libs import (
-    IS_WAYLAND,
-)
+from .libs import IS_WAYLAND
 from .screens import Screen as ScreenImpl
 
 
@@ -58,8 +56,12 @@ class Window:
         if self._changeeventid != changeeventid:
             return
         if self._pending_state_transition:
-            self._apply_state(self._pending_state_transition)
+            # The pending state transition should be cleared *first*,
+            # as _apply_state may initiate another state transition
+            # depending on if transitioning to Maximized.
+            state = self._pending_state_transition
             self._pending_state_transition = None
+            self._apply_state(state)
         self._state_lock = False
 
     def __init__(self, interface, title, position, size):
@@ -92,14 +94,26 @@ class Window:
         # Note:  KDE's default theme does not respond to minimize button
         # window hints, so minimizable cannot be implemented.
 
-        self.native.resizeEvent = self.resizeEvent
+        self.container.native.resizeEvent = self.qt_container_resize
+        self.native.resizeEvent = self.qt_resize
         self.toolbar_native = None
 
     def qt_close_event(self, event):
+        # Exit if the app has already been told to exit;
+        # closing an app should automatically close all windows
+        # regardless of handler status.
+        # No-covered because exiting an app will terminate the testbed.
+        if self.interface.app._impl._is_exiting:  # pragma: no cover
+            return
         if not self.prog_close:
-            # Subtlety: If on_close approves the closing
-            # this handler doesn't get called again.  Therefore
-            # the event is always rejected.
+            # Reject the event before the handler runs, if this is not a close
+            # event that is already expected and approved.  on_close will then
+            # trigger closing programmatically if appropriate, which we keep
+            # track of to avoid ignoring it again.
+            # Note that this handler may not be called again if it is on_close
+            # that triggers the handling to close the window programmatically,
+            # but the behavior there is not a concern as we do not need to
+            # reject closes we've already accepted.
             event.ignore()
             if self.interface.closable:
                 self.interface.on_close()
@@ -160,8 +174,10 @@ class Window:
     def set_size(self, size):
         self.native.resize(size[0], size[1])
 
-    def resizeEvent(self, event):
+    def qt_resize(self, event):
         self.interface.on_resize()
+
+    def qt_container_resize(self, event):
         if self.interface.content:
             self.interface.content.refresh()
 
@@ -234,15 +250,12 @@ class Window:
             self._state_lock = True
             self._changeeventid += 1
             QTimer.singleShot(100, partial(self._clear_pending, self._changeeventid))
+
         self._apply_state(state)
 
     def _apply_state(self, state):
         current_state = self.get_window_state()
         current_native_state = self.native.windowState()
-        if (
-            current_state == WindowState.MINIMIZED and not IS_WAYLAND
-        ):  # pragma: no-cover-if-linux-wayland
-            self.native.showNormal()
         if current_state == state:
             self._pending_state_transition = None
             return
@@ -252,6 +265,27 @@ class Window:
             self.native.menuBar().show()
             del self._before_presentation_mode_screen
             self._in_presentation_mode = False
+
+        # Go through normal first with maximized.
+        # On Wayland, this will retrigger the correct transition later
+        # using a pending state transition; on X11, directly trigger another
+        # "normal" transition before proceeding.
+        # Exclude FULLSCREEN <-> PRESENTATION switches, as whether size changes
+        # are emitted when FULLSCREEN -> NORMAL -> PRESENTATION (or reversed)
+        # is executed in rapid succession on X11 in different environments may
+        # be unreliable, so we just directly switch and emit manually.
+        if (
+            state != WindowState.NORMAL
+            and current_state != WindowState.NORMAL
+            and {state, current_state}
+            != {WindowState.FULLSCREEN, WindowState.PRESENTATION}
+        ):
+            if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+                self._pending_state_transition = state
+                state = WindowState.NORMAL
+                self._state_lock = True
+            else:  # pragma: no-cover-if-linux-wayland
+                self._apply_state(WindowState.NORMAL)
 
         if state == WindowState.MAXIMIZED:
             self.native.showMaximized()
@@ -265,6 +299,7 @@ class Window:
 
         elif state == WindowState.FULLSCREEN:
             self.native.showFullScreen()
+
             if current_state == WindowState.PRESENTATION:
                 # Fullscreen->Presentation doesn't register as a state change or
                 # size change.
@@ -287,6 +322,7 @@ class Window:
             # presentation mode
             self._in_presentation_mode = True
             self.native.showFullScreen()
+
             if current_state == WindowState.FULLSCREEN:
                 # Presentation->Fullscreen doesn't register as a state change or
                 # size change.
