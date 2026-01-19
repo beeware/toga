@@ -239,6 +239,7 @@ async def test_image_data(canvas, probe):
         image.size,
         (200, 200),
         screen=canvas.window.screen,
+        window=canvas.window,
     )
 
 

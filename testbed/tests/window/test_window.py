@@ -971,6 +971,10 @@ else:
             # Complex state changes on gtk:
             (WindowState.FULLSCREEN, WindowState.PRESENTATION),
             (WindowState.PRESENTATION, WindowState.NORMAL),
+            # Complex state changes on qt:
+            (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
+            (WindowState.PRESENTATION, WindowState.MAXIMIZED),
+            (WindowState.MINIMIZED, WindowState.MAXIMIZED),
         ],
     )
     @pytest.mark.parametrize(
@@ -988,7 +992,7 @@ else:
         """The backends can handle rapid assignment of new window states."""
         # Check that the state to be asserted is supported by the backend.
         if (
-            states[-1] == WindowState.MINIMIZED
+            WindowState.MINIMIZED in states
             and not second_window_probe.supports_minimize
         ):
             pytest.xfail(
@@ -1326,4 +1330,5 @@ async def test_as_image(main_window, main_window_probe):
             screenshot.size,
             main_window_probe.content_size,
             screen=main_window.screen,
+            window=main_window,
         )

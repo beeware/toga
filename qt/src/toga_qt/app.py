@@ -58,6 +58,9 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
+        self.cursorhidden = False
+        self._is_exiting = False
+
         self.native = create_qapplication()
         self.loop = QEventLoop(self.native)
         asyncio.set_event_loop(self.loop)
@@ -69,8 +72,6 @@ class App:
         # however, tasks scheduled on the event loop will only start
         # as soon as the application is running.
         self.loop.call_soon_threadsafe(self.interface._startup)
-
-        self.cursorhidden = False
 
     ######################################################################
     # Commands and menus
@@ -137,6 +138,7 @@ class App:
 
     # We can't call this under test conditions, because it would kill the test harness
     def exit(self):  # pragma: no cover
+        self._is_exiting = True
         self.native.quit()
 
     def main_loop(self):
