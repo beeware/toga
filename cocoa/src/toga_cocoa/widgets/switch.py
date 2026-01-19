@@ -64,7 +64,7 @@ class Switch(Widget):
         self.interface.intrinsic.height = content_size.height
 
     def set_background_color(self, color):
-        if color is TRANSPARENT:
+        if color == TRANSPARENT:
             # macOS bug: even when drawsBackground=False,
             # background color still seems drawn in certain
             # cases.
