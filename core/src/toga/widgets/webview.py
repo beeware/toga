@@ -87,7 +87,7 @@ class WebView(Widget):
         else:
             self.url = url
 
-    def __del__(self):  # pragma: nocover
+    def __del__(self):  # pragma: no branch
         if hasattr(self, "_impl"):
             del self._impl
 
