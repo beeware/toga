@@ -72,7 +72,7 @@ class TableSourceModel(QAbstractTableModel):
     ) -> int:
         # this could call out to end-user data sources, so could fail.
         try:
-            if self._columns is None:
+            if self._columns is not None:
                 return len(self._columns)
         except Exception:  # pragma: no cover
             logger.exception("Could not get number of columns.")
