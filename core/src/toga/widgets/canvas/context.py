@@ -38,7 +38,502 @@ if TYPE_CHECKING:
     from .canvas import Canvas
 
 
-class Context(DrawingAction):
+class DrawingActionDispatch:
+    @property
+    def _action_target(self):  # pragma: no cover
+        """The Context that should receive the drawing actions."""
+        raise NotImplementedError
+
+    ###########################################################################
+    # Path manipulation
+    ###########################################################################
+
+    def begin_path(self) -> BeginPath:
+        """Start a new path in the canvas context.
+
+        :returns: The `BeginPath`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        begin_path = BeginPath()
+        self._action_target.append(begin_path)
+        return begin_path
+
+    def close_path(self) -> ClosePath:
+        """Close the current path in the canvas context.
+
+        This closes the current path as a simple drawing operation. It should be paired
+        with a [`begin_path()`][toga.widgets.canvas.Context.begin_path] operation; or,
+        to complete a complete closed path, use the
+        [`ClosedPath()`][toga.widgets.canvas.Context.ClosedPath] context manager.
+
+        :returns: The `ClosePath`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        close_path = ClosePath()
+        self._action_target.append(close_path)
+        return close_path
+
+    def move_to(self, x: float, y: float) -> MoveTo:
+        """Moves the current point of the canvas context without drawing.
+
+        :param x: The x coordinate of the new current point.
+        :param y: The y coordinate of the new current point.
+        :returns: The `MoveTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        move_to = MoveTo(x, y)
+        self._action_target.append(move_to)
+        return move_to
+
+    def line_to(self, x: float, y: float) -> LineTo:
+        """Draw a line segment ending at a point in the canvas context.
+
+        :param x: The x coordinate for the end point of the line segment.
+        :param y: The y coordinate for the end point of the line segment.
+        :returns: The `LineTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        line_to = LineTo(x, y)
+        self._action_target.append(line_to)
+        return line_to
+
+    def bezier_curve_to(
+        self,
+        cp1x: float,
+        cp1y: float,
+        cp2x: float,
+        cp2y: float,
+        x: float,
+        y: float,
+    ) -> BezierCurveTo:
+        """Draw a Bézier curve in the canvas context.
+
+        A Bézier curve requires three points. The first two are control points; the
+        third is the end point for the curve. The starting point is the last point in
+        the current path, which can be changed using `move_to()` before creating the
+        Bézier curve.
+
+        :param cp1y: The y coordinate for the first control point of the Bézier curve.
+        :param cp1x: The x coordinate for the first control point of the Bézier curve.
+        :param cp2x: The x coordinate for the second control point of the Bézier curve.
+        :param cp2y: The y coordinate for the second control point of the Bézier curve.
+        :param x: The x coordinate for the end point.
+        :param y: The y coordinate for the end point.
+        :returns: The `BezierCurveTo`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self._action_target.append(bezier_curve_to)
+        return bezier_curve_to
+
+    def quadratic_curve_to(
+        self,
+        cpx: float,
+        cpy: float,
+        x: float,
+        y: float,
+    ) -> QuadraticCurveTo:
+        """Draw a quadratic curve in the canvas context.
+
+        A quadratic curve requires two points. The first point is a control point; the
+        second is the end point. The starting point of the curve is the last point in
+        the current path, which can be changed using `moveTo()` before creating the
+        quadratic curve.
+
+        :param cpx: The x axis of the coordinate for the control point of the quadratic
+            curve.
+        :param cpy: The y axis of the coordinate for the control point of the quadratic
+            curve.
+        :param x: The x axis of the coordinate for the end point.
+        :param y: The y axis of the coordinate for the end point.
+        :returns: The `QuadraticCurveTo`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
+        self._action_target.append(quadratic_curve_to)
+        return quadratic_curve_to
+
+    def arc(
+        self,
+        x: float,
+        y: float,
+        radius: float,
+        startangle: float = 0.0,
+        endangle: float = 2 * pi,
+        counterclockwise: bool | None = None,
+        anticlockwise: bool | None = None,  # DEPRECATED
+    ) -> Arc:
+        """Draw a circular arc in the canvas context.
+
+        A full circle will be drawn by default; an arc can be drawn by specifying a
+        start and end angle.
+
+        :param x: The X coordinate of the circle's center.
+        :param y: The Y coordinate of the circle's center.
+        :param startangle: The start angle in radians, measured clockwise from the
+            positive X axis.
+        :param endangle: The end angle in radians, measured clockwise from the positive
+            X axis.
+        :param counterclockwise: If true, the arc is swept counterclockwise. The default
+            is clockwise.
+        :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
+        :returns: The `Arc` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
+        self._action_target.append(arc)
+        return arc
+
+    def ellipse(
+        self,
+        x: float,
+        y: float,
+        radiusx: float,
+        radiusy: float,
+        rotation: float = 0.0,
+        startangle: float = 0.0,
+        endangle: float = 2 * pi,
+        counterclockwise: bool | None = None,
+        anticlockwise: bool | None = None,  # DEPRECATED
+    ) -> Ellipse:
+        """Draw an elliptical arc in the canvas context.
+
+        A full ellipse will be drawn by default; an arc can be drawn by specifying a
+        start and end angle.
+
+        :param x: The X coordinate of the ellipse's center.
+        :param y: The Y coordinate of the ellipse's center.
+        :param radiusx: The ellipse's horizontal axis radius.
+        :param radiusy: The ellipse's vertical axis radius.
+        :param rotation: The ellipse's rotation in radians, measured clockwise around
+            its center.
+        :param startangle: The start angle in radians, measured clockwise from the
+            positive X axis.
+        :param endangle: The end angle in radians, measured clockwise from the positive
+            X axis.
+        :param counterclockwise: If true, the arc is swept counterclockwise. The default
+            is clockwise.
+        :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
+        :returns: The `Ellipse` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        ellipse = Ellipse(
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            counterclockwise,
+            anticlockwise,
+        )
+        self._action_target.append(ellipse)
+        return ellipse
+
+    def rect(self, x: float, y: float, width: float, height: float) -> Rect:
+        """Draw a rectangle in the canvas context.
+
+        :param x: The horizontal coordinate of the left of the rectangle.
+        :param y: The vertical coordinate of the top of the rectangle.
+        :param width: The width of the rectangle.
+        :param height: The height of the rectangle.
+        :returns: The `Rect` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        rect = Rect(x, y, width, height)
+        self._action_target.append(rect)
+        return rect
+
+    def fill(
+        self,
+        color: ColorT | None = None,
+        fill_rule: FillRule = FillRule.NONZERO,
+    ) -> Fill:
+        """Fill the current path.
+
+        The fill can use either the
+        [Non-Zero](https://en.wikipedia.org/wiki/Nonzero-rule) or
+        [Even-Odd](https://en.wikipedia.org/wiki/Even-odd_rule) winding
+        rule for filling paths.
+
+        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
+            even-odd winding rule.
+        :param color: The fill color.
+        :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        fill = Fill(color, fill_rule)
+        self._action_target.append(fill)
+        return fill
+
+    def stroke(
+        self,
+        color: ColorT | None = None,
+        line_width: float | None = None,
+        line_dash: list[float] | None = None,
+    ) -> Stroke:
+        """Draw the current path as a stroke.
+
+        :param color: The color for the stroke.
+        :param line_width: The width of the stroke.
+        :param line_dash: The dash pattern to follow when drawing the line, expressed as
+            alternating lengths of dashes and spaces. The default is a solid line.
+        :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        stroke = Stroke(color, line_width, line_dash)
+        self._action_target.append(stroke)
+        return stroke
+
+    ###########################################################################
+    # Text drawing
+    ###########################################################################
+
+    def write_text(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+        line_height: float | None = None,
+    ) -> WriteText:
+        """Write text at a given position in the canvas context.
+
+        Drawing text is effectively a series of path operations, so the text will have
+        the color and fill properties of the canvas context.
+
+        :param text: The text to draw. Newlines will cause line breaks, but long lines
+            will not be wrapped.
+        :param x: The X coordinate of the text's left edge.
+        :param y: The Y coordinate: its meaning depends on `baseline`.
+        :param font: The font in which to draw the text. The default is the system font.
+        :param baseline: Alignment of text relative to the Y coordinate.
+        :param line_height: Height of the line box as a multiple of the font size
+            when multiple lines are present.
+        :returns: The `WriteText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        write_text = WriteText(text, x, y, font, baseline, line_height)
+        self._action_target.append(write_text)
+        return write_text
+
+    ###########################################################################
+    # Bitmap drawing
+    ###########################################################################
+
+    def draw_image(
+        self,
+        image: Image,
+        x: float = 0.0,
+        y: float = 0.0,
+        width: float | None = None,
+        height: float | None = None,
+    ):
+        """Draw a Toga Image in the canvas context.
+
+        The x, y coordinates specify the location of the bottom-left corner
+        of the image. If supplied, the width and height specify the size
+        of the image when it is rendered in the context, the image will be
+        scaled to fit.
+
+        Drawing of images is performed with the current transformation matrix
+        applied, so the destination rectangle of the image will be rotated,
+        scaled and translated by any transformations which are currently applied.
+
+        :param image: a Toga Image
+        :param x: The x-coordinate of the bottom-left corner of the image when
+            it is drawn.
+        :param y: The y-coordinate of the bottom-left corner of the image when
+            it is drawn.
+        :param width: The width of the destination rectangle where the image
+            will be drawn. The image will be scaled to fit the width. If the
+            width is omitted, the natural width of the image will be used and
+            no scaling will be done.
+        :param height: The height of the destination rectangle where the image
+            will be drawn. The image will be scaled to fit the height. If the
+            height is omitted, the natural height of the image will be used and
+            no scaling will be done.
+        """
+        draw_image = DrawImage(image, x, y, width, height)
+        self._action_target.append(draw_image)
+        return draw_image
+
+    ###########################################################################
+    # Transformations
+    ###########################################################################
+    def rotate(self, radians: float) -> Rotate:
+        """Add a rotation to the canvas context.
+
+        :param radians: The angle to rotate clockwise in radians.
+        :returns: The `Rotate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the transformation.
+        """
+        rotate = Rotate(radians)
+        self._action_target.append(rotate)
+        return rotate
+
+    def scale(self, sx: float, sy: float) -> Scale:
+        """Add a scaling transformation to the canvas context.
+
+        :param sx: Scale factor for the X dimension. A negative value flips the
+            image horizontally.
+        :param sy: Scale factor for the Y dimension. A negative value flips the
+            image vertically.
+        :returns: The `Scale` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the transformation.
+        """
+        scale = Scale(sx, sy)
+        self._action_target.append(scale)
+        return scale
+
+    def translate(self, tx: float, ty: float) -> Translate:
+        """Add a translation to the canvas context.
+
+        :param tx: Translation for the X dimension.
+        :param ty: Translation for the Y dimension.
+        :returns: The `Translate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the transformation.
+        """
+        translate = Translate(tx, ty)
+        self._action_target.append(translate)
+        return translate
+
+    def reset_transform(self) -> ResetTransform:
+        """Reset all transformations in the canvas context.
+
+        :returns: A `ResetTransform`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction].
+        """
+        reset_transform = ResetTransform()
+        self._action_target.append(reset_transform)
+        return reset_transform
+
+    ###########################################################################
+    # Subcontexts of this context
+    ###########################################################################
+
+    @contextmanager
+    def Context(self) -> Iterator[Context]:
+        """Construct and yield a new sub-[`Context`][toga.widgets.canvas.Context] within
+        this context.
+
+        :return: Yields the new [`Context`][toga.widgets.canvas.Context] object.
+        """
+        context = Context(canvas=self._canvas)
+        self._action_target.append(context)
+        yield context
+        self.redraw()
+
+    @contextmanager
+    def ClosedPath(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+    ) -> Iterator[ClosedPathContext]:
+        """Construct and yield a new `ClosedPath`
+        sub-context that will draw a closed path, starting from an origin.
+
+        This is a context manager; it creates a new path and moves to the start
+        coordinate; when the context exits, the path is closed. For fine-grained control
+        of a path, you can use [`begin_path`][toga.widgets.canvas.Context.begin_path]
+        and [`close_path`][toga.widgets.canvas.Context.close_path].
+
+        :param x: The x coordinate of the path's starting point.
+        :param y: The y coordinate of the path's starting point.
+        :return: Yields the [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext]
+            context object.
+        """
+        closed_path = ClosedPathContext(canvas=self.canvas, x=x, y=y)
+        self._action_target.append(closed_path)
+        yield closed_path
+
+    @contextmanager
+    def Fill(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+        color: ColorT | None = None,
+        fill_rule: FillRule = FillRule.NONZERO,
+    ) -> Iterator[FillContext]:
+        """Construct and yield a new `Fill` sub-context
+        within this context.
+
+        This is a context manager; it creates a new path, and moves to the start
+        coordinate; when the context exits, the path is closed with a fill. For
+        fine-grained control of a path, you can use
+        [`begin_path`][toga.widgets.canvas.Context.begin_path],
+        [`move_to`][toga.widgets.canvas.Context.move_to],
+        [`close_path`][toga.widgets.canvas.Context.close_path] and
+        [`fill`][toga.widgets.canvas.Context.fill].
+
+        If both an x and y coordinate is provided, the drawing context will begin with
+        a `move_to` operation in that context.
+
+        :param x: The x coordinate of the path's starting point.
+        :param y: The y coordinate of the path's starting point.
+        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
+            even-odd winding rule.
+        :param color: The fill color.
+        :return: Yields the new [`FilContext`][toga.widgets.canvas.FillContext] context
+            object.
+        """
+        fill = FillContext(
+            canvas=self.canvas,
+            x=x,
+            y=y,
+            color=color,
+            fill_rule=fill_rule,
+        )
+        self._action_target.append(fill)
+        yield fill
+
+    @contextmanager
+    def Stroke(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+        color: ColorT | None = None,
+        line_width: float | None = None,
+        line_dash: list[float] | None = None,
+    ) -> Iterator[StrokeContext]:
+        """Construct and yield a new `Stroke` sub-context
+        within this context.
+
+        This is a context manager; it creates a new path, and moves to the start
+        coordinate; when the context exits, the path is closed with a stroke. For
+        fine-grained control of a path, you can use
+        [`begin_path`][toga.widgets.canvas.Context.begin_path],
+        [`move_to`][toga.widgets.canvas.Context.move_to],
+        [`close_path`][toga.widgets.canvas.Context.close_path] and
+        [`stroke`][toga.widgets.canvas.Context.stroke].
+
+        If both an x and y coordinate is provided, the drawing context will begin with
+        a `move_to` operation in that context.
+
+        :param x: The x coordinate of the path's starting point.
+        :param y: The y coordinate of the path's starting point.
+        :param color: The color for the stroke.
+        :param line_width: The width of the stroke.
+        :param line_dash: The dash pattern to follow when drawing the line. Default is a
+            solid line.
+        :return: Yields the new [`StrokeContext`][toga.widgets.canvas.StrokeContext]
+            context object.
+        """
+        stroke = StrokeContext(
+            canvas=self.canvas,
+            x=x,
+            y=y,
+            color=color,
+            line_width=line_width,
+            line_dash=line_dash,
+        )
+        self._action_target.append(stroke)
+        yield stroke
+
+
+class Context(DrawingAction, DrawingActionDispatch):
     """A drawing context for a canvas.
 
     You should not create a [`Context`][toga.widgets.canvas.Context] directly; instead,
@@ -58,6 +553,11 @@ class Context(DrawingAction):
         for obj in self.drawing_objects:
             obj._draw(context)
         context.restore()
+
+    @property
+    def _action_target(self):
+        # Context itself holds its drawing actions.
+        return self
 
     ###########################################################################
     # Methods to keep track of the canvas, automatically redraw it
@@ -113,494 +613,6 @@ class Context(DrawingAction):
         """Remove all drawing objects from the context."""
         self.drawing_objects.clear()
         self.redraw()
-
-    ###########################################################################
-    # Path manipulation
-    ###########################################################################
-
-    def begin_path(self) -> BeginPath:
-        """Start a new path in the canvas context.
-
-        :returns: The `BeginPath`
-            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
-        """
-        begin_path = BeginPath()
-        self.append(begin_path)
-        return begin_path
-
-    def close_path(self) -> ClosePath:
-        """Close the current path in the canvas context.
-
-        This closes the current path as a simple drawing operation. It should be paired
-        with a [`begin_path()`][toga.widgets.canvas.Context.begin_path] operation; or,
-        to complete a complete closed path, use the
-        [`ClosedPath()`][toga.widgets.canvas.Context.ClosedPath] context manager.
-
-        :returns: The `ClosePath`
-            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
-        """
-        close_path = ClosePath()
-        self.append(close_path)
-        return close_path
-
-    def move_to(self, x: float, y: float) -> MoveTo:
-        """Moves the current point of the canvas context without drawing.
-
-        :param x: The x coordinate of the new current point.
-        :param y: The y coordinate of the new current point.
-        :returns: The `MoveTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the operation.
-        """
-        move_to = MoveTo(x, y)
-        self.append(move_to)
-        return move_to
-
-    def line_to(self, x: float, y: float) -> LineTo:
-        """Draw a line segment ending at a point in the canvas context.
-
-        :param x: The x coordinate for the end point of the line segment.
-        :param y: The y coordinate for the end point of the line segment.
-        :returns: The `LineTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the operation.
-        """
-        line_to = LineTo(x, y)
-        self.append(line_to)
-        return line_to
-
-    def bezier_curve_to(
-        self,
-        cp1x: float,
-        cp1y: float,
-        cp2x: float,
-        cp2y: float,
-        x: float,
-        y: float,
-    ) -> BezierCurveTo:
-        """Draw a Bézier curve in the canvas context.
-
-        A Bézier curve requires three points. The first two are control points; the
-        third is the end point for the curve. The starting point is the last point in
-        the current path, which can be changed using `move_to()` before creating the
-        Bézier curve.
-
-        :param cp1y: The y coordinate for the first control point of the Bézier curve.
-        :param cp1x: The x coordinate for the first control point of the Bézier curve.
-        :param cp2x: The x coordinate for the second control point of the Bézier curve.
-        :param cp2y: The y coordinate for the second control point of the Bézier curve.
-        :param x: The x coordinate for the end point.
-        :param y: The y coordinate for the end point.
-        :returns: The `BezierCurveTo`
-            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
-        """
-        bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self.append(bezier_curve_to)
-        return bezier_curve_to
-
-    def quadratic_curve_to(
-        self,
-        cpx: float,
-        cpy: float,
-        x: float,
-        y: float,
-    ) -> QuadraticCurveTo:
-        """Draw a quadratic curve in the canvas context.
-
-        A quadratic curve requires two points. The first point is a control point; the
-        second is the end point. The starting point of the curve is the last point in
-        the current path, which can be changed using `moveTo()` before creating the
-        quadratic curve.
-
-        :param cpx: The x axis of the coordinate for the control point of the quadratic
-            curve.
-        :param cpy: The y axis of the coordinate for the control point of the quadratic
-            curve.
-        :param x: The x axis of the coordinate for the end point.
-        :param y: The y axis of the coordinate for the end point.
-        :returns: The `QuadraticCurveTo`
-            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
-        """
-        quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self.append(quadratic_curve_to)
-        return quadratic_curve_to
-
-    def arc(
-        self,
-        x: float,
-        y: float,
-        radius: float,
-        startangle: float = 0.0,
-        endangle: float = 2 * pi,
-        counterclockwise: bool | None = None,
-        anticlockwise: bool | None = None,  # DEPRECATED
-    ) -> Arc:
-        """Draw a circular arc in the canvas context.
-
-        A full circle will be drawn by default; an arc can be drawn by specifying a
-        start and end angle.
-
-        :param x: The X coordinate of the circle's center.
-        :param y: The Y coordinate of the circle's center.
-        :param startangle: The start angle in radians, measured clockwise from the
-            positive X axis.
-        :param endangle: The end angle in radians, measured clockwise from the positive
-            X axis.
-        :param counterclockwise: If true, the arc is swept counterclockwise. The default
-            is clockwise.
-        :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
-        :returns: The `Arc` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the operation.
-        """
-        arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
-        self.append(arc)
-        return arc
-
-    def ellipse(
-        self,
-        x: float,
-        y: float,
-        radiusx: float,
-        radiusy: float,
-        rotation: float = 0.0,
-        startangle: float = 0.0,
-        endangle: float = 2 * pi,
-        counterclockwise: bool | None = None,
-        anticlockwise: bool | None = None,  # DEPRECATED
-    ) -> Ellipse:
-        """Draw an elliptical arc in the canvas context.
-
-        A full ellipse will be drawn by default; an arc can be drawn by specifying a
-        start and end angle.
-
-        :param x: The X coordinate of the ellipse's center.
-        :param y: The Y coordinate of the ellipse's center.
-        :param radiusx: The ellipse's horizontal axis radius.
-        :param radiusy: The ellipse's vertical axis radius.
-        :param rotation: The ellipse's rotation in radians, measured clockwise around
-            its center.
-        :param startangle: The start angle in radians, measured clockwise from the
-            positive X axis.
-        :param endangle: The end angle in radians, measured clockwise from the positive
-            X axis.
-        :param counterclockwise: If true, the arc is swept counterclockwise. The default
-            is clockwise.
-        :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
-        :returns: The `Ellipse` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the operation.
-        """
-        ellipse = Ellipse(
-            x,
-            y,
-            radiusx,
-            radiusy,
-            rotation,
-            startangle,
-            endangle,
-            counterclockwise,
-            anticlockwise,
-        )
-        self.append(ellipse)
-        return ellipse
-
-    def rect(self, x: float, y: float, width: float, height: float) -> Rect:
-        """Draw a rectangle in the canvas context.
-
-        :param x: The horizontal coordinate of the left of the rectangle.
-        :param y: The vertical coordinate of the top of the rectangle.
-        :param width: The width of the rectangle.
-        :param height: The height of the rectangle.
-        :returns: The `Rect` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the operation.
-        """
-        rect = Rect(x, y, width, height)
-        self.append(rect)
-        return rect
-
-    def fill(
-        self,
-        color: ColorT | None = None,
-        fill_rule: FillRule = FillRule.NONZERO,
-    ) -> Fill:
-        """Fill the current path.
-
-        The fill can use either the
-        [Non-Zero](https://en.wikipedia.org/wiki/Nonzero-rule) or
-        [Even-Odd](https://en.wikipedia.org/wiki/Even-odd_rule) winding
-        rule for filling paths.
-
-        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
-            even-odd winding rule.
-        :param color: The fill color.
-        :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the operation.
-        """
-        fill = Fill(color, fill_rule)
-        self.append(fill)
-        return fill
-
-    def stroke(
-        self,
-        color: ColorT | None = None,
-        line_width: float | None = None,
-        line_dash: list[float] | None = None,
-    ) -> Stroke:
-        """Draw the current path as a stroke.
-
-        :param color: The color for the stroke.
-        :param line_width: The width of the stroke.
-        :param line_dash: The dash pattern to follow when drawing the line, expressed as
-            alternating lengths of dashes and spaces. The default is a solid line.
-        :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the operation.
-        """
-        stroke = Stroke(color, line_width, line_dash)
-        self.append(stroke)
-        return stroke
-
-    ###########################################################################
-    # Text drawing
-    ###########################################################################
-
-    def write_text(
-        self,
-        text: str,
-        x: float = 0.0,
-        y: float = 0.0,
-        font: Font | None = None,
-        baseline: Baseline = Baseline.ALPHABETIC,
-        line_height: float | None = None,
-    ) -> WriteText:
-        """Write text at a given position in the canvas context.
-
-        Drawing text is effectively a series of path operations, so the text will have
-        the color and fill properties of the canvas context.
-
-        :param text: The text to draw. Newlines will cause line breaks, but long lines
-            will not be wrapped.
-        :param x: The X coordinate of the text's left edge.
-        :param y: The Y coordinate: its meaning depends on `baseline`.
-        :param font: The font in which to draw the text. The default is the system font.
-        :param baseline: Alignment of text relative to the Y coordinate.
-        :param line_height: Height of the line box as a multiple of the font size
-            when multiple lines are present.
-        :returns: The `WriteText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the operation.
-        """
-        write_text = WriteText(text, x, y, font, baseline, line_height)
-        self.append(write_text)
-        return write_text
-
-    ###########################################################################
-    # Bitmap drawing
-    ###########################################################################
-
-    def draw_image(
-        self,
-        image: Image,
-        x: float = 0.0,
-        y: float = 0.0,
-        width: float | None = None,
-        height: float | None = None,
-    ):
-        """Draw a Toga Image in the canvas context.
-
-        The x, y coordinates specify the location of the bottom-left corner
-        of the image. If supplied, the width and height specify the size
-        of the image when it is rendered in the context, the image will be
-        scaled to fit.
-
-        Drawing of images is performed with the current transformation matrix
-        applied, so the destination rectangle of the image will be rotated,
-        scaled and translated by any transformations which are currently applied.
-
-        :param image: a Toga Image
-        :param x: The x-coordinate of the bottom-left corner of the image when
-            it is drawn.
-        :param y: The y-coordinate of the bottom-left corner of the image when
-            it is drawn.
-        :param width: The width of the destination rectangle where the image
-            will be drawn. The image will be scaled to fit the width. If the
-            width is omitted, the natural width of the image will be used and
-            no scaling will be done.
-        :param height: The height of the destination rectangle where the image
-            will be drawn. The image will be scaled to fit the height. If the
-            height is omitted, the natural height of the image will be used and
-            no scaling will be done.
-        """
-        draw_image = DrawImage(image, x, y, width, height)
-        self.append(draw_image)
-        return draw_image
-
-    ###########################################################################
-    # Transformations
-    ###########################################################################
-    def rotate(self, radians: float) -> Rotate:
-        """Add a rotation to the canvas context.
-
-        :param radians: The angle to rotate clockwise in radians.
-        :returns: The `Rotate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the transformation.
-        """
-        rotate = Rotate(radians)
-        self.append(rotate)
-        return rotate
-
-    def scale(self, sx: float, sy: float) -> Scale:
-        """Add a scaling transformation to the canvas context.
-
-        :param sx: Scale factor for the X dimension. A negative value flips the
-            image horizontally.
-        :param sy: Scale factor for the Y dimension. A negative value flips the
-            image vertically.
-        :returns: The `Scale` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the transformation.
-        """
-        scale = Scale(sx, sy)
-        self.append(scale)
-        return scale
-
-    def translate(self, tx: float, ty: float) -> Translate:
-        """Add a translation to the canvas context.
-
-        :param tx: Translation for the X dimension.
-        :param ty: Translation for the Y dimension.
-        :returns: The `Translate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
-            for the transformation.
-        """
-        translate = Translate(tx, ty)
-        self.append(translate)
-        return translate
-
-    def reset_transform(self) -> ResetTransform:
-        """Reset all transformations in the canvas context.
-
-        :returns: A `ResetTransform`
-            [`DrawingAction`][toga.widgets.canvas.DrawingAction].
-        """
-        reset_transform = ResetTransform()
-        self.append(reset_transform)
-        return reset_transform
-
-    ###########################################################################
-    # Subcontexts of this context
-    ###########################################################################
-
-    @contextmanager
-    def Context(self) -> Iterator[Context]:
-        """Construct and yield a new sub-[`Context`][toga.widgets.canvas.Context] within
-        this context.
-
-        :return: Yields the new [`Context`][toga.widgets.canvas.Context] object.
-        """
-        context = Context(canvas=self._canvas)
-        self.append(context)
-        yield context
-        self.redraw()
-
-    @contextmanager
-    def ClosedPath(
-        self,
-        x: float | None = None,
-        y: float | None = None,
-    ) -> Iterator[ClosedPathContext]:
-        """Construct and yield a new `ClosedPath`
-        sub-context that will draw a closed path, starting from an origin.
-
-        This is a context manager; it creates a new path and moves to the start
-        coordinate; when the context exits, the path is closed. For fine-grained control
-        of a path, you can use [`begin_path`][toga.widgets.canvas.Context.begin_path]
-        and [`close_path`][toga.widgets.canvas.Context.close_path].
-
-        :param x: The x coordinate of the path's starting point.
-        :param y: The y coordinate of the path's starting point.
-        :return: Yields the [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext]
-            context object.
-        """
-        closed_path = ClosedPathContext(canvas=self.canvas, x=x, y=y)
-        self.append(closed_path)
-        yield closed_path
-
-    @contextmanager
-    def Fill(
-        self,
-        x: float | None = None,
-        y: float | None = None,
-        color: ColorT | None = None,
-        fill_rule: FillRule = FillRule.NONZERO,
-    ) -> Iterator[FillContext]:
-        """Construct and yield a new `Fill` sub-context
-        within this context.
-
-        This is a context manager; it creates a new path, and moves to the start
-        coordinate; when the context exits, the path is closed with a fill. For
-        fine-grained control of a path, you can use
-        [`begin_path`][toga.widgets.canvas.Context.begin_path],
-        [`move_to`][toga.widgets.canvas.Context.move_to],
-        [`close_path`][toga.widgets.canvas.Context.close_path] and
-        [`fill`][toga.widgets.canvas.Context.fill].
-
-        If both an x and y coordinate is provided, the drawing context will begin with
-        a `move_to` operation in that context.
-
-        :param x: The x coordinate of the path's starting point.
-        :param y: The y coordinate of the path's starting point.
-        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
-            even-odd winding rule.
-        :param color: The fill color.
-        :return: Yields the new [`FilContext`][toga.widgets.canvas.FillContext] context
-            object.
-        """
-        fill = FillContext(
-            canvas=self.canvas,
-            x=x,
-            y=y,
-            color=color,
-            fill_rule=fill_rule,
-        )
-        self.append(fill)
-        yield fill
-
-    @contextmanager
-    def Stroke(
-        self,
-        x: float | None = None,
-        y: float | None = None,
-        color: ColorT | None = None,
-        line_width: float | None = None,
-        line_dash: list[float] | None = None,
-    ) -> Iterator[StrokeContext]:
-        """Construct and yield a new `Stroke` sub-context
-        within this context.
-
-        This is a context manager; it creates a new path, and moves to the start
-        coordinate; when the context exits, the path is closed with a stroke. For
-        fine-grained control of a path, you can use
-        [`begin_path`][toga.widgets.canvas.Context.begin_path],
-        [`move_to`][toga.widgets.canvas.Context.move_to],
-        [`close_path`][toga.widgets.canvas.Context.close_path] and
-        [`stroke`][toga.widgets.canvas.Context.stroke].
-
-        If both an x and y coordinate is provided, the drawing context will begin with
-        a `move_to` operation in that context.
-
-        :param x: The x coordinate of the path's starting point.
-        :param y: The y coordinate of the path's starting point.
-        :param color: The color for the stroke.
-        :param line_width: The width of the stroke.
-        :param line_dash: The dash pattern to follow when drawing the line. Default is a
-            solid line.
-        :return: Yields the new [`StrokeContext`][toga.widgets.canvas.StrokeContext]
-            context object.
-        """
-        stroke = StrokeContext(
-            canvas=self.canvas,
-            x=x,
-            y=y,
-            color=color,
-            line_width=line_width,
-            line_dash=line_dash,
-        )
-        self.append(stroke)
-        yield stroke
 
 
 class ClosedPathContext(Context):
