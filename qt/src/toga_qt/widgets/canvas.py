@@ -64,9 +64,10 @@ class Context:
         self.native.save()
 
     def restore(self):
-        state = self.states.pop()
+        # Transform active path to current coordinates
+        self._path = self.state.transform.map(self._path)
+        self.states.pop()
         self.native.restore()
-        self._path = state.transform.map(self._path)
 
     # Setting attributes
     def set_fill_style(self, color):
@@ -186,7 +187,7 @@ class Context:
         self.native.rotate(degrees(radians))
 
         # track transforms and adjust path
-        self.states[-1].transform.rotateRadians(radians)
+        self.state.transform.rotateRadians(radians)
         inverse = QTransform()
         inverse.rotateRadians(-radians)
         self._path = inverse.map(self._path)
@@ -195,7 +196,7 @@ class Context:
         self.native.scale(sx, sy)
 
         # track transforms and adjust path
-        self.states[-1].transform.scale(sx, sy)
+        self.state.transform.scale(sx, sy)
         inverse = QTransform()
         inverse.scale(1 / sx, 1 / sy)
         self._path = inverse.map(self._path)
@@ -204,7 +205,7 @@ class Context:
         self.native.translate(tx, ty)
 
         # track transforms and adjust path
-        self.states[-1].transform.translate(tx, ty)
+        self.state.transform.translate(tx, ty)
         inverse = QTransform()
         inverse.scale(-tx, -ty)
         self._path = inverse.map(self._path)

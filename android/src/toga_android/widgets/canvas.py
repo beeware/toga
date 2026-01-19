@@ -30,9 +30,10 @@ BLACK = jint(native_color(rgb(0, 0, 0)))
 class State(NamedTuple):
     fill: Paint
     stroke: Paint
+    transform: Matrix
 
     def __deepcopy__(self, memo):
-        return type(self)(Paint(self.fill), Paint(self.stroke))
+        return type(self)(Paint(self.fill), Paint(self.stroke), Matrix())
 
 
 class Context:
@@ -71,6 +72,8 @@ class Context:
 
     def restore(self):
         self.native.restore()
+        # Transform active path to current coordinates
+        self.path.Transform(self.state.transform)
         self.states.pop()
 
     # Setting attributes
@@ -170,16 +173,36 @@ class Context:
 
     def rotate(self, radians):
         self.native.rotate(degrees(radians))
+        self.state.transform.postRotate(degrees(radians))
+
+        inverse = Matrix()
+        inverse.setRotate(-degrees(radians))
+        self.path.Transform(inverse)
 
     def scale(self, sx, sy):
         self.native.scale(sx, sy)
+        self.state.transform.postScale(sx, sy)
+
+        inverse = Matrix()
+        inverse.setScale(1 / sx, 1 / sy)
+        self.path.Transform(inverse)
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
+        self.states[-1].transform.postTranslate(tx, ty)
+
+        inverse = Matrix()
+        inverse.setTransform(-tx, -ty)
+        self.path.Transform(inverse)
 
     def reset_transform(self):
         self.native.setMatrix(None)
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
+
+        for state in reversed(self.states):
+            self.path.Transform(state.transform)
+            # set matrix to identity
+            state.transform.setRotate(0)
 
     # Text
     def write_text(self, text, x, y, font, baseline, line_height):

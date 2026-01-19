@@ -697,8 +697,9 @@ async def test_transforms(canvas, probe):
     assert_reference(probe, "transforms")
 
 
-@skip_on_backends("android", "winforms", reason="Issue #2206")
 async def test_transforms_mid_path(canvas, probe):
+    skip_on_backends("winforms", reason="Issue #2206")
+
     # draw a series of rotated rectangles
     canvas.context.begin_path()
     canvas.context.translate(100, 100)
