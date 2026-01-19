@@ -51,6 +51,7 @@ class TableProbe(SimpleProbe):
             # Ignore warnings about widgets in Tables when we're just looking at
             # the cell data, as opposed to when the table is rendering it.
             with warnings.catch_warnings(category=UserWarning):
+                warnings.simplefilter("ignore")
                 index = self.native_model.index(row, col)
                 if value:
                     assert value == self.native_model.data(
