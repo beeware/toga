@@ -136,7 +136,15 @@ class Context:
         )
 
     def ellipse(
-        self, x, y, radiusx, radiusy, rotation, startangle, endangle, counterclockwise
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
     ):
         self.save()
         self.translate(x, y)
