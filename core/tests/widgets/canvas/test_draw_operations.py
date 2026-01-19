@@ -282,8 +282,8 @@ def test_quadratic_curve_to(widget):
         (
             {"x": 10, "y": 20, "radius": 30},
             (
-                "x=10, y=20, radius=30, startangle=0.000, "
-                "endangle=6.283, counterclockwise=False"
+                "x=10, y=20, radius=30, startangle=0.0, "
+                "endangle=6.283185307179586, counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -299,7 +299,7 @@ def test_quadratic_curve_to(widget):
             {"x": 10, "y": 20, "radius": 30, "startangle": 1.234},
             (
                 "x=10, y=20, radius=30, startangle=1.234, "
-                "endangle=6.283, counterclockwise=False"
+                "endangle=6.283185307179586, counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -319,7 +319,7 @@ def test_quadratic_curve_to(widget):
                 "endangle": 2.345,
             },
             (
-                "x=10, y=20, radius=30, startangle=0.000, "
+                "x=10, y=20, radius=30, startangle=0.0, "
                 "endangle=2.345, counterclockwise=False"
             ),
             {
@@ -340,8 +340,8 @@ def test_quadratic_curve_to(widget):
                 "counterclockwise": False,
             },
             (
-                "x=10, y=20, radius=30, startangle=0.000, "
-                "endangle=6.283, counterclockwise=False"
+                "x=10, y=20, radius=30, startangle=0.0, "
+                "endangle=6.283185307179586, counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -361,8 +361,8 @@ def test_quadratic_curve_to(widget):
                 "counterclockwise": True,
             },
             (
-                "x=10, y=20, radius=30, startangle=0.000, "
-                "endangle=6.283, counterclockwise=True"
+                "x=10, y=20, radius=30, startangle=0.0, "
+                "endangle=6.283185307179586, counterclockwise=True"
             ),
             {
                 "x": 10,
@@ -423,7 +423,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=0.000, endangle=6.283, "
+                "rotation=0.0, startangle=0.0, endangle=6.283185307179586, "
                 "counterclockwise=False"
             ),
             {
@@ -442,7 +442,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "rotation": 1.234},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=1.234, startangle=0.000, endangle=6.283, "
+                "rotation=1.234, startangle=0.0, endangle=6.283185307179586, "
                 "counterclockwise=False"
             ),
             {
@@ -461,7 +461,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "startangle": 2.345},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=2.345, endangle=6.283, "
+                "rotation=0.0, startangle=2.345, endangle=6.283185307179586, "
                 "counterclockwise=False"
             ),
             {
@@ -480,7 +480,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "endangle": 3.456},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=0.000, endangle=3.456, "
+                "rotation=0.0, startangle=0.0, endangle=3.456, "
                 "counterclockwise=False"
             ),
             {
@@ -499,7 +499,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "counterclockwise": False},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=0.000, endangle=6.283, "
+                "rotation=0.0, startangle=0.0, endangle=6.283185307179586, "
                 "counterclockwise=False"
             ),
             {
@@ -518,7 +518,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "counterclockwise": True},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=0.000, endangle=6.283, "
+                "rotation=0.0, startangle=0.0, endangle=6.283185307179586, "
                 "counterclockwise=True"
             ),
             {
