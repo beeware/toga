@@ -162,12 +162,6 @@ plugins:
       reference/api/resources/dialogs.md: reference/api/application/dialogs.md
       reference/api/resources/statusicons.md: reference/api/application/status-icons.md
 
-      # Container widgets
-      reference/api/containers/box.md: reference/api/containers/box.md
-      reference/api/containers/optioncontainer.md: reference/api/containers/optioncontainer.md
-      reference/api/containers/scrollcontainer.md: reference/api/containers/scrollcontainer.md
-      reference/api/containers/splitcontainer.md: reference/api/containers/splitcontainer.md
-
       # Style
       reference/style/pack.md: reference/api/style/pack.md
 
