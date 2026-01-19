@@ -24,7 +24,7 @@ from toga.fonts import BOLD
 from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM, Pack
 
-from .conftest import build_cleanup_test
+from .conftest import build_cleanup_test, skip_on_backends
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -697,10 +697,7 @@ async def test_transforms(canvas, probe):
     assert_reference(probe, "transforms")
 
 
-@pytest.mark.xfail(
-    condition=toga.backend in {"android", "winforms"},
-    reason="Issue #4053: paths not correctly transformed.",
-)
+@skip_on_backends("android", "winforms", reason="Issue #2206")
 async def test_transforms_mid_path(canvas, probe):
     # draw a series of rotated rectangles
     canvas.context.begin_path()
