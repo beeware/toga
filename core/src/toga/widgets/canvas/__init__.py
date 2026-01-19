@@ -44,7 +44,7 @@ __all__ = [
     "Canvas",
     "OnResizeHandler",
     "OnTouchHandler",
-    # Actions,
+    # Drawing Actions
     "DrawingAction",
     "Arc",
     "BeginPath",
