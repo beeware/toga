@@ -90,7 +90,6 @@ Widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   Divider:
     description: A visual layout separator.
