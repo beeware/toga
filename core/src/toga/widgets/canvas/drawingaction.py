@@ -49,14 +49,14 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 ######################################################################
 
 
-class DrawingObject(ABC):
+class DrawingAction(ABC):
     """A drawing operation in a [`Context`][toga.widgets.canvas.Context].
 
-    Every context drawing method creates a `DrawingObject`, adds it to the context,
+    Every context drawing method creates a `DrawingAction`, adds it to the context,
     and returns it. Each argument passed to the method becomes a property of the
-    `DrawingObject`, which can be modified as shown in the [Usage][] section.
+    `DrawingAction`, which can be modified as shown in the [Usage][] section.
 
-    `DrawingObjects` can also be created manually, then added to a context using the
+    `DrawingActions` can also be created manually, then added to a context using the
     [`append()`][toga.widgets.canvas.Context.append] or
     [`insert()`][toga.widgets.canvas.Context.append] methods. Their constructors take
     the same arguments as the corresponding [`Context`][toga.widgets.canvas.Context]
@@ -91,17 +91,17 @@ class DrawingObject(ABC):
     def _draw(self, impl: Any, **kwargs: Any) -> None: ...
 
 
-class BeginPath(DrawingObject):
+class BeginPath(DrawingAction):
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.begin_path(**kwargs)
 
 
-class ClosePath(DrawingObject):
+class ClosePath(DrawingAction):
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.close_path(**kwargs)
 
 
-class Fill(DrawingObject):
+class Fill(DrawingAction):
     def __init__(
         self,
         color: ColorT = BLACK,
@@ -140,7 +140,7 @@ class Fill(DrawingObject):
             self._color = Color.parse(value)
 
 
-class Stroke(DrawingObject):
+class Stroke(DrawingAction):
     def __init__(
         self,
         color: ColorT | None = BLACK,
@@ -189,7 +189,7 @@ class Stroke(DrawingObject):
         self._line_dash = value
 
 
-class MoveTo(DrawingObject):
+class MoveTo(DrawingAction):
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
@@ -201,7 +201,7 @@ class MoveTo(DrawingObject):
         impl.move_to(self.x, self.y, **kwargs)
 
 
-class LineTo(DrawingObject):
+class LineTo(DrawingAction):
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
@@ -213,7 +213,7 @@ class LineTo(DrawingObject):
         impl.line_to(self.x, self.y, **kwargs)
 
 
-class BezierCurveTo(DrawingObject):
+class BezierCurveTo(DrawingAction):
     def __init__(
         self, cp1x: float, cp1y: float, cp2x: float, cp2y: float, x: float, y: float
     ):
@@ -237,7 +237,7 @@ class BezierCurveTo(DrawingObject):
         )
 
 
-class QuadraticCurveTo(DrawingObject):
+class QuadraticCurveTo(DrawingAction):
     def __init__(self, cpx: float, cpy: float, x: float, y: float):
         self.cpx = cpx
         self.cpy = cpy
@@ -254,7 +254,7 @@ class QuadraticCurveTo(DrawingObject):
         impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, **kwargs)
 
 
-class Arc(DrawingObject):
+class Arc(DrawingAction):
     def __init__(
         self,
         x: float,
@@ -301,7 +301,7 @@ class Arc(DrawingObject):
         )
 
 
-class Ellipse(DrawingObject):
+class Ellipse(DrawingAction):
     def __init__(
         self,
         x: float,
@@ -355,7 +355,7 @@ class Ellipse(DrawingObject):
         )
 
 
-class Rect(DrawingObject):
+class Rect(DrawingAction):
     def __init__(self, x: float, y: float, width: float, height: float):
         self.x = x
         self.y = y
@@ -372,7 +372,7 @@ class Rect(DrawingObject):
         impl.rect(self.x, self.y, self.width, self.height, **kwargs)
 
 
-class WriteText(DrawingObject):
+class WriteText(DrawingAction):
     def __init__(
         self,
         text: str,
@@ -419,7 +419,7 @@ class WriteText(DrawingObject):
             self._font = value
 
 
-class DrawImage(DrawingObject):
+class DrawImage(DrawingAction):
     def __init__(
         self,
         image: Image,
@@ -471,7 +471,7 @@ class DrawImage(DrawingObject):
         self._height = value
 
 
-class Rotate(DrawingObject):
+class Rotate(DrawingAction):
     def __init__(self, radians: float):
         self.radians = radians
 
@@ -482,7 +482,7 @@ class Rotate(DrawingObject):
         impl.rotate(self.radians, **kwargs)
 
 
-class Scale(DrawingObject):
+class Scale(DrawingAction):
     def __init__(self, sx: float, sy: float):
         self.sx = sx
         self.sy = sy
@@ -494,7 +494,7 @@ class Scale(DrawingObject):
         impl.scale(self.sx, self.sy, **kwargs)
 
 
-class Translate(DrawingObject):
+class Translate(DrawingAction):
     def __init__(self, tx: float, ty: float):
         self.tx = tx
         self.ty = ty
@@ -506,6 +506,6 @@ class Translate(DrawingObject):
         impl.translate(self.tx, self.ty, **kwargs)
 
 
-class ResetTransform(DrawingObject):
+class ResetTransform(DrawingAction):
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.reset_transform(**kwargs)
