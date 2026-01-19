@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication
 
 from ..colors import native_color, toga_color
 
@@ -13,6 +14,7 @@ class Widget:
         self.create()
         self.native.hide()
         self._hidden = True
+        self.native.setPalette(QApplication.style().standardPalette())
 
         if not hasattr(self, "_background_color_role"):
             self._background_color_role = self.native.backgroundRole()

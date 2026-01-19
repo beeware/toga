@@ -1,0 +1,1 @@
+Some unnecessary redirects have been removed from the reference documentation.

@@ -4,7 +4,13 @@ import toga
 from toga.colors import rgb
 from toga.constants import FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
-from toga.widgets.canvas import ClosedPathContext, Context, FillContext, StrokeContext
+from toga.widgets.canvas import (
+    ClosedPathContext,
+    Context,
+    DrawingAction,
+    FillContext,
+    StrokeContext,
+)
 from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
@@ -191,3 +197,15 @@ def test_as_image(widget):
     image = widget.as_image()
     assert image is not None
     assert_action_performed(widget, "get image data")
+
+
+def test_deprecated_names():
+    """Deprecated names work, but issue a warning."""
+    with pytest.warns(DeprecationWarning):
+        from toga.widgets.canvas import DrawingObject
+
+    assert DrawingObject is DrawingAction
+
+    # A completely bogus name still fails.
+    with pytest.raises(ImportError):
+        from toga.widgets.canvas import Nonexistent  # noqa: F401

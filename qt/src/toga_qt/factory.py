@@ -16,6 +16,7 @@ try:
     from .widgets.button import Button
     from .widgets.canvas import Canvas
     from .widgets.dateinput import DateInput
+    from .widgets.detailedlist import DetailedList
     from .widgets.divider import Divider
     from .widgets.imageview import ImageView
     from .widgets.label import Label
@@ -57,6 +58,7 @@ __all__ = [
     "Button",
     "Canvas",
     "DateInput",
+    "DetailedList",
     "Divider",
     "Font",
     "Container",
