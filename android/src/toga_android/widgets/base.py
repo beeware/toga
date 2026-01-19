@@ -203,7 +203,7 @@ def android_text_align(value):
 # to emit signals for, such ReferenceErrors we get are often
 # useless, so we suppress them.
 @contextlib.contextmanager
-def suppress_reference_error(return_value=None):
+def suppress_reference_error():
     try:
         yield
     except ReferenceError:  # pragma: no cover
