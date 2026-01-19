@@ -150,6 +150,17 @@ class Widget(ABC, Scalable):
     def set_color(self, color):
         pass  # If appropriate, a widget subclass will implement this.
 
+    def get_theme_color(self, attr_id: int) -> int:
+        ta = self._native_activity.getTheme().obtainStyledAttributes([attr_id])
+        try:
+            if not ta.hasValue(0):
+                raise RuntimeError(  # pragma: no cover
+                    f"Required theme color attribute not found: {attr_id}"
+                )
+            return ta.getColor(0, 0)
+        finally:
+            ta.recycle()
+
     # INTERFACE
 
     def add_child(self, child):
