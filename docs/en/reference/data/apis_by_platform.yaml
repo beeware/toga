@@ -42,7 +42,6 @@ Application components:
     beta:
       - web
       - textual
-      - qt
 
   Status icons:
     description: Icons representing status while the app isn't visible.
