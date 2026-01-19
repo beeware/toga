@@ -598,19 +598,34 @@ def test_rect(widget):
     assert draw_op.height == 40
 
 
+SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
+
+
 @pytest.mark.parametrize(
-    "kwargs, args_repr, draw_kwargs",
+    "kwargs, instructions, args_repr, draw_attrs",
     [
         # Defaults
         (
             {"text": "Hello world", "x": 10, "y": 20},
-            "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.ALPHABETIC, line_height=None",
+            # When font isn't specified, the system font is still supplied to the
+            # backend.
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
-                "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
+                "baseline": Baseline.ALPHABETIC,
+                "line_height": None,
+                "font": SYSTEM_FONT_IMPL,
+            },
+            (
+                "text='Hello world', x=10, y=20, font=None, "
+                "baseline=Baseline.ALPHABETIC, line_height=None"
+            ),
+            {
+                "text": "Hello world",
+                "x": 10,
+                "y": 20,
+                "font": None,
                 "baseline": Baseline.ALPHABETIC,
                 "line_height": None,
             },
@@ -618,13 +633,23 @@ def test_rect(widget):
         # Baseline
         (
             {"text": "Hello world", "x": 10, "y": 20, "baseline": Baseline.TOP},
-            "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.TOP, line_height=None",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
-                "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
+                "baseline": Baseline.TOP,
+                "line_height": None,
+                "font": SYSTEM_FONT_IMPL,
+            },
+            (
+                "text='Hello world', x=10, y=20, font=None, "
+                "baseline=Baseline.TOP, line_height=None"
+            ),
+            {
+                "text": "Hello world",
+                "x": 10,
+                "y": 20,
+                "font": None,
                 "baseline": Baseline.TOP,
                 "line_height": None,
             },
@@ -632,13 +657,23 @@ def test_rect(widget):
         # Font
         (
             {"text": "Hello world", "x": 10, "y": 20, "font": Font("Cutive", 42)},
-            "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>, "
-            "baseline=Baseline.ALPHABETIC, line_height=None",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
+                "baseline": Baseline.ALPHABETIC,
+                "line_height": None,
                 "font": Font("Cutive", 42)._impl,
+            },
+            (
+                "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>, "
+                "baseline=Baseline.ALPHABETIC, line_height=None"
+            ),
+            {
+                "text": "Hello world",
+                "x": 10,
+                "y": 20,
+                "font": Font("Cutive", 42),
                 "baseline": Baseline.ALPHABETIC,
                 "line_height": None,
             },
@@ -646,20 +681,30 @@ def test_rect(widget):
         # Line height factor
         (
             {"text": "Hello world", "x": 10, "y": 20, "line_height": 1.5},
-            "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.ALPHABETIC, line_height=1.5",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
-                "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
+                "baseline": Baseline.ALPHABETIC,
+                "line_height": 1.5,
+                "font": SYSTEM_FONT_IMPL,
+            },
+            (
+                "text='Hello world', x=10, y=20, font=None, "
+                "baseline=Baseline.ALPHABETIC, line_height=1.5"
+            ),
+            {
+                "text": "Hello world",
+                "x": 10,
+                "y": 20,
+                "font": None,
                 "baseline": Baseline.ALPHABETIC,
                 "line_height": 1.5,
             },
         ),
     ],
 )
-def test_write_text(widget, kwargs, args_repr, draw_kwargs):
+def test_write_text(widget, kwargs, instructions, args_repr, draw_attrs):
     """A write text operation can be added."""
     draw_op = widget.context.write_text(**kwargs)
 
@@ -668,16 +713,16 @@ def test_write_text(widget, kwargs, args_repr, draw_kwargs):
 
     # The first and last instructions push/pull the root context, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
-        ("write text", draw_kwargs),
+        ("write text", instructions),
     ]
 
     # All the attributes can be retrieved.
-    assert draw_op.text == draw_kwargs["text"]
-    assert draw_op.x == draw_kwargs["x"]
-    assert draw_op.y == draw_kwargs["y"]
-    assert draw_op.font == draw_kwargs["font"].interface
-    assert draw_op.baseline == draw_kwargs["baseline"]
-    assert draw_op.line_height == draw_kwargs["line_height"]
+    assert draw_op.text == draw_attrs["text"]
+    assert draw_op.x == draw_attrs["x"]
+    assert draw_op.y == draw_attrs["y"]
+    assert draw_op.font == draw_attrs["font"]
+    assert draw_op.baseline == draw_attrs["baseline"]
+    assert draw_op.line_height == draw_attrs["line_height"]
 
 
 def test_rotate(widget):
@@ -742,21 +787,30 @@ def test_reset_transform(widget):
 
 
 @pytest.mark.parametrize(
-    "kwargs, args_repr, draw_kwargs",
+    "kwargs, instructions, args_repr, draw_attrs",
     [
         # Defaults
         (
             {"x": 10, "y": 20},
-            "x=10, y=20, width=32, height=32",
+            # When width and height aren't specified, the image's true dimensions are
+            # supplied to the backend.
+            {"x": 10, "y": 20, "width": 32, "height": 32},
+            "x=10, y=20, width=None, height=None",
             {
                 "x": 10,
                 "y": 20,
-                "width": 32,
-                "height": 32,
+                "width": None,
+                "height": None,
             },
         ),
         # Into rectangle
         (
+            {
+                "x": 10,
+                "y": 20,
+                "width": 100,
+                "height": 50,
+            },
             {
                 "x": 10,
                 "y": 20,
@@ -773,7 +827,7 @@ def test_reset_transform(widget):
         ),
     ],
 )
-def test_draw_image(app, widget, kwargs, args_repr, draw_kwargs):
+def test_draw_image(app, widget, kwargs, instructions, args_repr, draw_attrs):
     """An image can be drawn."""
     image = Image(ABSOLUTE_FILE_PATH)
     draw_op = widget.context.draw_image(image=image, **kwargs)
@@ -782,17 +836,17 @@ def test_draw_image(app, widget, kwargs, args_repr, draw_kwargs):
     assert repr(draw_op) == f"DrawImage(image={image!r}, {args_repr})"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    draw_kwargs["image"] = image
+    instructions["image"] = image
     assert widget._impl.draw_instructions[1:-1] == [
-        ("draw_image", draw_kwargs),
+        ("draw_image", instructions),
     ]
 
     # All the attributes can be retrieved.
-    assert draw_op.image == draw_kwargs["image"]
-    assert draw_op.x == draw_kwargs["x"]
-    assert draw_op.y == draw_kwargs["y"]
-    assert draw_op.width == draw_kwargs["width"]
-    assert draw_op.height == draw_kwargs["height"]
+    assert draw_op.image == image
+    assert draw_op.x == draw_attrs["x"]
+    assert draw_op.y == draw_attrs["y"]
+    assert draw_op.width == draw_attrs["width"]
+    assert draw_op.height == draw_attrs["height"]
 
 
 @pytest.mark.parametrize("value", [True, False])
