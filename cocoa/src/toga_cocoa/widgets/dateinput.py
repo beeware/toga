@@ -1,6 +1,7 @@
 import datetime
 
 from rubicon.objc import SEL, objc_method, objc_property
+from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from toga.widgets.dateinput import MAX_DATE, MIN_DATE
@@ -100,3 +101,17 @@ class DateInput(Widget):
             self.native.textColor = NSColor.controlTextColor
         else:
             self.native.textColor = native_color(color)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            self.native.setBezeled(False)
+            self.native.drawsBackground = False
+            self.native.backgroundColor = NSColor.clearColor
+        else:
+            self.native.setBezeled(True)
+            if color is not None:
+                self.native.drawsBackground = True
+                self.native.backgroundColor = native_color(color)
+            else:
+                self.native.drawsBackground = False
+                self.native.backgroundColor = NSColor.controlBackgroundColor

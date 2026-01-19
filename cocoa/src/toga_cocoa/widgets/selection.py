@@ -1,7 +1,14 @@
+from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
-from toga_cocoa.libs import SEL, NSPopUpButton, objc_method, objc_property
-
+from ..colors import native_color
+from ..libs import (
+    SEL,
+    NSColor,
+    NSPopUpButton,
+    objc_method,
+    objc_property,
+)
 from .base import Widget
 
 
@@ -31,6 +38,17 @@ class Selection(Widget):
         self.interface.intrinsic.width = at_least(
             max(self.interface._MIN_WIDTH, content_size.width)
         )
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            # macOS bug: even when drawsBackground=False,
+            # background color still seems drawn in certain
+            # cases.
+            self.native.backgroundColor = NSColor.clearColor
+            self.native.drawsBackground = False
+        else:
+            self.native.backgroundColor = native_color(color)
+            self.native.drawsBackground = True
 
     def insert(self, index, item):
         # Issue 2319 - if item titles are not unique, macOS will move the existing item,

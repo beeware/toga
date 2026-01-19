@@ -1,6 +1,7 @@
 import datetime
 
 from rubicon.objc import SEL
+from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from ..colors import native_color
@@ -89,3 +90,17 @@ class TimeInput(Widget):
             self.native.textColor = NSColor.controlTextColor
         else:
             self.native.textColor = native_color(color)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            self.native.setBezeled(False)
+            self.native.drawsBackground = False
+            self.native.backgroundColor = NSColor.clearColor
+        else:
+            self.native.setBezeled(True)
+            if color is not None:
+                self.native.drawsBackground = True
+                self.native.backgroundColor = native_color(color)
+            else:
+                self.native.drawsBackground = False
+                self.native.backgroundColor = NSColor.controlBackgroundColor
