@@ -81,9 +81,9 @@ class Icon:
     ):
         """Create a new icon.
 
-        :param path:Base filename for the icon. Should not contain an extension
+        :param path: Base filename for the icon. Should not contain an extension
             (If an extension is specified, it will be ignored). Paths can be absolute
-            or relative. Relative paths start from the folder where your `toga.App`
+            or relative. Relative paths start from the folder where your [`toga.App`][]
             subclass is defined.
 
             If the icon cannot be found, the default icon will be
