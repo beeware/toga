@@ -111,7 +111,7 @@ class ListSourceModel(QAbstractListModel):
                 if role in self.formatters:
                     return self.formatters[role](value, self.source._accessors)
             except Exception:  # pragma: no cover
-                logger.exception("Could not get data for row {row}")
+                logger.exception(f"Could not get data for row {row}")
         if role == Qt.ItemDataRole.UserRole:
             # Our user data should always be a tuple of two values.
             # Shouldn't reach this in normal operation, but will if there
