@@ -31,6 +31,29 @@ When you create a widget like Selection or Table, and provide a data source for 
 
 Although widgets are the obvious listeners for a data source, *any* object can register as a listener. For example, a second data source might register as a listener to an initial source to implement a filtered source. When an item is added to the first data source, the second data source will be notified, and can choose whether to include the new item in its own data representation.
 
+You can add a listener by calling the [`add_listener`][toga.sources.base.Source.add_listener] method with your listener object.  The standard data sources based off of the [`Source`][toga.sources.base.Source] class hold references to all their listeners and will continue to notify the listener as long as the data source remains in memory. When a listener is finished listening to a data source, you should call [`remove_listener`][toga.sources.base.Source.remove_listener] to remove the listener from the source.
+
+This is particularly important if you might change the source that the listener is listening to.  When you change data source you should make sure that you remove from the old one and connect to the new one, something like:
+``` python
+class DataSourceListener:
+    ...
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, data):
+        # disconnect the old data source
+        self._data.remove_listener(self)
+        # update the data
+        self._data = data
+        # connect the new data source
+        self._data.add_listener(self)
+```
+If you don't disconnect, then your listener will get notifications from *both* data sources at the same time.
+
+Often the life-times of data sources are closely tied to the listeners and widgets which use them, but sometimes—particularly for custom data sources—the data source may live for a long time.  In these cases you should make sure that you disconnect widgets and listeners from the data source when you no longer need them.  Disconnecting a widget is as simple as setting its [`data`][toga.widgets.table.Table.data] to `None` (or its [`items`][toga.widgets.selection.Selection.items] to `None` for a [`Selection`][toga.widgets.selection.Selection] widget). For other listeners, call [`remove_listener`][toga.sources.base.Source.remove_listener] directly. This will improve performance, and prevent delays in garbage collection of objects that your application is no longer using.
+
 ## Custom data sources
 
 A custom data source enables you to provide a data manipulation API that makes sense for your application. For example, if you were writing an application to display files on a file system, you shouldn't just build a dictionary of files, and use that to construct a [`TreeSource`][toga.sources.TreeSource]. Instead, you should write your own `FileSystemSource` that reflects the files on the file system. Your file system data source doesn't need to expose `insert()` or `remove()` methods - because the end user doesn't need an interface to "insert" files into your file system. However, you might have a `create_empty_file()` method that creates a new file in the file system and adds a representation to the data tree.
