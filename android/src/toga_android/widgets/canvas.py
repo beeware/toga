@@ -251,6 +251,19 @@ class Canvas(Widget):
         paint.setTextSize(self.scale_out(font.size()))
         return paint
 
+    # Bitmaps
+    def draw_image(self, image, x, y, width, height, canvas, **kwargs):
+        canvas.save()
+        canvas.translate(x, y)
+        canvas.scale(width / image.width, height / image.height)
+        canvas.drawBitmap(
+            image._impl.native,
+            0,
+            0,
+            None,
+        )
+        canvas.restore()
+
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(
             self.native.getWidth(), self.native.getHeight(), Bitmap.Config.ARGB_8888

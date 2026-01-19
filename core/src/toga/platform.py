@@ -33,7 +33,26 @@ def get_current_platform() -> str | None:
         return _TOGA_PLATFORMS.get(sys.platform)
 
 
-current_platform = get_current_platform()
+current_platform: str = get_current_platform()
+"""A string identifier of the platform on which the application is currently running.
+One of:
+
+* `android`
+* `macOS`
+* `iOS`
+* `linux`
+* `freeBSD`
+* `web`
+* `windows`
+
+**DEPRECATED**: This property exists for historical reasons. On Python 3.13 and later,
+you can use the Python standard library property [`sys.platform`][].
+
+It is required on Python 3.12 and earlier because Android historically returned
+`sys.platform == "linux"` until the `android` value was formalied by PEP 783. The names
+used by `current_platform` do not exactly match the names returned by
+[`sys.platform`][].
+"""
 
 
 def find_backends():
@@ -110,6 +129,12 @@ def get_platform_factory() -> ModuleType:
             backend = matching_backends[0]
         factory = importlib.import_module(f"{backend.value}.factory")
     return factory
+
+
+backend: str
+"""The name of the backend that is being used by Toga to implement
+platform-specific capabilities (e.g., `toga_cocoa`, `toga_gtk`).
+"""
 
 
 def __getattr__(name):

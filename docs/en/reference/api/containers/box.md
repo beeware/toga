@@ -2,7 +2,9 @@
 
 ## Usage
 
-An empty Box can be constructed without any children, with children added to the box after construction:
+`Box` is the simplest container for other widgets, and the basic building block for laying out items in rows and columns.
+
+An empty `Box` can be constructed without any children, with children added to the box after construction:
 
 ```python
 import toga
