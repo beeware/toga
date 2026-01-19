@@ -1,4 +1,5 @@
 import itertools
+import weakref
 from copy import deepcopy
 from math import degrees
 from typing import NamedTuple
@@ -21,7 +22,7 @@ from toga.constants import Baseline, FillRule
 from toga.widgets.canvas import arc_to_bezier, sweepangle
 
 from ..colors import native_color
-from .base import Widget
+from .base import Widget, suppress_reference_error
 
 BLACK = jint(native_color(rgb(0, 0, 0)))
 
@@ -235,30 +236,32 @@ class Context:
 class DrawHandler(dynamic_proxy(IDrawHandler)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
-        self.interface = impl.interface
+        self.impl = weakref.proxy(impl)
+        self.interface = weakref.proxy(impl.interface)
 
     def handleDraw(self, canvas):
-        context = Context(self.impl, canvas)
-        self.interface.context._draw(context)
+        with suppress_reference_error():
+            context = Context(self.impl, canvas)
+            self.interface.context._draw(context)
 
 
 class TouchListener(dynamic_proxy(View.OnTouchListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
-        self.interface = impl.interface
+        self.impl = weakref.proxy(impl)
+        self.interface = weakref.proxy(impl.interface)
 
     def onTouch(self, canvas, event):
-        x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
-        if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
-            self.interface.on_press(x, y)
-        elif action == MotionEvent.ACTION_MOVE:
-            self.interface.on_drag(x, y)
-        elif action == MotionEvent.ACTION_UP:
-            self.interface.on_release(x, y)
-        else:  # pragma: no cover
-            return False
+        with suppress_reference_error():
+            x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
+            if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
+                self.interface.on_press(x, y)
+            elif action == MotionEvent.ACTION_MOVE:
+                self.interface.on_drag(x, y)
+            elif action == MotionEvent.ACTION_UP:
+                self.interface.on_release(x, y)
+            else:  # pragma: no cover
+                return False
         return True
 
 

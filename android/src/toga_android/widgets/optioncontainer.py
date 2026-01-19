@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+import weakref
 from dataclasses import dataclass
 
 from android.view import MenuItem
@@ -21,7 +22,7 @@ from travertino.size import at_least
 import toga
 
 from ..container import Container
-from .base import Widget
+from .base import Widget, suppress_reference_error
 
 
 @dataclass
@@ -40,15 +41,15 @@ if NavigationBarView is not None:  # pragma: no branch
     ):
         def __init__(self, impl):
             super().__init__()
-            self.impl = impl
+            self.impl = weakref.proxy(impl)
 
         def onNavigationItemSelected(self, item):
-            for index, option in enumerate(self.impl.options):
-                if option.menu_item == item:
-                    self.impl.set_current_tab_index(index, programmatic=False)
-                    return True
+            with suppress_reference_error():
+                for index, option in enumerate(self.impl.options):
+                    if option.menu_item == item:
+                        self.impl.set_current_tab_index(index, programmatic=False)
+                        return True
 
-            # You shouldn't be able to select an item that isn't isn't selectable.
             return False  # pragma: no cover
 
 

@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_UP
 
 from android import R
@@ -5,19 +6,21 @@ from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
 from java import dynamic_proxy
 
-from toga_android.widgets.base import ContainedWidget
+from .base import ContainedWidget, suppress_reference_error
 
 
 class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onItemSelected(self, parent, view, position, id):
-        self.impl.on_change(position)
+        with suppress_reference_error():
+            self.impl.on_change(position)
 
     def onNothingSelected(self, parent):
-        self.impl.on_change(None)
+        with suppress_reference_error():
+            self.impl.on_change(None)
 
 
 class Selection(ContainedWidget):
