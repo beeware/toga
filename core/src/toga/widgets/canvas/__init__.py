@@ -26,7 +26,10 @@ from .geometry import arc_to_bezier, sweepangle
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
-_deprecated_names = {"DrawingObject": DrawingAction}
+_deprecated_names = {
+    # Jan 2026: DrawingAction was named DrawingObject in Toga 0.5.3 and earlier
+    "DrawingObject": DrawingAction
+}
 
 
 def __getattr__(name):
