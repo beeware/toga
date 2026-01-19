@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 from PySide6.QtCore import QAbstractTableModel, QItemSelection, QItemSelectionModel, Qt
 from PySide6.QtWidgets import QTableView
@@ -46,18 +48,23 @@ class TableProbe(SimpleProbe):
         if widget:
             pytest.skip("Qt doesn't support widgets in Tables")
         else:
-            index = self.native_model.index(row, col)
-            if value:
-                assert (
-                    self.native_model.data(index, Qt.ItemDataRole.DisplayRole) == value
-                )
-            if icon:
-                assert (
-                    self.native_model.data(
-                        index, Qt.ItemDataRole.DecorationRole
-                    ).cacheKey()
-                    == icon._impl.native.cacheKey()
-                )
+            # Ignore warnings about widgets in Tables when we're just looking at
+            # the cell data, as opposed to when the table is rendering it.
+            with warnings.catch_warnings(category=UserWarning):
+                index = self.native_model.index(row, col)
+                if value:
+                    assert value == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.DisplayRole,
+                    )
+                if icon:
+                    assert (
+                        icon._impl.native.cacheKey()
+                        == self.native_model.data(
+                            index,
+                            Qt.ItemDataRole.DecorationRole,
+                        ).cacheKey()
+                    )
 
     @property
     def max_scroll_position(self):

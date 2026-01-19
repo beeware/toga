@@ -1,3 +1,4 @@
+import logging
 import warnings
 from typing import Any
 
@@ -8,6 +9,8 @@ from travertino.size import at_least
 from toga.sources import ListSource
 
 from .base import Widget
+
+logger = logging.getLogger(__name__)
 
 # convenience root/invalid index object
 INVALID_INDEX = QModelIndex()
@@ -55,17 +58,25 @@ class TableSourceModel(QAbstractTableModel):
         self,
         parent: QModelIndex | QPersistentModelIndex = INVALID_INDEX,
     ) -> int:
-        if self._source is None:
-            return 0  # pragma: no cover
-        return len(self._source)
+        # this could call out to end-user data sources, so could fail.
+        try:
+            if self._source is not None:
+                return len(self._source)
+        except Exception:  # pragma: no cover
+            logger.exception("Could not get data length.")
+        return 0  # pragma: no cover
 
     def columnCount(
         self,
         parent: QModelIndex | QPersistentModelIndex = INVALID_INDEX,
     ) -> int:
-        if self._columns is None:
-            return 0  # pragma: no cover
-        return len(self._columns)
+        # this could call out to end-user data sources, so could fail.
+        try:
+            if self._columns is None:
+                return len(self._columns)
+        except Exception:  # pragma: no cover
+            logger.exception("Could not get number of columns.")
+        return 0  # pragma: no cover
 
     def data(
         self,
@@ -73,31 +84,46 @@ class TableSourceModel(QAbstractTableModel):
         /,
         role: int = Qt.ItemDataRole.DisplayRole,
     ) -> Any:
-        if not index.isValid():
-            return None  # pragma: no cover
-        source = self._source
-        if source is None:
-            return None  # pragma: no cover
-        if (row_index := index.row()) >= len(source):
-            return None  # pragma: no cover
+        # Return empty data if index is invalid, shouldn't happen in normal operation
+        # but checking prevents crashes
+        if index.isValid():  # pragma: no branch
+            row_index = index.row()
+            column_index = index.column()
+            # this could call out to end-user data sources, so could fail.
+            try:
+                if (source := self._source) is None:
+                    # this can happen briefly during initialization
+                    return None  # pragma: no cover
+                if row_index >= len(source):
+                    # This should not happen in normal operation, but could occur
+                    # if data changed and notification hasn't been sent
+                    return None  # pragma: no cover
 
-        columns = self._columns
-        if (column_index := index.column()) >= len(columns):
-            return None  # pragma: no cover
+                columns = self._columns
+                if column_index >= len(columns):
+                    # This should not happen in normal operation, but could occur
+                    # if data changed and notification hasn't been sent
+                    return None  # pragma: no cover
 
-        row = source[row_index]
-        column = columns[column_index]
-        if column.widget(row) is not None:
-            warnings.warn(
-                "Qt does not support the use of widgets in cells",
-                stacklevel=2,
-            )
-        if role == Qt.ItemDataRole.DecorationRole:
-            icon = column.icon(row)
-            if icon is not None:
-                return icon._impl.native
-        elif role == Qt.ItemDataRole.DisplayRole:
-            return column.text(row, self._missing_value)
+                row = source[row_index]
+                column = columns[column_index]
+                if column.widget(row) is not None:
+                    warnings.warn(
+                        "Qt does not support the use of widgets in cells",
+                        stacklevel=2,
+                    )
+
+                # currently only handle icons and text
+                if role == Qt.ItemDataRole.DecorationRole:
+                    icon = column.icon(row)
+                    if icon is not None:
+                        return icon._impl.native
+                elif role == Qt.ItemDataRole.DisplayRole:
+                    return column.text(row, self._missing_value)
+            except Exception:  # pragma: no cover
+                logger.exception(
+                    f"Could not get data for row {row_index}, column {column_index}"
+                )
         return None
 
     def headerData(
@@ -109,10 +135,13 @@ class TableSourceModel(QAbstractTableModel):
     ) -> Any:
         if orientation == Qt.Orientation.Horizontal:
             columns = self._columns
-            if section >= len(columns):
-                return None  # pragma: no cover
-            if role == Qt.ItemDataRole.DisplayRole:
-                return columns[section].heading
+            # this could call out to end-user data sources, so could fail.
+            try:
+                if section < len(columns):  # pragma: no branch
+                    if role == Qt.ItemDataRole.DisplayRole:
+                        return columns[section].heading
+            except Exception:  # pragma: no cover
+                logger.exception(f"Could not header for column {section}.")
 
         return None
 
@@ -151,6 +180,7 @@ class Table(Widget):
         self.interface.on_select()
 
     def qt_activated(self, index):
+        # Invalid index shouldn't occur in normal operation.
         if index.isValid():  # pragma: no branch
             self.interface.on_activate(row=self.interface.data[index.row()])
 
