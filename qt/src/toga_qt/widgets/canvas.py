@@ -28,9 +28,10 @@ BLACK = native_color(rgb(0, 0, 0))
 
 
 class State:
-    """Doesn't need to track transform, only fill/stroke-related properties."""
+    """Track transform and fill/stroke-related properties."""
 
     def __init__(self, former_state=None):
+        self.transform = QTransform()
         if former_state:
             self.fill_style = former_state.fill_style
             self.stroke = QPen(former_state.stroke)
@@ -63,8 +64,9 @@ class Context:
         self.native.save()
 
     def restore(self):
-        self.states.pop()
+        state = self.states.pop()
         self.native.restore()
+        self._path = state.transform.map(self._path)
 
     # Setting attributes
     def set_fill_style(self, color):
@@ -183,14 +185,36 @@ class Context:
     def rotate(self, radians):
         self.native.rotate(degrees(radians))
 
+        # track transforms and adjust path
+        self.states[-1].transform.rotateRadians(radians)
+        inverse = QTransform()
+        inverse.rotateRadians(-radians)
+        self._path = inverse.map(self._path)
+
     def scale(self, sx, sy):
         self.native.scale(sx, sy)
+
+        # track transforms and adjust path
+        self.states[-1].transform.scale(sx, sy)
+        inverse = QTransform()
+        inverse.scale(1 / sx, 1 / sy)
+        self._path = inverse.map(self._path)
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
 
+        # track transforms and adjust path
+        self.states[-1].transform.translate(tx, ty)
+        inverse = QTransform()
+        inverse.scale(-tx, -ty)
+        self._path = inverse.map(self._path)
+
     def reset_transform(self):
         self.native.resetTransform()
+
+        for state in reversed(self.states):
+            self._path = state.transform.map(self._path)
+            state.transform = QTransform()
 
     # Text
     def write_text(self, text, x, y, font, baseline, line_height):

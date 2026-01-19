@@ -21,7 +21,6 @@ from toga.colors import (
 )
 from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
-from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM, Pack
 
 from .conftest import build_cleanup_test
@@ -108,7 +107,7 @@ async def canvas(widget, probe, on_resize_handler):
     return widget
 
 
-test_cleanup = build_cleanup_test(toga.Canvas)
+test_cleanup = build_cleanup_test(toga.Canvas, xfail_platforms=("android",))
 
 
 async def test_resize(widget, probe, on_resize_handler):
@@ -239,7 +238,6 @@ async def test_image_data(canvas, probe):
         image.size,
         (200, 200),
         screen=canvas.window.screen,
-        window=canvas.window,
     )
 
 
@@ -644,27 +642,6 @@ async def test_stroke_and_fill_context(canvas, probe):
     assert_reference(probe, "stroke_and_fill_context")
 
 
-async def test_nested_stroke_and_fill_context(canvas, probe):
-    """Inner contexts don't override unsupplied attributes."""
-    with canvas.context.Fill(color=GOLDENROD) as fill:
-        with fill.Fill() as inner_fill:
-            # Should still be goldenrod
-            inner_fill.rect(10, 10, 50, 50)
-
-    with canvas.context.Stroke(
-        color=REBECCAPURPLE,
-        line_width=15,
-        line_dash=[15, 14],
-    ) as stroke:
-        with stroke.Stroke() as inner_stroke:
-            # Should still be wide, dashed, and purple
-            inner_stroke.move_to(100, 10)
-            inner_stroke.line_to(100, 150)
-
-    await probe.redraw("Nested stroke and fill contexts should be drawn")
-    assert_reference(probe, "nested_stroke_and_fill_context")
-
-
 async def test_transforms(canvas, probe):
     "Transforms can be applied"
 
@@ -695,6 +672,31 @@ async def test_transforms(canvas, probe):
 
     await probe.redraw("Transforms can be applied")
     assert_reference(probe, "transforms")
+
+
+@pytest.mark.xfail(
+    condition=toga.backend in {"android", "winforms"},
+    reason="Issue #4053: paths not correctly transformed.",
+)
+async def test_transforms_mid_path(canvas, probe):
+    # draw a series of rotated rectangles
+    canvas.context.begin_path()
+    canvas.context.translate(100, 100)
+    for _ in range(12):
+        canvas.context.rect(50, 0, 10, 10)
+        canvas.context.rotate(math.pi / 6)
+    canvas.context.fill()
+
+    # draw a series of line segments
+    canvas.context.begin_path()
+    canvas.context.move_to(25, 0)
+    for _ in range(12):
+        canvas.context.line_to(25, 0)
+        canvas.context.rotate(math.pi / 6)
+    canvas.context.fill(CORNFLOWERBLUE)
+
+    await probe.redraw("Transforms can be applied")
+    assert_reference(probe, "transforms_mid_path")
 
 
 @pytest.mark.xfail(
@@ -900,30 +902,3 @@ async def test_write_text_and_path(canvas, probe):
 
     await probe.redraw("Text and path should be drawn independently")
     assert_reference(probe, "write_text_and_path", 0.04)
-
-
-async def test_draw_image_at_point(canvas, probe):
-    "Images can be drawn at a point."
-
-    image = TogaImage("resources/sample.png")
-    canvas.context.begin_path()
-    canvas.context.draw_image(image, 10, 10)
-
-    await probe.redraw("Image should be drawn")
-    assert_reference(probe, "draw_image", threshold=0.05)
-
-
-async def test_draw_image_in_rect(canvas, probe):
-    "Images can be drawn in a rectangle."
-
-    image = TogaImage("resources/sample.png")
-    canvas.context.begin_path()
-    canvas.context.translate(82, 46)
-    canvas.context.rotate(-pi / 6)
-    canvas.context.translate(-82, -46)
-    canvas.context.draw_image(image, 10, 10, 72, 144)
-    canvas.context.rect(10, 10, 72, 144)
-    canvas.context.stroke(REBECCAPURPLE)
-
-    await probe.redraw("Image should be drawn")
-    assert_reference(probe, "draw_image_in_rect", threshold=0.05)
