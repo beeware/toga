@@ -103,7 +103,7 @@ class Window:
         # closing an app should automatically close all windows
         # regardless of handler status.
         # No-covered because exiting an app will terminate the testbed.
-        if self.app._is_exiting:  # pragma: no cover
+        if self.interface.app._is_exiting:  # pragma: no cover
             return
         if not self.prog_close:
             # Reject the event before the handler runs, if this is not a close
@@ -198,7 +198,6 @@ class Window:
         self.native.move(position[0], position[1])
 
     def set_app(self, app):
-        self.app = app
         # All windows instantiated belongs to your only QApplication
         # and no need to explicitly set app, but the app icon needs to be
         # applied onto the window.
