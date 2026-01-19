@@ -58,7 +58,7 @@ class Context:
         stroke.setStrokeWidth(2.0)
         stroke.setColor(BLACK)
 
-        self.states = [State(fill, stroke)]
+        self.states = [State(fill, stroke, Matrix())]
 
     @property
     def state(self):
@@ -189,7 +189,7 @@ class Context:
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
-        self.states[-1].transform.postTranslate(tx, ty)
+        self.state.transform.postTranslate(tx, ty)
 
         inverse = Matrix()
         inverse.setTransform(-tx, -ty)
@@ -197,12 +197,13 @@ class Context:
 
     def reset_transform(self):
         self.native.setMatrix(None)
-        self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
         for state in reversed(self.states):
             self.path.Transform(state.transform)
             # set matrix to identity
             state.transform.setRotate(0)
+
+        self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
     def write_text(self, text, x, y, font, baseline, line_height):

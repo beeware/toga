@@ -698,7 +698,7 @@ async def test_transforms(canvas, probe):
 
 
 async def test_transforms_mid_path(canvas, probe):
-    skip_on_backends("winforms", reason="Issue #2206")
+    skip_on_backends("toga_winforms", reason="Issue #2206")
 
     # draw a series of rotated rectangles
     canvas.context.begin_path()
