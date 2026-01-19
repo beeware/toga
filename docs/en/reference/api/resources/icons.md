@@ -46,40 +46,7 @@ Any icon that is found will be resized to the required size. Toga will generate 
 
 An icon is **guaranteed** to have an implementation, regardless of the path specified. If you specify a path and no matching icon can be found, Toga will output a warning to the console, and return [`DEFAULT_ICON`][toga.Icon.DEFAULT_ICON]. The only exception to this is if an icon file is *found*, but it cannot be loaded (e.g., due to a file format or permission error). In this case, an error will be raised.
 
-If you are using relative path for your icon, note that the starting point of the
-path will be relative to the module where you define the `toga.App class`.
-
-Example:
-
-```python
-
-# app.py
-
-import toga
-
-class MyTogaApp(toga.App):  # <-- Defined Here in app.py module
-    def startup(self):
-        # This looks in the SAME folder as app.py
-        icon = toga.Icon("icon.png")
-
-        # This looks ONE folder up, then into 'resources'
-        logo = toga.Image("../resources/logo.png")
-
-```
-
-Project structure
-
-```text
-
-my_project/
-├── src/
-│   └── myapp/
-│       ├── app.py          <-- Your Toga App class is defined here
-│       └── icon.png        <-- Relative path: "icon.png"
-└── resources/
-    └── logo.png            <-- Relative path: "../resources/logo.png"
-
-```
+When you provide a relative path, Toga resolves it relative to the module that defines your toga.App subclass. If you instantiate toga.App directly (without subclassing), there is no separate “app module”, so the relative path may be resolved relative to the Toga installation instead of your project module. In that case, icons in a local resources folder will not be found; to avoid this, either define a simple toga.App subclass in your own module, or use an absolute path for the icon.
 
 ## Reference
 

@@ -82,13 +82,15 @@ class Icon:
         """Create a new icon.
 
         :param path:Base filename for the icon. Should not contain an extension
-        (If an extension is specified, it will be ignored). Paths can be absolute
-        or relative. Relative paths start from the folder containing the Python file
-        where you defined your Toga App class.
+            (If an extension is specified, it will be ignored). Paths can be absolute
+            or relative. Relative paths start from the folder where your `toga.App`
+            subclass is defined.
 
-        If the icon cannot be found, the default icon will be [Icon.DEFAULT_ICON].
-        If icon found, but cannot be loaded (due to a file format or permission error),
-        an exception will be raised.
+            If the icon cannot be found, the default icon will be
+            [Icon.DEFAULT_ICON][toga.Icon.DEFAULT_ICON].
+
+            If icon found, but cannot be loaded (due to a file format
+            or permission error), an exception will be raised.
         :param system: **For internal use only**
         """
         self.factory = get_platform_factory()
