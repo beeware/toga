@@ -644,6 +644,27 @@ async def test_stroke_and_fill_context(canvas, probe):
     assert_reference(probe, "stroke_and_fill_context")
 
 
+async def test_nested_stroke_and_fill_context(canvas, probe):
+    """Inner contexts don't override unsupplied attributes."""
+    with canvas.context.Fill(color=GOLDENROD) as fill:
+        with fill.Fill() as inner_fill:
+            # Should still be goldenrod
+            inner_fill.rect(10, 10, 50, 50)
+
+    with canvas.context.Stroke(
+        color=REBECCAPURPLE,
+        line_width=15,
+        line_dash=[15, 14],
+    ) as stroke:
+        with stroke.Stroke() as inner_stroke:
+            # Should still be wide, dashed, and purple
+            inner_stroke.move_to(100, 10)
+            inner_stroke.line_to(100, 150)
+
+    await probe.redraw("Nested stroke and fill contexts should be drawn")
+    assert_reference(probe, "nested_stroke_and_fill_context")
+
+
 async def test_transforms(canvas, probe):
     "Transforms can be applied"
 

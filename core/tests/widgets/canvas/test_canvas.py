@@ -90,8 +90,8 @@ def test_redraw(widget):
 
     # An empty canvas has 2 draw operations - pushing and popping the root context.
     assert widget._impl.draw_instructions == [
-        ("push context", {}),
-        ("pop context", {}),
+        "save",
+        "restore",
     ]
 
 
