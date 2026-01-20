@@ -42,7 +42,7 @@ def verify_focus_handlers():
     return False
 
 
-test_cleanup = build_cleanup_test(toga.NumberInput, xfail_platforms=("android",))
+test_cleanup = build_cleanup_test(toga.NumberInput)
 
 
 async def test_on_change_handler(widget, probe):
