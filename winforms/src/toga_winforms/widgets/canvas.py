@@ -264,10 +264,11 @@ class Context:
             path.Transform(inverse)
 
     def reset_transform(self):
-        inverse = self.native.Transform.Invert()
+        matrix = self.native.Transform
+        matrix.Invert()
         self.native.ResetTransform()
         for path in self.paths:
-            path.Transform(inverse)
+            path.Transform(matrix)
 
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
@@ -332,13 +333,8 @@ class Canvas(Box):
     # would give incorrect results if it was semi-transparent. But we do paint it in
     # get_image_data.
     def winforms_paint(self, panel, event, *args):
-        try:
-            context = Context(self, event.Graphics)
-            self.interface.context._draw(context)
-        except Exception:
-            import logging
-
-            logging.exception("Painting failed")
+        context = Context(self, event.Graphics)
+        self.interface.context._draw(context)
 
     def winforms_resize(self, *args):
         self.interface.on_resize(
