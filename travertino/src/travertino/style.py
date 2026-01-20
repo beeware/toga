@@ -158,14 +158,10 @@ class BaseStyle:
     ######################################################################
 
     def _apply(self, names: set):
-        raise NotImplementedError(
-            "Style must define an _apply method"
-        )  # pragma: no cover
+        raise NotImplementedError("Style must define an _apply method")
 
     def layout(self, viewport):
-        raise NotImplementedError(
-            "Style must define a layout method"
-        )  # pragma: no cover
+        raise NotImplementedError("Style must define a layout method")
 
     ######################################################################
     # Support for batching calls to apply()

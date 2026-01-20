@@ -40,9 +40,9 @@ if TYPE_CHECKING:
 
 class DrawingActionDispatch:
     @property
-    def _action_target(self):  # pragma: no cover
+    def _action_target(self):
         """The Context that should receive the drawing actions."""
-        raise NotImplementedError
+        raise NotImplementedError()
 
     ###########################################################################
     # Path manipulation
@@ -546,11 +546,11 @@ class Context(DrawingAction, DrawingActionDispatch):
         # kwargs used to support multiple inheritance
         super().__init__(**kwargs)
         self._canvas = canvas
-        self.drawing_objects: list[DrawingAction] = []
+        self.drawing_actions: list[DrawingAction] = []
 
     def _draw(self, context: Any) -> None:
         context.save()
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
         context.restore()
 
@@ -578,18 +578,18 @@ class Context(DrawingAction, DrawingActionDispatch):
 
     def __len__(self) -> int:
         """Returns the number of drawing objects that are in this context."""
-        return len(self.drawing_objects)
+        return len(self.drawing_actions)
 
     def __getitem__(self, index: int) -> DrawingAction:
         """Returns the drawing object at the given index."""
-        return self.drawing_objects[index]
+        return self.drawing_actions[index]
 
     def append(self, obj: DrawingAction) -> None:
         """Append a drawing object to the context.
 
         :param obj: The drawing object to add to the context.
         """
-        self.drawing_objects.append(obj)
+        self.drawing_actions.append(obj)
         self.redraw()
 
     def insert(self, index: int, obj: DrawingAction) -> None:
@@ -598,7 +598,7 @@ class Context(DrawingAction, DrawingActionDispatch):
         :param index: The index at which the drawing object should be inserted.
         :param obj: The drawing object to add to the context.
         """
-        self.drawing_objects.insert(index, obj)
+        self.drawing_actions.insert(index, obj)
         self.redraw()
 
     def remove(self, obj: DrawingAction) -> None:
@@ -606,12 +606,12 @@ class Context(DrawingAction, DrawingActionDispatch):
 
         :param obj: The drawing object to remove.
         """
-        self.drawing_objects.remove(obj)
+        self.drawing_actions.remove(obj)
         self.redraw()
 
     def clear(self) -> None:
         """Remove all drawing objects from the context."""
-        self.drawing_objects.clear()
+        self.drawing_actions.clear()
         self.redraw()
 
 
@@ -654,7 +654,7 @@ class ClosedPathContext(Context):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
 
         context.close_path()
@@ -711,7 +711,7 @@ class FillContext(ClosedPathContext):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
 
         context.fill(self.fill_rule)
@@ -784,7 +784,7 @@ class StrokeContext(ClosedPathContext):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
 
         context.stroke()
