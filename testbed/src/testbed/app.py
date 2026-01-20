@@ -222,12 +222,17 @@ class Testbed(toga.App):
         self.main_window.show()
 
     async def on_running(self):
-        # As soon as the app is running and the main window is visible,
-        # use the GUI thread to set a flag that the test suite can use
-        # as permission to proceed.
-        while not self.main_window.visible:
-            asyncio.sleep(0.05)
-        self.is_visible = True
+        # As soon as the app is running and the main window is visible, use the GUI
+        # thread to set a flag that the test suite can use as permission to proceed.
+        try:
+            async with asyncio.timeout(10):
+                while not self.main_window.visible:  # noqa: ASYNC110
+                    await asyncio.sleep(0.05)
+            self.is_visible = True
+        except TimeoutError:
+            # No extra handling required in the app. The test thread will fail after 5
+            # seconds, killing the test suite.
+            pass
 
 
 def main(appname):
