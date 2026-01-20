@@ -107,12 +107,12 @@ class Context:
         return self.states[-1]
 
     def save(self):
-        graphics_state = self.impl.Save()
+        graphics_state = self.native.Save()
         self.states.append(self.state.new_state(graphics_state))
 
     def restore(self):
         state = self.states.pop()
-        self.impl.Restore(state.graphics_state)
+        self.native.Restore(state.graphics_state)
 
     # Setting attributes
 
