@@ -421,7 +421,7 @@ class WriteText(DrawingAction):
         )
 
     @property
-    def font(self) -> Font:
+    def font(self) -> Font | None:
         return self._font
 
     @font.setter
@@ -460,7 +460,7 @@ class DrawImage(DrawingAction):
         )
 
     @property
-    def width(self) -> float:
+    def width(self) -> float | None:
         return self._width
 
     @width.setter
@@ -468,7 +468,7 @@ class DrawImage(DrawingAction):
         self._width = value
 
     @property
-    def height(self) -> float:
+    def height(self) -> float | None:
         return self._height
 
     @height.setter
