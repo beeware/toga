@@ -198,10 +198,13 @@ class Context:
     def reset_transform(self):
         self.native.setMatrix(None)
 
+        # current matrix needs to unwind all previous states
+        # can't just ask for current total transform as `getMatrix` is deprecated
         for state in reversed(self.states):
             self.path.transform(state.transform)
-            # set matrix to identity
-            state.transform.setRotate(0)
+            inverse = Matrix()
+            if state.transform.inverse(inverse):
+                self.state.transform.postTransform(inverse)
 
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 

@@ -211,11 +211,10 @@ class Context:
         self._path = inverse.map(self._path)
 
     def reset_transform(self):
+        transform = self.native.transform()
         self.native.resetTransform()
-
-        for state in reversed(self.states):
-            self._path = state.transform.map(self._path)
-            state.transform = QTransform()
+        self._path = transform.map(self._path)
+        self.state.transform *= transform.inverted()
 
     # Text
     def write_text(self, text, x, y, font, baseline, line_height):
