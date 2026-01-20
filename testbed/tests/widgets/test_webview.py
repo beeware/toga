@@ -207,23 +207,24 @@ async def test_static_content(widget, probe, on_load):
 
 
 async def test_static_large_content(widget, probe, on_load):
-    """Static large content can be loaded into the page on windows"""
+    """Static large content can be loaded into the page"""
+    large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
+    url = "https://example.com/"
+    widget.set_content(url, large_content)
     if toga.platform.current_platform == "windows":
-        large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
-        widget.set_content("https://example.com/", large_content)
         for f in os.listdir(widget._impl._large_content_dir):
             p = widget._impl._large_content_dir / f
-        new_url = p.as_uri().replace("%20", " ")
+        url = p.as_uri().replace("%20", " ")
 
-        # DOM loads aren't instantaneous; wait for the URL to appear
-        await assert_content_change(
-            widget,
-            probe,
-            message="Webview has static large content",
-            url=new_url,
-            content=large_content,
-            on_load=on_load,
-        )
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static large content",
+        url=url,
+        content=large_content,
+        on_load=on_load,
+    )
 
 
 async def test_user_agent(widget, probe):

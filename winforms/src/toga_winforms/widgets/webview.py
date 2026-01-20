@@ -252,8 +252,7 @@ class WebView(Widget):
             h.update(bytes(root_url, "utf-8"))
             file_name = h.hexdigest() + ".html"
             file_path = self._large_content_dir / file_name
-            with open(file_path, "w") as f:
-                f.write(content)
+            file_path.write_text(content, encoding="utf-8")
             self.set_url(file_path.as_uri())
         else:
             # There appears to be no way to pass the root_url.
