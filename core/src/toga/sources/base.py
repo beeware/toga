@@ -121,7 +121,8 @@ def __getattr__(name):
     if name == "Listener":
         import warnings
 
-        # Alias for backwards compatibility.
+        # Alias for backwards compatibility:
+        # Jan 2025: In 0.5.3 and earlier, ListListener was named Listener
         global Listener
         Listener = ListListener
         warnings.warn(

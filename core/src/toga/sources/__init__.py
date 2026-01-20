@@ -28,7 +28,8 @@ __all__ = [
 
 def __getattr__(name):
     if name == "Listener":
-        # Alias for backwards compatibility.
+        # Alias for backwards compatibility:
+        # Jan 2025: In 0.5.3 and earlier, ListListener was named Listener
         global Listener
         from .base import Listener
 
