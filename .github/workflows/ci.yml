@@ -41,33 +41,33 @@ jobs:
   #   with:
   #     tox-source: "--group tox-uv"
 
-  # package:
-  #   name: Package Toga
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-  #     attestations: write
-  #   strategy:
-  #     matrix:
-  #       subdir:
-  #       - "android"
-  #       - "cocoa"
-  #       - "core"
-  #       - "demo"
-  #       - "dummy"
-  #       - "gtk"
-  #       - "qt"
-  #       - "iOS"
-  #       - "toga"
-  #       - "positron"
-  #       - "travertino"
-  #       - "textual"
-  #       - "web"
-  #       - "winforms"
-  #   uses: beeware/.github/.github/workflows/python-package-create.yml@main
-  #   with:
-  #     build-subdirectory: ${{ matrix.subdir }}
-  #     attest: ${{ inputs.attest-package }}
+  package:
+    name: Package Toga
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+    strategy:
+      matrix:
+        subdir:
+        - "android"
+        - "cocoa"
+        - "core"
+        - "demo"
+        - "dummy"
+        - "gtk"
+        - "qt"
+        - "iOS"
+        - "toga"
+        - "positron"
+        - "travertino"
+        - "textual"
+        - "web"
+        - "winforms"
+    uses: beeware/.github/.github/workflows/python-package-create.yml@main
+    with:
+      build-subdirectory: ${{ matrix.subdir }}
+      attest: ${{ inputs.attest-package }}
 
   # core-and-travertino:
   #   name: Test ${{ matrix.package }} (${{ matrix.platform }}, ${{ matrix.python-version }})
@@ -210,6 +210,7 @@ jobs:
 
   testbed:
     name: Testbed (${{ matrix.backend }})
+    needs: [ package ]
     # needs: [ package, core-and-travertino ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
