@@ -1,0 +1,1 @@
+A layout timing inconsistency that caused failures on the iOS testbed has been resolved.
