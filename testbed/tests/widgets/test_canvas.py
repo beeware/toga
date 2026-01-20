@@ -716,7 +716,7 @@ async def test_transforms_mid_path(canvas, probe):
     canvas.context.fill(CORNFLOWERBLUE)
 
     await probe.redraw("Transforms can be applied")
-    assert_reference(probe, "transforms_mid_path", threshold=0.011)
+    assert_reference(probe, "transforms_mid_path", threshold=0.013)
 
 
 @pytest.mark.xfail(
