@@ -27,9 +27,9 @@ def test_subcontext(widget):
 
     # The first and last instructions can be ignored; they're the root canvas context
     assert widget._impl.draw_instructions[1:-1] == [
-        ("push context", {}),
+        "save",
         ("line to", {"x": 30, "y": 40}),
-        ("pop context", {}),
+        "restore",
     ]
 
 
@@ -83,12 +83,12 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
 
     # The first and last instructions can be ignored; they're the root canvas context
     assert widget._impl.draw_instructions[1:-1] == [
-        ("push context", {}),
-        ("begin path", {}),
+        "save",
+        "begin path",
     ] + ([("move to", {"x": 10, "y": 20})] if has_move else []) + [
         ("line to", {"x": 30, "y": 40}),
-        ("close path", {}),
-        ("pop context", {}),
+        "close path",
+        "restore",
     ]
 
 
@@ -98,35 +98,35 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
         # Defaults
         (
             {},
-            "x=None, y=None, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
+            "x=None, y=None, color=None, fill_rule=FillRule.NONZERO",
             False,
             {
                 "x": None,
                 "y": None,
-                "color": rgb(0, 0, 0),
+                "color": None,
                 "fill_rule": FillRule.NONZERO,
             },
         ),
         # X only
         (
             {"x": 10},
-            "x=10, y=None, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
+            "x=10, y=None, color=None, fill_rule=FillRule.NONZERO",
             False,
-            {"x": 10, "y": None, "color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
+            {"x": 10, "y": None, "color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Y only
         (
             {"y": 20},
-            "x=None, y=20, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
+            "x=None, y=20, color=None, fill_rule=FillRule.NONZERO",
             False,
-            {"x": None, "y": 20, "color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
+            {"x": None, "y": 20, "color": None, "fill_rule": FillRule.NONZERO},
         ),
         # X and Y
         (
             {"x": 10, "y": 20},
-            "x=10, y=20, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
+            "x=10, y=20, color=None, fill_rule=FillRule.NONZERO",
             True,
-            {"x": 10, "y": 20, "color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
+            {"x": 10, "y": 20, "color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Color
         (
@@ -143,27 +143,27 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
                 "fill_rule": FillRule.NONZERO,
             },
         ),
-        # Reset color with None
+        # Explicitly don't set color
         (
             {"color": None},
-            "x=None, y=None, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
+            "x=None, y=None, color=None, fill_rule=FillRule.NONZERO",
             False,
             {
                 "x": None,
                 "y": None,
-                "color": rgb(0, 0, 0),
+                "color": None,
                 "fill_rule": FillRule.NONZERO,
             },
         ),
         # Fill Rule
         (
             {"x": None, "y": None, "fill_rule": FillRule.EVENODD},
-            "x=None, y=None, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.EVENODD",
+            "x=None, y=None, color=None, fill_rule=FillRule.EVENODD",
             False,
             {
                 "x": None,
                 "y": None,
-                "color": rgb(0, 0, 0),
+                "color": None,
                 "fill_rule": FillRule.EVENODD,
             },
         ),
@@ -194,26 +194,21 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
     for attr, value in properties.items():
         assert getattr(fill, attr) == value
 
-    # x and y aren't part of the fill instruction
-    x = properties.pop("x")
-    y = properties.pop("y")
-
     # The first and last instructions can be ignored; they're the root canvas context
+    commands = [
+        "save",
+        ("set fill style", color)
+        if (color := properties["color"]) is not None
+        else None,
+        "begin path",
+        ("move to", {"x": properties["x"], "y": properties["y"]}) if has_move else None,
+        ("line to", {"x": 30, "y": 40}),
+        ("fill", {"fill_rule": properties["fill_rule"]}),
+        "restore",
+    ]
+
     assert widget._impl.draw_instructions[1:-1] == [
-        ("push context", {}),
-        ("begin path", {}),
-    ] + ([("move to", {"x": x, "y": y})] if has_move else []) + [
-        (
-            "line to",
-            {
-                "x": 30,
-                "y": 40,
-                "fill_color": properties["color"],
-                "fill_rule": properties["fill_rule"],
-            },
-        ),
-        ("fill", properties),
-        ("pop context", {}),
+        command for command in commands if command is not None
     ]
 
 
@@ -223,52 +218,52 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # Defaults
         (
             {},
-            "x=None, y=None, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
+            "x=None, y=None, color=None, line_width=None, line_dash=None",
             False,
             {
                 "x": None,
                 "y": None,
-                "color": rgb(0, 0, 0),
-                "line_width": 2.0,
+                "color": None,
+                "line_width": None,
                 "line_dash": None,
             },
         ),
         # X only
         (
             {"x": 10},
-            "x=10, y=None, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
+            "x=10, y=None, color=None, line_width=None, line_dash=None",
             False,
             {
                 "x": 10,
                 "y": None,
-                "color": rgb(0, 0, 0),
-                "line_width": 2.0,
+                "color": None,
+                "line_width": None,
                 "line_dash": None,
             },
         ),
         # Y only
         (
             {"y": 20},
-            "x=None, y=20, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
+            "x=None, y=20, color=None, line_width=None, line_dash=None",
             False,
             {
                 "x": None,
                 "y": 20,
-                "color": rgb(0, 0, 0),
-                "line_width": 2.0,
+                "color": None,
+                "line_width": None,
                 "line_dash": None,
             },
         ),
         # X and Y
         (
             {"x": 10, "y": 20},
-            "x=10, y=20, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
+            "x=10, y=20, color=None, line_width=None, line_dash=None",
             True,
             {
                 "x": 10,
                 "y": 20,
-                "color": rgb(0, 0, 0),
-                "line_width": 2.0,
+                "color": None,
+                "line_width": None,
                 "line_dash": None,
             },
         ),
@@ -277,39 +272,39 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
             {"color": REBECCAPURPLE},
             (
                 f"x=None, y=None, color={REBECCA_PURPLE_COLOR!r}, "
-                f"line_width=2.0, line_dash=None"
+                f"line_width=None, line_dash=None"
             ),
             False,
             {
                 "x": None,
                 "y": None,
                 "color": REBECCA_PURPLE_COLOR,
-                "line_width": 2.0,
+                "line_width": None,
                 "line_dash": None,
             },
         ),
-        # Reset color with None
+        # Explicitly don't set color
         (
             {"color": None},
-            "x=None, y=None, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
+            "x=None, y=None, color=None, line_width=None, line_dash=None",
             False,
             {
                 "x": None,
                 "y": None,
-                "color": rgb(0, 0, 0),
-                "line_width": 2.0,
+                "color": None,
+                "line_width": None,
                 "line_dash": None,
             },
         ),
         # Line width
         (
             {"x": None, "y": None, "line_width": 4.5},
-            "x=None, y=None, color=rgb(0, 0, 0, 1.0), line_width=4.5, line_dash=None",
+            "x=None, y=None, color=None, line_width=4.5, line_dash=None",
             False,
             {
                 "x": None,
                 "y": None,
-                "color": rgb(0, 0, 0),
+                "color": None,
                 "line_width": 4.5,
                 "line_dash": None,
             },
@@ -317,13 +312,13 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # Line dash
         (
             {"x": None, "y": None, "line_dash": [2, 7]},
-            "x=None, y=None, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=[2, 7]",
+            "x=None, y=None, color=None, line_width=None, line_dash=[2, 7]",
             False,
             {
                 "x": None,
                 "y": None,
-                "color": rgb(0, 0, 0),
-                "line_width": 2.0,
+                "color": None,
+                "line_width": None,
                 "line_dash": [2, 7],
             },
         ),
@@ -364,27 +359,27 @@ def test_stroke(widget, kwargs, args_repr, has_move, properties):
     for attr, value in properties.items():
         assert getattr(stroke, attr) == value
 
-    # x and y aren't part of the stroke instruction
-    x = properties.pop("x")
-    y = properties.pop("y")
+    commands = [
+        "save",
+        ("set stroke style", color)
+        if (color := properties["color"]) is not None
+        else None,
+        ("set line width", line_width)
+        if (line_width := properties["line_width"]) is not None
+        else None,
+        ("set line dash", line_dash)
+        if (line_dash := properties["line_dash"]) is not None
+        else None,
+        "begin path",
+        ("move to", {"x": properties["x"], "y": properties["y"]}) if has_move else None,
+        ("line to", {"x": 30, "y": 40}),
+        "stroke",
+        "restore",
+    ]
 
     # The first and last instructions can be ignored; they're the root canvas context
     assert widget._impl.draw_instructions[1:-1] == [
-        ("push context", {}),
-        ("begin path", {}),
-    ] + ([("move to", {"x": x, "y": y})] if has_move else []) + [
-        (
-            "line to",
-            {
-                "x": 30,
-                "y": 40,
-                "stroke_color": properties["color"],
-                "line_width": properties["line_width"],
-                "line_dash": properties["line_dash"],
-            },
-        ),
-        ("stroke", properties),
-        ("pop context", {}),
+        command for command in commands if command is not None
     ]
 
 
@@ -411,31 +406,23 @@ def test_order_change(widget):
 
     # Initial draw instructions are as expected
     assert widget._impl.draw_instructions == [
-        ("push context", {}),
+        "save",
         ("line to", {"x": 0, "y": 0}),
-        ("push context", {}),
+        "save",
         ("line to", {"x": 10, "y": 20}),
         ("line to", {"x": 20, "y": 30}),
         # Begin fill
-        ("push context", {}),
-        ("begin path", {}),
-        (
-            "line to",
-            {
-                "x": 25,
-                "y": 25,
-                "fill_color": rgb(0, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-            },
-        ),
-        ("fill", {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO}),
-        ("pop context", {}),
+        "save",
+        "begin path",
+        ("line to", {"x": 25, "y": 25}),
+        ("fill", {"fill_rule": FillRule.NONZERO}),
+        "restore",
         # End fill
         ("line to", {"x": 30, "y": 40}),
         ("line to", {"x": 40, "y": 50}),
-        ("pop context", {}),
+        "restore",
         ("line to", {"x": 99, "y": 99}),
-        ("pop context", {}),
+        "restore",
     ]
 
     # Remove the second draw instruction
@@ -453,30 +440,22 @@ def test_order_change(widget):
 
     # Draw instructions no longer have the second
     assert widget._impl.draw_instructions == [
-        ("push context", {}),
+        "save",
         ("line to", {"x": 0, "y": 0}),
-        ("push context", {}),
+        "save",
         ("line to", {"x": 10, "y": 20}),
         # Begin fill
-        ("push context", {}),
-        ("begin path", {}),
-        (
-            "line to",
-            {
-                "x": 25,
-                "y": 25,
-                "fill_color": rgb(0, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-            },
-        ),
-        ("fill", {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO}),
-        ("pop context", {}),
+        "save",
+        "begin path",
+        ("line to", {"x": 25, "y": 25}),
+        ("fill", {"fill_rule": FillRule.NONZERO}),
+        "restore",
         # End fill
         ("line to", {"x": 30, "y": 40}),
         ("line to", {"x": 40, "y": 50}),
-        ("pop context", {}),
+        "restore",
         ("line to", {"x": 99, "y": 99}),
-        ("pop context", {}),
+        "restore",
     ]
 
     # Insert the second draw instruction at index 3
@@ -489,31 +468,23 @@ def test_order_change(widget):
 
     # Draw instructions show the new position
     assert widget._impl.draw_instructions == [
-        ("push context", {}),
+        "save",
         ("line to", {"x": 0, "y": 0}),
-        ("push context", {}),
+        "save",
         ("line to", {"x": 10, "y": 20}),
         # Begin fill
-        ("push context", {}),
-        ("begin path", {}),
-        (
-            "line to",
-            {
-                "x": 25,
-                "y": 25,
-                "fill_color": rgb(0, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-            },
-        ),
-        ("fill", {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO}),
-        ("pop context", {}),
+        "save",
+        "begin path",
+        ("line to", {"x": 25, "y": 25}),
+        ("fill", {"fill_rule": FillRule.NONZERO}),
+        "restore",
         # End fill
         ("line to", {"x": 30, "y": 40}),
         ("line to", {"x": 20, "y": 30}),
         ("line to", {"x": 40, "y": 50}),
-        ("pop context", {}),
+        "restore",
         ("line to", {"x": 99, "y": 99}),
-        ("pop context", {}),
+        "restore",
     ]
 
     # Remove the fill context
@@ -526,47 +497,39 @@ def test_order_change(widget):
 
     # Draw instructions show the new position
     assert widget._impl.draw_instructions == [
-        ("push context", {}),
+        "save",
         ("line to", {"x": 0, "y": 0}),
-        ("push context", {}),
+        "save",
         ("line to", {"x": 10, "y": 20}),
         ("line to", {"x": 30, "y": 40}),
         ("line to", {"x": 20, "y": 30}),
         ("line to", {"x": 40, "y": 50}),
-        ("pop context", {}),
+        "restore",
         ("line to", {"x": 99, "y": 99}),
-        ("pop context", {}),
+        "restore",
     ]
 
     # Insert the fill context at a negative index
     context.insert(-1, fill)
     # Draw instructions show the new position
     assert widget._impl.draw_instructions == [
-        ("push context", {}),
+        "save",
         ("line to", {"x": 0, "y": 0}),
-        ("push context", {}),
+        "save",
         ("line to", {"x": 10, "y": 20}),
         ("line to", {"x": 30, "y": 40}),
         ("line to", {"x": 20, "y": 30}),
         # Begin fill
-        ("push context", {}),
-        ("begin path", {}),
-        (
-            "line to",
-            {
-                "x": 25,
-                "y": 25,
-                "fill_color": rgb(0, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-            },
-        ),
-        ("fill", {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO}),
-        ("pop context", {}),
+        "save",
+        "begin path",
+        ("line to", {"x": 25, "y": 25}),
+        ("fill", {"fill_rule": FillRule.NONZERO}),
+        "restore",
         # End fill
         ("line to", {"x": 40, "y": 50}),
-        ("pop context", {}),
+        "restore",
         ("line to", {"x": 99, "y": 99}),
-        ("pop context", {}),
+        "restore",
     ]
 
     # Clear the context
@@ -578,219 +541,10 @@ def test_order_change(widget):
 
     # No draw instructions other than the outer context.
     assert widget._impl.draw_instructions == [
-        ("push context", {}),
+        "save",
         ("line to", {"x": 0, "y": 0}),
-        ("push context", {}),
-        ("pop context", {}),
+        "save",
+        "restore",
         ("line to", {"x": 99, "y": 99}),
-        ("pop context", {}),
-    ]
-
-
-def test_stacked_kwargs(widget):
-    """If contexts are stacked, kwargs for sub operations don't leak."""
-    widget.context.line_to(0, 0)
-    with widget.Fill(color=rgb(255, 0, 0)) as fill1:
-        fill1.line_to(10, 20)
-        with fill1.Stroke(color=rgb(0, 255, 0)) as stroke1:
-            stroke1.line_to(20, 30)
-            with stroke1.Fill(color=rgb(0, 0, 255)) as fill2:
-                fill2.line_to(100, 200)
-                with fill2.Stroke(color=rgb(255, 255, 0)) as stroke2:
-                    stroke2.line_to(200, 300)
-                fill2.line_to(300, 400)
-            stroke1.line_to(70, 80)
-        fill1.line_to(80, 90)
-    widget.context.line_to(99, 99)
-
-    assert widget._impl.draw_instructions == [
-        ("push context", {}),
-        ("line to", {"x": 0, "y": 0}),
-        # begin fill1
-        ("push context", {}),
-        ("begin path", {}),
-        (
-            "line to",
-            {
-                "x": 10,
-                "y": 20,
-                "fill_color": rgb(255, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-            },
-        ),
-        # begin stroke 1
-        ("push context", {"fill_color": rgb(255, 0, 0), "fill_rule": FillRule.NONZERO}),
-        ("begin path", {"fill_color": rgb(255, 0, 0), "fill_rule": FillRule.NONZERO}),
-        (
-            "line to",
-            {
-                "x": 20,
-                "y": 30,
-                "fill_color": rgb(255, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        # begin fill 2
-        (
-            "push context",
-            {
-                "fill_color": rgb(255, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        (
-            "begin path",
-            {
-                "fill_color": rgb(255, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        (
-            "line to",
-            {
-                "x": 100,
-                "y": 200,
-                "fill_color": rgb(0, 0, 255),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        # stroke 2
-        (
-            "push context",
-            {
-                "fill_color": rgb(0, 0, 255),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        (
-            "begin path",
-            {
-                "fill_color": rgb(0, 0, 255),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        (
-            "line to",
-            {
-                "x": 200,
-                "y": 300,
-                "fill_color": rgb(0, 0, 255),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(255, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        (
-            "stroke",
-            {
-                "color": rgb(255, 255, 0),
-                "fill_color": rgb(0, 0, 255),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        (
-            "pop context",
-            {
-                "fill_color": rgb(0, 0, 255),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        # # end stroke 2
-        (
-            "line to",
-            {
-                "x": 300,
-                "y": 400,
-                "fill_color": rgb(0, 0, 255),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        (
-            "fill",
-            {
-                "color": rgb(0, 0, 255),
-                "fill_rule": FillRule.NONZERO,
-                "fill_color": rgb(255, 0, 0),
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        (
-            "pop context",
-            {
-                "fill_color": rgb(255, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        # end fill 2
-        (
-            "line to",
-            {
-                "x": 70,
-                "y": 80,
-                "fill_color": rgb(255, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-                "stroke_color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-            },
-        ),
-        (
-            "stroke",
-            {
-                "color": rgb(0, 255, 0),
-                "line_width": 2.0,
-                "line_dash": None,
-                "fill_color": rgb(255, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-            },
-        ),
-        ("pop context", {"fill_color": rgb(255, 0, 0), "fill_rule": FillRule.NONZERO}),
-        # end stroke 1
-        (
-            "line to",
-            {
-                "x": 80,
-                "y": 90,
-                "fill_color": rgb(255, 0, 0),
-                "fill_rule": FillRule.NONZERO,
-            },
-        ),
-        ("fill", {"color": rgb(255, 0, 0), "fill_rule": FillRule.NONZERO}),
-        ("pop context", {}),
-        # end fill 1
-        ("line to", {"x": 99, "y": 99}),
-        ("pop context", {}),
+        "restore",
     ]

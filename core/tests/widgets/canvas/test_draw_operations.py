@@ -21,9 +21,7 @@ def test_begin_path(widget):
     assert repr(draw_op) == "BeginPath()"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    assert widget._impl.draw_instructions[1:-1] == [
-        ("begin path", {}),
-    ]
+    assert widget._impl.draw_instructions[1:-1] == ["begin path"]
 
 
 def test_close_path(widget):
@@ -34,59 +32,73 @@ def test_close_path(widget):
     assert repr(draw_op) == "ClosePath()"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    assert widget._impl.draw_instructions[1:-1] == [
-        ("close path", {}),
-    ]
+    assert widget._impl.draw_instructions[1:-1] == ["close path"]
 
 
 @pytest.mark.parametrize(
-    "kwargs, args_repr, draw_kwargs",
+    "kwargs, args_repr, draw_objs, attrs",
     [
         # Defaults
         (
             {},
-            "color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
-            {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
+            "color=None, fill_rule=FillRule.NONZERO",
+            [("fill", {"fill_rule": FillRule.NONZERO})],
+            {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Color as string name
         (
             {"color": REBECCAPURPLE},
             f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO",
+            [
+                ("set fill style", REBECCA_PURPLE_COLOR),
+                ("fill", {"fill_rule": FillRule.NONZERO}),
+            ],
             {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
         ),
         # Color as RGB object
         (
             {"color": REBECCA_PURPLE_COLOR},
             f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO",
+            [
+                ("set fill style", REBECCA_PURPLE_COLOR),
+                ("fill", {"fill_rule": FillRule.NONZERO}),
+            ],
             {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
         ),
-        # Color reset with None
+        # Color explicitly not set
         (
             {"color": None},
-            "color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
-            {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
+            "color=None, fill_rule=FillRule.NONZERO",
+            [("fill", {"fill_rule": FillRule.NONZERO})],
+            {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Explicit Non-Zero winding
         (
             {"fill_rule": FillRule.NONZERO},
-            "color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
-            {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
+            "color=None, fill_rule=FillRule.NONZERO",
+            [("fill", {"fill_rule": FillRule.NONZERO})],
+            {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Even-Odd winding
         (
             {"fill_rule": FillRule.EVENODD},
-            "color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.EVENODD",
-            {"color": rgb(0, 0, 0), "fill_rule": FillRule.EVENODD},
+            "color=None, fill_rule=FillRule.EVENODD",
+            [("fill", {"fill_rule": FillRule.EVENODD})],
+            {"color": None, "fill_rule": FillRule.EVENODD},
         ),
         # All args
         (
             {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
             f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD",
+            [
+                ("set fill style", REBECCA_PURPLE_COLOR),
+                ("fill", {"fill_rule": FillRule.EVENODD}),
+            ],
             {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
         ),
     ],
 )
-def test_fill(widget, kwargs, args_repr, draw_kwargs):
+def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
     """A primitive fill operation can be added."""
     draw_op = widget.context.fill(**kwargs)
 
@@ -94,63 +106,73 @@ def test_fill(widget, kwargs, args_repr, draw_kwargs):
     assert repr(draw_op) == f"Fill({args_repr})"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    assert widget._impl.draw_instructions[1:-1] == [
-        ("fill", draw_kwargs),
-    ]
+    # But the fill itself also saves and then restores.
+    assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
 
     # All the attributes can be retrieved.
-    for attr, value in draw_kwargs.items():
-        assert getattr(draw_op, attr) == value
+    for name, value in attrs.items():
+        assert getattr(draw_op, name) == value
 
 
 @pytest.mark.parametrize(
-    "kwargs, args_repr, draw_kwargs",
+    "kwargs, args_repr, draw_objs, attrs",
     [
         # Defaults
         (
             {},
-            "color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
-            {"color": rgb(0, 0, 0), "line_width": 2.0, "line_dash": None},
+            "color=None, line_width=None, line_dash=None",
+            [],
+            {"color": None, "line_width": None, "line_dash": None},
         ),
         # Color as string name
         (
             {"color": REBECCAPURPLE},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=2.0, line_dash=None",
-            {"color": REBECCA_PURPLE_COLOR, "line_width": 2.0, "line_dash": None},
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            [("set stroke style", REBECCA_PURPLE_COLOR)],
+            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
         ),
         # Color as RGB object
         (
             {"color": REBECCA_PURPLE_COLOR},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=2.0, line_dash=None",
-            {"color": REBECCA_PURPLE_COLOR, "line_width": 2.0, "line_dash": None},
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            [("set stroke style", REBECCA_PURPLE_COLOR)],
+            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
         ),
-        # Color reset with None
+        # Color explicitly not set
         (
             {"color": None},
-            "color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
-            {"color": rgb(0, 0, 0), "line_width": 2.0, "line_dash": None},
+            "color=None, line_width=None, line_dash=None",
+            [],
+            {"color": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "color=rgb(0, 0, 0, 1.0), line_width=4.5, line_dash=None",
-            {"color": rgb(0, 0, 0), "line_width": 4.5, "line_dash": None},
+            "color=None, line_width=4.5, line_dash=None",
+            [("set line width", 4.5)],
+            {"color": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=[2, 7]",
-            {"color": rgb(0, 0, 0), "line_width": 2.0, "line_dash": [2, 7]},
+            "color=None, line_width=None, line_dash=[2, 7]",
+            [("set line dash", [2, 7])],
+            {"color": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
         (
             {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
             f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.5, line_dash=[2, 7]",
+            [
+                ("set stroke style", REBECCA_PURPLE_COLOR),
+                ("set line width", 4.5),
+                ("set line dash", [2, 7]),
+            ],
             {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
         ),
     ],
 )
-def test_stroke(widget, kwargs, args_repr, draw_kwargs):
+def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
     """A primitive stroke operation can be added."""
     draw_op = widget.context.stroke(**kwargs)
 
@@ -158,13 +180,17 @@ def test_stroke(widget, kwargs, args_repr, draw_kwargs):
     assert repr(draw_op) == f"Stroke({args_repr})"
 
     # The first and last instructions push/pull the root context, and can be ignored.
+    # But the stroke itself also saves and then restores.
     assert widget._impl.draw_instructions[1:-1] == [
-        ("stroke", draw_kwargs),
+        "save",
+        *draw_objs,
+        "stroke",
+        "restore",
     ]
 
     # All the attributes can be retrieved.
-    for attr, value in draw_kwargs.items():
-        assert getattr(draw_op, attr) == value
+    for name, value in attrs.items():
+        assert getattr(draw_op, name) == value
 
 
 def test_move_to(widget):
@@ -712,9 +738,7 @@ def test_reset_transform(widget):
     assert repr(draw_op) == "ResetTransform()"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    assert widget._impl.draw_instructions[1:-1] == [
-        ("reset transform", {}),
-    ]
+    assert widget._impl.draw_instructions[1:-1] == ["reset transform"]
 
 
 @pytest.mark.parametrize(
