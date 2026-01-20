@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import Mock
 
 import toga
@@ -219,6 +220,14 @@ class Testbed(toga.App):
             ]
         )
         self.main_window.show()
+
+    async def on_running(self):
+        # As soon as the app is running and the main window is visible,
+        # use the GUI thread to set a flag that the test suite can use
+        # as permission to proceed.
+        while not self.main_window.visible:
+            asyncio.sleep(0.05)
+        self.is_visible = True
 
 
 def main(appname):
