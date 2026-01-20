@@ -28,11 +28,21 @@ class WindowProbe(BaseProbe, DialogsMixin):
         state=None,
     ):
         await self.redraw(message)
+
+        # There may be some internal rendering delays that mean the container's content
+        # hasn't undergone full layout; wait for that to occur.
+        timeout = 5
+        polling_interval = 0.1
+        loop = asyncio.get_running_loop()
+        start_time = loop.time()
+        while (loop.time() - start_time) < timeout:
+            if self.impl.container.content.native.frame.origin.y >= self.top_bar_height:
+                return
+            else:
+                await asyncio.sleep(polling_interval)
+
+        # If a specific window state has been requested, wait for that state to occur.
         if state:
-            timeout = 5
-            polling_interval = 0.1
-            exception = None
-            loop = asyncio.get_running_loop()
             start_time = loop.time()
             while (loop.time() - start_time) < timeout:
                 try:
@@ -41,8 +51,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 except AssertionError as e:
                     exception = e
                     await asyncio.sleep(polling_interval)
-                    continue
-                raise exception
+
+            raise exception
 
     async def cleanup(self):
         self.window.close()
