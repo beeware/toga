@@ -1,4 +1,3 @@
-from copy import deepcopy
 from math import degrees
 
 import System.Windows.Forms as WinForms
@@ -42,22 +41,24 @@ class State:
     we used it. And it would still need to be kept in a list.
     """
 
-    def __init__(self, matrix, brush, pen):
-        self.matrix = matrix
+    def __init__(self, graphics_state, brush, pen):
+        # This is the previous graphics state, so we can restore.
+        self.graphics_state = graphics_state
         self.brush = brush
         self.pen = pen
+        self.transform = Matrix()
 
     @classmethod
     def for_impl(cls, impl):
         return cls(
-            matrix=Matrix(),
+            graphics_state=None,
             brush=SolidBrush(BLACK),
             pen=Pen(BLACK, impl.scale_in(2.0, rounding=None)),
         )
 
-    def __deepcopy__(self, memo):
+    def new_state(self, graphics_state):
         return type(self)(
-            matrix=self.matrix.Clone(),
+            graphics_state=graphics_state,
             brush=self.brush.Clone(),
             pen=self.pen.Clone(),
         )
@@ -106,10 +107,12 @@ class Context:
         return self.states[-1]
 
     def save(self):
-        self.states.append(deepcopy(self.state))
+        graphics_state = self.impl.Save()
+        self.states.append(self.state.new_state(graphics_state))
 
     def restore(self):
-        self.states.pop()
+        state = self.states.pop()
+        self.impl.Restore(state.graphics_state)
 
     # Setting attributes
 
@@ -223,27 +226,25 @@ class Context:
                 path.FillMode = FillMode.Alternate
             else:  # Default to NONZERO
                 path.FillMode = FillMode.Winding
-            path.Transform(self.state.matrix)
             self.native.FillPath(self.state.brush, path)
 
     def stroke(self):
         for path in self.paths:
-            path.Transform(self.state.matrix)
             self.native.DrawPath(self.state.pen, path)
 
     # Transformations
 
     def rotate(self, radians):
-        self.state.matrix.Rotate(degrees(radians))
+        self.native.RotateTransform(degrees(radians))
 
     def scale(self, sx, sy):
-        self.state.matrix.Scale(sx, sy)
+        self.native.ScaleTransform(sx, sy)
 
     def translate(self, tx, ty):
-        self.state.matrix.Translate(tx, ty)
+        self.native.TranslateTransform(tx, ty)
 
     def reset_transform(self):
-        self.state.matrix.Reset()
+        self.native.ResetTransform()
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
@@ -287,10 +288,7 @@ class Context:
             )
 
     def draw_image(self, image, x, y, width, height):
-        self.native.ResetTransform()
-        self.native.Transform = self.state.matrix
         self.native.DrawImage(image._impl.native, x, y, width, height)
-        self.native.ResetTransform()
 
 
 class Canvas(Box):
