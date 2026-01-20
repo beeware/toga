@@ -1,0 +1,1 @@
+The testbed startup sequence has been modified to avoid performing GUI operations on the non-GUI test thread.
