@@ -703,6 +703,7 @@ async def test_transforms_mid_path(canvas, probe):
     canvas.context.translate(100, 100)
     for _ in range(12):
         canvas.context.rect(50, 0, 10, 10)
+        canvas.context.scale(1.05, 1)
         canvas.context.rotate(math.pi / 6)
     canvas.context.fill()
 
