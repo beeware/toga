@@ -411,21 +411,22 @@ class WriteText(DrawingAction):
             str(self.text),
             self.x,
             self.y,
-            self.font._impl,
+            (
+                self.font._impl
+                if self.font is not None
+                else Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)._impl
+            ),
             self.baseline,
             self.line_height,
         )
 
     @property
-    def font(self) -> Font:
+    def font(self) -> Font | None:
         return self._font
 
     @font.setter
     def font(self, value: Font | None) -> None:
-        if value is None:
-            self._font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
-        else:
-            self._font = value
+        self._font = value
 
 
 class DrawImage(DrawingAction):
@@ -450,12 +451,16 @@ class DrawImage(DrawingAction):
         )
 
     def _draw(self, context: Any) -> None:
-        context.draw_image(self.image, self.x, self.y, self.width, self.height)
+        context.draw_image(
+            self.image,
+            self.x,
+            self.y,
+            self.width if self.width is not None else self.image.width,
+            self.height if self.height is not None else self.image.height,
+        )
 
     @property
-    def width(self) -> float:
-        if self._width is None:
-            return self.image.width
+    def width(self) -> float | None:
         return self._width
 
     @width.setter
@@ -463,9 +468,7 @@ class DrawImage(DrawingAction):
         self._width = value
 
     @property
-    def height(self) -> float:
-        if self._height is None:
-            return self.image.height
+    def height(self) -> float | None:
         return self._height
 
     @height.setter
