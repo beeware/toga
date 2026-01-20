@@ -22,37 +22,44 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.native = window._impl.native
         assert isinstance(self.native, UIWindow)
 
-    async def wait_for_window(
-        self,
-        message,
-        state=None,
-    ):
+    async def _wait_for_assertion(self, assertion, timeout=5, polling_interval=0.1):
+        # Loop for up to `timeout` seconds, until assertion() passes without
+        # raising an AssertionError
+        loop = asyncio.get_running_loop()
+        start_time = loop.time()
+        while (loop.time() - start_time) < timeout:
+            try:
+                assertion()
+                return
+            except AssertionError as e:
+                exception = e
+                await asyncio.sleep(polling_interval)
+
+        raise exception
+
+    def _assert_container_layout(self):
+        # If the window has been laid out, the origin should be at least at the
+        # position of the top bar height.
+        assert self.impl.container.content.native.frame.origin.y >= self.top_bar_height
+
+    def _assert_window_state(self, state):
+        # Create an assertion function that the window's instantaneous state is a
+        # specific required value.
+        def _state_assertion():
+            assert self.instantaneous_state == state
+
+        return _state_assertion
+
+    async def wait_for_window(self, message, state=None):
         await self.redraw(message)
 
         # There may be some internal rendering delays that mean the container's content
         # hasn't undergone full layout; wait for that to occur.
-        timeout = 5
-        polling_interval = 0.1
-        loop = asyncio.get_running_loop()
-        start_time = loop.time()
-        while (loop.time() - start_time) < timeout:
-            if self.impl.container.content.native.frame.origin.y >= self.top_bar_height:
-                return
-            else:
-                await asyncio.sleep(polling_interval)
+        await self._wait_for_assertion(self._assert_container_layout)
 
         # If a specific window state has been requested, wait for that state to occur.
         if state:
-            start_time = loop.time()
-            while (loop.time() - start_time) < timeout:
-                try:
-                    assert self.instantaneous_state == state
-                    return
-                except AssertionError as e:
-                    exception = e
-                    await asyncio.sleep(polling_interval)
-
-            raise exception
+            await self._wait_for_assertion(self._assert_window_state(state))
 
     async def cleanup(self):
         self.window.close()
@@ -61,7 +68,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     @property
     def content_size(self):
         # As a test, assert that our content is not overlapping the top bar.
-        assert self.impl.container.content.native.frame.origin.y >= self.top_bar_height
+        self._assert_container_layout()
+
         # Content height doesn't include the status bar or navigation bar.
         return (
             self.native.contentView.frame.size.width,
