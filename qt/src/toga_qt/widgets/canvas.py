@@ -214,7 +214,7 @@ class Context:
         transform = self.native.transform()
         self.native.resetTransform()
         self._path = transform.map(self._path)
-        self.state.transform *= transform.inverted()
+        self.state.transform = self.state.transform * transform.inverted()
 
     # Text
     def write_text(self, text, x, y, font, baseline, line_height):

@@ -203,7 +203,7 @@ class Context:
         for state in reversed(self.states):
             self.path.transform(state.transform)
             inverse = Matrix()
-            if state.transform.inverse(inverse):
+            if state.transform.invert(inverse):
                 self.state.transform.postTransform(inverse)
 
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
