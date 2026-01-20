@@ -41,7 +41,6 @@ class Context:
         self.native = native
         self.impl = impl
         self.path = Path()
-        self.reset_transform()
 
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
@@ -59,6 +58,7 @@ class Context:
         stroke.setColor(BLACK)
 
         self.states = [State(fill, stroke, Matrix())]
+        self.reset_transform()
 
     @property
     def state(self):
