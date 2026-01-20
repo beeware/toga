@@ -204,7 +204,7 @@ class Context:
             self.path.transform(state.transform)
             inverse = Matrix()
             if state.transform.invert(inverse):
-                self.state.transform.postTransform(inverse)
+                self.state.transform.postConcat(inverse)
 
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
