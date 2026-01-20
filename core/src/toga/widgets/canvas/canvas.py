@@ -9,7 +9,6 @@ from typing import (
 )
 
 import toga
-from toga.colors import BLACK
 from toga.constants import FillRule
 from toga.fonts import (
     SYSTEM,
@@ -160,7 +159,7 @@ class Canvas(Widget):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT | None = BLACK,
+        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> ContextManager[FillContext]:
         """Construct and yield a new [`FillContext`][toga.widgets.canvas.FillContext]
@@ -186,8 +185,8 @@ class Canvas(Widget):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT | None = BLACK,
-        line_width: float = 2.0,
+        color: ColorT | None = None,
+        line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> ContextManager[StrokeContext]:
         """Construct and yield a new

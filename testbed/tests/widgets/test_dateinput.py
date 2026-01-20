@@ -82,10 +82,7 @@ async def widget():
     return toga.DateInput()
 
 
-test_cleanup = build_cleanup_test(
-    toga.DateInput,
-    xfail_platforms=("android",),
-)
+test_cleanup = build_cleanup_test(toga.DateInput)
 
 
 async def test_init():

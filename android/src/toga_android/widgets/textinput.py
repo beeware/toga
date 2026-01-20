@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_UP
 
 from android.text import InputType, TextWatcher
@@ -5,22 +6,22 @@ from android.view import Gravity, View
 from android.widget import EditText
 from java import dynamic_proxy
 
-from toga_android.keys import toga_key
-from toga_android.widgets.base import ContainedWidget
-
+from ..keys import toga_key
+from .base import ContainedWidget, suppress_reference_error
 from .label import TextViewWidget
 
 
 class TogaTextWatcher(dynamic_proxy(TextWatcher)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def beforeTextChanged(self, _charSequence, _start, _count, _after):
         pass
 
     def afterTextChanged(self, _editable):
-        self.impl._on_change()
+        with suppress_reference_error():
+            self.impl._on_change()
 
     def onTextChanged(self, _charSequence, _start, _before, _count):
         pass
@@ -29,31 +30,33 @@ class TogaTextWatcher(dynamic_proxy(TextWatcher)):
 class TogaKeyListener(dynamic_proxy(View.OnKeyListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onKey(self, _view, _key, _event):
-        event_info = toga_key(_event)
-        if event_info is None:
-            pass  # pragma: nocover
-        else:
-            key_pressed = event_info["key"].value
-            if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and (
-                int(_event.getAction()) == 1
-            ):
-                self.impl._on_confirm()
+        with suppress_reference_error():
+            event_info = toga_key(_event)
+            if event_info is None:
+                pass  # pragma: nocover
+            else:
+                key_pressed = event_info["key"].value
+                if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and (
+                    int(_event.getAction()) == 1
+                ):
+                    self.impl._on_confirm()
         return False
 
 
 class TogaFocusListener(dynamic_proxy(View.OnFocusChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onFocusChange(self, view, has_focus):
-        if has_focus:
-            self.impl._on_gain_focus()
-        else:
-            self.impl._on_lose_focus()
+        with suppress_reference_error():
+            if has_focus:
+                self.impl._on_gain_focus()
+            else:
+                self.impl._on_lose_focus()
 
 
 class TextInput(ContainedWidget, TextViewWidget):
