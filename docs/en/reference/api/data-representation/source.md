@@ -14,6 +14,4 @@ It can also be used by custom data source implementations.
 
 ## Reference
 
-::: toga.sources.Listener
-
 ::: toga.sources.Source
