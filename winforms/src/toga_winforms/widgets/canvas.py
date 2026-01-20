@@ -113,6 +113,8 @@ class Context:
     def restore(self):
         state = self.states.pop()
         self.native.Restore(state.graphics_state)
+        for path in self.paths:
+            path.Transform(state.transform)
 
     # Setting attributes
 
@@ -236,15 +238,37 @@ class Context:
 
     def rotate(self, radians):
         self.native.RotateTransform(degrees(radians))
+        self.state.transform.Rotate(degrees(radians))
+
+        inverse = Matrix()
+        inverse.Rotate(-degrees(radians))
+        for path in self.paths:
+            path.Transform(inverse)
 
     def scale(self, sx, sy):
         self.native.ScaleTransform(sx, sy)
+        self.state.transform.Scale(sx, sy)
+
+        inverse = Matrix()
+        inverse.Scale(1 / sx, 1 / sy)
+        for path in self.paths:
+            path.Transform(inverse)
 
     def translate(self, tx, ty):
         self.native.TranslateTransform(tx, ty)
+        self.state.transform.Translate(tx, ty)
+
+        inverse = Matrix()
+        inverse.Translate(-tx, -ty)
+        for path in self.paths:
+            path.Transform(inverse)
 
     def reset_transform(self):
+        inverse = self.native.Transform.Invert()
         self.native.ResetTransform()
+        for path in self.paths:
+            path.Transform(inverse)
+
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text

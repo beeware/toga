@@ -24,7 +24,7 @@ from toga.fonts import BOLD
 from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM, Pack
 
-from .conftest import build_cleanup_test, skip_on_backends
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -698,8 +698,6 @@ async def test_transforms(canvas, probe):
 
 
 async def test_transforms_mid_path(canvas, probe):
-    skip_on_backends("toga_winforms", reason="Issue #2206")
-
     # draw a series of rotated rectangles
     canvas.context.begin_path()
     canvas.context.translate(100, 100)
