@@ -224,6 +224,8 @@ class Testbed(toga.App):
     async def on_running(self):
         # As soon as the app is running and the main window is visible, use the GUI
         # thread to set a flag that the test suite can use as permission to proceed.
+        # The NoQA is warning about using sleep in a loop, which would be good advice
+        # if there was an underlying Event that we could await - but there isn't.
         try:
             async with asyncio.timeout(10):
                 while not self.main_window.visible:  # noqa: ASYNC110
