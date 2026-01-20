@@ -73,7 +73,7 @@ class Context:
     def restore(self):
         self.native.restore()
         # Transform active path to current coordinates
-        self.path.Transform(self.state.transform)
+        self.path.transform(self.state.transform)
         self.states.pop()
 
     # Setting attributes
@@ -177,7 +177,7 @@ class Context:
 
         inverse = Matrix()
         inverse.setRotate(-degrees(radians))
-        self.path.Transform(inverse)
+        self.path.transform(inverse)
 
     def scale(self, sx, sy):
         self.native.scale(sx, sy)
@@ -185,7 +185,7 @@ class Context:
 
         inverse = Matrix()
         inverse.setScale(1 / sx, 1 / sy)
-        self.path.Transform(inverse)
+        self.path.transform(inverse)
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
@@ -193,13 +193,13 @@ class Context:
 
         inverse = Matrix()
         inverse.setTransform(-tx, -ty)
-        self.path.Transform(inverse)
+        self.path.transform(inverse)
 
     def reset_transform(self):
         self.native.setMatrix(None)
 
         for state in reversed(self.states):
-            self.path.Transform(state.transform)
+            self.path.transform(state.transform)
             # set matrix to identity
             state.transform.setRotate(0)
 
