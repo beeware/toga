@@ -698,6 +698,8 @@ async def test_transforms(canvas, probe):
 
 
 async def test_transforms_mid_path(canvas, probe):
+    "Transforms can be applied mid-path"
+
     # draw a series of rotated rectangles
     canvas.context.begin_path()
     canvas.context.translate(100, 100)

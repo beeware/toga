@@ -332,8 +332,13 @@ class Canvas(Box):
     # would give incorrect results if it was semi-transparent. But we do paint it in
     # get_image_data.
     def winforms_paint(self, panel, event, *args):
-        context = Context(self, event.Graphics)
-        self.interface.context._draw(context)
+        try:
+            context = Context(self, event.Graphics)
+            self.interface.context._draw(context)
+        except Exception:
+            import logging
+
+            logging.exception("Painting failed")
 
     def winforms_resize(self, *args):
         self.interface.on_resize(
