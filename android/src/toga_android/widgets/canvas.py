@@ -192,7 +192,7 @@ class Context:
         self.state.transform.postTranslate(tx, ty)
 
         inverse = Matrix()
-        inverse.setTransform(-tx, -ty)
+        inverse.setTranslate(-tx, -ty)
         self.path.transform(inverse)
 
     def reset_transform(self):
