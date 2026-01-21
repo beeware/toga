@@ -186,8 +186,10 @@ class Context:
     def rotate(self, radians):
         self.native.rotate(degrees(radians))
 
-        # track transforms and adjust path
+        # Update state transform
         self.state.transform.rotateRadians(radians)
+
+        # Transform active path to current coordinates
         inverse = QTransform()
         inverse.rotateRadians(-radians)
         self._path = inverse.map(self._path)
@@ -195,8 +197,10 @@ class Context:
     def scale(self, sx, sy):
         self.native.scale(sx, sy)
 
-        # track transforms and adjust path
+        # Update state transform
         self.state.transform.scale(sx, sy)
+
+        # Transform active path to current coordinates
         inverse = QTransform()
         inverse.scale(1 / sx, 1 / sy)
         self._path = inverse.map(self._path)
@@ -204,16 +208,22 @@ class Context:
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
 
-        # track transforms and adjust path
+        # Update state transform
         self.state.transform.translate(tx, ty)
+
+        # Transform active path to current coordinates
         inverse = QTransform()
-        inverse.scale(-tx, -ty)
+        inverse.translate(-tx, -ty)
         self._path = inverse.map(self._path)
 
     def reset_transform(self):
         transform = self.native.transform()
         self.native.resetTransform()
+
+        # Transform active path to current coordinates
         self._path = transform.map(self._path)
+
+        # Update state transform
         inverse, _ = transform.inverted()
         self.state.transform *= inverse
 

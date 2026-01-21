@@ -173,24 +173,33 @@ class Context:
 
     def rotate(self, radians):
         self.native.rotate(degrees(radians))
+
+        # Update state transform
         self.state.transform.postRotate(degrees(radians))
 
+        # Transform active path to current coordinates
         inverse = Matrix()
         inverse.setRotate(-degrees(radians))
         self.path.transform(inverse)
 
     def scale(self, sx, sy):
         self.native.scale(sx, sy)
+
+        # Update state transform
         self.state.transform.postScale(sx, sy)
 
+        # Transform active path to current coordinates
         inverse = Matrix()
         inverse.setScale(1 / sx, 1 / sy)
         self.path.transform(inverse)
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
+
+        # Update state transform
         self.state.transform.postTranslate(tx, ty)
 
+        # Transform active path to current coordinates
         inverse = Matrix()
         inverse.setTranslate(-tx, -ty)
         self.path.transform(inverse)
@@ -205,8 +214,10 @@ class Context:
             inverse = Matrix()
             # if we can't invert, ignore for now
             if state.transform.invert(inverse):  # pragma: no branch
+                # Update current state transform
                 self.state.transform.postConcat(inverse)
 
+        # Rescale to standard units
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text

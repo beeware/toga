@@ -703,11 +703,14 @@ async def test_transforms_mid_path(canvas, probe):
     # draw a series of rotated rectangles
     canvas.context.begin_path()
     canvas.context.translate(100, 100)
-    for _ in range(12):
-        canvas.context.rect(50, 0, 10, 10)
-        canvas.context.scale(1.05, 1)
-        canvas.context.rotate(math.pi / 6)
-    canvas.context.fill()
+    with canvas.context.Context() as ctx:
+        for _ in range(12):
+            ctx.rect(50, 0, 10, 10)
+            ctx.scale(1.1, 1)
+            ctx.rotate(math.pi / 6)
+
+        canvas.context.fill()
+        canvas.context.stroke(GOLDENROD)
 
     # draw a series of line segments
     canvas.context.begin_path()
@@ -715,7 +718,13 @@ async def test_transforms_mid_path(canvas, probe):
     for _ in range(12):
         canvas.context.line_to(25, 0)
         canvas.context.rotate(math.pi / 6)
-    canvas.context.fill(CORNFLOWERBLUE)
+        canvas.context.translate(5, 3)
+    canvas.context.close_path()
+    canvas.context.reset_transform()
+    canvas.context.move_to(110, 100)
+    canvas.context.scale(2, 1)
+    canvas.context.ellipse(50, 100, 5, 20, 0, 0, 2 * pi)
+    canvas.context.stroke(CORNFLOWERBLUE)
 
     await probe.redraw("Transforms can be applied")
     assert_reference(probe, "transforms_mid_path", threshold=0.013)

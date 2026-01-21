@@ -238,8 +238,11 @@ class Context:
 
     def rotate(self, radians):
         self.native.RotateTransform(degrees(radians))
+
+        # Update state transform
         self.state.transform.Rotate(degrees(radians))
 
+        # Transform active path to current coordinates
         inverse = Matrix()
         inverse.Rotate(-degrees(radians))
         for path in self.paths:
@@ -247,8 +250,11 @@ class Context:
 
     def scale(self, sx, sy):
         self.native.ScaleTransform(sx, sy)
+
+        # Update state transform
         self.state.transform.Scale(sx, sy)
 
+        # Transform active path to current coordinates
         inverse = Matrix()
         inverse.Scale(1 / sx, 1 / sy)
         for path in self.paths:
@@ -256,8 +262,11 @@ class Context:
 
     def translate(self, tx, ty):
         self.native.TranslateTransform(tx, ty)
+
+        # Update state transform
         self.state.transform.Translate(tx, ty)
 
+        # Transform active path to current coordinates
         inverse = Matrix()
         inverse.Translate(-tx, -ty)
         for path in self.paths:
@@ -267,6 +276,11 @@ class Context:
         matrix = self.native.Transform
         matrix.Invert()
         self.native.ResetTransform()
+
+        # Update state transform
+        self.state.transform.Multiply(matrix)
+
+        # Transform active path to current coordinates
         for path in self.paths:
             path.Transform(matrix)
 
