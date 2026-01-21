@@ -284,15 +284,15 @@ class Context:
         matrix = self.native.Transform
         self.native.ResetTransform()
 
-        # Update state transform
-        self.state.transform.Multiply(matrix)
-
         # Transform active path to current coordinates
-        matrix.Invert()
         for path in self.paths:
             path.Transform(matrix)
         if self.start_point:
             matrix.TransformPoints([self.start_point])
+
+        # Update state transform
+        matrix.Invert()
+        self.state.transform.Multiply(matrix)
 
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
