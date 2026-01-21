@@ -210,8 +210,6 @@ class Arc(DrawingAction):
     ######################################################################
 
     def __post_init__(self, anticlockwise):
-        print(f"{self.counterclockwise = }")
-        print(f"{anticlockwise = }")
         self.counterclockwise = _determine_counterclockwise(
             anticlockwise, self.counterclockwise
         )
@@ -248,8 +246,6 @@ class Ellipse(DrawingAction):
     ######################################################################
 
     def __post_init__(self, anticlockwise):
-        print(f"{self.counterclockwise = }")
-        print(f"{anticlockwise = }")
         self.counterclockwise = _determine_counterclockwise(
             anticlockwise,
             self.counterclockwise,
