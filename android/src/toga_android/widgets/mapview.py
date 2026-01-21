@@ -1,3 +1,4 @@
+import weakref
 from pathlib import Path
 
 from android.graphics import BitmapFactory
@@ -19,19 +20,21 @@ except ImportError:  # pragma: no cover
 import toga
 from toga.types import LatLng
 
-from .base import Widget
+from .base import Widget, suppress_reference_error
 
 if OSMMapView is not None:  # pragma: no branch
 
     class TogaOnMarkerClickListener(dynamic_proxy(Marker.OnMarkerClickListener)):
         def __init__(self, map_impl):
             super().__init__()
-            self.map_impl = map_impl
+            self.map_impl = weakref.proxy(map_impl)
 
         def onMarkerClick(self, marker, map_view):
-            result = marker.onMarkerClickDefault(marker, map_view)
-            pin = self.map_impl.pins[marker]
-            self.map_impl.interface.on_select(pin=pin)
+            result = False
+            with suppress_reference_error():
+                result = marker.onMarkerClickDefault(marker, map_view)
+                pin = self.map_impl.pins[marker]
+                self.map_impl.interface.on_select(pin=pin)
             return result
 
 

@@ -56,6 +56,8 @@ For more complex applications, you can replace ListSource with a [custom data so
 
 ::: toga.sources.Row
 
+::: toga.sources.ListSourceT
+
 ::: toga.sources.ListSource
 
-::: toga.sources.ListSourceT
+::: toga.sources.ListListener
