@@ -264,7 +264,9 @@ class Context:
         for path in self.paths:
             path.Transform(inverse)
         if self.start_point:
+            print(self.start_point)
             inverse.TransformPoints([self.start_point])
+            print(self.start_point)
 
     def translate(self, tx, ty):
         self.native.TranslateTransform(tx, ty)
