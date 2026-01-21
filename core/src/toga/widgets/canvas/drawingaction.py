@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import InitVar, dataclass
+from dataclasses import InitVar, dataclass, fields, is_dataclass
+from enum import Enum
 from math import pi
 from typing import TYPE_CHECKING, Any
 from warnings import filterwarnings, warn
@@ -86,7 +87,24 @@ class DrawingAction(ABC):
     # the link content is split on two lines.
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}()"
+        if is_dataclass(self):
+            str_fields = []
+            for field in fields(self):
+                match value := getattr(self, field.name):
+                    case float():
+                        str_value = f"{value:.3f}"
+                    case Enum():
+                        str_value = str(value)
+                    case _:
+                        str_value = repr(value)
+                str_fields.append(f"{field.name}={str_value}")
+
+            parenthetical = ", ".join(str_fields)
+
+        else:
+            parenthetical = ""
+
+        return f"{type(self).__name__}({parenthetical})"
 
     @abstractmethod
     def _draw(self, context: Any) -> None: ...
@@ -120,7 +138,7 @@ class ClosePath(DrawingAction):
         context.close_path()
 
 
-@dataclass
+@dataclass(repr=False)
 class Fill(DrawingAction):
     color: ColorT | None = color_property()
     fill_rule: FillRule = FillRule.NONZERO
@@ -133,7 +151,7 @@ class Fill(DrawingAction):
         context.restore()
 
 
-@dataclass
+@dataclass(repr=False)
 class Stroke(DrawingAction):
     color: ColorT | None = color_property()
     line_width: float | None = None
@@ -151,7 +169,7 @@ class Stroke(DrawingAction):
         context.restore()
 
 
-@dataclass
+@dataclass(repr=False)
 class MoveTo(DrawingAction):
     x: float
     y: float
@@ -160,7 +178,7 @@ class MoveTo(DrawingAction):
         context.move_to(self.x, self.y)
 
 
-@dataclass
+@dataclass(repr=False)
 class LineTo(DrawingAction):
     x: float
     y: float
@@ -169,7 +187,7 @@ class LineTo(DrawingAction):
         context.line_to(self.x, self.y)
 
 
-@dataclass
+@dataclass(repr=False)
 class BezierCurveTo(DrawingAction):
     cp1x: float
     cp1y: float
@@ -184,7 +202,7 @@ class BezierCurveTo(DrawingAction):
         )
 
 
-@dataclass
+@dataclass(repr=False)
 class QuadraticCurveTo(DrawingAction):
     cpx: float
     cpy: float
@@ -195,7 +213,7 @@ class QuadraticCurveTo(DrawingAction):
         context.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y)
 
 
-@dataclass
+@dataclass(repr=False)
 class Arc(DrawingAction):
     x: float
     y: float
@@ -229,7 +247,7 @@ class Arc(DrawingAction):
         )
 
 
-@dataclass
+@dataclass(repr=False)
 class Ellipse(DrawingAction):
     x: float
     y: float
@@ -268,7 +286,7 @@ class Ellipse(DrawingAction):
         )
 
 
-@dataclass
+@dataclass(repr=False)
 class Rect(DrawingAction):
     x: float
     y: float
@@ -279,7 +297,7 @@ class Rect(DrawingAction):
         context.rect(self.x, self.y, self.width, self.height)
 
 
-@dataclass
+@dataclass(repr=False)
 class WriteText(DrawingAction):
     text: str
     x: float = 0.0
@@ -303,7 +321,7 @@ class WriteText(DrawingAction):
         )
 
 
-@dataclass
+@dataclass(repr=False)
 class DrawImage(DrawingAction):
     image: Image
     x: float = 0.0
@@ -321,7 +339,7 @@ class DrawImage(DrawingAction):
         )
 
 
-@dataclass
+@dataclass(repr=False)
 class Rotate(DrawingAction):
     radians: float
 
@@ -329,7 +347,7 @@ class Rotate(DrawingAction):
         context.rotate(self.radians)
 
 
-@dataclass
+@dataclass(repr=False)
 class Scale(DrawingAction):
     sx: float
     sy: float
@@ -338,7 +356,7 @@ class Scale(DrawingAction):
         context.scale(self.sx, self.sy)
 
 
-@dataclass
+@dataclass(repr=False)
 class Translate(DrawingAction):
     tx: float
     ty: float

@@ -22,18 +22,12 @@ class Baseline(Enum):
     BOTTOM = auto()
     """Bottom of text"""
 
-    def __repr__(self):
-        return str(self)
-
 
 class FillRule(Enum):
     """The rule to use when filling paths."""
 
     EVENODD = 0
     NONZERO = 1
-
-    def __repr__(self):
-        return str(self)
 
 
 ##########################################################################
