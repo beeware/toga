@@ -1,4 +1,4 @@
-# Success Stories
+# Success stories
 
 Want to see examples of Toga in use? Here's some:
 
