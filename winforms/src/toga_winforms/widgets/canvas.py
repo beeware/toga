@@ -274,13 +274,13 @@ class Context:
 
     def reset_transform(self):
         matrix = self.native.Transform
-        matrix.Invert()
         self.native.ResetTransform()
 
         # Update state transform
         self.state.transform.Multiply(matrix)
 
         # Transform active path to current coordinates
+        matrix.Invert()
         for path in self.paths:
             path.Transform(matrix)
 
