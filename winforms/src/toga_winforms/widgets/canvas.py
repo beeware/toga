@@ -248,7 +248,7 @@ class Context:
         for path in self.paths:
             path.Transform(inverse)
         if self.start_point:
-            self.start_point.Transform(inverse)
+            inverse.TransformPoints([self.start_point])
 
     def scale(self, sx, sy):
         self.native.ScaleTransform(sx, sy)
@@ -262,7 +262,7 @@ class Context:
         for path in self.paths:
             path.Transform(inverse)
         if self.start_point:
-            self.start_point.Transform(inverse)
+            inverse.TransformPoints([self.start_point])
 
     def translate(self, tx, ty):
         self.native.TranslateTransform(tx, ty)
@@ -276,7 +276,7 @@ class Context:
         for path in self.paths:
             path.Transform(inverse)
         if self.start_point:
-            self.start_point.Transform(inverse)
+            inverse.TransformPoints([self.start_point])
 
     def reset_transform(self):
         matrix = self.native.Transform
@@ -291,6 +291,7 @@ class Context:
             path.Transform(matrix)
         if self.start_point:
             self.start_point.Transform(matrix)
+            matrix.TransformPoints([self.start_point])
 
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
