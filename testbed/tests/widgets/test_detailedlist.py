@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.sources import ListSource
+from toga.sources import ListListener, ListSource
 from toga.style.pack import Pack
 
 from .conftest import build_cleanup_test
@@ -75,9 +75,7 @@ async def widget(
     )
 
 
-test_cleanup = build_cleanup_test(
-    toga.DetailedList, xfail_platforms=("android", "linux")
-)
+test_cleanup = build_cleanup_test(toga.DetailedList, xfail_platforms=("linux",))
 
 
 async def test_scroll(widget, probe):
@@ -320,3 +318,8 @@ async def test_actions(
     await probe.redraw("A primary action was performed on row 6")
     on_primary_action_handler.assert_called_once_with(widget, row=widget.data[6])
     on_primary_action_handler.reset_mock()
+
+
+def test_list_listener(widget):
+    """Does the widget implement the ListListener API"""
+    assert isinstance(widget._impl, ListListener)

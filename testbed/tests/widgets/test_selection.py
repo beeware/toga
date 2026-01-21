@@ -4,7 +4,7 @@ import pytest
 
 import toga
 from toga.constants import CENTER
-from toga.sources import ListSource
+from toga.sources import ListListener, ListSource
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
@@ -55,7 +55,7 @@ def verify_vertical_text_align():
 test_cleanup = build_cleanup_test(
     toga.Selection,
     kwargs={"items": ["first", "second", "third"]},
-    xfail_platforms=("android", "windows"),
+    xfail_platforms=("windows",),
 )
 
 
@@ -328,3 +328,8 @@ async def test_resize_on_content_change(widget, probe):
     await probe.redraw("The long item has been renamed")
     if probe.shrink_on_resize:
         assert probe.width == original_width
+
+
+def test_list_listener(widget):
+    """Does the widget implement the ListListener API"""
+    assert isinstance(widget._impl, ListListener)

@@ -108,7 +108,7 @@ async def canvas(widget, probe, on_resize_handler):
     return widget
 
 
-test_cleanup = build_cleanup_test(toga.Canvas, xfail_platforms=("android",))
+test_cleanup = build_cleanup_test(toga.Canvas)
 
 
 async def test_resize(widget, probe, on_resize_handler):

@@ -1,3 +1,4 @@
+import weakref
 from abc import ABC, abstractmethod
 from decimal import ROUND_UP
 
@@ -6,16 +7,18 @@ from android.widget import EditText
 from java import dynamic_proxy
 from travertino.size import at_least
 
+from ..base import suppress_reference_error
 from ..label import TextViewWidget
 
 
 class TogaPickerClickListener(dynamic_proxy(View.OnClickListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onClick(self, _):
-        self.impl._dialog.show()
+        with suppress_reference_error():
+            self.impl._dialog.show()
 
 
 class PickerBase(TextViewWidget, ABC):
