@@ -82,6 +82,8 @@ For more complex applications, you can replace TreeSource with a [custom data so
 
 ::: toga.sources.Node
 
+::: toga.sources.TreeSourceT
+
 ::: toga.sources.TreeSource
 
-::: toga.sources.TreeSourceT
+::: toga.sources.TreeListener
