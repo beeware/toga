@@ -115,6 +115,8 @@ class Context:
         self.native.Restore(state.graphics_state)
         for path in self.paths:
             path.Transform(state.transform)
+        if self.start_point:
+            state.transform.TransformPoints([self.start_point])
 
     # Setting attributes
 
@@ -290,7 +292,6 @@ class Context:
         for path in self.paths:
             path.Transform(matrix)
         if self.start_point:
-            self.start_point.Transform(matrix)
             matrix.TransformPoints([self.start_point])
 
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
