@@ -1,4 +1,6 @@
+import hashlib
 import json
+import shutil
 from http.cookiejar import CookieJar
 
 from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
@@ -63,6 +65,15 @@ class WebView(Widget):
         self.settings.setBuiltInZoomControls(True)
         self.settings.setDisplayZoomControls(False)
 
+        # folder for temporary storing content larger than 2 MB
+        self._large_content_dir = (
+            toga.App.app.paths.cache / f"toga/webview-{self.interface.id}"
+        )
+
+    def __del__(self):  # pragma: nocover
+        """Cleaning up the cached files for large content"""
+        shutil.rmtree(self._large_content_dir, ignore_errors=True)
+
     def get_url(self):
         url = self.native.getUrl()
         if url == "about:blank" or url.startswith("data:"):
@@ -77,10 +88,20 @@ class WebView(Widget):
         self.native.loadUrl(value)
 
     def set_content(self, root_url, content):
-        # There is a loadDataWithBaseURL method, but it's inconsistent about whether
-        # getUrl returns the given URL or a data: URL. Rather than support this feature
-        # intermittently, it's better to not support it at all.
-        self.native.loadData(content, "text/html", "utf-8")
+        if len(content) > 2*1024*1024:
+            self._large_content_dir.mkdir(parents=True, exist_ok=True)
+            h = hashlib.new("sha1")
+            h.update(bytes(self.interface.id, "utf-8"))
+            h.update(bytes(root_url, "utf-8"))
+            file_name = h.hexdigest() + ".html"
+            file_path = self._large_content_dir / file_name
+            file_path.write_text(content, encoding="utf-8")
+            self.set_url(file_path.as_uri())
+        else:
+            # There is a loadDataWithBaseURL method, but it's inconsistent about whether
+            # getUrl returns the given URL or a data: URL. Rather than support this feature
+            # intermittently, it's better to not support it at all.
+            self.native.loadData(content, "text/html", "utf-8")
 
     def get_user_agent(self):
         return self.settings.getUserAgentString()

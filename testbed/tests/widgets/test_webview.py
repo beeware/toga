@@ -211,7 +211,7 @@ async def test_static_large_content(widget, probe, on_load):
     large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
     url = "https://example.com/"
     widget.set_content(url, large_content)
-    if toga.platform.current_platform == "windows":
+    if hasattr(widget._impl, "_large_content_dir"):  # pragma: no branch
         for f in os.listdir(widget._impl._large_content_dir):
             p = widget._impl._large_content_dir / f
         url = p.as_uri().replace("%20", " ")
