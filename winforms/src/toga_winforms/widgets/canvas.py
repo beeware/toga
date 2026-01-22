@@ -265,7 +265,7 @@ class Context:
             path.Transform(inverse)
         if self.start_point:
             print(self.start_point)
-            points = [self.start_point]
+            points = Array[PointF]([self.start_point])
             result = inverse.TransformPoints(points)
             self.start_point = points[0]
             print(self.start_point, result)
