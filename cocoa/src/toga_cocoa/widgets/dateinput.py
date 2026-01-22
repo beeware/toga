@@ -107,11 +107,17 @@ class DateInput(Widget):
             self.native.setBezeled(False)
             self.native.drawsBackground = False
             self.native.backgroundColor = NSColor.clearColor
+        elif color is not None:
+            self.native.drawsBackground = True
+            # On light mode, bezeling implies that
+            # the background color will not be drawn
+            # properly.
+            self.native.setBezeled(False)
+            self.native.backgroundColor = native_color(color)
         else:
+            # For some reason, only *not* drawing background
+            # will draw the correct control background color
+            # in dark mode.
+            self.native.drawsBackground = False
             self.native.setBezeled(True)
-            if color is not None:
-                self.native.drawsBackground = True
-                self.native.backgroundColor = native_color(color)
-            else:
-                self.native.drawsBackground = False
-                self.native.backgroundColor = NSColor.controlBackgroundColor
+            self.native.backgroundColor = NSColor.controlBackgroundColor

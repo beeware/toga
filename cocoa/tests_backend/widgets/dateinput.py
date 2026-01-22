@@ -52,7 +52,9 @@ class DateTimeInputProbe(SimpleProbe, ABC):
             assert not self.native.drawsBackground
             return None
         elif self.native.drawsBackground:
-            assert self.native.isBezeled()
+            # Shouldn't bezel in this case, as it breaks
+            # light mode.
+            assert not self.native.isBezeled()
             # None as a background color is misconfigured, and produces
             # incorrect results visually in dark mode.
             assert self.native.backgroundColor is not None
