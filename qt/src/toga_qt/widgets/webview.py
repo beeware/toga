@@ -7,6 +7,7 @@ from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from travertino.size import at_least
 
+import toga
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
 from .base import Widget
