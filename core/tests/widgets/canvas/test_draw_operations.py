@@ -148,7 +148,7 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
         # Line width
         (
             {"line_width": 4.5},
-            "color=None, line_width=4.5, line_dash=None",
+            "color=None, line_width=4.500, line_dash=None",
             [("set line width", 4.5)],
             {"color": None, "line_width": 4.5, "line_dash": None},
         ),
@@ -162,7 +162,7 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
         # All args
         (
             {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.5, line_dash=[2, 7]",
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7]",
             [
                 ("set stroke style", REBECCA_PURPLE_COLOR),
                 ("set line width", 4.5),
@@ -691,7 +691,7 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
             },
             (
                 "text='Hello world', x=10, y=20, font=None, "
-                "baseline=Baseline.ALPHABETIC, line_height=1.5"
+                "baseline=Baseline.ALPHABETIC, line_height=1.500"
             ),
             {
                 "text": "Hello world",
