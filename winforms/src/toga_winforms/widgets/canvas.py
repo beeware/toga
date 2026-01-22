@@ -100,6 +100,15 @@ class Context:
         else:
             return PointF(default_x, default_y)
 
+    def transform_path(self, matrix):
+        """Transform the current path using a matrix."""
+        for path in self.paths:
+            path.Transform(matrix)
+        if self.start_point:
+            points = Array[PointF]([self.start_point])
+            matrix.TransformPoints(points)
+            self.start_point = points[0]
+
     # Context management
 
     @property
@@ -113,10 +122,7 @@ class Context:
     def restore(self):
         state = self.states.pop()
         self.native.Restore(state.graphics_state)
-        for path in self.paths:
-            path.Transform(state.transform)
-        if self.start_point:
-            state.transform.TransformPoints([self.start_point])
+        self.transform_path(state.transform)
 
     # Setting attributes
 
@@ -247,12 +253,7 @@ class Context:
         # Transform active path to current coordinates
         inverse = Matrix()
         inverse.Rotate(-degrees(radians))
-        for path in self.paths:
-            path.Transform(inverse)
-        if self.start_point:
-            points = Array[PointF]([self.start_point])
-            inverse.TransformPoints(points)
-            self.start_point = points[0]
+        self.transform_path(inverse)
 
     def scale(self, sx, sy):
         self.native.ScaleTransform(sx, sy)
@@ -263,12 +264,7 @@ class Context:
         # Transform active path to current coordinates
         inverse = Matrix()
         inverse.Scale(1 / sx, 1 / sy)
-        for path in self.paths:
-            path.Transform(inverse)
-        if self.start_point:
-            points = Array[PointF]([self.start_point])
-            inverse.TransformPoints(points)
-            self.start_point = points[0]
+        self.transform_path(inverse)
 
     def translate(self, tx, ty):
         self.native.TranslateTransform(tx, ty)
@@ -279,24 +275,14 @@ class Context:
         # Transform active path to current coordinates
         inverse = Matrix()
         inverse.Translate(-tx, -ty)
-        for path in self.paths:
-            path.Transform(inverse)
-        if self.start_point:
-            points = Array[PointF]([self.start_point])
-            inverse.TransformPoints(points)
-            self.start_point = points[0]
+        self.transform_path(inverse)
 
     def reset_transform(self):
         matrix = self.native.Transform
         self.native.ResetTransform()
 
         # Transform active path to current coordinates
-        for path in self.paths:
-            path.Transform(matrix)
-        if self.start_point:
-            points = Array[PointF]([self.start_point])
-            matrix.TransformPoints(points)
-            self.start_point = points[0]
+        self.transform_path(matrix)
 
         # Update state transform
         matrix.Invert()
