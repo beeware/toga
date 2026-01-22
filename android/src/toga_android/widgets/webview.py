@@ -88,7 +88,7 @@ class WebView(Widget):
         self.native.loadUrl(value)
 
     def set_content(self, root_url, content):
-        if len(content) > 2*1024*1024:
+        if len(content) > 2 * 1024 * 1024:
             self._large_content_dir.mkdir(parents=True, exist_ok=True)
             h = hashlib.new("sha1")
             h.update(bytes(self.interface.id, "utf-8"))
