@@ -722,8 +722,8 @@ async def test_transforms_mid_path(canvas, probe):
     canvas.context.close_path()
     canvas.context.reset_transform()
     canvas.context.move_to(110, 100)
-    canvas.context.scale(2, 1)
-    canvas.context.ellipse(50, 100, 5, 20, 0, 0, 2 * pi)
+    canvas.context.scale(5, 1)
+    canvas.context.ellipse(20, 100, 2, 20, 0, 0, 2 * pi)
     canvas.context.stroke(CORNFLOWERBLUE)
 
     await probe.redraw("Transforms can be applied")
