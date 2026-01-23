@@ -207,7 +207,10 @@ class TextInput(Widget):
         else:
             self.native.drawsBackground = True
             self.native.bezeled = True
-            self.native.backgroundColor = native_color(color)
+            if color is None:
+                self.native.backgroundColor = NSColor.textBackgroundColor
+            else:
+                self.native.backgroundColor = native_color(color)
 
     def get_value(self):
         return str(self.native.stringValue)

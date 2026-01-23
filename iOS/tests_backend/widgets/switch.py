@@ -1,3 +1,5 @@
+import pytest
+
 from toga_iOS.libs import UIStackView
 
 from .base import SimpleProbe, UIControlEventValueChanged
@@ -23,6 +25,10 @@ class SwitchProbe(SimpleProbe):
     @property
     def color(self):
         return toga_color(self.native_label.textColor)
+
+    @property
+    def background_color(self):
+        pytest.skip("Background color not yet implemented for Switch on iOS")
 
     @property
     def font(self):

@@ -1,6 +1,7 @@
 import datetime
 
 from rubicon.objc import SEL, objc_method, objc_property
+from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from toga.widgets.dateinput import MAX_DATE, MIN_DATE
@@ -100,3 +101,23 @@ class DateInput(Widget):
             self.native.textColor = NSColor.controlTextColor
         else:
             self.native.textColor = native_color(color)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            self.native.setBezeled(False)
+            self.native.drawsBackground = False
+            self.native.backgroundColor = NSColor.clearColor
+        elif color is not None:
+            self.native.drawsBackground = True
+            # On light mode, bezeling implies that
+            # the background color will not be drawn
+            # properly.
+            self.native.setBezeled(False)
+            self.native.backgroundColor = native_color(color)
+        else:
+            # For some reason, only *not* drawing background
+            # will draw the correct control background color
+            # in dark mode.
+            self.native.drawsBackground = False
+            self.native.setBezeled(True)
+            self.native.backgroundColor = NSColor.controlBackgroundColor
