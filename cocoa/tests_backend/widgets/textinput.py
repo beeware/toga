@@ -1,6 +1,7 @@
 from toga.colors import TRANSPARENT
 from toga.constants import RIGHT
 from toga_cocoa.libs import (
+    NSColor,
     NSLeftTextAlignment,
     NSRange,
     NSRightTextAlignment,
@@ -47,7 +48,10 @@ class TextInputProbe(SimpleProbe):
         if self.native.drawsBackground:
             # Confirm the widget is bezeled
             assert self.native.isBezeled()
-            if self.native.backgroundColor:
+            # A backgroundColor of None is unsafe, and may not produce
+            # the correct background.
+            assert self.native.backgroundColor is not None
+            if self.native.backgroundColor != NSColor.textBackgroundColor:
                 return toga_color(self.native.backgroundColor)
             else:
                 return None

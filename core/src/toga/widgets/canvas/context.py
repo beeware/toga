@@ -38,81 +38,11 @@ if TYPE_CHECKING:
     from .canvas import Canvas
 
 
-class Context(DrawingAction):
-    """A drawing context for a canvas.
-
-    You should not create a [`Context`][toga.widgets.canvas.Context] directly; instead,
-    you should use the [`Context()`][toga.widgets.canvas.Context.Context] method on an
-    existing context, or use [`Canvas.context`][toga.Canvas.context] to access the root
-    context of the canvas.
-    """
-
-    def __init__(self, canvas: toga.Canvas, **kwargs: Any):
-        # kwargs used to support multiple inheritance
-        super().__init__(**kwargs)
-        self._canvas = canvas
-        self.drawing_objects: list[DrawingAction] = []
-
-    def _draw(self, context: Any) -> None:
-        context.save()
-        for obj in self.drawing_objects:
-            obj._draw(context)
-        context.restore()
-
-    ###########################################################################
-    # Methods to keep track of the canvas, automatically redraw it
-    ###########################################################################
-
+class DrawingActionDispatch:
     @property
-    def canvas(self) -> Canvas:
-        """The canvas that is associated with this drawing context."""
-        return self._canvas
-
-    def redraw(self) -> None:
-        """Calls [`Canvas.redraw`][toga.Canvas.redraw] on the parent Canvas."""
-        self.canvas.redraw()
-
-    ###########################################################################
-    # Operations on drawing objects
-    ###########################################################################
-
-    def __len__(self) -> int:
-        """Returns the number of drawing objects that are in this context."""
-        return len(self.drawing_objects)
-
-    def __getitem__(self, index: int) -> DrawingAction:
-        """Returns the drawing object at the given index."""
-        return self.drawing_objects[index]
-
-    def append(self, obj: DrawingAction) -> None:
-        """Append a drawing object to the context.
-
-        :param obj: The drawing object to add to the context.
-        """
-        self.drawing_objects.append(obj)
-        self.redraw()
-
-    def insert(self, index: int, obj: DrawingAction) -> None:
-        """Insert a drawing object into the context at a specific index.
-
-        :param index: The index at which the drawing object should be inserted.
-        :param obj: The drawing object to add to the context.
-        """
-        self.drawing_objects.insert(index, obj)
-        self.redraw()
-
-    def remove(self, obj: DrawingAction) -> None:
-        """Remove a drawing object from the context.
-
-        :param obj: The drawing object to remove.
-        """
-        self.drawing_objects.remove(obj)
-        self.redraw()
-
-    def clear(self) -> None:
-        """Remove all drawing objects from the context."""
-        self.drawing_objects.clear()
-        self.redraw()
+    def _action_target(self):
+        """The Context that should receive the drawing actions."""
+        raise NotImplementedError()
 
     ###########################################################################
     # Path manipulation
@@ -125,7 +55,7 @@ class Context(DrawingAction):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         begin_path = BeginPath()
-        self.append(begin_path)
+        self._action_target.append(begin_path)
         return begin_path
 
     def close_path(self) -> ClosePath:
@@ -140,7 +70,7 @@ class Context(DrawingAction):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         close_path = ClosePath()
-        self.append(close_path)
+        self._action_target.append(close_path)
         return close_path
 
     def move_to(self, x: float, y: float) -> MoveTo:
@@ -152,7 +82,7 @@ class Context(DrawingAction):
             for the operation.
         """
         move_to = MoveTo(x, y)
-        self.append(move_to)
+        self._action_target.append(move_to)
         return move_to
 
     def line_to(self, x: float, y: float) -> LineTo:
@@ -164,7 +94,7 @@ class Context(DrawingAction):
             for the operation.
         """
         line_to = LineTo(x, y)
-        self.append(line_to)
+        self._action_target.append(line_to)
         return line_to
 
     def bezier_curve_to(
@@ -193,7 +123,7 @@ class Context(DrawingAction):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self.append(bezier_curve_to)
+        self._action_target.append(bezier_curve_to)
         return bezier_curve_to
 
     def quadratic_curve_to(
@@ -220,7 +150,7 @@ class Context(DrawingAction):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self.append(quadratic_curve_to)
+        self._action_target.append(quadratic_curve_to)
         return quadratic_curve_to
 
     def arc(
@@ -251,7 +181,7 @@ class Context(DrawingAction):
             for the operation.
         """
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
-        self.append(arc)
+        self._action_target.append(arc)
         return arc
 
     def ellipse(
@@ -298,7 +228,7 @@ class Context(DrawingAction):
             counterclockwise,
             anticlockwise,
         )
-        self.append(ellipse)
+        self._action_target.append(ellipse)
         return ellipse
 
     def rect(self, x: float, y: float, width: float, height: float) -> Rect:
@@ -312,7 +242,7 @@ class Context(DrawingAction):
             for the operation.
         """
         rect = Rect(x, y, width, height)
-        self.append(rect)
+        self._action_target.append(rect)
         return rect
 
     def fill(
@@ -334,7 +264,7 @@ class Context(DrawingAction):
             for the operation.
         """
         fill = Fill(color, fill_rule)
-        self.append(fill)
+        self._action_target.append(fill)
         return fill
 
     def stroke(
@@ -353,7 +283,7 @@ class Context(DrawingAction):
             for the operation.
         """
         stroke = Stroke(color, line_width, line_dash)
-        self.append(stroke)
+        self._action_target.append(stroke)
         return stroke
 
     ###########################################################################
@@ -386,7 +316,7 @@ class Context(DrawingAction):
             for the operation.
         """
         write_text = WriteText(text, x, y, font, baseline, line_height)
-        self.append(write_text)
+        self._action_target.append(write_text)
         return write_text
 
     ###########################################################################
@@ -427,7 +357,7 @@ class Context(DrawingAction):
             no scaling will be done.
         """
         draw_image = DrawImage(image, x, y, width, height)
-        self.append(draw_image)
+        self._action_target.append(draw_image)
         return draw_image
 
     ###########################################################################
@@ -441,7 +371,7 @@ class Context(DrawingAction):
             for the transformation.
         """
         rotate = Rotate(radians)
-        self.append(rotate)
+        self._action_target.append(rotate)
         return rotate
 
     def scale(self, sx: float, sy: float) -> Scale:
@@ -455,7 +385,7 @@ class Context(DrawingAction):
             for the transformation.
         """
         scale = Scale(sx, sy)
-        self.append(scale)
+        self._action_target.append(scale)
         return scale
 
     def translate(self, tx: float, ty: float) -> Translate:
@@ -467,7 +397,7 @@ class Context(DrawingAction):
             for the transformation.
         """
         translate = Translate(tx, ty)
-        self.append(translate)
+        self._action_target.append(translate)
         return translate
 
     def reset_transform(self) -> ResetTransform:
@@ -477,7 +407,7 @@ class Context(DrawingAction):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
         reset_transform = ResetTransform()
-        self.append(reset_transform)
+        self._action_target.append(reset_transform)
         return reset_transform
 
     ###########################################################################
@@ -492,7 +422,7 @@ class Context(DrawingAction):
         :return: Yields the new [`Context`][toga.widgets.canvas.Context] object.
         """
         context = Context(canvas=self._canvas)
-        self.append(context)
+        self._action_target.append(context)
         yield context
         self.redraw()
 
@@ -516,7 +446,7 @@ class Context(DrawingAction):
             context object.
         """
         closed_path = ClosedPathContext(canvas=self.canvas, x=x, y=y)
-        self.append(closed_path)
+        self._action_target.append(closed_path)
         yield closed_path
 
     @contextmanager
@@ -556,7 +486,7 @@ class Context(DrawingAction):
             color=color,
             fill_rule=fill_rule,
         )
-        self.append(fill)
+        self._action_target.append(fill)
         yield fill
 
     @contextmanager
@@ -599,8 +529,90 @@ class Context(DrawingAction):
             line_width=line_width,
             line_dash=line_dash,
         )
-        self.append(stroke)
+        self._action_target.append(stroke)
         yield stroke
+
+
+class Context(DrawingAction, DrawingActionDispatch):
+    """A drawing context for a canvas.
+
+    You should not create a [`Context`][toga.widgets.canvas.Context] directly; instead,
+    you should use the [`Context()`][toga.widgets.canvas.Context.Context] method on an
+    existing context, or use [`Canvas.context`][toga.Canvas.context] to access the root
+    context of the canvas.
+    """
+
+    def __init__(self, canvas: toga.Canvas, **kwargs: Any):
+        # kwargs used to support multiple inheritance
+        super().__init__(**kwargs)
+        self._canvas = canvas
+        self.drawing_actions: list[DrawingAction] = []
+
+    def _draw(self, context: Any) -> None:
+        context.save()
+        for obj in self.drawing_actions:
+            obj._draw(context)
+        context.restore()
+
+    @property
+    def _action_target(self):
+        # Context itself holds its drawing actions.
+        return self
+
+    ###########################################################################
+    # Methods to keep track of the canvas, automatically redraw it
+    ###########################################################################
+
+    @property
+    def canvas(self) -> Canvas:
+        """The canvas that is associated with this drawing context."""
+        return self._canvas
+
+    def redraw(self) -> None:
+        """Calls [`Canvas.redraw`][toga.Canvas.redraw] on the parent Canvas."""
+        self.canvas.redraw()
+
+    ###########################################################################
+    # Operations on drawing objects
+    ###########################################################################
+
+    def __len__(self) -> int:
+        """Returns the number of drawing objects that are in this context."""
+        return len(self.drawing_actions)
+
+    def __getitem__(self, index: int) -> DrawingAction:
+        """Returns the drawing object at the given index."""
+        return self.drawing_actions[index]
+
+    def append(self, obj: DrawingAction) -> None:
+        """Append a drawing object to the context.
+
+        :param obj: The drawing object to add to the context.
+        """
+        self.drawing_actions.append(obj)
+        self.redraw()
+
+    def insert(self, index: int, obj: DrawingAction) -> None:
+        """Insert a drawing object into the context at a specific index.
+
+        :param index: The index at which the drawing object should be inserted.
+        :param obj: The drawing object to add to the context.
+        """
+        self.drawing_actions.insert(index, obj)
+        self.redraw()
+
+    def remove(self, obj: DrawingAction) -> None:
+        """Remove a drawing object from the context.
+
+        :param obj: The drawing object to remove.
+        """
+        self.drawing_actions.remove(obj)
+        self.redraw()
+
+    def clear(self) -> None:
+        """Remove all drawing objects from the context."""
+        self.drawing_actions.clear()
+        self.redraw()
 
 
 class ClosedPathContext(Context):
@@ -642,7 +654,7 @@ class ClosedPathContext(Context):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
 
         context.close_path()
@@ -699,7 +711,7 @@ class FillContext(ClosedPathContext):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
 
         context.fill(self.fill_rule)
@@ -772,7 +784,7 @@ class StrokeContext(ClosedPathContext):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
 
         context.stroke()
