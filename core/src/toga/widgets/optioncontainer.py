@@ -195,6 +195,9 @@ class OptionItem:
         enabled = self._enabled
         del self._enabled
 
+        self._content.app = interface.app
+        self._content.window = interface.window
+
         self._index = index
         self._interface = interface
         interface._impl.add_option(index, text, self.content._impl, icon)
@@ -237,6 +240,8 @@ class OptionList:
         # attributes on the item
         deleted_item = self._options[index]
         deleted_item._preserve_option()
+        deleted_item._content.window = None
+        deleted_item._content.app = None
 
         self.interface._impl.remove_option(index)
         del self._options[index]

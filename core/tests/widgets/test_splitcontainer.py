@@ -81,6 +81,68 @@ def test_widget_created_with_values(content1, content2):
         (True, True),
     ],
 )
+def test_assign_unassign_window_app_on_content(
+    app, window, content1, content2, include_left, include_right
+):
+    splitcontainer = toga.SplitContainer()
+
+    # Assign the split container to the app and window
+    splitcontainer.app = app
+    splitcontainer.window = window
+
+    # Initially, content should have no app or window
+    assert content1.app is None
+    assert content1.window is None
+    assert content2.app is None
+    assert content2.window is None
+
+    # Assign content to the split container
+    splitcontainer.content = [
+        content1 if include_left else None,
+        content2 if include_right else None,
+    ]
+
+    # Content is also on the app / window
+    if include_left:
+        assert app.widgets[content1.id] is content1
+        assert window.widgets[content1.id] is content1
+        assert content1.app == app
+        assert content1.window == window
+
+    if include_right:
+        assert app.widgets[content2.id] is content2
+        assert window.widgets[content2.id] is content2
+        assert content2.app == app
+        assert content2.window == window
+
+    # Unassign content from the split container
+    splitcontainer.content = [None, None]
+
+    # Content should no longer be on app or window
+    with pytest.raises(KeyError):
+        app.widgets[content1.id]
+    with pytest.raises(KeyError):
+        window.widgets[content1.id]
+    assert content1.app is None
+    assert content1.window is None
+
+    with pytest.raises(KeyError):
+        app.widgets[content2.id]
+    with pytest.raises(KeyError):
+        window.widgets[content2.id]
+    assert content2.app is None
+    assert content2.window is None
+
+
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
 def test_assign_to_app(app, content1, content2, include_left, include_right):
     """If the widget is assigned to an app, the content is also assigned."""
     splitcontainer = toga.SplitContainer(
@@ -158,7 +220,7 @@ def test_assign_to_window(window, content1, content2, include_left, include_righ
 
 
 def test_assign_to_window_no_content(window):
-    """If the widget is assigned to an app, and there is no content, there's no
+    """If the widget is assigned to a window, and there is no content, there's no
     error."""
     splitcontainer = toga.SplitContainer()
 

@@ -98,6 +98,11 @@ class SplitContainer(Widget):
 
     @content.setter
     def content(self, content: Sequence[SplitContainerContentT]) -> None:
+        for old_content in self._content:
+            if old_content is not None:
+                old_content.app = None
+                old_content.window = None
+
         try:
             if len(content) != 2:
                 raise TypeError()
