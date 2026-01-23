@@ -244,7 +244,7 @@ class Tree(Widget):
     def qt_activated(self, index):
         # Invalid index shouldn't occur in normal operation.
         if index.isValid():  # pragma: no branch
-            self.interface.on_activate(row=self.interface.data[index.row()])
+            self.interface.on_activate(node=self.native_model._get_node(index))
 
     def change_source(self, source):
         self.native_model.set_source(source)
@@ -275,6 +275,20 @@ class Tree(Widget):
             return [node for row, node in indexes]
         else:
             return indexes[0][1] if len(indexes) != 0 else None
+
+    def expand_node(self, item):
+        index = self.native_model._get_index(item)
+        self.native.expandRecursively(index)
+
+    def expand_all(self):
+        self.native.expandAll()
+
+    def collapse_node(self, item):
+        index = self.native_model._get_index(item)
+        self.native.collapse(index)
+
+    def collapse_all(self):
+        self.native.collapseAll()
 
     def scroll_to_row(self, row):
         index = self.native.model().index(row, 0, QModelIndex())

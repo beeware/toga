@@ -863,8 +863,9 @@ async def test_cell_widget(widget, probe):
     with warning_check:
         widget.data = data
 
-    await probe.expand_tree()
-    await probe.redraw("Tree has data with widgets")
+        # Qt backend doesn't know there are widgets until the row is expanded
+        await probe.expand_tree()
+        await probe.redraw("Tree has data with widgets")
 
     probe.assert_cell_content((0, 0), 0, "A0")
     probe.assert_cell_content((0, 0), 1, "B0")

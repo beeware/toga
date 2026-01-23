@@ -2,7 +2,13 @@ import asyncio
 import warnings
 
 import pytest
-from PySide6.QtCore import QAbstractItemModel, QItemSelection, QItemSelectionModel, Qt
+from PySide6.QtCore import (
+    QAbstractItemModel,
+    QItemSelection,
+    QItemSelectionModel,
+    QModelIndex,
+    Qt,
+)
 from PySide6.QtWidgets import QTreeView
 
 from .base import SimpleProbe
@@ -27,14 +33,21 @@ class TreeProbe(SimpleProbe):
         await asyncio.sleep(0.1)
 
     def is_expanded(self, node):
-        self.native.isExpanded(self.native_model._get_index(node))
+        index = self.native_model._get_index(node)
+        return self.native.isExpanded(index)
+
+    def _get_index_from_path(self, row_path=None, col=0):
+        index = QModelIndex()
+        if row_path:
+            columns = [0] * len(row_path)
+            columns[-1] = col
+            for row, col in zip(row_path, columns, strict=True):
+                index = self.native_model.index(row, col, index)
+        return index
 
     def child_count(self, row_path=None):
-        if row_path:
-            row = self.native.get_model()[row_path]
-            return len(list(row.iterchildren()))
-        else:
-            return len(self.native_tree.get_model())
+        index = self._get_index_from_path(row_path)
+        return self.native_model.rowCount(index)
 
     @property
     def column_count(self):
@@ -62,7 +75,7 @@ class TreeProbe(SimpleProbe):
             # the cell data, as opposed to when the tree is rendering it.
             with warnings.catch_warnings(category=UserWarning):
                 warnings.simplefilter("ignore")
-                index = self.native_model.index(row_path, col)
+                index = self._get_index_from_path(row_path, col)
                 if value:
                     assert value == self.native_model.data(
                         index,
@@ -89,22 +102,26 @@ class TreeProbe(SimpleProbe):
         # No animation associated with scroll, so this is a no-op
         pass
 
-    async def select_row(self, row, add=False):
+    async def select_row(self, row_path, add=False):
+        index = self._get_index_from_path(row_path)
+        selection = QItemSelection()
+        selection.select(index, index)
         if add and self.widget.multiple_select:
-            selection = QItemSelection()
-            index = self.native_model.index(row, 0)
-            selection.select(index, index)
             mode = (
                 QItemSelectionModel.SelectionFlag.Toggle
                 | QItemSelectionModel.SelectionFlag.Rows
             )
             self.native.selectionModel().select(selection, mode)
         else:
-            self.native.selectRow(row)
+            self.native.selectionModel().select(
+                selection,
+                QItemSelectionModel.SelectionFlag.ClearAndSelect
+                | QItemSelectionModel.SelectionFlag.Rows,
+            )
 
-    async def activate_row(self, row):
-        await self.select_row(row)
-        index = self.native_model.index(row, 0)
+    async def activate_row(self, row_path):
+        await self.select_row(row_path)
+        index = self._get_index_from_path(row_path)
         self.native.activated.emit(index)
 
     async def select_first_row_keyboard(self):
