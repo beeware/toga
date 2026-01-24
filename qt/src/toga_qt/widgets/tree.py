@@ -83,12 +83,12 @@ class TreeSourceModel(QAbstractItemModel):
         # QPersistentModelIndex objects can't store the data, so we need to do a lookup.
         # The tests don't create persistent model indices, but should handle case anyway
         # to future-proof for things like drag-and-drop support.
-        if isinstance(index, QModelIndex):  # pragma: no branch
+        if isinstance(index, QModelIndex):
             if index.isValid():
                 return index.internalPointer()
             else:
                 return self._source
-        else:
+        else:  # pragma: no cover
             # build list of row indexes in parents
             rows = self._get_rows(index)
             # climb down tree to find node we want
