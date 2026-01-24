@@ -84,15 +84,19 @@ class TreeSourceModel(QAbstractItemModel):
                 return self._source
         else:
             # build list of row indexes in parents
-            rows = []
-            while not index.isValid():
-                rows.append(index.row())
-                index = index.parent()
+            rows = self._get_rows(index)
             # climb down tree to find node we want
             node = self._source
             while rows:
                 node = node[rows.pop()]
             return node
+
+    def _get_rows(self, index: QModelIndex | QPersistentModelIndex):
+        rows = []
+        while index.isValid():
+            rows.append(index.row())
+            index = index.parent()
+        return rows
 
     def parent(self, index: QModelIndex) -> QModelIndex:
         if index.isValid():
@@ -267,7 +271,7 @@ class Tree(Widget):
     def get_selection(self):
         indexes = sorted(
             {
-                (index.row(), index.internalPointer())
+                (reversed(self.native_model._get_rows(index)), index.internalPointer())
                 for index in self.native.selectedIndexes()
             }
         )
