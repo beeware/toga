@@ -1,9 +1,13 @@
+import abc
+
 from android import R
 from android.app import AlertDialog
-from android.content import DialogInterface
+from android.content import DialogInterface, Intent
 from java import dynamic_proxy
 
 import toga
+
+from .libs import utilfile
 
 
 class OnClickListener(dynamic_proxy(DialogInterface.OnClickListener)):
@@ -118,6 +122,20 @@ class StackTraceDialog(BaseDialog):
         self.native = None
 
 
+class HandlerFileDialog(abc.ABC):
+    """An abstract class that handles file manager calls"""
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.app = toga.App.app._impl
+        self.mActive = toga.App.app._impl.native
+
+    @abc.abstractmethod
+    def show(self):
+        """Запуск менеджера"""
+        pass
+
+
 class SaveFileDialog(BaseDialog):
     def __init__(
         self,
@@ -132,7 +150,16 @@ class SaveFileDialog(BaseDialog):
         self.native = None
 
 
+class HandlerOpenDialog(HandlerFileDialog):
+    def show(self):
+        intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.setType("*/*")
+        self.app.start_activity(intent, on_complete=self.parent.handler)
+
+
 class OpenFileDialog(BaseDialog):
+
     def __init__(
         self,
         title,
@@ -140,10 +167,14 @@ class OpenFileDialog(BaseDialog):
         file_types,
         multiple_select,
     ):
-        super().__init__()
+        self.native = HandlerOpenDialog(self)
+        self.mActive = self.native.mActive
 
-        toga.App.app.factory.not_implemented("dialogs.OpenFileDialog()")
-        self.native = None
+    def handler(self, code, indent):
+        uri = indent.getData()
+        content = self.mActive.getContentResolver()
+        reader = utilfile.PathReader(content, uri)
+        self.future.set_result(reader)
 
 
 class SelectFolderDialog(BaseDialog):
