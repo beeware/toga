@@ -139,7 +139,7 @@ async def headerless_probe(main_window, headerless_widget):
 
 
 @pytest.fixture
-def multiselect_widget(source, on_select_handler):
+async def multiselect_widget(source, on_select_handler):
     # Although Android *has* a table implementation, it needs to be rebuilt.
     skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
