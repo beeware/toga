@@ -53,7 +53,8 @@ class TreeSourceModel(QAbstractItemModel):
 
     def item_changed(self, item):
         if self._source is None:
-            return
+            # The source can briefly be None during widget creation
+            return  # pragma: no cover
         start_index = self._get_index(item)
         end_index = self.index(
             start_index.row(), len(self._columns) - 1, start_index.parent()
@@ -62,7 +63,9 @@ class TreeSourceModel(QAbstractItemModel):
 
     def _get_index(self, node, column=0) -> QModelIndex:
         if self._source is None or not hasattr(node, "_parent"):
-            return INVALID_INDEX
+            # The source can briefly be None during widget creation
+            # and bad user implementations of nodes could lead here.
+            return INVALID_INDEX  # pragma: no cover
         rows = []
         while node._parent is not None:
             rows.append(node._parent.index(node))
@@ -74,10 +77,13 @@ class TreeSourceModel(QAbstractItemModel):
 
     def _get_node(self, index: QModelIndex | QPersistentModelIndex):
         if self._source is None:
-            return None
+            # The source can briefly be None during widget creation
+            return None  # pragma: no cover
         # If we have a valid QModelIndex, the internalPointer is the node.
         # QPersistentModelIndex objects can't store the data, so we need to do a lookup.
-        if isinstance(index, QModelIndex):
+        # The tests don't create persistent model indices, but should handle case anyway
+        # to future-proof for things like drag-and-drop support.
+        if isinstance(index, QModelIndex):  # pragma: no branch
             if index.isValid():
                 return index.internalPointer()
             else:
@@ -99,7 +105,8 @@ class TreeSourceModel(QAbstractItemModel):
         return rows
 
     def parent(self, index: QModelIndex) -> QModelIndex:
-        if index.isValid():
+        # index should always be valid, but check anyway
+        if index.isValid():  # pragma: no branch
             node = index.internalPointer()
             if node._parent is not None:
                 parent = node._parent
@@ -117,7 +124,8 @@ class TreeSourceModel(QAbstractItemModel):
     ) -> QModelIndex:
         parent_node = self._get_node(parent)
         if parent_node is None or row >= len(parent_node):
-            return INVALID_INDEX
+            # this shouldn't happen in normal operation
+            return INVALID_INDEX  # pragma: no cover
         else:
             # We attach the node for the row to the index for speed.
             # The node must remain alive during the lifetime of the QModelIndex()
@@ -132,7 +140,8 @@ class TreeSourceModel(QAbstractItemModel):
         try:
             parent_node = self._get_node(parent)
             if parent_node is None:
-                return 0
+                # this shouldn't happen in normal operation
+                return 0  # pragma: no cover
             else:
                 return len(parent_node)
         except Exception:  # pragma: no cover
@@ -201,7 +210,8 @@ class TreeSourceModel(QAbstractItemModel):
         /,
         role: int = Qt.ItemDataRole.DisplayRole,
     ) -> Any:
-        if orientation == Qt.Orientation.Horizontal:
+        # QTreeViews only have horizontal headers, but check anyway
+        if orientation == Qt.Orientation.Horizontal:  # pragma: no branch
             columns = self._columns
             # this could call out to end-user data sources, so could fail.
             try:
@@ -269,6 +279,7 @@ class Tree(Widget):
         self.native_model.reset_source()
 
     def get_selection(self):
+        # Deduplicate selection using row tuples and nodes.
         indexes = sorted(
             {
                 (
@@ -296,10 +307,6 @@ class Tree(Widget):
 
     def collapse_all(self):
         self.native.collapseAll()
-
-    def scroll_to_row(self, row):
-        index = self.native.model().index(row, 0, QModelIndex())
-        self.native.scrollTo(index)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
