@@ -113,7 +113,7 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 
 @pytest.fixture
-def headerless_widget(source, on_select_handler):
+async def headerless_widget(source, on_select_handler):
     skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
         data=source,
