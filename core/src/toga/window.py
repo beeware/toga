@@ -241,6 +241,7 @@ class Window:
         self._impl: Any = None
         self._content: Widget | None = None
         self._closed = False
+        self._bleed_top = False
 
         self._resizable = resizable
         self._closable = closable
@@ -333,6 +334,18 @@ class Window:
             title = self._default_title
 
         self._impl.set_title(str(title).split("\n")[0])
+
+    @property
+    def bleed_top(self) -> bool:
+        """The [`App`][toga.App] that this window belongs to (read-only).
+
+        New windows are automatically associated with the currently active app."""
+        return self._bleed_top
+
+    @bleed_top.setter
+    def bleed_top(self, bleed_top: bool) -> None:
+        self._bleed_top = bleed_top
+        self._impl.set_bleed_top(bleed_top)
 
     ######################################################################
     # Window lifecycle
