@@ -7,6 +7,11 @@ if toga.platform.current_platform == "iOS":
 
     toga_iOS.ENABLE_LIQUID_GLASS_ADAPTATION = True
 
+if toga.platform.current_platform == "macOS":
+    import toga_cocoa
+
+    toga_cocoa.ENABLE_LIQUID_GLASS_ADAPTATION = True
+
 
 class LayoutApp(toga.App):
     def startup(self):
@@ -64,7 +69,7 @@ class LayoutApp(toga.App):
             children=[
                 toga.Box(
                     height=200,
-                    background_color="ivory",
+                    background_color="cornflowerblue",
                 ),
                 self.row_box,
             ],

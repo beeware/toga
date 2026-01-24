@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method
+from rubicon.objc import objc_method, objc_property
 
 from .libs import (
     NSLayoutAttributeBottom,
@@ -20,6 +20,8 @@ from .libs import (
 
 
 class TogaView(NSView):
+    container = objc_property(object, weak=True)
+
     @objc_method
     def isFlipped(self) -> bool:
         # Default Cocoa coordinate frame is around the wrong way.
@@ -52,7 +54,13 @@ class Container:
         self.on_refresh = on_refresh
 
         self.native = TogaView.alloc().init()
+        self.native.container = self
         self.layout_native = self.native if layout_native is None else layout_native
+
+        self.top_inset = 0
+        self.bottom_inset = 0
+        self.left_inset = 0
+        self.right_inset = 0
 
         # Enforce a minimum size based on the content size.
         # This is enforcing the *minimum* size; the container might actually be
@@ -110,11 +118,11 @@ class Container:
 
     @property
     def width(self):
-        return self.layout_native.frame.size.width
+        return self.layout_native.frame.size.width - self.left_inset - self.right_inset
 
     @property
     def height(self):
-        return self.layout_native.frame.size.height
+        return self.layout_native.frame.size.height - self.top_inset - self.bottom_inset
 
     @property
     def min_width(self):
@@ -122,7 +130,7 @@ class Container:
 
     @min_width.setter
     def min_width(self, width):
-        self._min_width_constraint.constant = width
+        self._min_width_constraint.constant = width + self.left_inset + self.right_inset
 
     @property
     def min_height(self):
@@ -130,4 +138,6 @@ class Container:
 
     @min_height.setter
     def min_height(self, height):
-        self._min_height_constraint.constant = height
+        self._min_height_constraint.constant = (
+            height + self.top_inset + self.bottom_inset
+        )

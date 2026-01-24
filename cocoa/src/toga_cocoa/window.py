@@ -14,8 +14,10 @@ from toga.types import Position, Size
 from toga.window import _initial_position
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
+    SUPPORTS_LIQUID_GLASS,
     NSBackingStoreBuffered,
     NSImage,
+    NSKeyValueObservingOptions,
     NSMutableArray,
     NSMutableDictionary,
     NSNumber,
@@ -68,9 +70,6 @@ class TogaWindow(NSWindow):
         # incorrect window size. Hence, exclude it for fullscreen.
         if self.interface.state != WindowState.FULLSCREEN:
             self.impl.interface.on_resize()
-        if self.interface.content:
-            # Set the window to the new size
-            self.interface.content.refresh()
 
     @objc_method
     def windowDidBecomeMain_(self, notification):
@@ -206,6 +205,13 @@ class TogaWindow(NSWindow):
         item = self.impl._toolbar_items[str(obj.itemIdentifier)]
         item.action()
 
+    @objc_method
+    def observeValueForKeyPath_ofObject_change_context_(
+        self, keyPath, obj, change, context
+    ):
+        if keyPath == "contentLayoutRect":
+            self.impl.reapply_insets(self.impl.container)
+
 
 class Window:
     def __init__(self, interface, title, position, size):
@@ -222,6 +228,9 @@ class Window:
         if self.interface.minimizable:
             mask |= NSWindowStyleMask.Miniaturizable
 
+        if SUPPORTS_LIQUID_GLASS:
+            mask |= NSWindowStyleMask.FullSizeContentView
+
         # Create the window with a default frame;
         # we'll update size and position later.
         self.native = TogaWindow.alloc().initWithContentRect(
@@ -230,8 +239,18 @@ class Window:
             backing=NSBackingStoreBuffered,
             defer=False,
         )
+        self.native.addObserver(
+            self.native,
+            forKeyPath="contentLayoutRect",
+            options=NSKeyValueObservingOptions.New,
+            context=None,
+        )
         self.native.interface = self.interface
         self.native.impl = self
+
+        self.container = Container(on_refresh=self.content_refreshed)
+        self.last_refreshed_size = (0, 0)
+        self.native.contentView = self.container.native
 
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
@@ -248,10 +267,7 @@ class Window:
 
         self.native.delegate = self.native
 
-        self.container = Container(on_refresh=self.content_refreshed)
-        self.native.contentView = self.container.native
-
-        # Ensure that the container renders it's background in the same color as the
+        # Ensure that the container renders its background in the same color as the
         # window.
         self.native.wantsLayer = True
         self.container.native.backgroundColor = self.native.backgroundColor
@@ -304,9 +320,27 @@ class Window:
         self.container.min_width = min_width
         self.container.min_height = min_height
 
+    def reapply_insets(self, container):
+        if not (SUPPORTS_LIQUID_GLASS and self.interface.bleed_top):
+            self.container.top_inset = (
+                self.container.native.bounds.origin.y
+                - self.native.contentLayoutRect.origin.y
+            )
+        else:
+            self.container.top_inset = 0
+        if (container.width, container.height) != self.last_refreshed_size:
+            self.last_refreshed_size = (container.width, container.height)
+            if self.interface.content:
+                self.interface.content.refresh()
+
     def set_content(self, widget):
         # Set the content of the window's container
         self.container.content = widget
+
+    def set_bleed_top(self, bleed_top):
+        if SUPPORTS_LIQUID_GLASS:
+            self.native.titlebarAppearsTransparent = bleed_top
+            self.reapply_insets(self.container)
 
     ######################################################################
     # Window size
@@ -480,7 +514,6 @@ class Window:
                 # remains unchanged, hence the windowDidResize_ would not be notified
                 # when the window goes into presentation mode.
                 self.interface.on_resize()
-                self.interface.content.refresh()
 
                 # No need to check for other pending states, since this is fully applied
                 # at this point.
@@ -506,7 +539,6 @@ class Window:
                 # remains unchanged, hence the windowDidResize_ would not be notified
                 # when the window goes out of the presentation mode.
                 self.interface.on_resize()
-                self.interface.content.refresh()
 
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
@@ -569,10 +601,6 @@ class MainWindow(Window):
             self.native_toolbar = None
 
         self.native.setToolbar(self.native_toolbar)
-
-        # Adding/removing a toolbar changes the size of the content window.
-        if self.interface.content:
-            self.interface.content.refresh()
 
     def purge_toolbar(self):
         while self._toolbar_items:
