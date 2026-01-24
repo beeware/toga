@@ -271,7 +271,10 @@ class Tree(Widget):
     def get_selection(self):
         indexes = sorted(
             {
-                (reversed(self.native_model._get_rows(index)), index.internalPointer())
+                (
+                    tuple(reversed(self.native_model._get_rows(index))),
+                    index.internalPointer(),
+                )
                 for index in self.native.selectedIndexes()
             }
         )
