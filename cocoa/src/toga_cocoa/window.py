@@ -1,5 +1,6 @@
 from rubicon.objc import (
     SEL,
+    CGRectMake,
     CGSize,
     NSMakeRect,
     NSPoint,
@@ -209,7 +210,7 @@ class TogaWindow(NSWindow):
     def observeValueForKeyPath_ofObject_change_context_(
         self, keyPath, obj, change, context
     ):
-        if keyPath == "contentLayoutRect":
+        if keyPath == "contentLayoutRect" and hasattr(self.impl, "container"):
             self.impl.reapply_insets(self.impl.container)
 
 
@@ -247,10 +248,12 @@ class Window:
         )
         self.native.interface = self.interface
         self.native.impl = self
+        if SUPPORTS_LIQUID_GLASS:
+            self.native.titlebarAppearsTransparent = True
 
         self.container = Container(on_refresh=self.content_refreshed)
-        self.last_refreshed_size = (0, 0)
         self.native.contentView = self.container.native
+        self.need_nontransparent = False
 
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
@@ -317,6 +320,10 @@ class Window:
         elif frame.size.height < min_height:
             self.set_size((frame.size.width, min_height))
 
+        if SUPPORTS_LIQUID_GLASS:
+            self.native.titlebarAppearsTransparent = not self.need_nontransparent
+        self.need_nontransparent = False
+
         self.container.min_width = min_width
         self.container.min_height = min_height
 
@@ -328,10 +335,8 @@ class Window:
             )
         else:
             self.container.top_inset = 0
-        if (container.width, container.height) != self.last_refreshed_size:
-            self.last_refreshed_size = (container.width, container.height)
-            if self.interface.content:
-                self.interface.content.refresh()
+        if self.interface.content:
+            self.interface.content.refresh()
 
     def set_content(self, widget):
         # Set the content of the window's container
@@ -339,7 +344,6 @@ class Window:
 
     def set_bleed_top(self, bleed_top):
         if SUPPORTS_LIQUID_GLASS:
-            self.native.titlebarAppearsTransparent = bleed_top
             self.reapply_insets(self.container)
 
     ######################################################################
@@ -560,11 +564,21 @@ class Window:
         # Get a reference to the CGImage from the bitmap
         cg_image = bitmap.CGImage
 
-        target_size = CGSize(
-            core_graphics.CGImageGetWidth(cg_image),
-            core_graphics.CGImageGetHeight(cg_image),
+        # Crop the image so that it won't include insets
+        cropped = core_graphics.CGImageCreateWithImageInRect(
+            cg_image,
+            CGRectMake(
+                self.container.left_inset,
+                self.container.bottom_inset,
+                self.container.width
+                * self.interface.screen._impl.native.backingScaleFactor,
+                self.container.height
+                * self.interface.screen._impl.native.backingScaleFactor,
+            ),
         )
-        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
+
+        target_size = CGSize(self.container.width, self.container.height)
+        ns_image = NSImage.alloc().initWithCGImage(cropped, size=target_size)
         return ns_image
 
 

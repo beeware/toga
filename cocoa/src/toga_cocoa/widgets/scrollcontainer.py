@@ -42,6 +42,8 @@ class TogaScrollView(NSScrollView):
 
 
 class ScrollContainer(Widget):
+    adjust_titlebar = True
+
     def create(self):
         self.native = TogaScrollView.alloc().init()
         self.native.interface = self.interface
@@ -50,6 +52,7 @@ class ScrollContainer(Widget):
         self.native.autohidesScrollers = True
         self.native.borderType = NSNoBorder
         self.native.backgroundColor = NSColor.windowBackgroundColor
+        self.native.automaticallyAdjustsContentInsets = False
 
         # The container for the document bases its layout on the
         # size of the content view. It can only exceed the size
@@ -130,6 +133,7 @@ class ScrollContainer(Widget):
 
     def set_vertical(self, value):
         self.native.hasVerticalScroller = value
+        self.adjust_titlebar = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:

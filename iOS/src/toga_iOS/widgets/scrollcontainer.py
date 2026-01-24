@@ -9,7 +9,11 @@ from rubicon.objc import (
 from travertino.size import at_least
 
 from toga_iOS.container import Container
-from toga_iOS.libs import UIScrollView
+from toga_iOS.libs import (
+    SUPPORTS_LIQUID_GLASS,
+    UIScrollView,
+    UIScrollViewContentInsetAdjustmentBehavior,
+)
 from toga_iOS.widgets.base import Widget
 
 
@@ -30,6 +34,22 @@ class TogaScrollView(UIScrollView):
         if self.interface._content:  # pragma: no branch
             self.interface._content.refresh()
 
+    @objc_method
+    def safeAreaInsetsDidChange(self) -> None:
+        insets = self.safeAreaInsets
+
+        self.contentInset.top = 0
+        self.contentInset.bottom = 0
+        self.contentInset.left = 0
+        self.contentInset.right = 0
+
+        if self.interface.vertical:
+            self.contentInset.top = 0 if self.impl.bleed_top else insets.top
+            self.contentInset.bottom = insets.bottom
+        if self.interface.horizontal:
+            self.contentInset.left = insets.left
+            self.contentInset.right = insets.right
+
 
 class ScrollContainer(Widget):
     def create(self):
@@ -37,11 +57,16 @@ class ScrollContainer(Widget):
         self.native.interface = self.interface
         self.native.impl = self
         self.native.delegate = self.native
+        self.native.contentInsetAdjustmentBehavior = (
+            UIScrollViewContentInsetAdjustmentBehavior.Never
+        )
 
         # UIScrollView doesn't have a native ability to disable a scrolling direction;
         # it's handled by controlling the scrollable area.
         self._allow_horizontal = True
         self._allow_vertical = True
+
+        self.bleed_top = False
 
         self.document_container = Container(
             layout_native=self.native,
@@ -55,6 +80,14 @@ class ScrollContainer(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
+
+        self.bleed_top = (
+            SUPPORTS_LIQUID_GLASS
+            and y == -self.container.top_inset
+            and self.interface.window
+            and self.interface.window.bleed_top
+            and self.interface.window._impl.container == self.container
+        )
 
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
@@ -90,6 +123,7 @@ class ScrollContainer(Widget):
 
     def set_vertical(self, value):
         self._allow_vertical = value
+        self.native.alwaysBounceVertical = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:
@@ -104,6 +138,7 @@ class ScrollContainer(Widget):
 
     def set_horizontal(self, value):
         self._allow_horizontal = value
+        self.native.alwaysBounceHorizontally = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:

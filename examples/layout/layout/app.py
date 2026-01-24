@@ -58,8 +58,8 @@ class LayoutApp(toga.App):
             flex=1,
         )
 
-        # this tests adding children when we already have an impl but no window or app
-        # empty boxes works around cross-axis alignment issue (#2213)
+        # This tests adding children when we already have an impl but no window or app.
+        # Empty boxes are used to work around cross-axis alignment issue (#2213)
         self.row_box.add(toga.Row(flex=1))
         self.row_box.add(self.button_box)
         self.row_box.add(self.content_box)
@@ -67,9 +67,21 @@ class LayoutApp(toga.App):
 
         self.box = toga.Column(
             children=[
-                toga.Box(
+                toga.ScrollContainer(
+                    content=toga.Column(
+                        children=[
+                            toga.Box(
+                                height=200,
+                                background_color="cornflowerblue",
+                            ),
+                            toga.Label(
+                                text="Hello World",
+                                margin_top=20,
+                            ),
+                        ],
+                    ),
+                    horizontal=False,
                     height=200,
-                    background_color="cornflowerblue",
                 ),
                 self.row_box,
             ],

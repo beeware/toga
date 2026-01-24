@@ -19,6 +19,7 @@ from toga_iOS.libs import (
     UIAlertActionStyle,
     UIAlertController,
     UIAlertControllerStyle,
+    UIScrollViewContentInsetAdjustmentBehavior,
     WKNavigationResponsePolicy,
     WKUIDelegate,
     WKWebView,
@@ -210,12 +211,22 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
             completion=None,
         )
 
+    def safeAreaInsetsDidChange(self) -> None:
+        insets = self.safeAreaInsets
+
+        self.scrollView.contentInset.top = 0 if self.impl.bleed_top else insets.top
+        self.scrollView.contentInset.bottom = insets.bottom
+
 
 class WebView(Widget):
     def create(self):
         self.native = TogaWebView.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
+
+        self.native.scrollView.contentInsetAdjustmentBehavior = (
+            UIScrollViewContentInsetAdjustmentBehavior.Never
+        )
 
         # Enable the content inspector. This was added in iOS 16.4.
         # It is a no-op on earlier versions.
