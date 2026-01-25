@@ -103,35 +103,6 @@ class SplitContainer(Widget):
             self.native.setOrientation(Qt.Orientation.Vertical)
 
     def rehint(self):
-        SPLITTER_WIDTH = self.native.handleWidth()
-        if self.interface.direction == self.interface.HORIZONTAL:
-            # When the splitter is horizontal, the splitcontainer must be
-            # at least as wide as it's widest sub-container, and at least
-            # as tall as the minimum height of all subcontainers, plus the
-            # height of the splitter itself. Enforce a minimum size in both
-            # axies
-            min_width = self.interface._MIN_WIDTH
-            min_height = 0
-            for sub_container in self.sub_containers:
-                min_width = max(min_width, sub_container.native.minimumSize().width())
-                min_height += sub_container.native.minimumSize().height()
-
-            min_height = max(min_height, self.interface._MIN_HEIGHT) + SPLITTER_WIDTH
-        else:
-            # When the splitter is vertical, the splitcontainer must be
-            # at least as tall as it's tallest sub-container, and at least
-            # as wide as the minimum width of all subcontainers, plus the
-            # width of the splitter itself.
-            min_width = 0
-            min_height = self.interface._MIN_HEIGHT
-            for sub_container in self.sub_containers:
-                min_width += sub_container.native.minimumSize().width()
-                min_height = max(
-                    min_height, sub_container.native.minimumSize().height()
-                )
-
-            min_width = max(min_width, self.interface._MIN_WIDTH) + SPLITTER_WIDTH
-
         self.interface.intrinsic.width = at_least(self.native.minimumSizeHint().width())
         self.interface.intrinsic.height = at_least(
             self.native.minimumSizeHint().height()
