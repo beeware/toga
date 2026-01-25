@@ -275,6 +275,9 @@ class Window:
         # Set the new widget to be the container's content
         self.container.content = widget
 
+    def set_bleed_top(self, bleed_top):
+        pass
+
     ######################################################################
     # Window size
     ######################################################################

@@ -122,7 +122,7 @@ class Window:
         # the container, as iPadOS window corners are smaller than the
         # top status bar.
         if container.native.safeAreaInsets.top >= status_bar_height and not (
-            self.interface.bleed_top and SUPPORTS_LIQUID_GLASS
+            self.interface.bleed_top
         ):
             container.top_inset = status_bar_height
         else:

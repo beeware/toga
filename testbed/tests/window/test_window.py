@@ -55,6 +55,12 @@ async def test_title(main_window, app_probe, main_window_probe):
         await main_window_probe.wait_for_window("Window title can be reverted")
 
 
+async def test_bleed_top(main_window, main_window_probe):
+    main_window.bleed_top = True
+    await main_window_probe.redraw("Content can now bleed over the top bar on window")
+    main_window_probe.assert_top_bleed()
+
+
 # Mobile platforms have different windowing characteristics,
 # so they have different tests.
 if toga.platform.current_platform in {"iOS", "android"}:

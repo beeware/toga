@@ -230,6 +230,9 @@ class Window(Container, Scalable):
 
         self.resize_content()
 
+    def set_bleed_top(self, bleed_top):
+        pass
+
     ######################################################################
     # Window size
     ######################################################################

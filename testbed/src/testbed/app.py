@@ -2,6 +2,19 @@ import asyncio
 from unittest.mock import Mock
 
 import toga
+import toga.platform
+
+# Testbed will not be distributed, so "iOS 18 SDK running on
+# iOS 26" will not be possible.
+if toga.platform.current_platform == "iOS":
+    import toga_iOS
+
+    toga_iOS.ENABLE_LIQUID_GLASS_ADAPTATION = True
+
+if toga.platform.current_platform == "macOS":
+    import toga_cocoa
+
+    toga_cocoa.ENABLE_LIQUID_GLASS_ADAPTATION = True
 
 
 class ExampleDoc(toga.Document):

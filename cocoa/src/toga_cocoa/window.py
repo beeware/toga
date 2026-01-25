@@ -248,8 +248,6 @@ class Window:
         )
         self.native.interface = self.interface
         self.native.impl = self
-        if SUPPORTS_LIQUID_GLASS:
-            self.native.titlebarAppearsTransparent = True
 
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
@@ -321,7 +319,9 @@ class Window:
             self.set_size((frame.size.width, min_height))
 
         if SUPPORTS_LIQUID_GLASS:
-            self.native.titlebarAppearsTransparent = not self.need_nontransparent
+            self.native.titlebarAppearsTransparent = (
+                self.interface.bleed_top and not self.need_nontransparent
+            )
         self.need_nontransparent = False
 
         self.container.min_width = min_width
@@ -331,7 +331,10 @@ class Window:
         if not (SUPPORTS_LIQUID_GLASS and self.interface.bleed_top):
             self.container.top_inset = (
                 self.container.native.bounds.origin.y
-                - self.native.contentLayoutRect.origin.y
+                + self.container.native.bounds.size.height
+            ) - (
+                self.native.contentLayoutRect.origin.y
+                + self.native.contentLayoutRect.size.height
             )
         else:
             self.container.top_inset = 0
