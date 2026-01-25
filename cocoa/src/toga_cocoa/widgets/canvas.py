@@ -274,7 +274,7 @@ class TogaCanvas(NSView):
 
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
-        self.interface.context._draw(Context(self.impl))
+        self.interface.root_state._draw(Context(self.impl))
 
     @objc_method
     def isFlipped(self) -> bool:

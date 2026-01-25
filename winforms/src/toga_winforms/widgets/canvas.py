@@ -311,7 +311,7 @@ class Canvas(Box):
     # get_image_data.
     def winforms_paint(self, panel, event, *args):
         context = Context(self, event.Graphics)
-        self.interface.context._draw(context)
+        self.interface.root_state._draw(context)
 
     def winforms_resize(self, *args):
         self.interface.on_resize(

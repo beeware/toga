@@ -43,7 +43,7 @@ Font.register("Bahnschrift", "resources/Bahnschrift.ttf")
 Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=BOLD)
 ```
 
-A small number of Toga APIs (e.g., [`Context.write_text`][toga.widgets.canvas.Context.write_text]) *do* require the use of [`Font`][toga.Font] instance. In these cases, you can instantiate a Font using similar properties to the ones used for widget styling:
+A small number of Toga APIs (e.g., [`State.write_text`][toga.widgets.canvas.State.write_text]) *do* require the use of [`Font`][toga.Font] instance. In these cases, you can instantiate a Font using similar properties to the ones used for widget styling:
 
 ```python
 import toga
@@ -54,7 +54,7 @@ my_font = toga.Font(SERIF, 14, weight=BOLD)
 
 # Use the font to write on a canvas.
 canvas = toga.Canvas()
-canvas.context.write_text("Hello", font=my_font)
+canvas.root_tate.write_text("Hello", font=my_font)
 ```
 
 When constructing your own [`Font`][toga.Font] instance, ensure that the font family you provide is valid; otherwise an [`UnknownFontError`][toga.fonts.UnknownFontError] will be raised.
