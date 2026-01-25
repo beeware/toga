@@ -466,7 +466,7 @@ def test_insert_column_no_headings(source):
         tree,
         "insert column",
         index=1,
-        heading=None,
+        heading="",
         accessor="extra",
     )
     assert tree.headings is None
