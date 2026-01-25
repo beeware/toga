@@ -1,6 +1,7 @@
+import asyncio
+
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QPalette
-from PySide6.QtWidgets import QSizePolicy, QSplitter
+from PySide6.QtWidgets import QSplitter
 from travertino.size import at_least
 
 from ..container import Container
@@ -20,15 +21,7 @@ class SplitContainer(Widget):
         for container in self.sub_containers:
             self.native.addWidget(container.native)
             container.native.show()
-            container.native.setSizePolicy(
-                QSizePolicy(
-                    QSizePolicy.Policy.Expanding,
-                    QSizePolicy.Policy.Expanding,
-                )
-            )
-            palette = container.native.palette()
-            palette.setColor(QPalette.ColorRole.Window, QColor(255, 0, 0))
-            container.native.setPalette(palette)
+        self.native.setChildrenCollapsible(False)
 
         self._split_proportion = 0.5
 
@@ -67,7 +60,18 @@ class SplitContainer(Widget):
             container.content.interface.layout.min_width,
             container.content.interface.layout.min_height,
         )
+        # re-layout and schedule a second refresh if intrinsic size has changed
+        prev_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
         self.rehint()
+        intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        if prev_intrinsic_size != intrinsic_size:
+            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
 
     def set_content(self, content, flex):
         # Clear any existing content
@@ -128,16 +132,7 @@ class SplitContainer(Widget):
 
             min_width = max(min_width, self.interface._MIN_WIDTH) + SPLITTER_WIDTH
 
-        self.interface.intrinsic.width = at_least(min_width)
-        self.interface.intrinsic.height = at_least(min_height)
-
-        # self.native.setMinimumSize(min_width, min_height)
-        # self.native.updateGeometry()
-
-        # size = self.native.sizeHint()
-        # self.interface.intrinsic.width = at_least(
-        #     max(size.width(), self.interface._MIN_WIDTH)
-        # )
-        # self.interface.intrinsic.height = at_least(
-        #     max(size.height(), self.interface._MIN_HEIGHT)
-        # )
+        self.interface.intrinsic.width = at_least(self.native.minimumSizeHint().width())
+        self.interface.intrinsic.height = at_least(
+            self.native.minimumSizeHint().height()
+        )
