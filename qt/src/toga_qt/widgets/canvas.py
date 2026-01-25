@@ -247,7 +247,7 @@ class TogaCanvas(QWidget):
         try:
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             context.begin_path()
-            self.interface.context._draw(context)
+            self.interface.root_state._draw(context)
         except Exception:  # pragma: no cover
             logger.exception("Error rendering Canvas.")
         finally:

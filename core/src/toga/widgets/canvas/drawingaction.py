@@ -52,34 +52,34 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 
 
 class DrawingAction(ABC):
-    """A drawing operation in a [`Context`][toga.widgets.canvas.Context].
+    """A drawing operation in a [`State`][toga.widgets.canvas.State].
 
-    Every context drawing method creates a `DrawingAction`, adds it to the context,
+    Every state drawing method creates a `DrawingAction`, adds it to the state,
     and returns it. Each argument passed to the method becomes a property of the
     `DrawingAction`, which can be modified as shown in the [Usage][] section.
 
-    `DrawingActions` can also be created manually, then added to a context using the
-    [`append()`][toga.widgets.canvas.Context.append] or
-    [`insert()`][toga.widgets.canvas.Context.append] methods. Their constructors take
-    the same arguments as the corresponding [`Context`][toga.widgets.canvas.Context]
+    `DrawingActions` can also be created manually, then added to a state using the
+    [`append()`][toga.widgets.canvas.State.append] or
+    [`insert()`][toga.widgets.canvas.State.append] methods. Their constructors take
+    the same arguments as the corresponding [`State`][toga.widgets.canvas.State]
     method, and their classes have the same names, but capitalized:
 
-    * [`toga.widgets.canvas.Arc`][toga.widgets.canvas.Context.arc]
-    * [`toga.widgets.canvas.BeginPath`][toga.widgets.canvas.Context.begin_path]
-    * [`toga.widgets.canvas.BezierCurveTo`][toga.widgets.canvas.Context.bezier_curve_to]
-    * [`toga.widgets.canvas.ClosePath`][toga.widgets.canvas.Context.close_path]
-    * [`toga.widgets.canvas.Ellipse`][toga.widgets.canvas.Context.ellipse]
-    * [`toga.widgets.canvas.Fill`][toga.widgets.canvas.Context.fill]
-    * [`toga.widgets.canvas.LineTo`][toga.widgets.canvas.Context.line_to]
-    * [`toga.widgets.canvas.MoveTo`][toga.widgets.canvas.Context.move_to]
-    * [`toga.widgets.canvas.QuadraticCurveTo`][toga.widgets.canvas.Context.quadratic_curve_to]
-    * [`toga.widgets.canvas.Rect`][toga.widgets.canvas.Context.rect]
-    * [`toga.widgets.canvas.ResetTransform`][toga.widgets.canvas.Context.reset_transform]
-    * [`toga.widgets.canvas.Rotate`][toga.widgets.canvas.Context.rotate]
-    * [`toga.widgets.canvas.Scale`][toga.widgets.canvas.Context.scale]
-    * [`toga.widgets.canvas.Stroke`][toga.widgets.canvas.Context.stroke]
-    * [`toga.widgets.canvas.Translate`][toga.widgets.canvas.Context.translate]
-    * [`toga.widgets.canvas.WriteText`][toga.widgets.canvas.Context.write_text]
+    * [`toga.widgets.canvas.Arc`][toga.widgets.canvas.State.arc]
+    * [`toga.widgets.canvas.BeginPath`][toga.widgets.canvas.State.begin_path]
+    * [`toga.widgets.canvas.BezierCurveTo`][toga.widgets.canvas.State.bezier_curve_to]
+    * [`toga.widgets.canvas.ClosePath`][toga.widgets.canvas.State.close_path]
+    * [`toga.widgets.canvas.Ellipse`][toga.widgets.canvas.State.ellipse]
+    * [`toga.widgets.canvas.Fill`][toga.widgets.canvas.State.fill]
+    * [`toga.widgets.canvas.LineTo`][toga.widgets.canvas.State.line_to]
+    * [`toga.widgets.canvas.MoveTo`][toga.widgets.canvas.State.move_to]
+    * [`toga.widgets.canvas.QuadraticCurveTo`][toga.widgets.canvas.State.quadratic_curve_to]
+    * [`toga.widgets.canvas.Rect`][toga.widgets.canvas.State.rect]
+    * [`toga.widgets.canvas.ResetTransform`][toga.widgets.canvas.State.reset_transform]
+    * [`toga.widgets.canvas.Rotate`][toga.widgets.canvas.State.rotate]
+    * [`toga.widgets.canvas.Scale`][toga.widgets.canvas.State.scale]
+    * [`toga.widgets.canvas.Stroke`][toga.widgets.canvas.State.stroke]
+    * [`toga.widgets.canvas.Translate`][toga.widgets.canvas.State.translate]
+    * [`toga.widgets.canvas.WriteText`][toga.widgets.canvas.State.write_text]
     """  # noqa: E501
 
     # Disable the line-too-long check as there is no way to properly render the list
@@ -107,7 +107,8 @@ class DrawingAction(ABC):
         return f"{type(self).__name__}({parenthetical})"
 
     @abstractmethod
-    def _draw(self, context: Any) -> None: ...
+    def _draw(self, context: Any) -> None:
+        """Called by parent state to execute this drawing action."""
 
 
 class color_property:
