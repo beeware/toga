@@ -33,7 +33,7 @@ class SplitContainer(Widget):
         self._split_proportion = 0.5
 
     def qt_splitter_moved(self, pos, index):
-        self.rehint()
+        self.interface.refresh()
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
@@ -56,8 +56,6 @@ class SplitContainer(Widget):
                     int(self._split_proportion * height),
                     height - int(self._split_proportion * height),
                 ]
-            print(sizes)
-            print(width)
             self.native.setSizes(sizes)
             self._split_proportion = None
         for container in self.sub_containers:
@@ -65,7 +63,6 @@ class SplitContainer(Widget):
                 container.content.interface.refresh()
 
     def content_refreshed(self, container):
-        print(container)
         container.native.setMinimumSize(
             container.content.interface.layout.min_width,
             container.content.interface.layout.min_height,
@@ -84,7 +81,7 @@ class SplitContainer(Widget):
         # We now know the initial positions of the split. However, we can't *set* the
         # because Qt requires a pixel position, and the widget isn't visible yet. So -
         # store the split; and when we do our first layout, apply that proportion.
-        print(flex)
+        # print(flex)
         self._split_proportion = flex[0] / sum(flex)
 
     def get_direction(self):
@@ -136,30 +133,6 @@ class SplitContainer(Widget):
 
         # self.native.setMinimumSize(min_width, min_height)
         # self.native.updateGeometry()
-
-        print(self.native.sizeHint(), self.native.size())
-
-        print(
-            [
-                container.content.native.isVisible()
-                for container in self.sub_containers
-                if container.content is not None
-            ]
-        )
-        print(
-            [
-                container.content.native.parent()
-                for container in self.sub_containers
-                if container.content is not None
-            ]
-        )
-        print(min_width, min_height)
-
-        print(
-            self.native.isVisible(),
-            self.native.parent(),
-            self.native.parent().parent() if self.native.parent() is not None else None,
-        )
 
         # size = self.native.sizeHint()
         # self.interface.intrinsic.width = at_least(
