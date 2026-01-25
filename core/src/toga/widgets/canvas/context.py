@@ -6,18 +6,18 @@ from math import pi
 from typing import TYPE_CHECKING, Any
 
 import toga
-from toga.colors import BLACK, Color
+from toga.colors import Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
 from toga.images import Image
 
-from .drawingobject import (
+from .drawingaction import (
     Arc,
     BeginPath,
     BezierCurveTo,
     ClosePath,
     DrawImage,
-    DrawingObject,
+    DrawingAction,
     Ellipse,
     Fill,
     LineTo,
@@ -38,81 +38,11 @@ if TYPE_CHECKING:
     from .canvas import Canvas
 
 
-class Context(DrawingObject):
-    """A drawing context for a canvas.
-
-    You should not create a [`Context`][toga.widgets.canvas.Context] directly; instead,
-    you should use the [`Context()`][toga.widgets.canvas.Context.Context] method on an
-    existing context, or use [`Canvas.context`][toga.Canvas.context] to access the root
-    context of the canvas.
-    """
-
-    def __init__(self, canvas: toga.Canvas, **kwargs: Any):
-        # kwargs used to support multiple inheritance
-        super().__init__(**kwargs)
-        self._canvas = canvas
-        self.drawing_objects: list[DrawingObject] = []
-
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.push_context(**kwargs)
-        for obj in self.drawing_objects:
-            obj._draw(impl, **kwargs)
-        impl.pop_context(**kwargs)
-
-    ###########################################################################
-    # Methods to keep track of the canvas, automatically redraw it
-    ###########################################################################
-
+class DrawingActionDispatch:
     @property
-    def canvas(self) -> Canvas:
-        """The canvas that is associated with this drawing context."""
-        return self._canvas
-
-    def redraw(self) -> None:
-        """Calls [`Canvas.redraw`][toga.Canvas.redraw] on the parent Canvas."""
-        self.canvas.redraw()
-
-    ###########################################################################
-    # Operations on drawing objects
-    ###########################################################################
-
-    def __len__(self) -> int:
-        """Returns the number of drawing objects that are in this context."""
-        return len(self.drawing_objects)
-
-    def __getitem__(self, index: int) -> DrawingObject:
-        """Returns the drawing object at the given index."""
-        return self.drawing_objects[index]
-
-    def append(self, obj: DrawingObject) -> None:
-        """Append a drawing object to the context.
-
-        :param obj: The drawing object to add to the context.
-        """
-        self.drawing_objects.append(obj)
-        self.redraw()
-
-    def insert(self, index: int, obj: DrawingObject) -> None:
-        """Insert a drawing object into the context at a specific index.
-
-        :param index: The index at which the drawing object should be inserted.
-        :param obj: The drawing object to add to the context.
-        """
-        self.drawing_objects.insert(index, obj)
-        self.redraw()
-
-    def remove(self, obj: DrawingObject) -> None:
-        """Remove a drawing object from the context.
-
-        :param obj: The drawing object to remove.
-        """
-        self.drawing_objects.remove(obj)
-        self.redraw()
-
-    def clear(self) -> None:
-        """Remove all drawing objects from the context."""
-        self.drawing_objects.clear()
-        self.redraw()
+    def _action_target(self):
+        """The Context that should receive the drawing actions."""
+        raise NotImplementedError()
 
     ###########################################################################
     # Path manipulation
@@ -122,10 +52,10 @@ class Context(DrawingObject):
         """Start a new path in the canvas context.
 
         :returns: The `BeginPath`
-            [`DrawingObject`][toga.widgets.canvas.DrawingObject] for the operation.
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         begin_path = BeginPath()
-        self.append(begin_path)
+        self._action_target.append(begin_path)
         return begin_path
 
     def close_path(self) -> ClosePath:
@@ -137,10 +67,10 @@ class Context(DrawingObject):
         [`ClosedPath()`][toga.widgets.canvas.Context.ClosedPath] context manager.
 
         :returns: The `ClosePath`
-            [`DrawingObject`][toga.widgets.canvas.DrawingObject] for the operation.
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         close_path = ClosePath()
-        self.append(close_path)
+        self._action_target.append(close_path)
         return close_path
 
     def move_to(self, x: float, y: float) -> MoveTo:
@@ -148,11 +78,11 @@ class Context(DrawingObject):
 
         :param x: The x coordinate of the new current point.
         :param y: The y coordinate of the new current point.
-        :returns: The `MoveTo` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `MoveTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         move_to = MoveTo(x, y)
-        self.append(move_to)
+        self._action_target.append(move_to)
         return move_to
 
     def line_to(self, x: float, y: float) -> LineTo:
@@ -160,11 +90,11 @@ class Context(DrawingObject):
 
         :param x: The x coordinate for the end point of the line segment.
         :param y: The y coordinate for the end point of the line segment.
-        :returns: The `LineTo` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `LineTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         line_to = LineTo(x, y)
-        self.append(line_to)
+        self._action_target.append(line_to)
         return line_to
 
     def bezier_curve_to(
@@ -190,10 +120,10 @@ class Context(DrawingObject):
         :param x: The x coordinate for the end point.
         :param y: The y coordinate for the end point.
         :returns: The `BezierCurveTo`
-            [`DrawingObject`][toga.widgets.canvas.DrawingObject] for the operation.
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self.append(bezier_curve_to)
+        self._action_target.append(bezier_curve_to)
         return bezier_curve_to
 
     def quadratic_curve_to(
@@ -217,10 +147,10 @@ class Context(DrawingObject):
         :param x: The x axis of the coordinate for the end point.
         :param y: The y axis of the coordinate for the end point.
         :returns: The `QuadraticCurveTo`
-            [`DrawingObject`][toga.widgets.canvas.DrawingObject] for the operation.
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self.append(quadratic_curve_to)
+        self._action_target.append(quadratic_curve_to)
         return quadratic_curve_to
 
     def arc(
@@ -247,11 +177,11 @@ class Context(DrawingObject):
         :param counterclockwise: If true, the arc is swept counterclockwise. The default
             is clockwise.
         :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
-        :returns: The `Arc` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Arc` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
-        self.append(arc)
+        self._action_target.append(arc)
         return arc
 
     def ellipse(
@@ -284,7 +214,7 @@ class Context(DrawingObject):
         :param counterclockwise: If true, the arc is swept counterclockwise. The default
             is clockwise.
         :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
-        :returns: The `Ellipse` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Ellipse` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         ellipse = Ellipse(
@@ -298,7 +228,7 @@ class Context(DrawingObject):
             counterclockwise,
             anticlockwise,
         )
-        self.append(ellipse)
+        self._action_target.append(ellipse)
         return ellipse
 
     def rect(self, x: float, y: float, width: float, height: float) -> Rect:
@@ -308,16 +238,16 @@ class Context(DrawingObject):
         :param y: The vertical coordinate of the top of the rectangle.
         :param width: The width of the rectangle.
         :param height: The height of the rectangle.
-        :returns: The `Rect` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Rect` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         rect = Rect(x, y, width, height)
-        self.append(rect)
+        self._action_target.append(rect)
         return rect
 
     def fill(
         self,
-        color: ColorT = BLACK,
+        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> Fill:
         """Fill the current path.
@@ -330,17 +260,17 @@ class Context(DrawingObject):
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
-        :returns: The `Fill` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         fill = Fill(color, fill_rule)
-        self.append(fill)
+        self._action_target.append(fill)
         return fill
 
     def stroke(
         self,
-        color: ColorT = BLACK,
-        line_width: float = 2.0,
+        color: ColorT | None = None,
+        line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> Stroke:
         """Draw the current path as a stroke.
@@ -349,11 +279,11 @@ class Context(DrawingObject):
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
-        :returns: The `Stroke` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         stroke = Stroke(color, line_width, line_dash)
-        self.append(stroke)
+        self._action_target.append(stroke)
         return stroke
 
     ###########################################################################
@@ -382,11 +312,11 @@ class Context(DrawingObject):
         :param baseline: Alignment of text relative to the Y coordinate.
         :param line_height: Height of the line box as a multiple of the font size
             when multiple lines are present.
-        :returns: The `WriteText` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `WriteText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         write_text = WriteText(text, x, y, font, baseline, line_height)
-        self.append(write_text)
+        self._action_target.append(write_text)
         return write_text
 
     ###########################################################################
@@ -427,7 +357,7 @@ class Context(DrawingObject):
             no scaling will be done.
         """
         draw_image = DrawImage(image, x, y, width, height)
-        self.append(draw_image)
+        self._action_target.append(draw_image)
         return draw_image
 
     ###########################################################################
@@ -437,11 +367,11 @@ class Context(DrawingObject):
         """Add a rotation to the canvas context.
 
         :param radians: The angle to rotate clockwise in radians.
-        :returns: The `Rotate` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Rotate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
         """
         rotate = Rotate(radians)
-        self.append(rotate)
+        self._action_target.append(rotate)
         return rotate
 
     def scale(self, sx: float, sy: float) -> Scale:
@@ -451,11 +381,11 @@ class Context(DrawingObject):
             image horizontally.
         :param sy: Scale factor for the Y dimension. A negative value flips the
             image vertically.
-        :returns: The `Scale` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Scale` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
         """
         scale = Scale(sx, sy)
-        self.append(scale)
+        self._action_target.append(scale)
         return scale
 
     def translate(self, tx: float, ty: float) -> Translate:
@@ -463,21 +393,21 @@ class Context(DrawingObject):
 
         :param tx: Translation for the X dimension.
         :param ty: Translation for the Y dimension.
-        :returns: The `Translate` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Translate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
         """
         translate = Translate(tx, ty)
-        self.append(translate)
+        self._action_target.append(translate)
         return translate
 
     def reset_transform(self) -> ResetTransform:
         """Reset all transformations in the canvas context.
 
         :returns: A `ResetTransform`
-            [`DrawingObject`][toga.widgets.canvas.DrawingObject].
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
         reset_transform = ResetTransform()
-        self.append(reset_transform)
+        self._action_target.append(reset_transform)
         return reset_transform
 
     ###########################################################################
@@ -492,7 +422,7 @@ class Context(DrawingObject):
         :return: Yields the new [`Context`][toga.widgets.canvas.Context] object.
         """
         context = Context(canvas=self._canvas)
-        self.append(context)
+        self._action_target.append(context)
         yield context
         self.redraw()
 
@@ -516,7 +446,7 @@ class Context(DrawingObject):
             context object.
         """
         closed_path = ClosedPathContext(canvas=self.canvas, x=x, y=y)
-        self.append(closed_path)
+        self._action_target.append(closed_path)
         yield closed_path
 
     @contextmanager
@@ -524,7 +454,7 @@ class Context(DrawingObject):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT = BLACK,
+        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> Iterator[FillContext]:
         """Construct and yield a new `Fill` sub-context
@@ -556,7 +486,7 @@ class Context(DrawingObject):
             color=color,
             fill_rule=fill_rule,
         )
-        self.append(fill)
+        self._action_target.append(fill)
         yield fill
 
     @contextmanager
@@ -564,8 +494,8 @@ class Context(DrawingObject):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT = BLACK,
-        line_width: float = 2.0,
+        color: ColorT | None = None,
+        line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> Iterator[StrokeContext]:
         """Construct and yield a new `Stroke` sub-context
@@ -599,8 +529,90 @@ class Context(DrawingObject):
             line_width=line_width,
             line_dash=line_dash,
         )
-        self.append(stroke)
+        self._action_target.append(stroke)
         yield stroke
+
+
+class Context(DrawingAction, DrawingActionDispatch):
+    """A drawing context for a canvas.
+
+    You should not create a [`Context`][toga.widgets.canvas.Context] directly; instead,
+    you should use the [`Context()`][toga.widgets.canvas.Context.Context] method on an
+    existing context, or use [`Canvas.context`][toga.Canvas.context] to access the root
+    context of the canvas.
+    """
+
+    def __init__(self, canvas: toga.Canvas, **kwargs: Any):
+        # kwargs used to support multiple inheritance
+        super().__init__(**kwargs)
+        self._canvas = canvas
+        self.drawing_actions: list[DrawingAction] = []
+
+    def _draw(self, context: Any) -> None:
+        context.save()
+        for obj in self.drawing_actions:
+            obj._draw(context)
+        context.restore()
+
+    @property
+    def _action_target(self):
+        # Context itself holds its drawing actions.
+        return self
+
+    ###########################################################################
+    # Methods to keep track of the canvas, automatically redraw it
+    ###########################################################################
+
+    @property
+    def canvas(self) -> Canvas:
+        """The canvas that is associated with this drawing context."""
+        return self._canvas
+
+    def redraw(self) -> None:
+        """Calls [`Canvas.redraw`][toga.Canvas.redraw] on the parent Canvas."""
+        self.canvas.redraw()
+
+    ###########################################################################
+    # Operations on drawing objects
+    ###########################################################################
+
+    def __len__(self) -> int:
+        """Returns the number of drawing objects that are in this context."""
+        return len(self.drawing_actions)
+
+    def __getitem__(self, index: int) -> DrawingAction:
+        """Returns the drawing object at the given index."""
+        return self.drawing_actions[index]
+
+    def append(self, obj: DrawingAction) -> None:
+        """Append a drawing object to the context.
+
+        :param obj: The drawing object to add to the context.
+        """
+        self.drawing_actions.append(obj)
+        self.redraw()
+
+    def insert(self, index: int, obj: DrawingAction) -> None:
+        """Insert a drawing object into the context at a specific index.
+
+        :param index: The index at which the drawing object should be inserted.
+        :param obj: The drawing object to add to the context.
+        """
+        self.drawing_actions.insert(index, obj)
+        self.redraw()
+
+    def remove(self, obj: DrawingAction) -> None:
+        """Remove a drawing object from the context.
+
+        :param obj: The drawing object to remove.
+        """
+        self.drawing_actions.remove(obj)
+        self.redraw()
+
+    def clear(self) -> None:
+        """Remove all drawing objects from the context."""
+        self.drawing_actions.clear()
+        self.redraw()
 
 
 class ClosedPathContext(Context):
@@ -635,19 +647,18 @@ class ClosedPathContext(Context):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
+    def _draw(self, context: Any) -> None:
         """Used by parent to draw all objects that are part of the context."""
-        impl.push_context(**kwargs)
-        impl.begin_path(**kwargs)
+        context.save()
+        context.begin_path()
         if self.x is not None and self.y is not None:
-            impl.move_to(x=self.x, y=self.y, **kwargs)
+            context.move_to(x=self.x, y=self.y)
 
-        sub_kwargs = kwargs.copy()
-        for obj in self.drawing_objects:
-            obj._draw(impl, **sub_kwargs)
+        for obj in self.drawing_actions:
+            obj._draw(context)
 
-        impl.close_path(**kwargs)
-        impl.pop_context(**kwargs)
+        context.close_path()
+        context.restore()
 
 
 class FillContext(ClosedPathContext):
@@ -678,7 +689,7 @@ class FillContext(ClosedPathContext):
         canvas: toga.Canvas,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT = BLACK,
+        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
         super().__init__(canvas=canvas, x=x, y=y)
@@ -691,36 +702,31 @@ class FillContext(ClosedPathContext):
             f"color={self.color!r}, fill_rule={self.fill_rule})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.push_context(**kwargs)
-        impl.begin_path(**kwargs)
+    def _draw(self, context: Any) -> None:
+        context.save()
+        context.in_fill = True  # Backwards compatibility for Toga <= 0.5.3
+        if self.color:
+            context.set_fill_style(self.color)
+        context.begin_path()
         if self.x is not None and self.y is not None:
-            impl.move_to(x=self.x, y=self.y, **kwargs)
+            context.move_to(x=self.x, y=self.y)
 
-        sub_kwargs = kwargs.copy()
-        sub_kwargs.update(fill_color=self.color, fill_rule=self.fill_rule)
-        for obj in self.drawing_objects:
-            obj._draw(impl, **sub_kwargs)
+        for obj in self.drawing_actions:
+            obj._draw(context)
 
-        # Fill passes fill_rule to its children; but that is also a valid argument for
-        # fill(), so if a fill context is a child of a fill context, there's an argument
-        # collision. Duplicate the kwargs and explicitly overwrite to avoid the
-        # collision.
-        draw_kwargs = kwargs.copy()
-        draw_kwargs.update(fill_rule=self.fill_rule)
-        impl.fill(self.color, **draw_kwargs)
-
-        impl.pop_context(**kwargs)
+        context.fill(self.fill_rule)
+        context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
+        context.restore()
 
     @property
-    def color(self) -> Color:
+    def color(self) -> Color | None:
         """The fill color."""
         return self._color
 
     @color.setter
     def color(self, value: ColorT | None) -> None:
         if value is None:
-            self._color = Color.parse(BLACK)
+            self._color = None
         else:
             self._color = Color.parse(value)
 
@@ -749,8 +755,8 @@ class StrokeContext(ClosedPathContext):
         canvas: toga.Canvas,
         x: float | None = None,
         y: float | None = None,
-        color: ColorT | None = BLACK,
-        line_width: float = 2.0,
+        color: ColorT | None = None,
+        line_width: float | None = None,
         line_dash: list[float] | None = None,
     ):
         super().__init__(canvas=canvas, x=x, y=y)
@@ -764,39 +770,36 @@ class StrokeContext(ClosedPathContext):
             f"line_width={self.line_width}, line_dash={self.line_dash!r})"
         )
 
-    def _draw(self, impl: Any, **kwargs: Any) -> None:
-        impl.push_context(**kwargs)
-        impl.begin_path(**kwargs)
+    def _draw(self, context: Any) -> None:
+        context.save()
+        context.in_stroke = True  # Backwards compatibility for Toga <= 0.5.3
+        if self.color is not None:
+            context.set_stroke_style(self.color)
+        if self.line_width is not None:
+            context.set_line_width(self.line_width)
+        if self.line_dash is not None:
+            context.set_line_dash(self.line_dash)
+        context.begin_path()
 
         if self.x is not None and self.y is not None:
-            impl.move_to(x=self.x, y=self.y, **kwargs)
+            context.move_to(x=self.x, y=self.y)
 
-        sub_kwargs = kwargs.copy()
-        sub_kwargs["stroke_color"] = self.color
-        sub_kwargs["line_width"] = self.line_width
-        sub_kwargs["line_dash"] = self.line_dash
-        for obj in self.drawing_objects:
-            obj._draw(impl, **sub_kwargs)
+        for obj in self.drawing_actions:
+            obj._draw(context)
 
-        # Stroke passes line_width and line_dash to its children; but those two are also
-        # valid arguments for stroke, so if a stroke context is a child of stroke
-        # context, there's an argument collision. Duplicate the kwargs and explicitly
-        # overwrite to avoid the collision
-        draw_kwargs = kwargs.copy()
-        draw_kwargs["line_width"] = self.line_width
-        draw_kwargs["line_dash"] = self.line_dash
-        impl.stroke(self.color, **draw_kwargs)
+        context.stroke()
 
-        impl.pop_context(**kwargs)
+        context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
+        context.restore()
 
     @property
-    def color(self) -> Color:
+    def color(self) -> Color | None:
         """The color of the stroke."""
         return self._color
 
     @color.setter
     def color(self, value: object) -> None:
         if value is None:
-            self._color = Color.parse(BLACK)
+            self._color = None
         else:
             self._color = Color.parse(value)

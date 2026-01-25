@@ -59,7 +59,7 @@ async def widget(on_select):
         toga.App.app._gc_protector.append(widget)
 
 
-test_cleanup = build_cleanup_test(toga.MapView, xfail_platforms=("android",))
+test_cleanup = build_cleanup_test(toga.MapView)
 
 
 # The next two tests fail about 75% of the time in the macOS x86_64 CI configuration.

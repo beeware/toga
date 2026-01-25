@@ -46,6 +46,8 @@ Any icon that is found will be resized to the required size. Toga will generate 
 
 An icon is **guaranteed** to have an implementation, regardless of the path specified. If you specify a path and no matching icon can be found, Toga will output a warning to the console, and return [`DEFAULT_ICON`][toga.Icon.DEFAULT_ICON]. The only exception to this is if an icon file is *found*, but it cannot be loaded (e.g., due to a file format or permission error). In this case, an error will be raised.
 
+When you provide a relative path, Toga resolves it relative to the module that defines your [`toga.App`][] subclass. If you instantiate [`toga.App`][] directly (without subclassing), there is no separate “app module”, so the relative path is resolved relative to the Toga installation instead of your project.
+
 ## Reference
 
 ::: toga.Icon

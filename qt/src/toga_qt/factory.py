@@ -30,6 +30,7 @@ try:
     from .widgets.slider import Slider
     from .widgets.splitcontainer import SplitContainer
     from .widgets.switch import Switch
+    from .widgets.table import Table
     from .widgets.textinput import TextInput
     from .widgets.timeinput import TimeInput
     from .widgets.webview import WebView
@@ -74,6 +75,7 @@ __all__ = [
     "ScrollContainer",
     "Switch",
     "Slider",
+    "Table",
     "TextInput",
     "TimeInput",
     "WebView",

@@ -1,6 +1,7 @@
 import datetime
 from abc import ABC, abstractmethod
 
+from toga.colors import TRANSPARENT
 from toga_cocoa.libs import (
     NSApplication,
     NSCalendar,
@@ -43,6 +44,27 @@ class DateTimeInputProbe(SimpleProbe, ABC):
             return None
         else:
             return toga_color(self.native.textColor)
+
+    @property
+    def background_color(self):
+        if self.native.backgroundColor == NSColor.controlBackgroundColor:
+            assert self.native.isBezeled()
+            assert not self.native.drawsBackground
+            return None
+        elif self.native.drawsBackground:
+            # Shouldn't bezel in this case, as it breaks
+            # light mode.
+            assert not self.native.isBezeled()
+            # None as a background color is misconfigured, and produces
+            # incorrect results visually in dark mode.
+            assert self.native.backgroundColor is not None
+            # If drawing with default controlBackgroundColor, drawsBackground
+            # should be false, as it will be handled by the bezel.
+            assert self.native.backgroundColor != NSColor.controlBackgroundColor
+            return toga_color(self.native.backgroundColor)
+        else:
+            assert not self.native.isBezeled()
+            return TRANSPARENT
 
 
 class DateInputProbe(DateTimeInputProbe):

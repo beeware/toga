@@ -21,9 +21,7 @@ def test_begin_path(widget):
     assert repr(draw_op) == "BeginPath()"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    assert widget._impl.draw_instructions[1:-1] == [
-        ("begin path", {}),
-    ]
+    assert widget._impl.draw_instructions[1:-1] == ["begin path"]
 
 
 def test_close_path(widget):
@@ -34,59 +32,73 @@ def test_close_path(widget):
     assert repr(draw_op) == "ClosePath()"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    assert widget._impl.draw_instructions[1:-1] == [
-        ("close path", {}),
-    ]
+    assert widget._impl.draw_instructions[1:-1] == ["close path"]
 
 
 @pytest.mark.parametrize(
-    "kwargs, args_repr, draw_kwargs",
+    "kwargs, args_repr, draw_objs, attrs",
     [
         # Defaults
         (
             {},
-            "color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
-            {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
+            "color=None, fill_rule=FillRule.NONZERO",
+            [("fill", {"fill_rule": FillRule.NONZERO})],
+            {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Color as string name
         (
             {"color": REBECCAPURPLE},
             f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO",
+            [
+                ("set fill style", REBECCA_PURPLE_COLOR),
+                ("fill", {"fill_rule": FillRule.NONZERO}),
+            ],
             {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
         ),
         # Color as RGB object
         (
             {"color": REBECCA_PURPLE_COLOR},
             f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO",
+            [
+                ("set fill style", REBECCA_PURPLE_COLOR),
+                ("fill", {"fill_rule": FillRule.NONZERO}),
+            ],
             {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
         ),
-        # Color reset with None
+        # Color explicitly not set
         (
             {"color": None},
-            "color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
-            {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
+            "color=None, fill_rule=FillRule.NONZERO",
+            [("fill", {"fill_rule": FillRule.NONZERO})],
+            {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Explicit Non-Zero winding
         (
             {"fill_rule": FillRule.NONZERO},
-            "color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
-            {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
+            "color=None, fill_rule=FillRule.NONZERO",
+            [("fill", {"fill_rule": FillRule.NONZERO})],
+            {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Even-Odd winding
         (
             {"fill_rule": FillRule.EVENODD},
-            "color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.EVENODD",
-            {"color": rgb(0, 0, 0), "fill_rule": FillRule.EVENODD},
+            "color=None, fill_rule=FillRule.EVENODD",
+            [("fill", {"fill_rule": FillRule.EVENODD})],
+            {"color": None, "fill_rule": FillRule.EVENODD},
         ),
         # All args
         (
             {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
             f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD",
+            [
+                ("set fill style", REBECCA_PURPLE_COLOR),
+                ("fill", {"fill_rule": FillRule.EVENODD}),
+            ],
             {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
         ),
     ],
 )
-def test_fill(widget, kwargs, args_repr, draw_kwargs):
+def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
     """A primitive fill operation can be added."""
     draw_op = widget.context.fill(**kwargs)
 
@@ -94,63 +106,73 @@ def test_fill(widget, kwargs, args_repr, draw_kwargs):
     assert repr(draw_op) == f"Fill({args_repr})"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    assert widget._impl.draw_instructions[1:-1] == [
-        ("fill", draw_kwargs),
-    ]
+    # But the fill itself also saves and then restores.
+    assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
 
     # All the attributes can be retrieved.
-    for attr, value in draw_kwargs.items():
-        assert getattr(draw_op, attr) == value
+    for name, value in attrs.items():
+        assert getattr(draw_op, name) == value
 
 
 @pytest.mark.parametrize(
-    "kwargs, args_repr, draw_kwargs",
+    "kwargs, args_repr, draw_objs, attrs",
     [
         # Defaults
         (
             {},
-            "color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
-            {"color": rgb(0, 0, 0), "line_width": 2.0, "line_dash": None},
+            "color=None, line_width=None, line_dash=None",
+            [],
+            {"color": None, "line_width": None, "line_dash": None},
         ),
         # Color as string name
         (
             {"color": REBECCAPURPLE},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=2.0, line_dash=None",
-            {"color": REBECCA_PURPLE_COLOR, "line_width": 2.0, "line_dash": None},
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            [("set stroke style", REBECCA_PURPLE_COLOR)],
+            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
         ),
         # Color as RGB object
         (
             {"color": REBECCA_PURPLE_COLOR},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=2.0, line_dash=None",
-            {"color": REBECCA_PURPLE_COLOR, "line_width": 2.0, "line_dash": None},
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            [("set stroke style", REBECCA_PURPLE_COLOR)],
+            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
         ),
-        # Color reset with None
+        # Color explicitly not set
         (
             {"color": None},
-            "color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
-            {"color": rgb(0, 0, 0), "line_width": 2.0, "line_dash": None},
+            "color=None, line_width=None, line_dash=None",
+            [],
+            {"color": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "color=rgb(0, 0, 0, 1.0), line_width=4.5, line_dash=None",
-            {"color": rgb(0, 0, 0), "line_width": 4.5, "line_dash": None},
+            "color=None, line_width=4.500, line_dash=None",
+            [("set line width", 4.5)],
+            {"color": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=[2, 7]",
-            {"color": rgb(0, 0, 0), "line_width": 2.0, "line_dash": [2, 7]},
+            "color=None, line_width=None, line_dash=[2, 7]",
+            [("set line dash", [2, 7])],
+            {"color": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
         (
             {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.5, line_dash=[2, 7]",
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7]",
+            [
+                ("set stroke style", REBECCA_PURPLE_COLOR),
+                ("set line width", 4.5),
+                ("set line dash", [2, 7]),
+            ],
             {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
         ),
     ],
 )
-def test_stroke(widget, kwargs, args_repr, draw_kwargs):
+def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
     """A primitive stroke operation can be added."""
     draw_op = widget.context.stroke(**kwargs)
 
@@ -158,13 +180,17 @@ def test_stroke(widget, kwargs, args_repr, draw_kwargs):
     assert repr(draw_op) == f"Stroke({args_repr})"
 
     # The first and last instructions push/pull the root context, and can be ignored.
+    # But the stroke itself also saves and then restores.
     assert widget._impl.draw_instructions[1:-1] == [
-        ("stroke", draw_kwargs),
+        "save",
+        *draw_objs,
+        "stroke",
+        "restore",
     ]
 
     # All the attributes can be retrieved.
-    for attr, value in draw_kwargs.items():
-        assert getattr(draw_op, attr) == value
+    for name, value in attrs.items():
+        assert getattr(draw_op, name) == value
 
 
 def test_move_to(widget):
@@ -572,19 +598,34 @@ def test_rect(widget):
     assert draw_op.height == 40
 
 
+SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
+
+
 @pytest.mark.parametrize(
-    "kwargs, args_repr, draw_kwargs",
+    "kwargs, instructions, args_repr, draw_attrs",
     [
         # Defaults
         (
             {"text": "Hello world", "x": 10, "y": 20},
-            "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.ALPHABETIC, line_height=None",
+            # When font isn't specified, the system font is still supplied to the
+            # backend.
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
-                "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
+                "baseline": Baseline.ALPHABETIC,
+                "line_height": None,
+                "font": SYSTEM_FONT_IMPL,
+            },
+            (
+                "text='Hello world', x=10, y=20, font=None, "
+                "baseline=Baseline.ALPHABETIC, line_height=None"
+            ),
+            {
+                "text": "Hello world",
+                "x": 10,
+                "y": 20,
+                "font": None,
                 "baseline": Baseline.ALPHABETIC,
                 "line_height": None,
             },
@@ -592,13 +633,23 @@ def test_rect(widget):
         # Baseline
         (
             {"text": "Hello world", "x": 10, "y": 20, "baseline": Baseline.TOP},
-            "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.TOP, line_height=None",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
-                "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
+                "baseline": Baseline.TOP,
+                "line_height": None,
+                "font": SYSTEM_FONT_IMPL,
+            },
+            (
+                "text='Hello world', x=10, y=20, font=None, "
+                "baseline=Baseline.TOP, line_height=None"
+            ),
+            {
+                "text": "Hello world",
+                "x": 10,
+                "y": 20,
+                "font": None,
                 "baseline": Baseline.TOP,
                 "line_height": None,
             },
@@ -606,13 +657,23 @@ def test_rect(widget):
         # Font
         (
             {"text": "Hello world", "x": 10, "y": 20, "font": Font("Cutive", 42)},
-            "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>, "
-            "baseline=Baseline.ALPHABETIC, line_height=None",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
+                "baseline": Baseline.ALPHABETIC,
+                "line_height": None,
                 "font": Font("Cutive", 42)._impl,
+            },
+            (
+                "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>, "
+                "baseline=Baseline.ALPHABETIC, line_height=None"
+            ),
+            {
+                "text": "Hello world",
+                "x": 10,
+                "y": 20,
+                "font": Font("Cutive", 42),
                 "baseline": Baseline.ALPHABETIC,
                 "line_height": None,
             },
@@ -620,20 +681,30 @@ def test_rect(widget):
         # Line height factor
         (
             {"text": "Hello world", "x": 10, "y": 20, "line_height": 1.5},
-            "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.ALPHABETIC, line_height=1.5",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
-                "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
+                "baseline": Baseline.ALPHABETIC,
+                "line_height": 1.5,
+                "font": SYSTEM_FONT_IMPL,
+            },
+            (
+                "text='Hello world', x=10, y=20, font=None, "
+                "baseline=Baseline.ALPHABETIC, line_height=1.500"
+            ),
+            {
+                "text": "Hello world",
+                "x": 10,
+                "y": 20,
+                "font": None,
                 "baseline": Baseline.ALPHABETIC,
                 "line_height": 1.5,
             },
         ),
     ],
 )
-def test_write_text(widget, kwargs, args_repr, draw_kwargs):
+def test_write_text(widget, kwargs, instructions, args_repr, draw_attrs):
     """A write text operation can be added."""
     draw_op = widget.context.write_text(**kwargs)
 
@@ -642,16 +713,16 @@ def test_write_text(widget, kwargs, args_repr, draw_kwargs):
 
     # The first and last instructions push/pull the root context, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
-        ("write text", draw_kwargs),
+        ("write text", instructions),
     ]
 
     # All the attributes can be retrieved.
-    assert draw_op.text == draw_kwargs["text"]
-    assert draw_op.x == draw_kwargs["x"]
-    assert draw_op.y == draw_kwargs["y"]
-    assert draw_op.font == draw_kwargs["font"].interface
-    assert draw_op.baseline == draw_kwargs["baseline"]
-    assert draw_op.line_height == draw_kwargs["line_height"]
+    assert draw_op.text == draw_attrs["text"]
+    assert draw_op.x == draw_attrs["x"]
+    assert draw_op.y == draw_attrs["y"]
+    assert draw_op.font == draw_attrs["font"]
+    assert draw_op.baseline == draw_attrs["baseline"]
+    assert draw_op.line_height == draw_attrs["line_height"]
 
 
 def test_rotate(widget):
@@ -712,27 +783,34 @@ def test_reset_transform(widget):
     assert repr(draw_op) == "ResetTransform()"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    assert widget._impl.draw_instructions[1:-1] == [
-        ("reset transform", {}),
-    ]
+    assert widget._impl.draw_instructions[1:-1] == ["reset transform"]
 
 
 @pytest.mark.parametrize(
-    "kwargs, args_repr, draw_kwargs",
+    "kwargs, instructions, args_repr, draw_attrs",
     [
         # Defaults
         (
             {"x": 10, "y": 20},
-            "x=10, y=20, width=32, height=32",
+            # When width and height aren't specified, the image's true dimensions are
+            # supplied to the backend.
+            {"x": 10, "y": 20, "width": 32, "height": 32},
+            "x=10, y=20, width=None, height=None",
             {
                 "x": 10,
                 "y": 20,
-                "width": 32,
-                "height": 32,
+                "width": None,
+                "height": None,
             },
         ),
         # Into rectangle
         (
+            {
+                "x": 10,
+                "y": 20,
+                "width": 100,
+                "height": 50,
+            },
             {
                 "x": 10,
                 "y": 20,
@@ -749,7 +827,7 @@ def test_reset_transform(widget):
         ),
     ],
 )
-def test_draw_image(app, widget, kwargs, args_repr, draw_kwargs):
+def test_draw_image(app, widget, kwargs, instructions, args_repr, draw_attrs):
     """An image can be drawn."""
     image = Image(ABSOLUTE_FILE_PATH)
     draw_op = widget.context.draw_image(image=image, **kwargs)
@@ -758,17 +836,17 @@ def test_draw_image(app, widget, kwargs, args_repr, draw_kwargs):
     assert repr(draw_op) == f"DrawImage(image={image!r}, {args_repr})"
 
     # The first and last instructions push/pull the root context, and can be ignored.
-    draw_kwargs["image"] = image
+    instructions["image"] = image
     assert widget._impl.draw_instructions[1:-1] == [
-        ("draw_image", draw_kwargs),
+        ("draw_image", instructions),
     ]
 
     # All the attributes can be retrieved.
-    assert draw_op.image == draw_kwargs["image"]
-    assert draw_op.x == draw_kwargs["x"]
-    assert draw_op.y == draw_kwargs["y"]
-    assert draw_op.width == draw_kwargs["width"]
-    assert draw_op.height == draw_kwargs["height"]
+    assert draw_op.image == image
+    assert draw_op.x == draw_attrs["x"]
+    assert draw_op.y == draw_attrs["y"]
+    assert draw_op.width == draw_attrs["width"]
+    assert draw_op.height == draw_attrs["height"]
 
 
 @pytest.mark.parametrize("value", [True, False])

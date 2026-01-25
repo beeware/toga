@@ -1,5 +1,7 @@
 from unittest.mock import Mock
 
+import pytest
+
 from toga.sources import Source
 
 
@@ -67,3 +69,40 @@ def test_missing_listener_method():
     source.notify("message1")
 
     full_listener.message1.assert_called_once_with()
+
+
+def test_deprecate_listener():
+    import toga.sources.base
+
+    # Import Listener from toga.sources.base. Raises a deprecation warning.
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"The Listener protocol has been deprecated;",
+    ):
+        from toga.sources.base import Listener
+
+    assert Listener is toga.sources.base.ListListener
+
+    with pytest.raises(
+        ImportError,
+        match=r"cannot import name 'NonExistent' from 'toga.sources.base'",
+    ):
+        from toga.sources.base import NonExistent  # noqa: F401
+
+    # "unimport" Listener
+    del toga.sources.base.Listener
+
+    # Import Listener from toga.sources.base. Raises a deprecation warning.
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"The Listener protocol has been deprecated;",
+    ):
+        from toga.sources import Listener
+
+    assert Listener is toga.sources.base.ListListener
+
+    with pytest.raises(
+        ImportError,
+        match=r"cannot import name 'NonExistent' from 'toga.sources'",
+    ):
+        from toga.sources import NonExistent  # noqa: F401

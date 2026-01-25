@@ -89,8 +89,10 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - redraw
 
 ::: toga.widgets.canvas.Context
+    options:
+        inherited_members: True
 
-::: toga.widgets.canvas.DrawingObject
+::: toga.widgets.canvas.DrawingAction
 
 ::: toga.widgets.canvas.ClosedPathContext
 
