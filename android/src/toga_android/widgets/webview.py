@@ -70,6 +70,8 @@ class WebView(Widget):
         self._large_content_dir = (
             toga.App.app.paths.cache / f"toga/webview-{self.interface.id}"
         )
+        # base URL for accessing the cached files
+        self._large_content_base_url = f"https://appassets.androidplatform.net/cache/toga/webview-{self.interface.id}/"
 
     def __del__(self):  # pragma: nocover
         """Cleaning up the cached files for large content"""
@@ -97,7 +99,7 @@ class WebView(Widget):
             file_name = h.hexdigest() + ".html"
             file_path = self._large_content_dir / file_name
             file_path.write_text(content, encoding="utf-8")
-            self.set_url(file_path.as_uri())
+            self.set_url(self._large_content_base_url + file_name)
         else:
             # There is a loadDataWithBaseURL method, but it's inconsistent about
             # whether getUrl returns the given URL or a data: URL. Rather than support

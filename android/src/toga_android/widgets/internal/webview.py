@@ -1,14 +1,42 @@
 import weakref
 
-from android.webkit import WebResourceRequest, WebView as A_WebView, WebViewClient
-from java import Override, jboolean, jvoid, static_proxy
+from android.webkit import (
+    WebResourceRequest,
+    WebResourceResponse,
+    WebView as A_WebView,
+    WebViewClient,
+)
+from androidx.webkit import WebViewAssetLoader
+from java import Override, dynamic_proxy, jboolean, jvoid, static_proxy
+from java.io import FileInputStream
 from java.lang import String as jstring
+
+import toga
+
+
+class TogaCachePathHandler(dynamic_proxy(WebViewAssetLoader.PathHandler)):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+
+    @Override(WebResourceResponse, [jstring])
+    def handle(self, path):
+        filepath = toga.App.app.paths.cache / path
+        if filepath.exists():
+            return WebResourceResponse(
+                "text/html", "utf-8", FileInputStream(str(filepath))
+            )
+        return None
 
 
 class TogaWebClient(static_proxy(WebViewClient)):
     def __init__(self, impl):
         self._interface_ref = weakref.ref(impl.interface)
         self._impl_ref = weakref.ref(impl)
+        pathHandler = TogaCachePathHandler(impl._native_activity)
+        self.cache_assetLoader = (
+            WebViewAssetLoader.Builder().addPathHandler("/cache/", pathHandler).build()
+        )
         super().__init__()
 
     @property
@@ -46,3 +74,7 @@ class TogaWebClient(static_proxy(WebViewClient)):
         if self.impl and self.impl.loaded_future:  # pragma: no-branch
             self.impl.loaded_future.set_result(None)
             self.impl.loaded_future = None
+
+    @Override(WebResourceResponse, [A_WebView, WebResourceRequest])
+    def shouldInterceptRequest(self, webview, request):
+        return self.cache_assetLoader.shouldInterceptRequest(request.getUrl())

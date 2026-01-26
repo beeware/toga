@@ -1,5 +1,4 @@
 import asyncio
-import os
 from asyncio import wait_for
 from contextlib import nullcontext
 from http.cookiejar import CookieJar
@@ -211,10 +210,8 @@ async def test_static_large_content(widget, probe, on_load):
     large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
     url = "https://example.com/"
     widget.set_content(url, large_content)
-    if hasattr(widget._impl, "_large_content_dir"):  # pragma: no branch
-        for f in os.listdir(widget._impl._large_content_dir):
-            p = widget._impl._large_content_dir / f
-        url = p.as_uri().replace("%20", " ")
+    if hasattr(probe, "get_large_content_dir"):  # pragma: no branch
+        url = probe.get_large_content_dir(widget)
 
     # DOM loads aren't instantaneous; wait for the URL to appear
     await assert_content_change(

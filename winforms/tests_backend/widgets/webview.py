@@ -1,3 +1,5 @@
+import os
+
 from Microsoft.Web.WebView2.WinForms import WebView2
 
 from .base import SimpleProbe
@@ -17,3 +19,8 @@ class WebViewProbe(SimpleProbe):
 
     def extract_cookie(self, cookie_jar, name):
         return next((c for c in cookie_jar if c.name == name), None)
+
+    def get_large_content_dir(self, widget):
+        for f in os.listdir(widget._impl._large_content_dir):
+            p = widget._impl._large_content_dir / f
+        return p.as_uri().replace("%20", " ")
