@@ -61,7 +61,7 @@ class StartApp(toga.App):
             eye_pupils.arc(88, 97, 3)
 
     def draw_horns(self):
-        with self.canvas.Context() as r_horn:
+        with self.canvas.root_state.state() as r_horn:
             with r_horn.Fill(color=rgb(212, 212, 212)) as r_horn_filler:
                 r_horn_filler.move_to(112, 99)
                 r_horn_filler.quadratic_curve_to(145, 65, 139, 36)
@@ -71,7 +71,7 @@ class StartApp(toga.App):
                 r_horn_stroker.quadratic_curve_to(145, 65, 139, 36)
                 r_horn_stroker.quadratic_curve_to(130, 60, 109, 75)
 
-        with self.canvas.Context() as l_horn:
+        with self.canvas.root_state.state() as l_horn:
             with l_horn.Fill(color=rgb(212, 212, 212)) as l_horn_filler:
                 l_horn_filler.move_to(35, 99)
                 l_horn_filler.quadratic_curve_to(2, 65, 6, 36)
@@ -121,9 +121,9 @@ class StartApp(toga.App):
     def on_resize(self, widget, width, height, **kwargs):
         # On resize, center the text horizontally on the canvas. on_resize will be
         # called when the canvas is initially created, when the drawing objects won't
-        # exist yet. Only attempt to reposition the text if there's context objects on
+        # exist yet. Only attempt to reposition the text if there's a state object on
         # the canvas.
-        if widget.context:
+        if widget.root_state:
             left_pad = (width - self.text_width) // 2
             self.text.x = left_pad
             self.text_border.x = left_pad - 5

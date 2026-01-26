@@ -54,7 +54,7 @@ async def placeholder(request, widget):
     widget.placeholder = request.param
 
 
-test_cleanup = build_cleanup_test(toga.TextInput, xfail_platforms=("android",))
+test_cleanup = build_cleanup_test(toga.TextInput)
 
 
 async def test_value_not_hidden(widget, probe):

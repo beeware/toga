@@ -2,6 +2,8 @@
 
 ## Usage
 
+The range is shown as a horizontal line, and the selected value is shown as a draggable marker.
+
 A slider can either be continuous (allowing any value within the range), or discrete (allowing a fixed number of equally-spaced values). For example:
 
 ```python

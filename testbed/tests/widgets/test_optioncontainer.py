@@ -81,13 +81,51 @@ test_cleanup = build_cleanup_test(
     # Pass a function here to prevent init of toga.Box() in a different thread than
     # toga.OptionContainer. This would raise a runtime error on Windows.
     lambda: toga.OptionContainer(content=[("Tab 1", toga.Box())]),
-    xfail_platforms=("android", "linux"),
+    xfail_platforms=("linux",),
 )
 
 
 def assert_tab_text(tab, expected):
     assert tab.text == expected
     assert type(tab.text) is str
+
+
+async def test_content_size_rehint(
+    widget,
+    probe,
+    content1,
+    content1_probe,
+    content3,
+    main_window,
+    main_window_probe,
+):
+    """The OptionContainer should rehint to minimum size of all widgets plus necessary
+    decors, and should automatically rehint upon the addition of new tabs."""
+    probe.assert_supports_content_based_rehint()
+    main_window.size = (300, 300)
+    await main_window_probe.redraw("Main window size should be 300x300")
+
+    content3.width = 500
+    content3.height = 600
+
+    # Wait for size of content to change. Use content1 because content3 is not selected,
+    # and as a result, may not have a valid size.
+    await probe.redraw(
+        "Tab 3's size should be explicitly set to 500x600",
+        wait_for=lambda: (
+            content1_probe.width == pytest.approx(500, abs=2)
+            and content1_probe.height == pytest.approx(600, abs=2)
+        ),
+    )
+
+    assert main_window.size.width >= 500
+    assert main_window.size.height > 600
+    assert probe.width >= 500
+    assert probe.height > 600
+    # Asserting content1 for content size because content3, by virtue of not being
+    # selected, may have an invalid size.
+    assert content1_probe.width == pytest.approx(500, abs=2)
+    assert content1_probe.height == pytest.approx(600, abs=2)
 
 
 async def test_select_tab(

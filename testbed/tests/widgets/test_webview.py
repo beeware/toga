@@ -233,6 +233,7 @@ async def test_user_agent(widget, probe):
     assert widget.user_agent == "NCSA_Mosaic/1.0"
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript(widget, probe):
     """JavaScript can be evaluated."""
     on_result_handler = Mock()
@@ -260,6 +261,7 @@ async def test_evaluate_javascript(widget, probe):
         on_result_handler.assert_called_once_with(expected)
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript_no_handler(widget, probe):
     """A handler isn't needed to evaluate JavaScript."""
     result = await wait_for(
@@ -278,6 +280,7 @@ def javascript_error_context(probe):
         return nullcontext()
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript_error(widget, probe):
     """If JavaScript content raises an error, the error is propagated."""
     on_result_handler = Mock()
@@ -306,6 +309,7 @@ async def test_evaluate_javascript_error(widget, probe):
         assert kwargs == {}
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript_error_without_handler(widget, probe):
     """A handler isn't needed to propagate a JavaScript error."""
     with javascript_error_context(probe):

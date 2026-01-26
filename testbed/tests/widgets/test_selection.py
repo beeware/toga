@@ -4,7 +4,7 @@ import pytest
 
 import toga
 from toga.constants import CENTER
-from toga.sources import ListSource
+from toga.sources import ListListener, ListSource
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
@@ -27,7 +27,7 @@ from .properties import (  # noqa: F401
 # make out, there's an internal private widget that actually gets the focus, but
 # that widget isn't visible to GObject. We can't use test_focus_noop because
 # the textinput *does* lose focus when focus() is invoked on selection.
-if toga.platform.current_platform == "linux":
+if toga.platform.backend == "toga_gtk":
     pass
 elif toga.platform.current_platform == "android":
     # This widget can't be given focus on Android.
@@ -55,7 +55,7 @@ def verify_vertical_text_align():
 test_cleanup = build_cleanup_test(
     toga.Selection,
     kwargs={"items": ["first", "second", "third"]},
-    xfail_platforms=("android", "windows"),
+    xfail_platforms=("windows",),
 )
 
 
@@ -168,6 +168,23 @@ async def test_selection_change(widget, probe):
     await probe.redraw("Selected item has been changed by user interaction")
 
     assert widget.value == "second"
+    on_change_handler.assert_called_once_with(widget)
+
+
+async def test_selection_change_same_text(widget, probe):
+    """Selection signals are emitted even if only text changes"""
+    widget.items = ["Dubnium", "Dubnium"]
+
+    on_change_handler = Mock()
+    widget.on_change = on_change_handler
+
+    # Change the selection via GUI action
+    await probe.select_item()
+    await probe.redraw(
+        "An item with the same text has been selected by user interaction"
+    )
+
+    assert widget.value == "Dubnium"
     on_change_handler.assert_called_once_with(widget)
 
 
@@ -311,3 +328,8 @@ async def test_resize_on_content_change(widget, probe):
     await probe.redraw("The long item has been renamed")
     if probe.shrink_on_resize:
         assert probe.width == original_width
+
+
+def test_list_listener(widget):
+    """Does the widget implement the ListListener API"""
+    assert isinstance(widget._impl, ListListener)

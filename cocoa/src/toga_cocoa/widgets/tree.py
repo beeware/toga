@@ -1,7 +1,6 @@
 from rubicon.objc import SEL, at, objc_method, objc_property
 from travertino.size import at_least
 
-import toga
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -53,40 +52,18 @@ class TogaTree(NSOutlineView):
         if item is None:
             # How many root elements are there?
             # If we're starting up, the source may not exist yet.
-            if self.interface.data is not None:
-                return len(self.interface.data)
-            else:
-                return 0
+            return len(getattr(self.interface, "data", ()))
         else:
             # How many children does this node have?
             return len(item.attrs["node"])
 
     @objc_method
     def outlineView_viewForTableColumn_item_(self, tree, column, item):
-        col_identifier = str(column.identifier)
-
-        try:
-            value = getattr(item.attrs["node"], col_identifier)
-
-            # if the value is a widget itself, just draw the widget!
-            if isinstance(value, toga.Widget):
-                return value._impl.native
-
-            # Allow for an (icon, value) tuple as the simple case
-            # for encoding an icon in a table cell. Otherwise, look
-            # for an icon attribute.
-            elif isinstance(value, tuple):
-                icon, value = value
-            else:
-                try:
-                    icon = value.icon
-                except AttributeError:
-                    icon = None
-        except AttributeError:
-            # If the node doesn't have a property with the
-            # accessor name, assume an empty string value.
-            value = self.interface.missing_value
-            icon = None
+        node = item.attrs["node"]
+        if (widget := column.toga_column.widget(node)) is not None:
+            return widget._impl.native
+        icon = column.toga_column.icon(node)
+        text = column.toga_column.text(node, self.interface.missing_value)
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
@@ -101,7 +78,7 @@ class TogaTree(NSOutlineView):
             tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
-        tcv.setText(str(value))
+        tcv.setText(text)
         if icon:
             tcv.setImage(icon._impl.native)
         else:
@@ -192,15 +169,10 @@ class Tree(Widget):
 
         # Create columns for the table
         self.columns = []
-        if self.interface.headings:
-            for index, (heading, accessor) in enumerate(
-                zip(self.interface.headings, self.interface.accessors, strict=False)
-            ):
-                self._insert_column(index, heading, accessor)
-        else:
+        if not self.interface._show_headings:
             self.native_tree.setHeaderView(None)
-            for index, accessor in enumerate(self.interface.accessors):
-                self._insert_column(index, None, accessor)
+        for index, toga_column in enumerate(self.interface._columns):
+            self._insert_column(index, toga_column)
 
         # Put the tree arrows in the first column.
         self.native_tree.outlineTableColumn = self.columns[0]
@@ -219,7 +191,7 @@ class Tree(Widget):
     def change_source(self, source):
         self.native_tree.reloadData()
 
-    def insert(self, parent, index, item):
+    def insert(self, index, item, parent=None):
         index_set = NSIndexSet.indexSetWithIndex(index)
         self.native_tree.insertItemsAtIndexes(
             index_set,
@@ -230,7 +202,7 @@ class Tree(Widget):
     def change(self, item):
         self.native_tree.reloadItem(node_impl(item))
 
-    def remove(self, parent, index, item):
+    def remove(self, index, item, parent=None):
         try:
             index = self.native_tree.childIndexForItem(item._impl)
             index_set = NSIndexSet.indexSetWithIndex(index)
@@ -281,20 +253,19 @@ class Tree(Widget):
     def collapse_all(self):
         self.native_tree.collapseItem(None, collapseChildren=True)
 
-    def _insert_column(self, index, heading, accessor):
-        column = NSTableColumn.alloc().initWithIdentifier(accessor)
+    def _insert_column(self, index, toga_column):
+        column = NSTableColumn.alloc().initWithIdentifier(str(id(toga_column)))
+        column.toga_column = toga_column
         column.minWidth = 16
 
         self.columns.insert(index, column)
         self.native_tree.addTableColumn(column)
         if index != len(self.columns) - 1:
             self.native_tree.moveColumn(len(self.columns) - 1, toColumn=index)
-
-        if heading is not None:
-            column.headerCell.stringValue = heading
+        column.headerCell.stringValue = toga_column.heading
 
     def insert_column(self, index, heading, accessor):
-        self._insert_column(index, heading, accessor)
+        self._insert_column(index, self.interface._columns[index])
         self.native_tree.sizeToFit()
 
     def remove_column(self, index):

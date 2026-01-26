@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_UP
 
 from android.view import View
@@ -5,18 +6,18 @@ from android.widget import CompoundButton, Switch as A_Switch
 from java import dynamic_proxy
 from travertino.size import at_least
 
-from toga_android.widgets.base import ContainedWidget
-
+from .base import ContainedWidget, suppress_reference_error
 from .label import TextViewWidget
 
 
 class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self._impl = impl
+        self._impl = weakref.proxy(impl)
 
     def onCheckedChanged(self, _button, _checked):
-        self._impl.interface.on_change()
+        with suppress_reference_error():
+            self._impl.interface.on_change()
 
 
 class Switch(TextViewWidget, ContainedWidget):

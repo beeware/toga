@@ -1,3 +1,4 @@
+import contextlib
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, Decimal
 
@@ -150,6 +151,17 @@ class Widget(ABC, Scalable):
     def set_color(self, color):
         pass  # If appropriate, a widget subclass will implement this.
 
+    def get_theme_color(self, attr_id: int) -> int:
+        ta = self._native_activity.getTheme().obtainStyledAttributes([attr_id])
+        try:
+            if not ta.hasValue(0):
+                raise RuntimeError(  # pragma: no cover
+                    f"Required theme color attribute not found: {attr_id}"
+                )
+            return ta.getColor(0, 0)
+        finally:
+            ta.recycle()
+
     # INTERFACE
 
     def add_child(self, child):
@@ -181,6 +193,21 @@ def android_text_align(value):
         CENTER: Gravity.CENTER_HORIZONTAL,
         JUSTIFY: Gravity.LEFT,
     }[value]
+
+
+# In implementing certain widgets, weak back-references
+# are needed from the native widget back to the implementation
+# object, however, this can sometimes lead to functions
+# being called on the native object even after the implementation
+# has been garbage collected.  Since there is no implementation
+# to emit signals for, such ReferenceErrors we get are often
+# useless, so we suppress them.
+@contextlib.contextmanager
+def suppress_reference_error():
+    try:
+        yield
+    except ReferenceError:  # pragma: no cover
+        pass
 
 
 # The look and feel of Android widgets is sometimes implemented using background

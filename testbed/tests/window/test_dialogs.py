@@ -182,7 +182,7 @@ async def test_save_file_dialog(
         # Successful single select with no initial directory
         (None, None, False, TESTS_DIR / "data.py"),
         # Successful single select with file types
-        (TESTS_DIR, ["txt"], False, TESTS_DIR / "data.py"),
+        (TESTS_DIR, ["py"], False, TESTS_DIR / "data.py"),
         # Successful multiple selection
         (
             TESTS_DIR,
@@ -199,7 +199,7 @@ async def test_save_file_dialog(
         # Successful multiple selection with file types
         (
             TESTS_DIR,
-            ["txt", "doc"],
+            ["txt", "py"],
             True,
             [TESTS_DIR / "conftest.py", TESTS_DIR / "data.py"],
         ),

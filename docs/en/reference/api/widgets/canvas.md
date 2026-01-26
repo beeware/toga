@@ -2,19 +2,19 @@
 
 ## Usage
 
-Canvas is a 2D vector graphics drawing area, whose API broadly follows the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The Canvas provides a drawing Context; drawing instructions are then added to that context by calling methods on the context. All positions and sizes are measured in [CSS pixels][css-units].
+Canvas is a 2D vector graphics drawing area, whose API broadly follows the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The Canvas provides a drawing `State`; drawing instructions are then added to that state by calling methods on the state. All positions and sizes are measured in [CSS pixels][css-units].
 
 For example, the following code will draw an orange horizontal line:
 
 ```python
 import toga
 canvas = toga.Canvas()
-context = canvas.context
+state = canvas.root_state
 
-context.begin_path()
-context.move_to(20, 20)
-context.line_to(160, 20)
-context.stroke(color="orange")
+state.begin_path()
+state.move_to(20, 20)
+state.line_to(160, 20)
+state.stroke(color="orange")
 ```
 
 Toga adds an additional layer of convenience to the base HTML5 API by providing context managers for operations that have a natural open/close life cycle. For example, the previous example could be replaced with:
@@ -23,13 +23,13 @@ Toga adds an additional layer of convenience to the base HTML5 API by providing 
 import toga
 canvas = toga.Canvas()
 
-with canvas.context.Stroke(20, 20, color="orange") as stroke:
+with canvas.state.Stroke(20, 20, color="orange") as stroke:
     stroke.line_to(160, 20)
 ```
 
-Any argument provided to a drawing operation or context object becomes a property of that object. Those properties can be modified after creation, after which you should invoke [`Canvas.redraw`][toga.Canvas.redraw] to request a redraw of the canvas.
+Any argument provided to a drawing operation or state object becomes a property of that object. Those properties can be modified after creation, after which you should invoke [`Canvas.redraw`][toga.Canvas.redraw] to request a redraw of the canvas.
 
-Drawing operations can also be added to or removed from a context using the `list` operations `append`, `insert`, `remove` and `clear`. In this case, [`Canvas.redraw`][toga.Canvas.redraw] will be called automatically.
+Drawing operations can also be added to or removed from a state using the `list` operations `append`, `insert`, `remove` and `clear`. In this case, [`Canvas.redraw`][toga.Canvas.redraw] will be called automatically.
 
 For example, if you were drawing a bar chart where the height of the bars changed over time, you don't need to completely reset the canvas and redraw all the objects; you can use the same objects, only modifying the height of existing bars, or adding and removing bars as required.
 
@@ -39,7 +39,7 @@ In this example, we create 2 filled drawing objects, then manipulate those objec
 import toga
 
 canvas = toga.Canvas()
-with canvas.context.Fill(color="red") as fill:
+with canvas.root_state.Fill(color="red") as fill:
     circle = fill.arc(x=50, y=50, radius=15)
     rect = fill.rect(x=50, y=50, width=15, height=15)
 
@@ -70,11 +70,11 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
     options:
         members:
             - ClosedPath
-            - Context
+            - State
             - Fill
             - Stroke
             - as_image
-            - context
+            - root_state
             - enabled
             - focus
             - measure_text
@@ -88,9 +88,11 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - on_resize
             - redraw
 
-::: toga.widgets.canvas.Context
+::: toga.widgets.canvas.State
+    options:
+        inherited_members: True
 
-::: toga.widgets.canvas.DrawingObject
+::: toga.widgets.canvas.DrawingAction
 
 ::: toga.widgets.canvas.ClosedPathContext
 

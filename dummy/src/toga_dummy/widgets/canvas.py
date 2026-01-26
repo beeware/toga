@@ -6,107 +6,79 @@ from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
 from .base import Widget
 
 
-class Canvas(Widget):
-    def create(self):
-        self._action("create Canvas")
-
-    def redraw(self):
-        self._action("redraw")
-        self.draw_instructions = []
-        self.interface.context._draw(self, draw_instructions=self.draw_instructions)
+class Context:
+    def __init__(self, impl):
+        self.impl = impl
 
     # Context management
-    def push_context(self, draw_instructions, **kwargs):
-        draw_instructions.append(("push context", kwargs))
+    def save(self):
+        self.impl.draw_instructions.append("save")
 
-    def pop_context(self, draw_instructions, **kwargs):
-        draw_instructions.append(("pop context", kwargs))
+    def restore(self):
+        self.impl.draw_instructions.append("restore")
+
+    # Setting attributes
+    def set_fill_style(self, color):
+        self.impl.draw_instructions.append(("set fill style", color))
+
+    def set_line_dash(self, line_dash):
+        self.impl.draw_instructions.append(("set line dash", line_dash))
+
+    def set_line_width(self, line_width):
+        self.impl.draw_instructions.append(("set line width", line_width))
+
+    def set_stroke_style(self, color):
+        self.impl.draw_instructions.append(("set stroke style", color))
 
     # Basic paths
-    def begin_path(self, draw_instructions, **kwargs):
-        draw_instructions.append(("begin path", kwargs))
+    def begin_path(self):
+        self.impl.draw_instructions.append("begin path")
 
-    def close_path(self, draw_instructions, **kwargs):
-        draw_instructions.append(("close path", kwargs))
+    def close_path(self):
+        self.impl.draw_instructions.append("close path")
 
-    def move_to(self, x, y, draw_instructions, **kwargs):
-        draw_instructions.append(("move to", dict(**{"x": x, "y": y}, **kwargs)))
+    def move_to(self, x, y):
+        self.impl.draw_instructions.append(("move to", {"x": x, "y": y}))
 
-    def line_to(self, x, y, draw_instructions, **kwargs):
-        draw_instructions.append(("line to", dict(**{"x": x, "y": y}, **kwargs)))
+    def line_to(self, x, y):
+        self.impl.draw_instructions.append(("line to", {"x": x, "y": y}))
 
     # Basic shapes
-    def bezier_curve_to(
-        self,
-        cp1x,
-        cp1y,
-        cp2x,
-        cp2y,
-        x,
-        y,
-        draw_instructions,
-        *args,
-        **kwargs,
-    ):
-        draw_instructions.append(
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self.impl.draw_instructions.append(
             (
                 "bezier curve to",
-                dict(
-                    **{
-                        "cp1x": cp1x,
-                        "cp1y": cp1y,
-                        "cp2x": cp2x,
-                        "cp2y": cp2y,
-                        "x": x,
-                        "y": y,
-                    },
-                    **kwargs,
-                ),
+                {
+                    "cp1x": cp1x,
+                    "cp1y": cp1y,
+                    "cp2x": cp2x,
+                    "cp2y": cp2y,
+                    "x": x,
+                    "y": y,
+                },
             )
         )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_instructions, **kwargs):
-        draw_instructions.append(
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        self.impl.draw_instructions.append(
             (
                 "quadratic curve to",
-                dict(
-                    **{
-                        "cpx": cpx,
-                        "cpy": cpy,
-                        "x": x,
-                        "y": y,
-                    },
-                    **kwargs,
-                ),
+                {"cpx": cpx, "cpy": cpy, "x": x, "y": y},
             )
         )
 
-    def arc(
-        self,
-        x,
-        y,
-        radius,
-        startangle,
-        endangle,
-        counterclockwise,
-        draw_instructions,
-        *args,
-        **kwargs,
-    ):
-        draw_instructions.append(
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        self.impl.draw_instructions.append(
             (
                 "arc",
-                dict(
-                    **{
-                        "x": x,
-                        "y": y,
-                        "radius": radius,
-                        "startangle": startangle,
-                        "endangle": endangle,
-                        "counterclockwise": counterclockwise,
-                    },
-                    **kwargs,
-                ),
+                {
+                    "x": x,
+                    "y": y,
+                    "radius": radius,
+                    "startangle": startangle,
+                    "endangle": endangle,
+                    "counterclockwise": counterclockwise,
+                },
             )
         )
 
@@ -120,118 +92,89 @@ class Canvas(Widget):
         startangle,
         endangle,
         counterclockwise,
-        draw_instructions,
-        *args,
-        **kwargs,
     ):
-        draw_instructions.append(
+        self.impl.draw_instructions.append(
             (
                 "ellipse",
-                dict(
-                    **{
-                        "x": x,
-                        "y": y,
-                        "radiusx": radiusx,
-                        "radiusy": radiusy,
-                        "rotation": rotation,
-                        "startangle": startangle,
-                        "endangle": endangle,
-                        "counterclockwise": counterclockwise,
-                    },
-                    **kwargs,
-                ),
+                {
+                    "x": x,
+                    "y": y,
+                    "radiusx": radiusx,
+                    "radiusy": radiusy,
+                    "rotation": rotation,
+                    "startangle": startangle,
+                    "endangle": endangle,
+                    "counterclockwise": counterclockwise,
+                },
             )
         )
 
-    def rect(self, x, y, width, height, draw_instructions, **kwargs):
-        draw_instructions.append(
+    def rect(self, x, y, width, height):
+        self.impl.draw_instructions.append(
             (
                 "rect",
-                dict(
-                    **{
-                        "x": x,
-                        "y": y,
-                        "width": width,
-                        "height": height,
-                    },
-                    **kwargs,
-                ),
+                {"x": x, "y": y, "width": width, "height": height},
             )
         )
 
     # Drawing Paths
-    def fill(self, color, fill_rule, draw_instructions, **kwargs):
-        draw_instructions.append(
-            (
-                "fill",
-                dict(
-                    **{
-                        "color": color,
-                        "fill_rule": fill_rule,
-                    },
-                    **kwargs,
-                ),
-            )
-        )
+    def fill(self, fill_rule):
+        self.impl.draw_instructions.append(("fill", {"fill_rule": fill_rule}))
 
-    def stroke(self, color, line_width, line_dash, draw_instructions, **kwargs):
-        draw_instructions.append(
-            (
-                "stroke",
-                dict(
-                    **{
-                        "color": color,
-                        "line_width": line_width,
-                        "line_dash": line_dash,
-                    },
-                    **kwargs,
-                ),
-            )
-        )
+    def stroke(self):
+        self.impl.draw_instructions.append("stroke")
 
     # Transformations
 
-    def rotate(self, radians, draw_instructions, **kwargs):
-        draw_instructions.append(("rotate", dict(**{"radians": radians}, **kwargs)))
+    def rotate(self, radians):
+        self.impl.draw_instructions.append(("rotate", {"radians": radians}))
 
-    def scale(self, sx, sy, draw_instructions, **kwargs):
-        draw_instructions.append(("scale", dict(**{"sx": sx, "sy": sy}, **kwargs)))
+    def scale(self, sx, sy):
+        self.impl.draw_instructions.append(("scale", {"sx": sx, "sy": sy}))
 
-    def translate(self, tx, ty, draw_instructions, **kwargs):
-        draw_instructions.append(("translate", dict(**{"tx": tx, "ty": ty}, **kwargs)))
+    def translate(self, tx, ty):
+        self.impl.draw_instructions.append(("translate", {"tx": tx, "ty": ty}))
 
-    def reset_transform(self, draw_instructions, **kwargs):
-        draw_instructions.append(("reset transform", kwargs))
+    def reset_transform(self):
+        self.impl.draw_instructions.append("reset transform")
 
     # Text
 
-    def write_text(
-        self,
-        text,
-        x,
-        y,
-        font,
-        baseline,
-        line_height,
-        draw_instructions,
-        **kwargs,
-    ):
-        draw_instructions.append(
+    def write_text(self, text, x, y, font, baseline, line_height):
+        self.impl.draw_instructions.append(
             (
                 "write text",
-                dict(
-                    **{
-                        "text": text,
-                        "x": x,
-                        "y": y,
-                        "font": font,
-                        "baseline": baseline,
-                        "line_height": line_height,
-                    },
-                    **kwargs,
-                ),
+                {
+                    "text": text,
+                    "x": x,
+                    "y": y,
+                    "font": font,
+                    "baseline": baseline,
+                    "line_height": line_height,
+                },
             )
         )
+
+    # Image
+
+    def draw_image(self, image, x, y, width, height):
+        """Draw an Image into the context."""
+        self.impl.draw_instructions.append(
+            (
+                "draw_image",
+                {"image": image, "x": x, "y": y, "width": width, "height": height},
+            )
+        )
+
+
+class Canvas(Widget):
+    def create(self):
+        self._action("create Canvas")
+
+    def redraw(self):
+        self._action("redraw")
+        self.draw_instructions = []
+        self.interface.root_state._draw(Context(self))
 
     def measure_text(self, text, font, line_height):
         # Assume system font produces characters that have the same width and height as
@@ -260,8 +203,6 @@ class Canvas(Widget):
                 height = lines * line_height_factor * int(font.interface.size * 1.5)
 
         return width, height
-
-    # Image
 
     def get_image_data(self):
         """Return the Toga logo as the "native" image."""
