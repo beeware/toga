@@ -17,7 +17,7 @@ class WebViewProbe(SimpleProbe):
         assert isinstance(cookie_jar, CookieJar)
         skip("Cookie retrieval not implemented on Android")
 
-    def get_large_content_dir(self, widget):
+    def get_large_content_url(self, widget):
         for f in os.listdir(widget._impl._large_content_dir):
             url = widget._impl._large_content_base_url + f
         return url

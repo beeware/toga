@@ -211,8 +211,8 @@ async def test_static_large_content(widget, probe, on_load):
     url = "https://example.com/"
     widget.set_content(url, large_content)
     # some platforms handle large html content by loading a cached file
-    if hasattr(probe, "get_large_content_dir"):  # pragma: no branch
-        url = probe.get_large_content_dir(widget)
+    if hasattr(probe, "get_large_content_url"):  # pragma: no branch
+        url = probe.get_large_content_url(widget)
 
     # DOM loads aren't instantaneous; wait for the URL to appear
     await assert_content_change(
