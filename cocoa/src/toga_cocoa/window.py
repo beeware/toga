@@ -210,7 +210,12 @@ class TogaWindow(NSWindow):
     def observeValueForKeyPath_ofObject_change_context_(
         self, keyPath, obj, change, context
     ):
-        if keyPath == "contentLayoutRect" and hasattr(self.impl, "container"):
+        # No-branch because we only hook up 1 key-value observed
+        # path so far; also self.impl hasattr container is a safety
+        # catch for unfortunate timing that is not always reproducible.
+        if keyPath == "contentLayoutRect" and hasattr(
+            self.impl, "container"
+        ):  # pragma: no branch
             self.impl.reapply_insets(self.impl.container)
 
 
@@ -229,7 +234,8 @@ class Window:
         if self.interface.minimizable:
             mask |= NSWindowStyleMask.Miniaturizable
 
-        if SUPPORTS_LIQUID_GLASS:
+        # CI runners are still on Sequoia, not Tahoe.
+        if SUPPORTS_LIQUID_GLASS:  # pragma: no cover
             mask |= NSWindowStyleMask.FullSizeContentView
 
         # Create the window with a default frame;
@@ -319,7 +325,7 @@ class Window:
         elif frame.size.height < min_height:
             self.set_size((frame.size.width, min_height))
 
-        if SUPPORTS_LIQUID_GLASS:
+        if SUPPORTS_LIQUID_GLASS:  # pragma: no cover
             self.native.titlebarAppearsTransparent = (
                 self.interface.bleed_top and not self.need_nontransparent
             )
@@ -329,11 +335,22 @@ class Window:
         self.container.min_height = min_height
 
     def reapply_insets(self, container):
-        if self.get_window_state(True) == WindowState.PRESENTATION:
-            self.container.top_inset = 0
-        elif self.get_window_state(True) == WindowState.FULLSCREEN or not (
-            SUPPORTS_LIQUID_GLASS and self.interface.bleed_top
+        if (
+            (
+                # In PRESENTATION, the native window is not managed directly
+                # by self.native, and has 0 insets.
+                self.get_window_state(True) == WindowState.PRESENTATION
+                # If the option for bleed top is enabled, no insets are needed
+                # at the top.
+                or SUPPORTS_LIQUID_GLASS
+                and self.interface.bleed_top
+            )
+            # In fullscreen, the top bar is opaque and not
+            # suitable for bleeding over.
+            and not self.get_window_state(True) == WindowState.FULLSCREEN
         ):
+            self.container.top_inset = 0
+        else:
             self.container.top_inset = (
                 self.container.native.bounds.origin.y
                 + self.container.native.bounds.size.height
@@ -341,8 +358,6 @@ class Window:
                 self.native.contentLayoutRect.origin.y
                 + self.native.contentLayoutRect.size.height
             )
-        else:
-            self.container.top_inset = 0
         if self.interface.content:
             self.interface.content.refresh()
 
@@ -351,7 +366,7 @@ class Window:
         self.container.content = widget
 
     def set_bleed_top(self, bleed_top):
-        if SUPPORTS_LIQUID_GLASS:
+        if SUPPORTS_LIQUID_GLASS:  # pragma: no cover
             self.reapply_insets(self.container)
 
     ######################################################################

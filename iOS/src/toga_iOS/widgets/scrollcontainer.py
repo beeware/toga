@@ -3,8 +3,10 @@ from rubicon.objc import (
     CGRectMake,
     NSMakePoint,
     NSMakeSize,
+    UIEdgeInsetsMake,
     objc_method,
     objc_property,
+    send_super,
 )
 from travertino.size import at_least
 
@@ -36,19 +38,8 @@ class TogaScrollView(UIScrollView):
 
     @objc_method
     def safeAreaInsetsDidChange(self) -> None:
-        insets = self.safeAreaInsets
-
-        self.contentInset.top = 0
-        self.contentInset.bottom = 0
-        self.contentInset.left = 0
-        self.contentInset.right = 0
-
-        if self.interface.vertical:
-            self.contentInset.top = 0 if self.impl.bleed_top else insets.top
-            self.contentInset.bottom = insets.bottom
-        if self.interface.horizontal:
-            self.contentInset.left = insets.left
-            self.contentInset.right = insets.right
+        send_super(__class__, self, "safeAreaInsetsDidChange")
+        self.impl.recompute_insets()
 
 
 class ScrollContainer(Widget):
@@ -74,6 +65,22 @@ class ScrollContainer(Widget):
         )
         self.native.addSubview(self.document_container.native)
         self.add_constraints()
+
+    def recompute_insets(self):
+        insets = self.native.safeAreaInsets
+
+        top_inset, bottom_inset, left_inset, right_inset = 0, 0, 0, 0
+
+        if self.interface.vertical:
+            top_inset = 0 if self.bleed_top else insets.top
+            bottom_inset = insets.bottom
+        if self.interface.horizontal:
+            left_inset = insets.left
+            right_inset = insets.right
+
+        self.native.contentInset = UIEdgeInsetsMake(
+            top_inset, left_inset, bottom_inset, right_inset
+        )
 
     def set_content(self, widget):
         self.document_container.content = widget
@@ -124,6 +131,7 @@ class ScrollContainer(Widget):
     def set_vertical(self, value):
         self._allow_vertical = value
         self.native.alwaysBounceVertical = value
+        self.recompute_insets()
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:
@@ -139,6 +147,7 @@ class ScrollContainer(Widget):
     def set_horizontal(self, value):
         self._allow_horizontal = value
         self.native.alwaysBounceHorizontally = value
+        self.recompute_insets()
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:

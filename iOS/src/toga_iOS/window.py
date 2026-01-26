@@ -281,7 +281,7 @@ class MainWindow(Window):
         # a mystery... also, when the navigation bar metrics change,
         # a layout appears to be triggered in the innner subview,
         # and that's how we can catch it.
-        if self.interface.bleed_top and SUPPORTS_LIQUID_GLASS:
+        if self.interface.bleed_top and SUPPORTS_LIQUID_GLASS:  # pragma: no cover
             container.top_inset = 0
         else:
             container.top_inset = (
