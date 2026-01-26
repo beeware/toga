@@ -34,7 +34,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         message,
         state=None,
     ):
-        await self.redraw(message, delay=0.1)
+        await self.redraw(message, delay=0.11)
 
         if state:
             timeout = 5
@@ -75,10 +75,23 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def content_size(self):
-        return (
-            self.impl.container.native.frame.size.width,
-            self.impl.container.native.frame.size.height,
-        )
+        if self.impl.get_window_state(True) == WindowState.PRESENTATION:
+            return (
+                self.impl.container.native.frame.size.width,
+                self.impl.container.native.frame.size.height,
+            )
+        elif self.impl.get_window_state(True) == WindowState.FULLSCREEN or not (
+            SUPPORTS_LIQUID_GLASS and self.window.bleed_top
+        ):
+            return (
+                self.native.contentLayoutRect.size.width,
+                self.native.contentLayoutRect.size.height,
+            )
+        else:
+            return (
+                self.impl.container.native.frame.size.width,
+                self.impl.container.native.frame.size.height,
+            )
 
     @property
     def is_resizable(self):

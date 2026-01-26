@@ -126,7 +126,7 @@ class Container:
 
     @property
     def min_width(self):
-        return self._min_width_constraint.constant
+        return self._min_width_constraint.constant - self.left_inset - self.right_inset
 
     @min_width.setter
     def min_width(self, width):
@@ -134,7 +134,7 @@ class Container:
 
     @property
     def min_height(self):
-        return self._min_height_constraint.constant
+        return self._min_height_constraint.constant - self.top_inset - self.bottom_inset
 
     @min_height.setter
     def min_height(self, height):

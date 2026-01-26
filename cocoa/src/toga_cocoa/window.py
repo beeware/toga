@@ -240,6 +240,8 @@ class Window:
             backing=NSBackingStoreBuffered,
             defer=False,
         )
+        # Pending Window state transition variable:
+        self._pending_state_transition = None
         self.native.addObserver(
             self.native,
             forKeyPath="contentLayoutRect",
@@ -258,9 +260,6 @@ class Window:
         # references to the object left. Explicitly prevent this and let Rubicon
         # manage the release when no Python references are left.
         self.native.releasedWhenClosed = False
-
-        # Pending Window state transition variable:
-        self._pending_state_transition = None
 
         self.set_title(title)
         self.set_size(size)
@@ -288,6 +287,8 @@ class Window:
     ######################################################################
 
     def close(self):
+        if self.get_window_state(True) == WindowState.PRESENTATION:
+            self._apply_state(WindowState.NORMAL)
         self.native.close()
 
     def set_app(self, app):
@@ -328,7 +329,11 @@ class Window:
         self.container.min_height = min_height
 
     def reapply_insets(self, container):
-        if not (SUPPORTS_LIQUID_GLASS and self.interface.bleed_top):
+        if self.get_window_state(True) == WindowState.PRESENTATION:
+            self.container.top_inset = 0
+        elif self.get_window_state(True) == WindowState.FULLSCREEN or not (
+            SUPPORTS_LIQUID_GLASS and self.interface.bleed_top
+        ):
             self.container.top_inset = (
                 self.container.native.bounds.origin.y
                 + self.container.native.bounds.size.height
@@ -521,6 +526,9 @@ class Window:
                 # remains unchanged, hence the windowDidResize_ would not be notified
                 # when the window goes into presentation mode.
                 self.interface.on_resize()
+                # We've got a separate NSWindow over here... so we need a manual refresh
+                # instead of the KVO for the content size.
+                self.reapply_insets(self.container)
 
                 # No need to check for other pending states, since this is fully applied
                 # at this point.
@@ -571,8 +579,10 @@ class Window:
         cropped = core_graphics.CGImageCreateWithImageInRect(
             cg_image,
             CGRectMake(
-                self.container.left_inset,
-                self.container.bottom_inset,
+                self.container.left_inset
+                * self.interface.screen._impl.native.backingScaleFactor,
+                self.container.bottom_inset
+                * self.interface.screen._impl.native.backingScaleFactor,
                 self.container.width
                 * self.interface.screen._impl.native.backingScaleFactor,
                 self.container.height
@@ -580,7 +590,12 @@ class Window:
             ),
         )
 
-        target_size = CGSize(self.container.width, self.container.height)
+        target_size = CGSize(
+            self.container.width
+            * self.interface.screen._impl.native.backingScaleFactor,
+            self.container.height
+            * self.interface.screen._impl.native.backingScaleFactor,
+        )
         ns_image = NSImage.alloc().initWithCGImage(cropped, size=target_size)
         return ns_image
 
@@ -614,6 +629,9 @@ class MainWindow(Window):
                 f"Toolbar-{id(self)}"
             )
             self.native_toolbar.setDelegate(self.native)
+            self.native_toolbar.setDisplayMode(2)
+            self.native_toolbar.setAllowsDisplayModeCustomization(False)
+
         else:
             self.native_toolbar = None
 

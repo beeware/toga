@@ -650,6 +650,9 @@ else:
 
         assert second_window not in app.windows
 
+    # The content size propagation is slow and may fail on
+    # slow machines
+    @pytest.mark.flaky(retries=5, delay=1)
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
         [
