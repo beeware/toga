@@ -210,7 +210,7 @@ async def test_static_large_content(widget, probe, on_load):
     large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
     url = "https://example.com/"
     widget.set_content(url, large_content)
-    # some platforms handle large html content by loading a cached file
+    # some platforms handle large content by loading a file from the cache folder
     if hasattr(probe, "get_large_content_url"):  # pragma: no branch
         url = probe.get_large_content_url(widget)
 
