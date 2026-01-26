@@ -17,9 +17,9 @@ from ..base import suppress_reference_error
 
 
 class TogaCachePathHandler(dynamic_proxy(WebViewAssetLoader.PathHandler)):
-    def __init__(self, impl):
+    def __init__(self, webclient):
         super().__init__()
-        self.impl = impl
+        self.webclient = webclient
 
     @Override(WebResourceResponse, [jstring])
     def handle(self, path):
@@ -35,7 +35,7 @@ class TogaWebClient(static_proxy(WebViewClient)):
     def __init__(self, impl):
         self.impl = weakref.proxy(impl)
         self.interface = weakref.proxy(impl.interface)
-        pathHandler = TogaCachePathHandler(impl._native_activity)
+        pathHandler = TogaCachePathHandler(self)
         self.cache_assetLoader = (
             WebViewAssetLoader.Builder().addPathHandler("/cache/", pathHandler).build()
         )
