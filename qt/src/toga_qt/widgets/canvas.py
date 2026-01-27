@@ -195,6 +195,13 @@ class Context:
         self._path = inverse.map(self._path)
 
     def scale(self, sx, sy):
+        # Can't apply inverse transform if scale is 0,
+        # so use a small epsilon which will almost be the same
+        if sx == 0:
+            sx = 2**-24
+        if sy == 0:
+            sy = 2**-24
+
         self.native.scale(sx, sy)
 
         # Update state transform
@@ -220,11 +227,9 @@ class Context:
         transform = self.native.transform()
         self.native.resetTransform()
 
-        # Transform active path to current coordinates
-        self._path = transform.map(self._path)
-
         # Update state transform
         inverse, _ = transform.inverted()
+        self._path = transform.map(self._path)
         self.state.transform *= inverse
 
     # Text
