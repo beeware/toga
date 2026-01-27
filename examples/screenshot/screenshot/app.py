@@ -106,7 +106,7 @@ class ScreenshotGeneratorApp(toga.App):
 
     def create_mapview(self):
         return toga.MapView(
-            zoom=3,
+            zoom=13,
             pins=[toga.MapPin((-31.95064, 115.85889), title="Yagan Square")],
             margin=10,
             width=self.MAX_WIDTH,
