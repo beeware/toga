@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from contextlib import AbstractContextManager as ContextManager
 from typing import (
     TYPE_CHECKING,
@@ -18,11 +19,14 @@ from toga.fonts import (
 from toga.handlers import wrapped_handler
 
 from ..base import StyleT, Widget
-from .context import ClosedPathContext, Context, FillContext, StrokeContext
+from .state import ClosedPathContext, FillContext, State, StrokeContext
 
 if TYPE_CHECKING:
     from toga.colors import ColorT
     from toga.images import ImageT
+
+# Make sure deprecation warnings are shown by default
+warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class OnTouchHandler(Protocol):
@@ -84,7 +88,7 @@ class Canvas(Widget):
         :param on_alt_drag: Initial [`on_alt_drag`][toga.Canvas.on_alt_drag] handler.
         :param kwargs: Initial style properties.
         """
-        self._context = Context(canvas=self)
+        self._state = State(canvas=self)
 
         super().__init__(id, style, **kwargs)
 
@@ -118,9 +122,18 @@ class Canvas(Widget):
         pass
 
     @property
-    def context(self) -> Context:
-        """The root context for the canvas."""
-        return self._context
+    def root_state(self) -> State:
+        """The root state for the canvas."""
+        return self._state
+
+    @property
+    def context(self) -> State:
+        warnings.warn(
+            "Canvas.context has been renamed to Canvas.root_state",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._state
 
     def redraw(self) -> None:
         """Redraw the Canvas.
@@ -131,13 +144,18 @@ class Canvas(Widget):
         """
         self._impl.redraw()
 
-    def Context(self) -> ContextManager[Context]:
-        """Construct and yield a new sub-[`Context`][toga.widgets.canvas.Context] within
-        the root context of this Canvas.
+    def Context(self) -> ContextManager[State]:
+        """Construct and yield a new sub-[`State`][toga.widgets.canvas.State] within
+        the root state of this Canvas.
 
-        :return: Yields the new [`Context`][toga.widgets.canvas.Context] object.
+        :return: Yields the new [`State`][toga.widgets.canvas.State] object.
         """
-        return self.context.Context()
+        warnings.warn(
+            "Canvas.Context() is deprecated. Use Canvas.root_state.state() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.root_state.state()
 
     def ClosedPath(
         self,
@@ -146,14 +164,14 @@ class Canvas(Widget):
     ) -> ContextManager[ClosedPathContext]:
         """Construct and yield a new
         [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext]
-        context in the root context of this canvas.
+        state in the root state of this canvas.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
         :return: Yields the new
-            [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext] context object.
+            [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext] state object.
         """
-        return self.context.ClosedPath(x, y)
+        return self.root_state.ClosedPath(x, y)
 
     def Fill(
         self,
@@ -163,13 +181,13 @@ class Canvas(Widget):
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> ContextManager[FillContext]:
         """Construct and yield a new [`FillContext`][toga.widgets.canvas.FillContext]
-        in the root context of this canvas.
+        in the root state of this canvas.
 
-        A drawing operator that fills the path constructed in the context according to
+        A drawing operator that fills the path constructed in the state according to
         the current fill rule.
 
-        If both an x and y coordinate is provided, the drawing context will begin with
-        a `move_to` operation in that context.
+        If both an x and y coordinate is provided, the drawing state will begin with
+        a `move_to` operation in that state.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
@@ -177,9 +195,9 @@ class Canvas(Widget):
             even-odd winding rule.
         :param color: The fill color.
         :return class: Yields the new [`FillContext`][toga.widgets.canvas.FillContext]
-            context object.
+            state object.
         """
-        return self.context.Fill(x, y, color, fill_rule)
+        return self.root_state.Fill(x, y, color, fill_rule)
 
     def Stroke(
         self,
@@ -191,10 +209,10 @@ class Canvas(Widget):
     ) -> ContextManager[StrokeContext]:
         """Construct and yield a new
         [`StrokeContext`][toga.widgets.canvas.StrokeContext] in the
-        root context of this canvas.
+        root state of this canvas.
 
-        If both an x and y coordinate is provided, the drawing context will begin with
-        a `move_to` operation in that context.
+        If both an x and y coordinate is provided, the drawing state will begin with
+        a `move_to` operation in that state.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
@@ -203,9 +221,9 @@ class Canvas(Widget):
         :param line_dash: The dash pattern to follow when drawing the line. Default is a
             solid line.
         :return: Yields the new
-            [`StrokeContext`][toga.widgets.canvas.StrokeContext] context object.
+            [`StrokeContext`][toga.widgets.canvas.StrokeContext] state object.
         """
-        return self.context.Stroke(x, y, color, line_width, line_dash)
+        return self.root_state.Stroke(x, y, color, line_width, line_dash)
 
     @property
     def on_resize(self) -> OnResizeHandler:
@@ -302,7 +320,7 @@ class Canvas(Widget):
         line_height: float | None = None,
     ) -> tuple[float, float]:
         """Measure the size at which
-        [`Context.write_text`][toga.widgets.canvas.Context.write_text]
+        [`State.write_text`][toga.widgets.canvas.State.write_text]
         would render some text.
 
         :param text: The text to measure. Newlines will cause line breaks, but long

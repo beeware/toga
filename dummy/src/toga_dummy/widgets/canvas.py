@@ -174,7 +174,7 @@ class Canvas(Widget):
     def redraw(self):
         self._action("redraw")
         self.draw_instructions = []
-        self.interface.context._draw(Context(self))
+        self.interface.root_state._draw(Context(self))
 
     def measure_text(self, text, font, line_height):
         # Assume system font produces characters that have the same width and height as

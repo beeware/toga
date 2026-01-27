@@ -19,6 +19,8 @@ class Color:
     Not meant to be used directly.
     """
 
+    __slots__ = ["_a"]
+
     @staticmethod
     def parse(value: Color | str) -> Color:
         """Parse a color from a value.
@@ -203,6 +205,8 @@ class Color:
 
 
 class rgb(Color):
+    __slots__ = ["_r", "_g", "_b", "_hsl"]
+
     def __init__(self, r: int, g: int, b: int, a: float = 1.0):
         """A color specified via red, green, and blue channels, plus transparency.
 
@@ -299,6 +303,8 @@ rgba = rgb
 
 
 class hsl(Color):
+    __slots__ = ["_h", "_s", "_l", "_rgb"]
+
     def __init__(self, h: int, s: float, l: float, a: float = 1.0):  # noqa: E741
         """A color specified via hue, saturation, and lightness, plus transparency.
 

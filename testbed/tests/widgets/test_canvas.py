@@ -287,13 +287,13 @@ async def test_transparency(canvas, probe):
     canvas.style.background_color = TRANSPARENT
 
     # Draw a rectangle. move_to is implied
-    canvas.context.begin_path()
-    canvas.context.rect(x=20, y=20, width=120, height=120)
-    canvas.context.fill(color=REBECCAPURPLE)
+    canvas.root_state.begin_path()
+    canvas.root_state.rect(x=20, y=20, width=120, height=120)
+    canvas.root_state.fill(color=REBECCAPURPLE)
 
-    canvas.context.begin_path()
-    canvas.context.rect(x=60, y=60, width=120, height=120)
-    canvas.context.fill(color=rgb(0x33, 0x66, 0x99, 0.5))
+    canvas.root_state.begin_path()
+    canvas.root_state.rect(x=60, y=60, width=120, height=120)
+    canvas.root_state.fill(color=rgb(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
     assert_reference(probe, "transparency")
@@ -303,42 +303,42 @@ async def test_paths(canvas, probe):
     "A path can be drawn"
 
     # A filled path closes automatically.
-    canvas.context.begin_path()
-    canvas.context.move_to(20, 20)
-    canvas.context.line_to(140, 20)
-    canvas.context.line_to(20, 140)
-    canvas.context.fill()
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(20, 20)
+    canvas.root_state.line_to(140, 20)
+    canvas.root_state.line_to(20, 140)
+    canvas.root_state.fill()
 
     # A stroked path requires an explicit close. For an open stroke, see test_stroke.
-    canvas.context.begin_path()
+    canvas.root_state.begin_path()
     # When there are two consecutive move_tos, the first one should leave no trace.
-    canvas.context.move_to(140, 140)
-    canvas.context.move_to(180, 180)
-    canvas.context.line_to(180, 60)
-    canvas.context.line_to(60, 180)
-    canvas.context.close_path()
-    canvas.context.stroke()
+    canvas.root_state.move_to(140, 140)
+    canvas.root_state.move_to(180, 180)
+    canvas.root_state.line_to(180, 60)
+    canvas.root_state.line_to(60, 180)
+    canvas.root_state.close_path()
+    canvas.root_state.stroke()
 
     # An empty path should not appear.
-    canvas.context.begin_path()
-    canvas.context.close_path()
-    canvas.context.stroke(RED)
+    canvas.root_state.begin_path()
+    canvas.root_state.close_path()
+    canvas.root_state.stroke(RED)
 
     # A path containing only move_to commands should not appear.
-    canvas.context.begin_path()
-    canvas.context.move_to(140, 140)
-    canvas.context.move_to(160, 160)
-    canvas.context.stroke(RED)
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(140, 140)
+    canvas.root_state.move_to(160, 160)
+    canvas.root_state.stroke(RED)
 
     # A path is not cleared after being stroked or filled.
-    canvas.context.move_to(20, 10)
-    canvas.context.line_to(60, 10)
-    canvas.context.stroke(color=CORNFLOWERBLUE, line_width=10)
-    canvas.context.move_to(60, 10)
-    canvas.context.line_to(100, 10)
-    canvas.context.fill(color=REBECCAPURPLE)
-    canvas.context.line_to(140, 10)
-    canvas.context.stroke()
+    canvas.root_state.move_to(20, 10)
+    canvas.root_state.line_to(60, 10)
+    canvas.root_state.stroke(color=CORNFLOWERBLUE, line_width=10)
+    canvas.root_state.move_to(60, 10)
+    canvas.root_state.line_to(100, 10)
+    canvas.root_state.fill(color=REBECCAPURPLE)
+    canvas.root_state.line_to(140, 10)
+    canvas.root_state.stroke()
 
     await probe.redraw("Pair of triangles and a black line should be drawn")
     assert_reference(probe, "paths", threshold=0.02)
@@ -347,15 +347,15 @@ async def test_paths(canvas, probe):
 async def test_bezier_curve(canvas, probe):
     "A Bézier curve can be drawn"
 
-    canvas.context.begin_path()
-    canvas.context.move_to(100, 44)
-    canvas.context.bezier_curve_to(100, 40, 92, 20, 60, 20)
-    canvas.context.bezier_curve_to(12, 20, 12, 80, 12, 80)
-    canvas.context.bezier_curve_to(12, 108, 44, 144, 100, 172)
-    canvas.context.bezier_curve_to(156, 144, 188, 108, 188, 80)
-    canvas.context.bezier_curve_to(188, 80, 188, 20, 140, 20)
-    canvas.context.bezier_curve_to(116, 20, 100, 40, 100, 44)
-    canvas.context.stroke()
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(100, 44)
+    canvas.root_state.bezier_curve_to(100, 40, 92, 20, 60, 20)
+    canvas.root_state.bezier_curve_to(12, 20, 12, 80, 12, 80)
+    canvas.root_state.bezier_curve_to(12, 108, 44, 144, 100, 172)
+    canvas.root_state.bezier_curve_to(156, 144, 188, 108, 188, 80)
+    canvas.root_state.bezier_curve_to(188, 80, 188, 20, 140, 20)
+    canvas.root_state.bezier_curve_to(116, 20, 100, 40, 100, 44)
+    canvas.root_state.stroke()
 
     await probe.redraw("Heart should be drawn")
     assert_reference(probe, "bezier_curve", threshold=0.03)
@@ -364,15 +364,15 @@ async def test_bezier_curve(canvas, probe):
 async def test_quadratic_curve(canvas, probe):
     "A quadratic curve can be drawn"
 
-    canvas.context.begin_path()
-    canvas.context.move_to(100, 20)
-    canvas.context.quadratic_curve_to(20, 20, 20, 80)
-    canvas.context.quadratic_curve_to(20, 140, 60, 140)
-    canvas.context.quadratic_curve_to(60, 172, 28, 180)
-    canvas.context.quadratic_curve_to(76, 172, 110, 140)
-    canvas.context.quadratic_curve_to(180, 140, 180, 80)
-    canvas.context.quadratic_curve_to(180, 20, 100, 20)
-    canvas.context.stroke()
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(100, 20)
+    canvas.root_state.quadratic_curve_to(20, 20, 20, 80)
+    canvas.root_state.quadratic_curve_to(20, 140, 60, 140)
+    canvas.root_state.quadratic_curve_to(60, 172, 28, 180)
+    canvas.root_state.quadratic_curve_to(76, 172, 110, 140)
+    canvas.root_state.quadratic_curve_to(180, 140, 180, 80)
+    canvas.root_state.quadratic_curve_to(180, 20, 100, 20)
+    canvas.root_state.stroke()
 
     await probe.redraw("Quote bubble should be drawn")
     assert_reference(probe, "quadratic_curve", threshold=0.03)
@@ -380,38 +380,38 @@ async def test_quadratic_curve(canvas, probe):
 
 async def test_arc(canvas, probe):
     "An arc can be drawn"
-    canvas.context.begin_path()
+    canvas.root_state.begin_path()
 
     # Face
-    canvas.context.arc(100, 100, 80)
+    canvas.root_state.arc(100, 100, 80)
 
     # Smile (exactly half a turn)
-    canvas.context.move_to(150, 100)
-    canvas.context.arc(100, 100, 50, 0, pi, counterclockwise=False)
+    canvas.root_state.move_to(150, 100)
+    canvas.root_state.arc(100, 100, 50, 0, pi, counterclockwise=False)
 
     # Hair (exactly half a turn, but in the opposite direction)
-    canvas.context.move_to(190, 100)
-    canvas.context.arc(100, 100, 90, 0, pi, counterclockwise=True)
+    canvas.root_state.move_to(190, 100)
+    canvas.root_state.arc(100, 100, 90, 0, pi, counterclockwise=True)
 
     # Left eye
-    canvas.context.move_to(70, 70)
-    canvas.context.arc(64, 70, 6)
+    canvas.root_state.move_to(70, 70)
+    canvas.root_state.arc(64, 70, 6)
 
     # Right eye
-    canvas.context.move_to(130, 70)
-    canvas.context.arc(124, 70, 6)
+    canvas.root_state.move_to(130, 70)
+    canvas.root_state.arc(124, 70, 6)
 
-    canvas.context.stroke()
+    canvas.root_state.stroke()
 
     # Left eyebrow (less than half a turn)
-    canvas.context.begin_path()
-    canvas.context.arc(64, 70, 12, pi * 3 / 4, pi * 6 / 4)
-    canvas.context.stroke()
+    canvas.root_state.begin_path()
+    canvas.root_state.arc(64, 70, 12, pi * 3 / 4, pi * 6 / 4)
+    canvas.root_state.stroke()
 
     # Right eyebrow (less than half a turn, crossing the zero angle)
-    canvas.context.begin_path()
-    canvas.context.arc(124, 70, 12, pi * 6 / 4, pi * 1 / 4)
-    canvas.context.stroke()
+    canvas.root_state.begin_path()
+    canvas.root_state.arc(124, 70, 12, pi * 6 / 4, pi * 1 / 4)
+    canvas.root_state.stroke()
 
     await probe.redraw("Smiley face should be drawn")
     assert_reference(probe, "arc", threshold=0.03)
@@ -421,18 +421,18 @@ async def test_ellipse(canvas, probe):
     "An ellipse can be drawn"
 
     # Nucleus (filled circle)
-    canvas.context.move_to(90, 100)
-    canvas.context.ellipse(100, 100, 20, 20)
-    canvas.context.fill(color=RED)
+    canvas.root_state.move_to(90, 100)
+    canvas.root_state.ellipse(100, 100, 20, 20)
+    canvas.root_state.fill(color=RED)
 
     # Purple orbit
-    canvas.context.begin_path()
-    canvas.context.ellipse(100, 100, 90, 20, rotation=pi * 3 / 4)
-    canvas.context.stroke(color=REBECCAPURPLE)
+    canvas.root_state.begin_path()
+    canvas.root_state.ellipse(100, 100, 90, 20, rotation=pi * 3 / 4)
+    canvas.root_state.stroke(color=REBECCAPURPLE)
 
     # Blue orbit (more than half a turn)
-    canvas.context.begin_path()
-    canvas.context.ellipse(
+    canvas.root_state.begin_path()
+    canvas.root_state.ellipse(
         100,
         100,
         radiusx=20,
@@ -442,11 +442,11 @@ async def test_ellipse(canvas, probe):
         endangle=pi / 4,
         counterclockwise=True,
     )
-    canvas.context.stroke(color=CORNFLOWERBLUE)
+    canvas.root_state.stroke(color=CORNFLOWERBLUE)
 
     # Yellow orbit (more than half a turn)
-    canvas.context.begin_path()
-    canvas.context.ellipse(
+    canvas.root_state.begin_path()
+    canvas.root_state.ellipse(
         100,
         100,
         radiusx=20,
@@ -454,7 +454,7 @@ async def test_ellipse(canvas, probe):
         startangle=pi / 4,
         endangle=pi * 7 / 4,
     )
-    canvas.context.stroke(color=GOLDENROD)
+    canvas.root_state.stroke(color=GOLDENROD)
 
     await probe.redraw("Atom should be drawn")
     assert_reference(probe, "ellipse", threshold=0.02)
@@ -463,7 +463,7 @@ async def test_ellipse(canvas, probe):
 async def test_ellipse_path(canvas, probe):
     "An elliptical arc can be connected to other segments of a path"
 
-    context = canvas.context
+    state = canvas.root_state
     ellipse_args = {
         "x": 100,
         "y": 100,
@@ -473,25 +473,25 @@ async def test_ellipse_path(canvas, probe):
     }
 
     # Start of path -> arc
-    context.ellipse(**ellipse_args, startangle=radians(80), endangle=radians(160))
+    state.ellipse(**ellipse_args, startangle=radians(80), endangle=radians(160))
     # Arc -> arc
-    context.ellipse(**ellipse_args, startangle=radians(220), endangle=radians(260))
-    context.stroke()
+    state.ellipse(**ellipse_args, startangle=radians(220), endangle=radians(260))
+    state.stroke()
 
-    context.begin_path()
-    context.move_to(120, 20)
+    state.begin_path()
+    state.move_to(120, 20)
     # Move -> arc
-    context.ellipse(**ellipse_args, startangle=radians(280), endangle=radians(340))
+    state.ellipse(**ellipse_args, startangle=radians(280), endangle=radians(340))
     # Arc -> line
-    context.line_to(180, 50)
-    context.stroke(RED)
+    state.line_to(180, 50)
+    state.stroke(RED)
 
-    context.begin_path()
-    context.move_to(180, 180)
-    context.line_to(180, 160)
+    state.begin_path()
+    state.move_to(180, 180)
+    state.line_to(180, 160)
     # Line -> arc
-    context.ellipse(**ellipse_args, startangle=radians(10), endangle=radians(60))
-    context.stroke(CORNFLOWERBLUE)
+    state.ellipse(**ellipse_args, startangle=radians(10), endangle=radians(60))
+    state.stroke(CORNFLOWERBLUE)
 
     await probe.redraw("Broken ellipse with connected lines should be drawn")
     assert_reference(probe, "ellipse_path", threshold=0.02)
@@ -501,9 +501,9 @@ async def test_rect(canvas, probe):
     "A rectangle can be drawn"
 
     # Draw a rectangle. move_to is implied
-    canvas.context.begin_path()
-    canvas.context.rect(x=20, y=60, width=160, height=100)
-    canvas.context.fill(color=REBECCAPURPLE)
+    canvas.root_state.begin_path()
+    canvas.root_state.rect(x=20, y=60, width=160, height=100)
+    canvas.root_state.fill(color=REBECCAPURPLE)
 
     await probe.redraw("Filled rectangle should be drawn")
     assert_reference(probe, "rect")
@@ -512,22 +512,22 @@ async def test_rect(canvas, probe):
 async def test_fill(canvas, probe):
     "A fill can be drawn with primitives"
     # Draw a closed path
-    canvas.context.begin_path()
-    canvas.context.move_to(x=60, y=10)
-    canvas.context.line_to(x=30, y=110)
-    canvas.context.line_to(x=110, y=50)
-    canvas.context.line_to(x=10, y=50)
-    canvas.context.line_to(x=90, y=110)
-    canvas.context.fill(color=REBECCAPURPLE)
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(x=60, y=10)
+    canvas.root_state.line_to(x=30, y=110)
+    canvas.root_state.line_to(x=110, y=50)
+    canvas.root_state.line_to(x=10, y=50)
+    canvas.root_state.line_to(x=90, y=110)
+    canvas.root_state.fill(color=REBECCAPURPLE)
 
     # Same path (slightly offset), but with EVENODD winding.
-    canvas.context.begin_path()
-    canvas.context.move_to(x=140, y=90)
-    canvas.context.line_to(x=110, y=190)
-    canvas.context.line_to(x=190, y=130)
-    canvas.context.line_to(x=90, y=130)
-    canvas.context.line_to(x=170, y=190)
-    canvas.context.fill(color=CORNFLOWERBLUE, fill_rule=FillRule.EVENODD)
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(x=140, y=90)
+    canvas.root_state.line_to(x=110, y=190)
+    canvas.root_state.line_to(x=190, y=130)
+    canvas.root_state.line_to(x=90, y=130)
+    canvas.root_state.line_to(x=170, y=190)
+    canvas.root_state.fill(color=CORNFLOWERBLUE, fill_rule=FillRule.EVENODD)
 
     await probe.redraw("Stars should be drawn")
     assert_reference(probe, "fill")
@@ -536,22 +536,22 @@ async def test_fill(canvas, probe):
 async def test_stroke(canvas, probe):
     "A stroke can be drawn with primitives"
     # Draw a closed path
-    canvas.context.begin_path()
-    canvas.context.move_to(x=20, y=20)
-    canvas.context.line_to(x=100, y=20)
-    canvas.context.line_to(x=180, y=180)
-    canvas.context.line_to(x=100, y=180)
-    canvas.context.close_path()
-    canvas.context.stroke(color=REBECCAPURPLE)
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(x=20, y=20)
+    canvas.root_state.line_to(x=100, y=20)
+    canvas.root_state.line_to(x=180, y=180)
+    canvas.root_state.line_to(x=100, y=180)
+    canvas.root_state.close_path()
+    canvas.root_state.stroke(color=REBECCAPURPLE)
 
     # Draw an open path inside it
-    canvas.context.begin_path()
+    canvas.root_state.begin_path()
     # At the start of a path, line_to is equivalent to move_to.
-    canvas.context.line_to(x=50, y=40)
-    canvas.context.line_to(x=90, y=40)
-    canvas.context.line_to(x=150, y=160)
-    canvas.context.line_to(x=110, y=160)
-    canvas.context.stroke(color=CORNFLOWERBLUE)
+    canvas.root_state.line_to(x=50, y=40)
+    canvas.root_state.line_to(x=90, y=40)
+    canvas.root_state.line_to(x=150, y=160)
+    canvas.root_state.line_to(x=110, y=160)
+    canvas.root_state.stroke(color=CORNFLOWERBLUE)
 
     await probe.redraw("Stroke should be drawn")
     assert_reference(probe, "stroke")
@@ -560,79 +560,79 @@ async def test_stroke(canvas, probe):
 async def test_stroke_and_fill(canvas, probe):
     "A shape drawn with primitives can be stroked and filled."
     # Draw a closed path
-    canvas.context.begin_path()
-    canvas.context.move_to(x=20, y=20)
-    canvas.context.line_to(x=100, y=20)
-    canvas.context.line_to(x=180, y=180)
-    canvas.context.line_to(x=100, y=180)
-    canvas.context.close_path()
-    canvas.context.stroke(color=REBECCAPURPLE)
-    canvas.context.fill(color=CORNFLOWERBLUE)
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(x=20, y=20)
+    canvas.root_state.line_to(x=100, y=20)
+    canvas.root_state.line_to(x=180, y=180)
+    canvas.root_state.line_to(x=100, y=180)
+    canvas.root_state.close_path()
+    canvas.root_state.stroke(color=REBECCAPURPLE)
+    canvas.root_state.fill(color=CORNFLOWERBLUE)
 
     # Draw an open path inside it
-    canvas.context.begin_path()
+    canvas.root_state.begin_path()
     # At the start of a path, line_to is equivalent to move_to.
-    canvas.context.line_to(x=50, y=40)
-    canvas.context.line_to(x=90, y=40)
-    canvas.context.line_to(x=150, y=160)
-    canvas.context.line_to(x=110, y=160)
-    canvas.context.fill(color=GOLDENROD, fill_rule=FillRule.EVENODD)
-    canvas.context.stroke(color=REBECCAPURPLE)
+    canvas.root_state.line_to(x=50, y=40)
+    canvas.root_state.line_to(x=90, y=40)
+    canvas.root_state.line_to(x=150, y=160)
+    canvas.root_state.line_to(x=110, y=160)
+    canvas.root_state.fill(color=GOLDENROD, fill_rule=FillRule.EVENODD)
+    canvas.root_state.stroke(color=REBECCAPURPLE)
 
     await probe.redraw("Stroke should be drawn")
     assert_reference(probe, "stroke_and_fill")
 
 
-async def test_closed_path_context(canvas, probe):
-    "A closed path can be built with a context"
+async def test_closed_path_state(canvas, probe):
+    "A closed path can be built with a state"
 
     # Build a parallelogram path
-    with canvas.context.ClosedPath(x=20, y=20) as path:
+    with canvas.root_state.ClosedPath(x=20, y=20) as path:
         path.line_to(x=100, y=20)
         path.line_to(x=180, y=180)
         path.line_to(x=100, y=180)
 
     # Draw it with a thick dashed line
-    canvas.context.stroke(color=REBECCAPURPLE, line_width=5, line_dash=[20, 30])
+    canvas.root_state.stroke(color=REBECCAPURPLE, line_width=5, line_dash=[20, 30])
 
-    await probe.redraw("Closed path should be drawn with context")
-    assert_reference(probe, "closed_path_context")
+    await probe.redraw("Closed path should be drawn with state")
+    assert_reference(probe, "closed_path_state")
 
 
-async def test_fill_context(canvas, probe):
-    "A fill path can be built with a context"
+async def test_fill_state(canvas, probe):
+    "A fill path can be built with a state"
 
     # Build a filled parallelogram
-    with canvas.context.Fill(x=20, y=20, color=REBECCAPURPLE) as path:
+    with canvas.root_state.Fill(x=20, y=20, color=REBECCAPURPLE) as path:
         path.line_to(x=100, y=20)
         path.line_to(x=180, y=180)
         path.line_to(x=100, y=180)
 
-    await probe.redraw("Fill should be drawn with context")
-    assert_reference(probe, "fill_context")
+    await probe.redraw("Fill should be drawn with state")
+    assert_reference(probe, "fill_state")
 
 
-async def test_stroke_context(canvas, probe):
-    "A stroke can be drawn with a context"
+async def test_stroke_state(canvas, probe):
+    "A stroke can be drawn with a state"
     # Draw a thin line
-    with canvas.context.Stroke(x=40, y=20, color=REBECCAPURPLE) as stroke:
+    with canvas.root_state.Stroke(x=40, y=20, color=REBECCAPURPLE) as stroke:
         stroke.line_to(x=80, y=180)
 
     # Draw a thick dashed line
-    with canvas.context.Stroke(
+    with canvas.root_state.Stroke(
         x=80, y=20, line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE
     ) as stroke:
         stroke.line_to(x=120, y=180)
 
-    await probe.redraw("Stroke should be drawn with context")
-    assert_reference(probe, "stroke_context")
+    await probe.redraw("Stroke should be drawn with state")
+    assert_reference(probe, "stroke_state")
 
 
-async def test_stroke_and_fill_context(canvas, probe):
-    "A shape can be stroked and filled using contexts"
+async def test_stroke_and_fill_state(canvas, probe):
+    "A shape can be stroked and filled using states"
 
     # Draw a filled parallelogram
-    with canvas.context.Fill(x=20, y=20, color=REBECCAPURPLE) as fill:
+    with canvas.root_state.Fill(x=20, y=20, color=REBECCAPURPLE) as fill:
         with fill.Stroke(
             line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE
         ) as path:
@@ -640,18 +640,18 @@ async def test_stroke_and_fill_context(canvas, probe):
             path.line_to(x=180, y=180)
             path.line_to(x=100, y=180)
 
-    await probe.redraw("Stroke and Fill should be drawn with context")
-    assert_reference(probe, "stroke_and_fill_context")
+    await probe.redraw("Stroke and Fill should be drawn with state")
+    assert_reference(probe, "stroke_and_fill_state")
 
 
-async def test_nested_stroke_and_fill_context(canvas, probe):
-    """Inner contexts don't override unsupplied attributes."""
-    with canvas.context.Fill(color=GOLDENROD) as fill:
+async def test_nested_stroke_and_fill_state(canvas, probe):
+    """Inner states don't override unsupplied attributes."""
+    with canvas.root_state.Fill(color=GOLDENROD) as fill:
         with fill.Fill() as inner_fill:
             # Should still be goldenrod
             inner_fill.rect(10, 10, 50, 50)
 
-    with canvas.context.Stroke(
+    with canvas.root_state.Stroke(
         color=REBECCAPURPLE,
         line_width=15,
         line_dash=[15, 14],
@@ -661,37 +661,37 @@ async def test_nested_stroke_and_fill_context(canvas, probe):
             inner_stroke.move_to(100, 10)
             inner_stroke.line_to(100, 150)
 
-    await probe.redraw("Nested stroke and fill contexts should be drawn")
-    assert_reference(probe, "nested_stroke_and_fill_context")
+    await probe.redraw("Nested stroke and fill states should be drawn")
+    assert_reference(probe, "nested_stroke_and_fill_state")
 
 
 async def test_transforms(canvas, probe):
     "Transforms can be applied"
 
     # Draw a rectangle after a horizontal translation
-    canvas.context.translate(160, 20)
-    canvas.context.rect(0, 0, 20, 60)
-    canvas.context.fill(color=CORNFLOWERBLUE)
+    canvas.root_state.translate(160, 20)
+    canvas.root_state.rect(0, 0, 20, 60)
+    canvas.root_state.fill(color=CORNFLOWERBLUE)
 
-    canvas.context.reset_transform()
-    canvas.context.begin_path()
-    canvas.context.rotate(pi / 4)
-    canvas.context.rect(200, 0, 20, 60)
-    canvas.context.fill(color=REBECCAPURPLE)
+    canvas.root_state.reset_transform()
+    canvas.root_state.begin_path()
+    canvas.root_state.rotate(pi / 4)
+    canvas.root_state.rect(200, 0, 20, 60)
+    canvas.root_state.fill(color=REBECCAPURPLE)
 
-    canvas.context.reset_transform()
-    canvas.context.begin_path()
-    canvas.context.scale(2, 5)
-    canvas.context.rect(10, 10, 10, 10)
-    canvas.context.fill(color=GOLDENROD)
+    canvas.root_state.reset_transform()
+    canvas.root_state.begin_path()
+    canvas.root_state.scale(2, 5)
+    canvas.root_state.rect(10, 10, 10, 10)
+    canvas.root_state.fill(color=GOLDENROD)
 
-    canvas.context.reset_transform()
-    canvas.context.begin_path()
-    canvas.context.translate(100, 60)
-    canvas.context.rotate(pi / 7 * 4)
-    canvas.context.scale(5, 2)
-    canvas.context.rect(2, 2, 10, 10)
-    canvas.context.fill()
+    canvas.root_state.reset_transform()
+    canvas.root_state.begin_path()
+    canvas.root_state.translate(100, 60)
+    canvas.root_state.rotate(pi / 7 * 4)
+    canvas.root_state.scale(5, 2)
+    canvas.root_state.rect(2, 2, 10, 10)
+    canvas.root_state.fill()
 
     await probe.redraw("Transforms can be applied")
     assert_reference(probe, "transforms")
@@ -879,7 +879,7 @@ async def test_multiline_text(canvas, probe):
 
     # Vertical guidelines
     X = [10, 75, 140]
-    with canvas.context.Stroke(color=RED) as guideline:
+    with canvas.root_state.Stroke(color=RED) as guideline:
         for x in X:
             guideline.move_to(x, 0)
             guideline.line_to(x, canvas.style.height)
@@ -891,7 +891,7 @@ async def test_multiline_text(canvas, probe):
     y = 30
     guideline.move_to(0, y)
     guideline.line_to(canvas.style.width, y)
-    with canvas.context.Fill() as text_filler:
+    with canvas.root_state.Fill() as text_filler:
         # Default baseline (ALPHABETIC), with default font and various sizes.
         x = X[0]
         for size in [8, 12, 16, 20]:
@@ -928,10 +928,10 @@ async def test_multiline_text(canvas, probe):
         elif baseline == Baseline.BOTTOM:
             top = y - height
 
-        with canvas.context.Stroke(color=CORNFLOWERBLUE) as box:
+        with canvas.root_state.Stroke(color=CORNFLOWERBLUE) as box:
             box.rect(left, top, width, height)
 
-        with canvas.context.Fill() as text_filler:
+        with canvas.root_state.Fill() as text_filler:
             text_filler.write_text(text, left, y, font, baseline)
 
     await probe.redraw("Multiple text blocks should be drawn")
@@ -985,7 +985,7 @@ async def test_write_text_and_path(canvas, probe):
         # now stroke the path, but *not* the text
         fill.stroke(CORNFLOWERBLUE)
 
-        # start a new path so Fill context doesn't fill current path with black
+        # start a new path so Fill state doesn't fill current path with black
         fill.begin_path()
 
     await probe.redraw("Text and path should be drawn independently")
@@ -996,8 +996,8 @@ async def test_draw_image_at_point(canvas, probe):
     "Images can be drawn at a point."
 
     image = TogaImage("resources/sample.png")
-    canvas.context.begin_path()
-    canvas.context.draw_image(image, 10, 10)
+    canvas.root_state.begin_path()
+    canvas.root_state.draw_image(image, 10, 10)
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "draw_image", threshold=0.05)
@@ -1007,13 +1007,13 @@ async def test_draw_image_in_rect(canvas, probe):
     "Images can be drawn in a rectangle."
 
     image = TogaImage("resources/sample.png")
-    canvas.context.begin_path()
-    canvas.context.translate(82, 46)
-    canvas.context.rotate(-pi / 6)
-    canvas.context.translate(-82, -46)
-    canvas.context.draw_image(image, 10, 10, 72, 144)
-    canvas.context.rect(10, 10, 72, 144)
-    canvas.context.stroke(REBECCAPURPLE)
+    canvas.root_state.begin_path()
+    canvas.root_state.translate(82, 46)
+    canvas.root_state.rotate(-pi / 6)
+    canvas.root_state.translate(-82, -46)
+    canvas.root_state.draw_image(image, 10, 10, 72, 144)
+    canvas.root_state.rect(10, 10, 72, 144)
+    canvas.root_state.stroke(REBECCAPURPLE)
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "draw_image_in_rect", threshold=0.05)

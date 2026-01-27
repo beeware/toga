@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from collections.abc import Iterator
 from contextlib import contextmanager
 from math import pi
@@ -37,114 +38,47 @@ if TYPE_CHECKING:
 
     from .canvas import Canvas
 
+# Make sure deprecation warnings are shown by default
+warnings.filterwarnings("default", category=DeprecationWarning)
 
-class Context(DrawingAction):
-    """A drawing context for a canvas.
 
-    You should not create a [`Context`][toga.widgets.canvas.Context] directly; instead,
-    you should use the [`Context()`][toga.widgets.canvas.Context.Context] method on an
-    existing context, or use [`Canvas.context`][toga.Canvas.context] to access the root
-    context of the canvas.
-    """
-
-    def __init__(self, canvas: toga.Canvas, **kwargs: Any):
-        # kwargs used to support multiple inheritance
-        super().__init__(**kwargs)
-        self._canvas = canvas
-        self.drawing_objects: list[DrawingAction] = []
-
-    def _draw(self, context: Any) -> None:
-        context.save()
-        for obj in self.drawing_objects:
-            obj._draw(context)
-        context.restore()
-
-    ###########################################################################
-    # Methods to keep track of the canvas, automatically redraw it
-    ###########################################################################
-
+class DrawingActionDispatch:
     @property
-    def canvas(self) -> Canvas:
-        """The canvas that is associated with this drawing context."""
-        return self._canvas
-
-    def redraw(self) -> None:
-        """Calls [`Canvas.redraw`][toga.Canvas.redraw] on the parent Canvas."""
-        self.canvas.redraw()
-
-    ###########################################################################
-    # Operations on drawing objects
-    ###########################################################################
-
-    def __len__(self) -> int:
-        """Returns the number of drawing objects that are in this context."""
-        return len(self.drawing_objects)
-
-    def __getitem__(self, index: int) -> DrawingAction:
-        """Returns the drawing object at the given index."""
-        return self.drawing_objects[index]
-
-    def append(self, obj: DrawingAction) -> None:
-        """Append a drawing object to the context.
-
-        :param obj: The drawing object to add to the context.
-        """
-        self.drawing_objects.append(obj)
-        self.redraw()
-
-    def insert(self, index: int, obj: DrawingAction) -> None:
-        """Insert a drawing object into the context at a specific index.
-
-        :param index: The index at which the drawing object should be inserted.
-        :param obj: The drawing object to add to the context.
-        """
-        self.drawing_objects.insert(index, obj)
-        self.redraw()
-
-    def remove(self, obj: DrawingAction) -> None:
-        """Remove a drawing object from the context.
-
-        :param obj: The drawing object to remove.
-        """
-        self.drawing_objects.remove(obj)
-        self.redraw()
-
-    def clear(self) -> None:
-        """Remove all drawing objects from the context."""
-        self.drawing_objects.clear()
-        self.redraw()
+    def _action_target(self):
+        """The State that should receive the drawing actions."""
+        raise NotImplementedError()
 
     ###########################################################################
     # Path manipulation
     ###########################################################################
 
     def begin_path(self) -> BeginPath:
-        """Start a new path in the canvas context.
+        """Start a new path in the canvas state.
 
         :returns: The `BeginPath`
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         begin_path = BeginPath()
-        self.append(begin_path)
+        self._action_target.append(begin_path)
         return begin_path
 
     def close_path(self) -> ClosePath:
-        """Close the current path in the canvas context.
+        """Close the current path in the canvas state.
 
         This closes the current path as a simple drawing operation. It should be paired
-        with a [`begin_path()`][toga.widgets.canvas.Context.begin_path] operation; or,
+        with a [`begin_path()`][toga.widgets.canvas.State.begin_path] operation; or,
         to complete a complete closed path, use the
-        [`ClosedPath()`][toga.widgets.canvas.Context.ClosedPath] context manager.
+        [`ClosedPath()`][toga.widgets.canvas.State.ClosedPath] context manager.
 
         :returns: The `ClosePath`
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         close_path = ClosePath()
-        self.append(close_path)
+        self._action_target.append(close_path)
         return close_path
 
     def move_to(self, x: float, y: float) -> MoveTo:
-        """Moves the current point of the canvas context without drawing.
+        """Moves the current point of the canvas state without drawing.
 
         :param x: The x coordinate of the new current point.
         :param y: The y coordinate of the new current point.
@@ -152,11 +86,11 @@ class Context(DrawingAction):
             for the operation.
         """
         move_to = MoveTo(x, y)
-        self.append(move_to)
+        self._action_target.append(move_to)
         return move_to
 
     def line_to(self, x: float, y: float) -> LineTo:
-        """Draw a line segment ending at a point in the canvas context.
+        """Draw a line segment ending at a point in the canvas state.
 
         :param x: The x coordinate for the end point of the line segment.
         :param y: The y coordinate for the end point of the line segment.
@@ -164,7 +98,7 @@ class Context(DrawingAction):
             for the operation.
         """
         line_to = LineTo(x, y)
-        self.append(line_to)
+        self._action_target.append(line_to)
         return line_to
 
     def bezier_curve_to(
@@ -176,7 +110,7 @@ class Context(DrawingAction):
         x: float,
         y: float,
     ) -> BezierCurveTo:
-        """Draw a Bézier curve in the canvas context.
+        """Draw a Bézier curve in the canvas state.
 
         A Bézier curve requires three points. The first two are control points; the
         third is the end point for the curve. The starting point is the last point in
@@ -193,7 +127,7 @@ class Context(DrawingAction):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self.append(bezier_curve_to)
+        self._action_target.append(bezier_curve_to)
         return bezier_curve_to
 
     def quadratic_curve_to(
@@ -203,7 +137,7 @@ class Context(DrawingAction):
         x: float,
         y: float,
     ) -> QuadraticCurveTo:
-        """Draw a quadratic curve in the canvas context.
+        """Draw a quadratic curve in the canvas state.
 
         A quadratic curve requires two points. The first point is a control point; the
         second is the end point. The starting point of the curve is the last point in
@@ -220,7 +154,7 @@ class Context(DrawingAction):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self.append(quadratic_curve_to)
+        self._action_target.append(quadratic_curve_to)
         return quadratic_curve_to
 
     def arc(
@@ -233,7 +167,7 @@ class Context(DrawingAction):
         counterclockwise: bool | None = None,
         anticlockwise: bool | None = None,  # DEPRECATED
     ) -> Arc:
-        """Draw a circular arc in the canvas context.
+        """Draw a circular arc in the canvas state.
 
         A full circle will be drawn by default; an arc can be drawn by specifying a
         start and end angle.
@@ -251,7 +185,7 @@ class Context(DrawingAction):
             for the operation.
         """
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
-        self.append(arc)
+        self._action_target.append(arc)
         return arc
 
     def ellipse(
@@ -266,7 +200,7 @@ class Context(DrawingAction):
         counterclockwise: bool | None = None,
         anticlockwise: bool | None = None,  # DEPRECATED
     ) -> Ellipse:
-        """Draw an elliptical arc in the canvas context.
+        """Draw an elliptical arc in the canvas state.
 
         A full ellipse will be drawn by default; an arc can be drawn by specifying a
         start and end angle.
@@ -298,11 +232,11 @@ class Context(DrawingAction):
             counterclockwise,
             anticlockwise,
         )
-        self.append(ellipse)
+        self._action_target.append(ellipse)
         return ellipse
 
     def rect(self, x: float, y: float, width: float, height: float) -> Rect:
-        """Draw a rectangle in the canvas context.
+        """Draw a rectangle in the canvas state.
 
         :param x: The horizontal coordinate of the left of the rectangle.
         :param y: The vertical coordinate of the top of the rectangle.
@@ -312,7 +246,7 @@ class Context(DrawingAction):
             for the operation.
         """
         rect = Rect(x, y, width, height)
-        self.append(rect)
+        self._action_target.append(rect)
         return rect
 
     def fill(
@@ -334,7 +268,7 @@ class Context(DrawingAction):
             for the operation.
         """
         fill = Fill(color, fill_rule)
-        self.append(fill)
+        self._action_target.append(fill)
         return fill
 
     def stroke(
@@ -353,7 +287,7 @@ class Context(DrawingAction):
             for the operation.
         """
         stroke = Stroke(color, line_width, line_dash)
-        self.append(stroke)
+        self._action_target.append(stroke)
         return stroke
 
     ###########################################################################
@@ -369,10 +303,10 @@ class Context(DrawingAction):
         baseline: Baseline = Baseline.ALPHABETIC,
         line_height: float | None = None,
     ) -> WriteText:
-        """Write text at a given position in the canvas context.
+        """Write text at a given position in the canvas state.
 
         Drawing text is effectively a series of path operations, so the text will have
-        the color and fill properties of the canvas context.
+        the color and fill properties of the canvas state.
 
         :param text: The text to draw. Newlines will cause line breaks, but long lines
             will not be wrapped.
@@ -386,7 +320,7 @@ class Context(DrawingAction):
             for the operation.
         """
         write_text = WriteText(text, x, y, font, baseline, line_height)
-        self.append(write_text)
+        self._action_target.append(write_text)
         return write_text
 
     ###########################################################################
@@ -401,11 +335,11 @@ class Context(DrawingAction):
         width: float | None = None,
         height: float | None = None,
     ):
-        """Draw a Toga Image in the canvas context.
+        """Draw a Toga Image in the canvas state.
 
         The x, y coordinates specify the location of the bottom-left corner
         of the image. If supplied, the width and height specify the size
-        of the image when it is rendered in the context, the image will be
+        of the image when it is rendered in the state, the image will be
         scaled to fit.
 
         Drawing of images is performed with the current transformation matrix
@@ -427,25 +361,25 @@ class Context(DrawingAction):
             no scaling will be done.
         """
         draw_image = DrawImage(image, x, y, width, height)
-        self.append(draw_image)
+        self._action_target.append(draw_image)
         return draw_image
 
     ###########################################################################
     # Transformations
     ###########################################################################
     def rotate(self, radians: float) -> Rotate:
-        """Add a rotation to the canvas context.
+        """Add a rotation to the canvas state.
 
         :param radians: The angle to rotate clockwise in radians.
         :returns: The `Rotate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
         """
         rotate = Rotate(radians)
-        self.append(rotate)
+        self._action_target.append(rotate)
         return rotate
 
     def scale(self, sx: float, sy: float) -> Scale:
-        """Add a scaling transformation to the canvas context.
+        """Add a scaling transformation to the canvas state.
 
         :param sx: Scale factor for the X dimension. A negative value flips the
             image horizontally.
@@ -455,11 +389,11 @@ class Context(DrawingAction):
             for the transformation.
         """
         scale = Scale(sx, sy)
-        self.append(scale)
+        self._action_target.append(scale)
         return scale
 
     def translate(self, tx: float, ty: float) -> Translate:
-        """Add a translation to the canvas context.
+        """Add a translation to the canvas state.
 
         :param tx: Translation for the X dimension.
         :param ty: Translation for the Y dimension.
@@ -467,34 +401,42 @@ class Context(DrawingAction):
             for the transformation.
         """
         translate = Translate(tx, ty)
-        self.append(translate)
+        self._action_target.append(translate)
         return translate
 
     def reset_transform(self) -> ResetTransform:
-        """Reset all transformations in the canvas context.
+        """Reset all transformations in the canvas state.
 
         :returns: A `ResetTransform`
             [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
         reset_transform = ResetTransform()
-        self.append(reset_transform)
+        self._action_target.append(reset_transform)
         return reset_transform
 
     ###########################################################################
-    # Subcontexts of this context
+    # Sub-states of this state
     ###########################################################################
 
     @contextmanager
-    def Context(self) -> Iterator[Context]:
-        """Construct and yield a new sub-[`Context`][toga.widgets.canvas.Context] within
-        this context.
+    def state(self) -> Iterator[State]:
+        """Construct and yield a new sub-[`State`][toga.widgets.canvas.State] within
+        this state.
 
-        :return: Yields the new [`Context`][toga.widgets.canvas.Context] object.
+        :return: Yields the new [`State`][toga.widgets.canvas.State] object.
         """
-        context = Context(canvas=self._canvas)
-        self.append(context)
-        yield context
+        state = State(canvas=self._canvas)
+        self._action_target.append(state)
+        yield state
         self.redraw()
+
+    def Context(self) -> Iterator[State]:
+        warnings.warn(
+            "State.Context() has been renamed to State.state()",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.state()
 
     @contextmanager
     def ClosedPath(
@@ -503,20 +445,20 @@ class Context(DrawingAction):
         y: float | None = None,
     ) -> Iterator[ClosedPathContext]:
         """Construct and yield a new `ClosedPath`
-        sub-context that will draw a closed path, starting from an origin.
+        sub-state that will draw a closed path, starting from an origin.
 
         This is a context manager; it creates a new path and moves to the start
-        coordinate; when the context exits, the path is closed. For fine-grained control
-        of a path, you can use [`begin_path`][toga.widgets.canvas.Context.begin_path]
-        and [`close_path`][toga.widgets.canvas.Context.close_path].
+        coordinate; when the state exits, the path is closed. For fine-grained control
+        of a path, you can use [`begin_path`][toga.widgets.canvas.State.begin_path]
+        and [`close_path`][toga.widgets.canvas.State.close_path].
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
         :return: Yields the [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext]
-            context object.
+            state object.
         """
         closed_path = ClosedPathContext(canvas=self.canvas, x=x, y=y)
-        self.append(closed_path)
+        self._action_target.append(closed_path)
         yield closed_path
 
     @contextmanager
@@ -527,26 +469,26 @@ class Context(DrawingAction):
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> Iterator[FillContext]:
-        """Construct and yield a new `Fill` sub-context
-        within this context.
+        """Construct and yield a new `Fill` sub-state
+        within this state.
 
         This is a context manager; it creates a new path, and moves to the start
-        coordinate; when the context exits, the path is closed with a fill. For
+        coordinate; when the state exits, the path is closed with a fill. For
         fine-grained control of a path, you can use
-        [`begin_path`][toga.widgets.canvas.Context.begin_path],
-        [`move_to`][toga.widgets.canvas.Context.move_to],
-        [`close_path`][toga.widgets.canvas.Context.close_path] and
-        [`fill`][toga.widgets.canvas.Context.fill].
+        [`begin_path`][toga.widgets.canvas.State.begin_path],
+        [`move_to`][toga.widgets.canvas.State.move_to],
+        [`close_path`][toga.widgets.canvas.State.close_path] and
+        [`fill`][toga.widgets.canvas.State.fill].
 
-        If both an x and y coordinate is provided, the drawing context will begin with
-        a `move_to` operation in that context.
+        If both an x and y coordinate is provided, the drawing state will begin with
+        a `move_to` operation in that state.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
-        :return: Yields the new [`FilContext`][toga.widgets.canvas.FillContext] context
+        :return: Yields the new [`FilContext`][toga.widgets.canvas.FillContext] state
             object.
         """
         fill = FillContext(
@@ -556,7 +498,7 @@ class Context(DrawingAction):
             color=color,
             fill_rule=fill_rule,
         )
-        self.append(fill)
+        self._action_target.append(fill)
         yield fill
 
     @contextmanager
@@ -568,19 +510,19 @@ class Context(DrawingAction):
         line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> Iterator[StrokeContext]:
-        """Construct and yield a new `Stroke` sub-context
-        within this context.
+        """Construct and yield a new `Stroke` sub-state
+        within this state.
 
         This is a context manager; it creates a new path, and moves to the start
-        coordinate; when the context exits, the path is closed with a stroke. For
+        coordinate; when the state exits, the path is closed with a stroke. For
         fine-grained control of a path, you can use
-        [`begin_path`][toga.widgets.canvas.Context.begin_path],
-        [`move_to`][toga.widgets.canvas.Context.move_to],
-        [`close_path`][toga.widgets.canvas.Context.close_path] and
-        [`stroke`][toga.widgets.canvas.Context.stroke].
+        [`begin_path`][toga.widgets.canvas.State.begin_path],
+        [`move_to`][toga.widgets.canvas.State.move_to],
+        [`close_path`][toga.widgets.canvas.State.close_path] and
+        [`stroke`][toga.widgets.canvas.State.stroke].
 
-        If both an x and y coordinate is provided, the drawing context will begin with
-        a `move_to` operation in that context.
+        If both an x and y coordinate is provided, the drawing state will begin with
+        a `move_to` operation in that state.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
@@ -589,7 +531,7 @@ class Context(DrawingAction):
         :param line_dash: The dash pattern to follow when drawing the line. Default is a
             solid line.
         :return: Yields the new [`StrokeContext`][toga.widgets.canvas.StrokeContext]
-            context object.
+            state object.
         """
         stroke = StrokeContext(
             canvas=self.canvas,
@@ -599,27 +541,109 @@ class Context(DrawingAction):
             line_width=line_width,
             line_dash=line_dash,
         )
-        self.append(stroke)
+        self._action_target.append(stroke)
         yield stroke
 
 
-class ClosedPathContext(Context):
-    """A drawing context that will build a closed path, starting from an
+class State(DrawingAction, DrawingActionDispatch):
+    """A drawing state for a canvas.
+
+    You should not create a [`State`][toga.widgets.canvas.State] directly; instead,
+    you should use the [`state()`][toga.widgets.canvas.State.state] method on an
+    existing state, or use [`Canvas.root_state`][toga.Canvas.root_state] to access the
+    root state of the canvas.
+    """
+
+    def __init__(self, canvas: toga.Canvas, **kwargs: Any):
+        # kwargs used to support multiple inheritance
+        super().__init__(**kwargs)
+        self._canvas = canvas
+        self.drawing_actions: list[DrawingAction] = []
+
+    def _draw(self, context: Any) -> None:
+        context.save()
+        for obj in self.drawing_actions:
+            obj._draw(context)
+        context.restore()
+
+    @property
+    def _action_target(self):
+        # State itself holds its drawing actions.
+        return self
+
+    ###########################################################################
+    # Methods to keep track of the canvas, automatically redraw it
+    ###########################################################################
+
+    @property
+    def canvas(self) -> Canvas:
+        """The canvas that is associated with this drawing state."""
+        return self._canvas
+
+    def redraw(self) -> None:
+        """Calls [`Canvas.redraw`][toga.Canvas.redraw] on the parent Canvas."""
+        self.canvas.redraw()
+
+    ###########################################################################
+    # Operations on drawing objects
+    ###########################################################################
+
+    def __len__(self) -> int:
+        """Returns the number of drawing objects that are in this state."""
+        return len(self.drawing_actions)
+
+    def __getitem__(self, index: int) -> DrawingAction:
+        """Returns the drawing object at the given index."""
+        return self.drawing_actions[index]
+
+    def append(self, obj: DrawingAction) -> None:
+        """Append a drawing object to the state.
+
+        :param obj: The drawing object to add to the state.
+        """
+        self.drawing_actions.append(obj)
+        self.redraw()
+
+    def insert(self, index: int, obj: DrawingAction) -> None:
+        """Insert a drawing object into the state at a specific index.
+
+        :param index: The index at which the drawing object should be inserted.
+        :param obj: The drawing object to add to the state.
+        """
+        self.drawing_actions.insert(index, obj)
+        self.redraw()
+
+    def remove(self, obj: DrawingAction) -> None:
+        """Remove a drawing object from the state.
+
+        :param obj: The drawing object to remove.
+        """
+        self.drawing_actions.remove(obj)
+        self.redraw()
+
+    def clear(self) -> None:
+        """Remove all drawing objects from the state."""
+        self.drawing_actions.clear()
+        self.redraw()
+
+
+class ClosedPathContext(State):
+    """A drawing state that will build a closed path, starting from an
     origin.
 
     This is a context manager; it creates a new path and moves to the start coordinate;
-    when the context exits, the path is closed. For fine-grained control of a path, you
-    can use [`begin_path`][toga.widgets.canvas.Context.begin_path],
-    [`move_to`][toga.widgets.canvas.Context.move_to] and,
-    [`close_path`][toga.widgets.canvas.Context.close_path].
+    when the state exits, the path is closed. For fine-grained control of a path, you
+    can use [`begin_path`][toga.widgets.canvas.State.begin_path],
+    [`move_to`][toga.widgets.canvas.State.move_to] and,
+    [`close_path`][toga.widgets.canvas.State.close_path].
 
-    If both an x and y coordinate is provided, the drawing context will begin with
-    a `move_to` operation in that context.
+    If both an x and y coordinate is provided, the drawing state will begin with
+    a `move_to` operation in that state.
 
     You should not create a [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext]
-    context directly; instead, you should use the
-    [`ClosedPath()`][toga.widgets.canvas.Context.ClosedPath] method on an existing
-    context.
+    state directly; instead, you should use the
+    [`ClosedPath()`][toga.widgets.canvas.State.ClosedPath] method on an existing
+    state.
     """
 
     def __init__(
@@ -636,13 +660,12 @@ class ClosedPathContext(Context):
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
     def _draw(self, context: Any) -> None:
-        """Used by parent to draw all objects that are part of the context."""
         context.save()
         context.begin_path()
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
 
         context.close_path()
@@ -650,26 +673,26 @@ class ClosedPathContext(Context):
 
 
 class FillContext(ClosedPathContext):
-    """A drawing context that will apply a fill to any paths all objects in the
-    context.
+    """A drawing state that will apply a fill to any paths all objects in the
+    state.
 
     The fill can use either the [Non-Zero](https://en.wikipedia.org/wiki/Nonzero-rule)
     or [Even-Odd](https://en.wikipedia.org/wiki/Even-odd_rule) winding rule for
     filling paths.
 
     This is a context manager; it creates a new path, and moves to the start coordinate;
-    when the context exits, the path is closed with a fill. For fine-grained control of
-    a path, you can use [`begin_path`][toga.widgets.canvas.Context.begin_path],
-    [`move_to`][toga.widgets.canvas.Context.move_to],
-    [`close_path`][toga.widgets.canvas.Context.close_path] and
-    [`fill`][toga.widgets.canvas.Context.fill].
+    when the state exits, the path is closed with a fill. For fine-grained control of
+    a path, you can use [`begin_path`][toga.widgets.canvas.State.begin_path],
+    [`move_to`][toga.widgets.canvas.State.move_to],
+    [`close_path`][toga.widgets.canvas.State.close_path] and
+    [`fill`][toga.widgets.canvas.State.fill].
 
-    If both an x and y coordinate is provided, the drawing context will begin with
-    a `move_to` operation in that context.
+    If both an x and y coordinate is provided, the drawing state will begin with
+    a `move_to` operation in that state.
 
-    You should not create a [`FillContext`][toga.widgets.canvas.FillContext] context
-    directly; instead, you should use the [`Fill()`][toga.widgets.canvas.Context.Fill]
-    method on an existing context.
+    You should not create a [`FillContext`][toga.widgets.canvas.FillContext] state
+    directly; instead, you should use the [`Fill()`][toga.widgets.canvas.State.Fill]
+    method on an existing state.
     """
 
     def __init__(
@@ -699,7 +722,7 @@ class FillContext(ClosedPathContext):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
 
         context.fill(self.fill_rule)
@@ -720,22 +743,22 @@ class FillContext(ClosedPathContext):
 
 
 class StrokeContext(ClosedPathContext):
-    """Construct a drawing context that will draw a stroke on all paths defined
-    within the context.
+    """Construct a drawing state that will draw a stroke on all paths defined
+    within the state.
 
     This is a context manager; it creates a new path, and moves to the start coordinate;
-    when the context exits, the path is drawn with the stroke. For fine-grained control
-    of a path, you can use [`begin_path`][toga.widgets.canvas.Context.begin_path],
-    [`move_to`][toga.widgets.canvas.Context.move_to],
-    [`close_path`][toga.widgets.canvas.Context.close_path] and
-    [`stroke`][toga.widgets.canvas.Context.stroke].
+    when the state exits, the path is drawn with the stroke. For fine-grained control
+    of a path, you can use [`begin_path`][toga.widgets.canvas.State.begin_path],
+    [`move_to`][toga.widgets.canvas.State.move_to],
+    [`close_path`][toga.widgets.canvas.State.close_path] and
+    [`stroke`][toga.widgets.canvas.State.stroke].
 
-    If both an x and y coordinate is provided, the drawing context will begin with
-    a `move_to` operation in that context.
+    If both an x and y coordinate is provided, the drawing state will begin with
+    a `move_to` operation in that state.
 
-    You should not create a [`StrokeContext`][toga.widgets.canvas.StrokeContext] context
+    You should not create a [`StrokeContext`][toga.widgets.canvas.StrokeContext] state
     directly; instead, you should use the
-    [`Stroke()`][toga.widgets.canvas.Context.Stroke] method on an existing context.
+    [`Stroke()`][toga.widgets.canvas.State.Stroke] method on an existing state.
     """
 
     def __init__(
@@ -772,7 +795,7 @@ class StrokeContext(ClosedPathContext):
         if self.x is not None and self.y is not None:
             context.move_to(x=self.x, y=self.y)
 
-        for obj in self.drawing_objects:
+        for obj in self.drawing_actions:
             obj._draw(context)
 
         context.stroke()

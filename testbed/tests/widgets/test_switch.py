@@ -7,6 +7,9 @@ import toga
 from ..data import TEXTS
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
+    test_background_color,
+    test_background_color_reset,
+    test_background_color_transparent,
     test_color,
     test_color_reset,
     test_enabled,

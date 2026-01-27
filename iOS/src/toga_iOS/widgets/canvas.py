@@ -295,7 +295,7 @@ class TogaCanvas(UIView):
 
     @objc_method
     def drawRect_(self, rect: CGRect) -> None:
-        self.interface.context._draw(Context(self.impl))
+        self.interface.root_state._draw(Context(self.impl))
 
     @objc_method
     def touchesBegan_withEvent_(self, touches, event) -> None:

@@ -15,23 +15,23 @@ ABSOLUTE_FILE_PATH = Path(__file__).parent.parent.parent / "resources/toga.png"
 
 def test_begin_path(widget):
     """A begin path operation can be added."""
-    draw_op = widget.context.begin_path()
+    draw_op = widget.root_state.begin_path()
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "BeginPath()"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == ["begin path"]
 
 
 def test_close_path(widget):
     """A close path operation can be added."""
-    draw_op = widget.context.close_path()
+    draw_op = widget.root_state.close_path()
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "ClosePath()"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == ["close path"]
 
 
@@ -100,12 +100,12 @@ def test_close_path(widget):
 )
 def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
     """A primitive fill operation can be added."""
-    draw_op = widget.context.fill(**kwargs)
+    draw_op = widget.root_state.fill(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Fill({args_repr})"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     # But the fill itself also saves and then restores.
     assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
 
@@ -148,7 +148,7 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
         # Line width
         (
             {"line_width": 4.5},
-            "color=None, line_width=4.5, line_dash=None",
+            "color=None, line_width=4.500, line_dash=None",
             [("set line width", 4.5)],
             {"color": None, "line_width": 4.5, "line_dash": None},
         ),
@@ -162,7 +162,7 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
         # All args
         (
             {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.5, line_dash=[2, 7]",
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7]",
             [
                 ("set stroke style", REBECCA_PURPLE_COLOR),
                 ("set line width", 4.5),
@@ -174,12 +174,12 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
 )
 def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
     """A primitive stroke operation can be added."""
-    draw_op = widget.context.stroke(**kwargs)
+    draw_op = widget.root_state.stroke(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Stroke({args_repr})"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     # But the stroke itself also saves and then restores.
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
@@ -195,12 +195,12 @@ def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
 
 def test_move_to(widget):
     """A move to operation can be added."""
-    draw_op = widget.context.move_to(10, 20)
+    draw_op = widget.root_state.move_to(10, 20)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "MoveTo(x=10, y=20)"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("move to", {"x": 10, "y": 20}),
     ]
@@ -212,12 +212,12 @@ def test_move_to(widget):
 
 def test_line_to(widget):
     """A line to operation can be added."""
-    draw_op = widget.context.line_to(10, 20)
+    draw_op = widget.root_state.line_to(10, 20)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "LineTo(x=10, y=20)"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("line to", {"x": 10, "y": 20}),
     ]
@@ -229,14 +229,14 @@ def test_line_to(widget):
 
 def test_bezier_curve_to(widget):
     """A Bézier curve to operation can be added."""
-    draw_op = widget.context.bezier_curve_to(10, 20, 30, 40, 50, 60)
+    draw_op = widget.root_state.bezier_curve_to(10, 20, 30, 40, 50, 60)
 
     assert_action_performed(widget, "redraw")
     assert (
         repr(draw_op) == "BezierCurveTo(cp1x=10, cp1y=20, cp2x=30, cp2y=40, x=50, y=60)"
     )
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         (
             "bezier curve to",
@@ -255,12 +255,12 @@ def test_bezier_curve_to(widget):
 
 def test_quadratic_curve_to(widget):
     """A Quadratic curve to operation can be added."""
-    draw_op = widget.context.quadratic_curve_to(10, 20, 30, 40)
+    draw_op = widget.root_state.quadratic_curve_to(10, 20, 30, 40)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "QuadraticCurveTo(cpx=10, cpy=20, x=30, y=40)"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         (
             "quadratic curve to",
@@ -400,12 +400,12 @@ def test_quadratic_curve_to(widget):
 )
 def test_arc(widget, kwargs, args_repr, draw_kwargs):
     """An arc operation can be added."""
-    draw_op = widget.context.arc(**kwargs)
+    draw_op = widget.root_state.arc(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Arc({args_repr})"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("arc", draw_kwargs),
     ]
@@ -564,12 +564,12 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
 )
 def test_ellipse(widget, kwargs, args_repr, draw_kwargs):
     """An ellipse operation can be added."""
-    draw_op = widget.context.ellipse(**kwargs)
+    draw_op = widget.root_state.ellipse(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Ellipse({args_repr})"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("ellipse", draw_kwargs),
     ]
@@ -581,12 +581,12 @@ def test_ellipse(widget, kwargs, args_repr, draw_kwargs):
 
 def test_rect(widget):
     """A rect operation can be added."""
-    draw_op = widget.context.rect(10, 20, 30, 40)
+    draw_op = widget.root_state.rect(10, 20, 30, 40)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Rect(x=10, y=20, width=30, height=40)"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("rect", {"x": 10, "y": 20, "width": 30, "height": 40}),
     ]
@@ -691,7 +691,7 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
             },
             (
                 "text='Hello world', x=10, y=20, font=None, "
-                "baseline=Baseline.ALPHABETIC, line_height=1.5"
+                "baseline=Baseline.ALPHABETIC, line_height=1.500"
             ),
             {
                 "text": "Hello world",
@@ -706,12 +706,12 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
 )
 def test_write_text(widget, kwargs, instructions, args_repr, draw_attrs):
     """A write text operation can be added."""
-    draw_op = widget.context.write_text(**kwargs)
+    draw_op = widget.root_state.write_text(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"WriteText({args_repr})"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("write text", instructions),
     ]
@@ -727,12 +727,12 @@ def test_write_text(widget, kwargs, instructions, args_repr, draw_attrs):
 
 def test_rotate(widget):
     """A rotate operation can be added."""
-    draw_op = widget.context.rotate(1.234)
+    draw_op = widget.root_state.rotate(1.234)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Rotate(radians=1.234)"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("rotate", {"radians": pytest.approx(1.234)}),
     ]
@@ -743,12 +743,12 @@ def test_rotate(widget):
 
 def test_scale(widget):
     """A scale operation can be added."""
-    draw_op = widget.context.scale(1.234, 2.345)
+    draw_op = widget.root_state.scale(1.234, 2.345)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Scale(sx=1.234, sy=2.345)"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("scale", {"sx": pytest.approx(1.234), "sy": pytest.approx(2.345)}),
     ]
@@ -760,12 +760,12 @@ def test_scale(widget):
 
 def test_translate(widget):
     """A translate operation can be added."""
-    draw_op = widget.context.translate(10, 20)
+    draw_op = widget.root_state.translate(10, 20)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Translate(tx=10, ty=20)"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("translate", {"tx": 10, "ty": 20}),
     ]
@@ -777,12 +777,12 @@ def test_translate(widget):
 
 def test_reset_transform(widget):
     """A reset transform operation can be added."""
-    draw_op = widget.context.reset_transform()
+    draw_op = widget.root_state.reset_transform()
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "ResetTransform()"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == ["reset transform"]
 
 
@@ -830,12 +830,12 @@ def test_reset_transform(widget):
 def test_draw_image(app, widget, kwargs, instructions, args_repr, draw_attrs):
     """An image can be drawn."""
     image = Image(ABSOLUTE_FILE_PATH)
-    draw_op = widget.context.draw_image(image=image, **kwargs)
+    draw_op = widget.root_state.draw_image(image=image, **kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"DrawImage(image={image!r}, {args_repr})"
 
-    # The first and last instructions push/pull the root context, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     instructions["image"] = image
     assert widget._impl.draw_instructions[1:-1] == [
         ("draw_image", instructions),
@@ -857,13 +857,13 @@ def test_anticlockwise_deprecated(widget, value):
     )
 
     with pytest.warns(DeprecationWarning, match=match):
-        widget.context.arc(x=0, y=0, radius=10, anticlockwise=value)
+        widget.root_state.arc(x=0, y=0, radius=10, anticlockwise=value)
 
     with pytest.warns(DeprecationWarning, match=match):
         Arc(x=0, y=0, radius=10, anticlockwise=value)
 
     with pytest.warns(DeprecationWarning, match=match):
-        widget.context.ellipse(x=0, y=0, radiusx=10, radiusy=10, anticlockwise=value)
+        widget.root_state.ellipse(x=0, y=0, radiusx=10, radiusy=10, anticlockwise=value)
 
     with pytest.warns(DeprecationWarning, match=match):
         Ellipse(x=0, y=0, radiusx=10, radiusy=10, anticlockwise=value)
@@ -881,7 +881,7 @@ def test_anticlockwise_invalid(widget, anti, counter):
     match = r"Received both 'anticlockwise' and 'counterclockwise' arguments"
 
     with pytest.raises(TypeError, match=match):
-        widget.context.arc(
+        widget.root_state.arc(
             x=0, y=0, radius=10, anticlockwise=anti, counterclockwise=counter
         )
 
@@ -889,7 +889,7 @@ def test_anticlockwise_invalid(widget, anti, counter):
         Arc(x=0, y=0, radius=10, anticlockwise=anti, counterclockwise=counter)
 
     with pytest.raises(TypeError, match=match):
-        widget.context.ellipse(
+        widget.root_state.ellipse(
             x=0,
             y=0,
             radiusx=10,

@@ -281,7 +281,7 @@ class DrawHandler(dynamic_proxy(IDrawHandler)):
     def handleDraw(self, canvas):
         with suppress_reference_error():
             context = Context(self.impl, canvas)
-            self.interface.context._draw(context)
+            self.interface.root_state._draw(context)
 
 
 class TouchListener(dynamic_proxy(View.OnTouchListener)):

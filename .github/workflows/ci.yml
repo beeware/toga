@@ -94,12 +94,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.1
+      uses: actions/checkout@v6.0.2
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6.1.0
+      uses: actions/setup-python@v6.2.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -146,12 +146,12 @@ jobs:
             tox-suffix: "-trav"
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.1
+      uses: actions/checkout@v6.0.2
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v6.1.0
+      uses: actions/setup-python@v6.2.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -184,12 +184,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.1
+      uses: actions/checkout@v6.0.2
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v6.1.0
+      uses: actions/setup-python@v6.2.0
       with:
         python-version: ${{ env.min_python_version }}
 
@@ -498,12 +498,12 @@ jobs:
       uses: smorimoto/tune-github-hosted-runner-network@v1.0.0
 
     - name: Checkout
-      uses: actions/checkout@v6.0.1
+      uses: actions/checkout@v6.0.2
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v6.1.0
+      uses: actions/setup-python@v6.2.0
       if: matrix.setup-python
       with:
         python-version: "3.12"
@@ -583,12 +583,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.1
+      uses: actions/checkout@v6.0.2
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v6.1.0
+      uses: actions/setup-python@v6.2.0
       with:
         python-version: "3.12"
 

@@ -4,9 +4,9 @@ from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import FillRule
 from toga.widgets.canvas import (
     ClosedPathContext,
-    Context,
     FillContext,
     LineTo,
+    State,
     StrokeContext,
 )
 from toga_dummy.utils import assert_action_performed
@@ -14,18 +14,18 @@ from toga_dummy.utils import assert_action_performed
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
 
 
-def test_subcontext(widget):
-    """A context can produce a subcontext."""
-    with widget.context.Context() as subcontext:
-        subcontext.line_to(30, 40)
-    # A fresh context has been created as a subcontext of the canvas.
-    assert isinstance(subcontext, Context)
-    assert subcontext != widget.context
+def test_sub_state(widget):
+    """A state can produce a sub-state."""
+    with widget.root_state.state() as sub_state:
+        sub_state.line_to(30, 40)
+    # A fresh state has been created as a sub-state of the canvas.
+    assert isinstance(sub_state, State)
+    assert sub_state is not widget.root_state
 
     assert_action_performed(widget, "redraw")
-    assert repr(subcontext) == "Context()"
+    assert repr(sub_state) == "State()"
 
-    # The first and last instructions can be ignored; they're the root canvas context
+    # The first and last instructions can be ignored; they're the root canvas state
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
         ("line to", {"x": 30, "y": 40}),
@@ -67,11 +67,11 @@ def test_subcontext(widget):
     ],
 )
 def test_closed_path(widget, kwargs, args_repr, has_move, properties):
-    """A context can produce a ClosedPath subcontext."""
-    with widget.context.ClosedPath(**kwargs) as closed_path:
+    """A state can produce a ClosedPath sub-state."""
+    with widget.root_state.ClosedPath(**kwargs) as closed_path:
         closed_path.line_to(30, 40)
 
-    # A fresh context has been created as a subcontext of the canvas.
+    # A fresh state has been created as a sub-state of the canvas.
     assert isinstance(closed_path, ClosedPathContext)
     assert repr(closed_path) == f"ClosedPathContext({args_repr})"
 
@@ -81,7 +81,7 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
     for attr, value in properties.items():
         assert getattr(closed_path, attr) == value
 
-    # The first and last instructions can be ignored; they're the root canvas context
+    # The first and last instructions can be ignored; they're the root canvas state
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
         "begin path",
@@ -182,11 +182,11 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
     ],
 )
 def test_fill(widget, kwargs, args_repr, has_move, properties):
-    """A context can produce a Fill subcontext."""
-    with widget.context.Fill(**kwargs) as fill:
+    """A state can produce a Fill sub-state."""
+    with widget.root_state.Fill(**kwargs) as fill:
         fill.line_to(30, 40)
 
-    # A fresh context has been created as a subcontext of the canvas.
+    # A fresh state has been created as a sub-state of the canvas.
     assert isinstance(fill, FillContext)
     assert repr(fill) == f"FillContext({args_repr})"
 
@@ -194,7 +194,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
     for attr, value in properties.items():
         assert getattr(fill, attr) == value
 
-    # The first and last instructions can be ignored; they're the root canvas context
+    # The first and last instructions can be ignored; they're the root canvas state
     commands = [
         "save",
         ("set fill style", color)
@@ -347,11 +347,11 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
     ],
 )
 def test_stroke(widget, kwargs, args_repr, has_move, properties):
-    """A context can produce a Stroke subcontext."""
-    with widget.context.Stroke(**kwargs) as stroke:
+    """A state can produce a Stroke sub-state."""
+    with widget.root_state.Stroke(**kwargs) as stroke:
         stroke.line_to(30, 40)
 
-    # A fresh context has been created as a subcontext of the canvas.
+    # A fresh state has been created as a sub-state of the canvas.
     assert isinstance(stroke, StrokeContext)
     assert repr(stroke) == f"StrokeContext({args_repr})"
 
@@ -377,31 +377,31 @@ def test_stroke(widget, kwargs, args_repr, has_move, properties):
         "restore",
     ]
 
-    # The first and last instructions can be ignored; they're the root canvas context
+    # The first and last instructions can be ignored; they're the root canvas state
     assert widget._impl.draw_instructions[1:-1] == [
         command for command in commands if command is not None
     ]
 
 
 def test_order_change(widget):
-    """The order of context objects can be changed."""
-    # Initially nothing on the context.
-    assert len(widget.context) == 0
+    """The order of state objects can be changed."""
+    # Initially nothing on the state.
+    assert len(widget.root_state) == 0
 
-    # Set up an inner context that has contained operations, including a subcontext
-    widget.context.line_to(0, 0)
-    with widget.Context() as context:
-        context.line_to(10, 20)
-        second = context.line_to(20, 30)
-        with context.Fill() as fill:
+    # Set up an inner state that has contained operations, including a sub-state
+    widget.root_state.line_to(0, 0)
+    with widget.root_state.state() as state:
+        state.line_to(10, 20)
+        second = state.line_to(20, 30)
+        with state.Fill() as fill:
             fill.line_to(25, 25)
-        context.line_to(30, 40)
-        context.line_to(40, 50)
-    widget.context.line_to(99, 99)
+        state.line_to(30, 40)
+        state.line_to(40, 50)
+    widget.root_state.line_to(99, 99)
 
     # Counts are as expected
-    assert len(widget.context) == 3
-    assert len(context) == 5
+    assert len(widget.root_state) == 3
+    assert len(state) == 5
     assert len(fill) == 1
 
     # Initial draw instructions are as expected
@@ -426,16 +426,16 @@ def test_order_change(widget):
     ]
 
     # Remove the second draw instruction
-    context.remove(second)
+    state.remove(second)
 
     # Drawing objects are as expected
-    assert len(widget.context) == 3
-    for i, cls in enumerate([LineTo, Context, LineTo]):
-        assert isinstance(widget.context[i], cls)
+    assert len(widget.root_state) == 3
+    for i, cls in enumerate([LineTo, State, LineTo]):
+        assert isinstance(widget.root_state[i], cls)
     with pytest.raises(IndexError):
-        widget.context[3]
+        widget.root_state[3]
 
-    assert len(context) == 4
+    assert len(state) == 4
     assert len(fill) == 1
 
     # Draw instructions no longer have the second
@@ -459,11 +459,11 @@ def test_order_change(widget):
     ]
 
     # Insert the second draw instruction at index 3
-    context.insert(3, second)
+    state.insert(3, second)
 
     # Counts are as expected
-    assert len(widget.context) == 3
-    assert len(context) == 5
+    assert len(widget.root_state) == 3
+    assert len(state) == 5
     assert len(fill) == 1
 
     # Draw instructions show the new position
@@ -487,12 +487,12 @@ def test_order_change(widget):
         "restore",
     ]
 
-    # Remove the fill context
-    context.remove(fill)
+    # Remove the fill state
+    state.remove(fill)
 
     # Counts are as expected
-    assert len(widget.context) == 3
-    assert len(context) == 4
+    assert len(widget.root_state) == 3
+    assert len(state) == 4
     assert len(fill) == 1
 
     # Draw instructions show the new position
@@ -509,8 +509,8 @@ def test_order_change(widget):
         "restore",
     ]
 
-    # Insert the fill context at a negative index
-    context.insert(-1, fill)
+    # Insert the fill state at a negative index
+    state.insert(-1, fill)
     # Draw instructions show the new position
     assert widget._impl.draw_instructions == [
         "save",
@@ -532,14 +532,14 @@ def test_order_change(widget):
         "restore",
     ]
 
-    # Clear the context
-    context.clear()
+    # Clear the state
+    state.clear()
 
     # Counts are as expected
-    assert len(widget.context) == 3
-    assert len(context) == 0
+    assert len(widget.root_state) == 3
+    assert len(state) == 0
 
-    # No draw instructions other than the outer context.
+    # No draw instructions other than the outer state.
     assert widget._impl.draw_instructions == [
         "save",
         ("line to", {"x": 0, "y": 0}),

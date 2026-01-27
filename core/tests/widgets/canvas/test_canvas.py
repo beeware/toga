@@ -6,9 +6,9 @@ from toga.constants import FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.widgets.canvas import (
     ClosedPathContext,
-    Context,
     DrawingAction,
     FillContext,
+    State,
     StrokeContext,
 )
 from toga_dummy.utils import assert_action_not_performed, assert_action_performed
@@ -31,8 +31,8 @@ def test_widget_created():
     assert widget.on_alt_release._raw is None
     assert widget.on_alt_drag._raw is None
 
-    # Canvas has a root context
-    assert isinstance(widget.context, Context)
+    # Canvas has a root state
+    assert isinstance(widget.root_state, State)
 
 
 def test_create_with_value(
@@ -59,8 +59,8 @@ def test_create_with_value(
     assert widget.on_alt_release._raw == on_alt_release_handler
     assert widget.on_alt_drag._raw == on_alt_drag_handler
 
-    # Canvas has a root context
-    assert isinstance(widget.context, Context)
+    # Canvas has a root state
+    assert isinstance(widget.root_state, State)
 
 
 def test_disable_no_op(widget):
@@ -88,39 +88,31 @@ def test_redraw(widget):
 
     assert_action_performed(widget, "redraw")
 
-    # An empty canvas has 2 draw operations - pushing and popping the root context.
+    # An empty canvas has 2 draw operations - pushing and popping the root state.
     assert widget._impl.draw_instructions == [
         "save",
         "restore",
     ]
 
 
-def test_subcontext(widget):
-    """A canvas can produce a subcontext."""
-    with widget.Context() as subcontext:
-        # A fresh context has been created as a subcontext of the canvas.
-        assert isinstance(subcontext, Context)
-        assert subcontext != widget.context
-
-
 def test_closed_path(widget):
-    """A canvas can produce a ClosedPath subcontext."""
+    """A canvas can produce a ClosedPath sub-state."""
     with widget.ClosedPath(x=10, y=20) as closed_path:
-        # A fresh context has been created as a subcontext of the canvas.
+        # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(closed_path, ClosedPathContext)
-        assert closed_path != widget.context
+        assert closed_path is not widget.root_state
         assert closed_path.x == 10
         assert closed_path.y == 20
 
 
 def test_fill(widget):
-    """A canvas can produce a Fill subcontext."""
+    """A canvas can produce a Fill sub-state."""
     with widget.Fill(
         x=10, y=20, color="rebeccapurple", fill_rule=FillRule.EVENODD
     ) as fill:
-        # A fresh context has been created as a subcontext of the canvas.
+        # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(fill, FillContext)
-        assert fill != widget.context
+        assert fill is not widget.root_state
 
         assert fill.x == 10
         assert fill.y == 20
@@ -129,13 +121,13 @@ def test_fill(widget):
 
 
 def test_stroke(widget):
-    """A canvas can produce a Stroke subcontext."""
+    """A canvas can produce a Stroke sub-state."""
     with widget.Stroke(
         x=10, y=20, color="rebeccapurple", line_width=5, line_dash=[2, 7]
     ) as stroke:
-        # A fresh context has been created as a subcontext of the canvas.
+        # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(stroke, StrokeContext)
-        assert stroke != widget.context
+        assert stroke is not widget.root_state
 
         assert stroke.x == 10
         assert stroke.y == 20
@@ -199,13 +191,45 @@ def test_as_image(widget):
     assert_action_performed(widget, "get image data")
 
 
-def test_deprecated_names():
+def test_deprecated_class_names():
     """Deprecated names work, but issue a warning."""
     with pytest.warns(DeprecationWarning):
         from toga.widgets.canvas import DrawingObject
 
     assert DrawingObject is DrawingAction
 
+    with pytest.warns(DeprecationWarning):
+        from toga.widgets.canvas import Context
+
+    assert Context is State
+
     # A completely bogus name still fails.
     with pytest.raises(ImportError):
         from toga.widgets.canvas import Nonexistent  # noqa: F401
+
+
+def test_deprecated_attribute_names(widget):
+    with pytest.warns(DeprecationWarning):
+        context_property = widget.context
+
+    assert context_property is widget.root_state
+
+    # Create one sub-state first, to make sure we generate the new one in the right
+    # place — on the root state.
+    with widget.root_state.state() as state_1:
+        with pytest.warns(DeprecationWarning):
+            with widget.Context() as state_2:
+                pass
+
+    assert widget.root_state.drawing_actions == [state_1, state_2]
+
+    widget.root_state.clear()
+
+    # Create one sub-state first, to make sure we generate the new one in the right
+    # place — on the root state.
+    with widget.root_state.state() as state_3:
+        with pytest.warns(DeprecationWarning):
+            with widget.root_state.Context() as state_4:
+                pass
+
+    assert widget.root_state.drawing_actions == [state_3, state_4]
