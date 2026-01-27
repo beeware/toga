@@ -701,30 +701,30 @@ async def test_transforms_mid_path(canvas, probe):
     "Transforms can be applied mid-path"
 
     # draw a series of rotated rectangles
-    canvas.context.begin_path()
-    canvas.context.translate(100, 100)
-    with canvas.context.Context() as ctx:
+    canvas.root_state.begin_path()
+    canvas.root_state.translate(100, 100)
+    with canvas.root_state.state() as ctx:
         for _ in range(12):
             ctx.rect(50, 0, 10, 10)
             ctx.scale(1.1, 1)
             ctx.rotate(math.pi / 6)
 
-        canvas.context.fill()
-        canvas.context.stroke(GOLDENROD)
+        canvas.root_state.fill()
+        canvas.root_state.stroke(GOLDENROD)
 
     # draw a series of line segments
-    canvas.context.begin_path()
-    canvas.context.move_to(25, 0)
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(25, 0)
     for _ in range(12):
-        canvas.context.line_to(25, 0)
-        canvas.context.rotate(math.pi / 6)
-        canvas.context.translate(5, 3)
-    canvas.context.close_path()
-    canvas.context.reset_transform()
-    canvas.context.move_to(110, 100)
-    canvas.context.scale(5, 1)
-    canvas.context.ellipse(20, 100, 2, 20, 0, 0, 2 * pi)
-    canvas.context.stroke(CORNFLOWERBLUE)
+        canvas.root_state.line_to(25, 0)
+        canvas.root_state.rotate(math.pi / 6)
+        canvas.root_state.translate(5, 3)
+    canvas.root_state.close_path()
+    canvas.root_state.reset_transform()
+    canvas.root_state.move_to(110, 100)
+    canvas.root_state.scale(5, 1)
+    canvas.root_state.ellipse(20, 100, 2, 20, 0, 0, 2 * pi)
+    canvas.root_state.stroke(CORNFLOWERBLUE)
 
     await probe.redraw("Transforms can be applied")
     assert_reference(probe, "transforms_mid_path", threshold=0.015)
@@ -732,10 +732,10 @@ async def test_transforms_mid_path(canvas, probe):
 
 async def test_singular_transforms(canvas, probe):
     "Singular transforms behave reasonably"
-    ctx = canvas.context
+    ctx = canvas.root_state
 
     ctx.begin_path()
-    with ctx.Context() as ctx2:
+    with ctx.state() as ctx2:
         # flip about the line x = y
         ctx2.rotate(-pi / 2)
         ctx2.scale(-1, 1)
@@ -744,7 +744,7 @@ async def test_singular_transforms(canvas, probe):
         ctx2.line_to(80, 20)
         ctx2.line_to(100, 30)
 
-        with ctx2.Context() as ctx3:
+        with ctx2.state() as ctx3:
             # Apply a scale factor of zero
             ctx3.scale(0.9, 0)
             ctx3.line_to(180, 20)

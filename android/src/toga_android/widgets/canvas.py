@@ -183,6 +183,13 @@ class Context:
         self.path.transform(inverse)
 
     def scale(self, sx, sy):
+        # Can't apply inverse transform if scale is 0,
+        # so use a small epsilon which will almost be the same
+        if sx == 0:
+            sx = 2**-24
+        if sy == 0:
+            sy = 2**-24
+
         self.native.scale(sx, sy)
 
         # Update state transform
