@@ -41,11 +41,13 @@ class State:
     we used it. And it would still need to be kept in a list.
     """
 
-    def __init__(self, graphics_state, brush, pen):
+    def __init__(self, graphics_state, brush, pen, singular=False):
         # This is the previous graphics state, so we can restore.
         self.graphics_state = graphics_state
         self.brush = brush
         self.pen = pen
+        # When we are in a singular state, should not draw anything
+        self.singular = singular
         self.transform = Matrix()
 
     @classmethod
@@ -61,6 +63,7 @@ class State:
             graphics_state=graphics_state,
             brush=self.brush.Clone(),
             pen=self.pen.Clone(),
+            singular=self.singular,
         )
 
 
@@ -231,6 +234,9 @@ class Context:
     # Drawing Paths
 
     def fill(self, fill_rule):
+        if self.state.singular:
+            # draw nothing
+            return
         for path in self.paths:
             if fill_rule == FillRule.EVENODD:
                 path.FillMode = FillMode.Alternate
@@ -239,6 +245,9 @@ class Context:
             self.native.FillPath(self.state.brush, path)
 
     def stroke(self):
+        if self.state.singular:
+            # draw nothing
+            return
         for path in self.paths:
             self.native.DrawPath(self.state.pen, path)
 
@@ -260,8 +269,10 @@ class Context:
         # so use a small epsilon which will almost be the same
         if sx == 0:
             sx = 2**-24
+            self.state.singular = True
         if sy == 0:
             sy = 2**-24
+            self.state.singular = True
 
         self.native.ScaleTransform(sx, sy)
 
@@ -295,6 +306,7 @@ class Context:
         matrix.Invert()
         self.state.transform.Multiply(matrix)
 
+        self.state.singular = False
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
