@@ -774,7 +774,7 @@ async def test_singular_transforms(canvas, probe):
 
     ctx.reset_transform()
     ctx.begin_path()
-    ctx.scale(0.9, 0)
+    ctx.scale(0, 0.9)
     ctx.translate(50, 50)
 
     ctx.rect(0, 0, 25, 25)
