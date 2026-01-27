@@ -22,7 +22,9 @@ class TogaCachePathHandler(dynamic_proxy(WebViewAssetLoader.PathHandler)):
         self.webclient = webclient
 
     @Override(WebResourceResponse, [jstring])
-    def handle(self, path):
+    # This method is called in a separate thread and therefore not recognized
+    # by the coverage test
+    def handle(self, path):  # pragma no cover
         filepath = toga.App.app.paths.cache / path
         if filepath.exists():
             return WebResourceResponse(
@@ -67,5 +69,7 @@ class TogaWebClient(static_proxy(WebViewClient)):
                 self.impl.loaded_future = None
 
     @Override(WebResourceResponse, [A_WebView, WebResourceRequest])
-    def shouldInterceptRequest(self, webview, request):
+    # This method is called in a separate thread and therefore not recognized
+    # by the coverage test
+    def shouldInterceptRequest(self, webview, request):  # pragma no cover
         return self.cache_assetLoader.shouldInterceptRequest(request.getUrl())
