@@ -42,9 +42,7 @@ class MapView(Widget):
         return value
 
     def add_pin(self, pin):
-        if not hasattr(pin, "uid") or not pin.uid:
-            pin.uid = str(uuid.uuid4())
-
+        pin.uid = str(uuid.uuid4())
         self.native.rootObject().addPin(
             pin.uid, pin.location[0], pin.location[1], pin.title, pin.subtitle
         )
