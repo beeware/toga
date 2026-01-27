@@ -35,7 +35,8 @@ async def make_widget(on_select):
     with safe_create():
         widget = toga.MapView(style=Pack(flex=1), on_select=on_select)
 
-    # Ensure WebView / MapView is fully initialized
+    # Some implementations of MapView are a WebView wearing a trenchcoat.
+    # Ensure that the webview is fully configured before proceeding.
     if toga.platform.current_platform == "windows" or toga.backend == "toga_gtk":
         deadline = time() + WINDOWS_INIT_TIMEOUT
         while widget._impl.backlog is not None:
@@ -44,11 +45,15 @@ async def make_widget(on_select):
             else:
                 raise RuntimeError("MapView web canvas didn't initialize")
     else:
-        # Other platforms: give it a second to load
+        # All other implementations still need a second to load map tiles etc.
         await asyncio.sleep(1)
 
-    # Linux GC workaround
     if toga.backend == "toga_gtk":
+        # On Gtk, ensure that the MapView evades garbage collection by keeping a
+        # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
+        # thread disposing of it is not the same thread running the event loop. Since
+        # garbage collection for the WebView can run in either thread, just defer GC
+        # for it until after the testing thread has joined.
         toga.App.app._gc_protector.append(widget)
 
     return widget

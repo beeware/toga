@@ -25,26 +25,15 @@ class MapBridge(QObject):
 class MapView(Widget):
     def create(self):
         self._qml_path = str(Path(__file__).parent.parent / "resources/mapview.qml")
-
         self.native = QQuickWidget()
         self.native.setResizeMode(QQuickWidget.SizeRootObjectToView)
-
-        self._ready = False
-
-        # Bridge
         self.bridge = MapBridge()
         self.native.rootContext().setContextProperty("bridge", self.bridge)
         self.native.rootContext().setContextProperty(
             "cachePath", str(toga.App.app.paths.cache / "QtLocation")
         )
-
-        # Connect the bridge signals
         self.bridge.pinClickedSignal.connect(self._on_pin_clicked)
-
-        # Load QML
         self.native.setSource(self._qml_path)
-
-        # Reverse lookup of pins
         self.pins = {}
 
     def _unmarshall_latlng(self, value):
@@ -52,9 +41,6 @@ class MapView(Widget):
         value = LatLng(*nums)
         return value
 
-    # --------------------------
-    # Public API
-    # --------------------------
     def add_pin(self, pin):
         if not hasattr(pin, "uid") or not pin.uid:
             pin.uid = str(uuid.uuid4())
