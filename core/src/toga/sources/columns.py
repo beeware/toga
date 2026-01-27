@@ -112,9 +112,9 @@ class AccessorColumn(ColumnT[Value]):
         match value := self.value(row):
             case Widget():
                 return default
-            case (_, None):
+            case tuple((_, None)):
                 return default
-            case (_, value):
+            case tuple((_, value)):
                 return str(value)
             case None:
                 return default
@@ -135,7 +135,7 @@ class AccessorColumn(ColumnT[Value]):
         match value := self.value(row):
             case Widget():
                 return None
-            case (icon, _):
+            case tuple((icon, _)):
                 return icon
             case _:
                 return getattr(value, "icon", None)

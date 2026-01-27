@@ -182,6 +182,18 @@ def test_columns_from_headings_and_accessors_failure():
             None,
             LABEL_WIDGET,
         ),
+        # Issue #4135: List of 2 items is just data
+        (Row(x=[None, "test"]), [None, "test"], "[None, 'test']", None, None),
+        # Issue #4135: Tuple of 3+ items is just data
+        (
+            Row(x=(None, "test", 42)),
+            (None, "test", 42),
+            "(None, 'test', 42)",
+            None,
+            None,
+        ),
+        # Issue #4135: Tuple of 1 item is just data
+        (Row(x=("test",)), ("test",), "('test',)", None, None),
     ],
 )
 def test_accessor_column_values(row, value, text, icon, widget):
