@@ -9,7 +9,6 @@ import toga
 from toga.style import Pack
 
 from .conftest import build_cleanup_test, safe_create
-from .probe import get_probe
 from .properties import (  # noqa: F401
     test_flex_widget_size,
 )
