@@ -17,8 +17,6 @@ Item {
         TapHandler {
             acceptedButtons: Qt.LeftButton
             onTapped: (event) => {
-                // Convert screen point to geo coordinate
-                var coord = view.map.toCoordinate(event.position)
                 root.selectedPinUid = ""   // deselect pins
             }
         }
@@ -161,16 +159,21 @@ Item {
 
     function removePin(uid) {
         var m = mapPins[uid]
+        view.map.removeMapItem(m)
         m.destroy()
-        delete mapPins[uid]
     }
 
     function listPins() {
         var arr = "Array["
-        for (var k in mapPins)
-            arr += "," + k.uid
+        for (var k in view.map.mapItems)
+            arr += ","
         return arr + "]"
     }
 
-
+    function getMapRegionString() {
+        var topLeft = map.toCoordinate(Qt.point(0, 0))
+        var bottomRight = map.toCoordinate(Qt.point(map.width, map.height))
+        return topLeft.latitude + "," + topLeft.longitude + "," +
+        bottomRight.latitude + "," + bottomRight.longitude
+    }
 }
