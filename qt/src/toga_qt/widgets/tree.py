@@ -22,15 +22,23 @@ class TreeSourceModel(QAbstractItemModel):
         self._source = source
         self._columns = columns
         self._missing_value = missing_value
+        # cache of id(node): node
+        # It's safe to use id() as the key, as the id can't be reused
+        # by Python for another object unless we remove the object from
+        # the cache
+        self._node_cache = {}
 
     def set_source(self, source):
         self.beginResetModel()
         self._source = source
+        # Clear the cache, safe to do so here
+        self._node_cache = {}
         self.endResetModel()
 
     def reset_source(self):
         self.beginResetModel()
-        # Nothing to do, clear has already happened
+        # Clear the cache, safe to do so here
+        self._node_cache = {}
         self.endResetModel()
 
     def insert_item(self, index, item, parent=None):
@@ -48,7 +56,8 @@ class TreeSourceModel(QAbstractItemModel):
         else:
             model_index = self._get_index(parent)
         self.beginRemoveRows(model_index, index, index)
-        # Nothing to do, removal has already happened
+        # remove item from cache: safe to do so now
+        self._node_cache.pop(id(item), None)
         self.endRemoveRows()
 
     def item_changed(self, item):
@@ -111,6 +120,10 @@ class TreeSourceModel(QAbstractItemModel):
             if node._parent is not None:
                 parent = node._parent
                 row = parent.index(node)
+                # We attach the parent node to the index for speed.
+                # The node must remain alive during the lifetime of the
+                # QModelIndex() so we cache a reference to it.
+                self._node_cache[id(parent)] = parent
                 return self.createIndex(row, 0, parent)
 
         return INVALID_INDEX
@@ -129,7 +142,9 @@ class TreeSourceModel(QAbstractItemModel):
         else:
             # We attach the node for the row to the index for speed.
             # The node must remain alive during the lifetime of the QModelIndex()
+            # so we cache a reference to it.
             node = parent_node[row]
+            self._node_cache[id(node)] = node
             return self.createIndex(row, column, node)
 
     def rowCount(
