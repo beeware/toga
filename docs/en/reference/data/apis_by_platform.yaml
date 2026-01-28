@@ -234,7 +234,6 @@ Container widgets:
       - android
       - web
       - textual
-      - qt
 
   OptionContainer:
     description: A container for displaying multiple labeled tabs of content.

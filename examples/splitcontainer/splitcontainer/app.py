@@ -26,7 +26,7 @@ class ContentControls(toga.Box):
         if self.sw_content.value:
             box = toga.Box(margin=10, background_color="cyan")
             if not self.sw_flexible.value:
-                box.style.update(width=100, height=100)
+                box.style.update(width=200, height=200)
         else:
             box = None
 
