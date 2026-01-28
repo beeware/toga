@@ -161,13 +161,11 @@ Item {
         var m = mapPins[uid]
         view.map.removeMapItem(m)
         m.destroy()
+        delete mapPins[uid]
     }
 
-    function listPins() {
-        var arr = "Array["
-        for (var k in view.map.mapItems)
-            arr += ","
-        return arr + "]"
+    function numberPins() {
+        return view.map.mapItems.length
     }
 
     function getMapRegionString() {
