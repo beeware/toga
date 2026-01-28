@@ -43,7 +43,7 @@ class MapViewProbe(SimpleProbe):
 
     @property
     def pin_count(self):
-        return self.root.listPins().count(",")
+        return self.root.numberPins()
 
     async def select_pin(self, pin):
         self.impl.bridge.pinClicked(pin.uid)
