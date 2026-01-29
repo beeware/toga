@@ -97,7 +97,7 @@ class WebView(Widget):
 
     def set_content(self, root_url, content):
         if len(content) > 2 * 1024 * 1024:
-            if not self.SUPPORTS_ON_WEBVIEW_LOAD:  # pragma: no branch
+            if not self.SUPPORTS_ON_WEBVIEW_LOAD:  # pragma: no cover
                 html = f"<html>{self.ANDROIDX_WEBKIT_MISSING_ERROR}</html>"
                 self.native.loadData(html, "text/html", "utf-8")
             else:
