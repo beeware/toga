@@ -2,7 +2,14 @@ import logging
 import warnings
 from typing import Any
 
-from PySide6.QtCore import QAbstractItemModel, QModelIndex, QPersistentModelIndex, Qt
+from PySide6.QtCore import (
+    QAbstractItemModel,
+    QItemSelection,
+    QItemSelectionModel,
+    QModelIndex,
+    QPersistentModelIndex,
+    Qt,
+)
 from PySide6.QtWidgets import QHeaderView, QTreeView
 from travertino.size import at_least
 
@@ -43,13 +50,11 @@ class TreeSourceModel(QAbstractItemModel):
         self.endInsertRows()
 
     def remove_item(self, index, item, parent=None):
-        if parent is None:
-            model_index = INVALID_INDEX
-        else:
-            model_index = self._get_index(parent)
-        self.beginRemoveRows(model_index, index, index)
+        # Have to do a complete reset or stale row references in selections
+        # cause segfaults
+        self.beginResetModel()
         # Nothing to do, removal has already happened
-        self.endRemoveRows()
+        self.endResetModel()
 
     def item_changed(self, item):
         if self._source is None:
@@ -267,7 +272,31 @@ class Tree(Widget):
     # Listener Protocol implementation
 
     def insert(self, index, item, parent=None):
+        if selection := self.get_selected():
+            self.native.clearSelection()
         self.native_model.insert_item(item=item, index=index, parent=parent)
+        if selection:
+            if self.interface.multiple_selection:
+                qt_selection = QItemSelection()
+                for node in selection:
+                    index = self.native_model._get_index(node)
+                    qt_selection.merge(
+                        QItemSelection(index, index),
+                        QItemSelectionModel.SelectionFlag.Select
+                        | QItemSelectionModel.SelectionFlag.Rows,
+                    )
+                self.native.selectionModel().select(
+                    selection,
+                    QItemSelectionModel.SelectionFlag.Select
+                    | QItemSelectionModel.SelectionFlag.Rows,
+                )
+            else:
+                index = self.native_model._get_index(selection)
+                self.native.selectionModel().select(
+                    index,
+                    QItemSelectionModel.SelectionFlag.Select
+                    | QItemSelectionModel.SelectionFlag.Rows,
+                )
 
     def change(self, item):
         self.native_model.item_changed(item)

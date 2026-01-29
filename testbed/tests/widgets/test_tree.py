@@ -695,9 +695,21 @@ async def _row_change_test(widget, probe):
     await probe.redraw("Row has been removed")
     assert probe.child_count((0,)) == 5
     probe.assert_cell_content((0, 2), 0, "A3")
-    # - Exact selection behaviour is unspecified:
-    #   either keep same row selected or clear selection
+    # - nothing should be selected
     assert widget.selection is None
+
+    # Insert a row at selection
+    # - select row
+    await probe.select_row((0, 2))
+    await probe.redraw("Row has been selected")
+    assert widget.selection == widget.data[0][2]
+    # - insert row, which is missing a B accessor
+    widget.data[0].insert(2, {"a": "AY", "c": "CY"})
+    await probe.redraw("Partial row has been appended")
+    assert probe.child_count((0,)) == 6
+    probe.assert_cell_content((0, 2), 0, "AY")
+    # - selection should move down one row
+    assert widget.selection == widget.data[0][3]
 
     # Insert a new root
     widget.data.insert(0, {"a": "A!", "b": "B!", "c": "C!"})
