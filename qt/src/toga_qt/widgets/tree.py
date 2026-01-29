@@ -272,7 +272,7 @@ class Tree(Widget):
     # Listener Protocol implementation
 
     def insert(self, index, item, parent=None):
-        if selection := self.get_selected():
+        if selection := self.get_selection():
             self.native.clearSelection()
         self.native_model.insert_item(item=item, index=index, parent=parent)
         if selection:
@@ -286,7 +286,7 @@ class Tree(Widget):
                         | QItemSelectionModel.SelectionFlag.Rows,
                     )
                 self.native.selectionModel().select(
-                    selection,
+                    qt_selection,
                     QItemSelectionModel.SelectionFlag.Select
                     | QItemSelectionModel.SelectionFlag.Rows,
                 )
