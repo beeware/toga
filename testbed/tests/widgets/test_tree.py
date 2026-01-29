@@ -683,17 +683,21 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 5), 0, "AX")
 
     # Delete a selected row
+    # - ensure row is visible
+    await probe.expand_tree()
+    await probe.redraw("Tree expanded")
+    # - select row
     await probe.select_row((0, 2))
     await probe.redraw("Row has been selected")
     assert widget.selection == widget.data[0][2]
-
+    # - delete row
     del widget.data[0][2]
     await probe.redraw("Row has been removed")
     assert probe.child_count((0,)) == 5
-    probe.assert_cell_content((0, 2), 0, "A4")
-    # Exact selection behaviour is unspecified:
-    # either keep same row selected or clear selection
-    assert widget.selection is None or widget.selection == widget.data[0][2]
+    probe.assert_cell_content((0, 2), 0, "A3")
+    # - Exact selection behaviour is unspecified:
+    #   either keep same row selected or clear selection
+    assert widget.selection is None
 
     # Insert a new root
     widget.data.insert(0, {"a": "A!", "b": "B!", "c": "C!"})
