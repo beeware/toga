@@ -367,6 +367,14 @@ UIScreen.declare_class_property("mainScreen")
 # UIScrollView.h
 UIScrollView = ObjCClass("UIScrollView")
 
+
+class UIScrollViewContentInsetAdjustmentBehavior(IntEnum):
+    Automatic = 0
+    ScrollableAxes = 1
+    Never = 2
+    Always = 3
+
+
 ######################################################################
 # UISlider.h
 UISlider = ObjCClass("UISlider")

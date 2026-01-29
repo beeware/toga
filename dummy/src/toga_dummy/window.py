@@ -98,6 +98,9 @@ class Window(LoggedObject):
         self._action("set content", widget=widget)
         self._set_value("content", widget)
 
+    def set_bleed_top(self, bleed_top):
+        self._action("set bleed top")
+
     ######################################################################
     # Window size
     ######################################################################

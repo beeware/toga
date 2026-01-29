@@ -516,3 +516,9 @@ async def test_no_content(widget, probe, content):
     widget.parent.remove(other)
     await probe.redraw("Scroll container size has been restored")
     assert probe.width == original_width
+
+
+async def test_bleed_top(main_window, widget, probe):
+    main_window.bleed_top = True
+    await probe.redraw("Top bleeding is now applied")
+    probe.assert_top_bleed()

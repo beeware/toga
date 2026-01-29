@@ -2,7 +2,7 @@ import asyncio
 
 from rubicon.objc import NSMakePoint
 
-from toga_iOS.libs import UIScrollView
+from toga_iOS.libs import SUPPORTS_LIQUID_GLASS, UIScrollView
 
 from .base import SimpleProbe
 
@@ -51,3 +51,11 @@ class ScrollContainerProbe(SimpleProbe):
             position = current
             await asyncio.sleep(0.05)
             current = self.widget.position
+
+    def assert_top_bleed(self):
+        if (
+            SUPPORTS_LIQUID_GLASS
+            and self.native.frame.origin.y == 0
+            and self.impl.container == self.widget.window._impl.container
+        ):
+            assert self.native.contentInset.top == 0

@@ -131,6 +131,7 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
 
     main_window.state = WindowState.NORMAL
     app.current_window = main_window
+    main_window.bleed_top = False
     await main_window_probe.wait_for_window(
         "Resetting main_window", state=WindowState.NORMAL
     )
