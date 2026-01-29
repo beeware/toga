@@ -205,6 +205,26 @@ async def test_static_content(widget, probe, on_load):
     )
 
 
+async def test_static_large_content(widget, probe, on_load):
+    """Static large content can be loaded into the page"""
+    large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
+    url = "https://example.com/"
+    widget.set_content(url, large_content)
+    # some platforms handle large content by loading a file from the cache folder
+    if hasattr(probe, "get_large_content_url"):  # pragma: no branch
+        url = probe.get_large_content_url(widget)
+
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static large content",
+        url=url,
+        content=large_content,
+        on_load=on_load,
+    )
+
+
 async def test_user_agent(widget, probe):
     "The user agent can be customized"
 

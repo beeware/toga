@@ -1,4 +1,6 @@
+import hashlib
 import json
+import shutil
 import webbrowser
 from http.cookiejar import Cookie, CookieJar
 
@@ -101,6 +103,15 @@ class WebView(Widget):
         # attribute to store the URL allowed by user interaction or
         # user on_navigation_starting handler
         self._allowed_url = None
+
+        # folder for temporary storing content larger than 2 MB
+        self._large_content_dir = (
+            toga.App.app.paths.cache / f"toga/webview-{self.interface.id}"
+        )
+
+    def __del__(self):  # pragma: nocover
+        """Cleaning up the cached files for large content"""
+        shutil.rmtree(self._large_content_dir, ignore_errors=True)
 
     # Any non-trivial use of the WebView requires the CoreWebView2 object to be
     # initialized, which is asynchronous. Since most of this class's methods are not
@@ -232,8 +243,20 @@ class WebView(Widget):
         if self.interface.on_navigation_starting._raw:
             # mark URL as being allowed
             self._allowed_url = "about:blank"
-        # There appears to be no way to pass the root_url.
-        self.native.NavigateToString(content)
+        if len(content) > 1572834:
+            # according to the Microsoft documentation, the max content size is
+            # 2 MB, but in fact, the limit seems to be at about 1.5 MB
+            self._large_content_dir.mkdir(parents=True, exist_ok=True)
+            h = hashlib.new("sha1")
+            h.update(bytes(self.interface.id, "utf-8"))
+            h.update(bytes(root_url, "utf-8"))
+            file_name = h.hexdigest() + ".html"
+            file_path = self._large_content_dir / file_name
+            file_path.write_text(content, encoding="utf-8")
+            self.set_url(file_path.as_uri())
+        else:
+            # There appears to be no way to pass the root_url.
+            self.native.NavigateToString(content)
 
     def get_user_agent(self):
         if self.corewebview2_available:

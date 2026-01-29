@@ -1,10 +1,13 @@
+import hashlib
 import json
+import shutil
 from http.cookiejar import CookieJar
 
 from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from java import dynamic_proxy
 from java.lang import NoClassDefFoundError
 
+import toga
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
 from .base import Widget
@@ -35,6 +38,11 @@ class WebView(Widget):
         'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
         "`build_gradle_extra_content` section of pyproject.toml?"
     )
+    ANDROIDX_WEBKIT_MISSING_ERROR = (
+       "Can't set content larger than 2 MB; Have you added chaquopy."
+       'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
+       "`build_gradle_extra_content` section of pyproject.toml?"
+    )
 
     def create(self):
         self.native = A_WebView(self._native_activity)
@@ -63,6 +71,17 @@ class WebView(Widget):
         self.settings.setBuiltInZoomControls(True)
         self.settings.setDisplayZoomControls(False)
 
+        # folder for temporary storing content larger than 2 MB
+        self._large_content_dir = (
+            toga.App.app.paths.cache / f"toga/webview-{self.interface.id}"
+        )
+        # base URL for accessing the cached files
+        self._large_content_base_url = f"https://appassets.androidplatform.net/cache/toga/webview-{self.interface.id}/"
+
+    def __del__(self):  # pragma: nocover
+        """Cleaning up the cached files for large content"""
+        shutil.rmtree(self._large_content_dir, ignore_errors=True)
+
     def get_url(self):
         url = self.native.getUrl()
         if url == "about:blank" or url.startswith("data:"):
@@ -77,10 +96,24 @@ class WebView(Widget):
         self.native.loadUrl(value)
 
     def set_content(self, root_url, content):
-        # There is a loadDataWithBaseURL method, but it's inconsistent about whether
-        # getUrl returns the given URL or a data: URL. Rather than support this feature
-        # intermittently, it's better to not support it at all.
-        self.native.loadData(content, "text/html", "utf-8")
+        if len(content) > 2 * 1024 * 1024:
+            if not self.SUPPORTS_ON_WEBVIEW_LOAD:  # pragma: no branch
+                html = f"<html>{ANDROIDX_WEBKIT_MISSING_ERROR}</html>"
+                self.native.loadData(html, "text/html", "utf-8")
+            else:
+                self._large_content_dir.mkdir(parents=True, exist_ok=True)
+                h = hashlib.new("sha1")
+                h.update(bytes(self.interface.id, "utf-8"))
+                h.update(bytes(root_url, "utf-8"))
+                file_name = h.hexdigest() + ".html"
+                file_path = self._large_content_dir / file_name
+                file_path.write_text(content, encoding="utf-8")
+                self.set_url(self._large_content_base_url + file_name)
+        else:
+            # There is a loadDataWithBaseURL method, but it's inconsistent about
+            # whether getUrl returns the given URL or a data: URL. Rather than support
+            # this feature intermittently, it's better to not support it at all.
+            self.native.loadData(content, "text/html", "utf-8")
 
     def get_user_agent(self):
         return self.settings.getUserAgentString()
