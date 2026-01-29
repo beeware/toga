@@ -47,7 +47,7 @@ class Widget:
         return native
 
     def create(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def set_app(self, app):
         pass
