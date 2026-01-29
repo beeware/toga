@@ -115,7 +115,6 @@ Widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   MultilineTextInput:
     description: A scrollable panel for displaying and editing multiple lines of text.

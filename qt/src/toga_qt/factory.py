@@ -20,6 +20,7 @@ try:
     from .widgets.divider import Divider
     from .widgets.imageview import ImageView
     from .widgets.label import Label
+    from .widgets.mapview import MapView
     from .widgets.multilinetextinput import MultilineTextInput
     from .widgets.numberinput import NumberInput
     from .widgets.optioncontainer import OptionContainer
@@ -65,6 +66,7 @@ __all__ = [
     "Container",
     "Box",
     "Label",
+    "MapView",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
