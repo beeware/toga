@@ -30,7 +30,7 @@ class shorthand_property:
         return tuple(style[name] for name in self.property_names)
 
     def __set__(self, style, value):
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def __delete__(self, style):
         with style.batch_apply():

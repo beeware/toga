@@ -88,7 +88,7 @@ class Color:
         return self._a
 
     @property
-    def rgb(self) -> rgb:  # pragma: no cover
+    def rgb(self) -> rgb:
         """This color in RGB format. If it's already RGB, returns the object itself.
 
         Also accessible via the alias `rgba`.
@@ -100,7 +100,7 @@ class Color:
         return self.rgb
 
     @property
-    def hsl(self) -> hsl:  # pragma: no cover
+    def hsl(self) -> hsl:
         """This color in HSL format. If it's already HSL, returns the object itself.
 
         Also accessible via the alias `rgba`.
