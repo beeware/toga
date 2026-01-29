@@ -682,6 +682,18 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 4), 0, "A4")
     probe.assert_cell_content((0, 5), 0, "AX")
 
+    # Delete a selected row
+    await probe.select_row((0, 2))
+    await probe.redraw("Row has been selected")
+    assert widget.selection == widget.data[0][2]
+
+    del widget.data[0][2]
+    await probe.redraw("Row has been removed")
+    assert probe.child_count((0,)) == 5
+    probe.assert_cell_content((0, 2), 0, "A4")
+    # Would like to assert this, but behaviour is unspecified
+    assert widget.selection is None
+
     # Insert a new root
     widget.data.insert(0, {"a": "A!", "b": "B!", "c": "C!"})
     await probe.redraw("New root row has been appended")
