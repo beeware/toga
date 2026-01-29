@@ -1,5 +1,5 @@
-import urllib
 import os
+import urllib
 
 from Microsoft.Web.WebView2.WinForms import WebView2
 

@@ -6,7 +6,6 @@ from android.webkit import (
     WebView as A_WebView,
     WebViewClient,
 )
-from androidx.webkit import WebViewAssetLoader
 from java import Override, dynamic_proxy, jboolean, jvoid, static_proxy
 from java.io import FileInputStream
 from java.lang import String as jstring
@@ -15,22 +14,10 @@ import toga
 
 from ..base import suppress_reference_error
 
-
-class TogaCachePathHandler(dynamic_proxy(WebViewAssetLoader.PathHandler)):
-    def __init__(self, webclient):
-        super().__init__()
-        self.webclient = webclient
-
-    @Override(WebResourceResponse, [jstring])
-    # This method is called in a separate thread and therefore not recognized
-    # by the coverage test
-    def handle(self, path):  # pragma no cover
-        filepath = toga.App.app.paths.cache / path
-        if filepath.exists():
-            return WebResourceResponse(
-                "text/html", "utf-8", FileInputStream(str(filepath))
-            )
-        return None
+try:
+    from androidx.webkit import WebViewAssetLoader
+except ImportError:  # pragma: no cover
+    WebViewAssetLoader = None
 
 
 class TogaWebClient(static_proxy(WebViewClient)):
@@ -73,3 +60,20 @@ class TogaWebClient(static_proxy(WebViewClient)):
     # by the coverage test
     def shouldInterceptRequest(self, webview, request):  # pragma no cover
         return self.cache_assetLoader.shouldInterceptRequest(request.getUrl())
+
+
+class TogaCachePathHandler(dynamic_proxy(WebViewAssetLoader.PathHandler)):
+    def __init__(self, webclient):
+        super().__init__()
+        self.webclient = webclient
+
+    @Override(WebResourceResponse, [jstring])
+    # This method is called in a separate thread and therefore not recognized
+    # by the coverage test
+    def handle(self, path):  # pragma no cover
+        filepath = toga.App.app.paths.cache / path
+        if filepath.exists():
+            return WebResourceResponse(
+                "text/html", "utf-8", FileInputStream(str(filepath))
+            )
+        return None

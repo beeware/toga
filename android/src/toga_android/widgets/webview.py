@@ -39,9 +39,9 @@ class WebView(Widget):
         "`build_gradle_extra_content` section of pyproject.toml?"
     )
     ANDROIDX_WEBKIT_MISSING_ERROR = (
-       "Can't set content larger than 2 MB; Have you added chaquopy."
-       'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
-       "`build_gradle_extra_content` section of pyproject.toml?"
+        "Can't set content larger than 2 MB; Have you added chaquopy."
+        'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
+        "`build_gradle_extra_content` section of pyproject.toml?"
     )
 
     def create(self):
@@ -98,7 +98,7 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         if len(content) > 2 * 1024 * 1024:
             if not self.SUPPORTS_ON_WEBVIEW_LOAD:  # pragma: no branch
-                html = f"<html>{ANDROIDX_WEBKIT_MISSING_ERROR}</html>"
+                html = f"<html>{self.ANDROIDX_WEBKIT_MISSING_ERROR}</html>"
                 self.native.loadData(html, "text/html", "utf-8")
             else:
                 self._large_content_dir.mkdir(parents=True, exist_ok=True)

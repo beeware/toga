@@ -1,5 +1,5 @@
-import urllib
 import os
+import urllib
 
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
