@@ -38,6 +38,11 @@ class WebView(Widget):
         'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
         "`build_gradle_extra_content` section of pyproject.toml?"
     )
+    ANDROIDX_WEBKIT_MISSING_ERROR = (
+       "Can't set content larger than 2 MB; Have you added chaquopy."
+       'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
+       "`build_gradle_extra_content` section of pyproject.toml?"
+    )
 
     def create(self):
         self.native = A_WebView(self._native_activity)
@@ -92,14 +97,18 @@ class WebView(Widget):
 
     def set_content(self, root_url, content):
         if len(content) > 2 * 1024 * 1024:
-            self._large_content_dir.mkdir(parents=True, exist_ok=True)
-            h = hashlib.new("sha1")
-            h.update(bytes(self.interface.id, "utf-8"))
-            h.update(bytes(root_url, "utf-8"))
-            file_name = h.hexdigest() + ".html"
-            file_path = self._large_content_dir / file_name
-            file_path.write_text(content, encoding="utf-8")
-            self.set_url(self._large_content_base_url + file_name)
+            if not self.SUPPORTS_ON_WEBVIEW_LOAD:  # pragma: no branch
+                html = f"<html>{ANDROIDX_WEBKIT_MISSING_ERROR}</html>"
+                self.native.loadData(html, "text/html", "utf-8")
+            else:
+                self._large_content_dir.mkdir(parents=True, exist_ok=True)
+                h = hashlib.new("sha1")
+                h.update(bytes(self.interface.id, "utf-8"))
+                h.update(bytes(root_url, "utf-8"))
+                file_name = h.hexdigest() + ".html"
+                file_path = self._large_content_dir / file_name
+                file_path.write_text(content, encoding="utf-8")
+                self.set_url(self._large_content_base_url + file_name)
         else:
             # There is a loadDataWithBaseURL method, but it's inconsistent about
             # whether getUrl returns the given URL or a data: URL. Rather than support

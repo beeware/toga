@@ -1,3 +1,4 @@
+import urllib
 import os
 
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -17,4 +18,4 @@ class WebViewProbe(SimpleProbe):
     def get_large_content_url(self, widget):
         for f in os.listdir(widget._impl._large_content_dir):
             p = widget._impl._large_content_dir / f
-        return p.as_uri().replace("%20", " ")
+        return urllib.parse.unquote(p.as_uri())
