@@ -113,7 +113,7 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 
 @pytest.fixture
-def headerless_widget(source, on_select_handler):
+async def headerless_widget(source, on_select_handler):
     skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
         data=source,
@@ -139,7 +139,7 @@ async def headerless_probe(main_window, headerless_widget):
 
 
 @pytest.fixture
-def multiselect_widget(source, on_select_handler):
+async def multiselect_widget(source, on_select_handler):
     # Although Android *has* a table implementation, it needs to be rebuilt.
     skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
@@ -682,6 +682,23 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 4), 0, "A4")
     probe.assert_cell_content((0, 5), 0, "AX")
 
+    # Delete a selected row
+    # - ensure row is visible
+    await probe.expand_tree()
+    await probe.redraw("Tree expanded")
+    # - select row
+    await probe.select_row((0, 2))
+    await probe.redraw("Row has been selected")
+    assert widget.selection == widget.data[0][2]
+    # - delete row
+    del widget.data[0][2]
+    await probe.redraw("Row has been removed")
+    assert probe.child_count((0,)) == 5
+    probe.assert_cell_content((0, 2), 0, "A3")
+    # - Exact selection behaviour is unspecified:
+    #   either keep same row selected or clear selection
+    assert widget.selection is None
+
     # Insert a new root
     widget.data.insert(0, {"a": "A!", "b": "B!", "c": "C!"})
     await probe.redraw("New root row has been appended")
@@ -863,8 +880,9 @@ async def test_cell_widget(widget, probe):
     with warning_check:
         widget.data = data
 
-    await probe.expand_tree()
-    await probe.redraw("Tree has data with widgets")
+        # Qt backend doesn't know there are widgets until the row is expanded
+        await probe.expand_tree()
+        await probe.redraw("Tree has data with widgets")
 
     probe.assert_cell_content((0, 0), 0, "A0")
     probe.assert_cell_content((0, 0), 1, "B0")
