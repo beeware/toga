@@ -23,7 +23,6 @@ Item {
 
         map {
             id: map
-
             plugin: Plugin {
                 name: "osm"
                 parameters: [
@@ -113,6 +112,10 @@ Item {
         }
     }
 
+    // Below, those functions are needed because the Python/C++ side
+    // does not know about the MapView or our component types, resulting
+    // in conversion errors.
+
     function setCenter(lat, lon) {
         view.map.center = QtPositioning.coordinate(lat, lon)
     }
@@ -129,45 +132,24 @@ Item {
         return view.map.zoomLevel
     }
 
-    function addPin(uid, lat, lon, title, subtitle) {
-        if (mapPins[uid])
-            return
-
-        var obj = markerComponent.createObject(view.map, {
-            uid: uid,
-            coordinate: QtPositioning.coordinate(lat, lon),
-            title: title || "",
-            subtitle: subtitle || ""
-        })
-        view.map.addMapItem(obj)
-
-        mapPins[uid] = obj
-        return
+    function makePin() {
+        return markerComponent.createObject(view.map)
     }
 
-    function updatePin(uid, lat, lon, title, subtitle) {
-        var m = mapPins[uid]
-        if (!m)
-            return
-
-        if (lat !== undefined && lon !== undefined)
-            m.coordinate = QtPositioning.coordinate(lat, lon)
-
-        if (title !== undefined) m.title = title
-        if (subtitle !== undefined) m.subtitle = subtitle
+    function attachPin(pin) {
+        view.map.addMapItem(pin)
     }
 
-    function removePin(uid) {
-        var m = mapPins[uid]
-        view.map.removeMapItem(m)
-        m.destroy()
+    function detachPin(pin) {
+        view.map.removeMapItem(pin)
     }
 
-    function listPins() {
-        var arr = "Array["
-        for (var k in view.map.mapItems)
-            arr += ","
-        return arr + "]"
+    function deleteUid(uid) {
+        delete mapPins[uid]
+    }
+
+    function numberPins() {
+        return view.map.mapItems.length
     }
 
     function getMapRegionString() {

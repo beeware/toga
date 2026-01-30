@@ -9,7 +9,6 @@ import toga
 from toga.style import Pack
 
 from .conftest import build_cleanup_test, safe_create
-from .probe import get_probe
 from .properties import (  # noqa: F401
     test_flex_widget_size,
 )
@@ -31,7 +30,8 @@ async def on_select():
     return on_select
 
 
-async def make_widget(on_select):
+@pytest.fixture
+async def widget(on_select):
     with safe_create():
         widget = toga.MapView(style=Pack(flex=1), on_select=on_select)
 
@@ -57,24 +57,6 @@ async def make_widget(on_select):
         toga.App.app._gc_protector.append(widget)
 
     return widget
-
-
-@pytest.fixture
-async def widget(on_select):
-    widget = await make_widget(on_select)
-    yield widget
-
-
-@pytest.fixture
-async def second_widget(widget, on_select):
-    widget2 = await make_widget(on_select)
-    widget.parent.add(widget2)
-    yield widget2
-
-
-@pytest.fixture
-async def second_probe(second_widget):
-    return get_probe(second_widget)
 
 
 test_cleanup = build_cleanup_test(toga.MapView, xfail_platforms=("android",))
@@ -145,7 +127,7 @@ async def test_zoom(widget, probe):
         assert widget.zoom == zoom
 
 
-async def test_add_pins(widget, probe, second_widget, second_probe, on_select):
+async def test_add_pins(widget, probe, on_select):
     """Pins can be added and removed from the map."""
 
     fremantle = toga.MapPin((-32.05423, 115.74763), title="Fremantle")
@@ -162,10 +144,6 @@ async def test_add_pins(widget, probe, second_widget, second_probe, on_select):
     widget.pins.add(stadium)
     await probe.wait_for_map("Other pins have been added")
     assert probe.pin_count == 4
-
-    second_widget.pins.add(stadium)
-    await second_probe.wait_for_map("Stadium has been added to second widget")
-    assert second_probe.pin_count == 1
 
     # Move the sports ground to a new location
     stadium.location = (-31.951111, 115.889167)

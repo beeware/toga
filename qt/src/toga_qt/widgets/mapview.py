@@ -2,6 +2,7 @@ import uuid
 from pathlib import Path
 
 from PySide6.QtCore import QObject, Signal, Slot
+from PySide6.QtPositioning import QGeoCoordinate
 from PySide6.QtQuickWidgets import QQuickWidget
 from travertino.size import at_least
 
@@ -42,22 +43,38 @@ class MapView(Widget):
         return value
 
     def add_pin(self, pin):
-        if not hasattr(pin, "uid") or not pin.uid:
-            pin.uid = str(uuid.uuid4())
-
-        self.native.rootObject().addPin(
-            pin.uid, pin.location[0], pin.location[1], pin.title, pin.subtitle
+        pin.uid = str(uuid.uuid4())
+        marker_obj = self.native.rootObject().makePin()
+        marker_obj.setProperty("uid", pin.uid)
+        marker_obj.setProperty("title", pin.title)
+        marker_obj.setProperty("subtitle", pin.subtitle or "")
+        marker_obj.setProperty(
+            "coordinate", QGeoCoordinate(pin.location[0], pin.location[1])
+        )
+        self.native.rootObject().property("mapPins").setProperty(
+            pin.uid, self.native.engine().toScriptValue(marker_obj)
+        )
+        self.native.rootObject().attachPin(
+            self.native.engine().toScriptValue(marker_obj)
         )
         self.pins[pin.uid] = pin
 
     def update_pin(self, pin):
-        self.native.rootObject().updatePin(
-            pin.uid, pin.location[0], pin.location[1], pin.title, pin.subtitle
+        pinobj = self.native.rootObject().property("mapPins").property(pin.uid)
+        pinobj.setProperty("title", pin.title)
+        pinobj.setProperty("subtitle", pin.subtitle or "")
+        pinobj.setProperty(
+            "coordinate",
+            self.native.engine().toScriptValue(
+                QGeoCoordinate(pin.location[0], pin.location[1])
+            ),
         )
 
     def remove_pin(self, pin):
-        self.native.rootObject().removePin(pin.uid)
-        del self.pins[pin.uid]
+        self.native.rootObject().detachPin(
+            self.native.rootObject().property("mapPins").property(pin.uid)
+        )
+        self.native.rootObject().deleteUid(pin.uid)
 
     def set_location(self, position):
         lat, lon = position
@@ -73,8 +90,7 @@ class MapView(Widget):
         return self.native.rootObject().getZoom()
 
     def _on_pin_clicked(self, uid):
-        pin = self.pins.get(uid)
-        self.interface.on_select(pin=pin)
+        self.interface.on_select(pin=self.pins[uid])
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
