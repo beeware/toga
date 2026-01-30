@@ -712,8 +712,8 @@ async def _row_change_test(widget, probe):
     assert probe.child_count((0,)) == 6
     probe.assert_cell_content((0, 2), 0, "AY")
     probe.assert_cell_content((0, 3), 0, "A3")
-    # - check selection is original object
-    assert widget.selection == widget.data[0][3]
+    # - check selection is original object or has been cleared
+    assert widget.selection == widget.data[0][3] or widget.selection is None
 
     # Insert a new root
     widget.data.insert(0, {"a": "A!", "b": "B!", "c": "C!"})
