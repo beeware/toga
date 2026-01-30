@@ -41,13 +41,11 @@ class TreeSourceModel(QAbstractItemModel):
         self.endResetModel()
 
     def insert_item(self, index, item, parent=None):
-        if parent is None:
-            model_index = INVALID_INDEX
-        else:
-            model_index = self._get_index(parent)
-        self.beginInsertRows(model_index, index, index)
+        # Have to do a complete reset or stale row references in selections
+        # give incorrect results
+        self.beginResetModel()
         # Nothing to do, insertion has already happened
-        self.endInsertRows()
+        self.endResetModel()
 
     def remove_item(self, index, item, parent=None):
         # Have to do a complete reset or stale row references in selections
@@ -272,28 +270,51 @@ class Tree(Widget):
     # Listener Protocol implementation
 
     def insert(self, index, item, parent=None):
-        if selection := self.get_selection():
+        # Get the selection before we tell the table to update
+        # Note that this is not 100% correct, as the items grabbed will be after
+        # the new node has been inserted into the data.
+        selection = self.interface.selection
+        # Clear the selection
+        if selection is not None and selection != []:
             self.native.clearSelection()
+        # Tell the model to update
         self.native_model.insert_item(item=item, index=index, parent=parent)
-        if selection:
-            if self.interface.multiple_selection:
+        if selection is not None and selection != []:
+            if self.interface.multiple_select:
+                # Build the new selection
                 qt_selection = QItemSelection()
                 for node in selection:
-                    index = self.native_model._get_index(node)
+                    model_index = self.native_model._get_index(node)
+                    # if the node is after the inserted item, the correct node
+                    # is one row further down
+                    if node._parent == parent:
+                        if parent is not None and parent.index(node) >= index:
+                            model_index = model_index.sibling(model_index.row() + 1, 0)
+                        elif self.interface.data.index(node) >= index:
+                            model_index = model_index.sibling(model_index.row() + 1, 0)
+                    # Merge the row into the selection
                     qt_selection.merge(
-                        QItemSelection(index, index),
+                        QItemSelection(model_index, model_index),
                         QItemSelectionModel.SelectionFlag.Select
                         | QItemSelectionModel.SelectionFlag.Rows,
                     )
+                # Select
                 self.native.selectionModel().select(
                     qt_selection,
                     QItemSelectionModel.SelectionFlag.Select
                     | QItemSelectionModel.SelectionFlag.Rows,
                 )
             else:
-                index = self.native_model._get_index(selection)
+                model_index = self.native_model._get_index(selection)
+                # if the node is after the inserted item, the correct node
+                # is one row further down
+                if selection._parent == parent:
+                    if parent is not None and parent.index(selection) >= index:
+                        model_index = model_index.sibling(model_index.row() + 1, 0)
+                    elif self.interface.data.index(selection) >= index:
+                        model_index = model_index.sibling(model_index.row() + 1, 0)
                 self.native.selectionModel().select(
-                    index,
+                    model_index,
                     QItemSelectionModel.SelectionFlag.Select
                     | QItemSelectionModel.SelectionFlag.Rows,
                 )
