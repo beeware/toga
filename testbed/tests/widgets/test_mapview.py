@@ -48,6 +48,8 @@ async def widget(on_select):
         # All other implementations still need a second to load map tiles etc.
         await asyncio.sleep(1)
 
+    yield widget
+
     if toga.backend == "toga_gtk":
         # On Gtk, ensure that the MapView evades garbage collection by keeping a
         # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
@@ -55,8 +57,6 @@ async def widget(on_select):
         # garbage collection for the WebView can run in either thread, just defer GC
         # for it until after the testing thread has joined.
         toga.App.app._gc_protector.append(widget)
-
-    return widget
 
 
 test_cleanup = build_cleanup_test(toga.MapView, xfail_platforms=("android",))
