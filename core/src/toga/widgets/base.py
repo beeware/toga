@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from builtins import id as identifier
 from os import environ
 from typing import TYPE_CHECKING, Any, TypeVar
@@ -41,7 +42,7 @@ DEBUG_BACKGROUND_PALETTE = [
 ]
 
 
-class Widget(Node, PackMixin):
+class Widget(Node, PackMixin, ABC):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
 
@@ -122,6 +123,12 @@ class Widget(Node, PackMixin):
 
         A subclass of Widget should redefine this method to return its implementation.
         """
+        ##################################################################
+        # 2024-12: Backwards compatibility for Toga < 0.5.0
+        ##################################################################
+
+        # When this is removed, _create can be decorated as @abstractmethod.
+
         warn(
             (
                 "Widgets should create and return their implementation in ._create(). "
@@ -130,6 +137,10 @@ class Widget(Node, PackMixin):
             RuntimeWarning,
             stacklevel=2,
         )
+
+        #############################
+        # End backwards compatibility
+        #############################
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"

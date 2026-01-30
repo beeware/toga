@@ -24,12 +24,10 @@ class TogaPickerClickListener(dynamic_proxy(View.OnClickListener)):
 class PickerBase(TextViewWidget, ABC):
     @classmethod
     @abstractmethod
-    def _get_icon(cls):
-        raise NotImplementedError
+    def _get_icon(cls): ...
 
     @abstractmethod
-    def _create_dialog(self):
-        raise NotImplementedError
+    def _create_dialog(self): ...
 
     def create(self):
         self._dialog = self._create_dialog()

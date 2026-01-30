@@ -21,8 +21,7 @@ class Scalable(ABC):
 
     @property
     @abstractmethod
-    def dpi_scale(self):
-        raise NotImplementedError()
+    def dpi_scale(self): ...
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):

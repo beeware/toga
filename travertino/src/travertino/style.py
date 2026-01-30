@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Mapping
 from contextlib import contextmanager
@@ -19,7 +20,7 @@ _DEPRECATION_MSG = (
 )
 
 
-class BaseStyle:
+class BaseStyle(ABC):
     """A base class for style declarations.
 
     Exposes a dict-like interface. Designed for subclasses to be decorated
@@ -157,11 +158,13 @@ class BaseStyle:
     # Interface that style declarations must define
     ######################################################################
 
+    @abstractmethod
     def _apply(self, names: set):
-        raise NotImplementedError("Style must define an _apply method")
+        """Apply the properties whose names are supplied."""
 
+    @abstractmethod
     def layout(self, viewport):
-        raise NotImplementedError("Style must define a layout method")
+        """Lay out this style's node in the supplied viewport."""
 
     ######################################################################
     # Support for batching calls to apply()
