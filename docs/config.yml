@@ -30,6 +30,7 @@ extra:
   "not_supported": ^&#x274C;^
   "fully_supported": ●
   "partly_supported": ○
+  generator: false
 
 extra_css:
   - stylesheets/toga.css
@@ -42,6 +43,8 @@ theme:
   features:
     - content.tabs.link
     - toc.follow
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.indexes
     - navigation.footer
     - search.suggest
@@ -87,6 +90,7 @@ markdown_extensions:
     title: On this page
   attr_list: {}
   footnotes: {}
+  admonition: {}
 
 plugins:
   search: {}
