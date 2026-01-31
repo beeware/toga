@@ -24,10 +24,15 @@ class TogaWebClient(static_proxy(WebViewClient)):
     def __init__(self, impl):
         self.impl = weakref.proxy(impl)
         self.interface = weakref.proxy(impl.interface)
-        pathHandler = TogaCachePathHandler(self)
-        self.cache_assetLoader = (
-            WebViewAssetLoader.Builder().addPathHandler("/cache/", pathHandler).build()
-        )
+        if WebViewAssetLoader is not None:
+            pathHandler = TogaCachePathHandler(self)
+            self.cache_assetLoader = (
+                WebViewAssetLoader.Builder()
+                .addPathHandler("/cache/", pathHandler)
+                .build()
+            )
+        else:
+            self.cache_assetLoader = None
         super().__init__()
 
     @Override(jboolean, [A_WebView, WebResourceRequest])

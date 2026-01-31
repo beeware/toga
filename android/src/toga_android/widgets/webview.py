@@ -30,18 +30,20 @@ class ReceiveString(dynamic_proxy(ValueCallback)):
 class WebView(Widget):
     ON_NAVIGATION_CONFIG_MISSING_ERROR = (
         "Can't add a WebView.on_navigation_starting handler; Have you added chaquopy."
-        'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
+        'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the '
         "`build_gradle_extra_content` section of pyproject.toml?"
     )
     ON_LOAD_CONFIG_MISSING_ERROR = (
         "Can't add a WebView.on_webview_load handler; Have you added chaquopy."
-        'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
+        'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the '
         "`build_gradle_extra_content` section of pyproject.toml?"
     )
     ANDROIDX_WEBKIT_MISSING_ERROR = (
         "Can't set content larger than 2 MB; Have you added chaquopy."
-        'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
-        "`build_gradle_extra_content` section of pyproject.toml?"
+        'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the '
+        "`build_gradle_extra_content` section of pyproject.toml? You also need "
+        'the addition of `"androidx.webkit:webkit:1.15.0"` to the '
+        "`build_gradle_dependencies` section."
     )
 
     def create(self):
@@ -52,16 +54,16 @@ class WebView(Widget):
 
             self.SUPPORTS_ON_NAVIGATION_STARTING = True
             self.SUPPORTS_ON_WEBVIEW_LOAD = True
-            client = TogaWebClient(self)
+            self.client = TogaWebClient(self)
         except NoClassDefFoundError:  # pragma: no cover
             # Briefcase configuration hasn't declared a static proxy
             self.SUPPORTS_ON_NAVIGATION_STARTING = False
             self.SUPPORTS_ON_WEBVIEW_LOAD = False
-            client = WebViewClient()
+            self.client = WebViewClient()
 
         # Set a WebViewClient so that new links open in this activity,
         # rather than triggering the phone's web browser.
-        self.native.setWebViewClient(client)
+        self.native.setWebViewClient(self.client)
 
         self.settings = self.native.getSettings()
         self.default_user_agent = self.settings.getUserAgentString()
@@ -97,7 +99,10 @@ class WebView(Widget):
 
     def set_content(self, root_url, content):
         if len(content) > 2 * 1024 * 1024:
-            if not self.SUPPORTS_ON_WEBVIEW_LOAD:  # pragma: no cover
+            if (
+                type(self.client) is WebViewClient
+                or self.client.cache_assetLoader is None
+            ):  # pragma: no cover
                 html = f"<html>{self.ANDROIDX_WEBKIT_MISSING_ERROR}</html>"
                 self.native.loadData(html, "text/html", "utf-8")
             else:
