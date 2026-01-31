@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import InitVar, dataclass, fields, is_dataclass
 from enum import Enum
 from math import pi
@@ -50,7 +51,7 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 ######################################################################
 
 
-class DrawingAction:
+class DrawingAction(ABC):
     """A drawing operation in a [`State`][toga.widgets.canvas.State].
 
     Every state drawing method creates a `DrawingAction`, adds it to the state,
@@ -105,9 +106,9 @@ class DrawingAction:
 
         return f"{type(self).__name__}({parenthetical})"
 
+    @abstractmethod
     def _draw(self, context: Any) -> None:
         """Called by parent state to execute this drawing action."""
-        raise NotImplementedError
 
 
 class color_property:

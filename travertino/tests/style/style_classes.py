@@ -21,6 +21,12 @@ VALUES = [VALUE1, VALUE2, VALUE3, None]
 @mock_apply
 @dataclass(kw_only=True, repr=False)
 class Style(BaseStyle):
+    def _apply(self, names):
+        pass
+
+    def layout(self, viewport):
+        pass
+
     #############################
     # Simple validated properties
     #############################
@@ -118,7 +124,11 @@ with catch_warnings():
 
     @mock_apply
     class DeprecatedStyle(BaseStyle):
-        pass
+        def _apply(self, names):
+            pass
+
+        def layout(self, viewport):
+            pass
 
     # Some properties with explicit initial values
     DeprecatedStyle.validated_property(

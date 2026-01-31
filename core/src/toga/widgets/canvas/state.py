@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from contextlib import contextmanager
 from math import pi
@@ -42,11 +43,11 @@ if TYPE_CHECKING:
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 
-class DrawingActionDispatch:
+class DrawingActionDispatch(ABC):
     @property
+    @abstractmethod
     def _action_target(self):
         """The State that should receive the drawing actions."""
-        raise NotImplementedError()
 
     ###########################################################################
     # Path manipulation

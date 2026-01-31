@@ -24,6 +24,9 @@ class Style(BaseStyle):
     class Box(BaseBox):
         pass
 
+    def _apply(self, names):
+        pass
+
     def layout(self, viewport):
         # A simple layout scheme that allocates twice the viewport size.
         self._applicator.node.layout.content_width = viewport.width * 2
@@ -33,6 +36,9 @@ class Style(BaseStyle):
 @mock_apply
 @dataclass(kw_only=True, repr=False)
 class OldStyle(Style):
+    def _apply(self, names):
+        pass
+
     # Uses two-argument layout(), as in Toga <= 0.4.8
     def layout(self, node, viewport):
         # A simple layout scheme that allocates twice the viewport size.
@@ -50,6 +56,9 @@ class BrokenStyle(BaseStyle):
     class Box(BaseBox):
         pass
 
+    def _apply(self, names):
+        pass
+
     def layout(self, viewport):
         # A simple layout scheme that allocates twice the viewport size.
         self._applicator.node.layout.content_width = viewport.width * 2
@@ -64,8 +73,14 @@ class AttributeTestStyle(BaseStyle):
     class Box(BaseBox):
         pass
 
+    def _apply(self, names):
+        pass
+
     def apply(self):
         assert self._applicator.node.style is self
+
+    def layout(self, viewport):
+        pass
 
 
 def test_create_leaf():
