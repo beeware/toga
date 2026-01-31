@@ -31,7 +31,7 @@ class TogaWebClient(static_proxy(WebViewClient)):
                 .addPathHandler("/cache/", pathHandler)
                 .build()
             )
-        else:
+        else:  # pragma: no cover
             self.cache_assetLoader = None
         super().__init__()
 
