@@ -3,7 +3,7 @@ import asyncio
 from rubicon.objc import objc_id, send_message
 
 from toga.constants import WindowState
-from toga_cocoa.libs import NSWindow, NSWindowStyleMask
+from toga_cocoa.libs import SUPPORTS_LIQUID_GLASS, NSWindow, NSWindowStyleMask
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -34,7 +34,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         message,
         state=None,
     ):
-        await self.redraw(message, delay=0.1)
+        await self.redraw(message, delay=0.11)
 
         if state:
             timeout = 5
@@ -75,10 +75,23 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def content_size(self):
-        return (
-            self.impl.container.native.frame.size.width,
-            self.impl.container.native.frame.size.height,
-        )
+        if self.impl.get_window_state(True) == WindowState.PRESENTATION:
+            return (
+                self.impl.container.native.frame.size.width,
+                self.impl.container.native.frame.size.height,
+            )
+        elif self.impl.get_window_state(True) == WindowState.FULLSCREEN or not (
+            SUPPORTS_LIQUID_GLASS and self.window.bleed_top
+        ):
+            return (
+                self.native.contentLayoutRect.size.width,
+                self.native.contentLayoutRect.size.height,
+            )
+        else:
+            return (
+                self.impl.container.native.frame.size.width,
+                self.impl.container.native.frame.size.height,
+            )
 
     @property
     def is_resizable(self):
@@ -159,3 +172,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def _setup_file_dialog_result(self, dialog, result):
         # Closing a window modal file dialog is the same as alerts.
         self._setup_alert_dialog_result(dialog, result)
+
+    def assert_top_bleed(self):
+        if SUPPORTS_LIQUID_GLASS:
+            assert self.impl.container.top_inset == 0

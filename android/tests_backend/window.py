@@ -115,3 +115,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     def press_toolbar_button(self, index):
         self.native.onOptionsItemSelected(self._toolbar_items()[index])
+
+    def assert_top_bleed(self):
+        pass

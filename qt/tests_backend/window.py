@@ -118,3 +118,6 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self.window._impl.toolbar_native.actions()[index].trigger()
+
+    def assert_top_bleed(self):
+        pass

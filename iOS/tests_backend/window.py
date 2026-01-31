@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from toga_iOS.libs import UIWindow
+from toga_iOS.libs import SUPPORTS_LIQUID_GLASS, UIWindow
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -93,3 +93,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     def has_toolbar(self):
         pytest.skip("Toolbars not implemented on iOS")
+
+    def assert_top_bleed(self):
+        if SUPPORTS_LIQUID_GLASS:
+            assert self.impl.container.top_inset == 0

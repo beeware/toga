@@ -181,6 +181,14 @@ def test_change_content(window, app):
     assert content1.window is None
 
 
+def test_bleed_top(window):
+    """The bleed top of a window can be changed."""
+    window.bleed_top = True
+
+    assert window.bleed_top
+    assert_action_performed_with(window, "set bleed top")
+
+
 def test_set_position(window):
     """The position of the window can be set."""
     window.position = (123, 456)

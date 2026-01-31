@@ -1,5 +1,6 @@
 from rubicon.objc import (
     SEL,
+    CGRectMake,
     CGSize,
     NSMakeRect,
     NSPoint,
@@ -14,8 +15,10 @@ from toga.types import Position, Size
 from toga.window import _initial_position
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
+    SUPPORTS_LIQUID_GLASS,
     NSBackingStoreBuffered,
     NSImage,
+    NSKeyValueObservingOptions,
     NSMutableArray,
     NSMutableDictionary,
     NSNumber,
@@ -68,9 +71,6 @@ class TogaWindow(NSWindow):
         # incorrect window size. Hence, exclude it for fullscreen.
         if self.interface.state != WindowState.FULLSCREEN:
             self.impl.interface.on_resize()
-        if self.interface.content:
-            # Set the window to the new size
-            self.interface.content.refresh()
 
     @objc_method
     def windowDidBecomeMain_(self, notification):
@@ -206,6 +206,18 @@ class TogaWindow(NSWindow):
         item = self.impl._toolbar_items[str(obj.itemIdentifier)]
         item.action()
 
+    @objc_method
+    def observeValueForKeyPath_ofObject_change_context_(
+        self, keyPath, obj, change, context
+    ):
+        # No-branch because we only hook up 1 key-value observed
+        # path so far; also self.impl hasattr container is a safety
+        # catch for unfortunate timing that is not always reproducible.
+        if keyPath == "contentLayoutRect" and hasattr(
+            self.impl, "container"
+        ):  # pragma: no branch
+            self.impl.reapply_insets(self.impl.container)
+
 
 class Window:
     def __init__(self, interface, title, position, size):
@@ -222,6 +234,10 @@ class Window:
         if self.interface.minimizable:
             mask |= NSWindowStyleMask.Miniaturizable
 
+        # CI runners are still on Sequoia, not Tahoe.
+        if SUPPORTS_LIQUID_GLASS:  # pragma: no cover
+            mask |= NSWindowStyleMask.FullSizeContentView
+
         # Create the window with a default frame;
         # we'll update size and position later.
         self.native = TogaWindow.alloc().initWithContentRect(
@@ -230,8 +246,20 @@ class Window:
             backing=NSBackingStoreBuffered,
             defer=False,
         )
+        # Pending Window state transition variable:
+        self._pending_state_transition = None
+        self.native.addObserver(
+            self.native,
+            forKeyPath="contentLayoutRect",
+            options=NSKeyValueObservingOptions.New,
+            context=None,
+        )
         self.native.interface = self.interface
         self.native.impl = self
+
+        self.container = Container(on_refresh=self.content_refreshed)
+        self.native.contentView = self.container.native
+        self.need_nontransparent = False
 
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
@@ -239,19 +267,13 @@ class Window:
         # manage the release when no Python references are left.
         self.native.releasedWhenClosed = False
 
-        # Pending Window state transition variable:
-        self._pending_state_transition = None
-
         self.set_title(title)
         self.set_size(size)
         self.set_position(position if position is not None else _initial_position())
 
         self.native.delegate = self.native
 
-        self.container = Container(on_refresh=self.content_refreshed)
-        self.native.contentView = self.container.native
-
-        # Ensure that the container renders it's background in the same color as the
+        # Ensure that the container renders its background in the same color as the
         # window.
         self.native.wantsLayer = True
         self.container.native.backgroundColor = self.native.backgroundColor
@@ -271,6 +293,8 @@ class Window:
     ######################################################################
 
     def close(self):
+        if self.get_window_state(True) == WindowState.PRESENTATION:
+            self._apply_state(WindowState.NORMAL)
         self.native.close()
 
     def set_app(self, app):
@@ -301,12 +325,49 @@ class Window:
         elif frame.size.height < min_height:
             self.set_size((frame.size.width, min_height))
 
+        if SUPPORTS_LIQUID_GLASS:  # pragma: no cover
+            self.native.titlebarAppearsTransparent = (
+                self.interface.bleed_top and not self.need_nontransparent
+            )
+        self.need_nontransparent = False
+
         self.container.min_width = min_width
         self.container.min_height = min_height
+
+    def reapply_insets(self, container):
+        if (
+            (
+                # In PRESENTATION, the native window is not managed directly
+                # by self.native, and has 0 insets.
+                self.get_window_state(True) == WindowState.PRESENTATION
+                # If the option for bleed top is enabled, no insets are needed
+                # at the top.
+                or SUPPORTS_LIQUID_GLASS
+                and self.interface.bleed_top
+            )
+            # In fullscreen, the top bar is opaque and not
+            # suitable for bleeding over.
+            and not self.get_window_state(True) == WindowState.FULLSCREEN
+        ):
+            self.container.top_inset = 0
+        else:
+            self.container.top_inset = (
+                self.container.native.bounds.origin.y
+                + self.container.native.bounds.size.height
+            ) - (
+                self.native.contentLayoutRect.origin.y
+                + self.native.contentLayoutRect.size.height
+            )
+        if self.interface.content:
+            self.interface.content.refresh()
 
     def set_content(self, widget):
         # Set the content of the window's container
         self.container.content = widget
+
+    def set_bleed_top(self, bleed_top):
+        if SUPPORTS_LIQUID_GLASS:  # pragma: no cover
+            self.reapply_insets(self.container)
 
     ######################################################################
     # Window size
@@ -480,7 +541,9 @@ class Window:
                 # remains unchanged, hence the windowDidResize_ would not be notified
                 # when the window goes into presentation mode.
                 self.interface.on_resize()
-                self.interface.content.refresh()
+                # We've got a separate NSWindow over here... so we need a manual refresh
+                # instead of the KVO for the content size.
+                self.reapply_insets(self.container)
 
                 # No need to check for other pending states, since this is fully applied
                 # at this point.
@@ -506,7 +569,6 @@ class Window:
                 # remains unchanged, hence the windowDidResize_ would not be notified
                 # when the window goes out of the presentation mode.
                 self.interface.on_resize()
-                self.interface.content.refresh()
 
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
@@ -528,11 +590,28 @@ class Window:
         # Get a reference to the CGImage from the bitmap
         cg_image = bitmap.CGImage
 
-        target_size = CGSize(
-            core_graphics.CGImageGetWidth(cg_image),
-            core_graphics.CGImageGetHeight(cg_image),
+        # Crop the image so that it won't include insets
+        cropped = core_graphics.CGImageCreateWithImageInRect(
+            cg_image,
+            CGRectMake(
+                self.container.left_inset
+                * self.interface.screen._impl.native.backingScaleFactor,
+                self.container.bottom_inset
+                * self.interface.screen._impl.native.backingScaleFactor,
+                self.container.width
+                * self.interface.screen._impl.native.backingScaleFactor,
+                self.container.height
+                * self.interface.screen._impl.native.backingScaleFactor,
+            ),
         )
-        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
+
+        target_size = CGSize(
+            self.container.width
+            * self.interface.screen._impl.native.backingScaleFactor,
+            self.container.height
+            * self.interface.screen._impl.native.backingScaleFactor,
+        )
+        ns_image = NSImage.alloc().initWithCGImage(cropped, size=target_size)
         return ns_image
 
 
@@ -565,14 +644,13 @@ class MainWindow(Window):
                 f"Toolbar-{id(self)}"
             )
             self.native_toolbar.setDelegate(self.native)
+            self.native_toolbar.setDisplayMode(2)
+            self.native_toolbar.setAllowsDisplayModeCustomization(False)
+
         else:
             self.native_toolbar = None
 
         self.native.setToolbar(self.native_toolbar)
-
-        # Adding/removing a toolbar changes the size of the content window.
-        if self.interface.content:
-            self.interface.content.refresh()
 
     def purge_toolbar(self):
         while self._toolbar_items:

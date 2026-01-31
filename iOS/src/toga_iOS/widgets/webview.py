@@ -4,21 +4,25 @@ from rubicon.objc import (
     Block,
     NSInteger,
     ObjCBlock,
+    UIEdgeInsetsMake,
     objc_id,
     objc_method,
     objc_property,
     py_from_ns,
+    send_super,
 )
 from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 from toga_iOS.libs import (
     NSURL,
+    SUPPORTS_LIQUID_GLASS,
     NSURLRequest,
     UIAlertAction,
     UIAlertActionStyle,
     UIAlertController,
     UIAlertControllerStyle,
+    UIScrollViewContentInsetAdjustmentBehavior,
     WKNavigationResponsePolicy,
     WKUIDelegate,
     WKWebView,
@@ -210,12 +214,27 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
             completion=None,
         )
 
+    @objc_method
+    def safeAreaInsetsDidChange(self) -> None:
+        send_super(__class__, self, "safeAreaInsetsDidChange")
+        insets = self.safeAreaInsets
+
+        top_inset = 0 if self.impl.bleed_top else insets.top
+        self.scrollView.contentInset = UIEdgeInsetsMake(
+            top_inset, insets.left, insets.bottom, insets.right
+        )
+
 
 class WebView(Widget):
     def create(self):
         self.native = TogaWebView.alloc().init()
+        self.bleed_top = False
         self.native.interface = self.interface
         self.native.impl = self
+
+        self.native.scrollView.contentInsetAdjustmentBehavior = (
+            UIScrollViewContentInsetAdjustmentBehavior.Never
+        )
 
         # Enable the content inspector. This was added in iOS 16.4.
         # It is a no-op on earlier versions.
@@ -232,6 +251,17 @@ class WebView(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+
+        self.bleed_top = (
+            SUPPORTS_LIQUID_GLASS
+            and y == -self.container.top_inset
+            and self.interface.window
+            and self.interface.window.bleed_top
+            and self.interface.window._impl.container == self.container
+        )
 
     def get_url(self):
         url = str(self.native.URL)

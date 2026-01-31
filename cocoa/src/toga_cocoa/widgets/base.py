@@ -6,6 +6,8 @@ from toga_cocoa.constraints import Constraints
 
 
 class Widget:
+    adjust_titlebar = False
+
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
@@ -58,6 +60,14 @@ class Widget:
     def set_bounds(self, x, y, width, height):
         # print(f"SET BOUNDS ON {self.interface} {width}x{height} @ ({x},{y})")
         self.constraints.update(x, y, width, height)
+
+        if (
+            self.adjust_titlebar
+            and self.interface.window
+            and self.interface.window._impl.container == self.container
+            and y == -self.container.top_inset
+        ):
+            self.interface.window._impl.need_nontransparent = True
 
     def set_text_align(self, alignment):
         pass
