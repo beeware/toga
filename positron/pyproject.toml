@@ -20,6 +20,7 @@ dependencies = ["briefcase >= 0.3.21"]
 
 [project.entry-points."briefcase.bootstraps"]
 "Toga Positron (Django server)" = "positron.django.bootstrap:DjangoPositronBootstrap"
+"Toga Positron (FastAPI server)" = "positron.fastapi.bootstrap:FastAPIPositronBootstrap"
 "Toga Positron (Static server)" = "positron.static:StaticPositronBootstrap"
 "Toga Positron (Site-specific browser)" = "positron.sitespecific:SiteSpecificPositronBootstrap"
 

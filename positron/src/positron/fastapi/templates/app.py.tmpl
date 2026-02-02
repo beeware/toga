@@ -1,0 +1,53 @@
+from __future__ import annotations
+
+import asyncio
+import os
+import shutil
+import socketserver
+
+import toga
+import uvicorn
+
+from .site import app
+
+
+class {{{{ cookiecutter.class_name }}}}(toga.App):
+    async def cleanup(self, app, **kwargs):
+        print("Shutting down...")
+        await self.server.shutdown()
+        return True
+
+    def startup(self):
+        # Create a uvicorn server on 127.0.0.1, any available port
+        config = uvicorn.Config(fastapi_app, host="127.0.0.1", port=0)
+        self.server = uvicorn.Server(config)
+
+        # Start the server asynchronously
+        asyncio.create_task(self.server.serve())
+
+        self.web_view = toga.WebView()
+
+        self.on_exit = self.cleanup
+
+        self.main_window = toga.MainWindow()
+        self.main_window.content = self.web_view
+
+    async def on_running(self):
+        # uvicorn doesn't provide a way to wait until the server is running,
+        # or to get the auto-allocated port. See:
+        # https://github.com/Kludex/uvicorn/issues/761
+        while self.server is None or not self.server.started:  # noqa: ASYNC110
+            await asyncio.sleep(0.01)
+
+        for server in self.server.servers:
+            for socket in server.sockets:
+                host, port = socket.getsockname()
+                break
+
+        # Point the webview at the internal server.
+        self.web_view.url = f"http://{host}:{port}/"
+        self.main_window.show()
+
+
+def main():
+    return {{{{ cookiecutter.class_name }}}}()
