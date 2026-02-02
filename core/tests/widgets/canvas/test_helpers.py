@@ -264,10 +264,11 @@ def test_arc_to_quad_points():
 
     # 180 degrees
     assert_arc_to_quad_points([(10, 10), (20, 10), (10, 10), 10], [(20, 10)])
-
     assert_arc_to_quad_points([(15, 10), (20, 10), (15, 10), 10], [(20, 10)])
-
     assert_arc_to_quad_points([(5, 10), (20, 10), (5, 10), 10], [(20, 10)])
 
     # radius 0
     assert_arc_to_quad_points([(10, 10), (20, 10), (20, 20), 0], [(20, 10)])
+
+    # identical points
+    assert_arc_to_quad_points([(20, 10), (20, 10), (20, 10), 10], [(20, 10)])

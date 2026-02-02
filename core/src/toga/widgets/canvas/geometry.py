@@ -75,8 +75,6 @@ def arc_to_bezier(sweepangle: float) -> list[point]:
 def normalize_vector(x, y):
     """Given a vector, return its unit length representation."""
     length = hypot(x, y)
-    if length == 0:
-        return (0.0, 0.0)
     return (x / length, y / length)
 
 
@@ -102,7 +100,7 @@ def arc_to_quad_points(
         on the circle, and cp1, cp2 are the control points for the quadratic Bezier
         curves.
     """
-    if radius == 0:
+    if radius == 0 or start == p1 or p1 == p2:
         return (p1,)
 
     # calculate the angle between the two line segments
