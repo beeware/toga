@@ -114,9 +114,7 @@ class Context:
             # if this is the first point of the path, move to
             self.native.moveTo(x1, y1)
 
-        current_point = self.native.get_current_point()
-        x0 = current_point.X()
-        y0 = current_point.Y()
+        x0, y0 = self.native.get_current_point()
 
         # get tangent points and control points
         points = arc_to_quad_points((x0, y0), (x1, y1), (x2, y2), radius)

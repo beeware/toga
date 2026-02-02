@@ -97,7 +97,8 @@ class Context:
         elif self.start_point:
             return self.start_point
         else:
-            return PointF(default_x, default_y)
+            self.start_point = PointF(default_x, default_y)
+            return self.start_point
 
     # Context management
 

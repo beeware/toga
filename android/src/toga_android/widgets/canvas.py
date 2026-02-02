@@ -11,16 +11,15 @@ from android.graphics import (
     Matrix,
     Paint,
     Path,
-    PathMeasure,
 )
 from android.view import MotionEvent, View
-from java import dynamic_proxy, jarray, jfloat, jint
+from java import dynamic_proxy, jint
 from java.io import ByteArrayOutputStream
 from org.beeware.android import DrawHandlerView, IDrawHandler
 
 from toga.colors import rgb
 from toga.constants import Baseline, FillRule
-from toga.widgets.canvas import arc_to_bezier, arc_to_quad_points, sweepangle
+from toga.widgets.canvas import arc_to_bezier, sweepangle
 
 from ..colors import native_color
 from .base import Widget, suppress_reference_error
@@ -41,6 +40,7 @@ class Context:
         self.native = native
         self.impl = impl
         self.path = Path()
+        self._current_point = None
         self.reset_transform()
 
         # Backwards compatibility for Toga <= 0.5.3
@@ -106,18 +106,6 @@ class Context:
         if self.path.isEmpty():
             self.move_to(x, y)
 
-    def _get_last_point(self, x, y):
-        if self.path.isEmpty():
-            self.move_to(x, y)
-            return x, y
-        else:
-            path_measure = PathMeasure(self.path, False)
-            length = path_measure.getLength()
-            pos = jarray(jfloat)([0, 0])
-            tan = jarray(jfloat)([0, 0])
-            path_measure.getPosTan(length, pos, tan)
-            return pos[0], pos[1]
-
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
@@ -132,20 +120,7 @@ class Context:
         self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
 
     def arc_to(self, x1, y1, x2, y2, radius):
-        current_point = self._get_last_point(x1, y1)
-
-        # get tangent points and control points
-        points = arc_to_quad_points(current_point, (x1, y1), (x2, y2), radius)
-
-        # draw line to start of arc
-        self.path.lineTo(*points[0])
-
-        if len(points) == 5:
-            cp1, t2, cp2, t3 = points[1:]
-
-            # use 2 quad Bezier curve as approximation to circular arc
-            self.path.quadTo(*cp1, *t2)
-            self.path.quadTo(*cp2, *t3)
+        raise NotImplementedError("Android canvas doesn't implement arc_to().")
 
     def ellipse(
         self,

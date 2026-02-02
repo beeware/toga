@@ -257,6 +257,9 @@ def test_arc_to_quad_points():
         ],
     )
 
+    # The following handle the edge-cases in the standard:
+    # https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-arcto
+
     # straight
     assert_arc_to_quad_points([(10, 10), (20, 10), (30, 10), 10], [(20, 10)])
     assert_arc_to_quad_points([(0, 10), (20, 10), (40, 10), 10], [(20, 10)])
@@ -272,3 +275,5 @@ def test_arc_to_quad_points():
 
     # identical points
     assert_arc_to_quad_points([(20, 10), (20, 10), (20, 10), 10], [(20, 10)])
+    assert_arc_to_quad_points([(20, 10), (20, 10), (20, 20), 10], [(20, 10)])
+    assert_arc_to_quad_points([(10, 10), (20, 10), (20, 10), 10], [(20, 10)])

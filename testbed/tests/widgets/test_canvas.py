@@ -24,7 +24,7 @@ from toga.fonts import BOLD
 from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM, Pack
 
-from .conftest import build_cleanup_test
+from .conftest import build_cleanup_test, skip_on_backends
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -419,6 +419,7 @@ async def test_arc(canvas, probe):
 
 async def test_arc_to(canvas, probe):
     "An arc given by tangents and radius can be drawn"
+    skip_on_backends("android", reason="Can't compute current point for tangent.")
     canvas.root_state.begin_path()
 
     canvas.root_state.move_to(115, 10)
