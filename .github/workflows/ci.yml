@@ -569,11 +569,15 @@ jobs:
       matrix:
         bootstrap:
         - "Positron (Django)"
+        - "Positron (FastAPI)"
         - "Positron (Static)"
         - "Positron (Site-specific)"
         include:
         - bootstrap: "Positron (Django)"
           new-options: '-Q "bootstrap=Toga Positron (Django server)"'
+
+        - bootstrap: "Positron (FastAPI)"
+          new-options: '-Q "bootstrap=Toga Positron (FastAPI server)"'
 
         - bootstrap: "Positron (Static)"
           new-options: '-Q "bootstrap=Toga Positron (Static server)"'
