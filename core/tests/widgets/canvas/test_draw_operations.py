@@ -418,6 +418,39 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
 @pytest.mark.parametrize(
     "kwargs, args_repr, draw_kwargs",
     [
+        (
+            {"x1": 10, "y1": 20, "x2": 30, "y2": 40, "radius": 50},
+            ("x1=10, y1=20, x2=30, y2=40, radius=50"),
+            {
+                "x1": 10,
+                "y1": 20,
+                "x2": 30,
+                "y2": 40,
+                "radius": 50,
+            },
+        )
+    ],
+)
+def test_arc_to(widget, kwargs, args_repr, draw_kwargs):
+    """An arc_to operation can be added."""
+    draw_op = widget.root_state.arc_to(**kwargs)
+
+    assert_action_performed(widget, "redraw")
+    assert repr(draw_op) == f"ArcTo({args_repr})"
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == [
+        ("arc_to", draw_kwargs),
+    ]
+
+    # All the attributes can be retrieved.
+    for attr, value in draw_kwargs.items():
+        assert getattr(draw_op, attr) == value
+
+
+@pytest.mark.parametrize(
+    "kwargs, args_repr, draw_kwargs",
+    [
         # Defaults
         (
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40},

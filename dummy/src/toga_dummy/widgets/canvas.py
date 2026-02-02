@@ -85,7 +85,7 @@ class Context:
     def arc_to(self, x1, y1, x2, y2, radius):
         self.impl.draw_instructions.append(
             (
-                "arc",
+                "arc_to",
                 {
                     "x1": x1,
                     "y1": y1,
