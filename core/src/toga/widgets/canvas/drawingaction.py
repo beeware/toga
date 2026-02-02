@@ -249,6 +249,24 @@ class Arc(DrawingAction):
 
 
 @dataclass(repr=False)
+class ArcTo(DrawingAction):
+    x1: float
+    y1: float
+    x2: float
+    y2: float
+    radius: float
+
+    def _draw(self, context: Any) -> None:
+        context.arc_to(
+            self.x1,
+            self.y1,
+            self.x2,
+            self.y2,
+            self.radius,
+        )
+
+
+@dataclass(repr=False)
 class Ellipse(DrawingAction):
     x: float
     y: float

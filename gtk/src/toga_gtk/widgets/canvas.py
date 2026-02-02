@@ -10,6 +10,7 @@ from toga.colors import rgb
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.handlers import WeakrefCallable
+from toga.widgets.canvas.geometry import arc_to_quad_points
 from toga_gtk.colors import native_color
 from toga_gtk.libs import (
     GTK_VERSION,
@@ -107,6 +108,25 @@ class Context:
             self.native.arc_negative(x, y, radius, startangle, endangle)
         else:
             self.native.arc(x, y, radius, startangle, endangle)
+
+    def arc_to(self, x1, y1, x2, y2, radius):
+        if not self.native.has_current_point():
+            # if this is the first point of the path, move to
+            self.native.moveTo(x1, y1)
+
+        current_point = self.native.get_current_point()
+        x0 = current_point.X()
+        y0 = current_point.Y()
+
+        # get tangent points and control points
+        t1, cp1, t2, cp2, t3 = arc_to_quad_points((x0, y0), (x1, y1), (x2, y2), radius)
+
+        # draw line to start of arc
+        self.native.line_to(*t1)
+
+        # use 2 quad Bezier curve as approximation to circular arc
+        self.native.quad_to(*cp1, *t2)
+        self.native.quad_to(*cp2, *t3)
 
     def ellipse(
         self,
