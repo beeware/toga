@@ -19,7 +19,7 @@ dynamic = ["version"]
 dependencies = ["briefcase >= 0.3.21"]
 
 [project.entry-points."briefcase.bootstraps"]
-"Toga Positron (Django server)" = "positron.django:DjangoPositronBootstrap"
+"Toga Positron (Django server)" = "positron.django.bootstrap:DjangoPositronBootstrap"
 "Toga Positron (Static server)" = "positron.static:StaticPositronBootstrap"
 "Toga Positron (Site-specific browser)" = "positron.sitespecific:SiteSpecificPositronBootstrap"
 

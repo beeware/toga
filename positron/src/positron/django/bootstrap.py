@@ -5,40 +5,25 @@ from typing import Any
 
 from briefcase.bootstraps import TogaGuiBootstrap
 
+from ..common import templated_content, templated_file, validate_path
 
-def validate_path(value: str) -> bool:
-    """Validate that the value is a valid path."""
-    if not value.startswith("/"):
-        raise ValueError("Path must start with a /")
-    return True
-
-
-def templated_content(template_name, **context):
-    """Render a template for `template.name` with the provided context."""
-    template = (
-        Path(__file__).parent / f"django_templates/{template_name}.tmpl"
-    ).read_text(encoding="utf-8")
-    return template.format(**context)
-
-
-def templated_file(template_name, output_path, **context):
-    """Render a template for `template.name` with the provided context, saving the
-    result in `output_path`."""
-    (output_path / template_name).write_text(
-        templated_content(template_name, **context), encoding="utf-8"
-    )
+TEMPLATE_PATH = Path(__file__).parent / "templates"
 
 
 class DjangoPositronBootstrap(TogaGuiBootstrap):
     display_name_annotation = "does not support Web deployment"
 
     def app_source(self):
-        return templated_content("app.py", initial_path=self.initial_path)
+        return templated_content(
+            TEMPLATE_PATH,
+            "app.py",
+            initial_path=self.initial_path,
+        )
 
     def pyproject_table_briefcase_app_extra_content(self):
         return """
 requires = [
-    "django~=5.1",
+    "django~=6.0",
 ]
 test_requires = [
 {% if cookiecutter.test_framework == "pytest" %}
@@ -78,6 +63,7 @@ test_requires = [
         # Top level files
         self.console.debug("Writing manage.py")
         templated_file(
+            TEMPLATE_PATH,
             "manage.py",
             app_path.parent,
             module_name=self.context["module_name"],
@@ -86,6 +72,7 @@ test_requires = [
         for template_name in ["settings.py", "urls.py", "wsgi.py"]:
             self.console.debug(f"Writing {template_name}")
             templated_file(
+                TEMPLATE_PATH,
                 template_name,
                 app_path,
                 module_name=self.context["module_name"],
