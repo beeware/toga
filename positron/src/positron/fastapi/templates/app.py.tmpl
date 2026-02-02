@@ -45,7 +45,7 @@ class {{{{ cookiecutter.class_name }}}}(toga.App):
                 break
 
         # Point the webview at the internal server.
-        self.web_view.url = f"http://{host}:{port}/"
+        self.web_view.url = f"http://{{host}}:{{port}}/"
         self.main_window.show()
 
 

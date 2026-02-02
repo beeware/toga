@@ -75,6 +75,11 @@ def main():
     return {{ cookiecutter.class_name }}()
 """
 
+    def pyproject_table_web(self):
+        return """\
+supported = false
+"""
+
     def post_generate(self, base_path: Path):
         resource_path = base_path / "src" / self.context["module_name"] / "resources"
 

@@ -11,7 +11,9 @@ TEMPLATE_PATH = Path(__file__).parent / "templates"
 
 
 class FastAPIPositronBootstrap(TogaGuiBootstrap):
-    display_name_annotation = "does not support Web deployment"
+    display_name_annotation = "does not support iOS/Android/Web deployment"
+    # Need a pydantic-core binary to make iOS/Android possible.
+    # display_name_annotation = "does not support Web deployment"
 
     def app_source(self):
         return templated_content(
@@ -31,6 +33,21 @@ test_requires = [
     "pytest",
 {% endif %}
 ]
+"""
+
+    def pyproject_table_iOS(self):
+        return """\
+supported = false
+"""
+
+    def pyproject_table_android(self):
+        return """\
+supported = false
+"""
+
+    def pyproject_table_web(self):
+        return """\
+supported = false
 """
 
     def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:

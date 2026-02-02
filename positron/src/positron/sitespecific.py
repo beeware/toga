@@ -29,6 +29,11 @@ def main():
     return {{{{ cookiecutter.class_name }}}}()
 """
 
+    def pyproject_table_web(self):
+        return """\
+supported = false
+"""
+
     def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:
         """Runs prior to other plugin hooks to provide additional context.
 
