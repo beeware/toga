@@ -8,7 +8,7 @@ import socketserver
 import toga
 import uvicorn
 
-from .site import app as fastapi_app
+from .server import app as fastapi_app
 
 
 class {{{{ cookiecutter.class_name }}}}(toga.App):
@@ -19,7 +19,13 @@ class {{{{ cookiecutter.class_name }}}}(toga.App):
 
     def startup(self):
         # Create a uvicorn server on 127.0.0.1, any available port
-        config = uvicorn.Config(fastapi_app, host="127.0.0.1", port=0)
+        config = uvicorn.Config(
+            fastapi_app,
+            host="127.0.0.1",
+            port=0,
+            reload=False,
+            workers=1,
+        )
         self.server = uvicorn.Server(config)
 
         # Start the server asynchronously
