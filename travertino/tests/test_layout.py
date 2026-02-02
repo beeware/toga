@@ -16,6 +16,12 @@ class Style(BaseStyle):
     class Box(BaseBox):
         pass
 
+    def _apply(self, names):
+        pass
+
+    def layout(self, viewport):
+        pass
+
 
 def test_viewport_default():
     viewport = Viewport()

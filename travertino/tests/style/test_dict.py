@@ -12,7 +12,11 @@ class DeprecatedStyleSubclass(DeprecatedStyle):
 
 
 class Sibling(BaseStyle):
-    pass
+    def _apply(self, names):
+        pass
+
+    def layout(self, viewport):
+        pass
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])

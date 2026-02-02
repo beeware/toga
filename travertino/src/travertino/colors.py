@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import string
 import warnings
+from abc import ABC, abstractmethod
 
 from .constants import *  # noqa: F403
 
@@ -13,7 +14,7 @@ def _clamp(value, lower, upper):
     return min(upper, max(lower, value))
 
 
-class Color:
+class Color(ABC):
     """A base class for all colorspace representations.
 
     Not meant to be used directly.
@@ -88,24 +89,24 @@ class Color:
         return self._a
 
     @property
+    @abstractmethod
     def rgb(self) -> rgb:
         """This color in RGB format. If it's already RGB, returns the object itself.
 
         Also accessible via the alias `rgba`.
         """
-        raise NotImplementedError
 
     @property
     def rgba(self) -> rgb:
         return self.rgb
 
     @property
+    @abstractmethod
     def hsl(self) -> hsl:
         """This color in HSL format. If it's already HSL, returns the object itself.
 
         Also accessible via the alias `rgba`.
         """
-        raise NotImplementedError
 
     @property
     def hsla(self) -> hsl:
