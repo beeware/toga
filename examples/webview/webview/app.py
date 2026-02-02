@@ -80,6 +80,13 @@ class WebViewApp(toga.App):
             ),
         )
 
+    def on_set_large_content(self, widget, **kwargs):
+        # according to the Microsoft documentation, the max content size is
+        # 2 MB but in fact, the limit seems to be at about 1.5 MB
+        large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
+        print(f"content length: {len(large_content)}")
+        self.webview.set_content("https://example.com", large_content)
+
     def on_get_agent(self, widget, **kwargs):
         self.label.text = self.webview.user_agent
 
@@ -112,6 +119,9 @@ class WebViewApp(toga.App):
                         toga.Button("good js", on_press=self.on_good_js),
                         toga.Button("bad js", on_press=self.on_bad_js),
                         toga.Button("set content", on_press=self.on_set_content),
+                        toga.Button(
+                            "set large content", on_press=self.on_set_large_content
+                        ),
                     ],
                 ),
                 toga.Box(
