@@ -119,14 +119,16 @@ class Context:
         y0 = current_point.Y()
 
         # get tangent points and control points
-        t1, cp1, t2, cp2, t3 = arc_to_quad_points((x0, y0), (x1, y1), (x2, y2), radius)
+        points = arc_to_quad_points((x0, y0), (x1, y1), (x2, y2), radius)
 
         # draw line to start of arc
-        self.native.line_to(*t1)
+        self.native.line_to(*points[0])
 
-        # use 2 quad Bezier curve as approximation to circular arc
-        self.native.quad_to(*cp1, *t2)
-        self.native.quad_to(*cp2, *t3)
+        if len(points) == 5:
+            cp1, t2, cp2, t3 = points[1:]
+            # use 2 quad Bezier curve as approximation to circular arc
+            self.native.quad_to(*cp1, *t2)
+            self.native.quad_to(*cp2, *t3)
 
     def ellipse(
         self,

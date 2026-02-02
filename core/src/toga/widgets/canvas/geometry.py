@@ -88,7 +88,7 @@ def arc_to_quad_points(
     p1: point,
     p2: point,
     radius: float,
-) -> tuple[point, point, point, point, point]:
+) -> tuple[point, ...]:
     """Calculate the tangents and control points to turn arc_to() into cubic bezier.
 
     Given a starting point, two endpoints of a line segment, and a radius,
@@ -98,10 +98,12 @@ def arc_to_quad_points(
     :param start: The current point on the path.
     :p1: The intersection point of the two tangent lines.
     :p2: A point on the second tangent line.
-    :returns: points (t1, cp1, t2, cp2, t3), where t1, t2, and t3 are tangent points
+    :returns: points (t1, [cp1, t2, cp2, t3]), where t1, t2, and t3 are tangent points
         on the circle, and cp1, cp2 are the control points for the quadratic Bezier
         curves.
     """
+    if radius == 0:
+        return (p1,)
 
     # calculate the angle between the two line segments
     v1 = normalize_vector(start[0] - p1[0], start[1] - p1[1])
@@ -110,13 +112,18 @@ def arc_to_quad_points(
 
     # punt if the half angle is zero or a multiple of pi
     sin_half_angle = sin(angle / 2.0)
-    if sin_half_angle == 0.0:
-        return (p1, p2)
+    if abs(sin_half_angle) <= 0.00001:
+        # 180 turn
+        return (p1,)
 
     # calculate the distance from p1 to the center of the arc
     dist_to_center = radius / sin_half_angle
     # calculate the distance from p1 to each tangent point
     dist_to_tangent = sqrt(dist_to_center**2 - radius**2)
+
+    if abs(dist_to_tangent) <= 0.00001:
+        # straight line
+        return (p1,)
 
     # calculate the tangent points
     t1 = (p1[0] + v1[0] * dist_to_tangent, p1[1] + v1[1] * dist_to_tangent)

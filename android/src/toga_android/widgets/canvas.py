@@ -135,16 +135,17 @@ class Context:
         current_point = self._get_last_point(x1, y1)
 
         # get tangent points and control points
-        t1, cp1, t2, cp2, t3 = arc_to_quad_points(
-            current_point, (x1, y1), (x2, y2), radius
-        )
+        points = arc_to_quad_points(current_point, (x1, y1), (x2, y2), radius)
 
         # draw line to start of arc
-        self.path.lineTo(*t1)
+        self.path.lineTo(*points[0])
 
-        # use 2 quad Bezier curve as approximation to circular arc
-        self.path.quadTo(*cp1, *t2)
-        self.path.quadTo(*cp2, *t3)
+        if len(points) == 5:
+            cp1, t2, cp2, t3 = points[1:]
+
+            # use 2 quad Bezier curve as approximation to circular arc
+            self.path.quadTo(*cp1, *t2)
+            self.path.quadTo(*cp2, *t3)
 
     def ellipse(
         self,
