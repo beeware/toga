@@ -41,9 +41,9 @@ class State:
     we used it. And it would still need to be kept in a list.
     """
 
-    def __init__(self, graphics_state, brush, pen, singular=False):
+    def __init__(self, previous_state, brush, pen, singular=False):
         # This is the previous graphics state, so we can restore.
-        self.graphics_state = graphics_state
+        self.previous_state = previous_state
         self.brush = brush
         self.pen = pen
         # When we are in a singular state, should not draw anything
@@ -53,14 +53,14 @@ class State:
     @classmethod
     def for_impl(cls, impl):
         return cls(
-            graphics_state=None,
+            previous_state=None,
             brush=SolidBrush(BLACK),
             pen=Pen(BLACK, impl.scale_in(2.0, rounding=None)),
         )
 
-    def new_state(self, graphics_state):
+    def new_state(self, previous_state):
         return type(self)(
-            graphics_state=graphics_state,
+            previous_state=previous_state,
             brush=self.brush.Clone(),
             pen=self.pen.Clone(),
             singular=self.singular,
@@ -124,7 +124,7 @@ class Context:
 
     def restore(self):
         state = self.states.pop()
-        self.native.Restore(state.graphics_state)
+        self.native.Restore(state.previous_state)
         self.transform_path(state.transform)
 
     # Setting attributes
