@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from briefcase.bootstraps import TogaGuiBootstrap
 from briefcase.config import validate_url
 
+from .base import BasePositronBootstrap
 
-class SiteSpecificPositronBootstrap(TogaGuiBootstrap):
-    display_name_annotation = "does not support Web deployment"
 
+class SiteSpecificPositronBootstrap(BasePositronBootstrap):
     def app_source(self):
         return f"""\
 import toga
@@ -27,11 +26,6 @@ class {{{{ cookiecutter.class_name }}}}(toga.App):
 
 def main():
     return {{{{ cookiecutter.class_name }}}}()
-"""
-
-    def pyproject_table_web(self):
-        return """\
-supported = false
 """
 
     def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:

@@ -2,12 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from briefcase.bootstraps import TogaGuiBootstrap
+from .base import BasePositronBootstrap
 
 
-class StaticPositronBootstrap(TogaGuiBootstrap):
-    display_name_annotation = "does not support Web deployment"
-
+class StaticPositronBootstrap(BasePositronBootstrap):
     def app_source(self):
         return """\
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -73,11 +71,6 @@ class {{ cookiecutter.class_name }}(toga.App):
 
 def main():
     return {{ cookiecutter.class_name }}()
-"""
-
-    def pyproject_table_web(self):
-        return """\
-supported = false
 """
 
     def post_generate(self, base_path: Path):

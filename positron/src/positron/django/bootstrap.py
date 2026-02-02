@@ -3,22 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from briefcase.bootstraps import TogaGuiBootstrap
-
-from ..common import templated_content, templated_file, validate_path
-
-TEMPLATE_PATH = Path(__file__).parent / "templates"
+from ..base import BasePositronBootstrap
 
 
-class DjangoPositronBootstrap(TogaGuiBootstrap):
-    display_name_annotation = "does not support Web deployment"
+class DjangoPositronBootstrap(BasePositronBootstrap):
+    @property
+    def template_path(self):
+        return Path(__file__).parent / "templates"
 
     def app_source(self):
-        return templated_content(
-            TEMPLATE_PATH,
-            "app.py",
-            initial_path=self.initial_path,
-        )
+        return self.templated_content("app.py", initial_path=self.initial_path)
 
     def pyproject_table_briefcase_app_extra_content(self):
         return """
@@ -56,7 +50,7 @@ supported = false
             ),
             description="Initial path",
             default="/admin/",
-            validator=validate_path,
+            validator=self.validate_path,
             override_value=project_overrides.pop("initial_path", None),
         )
 
@@ -67,8 +61,7 @@ supported = false
 
         # Top level files
         self.console.debug("Writing manage.py")
-        templated_file(
-            TEMPLATE_PATH,
+        self.templated_file(
             "manage.py",
             app_path.parent,
             module_name=self.context["module_name"],
@@ -76,8 +69,7 @@ supported = false
         # App files
         for template_name in ["settings.py", "urls.py", "wsgi.py"]:
             self.console.debug(f"Writing {template_name}")
-            templated_file(
-                TEMPLATE_PATH,
+            self.templated_file(
                 template_name,
                 app_path,
                 module_name=self.context["module_name"],
