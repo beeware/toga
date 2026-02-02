@@ -38,12 +38,11 @@ class WebView(Widget):
         'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the '
         "`build_gradle_extra_content` section of pyproject.toml?"
     )
-    ANDROIDX_WEBKIT_MISSING_ERROR = (
+    NO_LARGE_CONTENT_ERROR = (
         "Can't set content larger than 2 MB; Have you added chaquopy."
         'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the '
-        "`build_gradle_extra_content` section of pyproject.toml? You also need "
-        'the addition of `"androidx.webkit:webkit:1.15.0"` to the '
-        "`build_gradle_dependencies` section."
+        '`build_gradle_extra_content` section, and `"androidx.webkit:webkit:1.15.0"` '
+        "to the `build_gradle_dependencies` section of pyproject.toml?"
     )
 
     def create(self):
@@ -55,10 +54,16 @@ class WebView(Widget):
             self.SUPPORTS_ON_NAVIGATION_STARTING = True
             self.SUPPORTS_ON_WEBVIEW_LOAD = True
             self.client = TogaWebClient(self)
+
+            # We can create a TogaWebClient without having the full support for large
+            # content. Check for the cached asset loader as evidence.
+            self.SUPPORTS_LARGE_CONTENT = self.client.cache_assetLoader is not None
         except NoClassDefFoundError:  # pragma: no cover
             # Briefcase configuration hasn't declared a static proxy
             self.SUPPORTS_ON_NAVIGATION_STARTING = False
             self.SUPPORTS_ON_WEBVIEW_LOAD = False
+            self.SUPPORTS_ON_WEBVIEW_LOAD = False
+            self.SUPPORTS_LARGE_CONTENT = False
             self.client = WebViewClient()
 
         # Set a WebViewClient so that new links open in this activity,
@@ -77,7 +82,9 @@ class WebView(Widget):
         self._large_content_dir = (
             toga.App.app.paths.cache / f"toga/webview-{self.interface.id}"
         )
-        # base URL for accessing the cached files
+        # Base URL for accessing cached large files. The URL is one reserved by
+        # Android; for more details, see:
+        # https://developer.android.com/reference/androidx/webkit/WebViewAssetLoader
         self._large_content_base_url = f"https://appassets.androidplatform.net/cache/toga/webview-{self.interface.id}/"
 
     def __del__(self):  # pragma: nocover
@@ -99,13 +106,7 @@ class WebView(Widget):
 
     def set_content(self, root_url, content):
         if len(content) > 2 * 1024 * 1024:
-            if (
-                type(self.client) is WebViewClient
-                or self.client.cache_assetLoader is None
-            ):  # pragma: no cover
-                html = f"<html>{self.ANDROIDX_WEBKIT_MISSING_ERROR}</html>"
-                self.native.loadData(html, "text/html", "utf-8")
-            else:
+            if self.SUPPORTS_LARGE_CONTENT:
                 self._large_content_dir.mkdir(parents=True, exist_ok=True)
                 h = hashlib.new("sha1")
                 h.update(bytes(self.interface.id, "utf-8"))
@@ -114,6 +115,11 @@ class WebView(Widget):
                 file_path = self._large_content_dir / file_name
                 file_path.write_text(content, encoding="utf-8")
                 self.set_url(self._large_content_base_url + file_name)
+            else:  # pragma: no cover
+                print(self.NO_LARGE_CONTENT_ERROR)
+                self.native.loadData(
+                    "Unable to display large HTML content", "text/html", "utf-8"
+                )
         else:
             # There is a loadDataWithBaseURL method, but it's inconsistent about
             # whether getUrl returns the given URL or a data: URL. Rather than support

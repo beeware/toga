@@ -64,7 +64,8 @@ class TogaWebClient(static_proxy(WebViewClient)):
     # This method is called in a separate thread and therefore not recognized
     # by the coverage test
     def shouldInterceptRequest(self, webview, request):  # pragma no cover
-        return self.cache_assetLoader.shouldInterceptRequest(request.getUrl())
+        if self.cache_assetLoader:
+            return self.cache_assetLoader.shouldInterceptRequest(request.getUrl())
 
 
 class TogaCachePathHandler(dynamic_proxy(WebViewAssetLoader.PathHandler)):
