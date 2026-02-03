@@ -1,6 +1,6 @@
 from math import pi
 
-from pytest import approx
+from pytest import approx, raises
 
 from toga.widgets.canvas import (
     arc_to_bezier,
@@ -336,3 +336,18 @@ def test_get_round_rect_radii():
     # degenerate cases
     assert_get_round_rect_radii(0, 20, 5, [(0, 0), (0, 0), (0, 0), (0, 0)])
     assert_get_round_rect_radii(20, 0, 5, [(0, 0), (0, 0), (0, 0), (0, 0)])
+
+    # radii length
+    with raises(
+        ValueError,
+        match=r"Invalid radii: \[\], expected length between 1 and 4 items",
+    ):
+        get_round_rect_radii(20, 30, [])
+
+    with raises(
+        ValueError,
+        match=(
+            r"Invalid radii: \[1, 2, 3, 4, 5\], expected length between 1 and 4 items"
+        ),
+    ):
+        get_round_rect_radii(20, 30, [1, 2, 3, 4, 5])
