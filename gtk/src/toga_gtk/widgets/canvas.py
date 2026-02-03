@@ -125,8 +125,8 @@ class Context:
         if len(points) == 5:
             cp1, t2, cp2, t3 = points[1:]
             # use 2 quad Bezier curve as approximation to circular arc
-            self.native.quad_to(*cp1, *t2)
-            self.native.quad_to(*cp2, *t3)
+            self.quadratic_curve_to(*cp1, *t2)
+            self.quadratic_curve_to(*cp2, *t3)
 
     def ellipse(
         self,

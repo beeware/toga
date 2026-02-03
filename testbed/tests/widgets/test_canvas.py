@@ -419,7 +419,7 @@ async def test_arc(canvas, probe):
 
 async def test_arc_to(canvas, probe):
     "An arc given by tangents and radius can be drawn"
-    skip_on_backends("android", reason="Can't compute current point for tangent.")
+    skip_on_backends("toga_android", reason="Can't compute current point for tangent.")
     canvas.root_state.begin_path()
 
     canvas.root_state.move_to(115, 10)
