@@ -195,12 +195,14 @@ class Context:
         self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
 
     def arc_to(self, x1, y1, x2, y2, radius):
-        current_point = self.get_last_point(x1, y1)
-        x0 = current_point.X
-        y0 = current_point.Y
+        print("---->", self.start_point)
+        last_point = self.get_last_point(x1, y1)
+        x0, y0 = (last_point.X, last_point.Y)
+        print("---->", x0, y0, x1, y1)
 
         # get tangent points and control points
         points = arc_to_quad_points((x0, y0), (x1, y1), (x2, y2), radius)
+        print("---->", points)
 
         # draw line to start of arc
         self.line_to(*points[0])
