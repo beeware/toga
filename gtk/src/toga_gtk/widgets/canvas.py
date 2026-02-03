@@ -123,6 +123,11 @@ class Context:
         self.native.save()
         self.native.translate(x, y)
         self.native.rotate(rotation)
+        # use very small radii instead of 0
+        if radiusx == 0:
+            radiusx = 2**-24
+        if radiusy == 0:
+            radiusy = 2**-24
         self.native.scale(radiusx, radiusy)
         self.arc(0, 0, 1.0, startangle, endangle, counterclockwise)
         self.native.identity_matrix()
