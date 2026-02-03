@@ -195,23 +195,18 @@ class Context:
         self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
 
     def arc_to(self, x1, y1, x2, y2, radius):
-        print("---->", self.start_point)
         last_point = self.get_last_point(x1, y1)
         x0, y0 = (last_point.X, last_point.Y)
-        print("---->", x0, y0, x1, y1)
 
         # get tangent points and control points
         points = arc_to_quad_points((x0, y0), (x1, y1), (x2, y2), radius)
-        print("---->", points)
 
         # draw line to start of arc
         self.line_to(*points[0])
-        print("---->", self.get_last_point(x1, y1))
 
         if len(points) == 5:
-            cp1, t2, cp2, t3 = points[1:]
-
             # use 2 quad Bezier curve as approximation to circular arc
+            cp1, t2, cp2, t3 = points[1:]
             self.quadratic_curve_to(*cp1, *t2)
             self.quadratic_curve_to(*cp2, *t3)
 
