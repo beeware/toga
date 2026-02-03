@@ -266,7 +266,7 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         if self.interface.on_navigation_starting._raw:
             # mark URL as being allowed
-            self._allowed_url = root_url
+            self._allowed_url = root_url or "about:blank"
         self.native.loadHTMLString(content, baseURL=NSURL.URLWithString(root_url))
 
     def get_user_agent(self):
