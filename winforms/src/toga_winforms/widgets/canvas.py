@@ -196,6 +196,8 @@ class Context:
 
     def arc_to(self, x1, y1, x2, y2, radius):
         print("---->", self.start_point)
+        if self.current_path.PointCount == 0:
+            self.move_to(x1, y1)
         last_point = self.get_last_point(x1, y1)
         x0, y0 = (last_point.X, last_point.Y)
         print("---->", x0, y0, x1, y1)
@@ -206,6 +208,7 @@ class Context:
 
         # draw line to start of arc
         self.line_to(*points[0])
+        print("---->", self.get_last_point(x1, y1))
 
         if len(points) == 5:
             cp1, t2, cp2, t3 = points[1:]

@@ -112,7 +112,7 @@ class Context:
     def arc_to(self, x1, y1, x2, y2, radius):
         if not self.native.has_current_point():
             # if this is the first point of the path, move to
-            self.native.moveTo(x1, y1)
+            self.native.move_to(x1, y1)
 
         x0, y0 = self.native.get_current_point()
 
