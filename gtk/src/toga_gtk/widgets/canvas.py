@@ -10,6 +10,7 @@ from toga.colors import rgb
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.handlers import WeakrefCallable
+from toga.widgets.canvas import round_rect
 from toga_gtk.colors import native_color
 from toga_gtk.libs import (
     GTK_VERSION,
@@ -122,17 +123,16 @@ class Context:
         self.native.save()
         self.native.translate(x, y)
         self.native.rotate(rotation)
-        if radiusx >= radiusy:
-            self.native.scale(1, radiusy / radiusx)
-            self.arc(0, 0, radiusx, startangle, endangle, counterclockwise)
-        else:
-            self.native.scale(radiusx / radiusy, 1)
-            self.arc(0, 0, radiusy, startangle, endangle, counterclockwise)
+        self.native.scale(radiusx, radiusy)
+        self.arc(0, 0, 1.0, startangle, endangle, counterclockwise)
         self.native.identity_matrix()
         self.native.restore()
 
     def rect(self, x, y, width, height):
         self.native.rectangle(x, y, width, height)
+
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
 
     # Drawing Paths
 

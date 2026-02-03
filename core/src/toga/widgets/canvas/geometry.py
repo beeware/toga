@@ -1,4 +1,14 @@
+from collections.abc import Iterable
 from math import cos, pi, sin, tan
+from typing import Protocol, runtime_checkable
+
+
+@runtime_checkable
+class CornerRadiusT(Protocol):
+    """Protocol for objects that can be used as a corner radius."""
+
+    x: float
+    y: float
 
 
 def sweepangle(startangle: float, endangle: float, counterclockwise: bool) -> float:
@@ -67,6 +77,79 @@ def arc_to_bezier(sweepangle: float) -> list[tuple[float, float]]:
         sweepangle -= pi / 2
 
     return result
+
+
+def get_round_rect_radii(
+    w: float, h: float, radii: float | CornerRadiusT | Iterable[float | CornerRadiusT]
+) -> list[tuple[int | float, int | float]]:
+    """Determine the corner radii for a rounded rectangle.
+
+    This implements the procedure described here:
+    https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-roundrect
+
+    :param w: The width of the rounded rectangle.
+    :param h: The height of the rounded rectangle.
+    :param radii: The radii: a float.
+    :returns: list of radii [ul, ur, ll, lr] for upper and lower left and right
+        where each item is a 2-tuple of (rx, ry), the radius for x and y
+        directions.
+    """
+    if isinstance(radii, (int, float, CornerRadiusT)):
+        radii = [radii]
+    corners = [(r, r) if isinstance(r, (int, float)) else (r.x, r.y) for r in radii]
+    if len(corners) == 1:
+        corners *= 4
+    elif len(corners) == 2:
+        corners = [corners[0], corners[1], corners[1], corners[0]]
+    elif len(corners) == 3:
+        corners = [corners[0], corners[1], corners[1], corners[2]]
+    elif len(corners) != 4:
+        raise ValueError(
+            f"Invalid radii: {corners!r}, expected length between 1 and 4 items"
+        )
+    # get corners
+    ul, ur, ll, lr = corners
+
+    # ensure radii are smaller than sides
+    top = ul[0] + ur[0]
+    bottom = ll[0] + lr[0]
+    horizontal = max(top, bottom, abs(w))
+    left = ul[1] + ll[1]
+    right = ur[1] + lr[1]
+    vertical = max(left, right, abs(h))
+
+    scale = min(abs(w) / horizontal, abs(h) / vertical)
+    sign_x = w / abs(w) if w != 0 else 1
+    sign_y = h / abs(h) if h != 0 else 1
+    corners = [(sign_x * x * scale, sign_y * y * scale) for x, y in corners]
+    return corners
+
+
+def round_rect(context, x, y, w, h, radii):
+    """Given a native context draw a rounded rectangle.
+
+    This implements the procedure described here:
+    https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-roundrect
+
+    The native context needs to implement at least move_to, line_to and ellipse.
+
+    :param x: The width of the rounded rectangle.
+    :param y: The height of the rounded rectangle.
+    :param w: The width of the rounded rectangle.
+    :param h: The height of the rounded rectangle.
+    :param radii: The radii: a float.
+    """
+    ul, ur, ll, lr = get_round_rect_radii(w, h, radii)
+    context.move_to(x + ul[0], y)
+    context.line_to(x + w - ur[0], y)
+    context.ellipse(x + w - ur[0], y + ur[1], *ur, 0, -pi / 2, 0, False)
+    context.line_to(x + w, y + h - lr[1])
+    context.ellipse(x + w - lr[0], y + h - lr[1], *lr, 0, 0, pi / 2, False)
+    context.line_to(x + ll[0], y + h)
+    context.ellipse(x + ll[0], y + h - ll[1], *ll, 0, pi / 2, pi, False)
+    context.line_to(x, y + ul[1])
+    context.ellipse(x + ul[0], y + ul[1], *ul, 0, pi, 3 * pi / 2, False)
+    context.move_to(x, y)
 
 
 def transform(x: float, y: float, matrix: list[int]) -> tuple[float, float]:

@@ -20,7 +20,7 @@ from .drawingaction import (
     Translate,
     WriteText,
 )
-from .geometry import arc_to_bezier, sweepangle
+from .geometry import arc_to_bezier, get_round_rect_radii, round_rect, sweepangle
 from .state import ClosedPathContext, FillContext, State, StrokeContext
 
 # Make sure deprecation warnings are shown by default
@@ -74,5 +74,7 @@ __all__ = [
     "StrokeContext",
     # Geometry
     "arc_to_bezier",
+    "get_round_rect_radii",
+    "round_rect",
     "sweepangle",
 ]

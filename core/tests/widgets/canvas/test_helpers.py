@@ -2,7 +2,13 @@ from math import pi
 
 from pytest import approx
 
-from toga.widgets.canvas import arc_to_bezier, sweepangle
+from toga.widgets.canvas import (
+    arc_to_bezier,
+    get_round_rect_radii,
+    round_rect,
+    sweepangle,
+)
+from toga_dummy.widgets.canvas import Canvas, Context
 
 
 def test_sweepangle():
@@ -216,3 +222,117 @@ def test_arc_to_bezier():
             (1.0, 0.0),
         ],
     )
+
+
+def test_round_rect():
+    canvas = Canvas(None)
+    canvas.draw_instructions = []
+    context = Context(canvas)
+
+    round_rect(context, 10, 20, 30, 40, 5)
+    assert canvas.draw_instructions == [
+        ("move to", {"x": 15, "y": 20}),
+        ("line to", {"x": 35, "y": 20}),
+        (
+            "ellipse",
+            {
+                "x": 35,
+                "y": 25,
+                "radiusx": 5,
+                "radiusy": 5,
+                "rotation": 0,
+                "startangle": -pi / 2,
+                "endangle": 0,
+                "counterclockwise": False,
+            },
+        ),
+        ("line to", {"x": 40, "y": 55}),
+        (
+            "ellipse",
+            {
+                "x": 35,
+                "y": 55,
+                "radiusx": 5,
+                "radiusy": 5,
+                "rotation": 0,
+                "startangle": 0,
+                "endangle": pi / 2,
+                "counterclockwise": False,
+            },
+        ),
+        ("line to", {"x": 15, "y": 60}),
+        (
+            "ellipse",
+            {
+                "x": 15,
+                "y": 55,
+                "radiusx": 5,
+                "radiusy": 5,
+                "rotation": 0,
+                "startangle": pi / 2,
+                "endangle": pi,
+                "counterclockwise": False,
+            },
+        ),
+        ("line to", {"x": 10, "y": 25}),
+        (
+            "ellipse",
+            {
+                "x": 15,
+                "y": 25,
+                "radiusx": 5,
+                "radiusy": 5,
+                "rotation": 0,
+                "startangle": pi,
+                "endangle": 3 * pi / 2,
+                "counterclockwise": False,
+            },
+        ),
+        ("move to", {"x": 10, "y": 20}),
+    ]
+
+
+def assert_get_round_rect_radii(w, h, radii, expected):
+    actual = get_round_rect_radii(w, h, radii)
+    assert actual == expected
+
+
+def test_get_round_rect_radii():
+    class Radius:
+        x: float
+        y: float
+
+        def __init__(self, x, y):
+            self.x = x
+            self.y = y
+
+    # argument handling
+    assert_get_round_rect_radii(20, 30, 5, [(5, 5), (5, 5), (5, 5), (5, 5)])
+    assert_get_round_rect_radii(
+        20, 30, 5.5, [(5.5, 5.5), (5.5, 5.5), (5.5, 5.5), (5.5, 5.5)]
+    )
+    assert_get_round_rect_radii(20, 30, [5], [(5, 5), (5, 5), (5, 5), (5, 5)])
+    assert_get_round_rect_radii(20, 30, [5, 6], [(5, 5), (6, 6), (6, 6), (5, 5)])
+    assert_get_round_rect_radii(20, 30, [5, 6, 7], [(5, 5), (6, 6), (6, 6), (7, 7)])
+    assert_get_round_rect_radii(20, 30, [5, 6, 7, 8], [(5, 5), (6, 6), (7, 7), (8, 8)])
+    assert_get_round_rect_radii(20, 30, Radius(5, 6), [(5, 6), (5, 6), (5, 6), (5, 6)])
+    assert_get_round_rect_radii(
+        20, 30, [Radius(5, 6)], [(5, 6), (5, 6), (5, 6), (5, 6)]
+    )
+    assert_get_round_rect_radii(
+        20, 30, [Radius(5, 6), 7], [(5, 6), (7, 7), (7, 7), (5, 6)]
+    )
+
+    # scaling needed
+    assert_get_round_rect_radii(10, 20, 10, [(5, 5), (5, 5), (5, 5), (5, 5)])
+    assert_get_round_rect_radii(
+        20, 20, Radius(5, 20), [(2.5, 10), (2.5, 10), (2.5, 10), (2.5, 10)]
+    )
+
+    # negative width and/or height
+    assert_get_round_rect_radii(-20, 30, 5, [(-5, 5), (-5, 5), (-5, 5), (-5, 5)])
+    assert_get_round_rect_radii(20, -30, 5, [(5, -5), (5, -5), (5, -5), (5, -5)])
+
+    # degenerate cases
+    assert_get_round_rect_radii(0, 20, 5, [(0, 0), (0, 0), (0, 0), (0, 0)])
+    assert_get_round_rect_radii(20, 0, 5, [(0, 0), (0, 0), (0, 0), (0, 0)])
