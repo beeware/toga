@@ -720,6 +720,96 @@ async def test_transforms(canvas, probe):
     assert_reference(probe, "transforms")
 
 
+async def test_transforms_mid_path(canvas, probe):
+    "Transforms can be applied mid-path"
+
+    # draw a series of rotated rectangles
+    canvas.root_state.begin_path()
+    canvas.root_state.translate(100, 100)
+    with canvas.root_state.state() as ctx:
+        for _ in range(12):
+            ctx.rect(50, 0, 10, 10)
+            ctx.scale(1.1, 1)
+            ctx.rotate(math.pi / 6)
+
+        canvas.root_state.fill()
+        canvas.root_state.stroke(GOLDENROD)
+
+    # draw a series of line segments
+    canvas.root_state.begin_path()
+    canvas.root_state.move_to(25, 0)
+    for _ in range(12):
+        canvas.root_state.line_to(25, 0)
+        canvas.root_state.rotate(math.pi / 6)
+        canvas.root_state.translate(5, 3)
+    canvas.root_state.close_path()
+    canvas.root_state.reset_transform()
+    canvas.root_state.move_to(110, 100)
+    canvas.root_state.scale(5, 1)
+    canvas.root_state.ellipse(20, 100, 2, 20, 0, 0, 2 * pi)
+    canvas.root_state.stroke(CORNFLOWERBLUE)
+
+    await probe.redraw("Transforms can be applied")
+    assert_reference(probe, "transforms_mid_path", threshold=0.015)
+
+
+async def test_singular_transforms(canvas, probe):
+    "Singular transforms behave reasonably"
+    ctx = canvas.root_state
+
+    ctx.begin_path()
+    with ctx.state() as ctx2:
+        # flip about the line x = y
+        ctx2.rotate(-pi / 2)
+        ctx2.scale(-1, 1)
+
+        ctx2.move_to(40, 20)
+        ctx2.line_to(80, 20)
+        ctx2.line_to(100, 30)
+
+        with ctx2.state() as ctx3:
+            # Apply a scale factor of zero
+            ctx3.scale(0.9, 0)
+            ctx3.line_to(180, 20)
+
+        ctx2.rotate(pi / 4)
+        ctx2.line_to(180, 20)
+
+        ctx2.stroke(GOLDENROD, line_width=8)
+
+    # Same shape, but not flipped, using reset_transform()
+    ctx.begin_path()
+
+    ctx.move_to(40, 20)
+    ctx.line_to(80, 20)
+    ctx.line_to(100, 30)
+
+    # Apply a scale factor of zero
+    ctx.scale(0.9, 0)
+    ctx.line_to(180, 20)
+    # Total transform is singular
+    ctx.reset_transform()
+
+    ctx.rotate(pi / 4)
+    ctx.line_to(180, 20)
+
+    ctx.stroke(CORNFLOWERBLUE, line_width=8)
+
+    ctx.reset_transform()
+    ctx.begin_path()
+    ctx.scale(0, 0.9)
+    ctx.translate(50, 50)
+
+    ctx.rect(0, 0, 25, 25)
+
+    # Should draw nothing.
+    ctx.fill()
+    ctx.stroke(line_width=10)
+
+    await probe.redraw("Transforms can be applied")
+    assert_reference(probe, "singular_transforms")
+
+
 @pytest.mark.xfail(
     condition=os.environ.get("RUNNING_IN_CI") != "true",
     reason="Canvas tests are unstable outside of CI. Manual inspection may be required",

@@ -30,9 +30,10 @@ BLACK = jint(native_color(rgb(0, 0, 0)))
 class State(NamedTuple):
     fill: Paint
     stroke: Paint
+    transform: Matrix
 
     def __deepcopy__(self, memo):
-        return type(self)(Paint(self.fill), Paint(self.stroke))
+        return type(self)(Paint(self.fill), Paint(self.stroke), Matrix())
 
 
 class Context:
@@ -40,8 +41,6 @@ class Context:
         self.native = native
         self.impl = impl
         self.path = Path()
-        self._current_point = None
-        self.reset_transform()
 
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
@@ -58,7 +57,8 @@ class Context:
         stroke.setStrokeWidth(2.0)
         stroke.setColor(BLACK)
 
-        self.states = [State(fill, stroke)]
+        self.states = [State(fill, stroke, Matrix())]
+        self.reset_transform()
 
     @property
     def state(self):
@@ -72,6 +72,8 @@ class Context:
 
     def restore(self):
         self.native.restore()
+        # Transform active path to current coordinates
+        self.path.transform(self.state.transform)
         self.states.pop()
 
     # Setting attributes
@@ -175,14 +177,57 @@ class Context:
     def rotate(self, radians):
         self.native.rotate(degrees(radians))
 
+        # Update state transform
+        self.state.transform.postRotate(degrees(radians))
+
+        # Transform active path to current coordinates
+        inverse = Matrix()
+        inverse.setRotate(-degrees(radians))
+        self.path.transform(inverse)
+
     def scale(self, sx, sy):
+        # Can't apply inverse transform if scale is 0,
+        # so use a small epsilon which will almost be the same
+        if sx == 0:
+            sx = 2**-24
+        if sy == 0:
+            sy = 2**-24
+
         self.native.scale(sx, sy)
+
+        # Update state transform
+        self.state.transform.postScale(sx, sy)
+
+        # Transform active path to current coordinates
+        inverse = Matrix()
+        inverse.setScale(1 / sx, 1 / sy)
+        self.path.transform(inverse)
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
 
+        # Update state transform
+        self.state.transform.postTranslate(tx, ty)
+
+        # Transform active path to current coordinates
+        inverse = Matrix()
+        inverse.setTranslate(-tx, -ty)
+        self.path.transform(inverse)
+
     def reset_transform(self):
         self.native.setMatrix(None)
+
+        # current matrix needs to unwind all previous states
+        # can't just ask for current total transform as `getMatrix` is deprecated
+        for state in reversed(self.states):
+            self.path.transform(state.transform)
+            inverse = Matrix()
+            # if we can't invert, ignore for now
+            if state.transform.invert(inverse):  # pragma: no branch
+                # Update current state transform
+                self.state.transform.postConcat(inverse)
+
+        # Rescale to standard units
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text

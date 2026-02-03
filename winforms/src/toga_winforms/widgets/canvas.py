@@ -1,4 +1,3 @@
-from copy import deepcopy
 from math import degrees
 
 import System.Windows.Forms as WinForms
@@ -42,24 +41,29 @@ class State:
     we used it. And it would still need to be kept in a list.
     """
 
-    def __init__(self, matrix, brush, pen):
-        self.matrix = matrix
+    def __init__(self, previous_state, brush, pen, singular=False):
+        # This is the previous graphics state, so we can restore.
+        self.previous_state = previous_state
         self.brush = brush
         self.pen = pen
+        # When we are in a singular state, should not draw anything
+        self.singular = singular
+        self.transform = Matrix()
 
     @classmethod
     def for_impl(cls, impl):
         return cls(
-            matrix=Matrix(),
+            previous_state=None,
             brush=SolidBrush(BLACK),
             pen=Pen(BLACK, impl.scale_in(2.0, rounding=None)),
         )
 
-    def __deepcopy__(self, memo):
+    def new_state(self, previous_state):
         return type(self)(
-            matrix=self.matrix.Clone(),
+            previous_state=previous_state,
             brush=self.brush.Clone(),
             pen=self.pen.Clone(),
+            singular=self.singular,
         )
 
 
@@ -100,6 +104,15 @@ class Context:
             self.start_point = PointF(default_x, default_y)
             return self.start_point
 
+    def transform_path(self, matrix):
+        """Transform the current path using a matrix."""
+        for path in self.paths:
+            path.Transform(matrix)
+        if self.start_point:
+            points = Array[PointF]([self.start_point])
+            matrix.TransformPoints(points)
+            self.start_point = points[0]
+
     # Context management
 
     @property
@@ -107,10 +120,13 @@ class Context:
         return self.states[-1]
 
     def save(self):
-        self.states.append(deepcopy(self.state))
+        graphics_state = self.native.Save()
+        self.states.append(self.state.new_state(graphics_state))
 
     def restore(self):
-        self.states.pop()
+        state = self.states.pop()
+        self.native.Restore(state.previous_state)
+        self.transform_path(state.transform)
 
     # Setting attributes
 
@@ -237,32 +253,79 @@ class Context:
     # Drawing Paths
 
     def fill(self, fill_rule):
+        if self.state.singular:
+            # draw nothing
+            return
         for path in self.paths:
             if fill_rule == FillRule.EVENODD:
                 path.FillMode = FillMode.Alternate
             else:  # Default to NONZERO
                 path.FillMode = FillMode.Winding
-            path.Transform(self.state.matrix)
             self.native.FillPath(self.state.brush, path)
 
     def stroke(self):
+        if self.state.singular:
+            # draw nothing
+            return
         for path in self.paths:
-            path.Transform(self.state.matrix)
             self.native.DrawPath(self.state.pen, path)
 
     # Transformations
 
     def rotate(self, radians):
-        self.state.matrix.Rotate(degrees(radians))
+        self.native.RotateTransform(degrees(radians))
+
+        # Update state transform
+        self.state.transform.Rotate(degrees(radians))
+
+        # Transform active path to current coordinates
+        inverse = Matrix()
+        inverse.Rotate(-degrees(radians))
+        self.transform_path(inverse)
 
     def scale(self, sx, sy):
-        self.state.matrix.Scale(sx, sy)
+        # Can't apply inverse transform if scale is 0,
+        # so use a small epsilon which will almost be the same
+        if sx == 0:
+            sx = 2**-24
+            self.state.singular = True
+        if sy == 0:
+            sy = 2**-24
+            self.state.singular = True
+
+        self.native.ScaleTransform(sx, sy)
+
+        # Update state transform
+        self.state.transform.Scale(sx, sy)
+
+        # Transform active path to current coordinates
+        inverse = Matrix()
+        inverse.Scale(1 / sx, 1 / sy)
+        self.transform_path(inverse)
 
     def translate(self, tx, ty):
-        self.state.matrix.Translate(tx, ty)
+        self.native.TranslateTransform(tx, ty)
+
+        # Update state transform
+        self.state.transform.Translate(tx, ty)
+
+        # Transform active path to current coordinates
+        inverse = Matrix()
+        inverse.Translate(-tx, -ty)
+        self.transform_path(inverse)
 
     def reset_transform(self):
-        self.state.matrix.Reset()
+        matrix = self.native.Transform
+        self.native.ResetTransform()
+
+        # Transform active path to current coordinates
+        self.transform_path(matrix)
+
+        # Update state transform
+        matrix.Invert()
+        self.state.transform.Multiply(matrix)
+
+        self.state.singular = False
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
@@ -306,10 +369,7 @@ class Context:
             )
 
     def draw_image(self, image, x, y, width, height):
-        self.native.ResetTransform()
-        self.native.Transform = self.state.matrix
         self.native.DrawImage(image._impl.native, x, y, width, height)
-        self.native.ResetTransform()
 
 
 class Canvas(Box):

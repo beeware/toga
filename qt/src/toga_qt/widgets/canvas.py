@@ -28,9 +28,10 @@ BLACK = native_color(rgb(0, 0, 0))
 
 
 class State:
-    """Doesn't need to track transform, only fill/stroke-related properties."""
+    """Track transform and fill/stroke-related properties."""
 
     def __init__(self, former_state=None):
+        self.transform = QTransform()
         if former_state:
             self.fill_style = former_state.fill_style
             self.stroke = QPen(former_state.stroke)
@@ -63,6 +64,8 @@ class Context:
         self.native.save()
 
     def restore(self):
+        # Transform active path to current coordinates
+        self._path = self.state.transform.map(self._path)
         self.states.pop()
         self.native.restore()
 
@@ -205,14 +208,51 @@ class Context:
     def rotate(self, radians):
         self.native.rotate(degrees(radians))
 
+        # Update state transform
+        self.state.transform.rotateRadians(radians)
+
+        # Transform active path to current coordinates
+        inverse = QTransform()
+        inverse.rotateRadians(-radians)
+        self._path = inverse.map(self._path)
+
     def scale(self, sx, sy):
+        # Can't apply inverse transform if scale is 0,
+        # so use a small epsilon which will almost be the same
+        if sx == 0:
+            sx = 2**-24
+        if sy == 0:
+            sy = 2**-24
+
         self.native.scale(sx, sy)
+
+        # Update state transform
+        self.state.transform.scale(sx, sy)
+
+        # Transform active path to current coordinates
+        inverse = QTransform()
+        inverse.scale(1 / sx, 1 / sy)
+        self._path = inverse.map(self._path)
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
 
+        # Update state transform
+        self.state.transform.translate(tx, ty)
+
+        # Transform active path to current coordinates
+        inverse = QTransform()
+        inverse.translate(-tx, -ty)
+        self._path = inverse.map(self._path)
+
     def reset_transform(self):
+        transform = self.native.transform()
         self.native.resetTransform()
+
+        # Update state transform
+        inverse, _ = transform.inverted()
+        self._path = transform.map(self._path)
+        self.state.transform *= inverse
 
     # Text
     def write_text(self, text, x, y, font, baseline, line_height):

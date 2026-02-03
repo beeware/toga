@@ -175,6 +175,13 @@ class Context:
         self.native.rotate(radians)
 
     def scale(self, sx, sy):
+        # Cairo throws an exception if scale is 0,
+        # so use a small epsilon which will almost be the same
+        if sx == 0:
+            sx = 2**-24
+        if sy == 0:
+            sy = 2**-24
+
         self.native.scale(sx, sy)
 
     def translate(self, tx, ty):
