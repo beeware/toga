@@ -437,39 +437,39 @@ class CanvasApp(toga.App):
         self.render_drawing()
 
     def render_drawing(self):
-        self.canvas.root_state.clear()
-        self.canvas.root_state.translate(
+        self.canvas.root_state.drawing_actions.clear()
+        self.canvas.translate(
             self.width / 2 + self.x_translation,
             self.height / 2 + self.y_translation,
         )
-        self.canvas.root_state.rotate(self.rotation)
-        self.canvas.root_state.scale(
+        self.canvas.rotate(self.rotation)
+        self.canvas.scale(
             self.scale_x_slider.value,
             self.scale_y_slider.value,
         )
-        self.canvas.root_state.translate(-self.width / 2, -self.height / 2)
-        with self.get_state() as state:
-            self.draw_shape(state)
-        self.canvas.root_state.reset_transform()
+        self.canvas.translate(-self.width / 2, -self.height / 2)
+        with self.get_state():
+            self.draw_shape()
+        self.canvas.reset_transform()
 
-    def draw_shape(self, state):
+    def draw_shape(self):
         # Scale to the smallest axis to maintain aspect ratio
         factor = min(self.width, self.height)
         drawing_instructions = self.drawing_shape_instructions.get(
             self.shape_selection.value, None
         )
         if drawing_instructions is not None:
-            drawing_instructions(state, factor)
+            drawing_instructions(factor)
 
-    def draw_triangle(self, state, factor):
+    def draw_triangle(self, factor):
         # calculate offsets to centralize drawing in the bigger axis
         dx = self.x_middle - factor / 2
         dy = self.y_middle - factor / 2
-        with state.ClosedPath(dx + factor / 3, dy + factor / 3) as closer:
-            closer.line_to(dx + 2 * factor / 3, dy + 2 * factor / 3)
-            closer.line_to(dx + 2 * factor / 3, dy + factor / 3)
+        with self.canvas.close_path(dx + factor / 3, dy + factor / 3):
+            self.canvas.line_to(dx + 2 * factor / 3, dy + 2 * factor / 3)
+            self.canvas.line_to(dx + 2 * factor / 3, dy + factor / 3)
 
-    def draw_triangles(self, state, factor):
+    def draw_triangles(self, factor):
         # calculate offsets to centralize drawing in the bigger axis
         triangle_size = factor / 5
         gap = factor / 12
@@ -479,54 +479,54 @@ class CanvasApp(toga.App):
             (gap, -2 * triangle_size),
             (-triangle_size, -triangle_size + gap),
         ]:
-            with state.state() as triangle:
-                triangle.translate(self.x_middle + x, self.y_middle + y)
-                triangle.move_to(0, 0)
-                triangle.line_to(2 * triangle_size, 0)
-                triangle.line_to(triangle_size, triangle_size)
-                triangle.line_to(0, 0)
+            with self.canvas.state():
+                self.canvas.translate(self.x_middle + x, self.y_middle + y)
+                self.canvas.move_to(0, 0)
+                self.canvas.line_to(2 * triangle_size, 0)
+                self.canvas.line_to(triangle_size, triangle_size)
+                self.canvas.line_to(0, 0)
 
-    def draw_rectangle(self, state, factor):
-        state.rect(
+    def draw_rectangle(self, factor):
+        self.canvas.rect(
             self.x_middle - factor / 3,
             self.y_middle - factor / 6,
             2 * factor / 3,
             factor / 3,
         )
 
-    def draw_ellipse(self, state, factor):
+    def draw_ellipse(self, factor):
         rx = factor / 3
         ry = factor / 4
 
-        state.ellipse(self.width / 2, self.height / 2, rx, ry)
+        self.canvas.ellipse(self.width / 2, self.height / 2, rx, ry)
 
-    def draw_half_ellipse(self, state, factor):
+    def draw_half_ellipse(self, factor):
         rx = factor / 3
         ry = factor / 4
 
-        with state.ClosedPath(self.x_middle + rx, self.y_middle) as closer:
-            closer.ellipse(self.x_middle, self.y_middle, rx, ry, 0, 0, math.pi)
+        with self.canvas.close_path(self.x_middle + rx, self.y_middle):
+            self.canvas.ellipse(self.x_middle, self.y_middle, rx, ry, 0, 0, math.pi)
 
-    def draw_ice_cream(self, state, factor):
+    def draw_ice_cream(self, factor):
         dx = self.x_middle
         dy = self.y_middle - factor / 6
-        with state.ClosedPath(dx - factor / 5, dy) as closer:
-            closer.arc(dx, dy, factor / 5, math.pi, 2 * math.pi)
-            closer.line_to(dx, dy + 2 * factor / 5)
+        with self.canvas.close_path(dx - factor / 5, dy):
+            self.canvas.arc(dx, dy, factor / 5, math.pi, 2 * math.pi)
+            self.canvas.line_to(dx, dy + 2 * factor / 5)
 
-    def draw_smile(self, state, factor):
+    def draw_smile(self, factor):
         dx = self.x_middle
         dy = self.y_middle - factor / 5
-        with state.ClosedPath(dx - factor / 5, dy) as closer:
-            closer.quadratic_curve_to(dx, dy + 3 * factor / 5, dx + factor / 5, dy)
-            closer.quadratic_curve_to(dx, dy + factor / 5, dx - factor / 5, dy)
+        with self.canvas.close_path(dx - factor / 5, dy):
+            self.canvas.quadratic_curve_to(dx, dy + 3 * factor / 5, dx + factor / 5, dy)
+            self.canvas.quadratic_curve_to(dx, dy + factor / 5, dx - factor / 5, dy)
 
-    def draw_sea(self, state, factor):
-        with state.ClosedPath(
+    def draw_sea(self, factor):
+        with self.canvas.close_path(
             self.x_middle - 1 * factor / 5,
             self.y_middle - 1 * factor / 5,
-        ) as closer:
-            closer.bezier_curve_to(
+        ):
+            self.canvas.bezier_curve_to(
                 self.x_middle - 1 * factor / 10,
                 self.y_middle,
                 self.x_middle + 1 * factor / 10,
@@ -534,35 +534,34 @@ class CanvasApp(toga.App):
                 self.x_middle + 1 * factor / 5,
                 self.y_middle - 1 * factor / 5,
             )
-            closer.line_to(
+            self.canvas.line_to(
                 self.x_middle + 1 * factor / 5,
                 self.y_middle + 1 * factor / 5,
             )
-            closer.line_to(
+            self.canvas.line_to(
                 self.x_middle - 1 * factor / 5,
                 self.y_middle + 1 * factor / 5,
             )
 
-    def draw_star(self, state, factor):
+    def draw_star(self, factor):
         sides = 5
         radius = factor / 5
         rotation_angle = 4 * math.pi / sides
-        with state.ClosedPath(self.x_middle, self.y_middle - radius) as closer:
+        with self.canvas.close_path(self.x_middle, self.y_middle - radius):
             for i in range(1, sides):
-                closer.line_to(
+                self.canvas.line_to(
                     self.x_middle + radius * math.sin(i * rotation_angle),
                     self.y_middle - radius * math.cos(i * rotation_angle),
                 )
 
-    def draw_image(self, state, factor):
-        with state.state() as ctx:
-            ctx.draw_image(
-                self.image,
-                self.x_middle - self.image.width / 2,
-                self.y_middle - self.image.height / 2,
-            )
+    def draw_image(self, factor):
+        self.canvas.draw_image(
+            self.image,
+            self.x_middle - self.image.width / 2,
+            self.y_middle - self.image.height / 2,
+        )
 
-    def draw_instructions(self, state, factor):
+    def draw_instructions(self, factor):
         text = (
             "Instructions:\n"
             "1. Use the controls to modify the image\n"
@@ -580,7 +579,7 @@ class CanvasApp(toga.App):
         width, height = self.canvas.measure_text(
             text, font, self.line_height_slider.value
         )
-        state.write_text(
+        self.canvas.write_text(
             text,
             self.x_middle - width / 2,
             self.y_middle,
@@ -588,6 +587,7 @@ class CanvasApp(toga.App):
             Baseline.MIDDLE,
             self.line_height_slider.value,
         )
+        self.canvas.redraw()
 
     def get_weight(self):
         return BOLD if self.bold_switch.value else NORMAL
@@ -597,12 +597,12 @@ class CanvasApp(toga.App):
 
     def get_state(self):
         if self.state_selection.value == STROKE:
-            return self.canvas.Stroke(
+            return self.canvas.stroke(
                 color=str(self.color_selection.value),
                 line_width=self.stroke_width_slider.value,
                 line_dash=self.dash_patterns[self.dash_pattern_selection.value],
             )
-        return self.canvas.Fill(
+        return self.canvas.fill(
             color=self.color_selection.value,
             fill_rule=FillRule[self.fill_rule_selection.value],
         )

@@ -5,10 +5,9 @@ from .drawingaction import (
     Arc,
     BeginPath,
     BezierCurveTo,
-    ClosePath,
+    DrawImage,
     DrawingAction,
     Ellipse,
-    Fill,
     LineTo,
     MoveTo,
     QuadraticCurveTo,
@@ -16,21 +15,24 @@ from .drawingaction import (
     ResetTransform,
     Rotate,
     Scale,
-    Stroke,
     Translate,
     WriteText,
 )
 from .geometry import arc_to_bezier, sweepangle
-from .state import ClosedPathContext, FillContext, State, StrokeContext
+from .state import ClosePath, Fill, State, Stroke
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 _deprecated_names = {
-    # Jan 2026: DrawingAction was named DrawingObject, and State was named Context, in
-    # Toga 0.5.3 and earlier.
+    # 2026-02: The following have different names than they did in Toga 0.5.3 and
+    # earlier.
     "DrawingObject": DrawingAction,
     "Context": State,
+    # No one should be using these directly anyway, but just in case...
+    "ClosedPathContext": ClosePath,
+    "FillContext": Fill,
+    "StrokeContext": Stroke,
 }
 
 
@@ -54,9 +56,8 @@ __all__ = [
     "Arc",
     "BeginPath",
     "BezierCurveTo",
-    "ClosePath",
+    "DrawImage",
     "Ellipse",
-    "Fill",
     "LineTo",
     "MoveTo",
     "QuadraticCurveTo",
@@ -64,14 +65,13 @@ __all__ = [
     "ResetTransform",
     "Rotate",
     "Scale",
-    "Stroke",
     "Translate",
     "WriteText",
     # States
-    "ClosedPathContext",
     "State",
-    "FillContext",
-    "StrokeContext",
+    "Fill",
+    "Stroke",
+    "ClosePath",
     # Geometry
     "arc_to_bezier",
     "sweepangle",
