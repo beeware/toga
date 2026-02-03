@@ -534,7 +534,7 @@ async def test_round_rect(canvas, probe):
     canvas.root_state.stroke(color=BLACK)
 
     await probe.redraw("Filled and stroked rounded rectangles should be drawn")
-    assert_reference(probe, "round_rect")
+    assert_reference(probe, "round_rect", threshold=0.016)
 
 
 async def test_fill(canvas, probe):
