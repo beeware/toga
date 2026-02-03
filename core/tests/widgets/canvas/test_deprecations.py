@@ -1,3 +1,5 @@
+from weakref import ref
+
 import pytest
 
 import toga
@@ -29,6 +31,10 @@ from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
 )
+
+# Insert a dead weakref first in the list, just to make sure we cover the case of
+# checking against a nonexistent canvas.
+toga.Canvas._instances.insert(0, ref(toga.Canvas()))
 
 
 @pytest.mark.parametrize(
