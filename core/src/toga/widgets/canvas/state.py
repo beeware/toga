@@ -15,6 +15,7 @@ from toga.images import Image
 
 from .drawingaction import (
     Arc,
+    ArcTo,
     BeginPath,
     BezierCurveTo,
     ClosePath,
@@ -175,6 +176,7 @@ class DrawingActionDispatch(ABC):
 
         :param x: The X coordinate of the circle's center.
         :param y: The Y coordinate of the circle's center.
+        :param radius: The radius coordinate of the circle.
         :param startangle: The start angle in radians, measured clockwise from the
             positive X axis.
         :param endangle: The end angle in radians, measured clockwise from the positive
@@ -188,6 +190,34 @@ class DrawingActionDispatch(ABC):
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
         self._action_target.append(arc)
         return arc
+
+    def arc_to(
+        self,
+        x1: float,
+        y1: float,
+        x2: float,
+        y2: float,
+        radius: float,
+    ) -> ArcTo:
+        """Draw a circular arc specified by tangents and a radius in the canvas state.
+
+        This draws a straight line and circular arc from the current point to the point
+        (x2, y2).  The arc is drawn with the specified radius and tangent to the line
+        segments from the current point to (x1, y1) and the line segment from (x1, y1)
+        to (x2, y2).  This effectively draws the arc in the "corner" formed by the two
+        tangent lines.
+
+        :param x1: The X coordinate of the 'corner' point.
+        :param y1: The Y coordinate of the 'corner' point.
+        :param x2: The X coordinate of the point determining the point.
+        :param y2: The Y coordinate of the 'end' point.
+        :param radius: The radius coordinate of the circular arc.
+        :returns: The `ArcTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        arc_to = ArcTo(x1, y1, x2, y2, radius)
+        self._action_target.append(arc_to)
+        return arc_to
 
     def ellipse(
         self,

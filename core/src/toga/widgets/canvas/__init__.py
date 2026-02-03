@@ -20,7 +20,7 @@ from .drawingaction import (
     Translate,
     WriteText,
 )
-from .geometry import arc_to_bezier, sweepangle
+from .geometry import arc_to_bezier, arc_to_quad_points, sweepangle
 from .state import ClosedPathContext, FillContext, State, StrokeContext
 
 # Make sure deprecation warnings are shown by default
@@ -75,4 +75,5 @@ __all__ = [
     # Geometry
     "arc_to_bezier",
     "sweepangle",
+    "arc_to_quad_points",
 ]

@@ -135,6 +135,10 @@ class Context:
             self.native, x, y, radius, startangle, endangle, clockwise
         )
 
+    def arc_to(self, x1, y1, x2, y2, radius):
+        self._ensure_subpath(x1, y1)
+        core_graphics.CGContextAddArcToPoint(self.native, x1, y1, x2, y2, radius)
+
     def ellipse(
         self,
         x,

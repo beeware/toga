@@ -25,7 +25,7 @@ from System.IO import MemoryStream
 from toga.colors import TRANSPARENT, rgb
 from toga.constants import Baseline, FillRule
 from toga.handlers import WeakrefCallable
-from toga.widgets.canvas import arc_to_bezier, sweepangle
+from toga.widgets.canvas import arc_to_bezier, arc_to_quad_points, sweepangle
 from toga_winforms.colors import native_color
 
 from .box import Box
@@ -101,7 +101,8 @@ class Context:
         elif self.start_point:
             return self.start_point
         else:
-            return PointF(default_x, default_y)
+            self.start_point = PointF(default_x, default_y)
+            return self.start_point
 
     def transform_path(self, matrix):
         """Transform the current path using a matrix."""
@@ -192,6 +193,22 @@ class Context:
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
         self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
+
+    def arc_to(self, x1, y1, x2, y2, radius):
+        last_point = self.get_last_point(x1, y1)
+        x0, y0 = (last_point.X, last_point.Y)
+
+        # get tangent points and control points
+        points = arc_to_quad_points((x0, y0), (x1, y1), (x2, y2), radius)
+
+        # draw line to start of arc
+        self.line_to(*points[0])
+
+        if len(points) == 5:
+            # use 2 quad Bezier curve as approximation to circular arc
+            cp1, t2, cp2, t3 = points[1:]
+            self.quadratic_curve_to(*cp1, *t2)
+            self.quadratic_curve_to(*cp2, *t3)
 
     def ellipse(
         self,

@@ -2,7 +2,7 @@ from math import pi
 
 from pytest import approx
 
-from toga.widgets.canvas import arc_to_bezier, sweepangle
+from toga.widgets.canvas import arc_to_bezier, arc_to_quad_points, sweepangle
 
 
 def test_sweepangle():
@@ -216,3 +216,64 @@ def test_arc_to_bezier():
             (1.0, 0.0),
         ],
     )
+
+
+def assert_arc_to_quad_points(args, expected):
+    actual = arc_to_quad_points(*args)
+    for a, e in zip(actual, expected, strict=True):
+        assert a[0] == approx(e[0], abs=0.000001)
+        assert a[1] == approx(e[1], abs=0.000001)
+
+
+def test_arc_to_quad_points():
+    assert_arc_to_quad_points(
+        [(10, 10), (20, 10), (20, 20), 10],
+        [
+            (10, 10),
+            (14.1421356, 10),
+            (17.07106781, 12.92893218),
+            (20, 15.85786437),
+            (20, 20),
+        ],
+    )
+    assert_arc_to_quad_points(
+        [(0, 10), (20, 10), (20, 30), 10],
+        [
+            (10, 10),
+            (14.1421356, 10),
+            (17.07106781, 12.92893218),
+            (20, 15.85786437),
+            (20, 20),
+        ],
+    )
+    assert_arc_to_quad_points(
+        [(15, 10), (20, 10), (20, 15), 10],
+        [
+            (10, 10),
+            (14.1421356, 10),
+            (17.07106781, 12.92893218),
+            (20, 15.85786437),
+            (20, 20),
+        ],
+    )
+
+    # The following handle the edge-cases in the standard:
+    # https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-arcto
+
+    # straight
+    assert_arc_to_quad_points([(10, 10), (20, 10), (30, 10), 10], [(20, 10)])
+    assert_arc_to_quad_points([(0, 10), (20, 10), (40, 10), 10], [(20, 10)])
+    assert_arc_to_quad_points([(15, 10), (20, 10), (25, 10), 10], [(20, 10)])
+
+    # 180 degrees
+    assert_arc_to_quad_points([(10, 10), (20, 10), (10, 10), 10], [(20, 10)])
+    assert_arc_to_quad_points([(15, 10), (20, 10), (15, 10), 10], [(20, 10)])
+    assert_arc_to_quad_points([(5, 10), (20, 10), (5, 10), 10], [(20, 10)])
+
+    # radius 0
+    assert_arc_to_quad_points([(10, 10), (20, 10), (20, 20), 0], [(20, 10)])
+
+    # identical points
+    assert_arc_to_quad_points([(20, 10), (20, 10), (20, 10), 10], [(20, 10)])
+    assert_arc_to_quad_points([(20, 10), (20, 10), (20, 20), 10], [(20, 10)])
+    assert_arc_to_quad_points([(10, 10), (20, 10), (20, 10), 10], [(20, 10)])

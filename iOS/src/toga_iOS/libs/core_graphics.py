@@ -87,6 +87,15 @@ core_graphics.CGContextAddArc.argtypes = [
     CGFloat,
     c_int,
 ]
+core_graphics.CGContextAddArcToPoint.restype = c_void_p
+core_graphics.CGContextAddArcToPoint.argtypes = [
+    CGContextRef,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+]
 core_graphics.CGContextAddCurveToPoint.restype = c_void_p
 core_graphics.CGContextAddCurveToPoint.argtypes = [
     CGContextRef,

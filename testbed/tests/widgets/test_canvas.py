@@ -24,7 +24,7 @@ from toga.fonts import BOLD
 from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM, Pack
 
-from .conftest import build_cleanup_test
+from .conftest import build_cleanup_test, skip_on_backends, xfail_on_backends
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -415,6 +415,30 @@ async def test_arc(canvas, probe):
 
     await probe.redraw("Smiley face should be drawn")
     assert_reference(probe, "arc", threshold=0.03)
+
+
+async def test_arc_to(canvas, probe):
+    "An arc given by tangents and radius can be drawn"
+    skip_on_backends("toga_android", reason="Can't compute current point for tangent.")
+    canvas.root_state.begin_path()
+
+    canvas.root_state.move_to(115, 10)
+    canvas.root_state.arc_to(120, 10, 120, 15, 30)
+    canvas.root_state.arc_to(120, 120, 25, 25, 10)
+    canvas.root_state.stroke()
+
+    # If there is no current point the HTML spec says to make (x1, y1)
+    # the current point (effectively draws straight line from (x1, y1)
+    # to (x2, y2)). Firefox does not conform to the spec.
+    # https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-arcto
+    canvas.root_state.begin_path()
+    canvas.root_state.arc_to(180, 180, 100, 180, 30)
+    canvas.root_state.line_to(50, 180)
+    canvas.root_state.stroke()
+
+    await probe.redraw("Arcs and lines should be drawn")
+    xfail_on_backends("toga_winforms", reason="Draws a too-long line.")
+    assert_reference(probe, "arc_to")
 
 
 async def test_ellipse(canvas, probe):

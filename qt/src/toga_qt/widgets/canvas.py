@@ -16,7 +16,7 @@ from travertino.size import at_least
 
 from toga.colors import rgb
 from toga.constants import Baseline, FillRule
-from toga.widgets.canvas.geometry import arc_to_bezier, sweepangle
+from toga.widgets.canvas.geometry import arc_to_bezier, arc_to_quad_points, sweepangle
 
 from ..colors import native_color
 from .base import Widget
@@ -127,6 +127,28 @@ class Context:
             -degrees(startangle),
             -degrees(sweepangle(startangle, endangle, counterclockwise)),
         )
+
+    def arc_to(self, x1, y1, x2, y2, radius):
+        if self._path.elementCount() == 0:
+            # if this is the first point of the path, move to
+            self._path.moveTo(x1, y1)
+
+        current_point = self._path.currentPosition()
+        x0 = current_point.x()
+        y0 = current_point.y()
+
+        # get tangent points and control points
+        points = arc_to_quad_points((x0, y0), (x1, y1), (x2, y2), radius)
+
+        # draw line to start of arc
+        self._path.lineTo(*points[0])
+
+        if len(points) == 5:
+            cp1, t2, cp2, t3 = points[1:]
+
+            # use 2 quad Bezier curve as approximation to circular arc
+            self._path.quadTo(*cp1, *t2)
+            self._path.quadTo(*cp2, *t3)
 
     def ellipse(
         self,
