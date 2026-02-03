@@ -420,7 +420,6 @@ async def test_arc(canvas, probe):
 async def test_arc_to(canvas, probe):
     "An arc given by tangents and radius can be drawn"
     skip_on_backends("toga_android", reason="Can't compute current point for tangent.")
-    xfail_on_backends("toga_winforms", reason="Draws a too-long line.")
     canvas.root_state.begin_path()
 
     canvas.root_state.move_to(115, 10)
@@ -438,6 +437,7 @@ async def test_arc_to(canvas, probe):
     canvas.root_state.stroke()
 
     await probe.redraw("Arcs and lines should be drawn")
+    xfail_on_backends("toga_winforms", reason="Draws a too-long line.")
     assert_reference(probe, "arc_to")
 
 
