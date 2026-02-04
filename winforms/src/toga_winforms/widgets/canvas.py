@@ -49,7 +49,7 @@ class Path:
     @property
     def last_point(self):
         last_point = self.native.GetLastPoint()
-        if last_point.IsEmpty():
+        if last_point.IsEmpty:
             return self._subpath_start
         else:
             return last_point
@@ -58,7 +58,7 @@ class Path:
         self.native.CloseFigure()
 
     def move_to(self, x, y):
-        if not self.native.GetLastPoint().IsEmpty():
+        if not self.native.GetLastPoint().IsEmpty:
             self.native.StartFigure()
         self._subpath_start = PointF(x, y)
 
@@ -127,7 +127,7 @@ class Path:
         matrix.TransformPoints(points)
 
         start = self._subpath_start
-        if start and self.native.GetLastPoint().IsEmpty():
+        if start and self.native.GetLastPoint().IsEmpty:
             self.native.AddLine(start, start)
         self.native.AddBeziers(points)
 
