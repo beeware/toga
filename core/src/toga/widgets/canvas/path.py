@@ -1,3 +1,4 @@
+# pragma: no cover
 import copy
 from collections.abc import Sequence
 from dataclasses import dataclass
