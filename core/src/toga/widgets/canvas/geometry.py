@@ -80,7 +80,9 @@ def arc_to_bezier(sweepangle: float) -> list[tuple[float, float]]:
 
 
 def get_round_rect_radii(
-    w: float, h: float, radii: float | CornerRadiusT | Iterable[float | CornerRadiusT]
+    w: float,
+    h: float,
+    radii: float | CornerRadiusT | Iterable[float | CornerRadiusT],
 ) -> list[tuple[int | float, int | float]]:
     """Determine the corner radii for a rounded rectangle.
 
