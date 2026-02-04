@@ -1,3 +1,12 @@
+from ctypes import (
+    POINTER,
+    WINFUNCTYPE,
+    Structure as c_Structure,
+    c_size_t,
+    cast,
+    windll,
+)
+from ctypes.wintypes import HWND, INT, LPARAM, LPWSTR, UINT, WPARAM
 from warnings import warn
 
 import System.Windows.Forms as WinForms
@@ -5,6 +14,89 @@ import System.Windows.Forms as WinForms
 from toga.handlers import WeakrefCallable
 
 from .base import Widget
+
+################################################
+# C classes used with Windows shell functions.
+################################################
+LRESULT = LPARAM  # LPARAM is essentially equivalent to LRESULT
+UINT_PTR = c_size_t
+DWORD_PTR = c_size_t
+
+
+class LVITEMW(c_Structure):
+    _fields_ = [
+        ("uiMask", UINT),
+        ("iItem", INT),
+        ("iSubItem", INT),
+        ("state", UINT),
+        ("stateMask", UINT),
+        ("pszText", LPWSTR),
+        ("cchTextMax", INT),
+        ("iImage", INT),
+        ("lParam", LPARAM),
+        ("iIndent", INT),
+        ("iGroupId", INT),
+        ("cColumns", UINT),
+        ("puColumns", POINTER(UINT)),
+        ("piColFmt", INT),
+        ("iGroup", INT),
+    ]
+
+
+class NMHDR(c_Structure):
+    _fields_ = [
+        ("hwndFrom", HWND),
+        ("idFrom", UINT_PTR),
+        ("code", UINT),
+    ]
+
+
+class NMLVDISPINFOW(c_Structure):
+    _fields_ = [
+        ("hdr", NMHDR),
+        ("item", LVITEMW),
+    ]
+
+
+SUBCLASSPROC = WINFUNCTYPE(
+    # Return type:
+    LRESULT,
+    # Argument types:
+    HWND,
+    UINT,
+    WPARAM,
+    LPARAM,
+    UINT_PTR,
+    DWORD_PTR,
+)
+
+################################################
+# Windows shell functions.
+################################################
+PostMessageW = windll.user32.PostMessageW
+
+DefSubclassProc = windll.comctl32.DefSubclassProc
+SetWindowSubclass = windll.comctl32.SetWindowSubclass
+RemoveWindowSubclass = windll.comctl32.RemoveWindowSubclass
+
+################################################
+# Windows message hex codes.
+################################################
+LVIF_TEXT = 0x0001
+LVIF_IMAGE = 0x0002
+LVIF_STATE = 0x0008
+
+LVM_GETEXTENDEDLISTVIEWSTYLE = 0x1037
+LVM_SETEXTENDEDLISTVIEWSTYLE = 0x1036
+
+LVN_GETDISPINFOW = 0xFFFFFF4F
+
+LVS_EX_SUBITEMIMAGES = 0x2
+
+WM_NCDESTROY = 0x0082
+WM_REFLECT_NOTIFY = 0x204E
+
+################################################
 
 
 class Table(Widget):
@@ -26,8 +118,14 @@ class Table(Widget):
         return self.interface.data
 
     def create(self):
+        self.pfn_subclass = SUBCLASSPROC(self._subclass_proc)
         self.native = WinForms.ListView()
+        self._set_subclass()
+
+        self.native.HandleCreated += WeakrefCallable(self.handle_created)
+
         self.native.View = WinForms.View.Details
+        self._enable_multi_icon_style()
         self._cache = []
         self._first_item = 0
         self._pending_resize = True
@@ -67,6 +165,57 @@ class Table(Widget):
         )
         self.add_action_events()
 
+    def _enable_multi_icon_style(self):
+        list_view_handle = int(self.native.Handle.ToString())
+
+        old_style = PostMessageW(list_view_handle, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0)
+        new_style = old_style | LVS_EX_SUBITEMIMAGES
+
+        PostMessageW(list_view_handle, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, new_style)
+
+    def handle_created(self, sender, e):
+        self._set_subclass()
+
+    def _set_subclass(self):
+        SetWindowSubclass(int(self.native.Handle.ToString()), self.pfn_subclass, 0, 0)
+
+    def _subclass_proc(
+        self,
+        hWnd: int,
+        uMsg: int,
+        wParam: int,
+        lParam: int,
+        uIdSubclass: int,
+        dwRefData: int,
+    ) -> LRESULT:
+        # Remove the window subclass in the way recommended by Raymond Chen here:
+        # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
+        if uMsg == WM_NCDESTROY:
+            RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
+
+        if uMsg == WM_REFLECT_NOTIFY:
+            phdr = cast(lParam, POINTER(NMHDR)).contents
+            code = phdr.code
+            if hex(code) == hex(LVN_GETDISPINFOW):
+                disp_info = cast(lParam, POINTER(NMLVDISPINFOW)).contents
+                self._set_subitem_icon(disp_info.item)
+
+        # Call the original window procedure
+        return DefSubclassProc(HWND(hWnd), UINT(uMsg), LPARAM(wParam), LPARAM(lParam))
+
+    def _set_subitem_icon(self, lvitem: LVITEMW):
+        row_index = lvitem.iItem
+        column_index = lvitem.iSubItem
+
+        _, icon_indices = self._toga_retrieve_virtual_item(row_index)
+
+        # Add the icon property if it doesn't exist.
+        if lvitem.uiMask == (LVIF_TEXT | LVIF_STATE):
+            lvitem.uiMask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE
+
+        if lvitem.uiMask & LVIF_IMAGE != 0 and icon_indices[column_index] > -1:
+            lvitem.iImage = icon_indices[column_index]
+
     def add_action_events(self):
         self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
 
@@ -80,14 +229,17 @@ class Table(Widget):
         # Because ListView is in VirtualMode, it's necessary implement
         # VirtualItemsSelectionRangeChanged event to create ListViewItem
         # when it's needed
+        e.Item, _ = self._toga_retrieve_virtual_item(e.ItemIndex)
+
+    def _toga_retrieve_virtual_item(self, item_index):
         if (
             self._cache
-            and e.ItemIndex >= self._first_item
-            and e.ItemIndex < self._first_item + len(self._cache)
+            and item_index >= self._first_item
+            and item_index < self._first_item + len(self._cache)
         ):
-            e.Item = self._cache[e.ItemIndex - self._first_item]
+            return self._cache[item_index - self._first_item]
         else:
-            e.Item = self._new_item(e.ItemIndex)
+            return self._new_item(item_index)
 
     def winforms_cache_virtual_items(self, sender, e):
         if (
@@ -194,28 +346,26 @@ class Table(Widget):
     def change_source(self, source):
         self.update_data()
 
+    def _icon_index(self, row, column) -> int:
+        icon = column.icon(row)
+        return -1 if icon is None else self._image_index(icon._impl)
+
     def _new_item(self, index):
-        item = self._data[index]
+        row = self._data[index]
 
         missing_value = self.interface.missing_value
         lvi = WinForms.ListViewItem(
-            [column.text(item, missing_value) for column in self._columns],
+            [column.text(row, missing_value) for column in self._columns],
         )
-        if any(column.widget(item) is not None for column in self._columns):
+        if any(column.widget(row) is not None for column in self._columns):
             warn(
                 "Winforms does not support the use of widgets in cells",
                 stacklevel=1,
             )
 
-        # If the table has accessors, populate the icons for the table.
-        if self._columns:
-            # TODO: ListView only has built-in support for one icon per row. One
-            # possible workaround is in https://stackoverflow.com/a/46128593.
-            icon = self._columns[0].icon(item)
-            if icon is not None:
-                lvi.ImageIndex = self._image_index(icon._impl)
+        icon_indices = tuple(self._icon_index(row, column) for column in self._columns)
 
-        return lvi
+        return (lvi, icon_indices)
 
     def _image_index(self, icon):
         images = self.native.SmallImageList.Images
