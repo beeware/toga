@@ -607,7 +607,7 @@ def test_round_rect(widget):
 
     # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
-        ("rect", {"x": 10, "y": 20, "width": 30, "height": 40, "radii": 5}),
+        ("round rect", {"x": 10, "y": 20, "width": 30, "height": 40, "radii": 5}),
     ]
 
     # All the attributes can be retrieved.

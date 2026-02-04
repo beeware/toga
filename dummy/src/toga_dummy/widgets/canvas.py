@@ -120,7 +120,7 @@ class Context:
     def round_rect(self, x, y, width, height, radii):
         self.impl.draw_instructions.append(
             (
-                "rect",
+                "round rect",
                 {"x": x, "y": y, "width": width, "height": height, "radii": radii},
             )
         )
