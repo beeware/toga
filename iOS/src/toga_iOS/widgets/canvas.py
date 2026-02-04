@@ -20,7 +20,7 @@ from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, Color
 from toga.constants import Baseline, FillRule
-from toga.widgets.canvas import round_rect
+from toga.widgets.canvas.geometry import round_rect
 from toga_iOS.colors import native_color
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (

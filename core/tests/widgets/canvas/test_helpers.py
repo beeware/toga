@@ -1,8 +1,8 @@
 from math import pi
 
-from pytest import approx, raises
+from pytest import approx, mark, raises
 
-from toga.widgets.canvas import (
+from toga.widgets.canvas.geometry import (
     arc_to_bezier,
     get_round_rect_radii,
     round_rect,
@@ -292,51 +292,45 @@ def test_round_rect():
     ]
 
 
-def assert_get_round_rect_radii(w, h, radii, expected):
+class Radius:
+    x: float
+    y: float
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
+@mark.parametrize(
+    "w, h, radii, expected",
+    # argument handling
+    [
+        (20, 30, 5, [(5, 5), (5, 5), (5, 5), (5, 5)]),
+        (20, 30, 5.5, [(5.5, 5.5), (5.5, 5.5), (5.5, 5.5), (5.5, 5.5)]),
+        (20, 30, [5], [(5, 5), (5, 5), (5, 5), (5, 5)]),
+        (20, 30, [5, 6], [(5, 5), (6, 6), (6, 6), (5, 5)]),
+        (20, 30, [5, 6, 7], [(5, 5), (6, 6), (6, 6), (7, 7)]),
+        (20, 30, [5, 6, 7, 8], [(5, 5), (6, 6), (7, 7), (8, 8)]),
+        (20, 30, Radius(5, 6), [(5, 6), (5, 6), (5, 6), (5, 6)]),
+        (20, 30, [Radius(5, 6)], [(5, 6), (5, 6), (5, 6), (5, 6)]),
+        (20, 30, [Radius(5, 6), 7], [(5, 6), (7, 7), (7, 7), (5, 6)]),
+        # scaling needed
+        (10, 20, 10, [(5, 5), (5, 5), (5, 5), (5, 5)]),
+        (20, 20, Radius(5, 20), [(2.5, 10), (2.5, 10), (2.5, 10), (2.5, 10)]),
+        # negative width and/or height
+        (-20, 30, 5, [(-5, 5), (-5, 5), (-5, 5), (-5, 5)]),
+        (20, -30, 5, [(5, -5), (5, -5), (5, -5), (5, -5)]),
+        # degenerate cases
+        (0, 20, 5, [(0, 0), (0, 0), (0, 0), (0, 0)]),
+        (20, 0, 5, [(0, 0), (0, 0), (0, 0), (0, 0)]),
+    ],
+)
+def test_get_round_rect_radii(w, h, radii, expected):
     actual = get_round_rect_radii(w, h, radii)
     assert actual == expected
 
 
-def test_get_round_rect_radii():
-    class Radius:
-        x: float
-        y: float
-
-        def __init__(self, x, y):
-            self.x = x
-            self.y = y
-
-    # argument handling
-    assert_get_round_rect_radii(20, 30, 5, [(5, 5), (5, 5), (5, 5), (5, 5)])
-    assert_get_round_rect_radii(
-        20, 30, 5.5, [(5.5, 5.5), (5.5, 5.5), (5.5, 5.5), (5.5, 5.5)]
-    )
-    assert_get_round_rect_radii(20, 30, [5], [(5, 5), (5, 5), (5, 5), (5, 5)])
-    assert_get_round_rect_radii(20, 30, [5, 6], [(5, 5), (6, 6), (6, 6), (5, 5)])
-    assert_get_round_rect_radii(20, 30, [5, 6, 7], [(5, 5), (6, 6), (6, 6), (7, 7)])
-    assert_get_round_rect_radii(20, 30, [5, 6, 7, 8], [(5, 5), (6, 6), (7, 7), (8, 8)])
-    assert_get_round_rect_radii(20, 30, Radius(5, 6), [(5, 6), (5, 6), (5, 6), (5, 6)])
-    assert_get_round_rect_radii(
-        20, 30, [Radius(5, 6)], [(5, 6), (5, 6), (5, 6), (5, 6)]
-    )
-    assert_get_round_rect_radii(
-        20, 30, [Radius(5, 6), 7], [(5, 6), (7, 7), (7, 7), (5, 6)]
-    )
-
-    # scaling needed
-    assert_get_round_rect_radii(10, 20, 10, [(5, 5), (5, 5), (5, 5), (5, 5)])
-    assert_get_round_rect_radii(
-        20, 20, Radius(5, 20), [(2.5, 10), (2.5, 10), (2.5, 10), (2.5, 10)]
-    )
-
-    # negative width and/or height
-    assert_get_round_rect_radii(-20, 30, 5, [(-5, 5), (-5, 5), (-5, 5), (-5, 5)])
-    assert_get_round_rect_radii(20, -30, 5, [(5, -5), (5, -5), (5, -5), (5, -5)])
-
-    # degenerate cases
-    assert_get_round_rect_radii(0, 20, 5, [(0, 0), (0, 0), (0, 0), (0, 0)])
-    assert_get_round_rect_radii(20, 0, 5, [(0, 0), (0, 0), (0, 0), (0, 0)])
-
+def test_get_round_rect_radii_errors():
     # radii length
     with raises(
         ValueError,

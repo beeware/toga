@@ -10,7 +10,7 @@ from toga.colors import rgb
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.handlers import WeakrefCallable
-from toga.widgets.canvas import round_rect
+from toga.widgets.canvas.geometry import round_rect
 from toga_gtk.colors import native_color
 from toga_gtk.libs import (
     GTK_VERSION,
