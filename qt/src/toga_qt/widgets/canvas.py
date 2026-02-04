@@ -40,6 +40,7 @@ class State:
             self.stroke = QPen(BLACK)
             self.stroke.setCapStyle(Qt.PenCapStyle.FlatCap)
             self.stroke.setWidth(2.0)
+            self.stroke.setJoinStyle(Qt.MiterJoin)
 
 
 class Context:

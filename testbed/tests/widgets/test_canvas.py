@@ -112,7 +112,7 @@ test_cleanup = build_cleanup_test(toga.Canvas)
 
 
 async def test_resize(widget, probe, on_resize_handler):
-    "Resizing the widget causes on-resize events"
+    """Resizing the widget causes on-resize events."""
     # Make the canvas visible against window background.
     widget.style.background_color = CORNFLOWERBLUE
 
@@ -166,7 +166,7 @@ async def test_activate(
     on_release_handler,
     on_activate_handler,
 ):
-    "Activation events trigger handlers"
+    """Activation events trigger handlers."""
     await probe.mouse_activate(20, 30)
     await probe.redraw("Activate has been handled")
 
@@ -182,7 +182,7 @@ async def test_drag(
     on_drag_handler,
     on_release_handler,
 ):
-    "A drag event triggers a handler"
+    """A drag event triggers a handler."""
     await probe.mouse_drag(20, 40, 70, 90)
     await probe.redraw("Drag has been handled")
 
@@ -192,7 +192,7 @@ async def test_drag(
 
 
 async def test_alt_press(canvas, probe, on_alt_press_handler, on_alt_release_handler):
-    "An alternate press event triggers a handler"
+    """An alternate press event triggers a handler."""
     await probe.alt_mouse_press(20, 40)
     await probe.redraw("Alt press has been handled")
 
@@ -207,7 +207,7 @@ async def test_alt_drag(
     on_alt_drag_handler,
     on_alt_release_handler,
 ):
-    "A drag event triggers a handler"
+    """A drag event triggers a handler."""
     await probe.alt_mouse_drag(20, 40, 70, 90)
     await probe.redraw("Alternate drag has been handled")
 
@@ -217,7 +217,7 @@ async def test_alt_drag(
 
 
 async def test_image_data(canvas, probe):
-    "The canvas can be saved as an image"
+    """The canvas can be saved as an image."""
     with canvas.Stroke(x=0, y=0, color=RED) as stroke:
         stroke.line_to(x=200, y=200)
         stroke.move_to(x=200, y=0)
@@ -245,7 +245,7 @@ async def test_image_data(canvas, probe):
 
 def assert_reference(probe, reference, threshold=0.01):
     """Assert that the canvas currently matches a reference image, within an
-    RMS threshold"""
+    RMS threshold."""
     # Get the canvas image.
     image = probe.get_image()
     scaled_image = image.resize((200, 200))
@@ -283,7 +283,7 @@ def assert_reference(probe, reference, threshold=0.01):
 
 
 async def test_transparency(canvas, probe):
-    "Transparency is preserved in captured images"
+    """Transparency is preserved in captured images."""
     canvas.style.background_color = TRANSPARENT
 
     # Draw a rectangle. move_to is implied
@@ -300,7 +300,7 @@ async def test_transparency(canvas, probe):
 
 
 async def test_paths(canvas, probe):
-    "A path can be drawn"
+    """A path can be drawn."""
 
     # A filled path closes automatically.
     canvas.root_state.begin_path()
@@ -345,7 +345,7 @@ async def test_paths(canvas, probe):
 
 
 async def test_bezier_curve(canvas, probe):
-    "A Bézier curve can be drawn"
+    """A Bézier curve can be drawn."""
 
     canvas.root_state.begin_path()
     canvas.root_state.move_to(100, 44)
@@ -362,7 +362,7 @@ async def test_bezier_curve(canvas, probe):
 
 
 async def test_quadratic_curve(canvas, probe):
-    "A quadratic curve can be drawn"
+    """A quadratic curve can be drawn."""
 
     canvas.root_state.begin_path()
     canvas.root_state.move_to(100, 20)
@@ -379,7 +379,7 @@ async def test_quadratic_curve(canvas, probe):
 
 
 async def test_arc(canvas, probe):
-    "An arc can be drawn"
+    """An arc can be drawn."""
     canvas.root_state.begin_path()
 
     # Face
@@ -418,7 +418,7 @@ async def test_arc(canvas, probe):
 
 
 async def test_ellipse(canvas, probe):
-    "An ellipse can be drawn"
+    """An ellipse can be drawn."""
 
     # Nucleus (filled circle)
     canvas.root_state.move_to(90, 100)
@@ -461,7 +461,7 @@ async def test_ellipse(canvas, probe):
 
 
 async def test_ellipse_path(canvas, probe):
-    "An elliptical arc can be connected to other segments of a path"
+    """An elliptical arc can be connected to other segments of a path."""
 
     state = canvas.root_state
     ellipse_args = {
@@ -498,7 +498,7 @@ async def test_ellipse_path(canvas, probe):
 
 
 async def test_rect(canvas, probe):
-    "A rectangle can be drawn"
+    """A rectangle can be drawn."""
 
     # Draw a rectangle. move_to is implied
     canvas.root_state.begin_path()
@@ -510,7 +510,7 @@ async def test_rect(canvas, probe):
 
 
 async def test_fill(canvas, probe):
-    "A fill can be drawn with primitives"
+    """A fill can be drawn with primitives."""
     # Draw a closed path
     canvas.root_state.begin_path()
     canvas.root_state.move_to(x=60, y=10)
@@ -534,7 +534,7 @@ async def test_fill(canvas, probe):
 
 
 async def test_stroke(canvas, probe):
-    "A stroke can be drawn with primitives"
+    """A stroke can be drawn with primitives."""
     # Draw a closed path
     canvas.root_state.begin_path()
     canvas.root_state.move_to(x=20, y=20)
@@ -584,7 +584,7 @@ async def test_stroke_and_fill(canvas, probe):
 
 
 async def test_closed_path_state(canvas, probe):
-    "A closed path can be built with a state"
+    """A closed path can be built with a state."""
 
     # Build a parallelogram path
     with canvas.root_state.ClosedPath(x=20, y=20) as path:
@@ -600,7 +600,7 @@ async def test_closed_path_state(canvas, probe):
 
 
 async def test_fill_state(canvas, probe):
-    "A fill path can be built with a state"
+    """A fill path can be built with a state."""
 
     # Build a filled parallelogram
     with canvas.root_state.Fill(x=20, y=20, color=REBECCAPURPLE) as path:
@@ -613,7 +613,7 @@ async def test_fill_state(canvas, probe):
 
 
 async def test_stroke_state(canvas, probe):
-    "A stroke can be drawn with a state"
+    """A stroke can be drawn with a state."""
     # Draw a thin line
     with canvas.root_state.Stroke(x=40, y=20, color=REBECCAPURPLE) as stroke:
         stroke.line_to(x=80, y=180)
@@ -629,7 +629,7 @@ async def test_stroke_state(canvas, probe):
 
 
 async def test_stroke_and_fill_state(canvas, probe):
-    "A shape can be stroked and filled using states"
+    """A shape can be stroked and filled using states."""
 
     # Draw a filled parallelogram
     with canvas.root_state.Fill(x=20, y=20, color=REBECCAPURPLE) as fill:
@@ -666,7 +666,7 @@ async def test_nested_stroke_and_fill_state(canvas, probe):
 
 
 async def test_transforms(canvas, probe):
-    "Transforms can be applied"
+    """Transforms can be applied."""
 
     # Draw a rectangle after a horizontal translation
     canvas.root_state.translate(160, 20)
@@ -698,7 +698,7 @@ async def test_transforms(canvas, probe):
 
 
 async def test_transforms_mid_path(canvas, probe):
-    "Transforms can be applied mid-path"
+    """Transforms can be applied mid-path."""
 
     # draw a series of rotated rectangles
     canvas.root_state.begin_path()
@@ -731,7 +731,7 @@ async def test_transforms_mid_path(canvas, probe):
 
 
 async def test_singular_transforms(canvas, probe):
-    "Singular transforms behave reasonably"
+    """Singular transforms behave reasonably."""
     ctx = canvas.root_state
 
     ctx.begin_path()
@@ -792,7 +792,7 @@ async def test_singular_transforms(canvas, probe):
     reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
 )
 async def test_write_text(canvas, probe):
-    "Text can be measured and written"
+    """Text can be measured and written."""
 
     # Use fonts which look different from the system fonts on all platforms.
     Font.register("Droid Serif", "resources/fonts/DroidSerif-Regular.ttf")
@@ -875,7 +875,7 @@ async def test_write_text(canvas, probe):
     reason="may fail outside of a GitHub runner environment",
 )
 async def test_multiline_text(canvas, probe):
-    "Multiline text can be measured and written"
+    """Multiline text can be measured and written."""
 
     # Vertical guidelines
     X = [10, 75, 140]
@@ -993,7 +993,7 @@ async def test_write_text_and_path(canvas, probe):
 
 
 async def test_draw_image_at_point(canvas, probe):
-    "Images can be drawn at a point."
+    """Images can be drawn at a point."""
 
     image = TogaImage("resources/sample.png")
     canvas.root_state.begin_path()
@@ -1004,7 +1004,7 @@ async def test_draw_image_at_point(canvas, probe):
 
 
 async def test_draw_image_in_rect(canvas, probe):
-    "Images can be drawn in a rectangle."
+    """Images can be drawn in a rectangle."""
 
     image = TogaImage("resources/sample.png")
     canvas.root_state.begin_path()
@@ -1017,3 +1017,15 @@ async def test_draw_image_in_rect(canvas, probe):
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "draw_image_in_rect", threshold=0.05)
+
+
+async def test_miter_join(canvas, probe):
+    """Lines are joined with a miter."""
+    with canvas.Stroke(line_width=20, x=50, y=150) as stroke:
+        stroke.line_to(50, 50)
+        stroke.line_to(100, 150)
+        stroke.bezier_curve_to(100, 140, 100, 100, x=150, y=50)
+        stroke.bezier_curve_to(145, 70, 145, 130, x=150, y=150)
+
+    await probe.redraw("Image should be drawn")
+    assert_reference(probe, "miter_join")
