@@ -26,6 +26,106 @@ from .base import Widget
 BLACK = native_color(rgb(0, 0, 0))
 
 
+class Path:
+    def __init__(self, path=None):
+        if path is None:
+            steps = []
+        else:
+            steps = path._steps.copy()
+        self._steps = steps
+        # Cache if C-level path.
+        # Any change to the path invalidates it.
+        self._native_cached = None
+
+    def _ensure_subpath(self, x, y):
+        if not self._steps:
+            self.move_to(x, y)
+
+    def add_path(self, path, transform=None):
+        self._steps.append(("add_path", path.steps.copy(), transform))
+        self._native_cached = None
+
+    def close_path(self):
+        self._steps.append("close_path")
+        self._native_cached = None
+
+    def move_to(self, x, y):
+        self._steps.append(("move_to", x, y))
+        self._native_cached = None
+
+    def line_to(self, x, y):
+        self._steps.append(("line_to", x, y))
+        self._native_cached = None
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self._steps.append(("bezier_curve_to", cp1x, cp1y, cp2x, cp2y, x, y))
+        self._native_cached = None
+
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        self._steps.append(("quadratic_curve_to", cpx, cpy, x, y))
+        self._native_cached = None
+
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        self._steps.append(
+            ("arc", x, y, radius, startangle, endangle, counterclockwise)
+        )
+        self._native_cached = None
+
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
+    ):
+        self._steps.append(
+            (
+                "ellipse",
+                x,
+                y,
+                radiusx,
+                radiusy,
+                rotation,
+                startangle,
+                endangle,
+                counterclockwise,
+            )
+        )
+        self._native_cached = None
+
+    def rect(self, x, y, width, height):
+        self._steps.append(("rect", x, y, width, height))
+        self._native_cached = None
+
+    # extra utility methods
+    def is_empty(self):
+        return not self._steps
+
+    def apply(self, context):
+        context.begin_path()
+        if self._native_cached:
+            # if we have a C-leve cache of the path, use it
+            context.native.add_path(self._native_cached)
+        else:
+            for method, *args in self._steps:
+                if method == "add_path":
+                    path, transform = args
+                    context.save()
+                    try:
+                        context.transform(transform)
+                        path.apply(context)
+                    finally:
+                        context.restore()
+                else:
+                    getattr(context, method)(*args)
+            # Cache the C-level path for reuse
+            self._native_cached = context.copy_path()
+
+
 @dataclass(slots=True)
 class State:
     # GTK doesn't track fill and stroke color separately.
@@ -136,18 +236,30 @@ class Context:
 
     # Drawing Paths
 
-    def fill(self, fill_rule):
+    def fill(self, fill_rule, path=None):
         self.native.set_source_rgba(*self.state.fill_style)
         if fill_rule == FillRule.EVENODD:
             self.native.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
             self.native.set_fill_rule(cairo.FILL_RULE_WINDING)
+        if path is None:
+            self.native.fill_preserve()
+        else:
+            current_path = self.native.copy_path()
+            self.begin_path()
+            path.apply(self)
+            self.native.fill()
+            self.native.add_path(current_path)
 
-        self.native.fill_preserve()
-
-    def stroke(self):
+    def stroke(self, path=None):
         self.native.set_source_rgba(*self.state.stroke_style)
-        self.native.stroke_preserve()
+        if path is None:
+            self.native.stroke_preserve()
+        else:
+            current_path = self.native.copy_path()
+            path.apply(self)
+            self.native.stroke()
+            self.native.add_path(current_path)
 
     # Transformations
 
@@ -166,6 +278,10 @@ class Context:
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
+
+    def transform(self, transform):
+        matrix = cairo.Matrix(*transform)
+        self.native.transform(matrix)
 
     def reset_transform(self):
         self.native.set_matrix(self.original_transform_matrix)

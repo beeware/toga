@@ -33,6 +33,92 @@ from .box import Box
 BLACK = native_color(rgb(0, 0, 0))
 
 
+class Path:
+    # We don't use current_path.CloseFigure, because that causes the dash pattern to
+    # start on the last segment of the path rather than the first one.
+    def close_path(self):
+        if self.native.PointCount:
+            start = self.native.PathPoints[0]
+            self.native.AddLine(self.native.GetLastPoint(), start)
+            self.move_to(start.X, start.Y)
+
+    def move_to(self, x, y):
+        self.add_path(PointF(x, y))
+
+    def line_to(self, x, y):
+        self.current_path.AddLine(self.get_last_point(x, y), PointF(x, y))
+
+    # Basic shapes
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self.current_path.AddBezier(
+            self.get_last_point(cp1x, cp1y),
+            PointF(cp1x, cp1y),
+            PointF(cp2x, cp2y),
+            PointF(x, y),
+        )
+
+    # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
+    # we can convert the single Quadratic control point into the
+    # 2 control points required for the cubic Bézier.
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        last_point = self.get_last_point(cpx, cpy)
+        x0, y0 = (last_point.X, last_point.Y)
+        self.current_path.AddBezier(
+            last_point,
+            PointF(
+                x0 + 2 / 3 * (cpx - x0),
+                y0 + 2 / 3 * (cpy - y0),
+            ),
+            PointF(
+                x + 2 / 3 * (cpx - x),
+                y + 2 / 3 * (cpy - y),
+            ),
+            PointF(x, y),
+        )
+
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
+
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
+    ):
+        matrix = Matrix()
+        matrix.Translate(x, y)
+        matrix.Rotate(degrees(rotation))
+        matrix.Scale(radiusx, radiusy)
+        matrix.Rotate(degrees(startangle))
+
+        points = Array[PointF](
+            [
+                PointF(x, y)
+                for x, y in arc_to_bezier(
+                    sweepangle(startangle, endangle, counterclockwise)
+                )
+            ]
+        )
+        matrix.TransformPoints(points)
+
+        start = self.start_point
+        if start and not self.current_path.PointCount:
+            self.current_path.AddLine(start, start)
+        self.current_path.AddBeziers(points)
+
+    def rect(self, x, y, width, height):
+        self.add_path()
+        rect = RectangleF(x, y, width, height)
+        self.current_path.AddRectangle(rect)
+        self.add_path()
+
+
 class State:
     """Represents a canvas state; can be saved and restored.
 

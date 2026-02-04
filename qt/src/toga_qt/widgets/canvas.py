@@ -27,6 +27,99 @@ logger = logging.getLogger(__name__)
 BLACK = native_color(rgb(0, 0, 0))
 
 
+class Path:
+    def __init__(self, path=None):
+        if path is None:
+            self.native = QPainterPath()
+        else:
+            self.native = QPainterPath(path.native)
+
+    def _ensure_point(self, x, y):
+        if self.native.elementCount() == 0:
+            self.native.moveTo(x, y)
+
+    def add_path(self, path, transform: QTransform | None = None):
+        if transform is None:
+            self.native.addPath(path.native)
+        else:
+            self.native.addPath(transform.map(path.native))
+
+    def close_path(self):
+        self.native.closeSubpath()
+
+    def move_to(self, x, y):
+        self.native.moveTo(x, y)
+
+    def line_to(self, x, y):
+        self._ensure_point(x, y)
+        self.native.lineTo(x, y)
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self.native.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
+
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        self.native.quadTo(cpx, cpy, x, y)
+
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        self._ensure_point(x + radius * cos(startangle), y + radius * sin(startangle))
+
+        # Qt measures angles counterclockwise from x-axis and in degrees
+        self.native.arcTo(
+            x - radius,
+            y - radius,
+            radius * 2,
+            radius * 2,
+            -degrees(startangle),
+            -degrees(sweepangle(startangle, endangle, counterclockwise)),
+        )
+
+    def arc_to(self, x1, y1, x2, y2, radius):
+        raise NotImplementedError()
+
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
+    ):
+        # Draw the ellipse unrotated and at origin
+        transform = QTransform()
+        transform.translate(x, y)
+        transform.rotate(degrees(rotation))
+        transform.scale(radiusx, radiusy)
+        transform.rotate(degrees(startangle))
+
+        # Note: we can *almost* do this using arcTo, but arcTo doesn't support rotation
+        # (it must be axis-aligned), and attempts at manually rotating the points after
+        # creation are awkward: easier just to use geometry routines.
+        points = [
+            transform.map(QPointF(x, y))
+            for (x, y) in arc_to_bezier(
+                sweepangle(startangle, endangle, counterclockwise)
+            )
+        ]
+
+        # draw a line to the start point unless this is the first point of the path
+        start = points.pop(0)
+        self._ensure_point(start.x(), start.y())
+        self.native.lineTo(start)
+
+        for i in range(0, len(points), 3):
+            cp1, cp2, end = points[i : i + 3]
+            self.native.cubicTo(cp1, cp2, end)
+
+    def rect(self, x, y, width, height):
+        self.native.addRect(x, y, width, height)
+
+    def round_rect(self, x, y, w, h, radii):
+        raise NotImplementedError()
+
+
 class State:
     """Track transform and fill/stroke-related properties."""
 
@@ -57,6 +150,12 @@ class Context:
     @property
     def state(self):
         return self.states[-1]
+
+    @property
+    def path(self):
+        path = Path()
+        path.native = self._path
+        return path
 
     # Context management
     def save(self):
@@ -90,43 +189,24 @@ class Context:
         self._path = QPainterPath()
 
     def close_path(self):
-        self._path.closeSubpath()
+        self.path.close_path()
 
     def move_to(self, x, y):
-        self._path.moveTo(x, y)
+        self.path.move_to(x, y)
 
     def line_to(self, x, y):
-        if self._path.elementCount() == 0:
-            self._path.moveTo(x, y)
-        else:
-            self._path.lineTo(x, y)
+        self.path.line_to(x, y)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self._path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self.path.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        self._path.quadTo(cpx, cpy, x, y)
+        self.path.quadratic_curve_to(cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
-        if self._path.elementCount() == 0:
-            # if this is the first point of the path, don't draw a line
-            # to the start point
-            self._path.moveTo(
-                x + radius * cos(startangle),
-                y + radius * sin(startangle),
-            )
-
-        # Qt measures angles counterclockwise from x-axis and in degrees
-        self._path.arcTo(
-            x - radius,
-            y - radius,
-            radius * 2,
-            radius * 2,
-            -degrees(startangle),
-            -degrees(sweepangle(startangle, endangle, counterclockwise)),
-        )
+        self.path.arc(x, y, radius, startangle, endangle, counterclockwise)
 
     def ellipse(
         self,
@@ -139,48 +219,35 @@ class Context:
         endangle,
         counterclockwise,
     ):
-        # Draw the ellipse unrotated and at origin
-        transform = QTransform()
-        transform.translate(x, y)
-        transform.rotate(degrees(rotation))
-        transform.scale(radiusx, radiusy)
-        transform.rotate(degrees(startangle))
-
-        # Note: we can *almost* do this using arcTo, but arcTo doesn't support rotation
-        # (it must be axis-aligned), and attempts at manually rotating the points after
-        # creation are awkward: easier just to use geometry routines.
-        points = [
-            transform.map(QPointF(x, y))
-            for (x, y) in arc_to_bezier(
-                sweepangle(startangle, endangle, counterclockwise)
-            )
-        ]
-
-        # draw a line to the start point unless this is the first point of the path
-        start = points.pop(0)
-        if self._path.elementCount() == 0:
-            self._path.moveTo(start)
-        else:
-            self._path.lineTo(start)
-
-        for i in range(0, len(points), 3):
-            cp1, cp2, end = points[i : i + 3]
-            self._path.cubicTo(cp1, cp2, end)
+        self.path.ellipse(
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            counterclockwise,
+        )
 
     def rect(self, x, y, width, height):
-        self._path.addRect(x, y, width, height)
+        self.path.rect(x, y, width, height)
 
     # Drawing Paths
 
-    def fill(self, fill_rule):
+    def fill(self, fill_rule, path=None):
+        if path is None:
+            path = self.path
         if fill_rule == FillRule.EVENODD:
-            self._path.setFillRule(Qt.FillRule.OddEvenFill)
+            path.native.setFillRule(Qt.FillRule.OddEvenFill)
         else:
-            self._path.setFillRule(Qt.FillRule.WindingFill)
-        self.native.fillPath(self._path, self.state.fill_style)
+            path.native.setFillRule(Qt.FillRule.WindingFill)
+        self.native.fillPath(path.native, self.state.fill_style)
 
-    def stroke(self):
-        self.native.strokePath(self._path, self.state.stroke)
+    def stroke(self, path=None):
+        if path is None:
+            path = self.path
+        self.native.strokePath(path.native, self.state.stroke)
 
     # Transformations
     def rotate(self, radians):

@@ -1,7 +1,7 @@
 import itertools
 import weakref
 from copy import deepcopy
-from math import degrees
+from math import cos, degrees, sin
 from typing import NamedTuple
 
 from android.graphics import (
@@ -10,7 +10,7 @@ from android.graphics import (
     DashPathEffect,
     Matrix,
     Paint,
-    Path,
+    Path as NativePath,
 )
 from android.view import MotionEvent, View
 from java import dynamic_proxy, jint
@@ -25,6 +25,90 @@ from ..colors import native_color
 from .base import Widget, suppress_reference_error
 
 BLACK = jint(native_color(rgb(0, 0, 0)))
+
+
+class Path:
+    native: NativePath
+
+    def __init__(self, path=None):
+        if path:
+            self.native = NativePath(path.native)
+            self._last_point = path._last_point
+        else:
+            self.native = NativePath()
+
+    def _ensure_subpath(self, x, y):
+        if self.native.isEmpty():
+            self.native.moveTo(x, y)
+
+    def add_path(self, path, transform=None):
+        if transform is None:
+            self.native.addPath(path.native)
+            self._last_point = path._last_point
+        else:
+            self.native.addPath(NativePath(path.native).transform(transform))
+            self._last_point = transform.mapPoints([path._last_point])[0]
+
+    def close_path(self):
+        self.native.close()
+        self._last_point = None
+
+    def move_to(self, x, y):
+        self.native.moveTo(x, y)
+        self._last_point = (x, y)
+
+    def line_to(self, x, y):
+        self._ensure_subpath(x, y)
+        self.native.lineTo(x, y)
+        self._last_point = (x, y)
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self._ensure_subpath(cp1x, cp1y)
+        self.native.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self._last_point = (x, y)
+
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        self._ensure_subpath(cpx, cpy)
+        self.native.quadTo(cpx, cpy, x, y)
+        self._last_point = (x, y)
+
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
+        self._last_point = (x + radius * cos(endangle), y + sin(endangle))
+
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
+    ):
+        matrix = Matrix()
+        matrix.preTranslate(x, y)
+        matrix.preRotate(degrees(rotation))
+        matrix.preScale(radiusx, radiusy)
+        matrix.preRotate(degrees(startangle))
+
+        coords = list(
+            itertools.chain(
+                *arc_to_bezier(sweepangle(startangle, endangle, counterclockwise))
+            )
+        )
+        matrix.mapPoints(coords)
+
+        self.line_to(coords[0], coords[1])
+        i = 2
+        while i < len(coords):
+            self.bezier_curve_to(*coords[i : i + 6])
+            i += 6
+
+    def rect(self, x, y, width, height):
+        self.native.addRect(x, y, x + width, y + height, NativePath.Direction.CW)
+        self._last_point = (x, y)
 
 
 class State(NamedTuple):
@@ -73,7 +157,7 @@ class Context:
     def restore(self):
         self.native.restore()
         # Transform active path to current coordinates
-        self.path.transform(self.state.transform)
+        self.path.native.transform(self.state.transform)
         self.states.pop()
 
     # Setting attributes
@@ -92,34 +176,27 @@ class Context:
     # Basic paths
 
     def begin_path(self):
-        self.path.reset()
+        self.path = Path()
 
     def close_path(self):
-        self.path.close()
+        self.path.close_path()
 
     def move_to(self, x, y):
-        self.path.moveTo(x, y)
+        self.path.move_to(x, y)
 
     def line_to(self, x, y):
-        self._ensure_subpath(x, y)
-        self.path.lineTo(x, y)
-
-    def _ensure_subpath(self, x, y):
-        if self.path.isEmpty():
-            self.move_to(x, y)
+        self.path.line_to(x, y)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self._ensure_subpath(cp1x, cp1y)
-        self.path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self.path.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        self._ensure_subpath(cpx, cpy)
-        self.path.quadTo(cpx, cpy, x, y)
+        self.path.quadratic_curve_to(cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
-        self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
+        self.path.arc(x, y, radius, startangle, endangle, counterclockwise)
 
     def ellipse(
         self,
@@ -132,42 +209,39 @@ class Context:
         endangle,
         counterclockwise,
     ):
-        matrix = Matrix()
-        matrix.preTranslate(x, y)
-        matrix.preRotate(degrees(rotation))
-        matrix.preScale(radiusx, radiusy)
-        matrix.preRotate(degrees(startangle))
-
-        coords = list(
-            itertools.chain(
-                *arc_to_bezier(sweepangle(startangle, endangle, counterclockwise))
-            )
+        self.path.ellipse(
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            counterclockwise,
         )
-        matrix.mapPoints(coords)
-
-        self.line_to(coords[0], coords[1])
-        i = 2
-        while i < len(coords):
-            self.bezier_curve_to(*coords[i : i + 6])
-            i += 6
 
     def rect(self, x, y, width, height):
-        self.path.addRect(x, y, x + width, y + height, Path.Direction.CW)
+        self.path.rect(x, y, width, height)
 
     # Drawing Paths
 
-    def fill(self, fill_rule):
-        self.path.setFillType(
-            {
-                FillRule.EVENODD: Path.FillType.EVEN_ODD,
-                FillRule.NONZERO: Path.FillType.WINDING,
-            }.get(fill_rule, Path.FillType.WINDING)
-        )
-        self.native.drawPath(self.path, self.state.fill)
+    def fill(self, fill_rule, path=None):
+        if path is None:
+            path = self.path
 
-    def stroke(self):
+        path.native.setFillType(
+            {
+                FillRule.EVENODD: NativePath.FillType.EVEN_ODD,
+                FillRule.NONZERO: NativePath.FillType.WINDING,
+            }.get(fill_rule, NativePath.FillType.WINDING)
+        )
+        self.native.drawPath(path.native, self.state.fill)
+
+    def stroke(self, path=None):
         # The stroke respects the canvas transform, so we don't need to scale it here.
-        self.native.drawPath(self.path, self.state.stroke)
+        if path is None:
+            path = self.path
+        self.native.drawPath(path.native, self.state.stroke)
 
     # Transformations
 
@@ -180,7 +254,7 @@ class Context:
         # Transform active path to current coordinates
         inverse = Matrix()
         inverse.setRotate(-degrees(radians))
-        self.path.transform(inverse)
+        self.path.native.transform(inverse)
 
     def scale(self, sx, sy):
         # Can't apply inverse transform if scale is 0,
@@ -198,7 +272,7 @@ class Context:
         # Transform active path to current coordinates
         inverse = Matrix()
         inverse.setScale(1 / sx, 1 / sy)
-        self.path.transform(inverse)
+        self.path.native.transform(inverse)
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
@@ -209,7 +283,7 @@ class Context:
         # Transform active path to current coordinates
         inverse = Matrix()
         inverse.setTranslate(-tx, -ty)
-        self.path.transform(inverse)
+        self.path.native.transform(inverse)
 
     def reset_transform(self):
         self.native.setMatrix(None)
@@ -217,7 +291,7 @@ class Context:
         # current matrix needs to unwind all previous states
         # can't just ask for current total transform as `getMatrix` is deprecated
         for state in reversed(self.states):
-            self.path.transform(state.transform)
+            self.path.native.transform(state.transform)
             inverse = Matrix()
             # if we can't invert, ignore for now
             if state.transform.invert(inverse):  # pragma: no branch
