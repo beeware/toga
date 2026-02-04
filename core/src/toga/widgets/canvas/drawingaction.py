@@ -19,6 +19,8 @@ from toga.images import Image
 if TYPE_CHECKING:
     from toga.colors import ColorT
 
+    from .path import Path
+
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
 
@@ -143,12 +145,17 @@ class ClosePath(DrawingAction):
 class Fill(DrawingAction):
     color: ColorT | None = color_property()
     fill_rule: FillRule = FillRule.NONZERO
+    path: Path | None = None
 
     def _draw(self, context: Any) -> None:
         context.save()
         if self.color is not None:
             context.set_fill_style(self.color)
-        context.fill(self.fill_rule)
+        if self.path is None:
+            path_impl = None
+        else:
+            path_impl = self.path.impl
+        context.fill(self.fill_rule, path_impl)
         context.restore()
 
 
@@ -157,6 +164,7 @@ class Stroke(DrawingAction):
     color: ColorT | None = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
+    path: Path | None = None
 
     def _draw(self, context: Any) -> None:
         context.save()
@@ -166,7 +174,11 @@ class Stroke(DrawingAction):
             context.set_line_width(self.line_width)
         if self.line_dash is not None:
             context.set_line_dash(self.line_dash)
-        context.stroke()
+        if self.path is None:
+            path_impl = None
+        else:
+            path_impl = self.path.impl
+        context.stroke(path_impl)
         context.restore()
 
 

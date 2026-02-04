@@ -38,10 +38,11 @@ class Path:
         if self.native.elementCount() == 0:
             self.native.moveTo(x, y)
 
-    def add_path(self, path, transform: QTransform | None = None):
+    def add_path(self, path, transform=None):
         if transform is None:
             self.native.addPath(path.native)
         else:
+            transform = QTransform(*transform)
             self.native.addPath(transform.map(path.native))
 
     def close_path(self):

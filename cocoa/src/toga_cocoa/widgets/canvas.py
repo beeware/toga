@@ -33,6 +33,8 @@ from toga_cocoa.libs import (
 
 from .base import Widget
 
+IDENTITY = core_graphics.CGAffineTransformMake(1, 0, 0, 1, 0, 0)
+
 
 class Path:
     def __init__(self, path=None):
@@ -47,27 +49,25 @@ class Path:
 
     def add_path(self, path, transform=None):
         if transform is None:
-            transform = core_graphics.CGAffineTransformIdentity()
+            transform = IDENTITY
+        else:
+            transform = core_graphics.CGAffineTransformMake(*transform)
         core_graphics.CGPathAddPath(self.native, transform, path.native)
 
     def close_path(self):
         core_graphics.CGPathCloseSubpath(self.native)
 
     def move_to(self, x, y):
-        core_graphics.CGPathMoveToPoint(
-            self.native, core_graphics.CGAffineTransformIdentity(), x, y
-        )
+        core_graphics.CGPathMoveToPoint(self.native, IDENTITY, x, y)
 
     def line_to(self, x, y):
-        core_graphics.CGPathAddLineToPoint(
-            self.native, core_graphics.CGAffineTransformIdentity(), x, y
-        )
+        core_graphics.CGPathAddLineToPoint(self.native, IDENTITY, x, y)
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
         self._ensure_subpath(cp1x, cp1y)
         core_graphics.CGPathAddCurveToPoint(
             self.native,
-            core_graphics.CGAffineTransformIdentity(),
+            IDENTITY,
             cp1x,
             cp1y,
             cp2x,
@@ -78,9 +78,7 @@ class Path:
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         self._ensure_subpath(cpx, cpy)
-        core_graphics.CGPathAddQuadCurveToPoint(
-            self.native, core_graphics.CGAffineTransformIdentity(), cpx, cpy, x, y
-        )
+        core_graphics.CGPathAddQuadCurveToPoint(self.native, IDENTITY, cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
         # Cocoa Path is using a flipped coordinate system, so clockwise
@@ -88,7 +86,7 @@ class Path:
         clockwise = counterclockwise
         core_graphics.CGPathAddArc(
             self.native,
-            core_graphics.CGAffineTransformIdentity(),
+            IDENTITY,
             x,
             y,
             radius,
@@ -108,24 +106,16 @@ class Path:
         endangle,
         counterclockwise,
     ):
-        transform = core_graphics.CGAffineTransformTranslate(
-            core_graphics.CGAffineTransformRotate(
-                core_graphics.CGAffineTransformMakeScale(radiusx, radiusy),
-                rotation,
-            ),
-            x,
-            y,
-        )
-        clockwise = not counterclockwise
+        transform = core_graphics.CGAffineTransformMake(1, 0, 0, 1, x, y)
+        transform = core_graphics.CGAffineTransformRotate(transform, rotation)
+        transform = core_graphics.CGAffineTransformScale(transform, radiusx, radiusy)
         core_graphics.CGPathAddArc(
-            self.native, transform, 0, 0, 1.0, startangle, endangle, clockwise
+            self.native, transform, 0, 0, 1.0, startangle, endangle, counterclockwise
         )
 
     def rect(self, x, y, width, height):
         rectangle = CGRectMake(x, y, width, height)
-        core_graphics.CGPathAddRect(
-            self.native, core_graphics.CGAffineTransformIdentity, rectangle
-        )
+        core_graphics.CGPathAddRect(self.native, IDENTITY, rectangle)
 
     # extra utility methods
     def is_empty(self):

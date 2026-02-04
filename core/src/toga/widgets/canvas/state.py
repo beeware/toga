@@ -38,6 +38,7 @@ if TYPE_CHECKING:
     from toga.colors import ColorT
 
     from .canvas import Canvas
+    from .path import Path
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -254,6 +255,7 @@ class DrawingActionDispatch(ABC):
         self,
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
+        path: Path | None = None,
     ) -> Fill:
         """Fill the current path.
 
@@ -268,7 +270,7 @@ class DrawingActionDispatch(ABC):
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        fill = Fill(color, fill_rule)
+        fill = Fill(color, fill_rule, path)
         self._action_target.append(fill)
         return fill
 
@@ -277,6 +279,7 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
+        path: Path | None = None,
     ) -> Stroke:
         """Draw the current path as a stroke.
 
@@ -287,7 +290,7 @@ class DrawingActionDispatch(ABC):
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        stroke = Stroke(color, line_width, line_dash)
+        stroke = Stroke(color, line_width, line_dash, path)
         self._action_target.append(stroke)
         return stroke
 

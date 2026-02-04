@@ -23,6 +23,7 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
 from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM, Pack
+from toga.widgets.canvas import Path
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
@@ -1017,3 +1018,36 @@ async def test_draw_image_in_rect(canvas, probe):
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "draw_image_in_rect", threshold=0.05)
+
+
+async def test_path_object(canvas, probe):
+    path = Path()
+
+    # exercise all of the Path methods
+    path.move_to(10, 15)
+    path.line_to(20, 30)
+    path.bezier_curve_to(20, 10, 40, 15, 50, 10)
+    path.close_path()
+
+    path.rect(5, 5, 50, 30)
+
+    path2 = Path()
+    path2.move_to(100, 80)
+    path2.quadratic_curve_to(100, 100, 120, 130)
+    path2.quadratic_curve_to(150, 120, 150, 100)
+    path2.arc(130, 100, 20, endangle=pi / 3)
+
+    path.add_path(path2, (0.5, 0.0, 0.0, 0.75, 30, 10))
+    path.move_to(150, 100)
+    path.ellipse(150, 100, 20, 30, pi / 4, 0, pi, True)
+
+    canvas.root_state.translate(100, 100)
+    canvas.root_state.scale(0.5, 0.5)
+    for _ in range(12):
+        canvas.root_state.rotate(pi / 6)
+        canvas.root_state.scale(0.95, 0.95)
+        canvas.root_state.fill(CORNFLOWERBLUE, path=path)
+        canvas.root_state.stroke(REBECCAPURPLE, path=path)
+
+    await probe.redraw("Image should be drawn")
+    assert_reference(probe, "path_object", threshold=0.05)
