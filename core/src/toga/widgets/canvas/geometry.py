@@ -89,9 +89,26 @@ def get_round_rect_radii(
     This implements the procedure described here:
     https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-roundrect
 
+    Corner radii can be provided as:
+    - a single numerical radius for both x and y radius for all corners
+    - an object with attributes "x" and "y" for the x and y radius for all corners
+    - a list of 1 to 4 of the above
+
+    If the list has:
+    - length 1, then the item gives the radius of all corners
+    - length 2, then the upper left and lower right corners use the first radius,
+        and upper right and lower left use the second radius
+    - length 3, then the upper left corner uses the first radius, the upper right
+        and lower left use the second radius, and the lower right corner uses the
+        third radius
+    - length 4, then the radii are given in order upper left, upper right, lower
+        left, lower right
+
+    If the radii are too large for the width or height, then they will be scaled.
+
     :param w: The width of the rounded rectangle.
     :param h: The height of the rounded rectangle.
-    :param radii: The radii: a float.
+    :param radii: The corner radii of the rounded rectangle.
     :returns: list of radii [ul, ur, ll, lr] for upper and lower left and right
         where each item is a 2-tuple of (rx, ry), the radius for x and y
         directions.
@@ -137,11 +154,28 @@ def round_rect(context, x, y, w, h, radii):
 
     The native context needs to implement at least move_to, line_to and ellipse.
 
+    Corner radii can be provided as:
+    - a single numerical radius for both x and y radius for all corners
+    - an object with attributes "x" and "y" for the x and y radius for all corners
+    - a list of 1 to 4 of the above
+
+    If the list has:
+    - length 1, then the item gives the radius of all corners
+    - length 2, then the upper left and lower right corners use the first radius,
+        and upper right and lower left use the second radius
+    - length 3, then the upper left corner uses the first radius, the upper right
+        and lower left use the second radius, and the lower right corner uses the
+        third radius
+    - length 4, then the radii are given in order upper left, upper right, lower
+        left, lower right
+
+    If the radii are too large for the width or height, then they will be scaled.
+
     :param x: The width of the rounded rectangle.
     :param y: The height of the rounded rectangle.
     :param w: The width of the rounded rectangle.
     :param h: The height of the rounded rectangle.
-    :param radii: The radii: a float.
+    :param radii: The corner radii of the rounded rectangle.
     """
     ul, ur, ll, lr = get_round_rect_radii(w, h, radii)
     context.move_to(x + ul[0], y)
