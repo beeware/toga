@@ -118,11 +118,13 @@ class Context:
         )
 
     # Drawing Paths
-    def fill(self, fill_rule):
-        self.impl.draw_instructions.append(("fill", {"fill_rule": fill_rule}))
+    def fill(self, fill_rule, path=None):
+        self.impl.draw_instructions.append(
+            ("fill", {"fill_rule": fill_rule, "path": path})
+        )
 
-    def stroke(self):
-        self.impl.draw_instructions.append("stroke")
+    def stroke(self, path=None):
+        self.impl.draw_instructions.append(("stroke", {"path": path}))
 
     # Transformations
 

@@ -2,7 +2,6 @@ import copy
 from collections.abc import Sequence
 from dataclasses import dataclass
 from math import pi
-from typing import Self
 
 from toga.platform import get_platform_factory
 
@@ -20,7 +19,7 @@ from .drawingaction import (
 
 
 class Path:
-    def __init__(self, path: Self | None = None):
+    def __init__(self, path: "Path | None" = None):
         if path is None:
             self.drawing_actions = []
         else:
@@ -35,7 +34,7 @@ class Path:
             self._impl = self.compile()
         return self._impl
 
-    def add_path(self, path: Self, transform: Sequence[float] | None = None):
+    def add_path(self, path: "Path", transform: Sequence[float] | None = None):
         """Adds another path to the current path with an optional transform.
 
         :param path: The Path being added.
