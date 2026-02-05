@@ -1052,9 +1052,9 @@ async def test_path_object(canvas, probe):
     path = Path2D()
 
     # exercise all of the Path methods
-    print("move_to")
-    path.move_to(10, 15)
-    print("line_to")
+    print("line_to without point")
+    path.line_to(10, 15)
+    print("line_to with point")
     path.line_to(20, 30)
     print("bezier")
     path.bezier_curve_to(20, 10, 40, 15, 50, 10)
@@ -1065,6 +1065,7 @@ async def test_path_object(canvas, probe):
     path.rect(5, 5, 50, 30)
 
     path2 = Path2D()
+    print("move_to")
     path2.move_to(100, 80)
     print("quadratic")
     path2.quadratic_curve_to(100, 100, 120, 130)
@@ -1077,6 +1078,14 @@ async def test_path_object(canvas, probe):
     path.move_to(150, 100)
     print("ellipse")
     path.ellipse(150, 100, 20, 30, pi / 4, 0, pi, True)
+    path.round_rect(180, 140, 10, 10, 3)
+
+    # add an empty path with and without transformation
+    path.add_path(Path2D())
+    path.add_path(Path2D(), (1, 0, 0, 1, 10, 10))
+
+    # clone a path
+    Path2D(path2)
 
     print("transform")
     canvas.root_state.translate(100, 100)
