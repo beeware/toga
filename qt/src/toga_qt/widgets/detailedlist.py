@@ -464,11 +464,13 @@ class DetailedList(Widget):
         if not self._menu.isEmpty():  # pragma: no branch
             self._menu.exec(self.native.mapToGlobal(pos))
 
-    def qt_primary_action(self, checked, row):
+    def qt_primary_action(self, checked=False, row=None):
+        row = row if row else self.get_selection()
         row_data = self.interface.data[row]
         self.interface.on_primary_action(row=row_data)
 
-    def qt_secondary_action(self, checked, row):
+    def qt_secondary_action(self, checked=False, row=None):
+        row = row if row else self.get_selection()
         row_data = self.interface.data[row]
         self.interface.on_secondary_action(row=row_data)
 
