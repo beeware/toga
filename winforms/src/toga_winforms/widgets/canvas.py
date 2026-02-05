@@ -39,10 +39,12 @@ class Path2D:
             self.native = GraphicsPath()
             self._subpath_start = None
             self._subpath_end = None
+            self._subpath_empty = True
         else:
             self.native = GraphicsPath(path.native.PathPoints, path.native.PathTypes)
             self._subpath_start = path._subpath_start
             self._subpath_end = path._subpath_end
+            self._subpath_empty = path._subpath_empty
 
     def _ensure_path(self, x, y):
         if self._subpath_start is None:
@@ -80,15 +82,16 @@ class Path2D:
 
     def move_to(self, x, y):
         self._subpath_end = PointF(x, y)
-        if self._subpath_start is None:
-            self._subpath_start = self._subpath_end
-        else:
+        self._subpath_start = self._subpath_end
+        if not self._subpath_empty:
             self.native.StartFigure()
+            self._subpath_empty = True
 
     def line_to(self, x, y):
         self._ensure_path(x, y)
         self.native.AddLine(self.last_point, PointF(x, y))
         self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
 
     # Basic shapes
 
@@ -101,6 +104,7 @@ class Path2D:
             PointF(x, y),
         )
         self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
@@ -121,6 +125,7 @@ class Path2D:
             PointF(x, y),
         )
         self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
         self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
@@ -156,6 +161,7 @@ class Path2D:
         self.native.AddLine(PointF(self._subpath_end.X, self._subpath_end.Y), points[0])
         self.native.AddBeziers(points)
         self._subpath_end = points[-1]
+        self._subpath_empty = False
 
     def rect(self, x, y, width, height):
         rect = RectangleF(x, y, width, height)
@@ -163,6 +169,7 @@ class Path2D:
         if self._subpath_start is None:
             self._subpath_start = PointF(x, y)
         self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
 
     def round_rect(self, x, y, width, height, radii):
         set_start = self._subpath_start is None
@@ -170,6 +177,7 @@ class Path2D:
         if set_start:
             self._subpath_start = PointF(x, y)
         self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
 
 
 class State:
