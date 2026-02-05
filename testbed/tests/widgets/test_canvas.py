@@ -1021,11 +1021,16 @@ async def test_draw_image_in_rect(canvas, probe):
 
 async def test_miter_join(canvas, probe):
     """Lines are joined with a miter."""
-    with canvas.Stroke(line_width=20, x=50, y=150) as stroke:
-        stroke.line_to(50, 50)
-        stroke.line_to(100, 150)
-        stroke.bezier_curve_to(100, 140, 100, 100, x=150, y=50)
-        stroke.bezier_curve_to(145, 70, 145, 130, x=150, y=150)
+    with canvas.Stroke(line_width=15) as stroke:
+        # Left: angle ~12º, should miter
+        stroke.move_to(35, 190)
+        stroke.line_to(46, 85.34)
+        stroke.line_to(57, 190)
+
+        # Right: angle ~11º, should cut off to bevel
+        stroke.move_to(144.84, 190)
+        stroke.line_to(154.92, 85.34)
+        stroke.line_to(165, 190)
 
     await probe.redraw("Image should be drawn")
-    assert_reference(probe, "miter_join")
+    assert_reference(probe, "miter_join", threshold=0.025)
