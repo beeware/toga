@@ -5,14 +5,15 @@ from typing import Any
 
 from ..base import BasePositronBootstrap
 
+TEMPLATE_PATH = Path(__file__).parent / "templates"
+
 
 class DjangoPositronBootstrap(BasePositronBootstrap):
-    @property
-    def template_path(self):
-        return Path(__file__).parent / "templates"
-
     def app_source(self):
-        return self.templated_content("app.py", initial_path=self.initial_path)
+        return self.templated_content(
+            TEMPLATE_PATH / "app.py",
+            initial_path=self.initial_path,
+        )
 
     def pyproject_table_briefcase_app_extra_content(self):
         return """
@@ -61,7 +62,7 @@ supported = false
 
         # Top level files
         self.templated_file(
-            "manage.py",
+            TEMPLATE_PATH / "manage.py",
             app_path.parent,
             module_name=self.context["module_name"],
         )
@@ -69,7 +70,7 @@ supported = false
         # App files
         for template_name in ["settings.py", "urls.py", "wsgi.py"]:
             self.templated_file(
-                template_name,
+                TEMPLATE_PATH / template_name,
                 app_path,
                 module_name=self.context["module_name"],
             )

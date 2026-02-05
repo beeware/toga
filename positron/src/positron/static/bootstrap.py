@@ -5,14 +5,12 @@ from typing import Any
 
 from ..base import BasePositronBootstrap
 
+TEMPLATE_PATH = Path(__file__).parent / "templates"
+
 
 class StaticPositronBootstrap(BasePositronBootstrap):
-    @property
-    def template_path(self) -> Path:
-        return Path(__file__).parent / "templates"
-
     def app_source(self) -> str:
-        return self.templated_content("app.py")
+        return self.templated_content(TEMPLATE_PATH / "app.py")
 
     def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:
         """Runs prior to other plugin hooks to provide additional context.
@@ -34,4 +32,8 @@ class StaticPositronBootstrap(BasePositronBootstrap):
         else:
             # Write default content
             for template_name in ["index.html", "positron.css"]:
-                self.templated_file(template_name, resource_path, **self.context)
+                self.templated_file(
+                    TEMPLATE_PATH / template_name,
+                    resource_path,
+                    **self.context,
+                )

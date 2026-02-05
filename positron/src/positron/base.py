@@ -9,10 +9,6 @@ from briefcase.bootstraps import TogaGuiBootstrap
 class BasePositronBootstrap(TogaGuiBootstrap):
     display_name_annotation = "does not support Web deployment"
 
-    @property
-    def template_path(self):
-        return Path(__file__).parent / "templates"
-
     def validate_url_path(self, value: str) -> bool:
         """Validate that the value is a valid path."""
         if not value.startswith("/"):
@@ -28,26 +24,27 @@ class BasePositronBootstrap(TogaGuiBootstrap):
                 raise ValueError(f"Path {Path(value).resolve()} does not exist")
         return True
 
-    def templated_content(self, template_name, **context):
-        """Render a template for `template_name`.
+    def templated_content(self, template_path, **context):
+        """Render the template at the provided path.
 
-        If a {template_name}.tmpl exists, it will be expanded with the provided
-        context. Otherwise, {template_name} will be used as-is.
+        If a {template_path}.tmpl exists, it will be expanded with the provided
+        context. Otherwise, the content will be used as-is.
         """
-        if (self.template_path / f"{template_name}.tmpl").exists():
-            template = (self.template_path / f"{template_name}.tmpl").read_text(
-                encoding="utf-8"
-            )
+        full_template_path = template_path.with_suffix(template_path.suffix + ".tmpl")
+        if full_template_path.exists():
+            template = full_template_path.read_text(encoding="utf-8")
             return template.format(**context)
         else:
-            return (self.template_path / template_name).read_text(encoding="utf-8")
+            return template_path.read_text(encoding="utf-8")
 
-    def templated_file(self, template_name, output_path, **context):
-        """Render a template for `template.name` with the provided context, saving the
-        result in `output_path`."""
-        self.console.debug(f"Writing {template_name}")
-        (output_path / template_name).write_text(
-            self.templated_content(template_name, **context), encoding="utf-8"
+    def templated_file(self, template_path, output_path, **context):
+        """Render the template at the provided path with the provided context, saving
+        the result in `output_path`.
+        """
+        self.console.debug(f"Writing {template_path.name}")
+        (output_path / template_path.name).write_text(
+            self.templated_content(template_path, **context),
+            encoding="utf-8",
         )
 
     def select_content_path(self, override_content_path):

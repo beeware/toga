@@ -5,13 +5,12 @@ from typing import Any
 
 from ..fastapi.bootstrap import FastAPIPositronBootstrap
 
+TEMPLATE_PATH = Path(__file__).parent / "templates"
+STATIC_TEMPLATE_PATH = Path(__file__).parent.parent / "static/templates"
+
 
 class PyScriptPositronBootstrap(FastAPIPositronBootstrap):
     display_name_annotation = "does not support Web deployment"
-
-    @property
-    def template_path(self):
-        return Path(__file__).parent / "templates"
 
     def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:
         """Runs prior to other plugin hooks to provide additional context.
@@ -33,7 +32,7 @@ class PyScriptPositronBootstrap(FastAPIPositronBootstrap):
         # FastAPI server
         for template_name in ["server.py"]:
             self.templated_file(
-                template_name,
+                TEMPLATE_PATH / template_name,
                 app_path,
                 module_name=self.context["module_name"],
             )
@@ -42,11 +41,19 @@ class PyScriptPositronBootstrap(FastAPIPositronBootstrap):
         if self.content_path:
             self.install_static_content(resource_path)
         else:
-            # Write default content for a PyScript app
-            for template_name in [
-                "index.html",
-                "positron.css",
-                "main.py",
-                "pyscript.toml",
-            ]:
-                self.templated_file(template_name, resource_path, **self.context)
+            # Write default content for a PyScript app.
+            # Start with content shared with every static app
+            for template_name in ["positron.css"]:
+                self.templated_file(
+                    STATIC_TEMPLATE_PATH / template_name,
+                    resource_path,
+                    **self.context,
+                )
+
+            # Then add content that is PyScript specific
+            for template_name in ["index.html", "main.py", "pyscript.toml"]:
+                self.templated_file(
+                    TEMPLATE_PATH / template_name,
+                    resource_path,
+                    **self.context,
+                )

@@ -11,6 +11,8 @@ else:  # pragma: no-cover-if-gte-py311
 
 from ..base import BasePositronBootstrap
 
+TEMPLATE_PATH = Path(__file__).parent / "templates"
+
 
 class FastAPIPositronBootstrap(BasePositronBootstrap):
     display_name_annotation = "does not support Web deployment"
@@ -20,10 +22,16 @@ class FastAPIPositronBootstrap(BasePositronBootstrap):
         return Path(__file__).parent / "templates"
 
     def app_start_source(self):
-        return self.templated_content("__main__.py", initial_path=self.initial_path)
+        return self.templated_content(
+            TEMPLATE_PATH / "__main__.py",
+            initial_path=self.initial_path,
+        )
 
     def app_source(self):
-        return self.templated_content("app.py", initial_path=self.initial_path)
+        return self.templated_content(
+            TEMPLATE_PATH / "app.py",
+            initial_path=self.initial_path,
+        )
 
     def pyproject_table_briefcase_app_extra_content(self):
         return """
@@ -97,7 +105,7 @@ build_gradle_dependencies = [
         # App files
         for template_name in ["server.py"]:
             self.templated_file(
-                template_name,
+                TEMPLATE_PATH / template_name,
                 app_path,
                 module_name=self.context["module_name"],
             )

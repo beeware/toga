@@ -7,6 +7,8 @@ from briefcase.config import validate_url
 
 from ..base import BasePositronBootstrap
 
+TEMPLATE_PATH = Path(__file__).parent / "templates"
+
 
 class SiteSpecificPositronBootstrap(BasePositronBootstrap):
     @property
@@ -14,7 +16,7 @@ class SiteSpecificPositronBootstrap(BasePositronBootstrap):
         return Path(__file__).parent / "templates"
 
     def app_source(self):
-        return self.templated_content("app.py", site_url=self.site_url)
+        return self.templated_content(TEMPLATE_PATH / "app.py", site_url=self.site_url)
 
     def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:
         """Runs prior to other plugin hooks to provide additional context.
