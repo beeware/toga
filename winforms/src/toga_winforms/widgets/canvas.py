@@ -38,9 +38,11 @@ class Path2D:
         if path is None:
             self.native = GraphicsPath()
             self._subpath_start = None
+            self._subpath_end = None
         else:
             self.native = GraphicsPath(path.native.PathPoints, path.native.PathTypes)
             self._subpath_start = path._subpath_start
+            self._subpath_end = path._subpath_end
 
     def _ensure_path(self, x, y):
         if self._subpath_start is None:
@@ -48,44 +50,40 @@ class Path2D:
 
     @property
     def last_point(self):
-        try:
-            last_point = self.native.GetLastPoint()
-        except Exception as exc:
-            print("last_point", exc)
-            print(self.native, self.native.PointCount)
-            return self._subpath_start
-        if last_point.IsEmpty:
-            return self._subpath_start
-        else:
-            return last_point
+        return self._subpath_end
 
     def add_path(self, path, transform=None):
         if transform is None:
             self.native.AddPath(path.native)
+            self._subpath_end = path._subpath_end
         else:
             native_path = GraphicsPath(path.native.PathPoints, path.native.PathTypes)
             matrix = Matrix(*transform)
             native_path.Transform(matrix)
             self.native.AddPath(native_path, False)
+            if self._subpath_start is None and path._subpath_start is not None:
+                points = [path._subpath_start]
+                self._subpath_start = matrix.TransformPoints(points)[0]
+            if path._subpath_end is not None:
+                points = [path._subpath_end]
+                self._subpath_end = matrix.TransformPoints(points)[0]
 
     def close_path(self):
-        self.native.CloseFigure()
+        if self._subpath_start is not None:
+            self.native.CloseFigure()
+        self._subpath_end = self._subpath_start
 
     def move_to(self, x, y):
-        try:
-            last_point = self.native.GetLastPoint()
-        except Exception as exc:
-            print(exc)
-            print(self.native, self.native.PointCount)
-            self.native.StartFigure()
+        self._subpath_end = PointF(x, y)
+        if self._subpath_start is None:
+            self._subpath_start = self._subpath_start
         else:
-            if not last_point.IsEmpty:
-                self.native.StartFigure()
-        self._subpath_start = PointF(x, y)
+            self.native.StartFigure()
 
     def line_to(self, x, y):
         self._ensure_path(x, y)
         self.native.AddLine(self.last_point, PointF(x, y))
+        self._subpath_end = PointF(x, y)
 
     # Basic shapes
 
@@ -97,6 +95,7 @@ class Path2D:
             PointF(cp2x, cp2y),
             PointF(x, y),
         )
+        self._subpath_end = PointF(x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
@@ -116,6 +115,7 @@ class Path2D:
             ),
             PointF(x, y),
         )
+        self._subpath_end = PointF(x, y)
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
         self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
@@ -147,24 +147,23 @@ class Path2D:
         )
         matrix.TransformPoints(points)
 
-        start = self._subpath_start
-        try:
-            last_point = self.native.GetLastPoint()
-            print(self.native, self.native.PointCount)
-        except Exception as exc:
-            print(exc)
-            self.native.AddLine(start, start)
-        else:
-            if start and last_point.IsEmpty:
-                self.native.AddLine(start, start)
+        self._ensure_path(points[0].X, points[0].Y)
         self.native.AddBeziers(points)
+        self._subpath_end = points[-1]
 
     def rect(self, x, y, width, height):
         rect = RectangleF(x, y, width, height)
         self.native.AddRectangle(rect)
+        if self._subpath_start is None:
+            self._subpath_start = PointF(x, y)
+        self._subpath_end = PointF(x, y)
 
     def round_rect(self, x, y, width, height, radii):
+        set_start = self._subpath_start is None
         round_rect(self, x, y, width, height, radii)
+        if set_start:
+            self._subpath_start = PointF(x, y)
+        self._subpath_end = PointF(x, y)
 
 
 class State:

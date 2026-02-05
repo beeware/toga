@@ -57,7 +57,10 @@ class Path2D:
             matrix = matrix_from_transform(transform)
             native_path.transform(matrix)
             self.native.addPath(native_path)
-            self._last_point = tuple(matrix.mapPoints(list(path._last_point)))
+            if path._last_point is not None:
+                self._last_point = tuple(matrix.mapPoints(list(path._last_point)))
+            else:
+                self._last_point = None
 
     def close_path(self):
         self.native.close()

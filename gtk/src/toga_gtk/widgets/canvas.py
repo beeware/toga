@@ -118,7 +118,7 @@ class Path2D:
         else:
             self._apply(self._steps, context)
             # Cache the C-level path for reuse
-            self._native_cached = context.copy_path()
+            self._native_cached = context.native.copy_path()
 
     def _apply(self, steps, context):
         for method, *args in steps:
