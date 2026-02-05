@@ -27,7 +27,7 @@ from .base import Widget
 BLACK = native_color(rgb(0, 0, 0))
 
 
-class Path:
+class Path2D:
     def __init__(self, path=None):
         if path is None:
             steps = []

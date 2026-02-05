@@ -22,7 +22,7 @@ from .geometry import CornerRadiusT
 if TYPE_CHECKING:
     from toga.colors import ColorT
 
-    from .path import Path
+    from .path import Path2D
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
@@ -148,7 +148,7 @@ class ClosePath(DrawingAction):
 class Fill(DrawingAction):
     color: ColorT | None = color_property()
     fill_rule: FillRule = FillRule.NONZERO
-    path: Path | None = None
+    path: Path2D | None = None
 
     def _draw(self, context: Any) -> None:
         context.save()
@@ -167,7 +167,7 @@ class Stroke(DrawingAction):
     color: ColorT | None = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
-    path: Path | None = None
+    path: Path2D | None = None
 
     def _draw(self, context: Any) -> None:
         context.save()

@@ -40,7 +40,7 @@ if TYPE_CHECKING:
     from toga.colors import ColorT
 
     from .canvas import Canvas
-    from .path import Path
+    from .path import Path2D
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -296,7 +296,7 @@ class DrawingActionDispatch(ABC):
         self,
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
-        path: Path | None = None,
+        path: Path2D | None = None,
     ) -> Fill:
         """Fill the current path.
 
@@ -320,7 +320,7 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
-        path: Path | None = None,
+        path: Path2D | None = None,
     ) -> Stroke:
         """Draw the current path as a stroke.
 

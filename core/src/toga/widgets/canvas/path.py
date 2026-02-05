@@ -1,6 +1,6 @@
 # pragma: no cover
 import copy
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from math import pi
 
@@ -16,11 +16,13 @@ from .drawingaction import (
     MoveTo,
     QuadraticCurveTo,
     Rect,
+    RoundRect,
 )
+from .geometry import CornerRadiusT
 
 
-class Path:
-    def __init__(self, path: "Path | None" = None):
+class Path2D:
+    def __init__(self, path: "Path2D | None" = None):
         if path is None:
             self.drawing_actions = []
         else:
@@ -32,10 +34,10 @@ class Path:
     @property
     def impl(self):
         if self._impl is None:
-            self._impl = self.compile()
+            self.compile()
         return self._impl
 
-    def add_path(self, path: "Path", transform: Sequence[float] | None = None):
+    def add_path(self, path: "Path2D", transform: Sequence[float] | None = None):
         """Adds another path to the current path with an optional transform.
 
         :param path: The Path being added.
@@ -242,21 +244,61 @@ class Path:
         self._redraw_with_warning_if_state()
         return rect
 
+    def round_rect(
+        self,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        radii: float | CornerRadiusT | Iterable[float | CornerRadiusT],
+    ) -> RoundRect:
+        """Draw a rounded rectangle in the canvas state.
+
+        Corner radii can be provided as:
+        - a single numerical radius for both x and y radius for all corners
+        - an object with attributes "x" and "y" for the x and y radius for all corners
+        - a list of 1 to 4 of the above
+
+        If the list has:
+        - length 1, then the item gives the radius of all corners
+        - length 2, then the upper left and lower right corners use the first radius,
+          and upper right and lower left use the second radius
+        - length 3, then the upper left corner uses the first radius, the upper right
+          and lower left use the second radius, and the lower right corner uses the
+          third radius
+        - length 4, then the radii are given in order upper left, upper right, lower
+          left, lower right
+
+        If the radii are too large for the width or height, then they will be scaled.
+
+        :param x: The horizontal coordinate of the left of the rounded rectangle.
+        :param y: The vertical coordinate of the top of the rounded rectangle.
+        :param width: The width of the rounded rectangle.
+        :param height: The height of the roundedrectangle.
+        :param radii: The corner radii of the rounded rectangle.
+        :returns: The `RoundRect` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        round_rect = RoundRect(x, y, width, height, radii)
+        self._action_target.drawing_actions.append(round_rect)
+        self._redraw_with_warning_if_state()
+        return round_rect
+
     def _redraw_with_warning_if_state(self):
         pass
 
     def compile(self):
         print("compiling")
-        impl = self.factory.Path()
+        self._impl = self.factory.Path2D()
         for action in self.drawing_actions:
             print(action)
-            action._draw(impl)
-        return impl
+            action._draw(self._impl)
+        return self._impl
 
 
 @dataclass(repr=False)
 class AddPath(DrawingAction):
-    path: Path
+    path: Path2D
     transform: Sequence[float] | None = None
 
     def _draw(self, context):

@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 BLACK = native_color(rgb(0, 0, 0))
 
 
-class Path:
+class Path2D:
     def __init__(self, path=None):
         if path is None:
             self.native = QPainterPath()
@@ -154,7 +154,7 @@ class Context:
 
     @property
     def path(self):
-        path = Path()
+        path = Path2D()
         path.native = self._path
         return path
 

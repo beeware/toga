@@ -43,7 +43,7 @@ from toga_iOS.libs import (
 from toga_iOS.widgets.base import Widget
 
 
-class Path:
+class Path2D:
     def __init__(self, path=None):
         if path is None:
             self.native = core_graphics.CGPathCreateMutable()

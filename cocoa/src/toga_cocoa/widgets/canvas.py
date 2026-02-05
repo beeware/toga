@@ -37,7 +37,7 @@ from .base import Widget
 IDENTITY = core_graphics.CGAffineTransformMake(1, 0, 0, 1, 0, 0)
 
 
-class Path:
+class Path2D:
     def __init__(self, path=None):
         if path is None:
             self.native = core_graphics.CGPathCreateMutable()

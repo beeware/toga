@@ -23,7 +23,7 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
 from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM, Pack
-from toga.widgets.canvas import Path
+from toga.widgets.canvas import Path2D
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
@@ -1049,7 +1049,7 @@ async def test_draw_image_in_rect(canvas, probe):
 
 
 async def test_path_object(canvas, probe):
-    path = Path()
+    path = Path2D()
 
     # exercise all of the Path methods
     path.move_to(10, 15)
@@ -1059,7 +1059,7 @@ async def test_path_object(canvas, probe):
 
     path.rect(5, 5, 50, 30)
 
-    path2 = Path()
+    path2 = Path2D()
     path2.move_to(100, 80)
     path2.quadratic_curve_to(100, 100, 120, 130)
     path2.quadratic_curve_to(150, 120, 150, 100)

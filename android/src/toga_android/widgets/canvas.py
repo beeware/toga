@@ -27,7 +27,7 @@ from .base import Widget, suppress_reference_error
 BLACK = jint(native_color(rgb(0, 0, 0)))
 
 
-class Path:
+class Path2D:
     native: NativePath
 
     def __init__(self, path=None):
@@ -127,7 +127,7 @@ class Context:
     def __init__(self, impl, native):
         self.native = native
         self.impl = impl
-        self.path = Path()
+        self.path = Path2D()
 
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
@@ -179,7 +179,7 @@ class Context:
     # Basic paths
 
     def begin_path(self):
-        self.path = Path()
+        self.path = Path2D()
 
     def close_path(self):
         self.path.close_path()

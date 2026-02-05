@@ -33,7 +33,7 @@ from .box import Box
 BLACK = native_color(rgb(0, 0, 0))
 
 
-class Path:
+class Path2D:
     def __init__(self, path=None):
         if path is None:
             self.native = GraphicsPath()
@@ -227,7 +227,7 @@ class Context:
     # Basic paths
 
     def begin_path(self):
-        self.path = Path()
+        self.path = Path2D()
 
     def close_path(self):
         self.path.close_path()
@@ -383,7 +383,7 @@ class Context:
             # Default to Baseline.ALPHABETIC
             top = y - font.metric("CellAscent")
 
-        path = Path()
+        path = Path2D()
         for line_num, line in enumerate(lines):
             path.native.AddString(
                 line,
