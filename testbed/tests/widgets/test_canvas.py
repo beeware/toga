@@ -1,7 +1,7 @@
 import math
 import os
 from itertools import chain
-from math import pi, radians
+from math import pi, radians, tan
 from unittest.mock import Mock, call
 
 import pytest
@@ -1020,17 +1020,31 @@ async def test_draw_image_in_rect(canvas, probe):
 
 
 async def test_miter_join(canvas, probe):
-    """Lines are joined with a miter."""
-    with canvas.Stroke(line_width=15) as stroke:
-        # Left: angle ~12º, should miter
-        stroke.move_to(35, 190)
-        stroke.line_to(46, 85.34)
-        stroke.line_to(57, 190)
+    """Lines are joined with a miter, down to about 11.5º."""
 
-        # Right: angle ~11º, should cut off to bevel
-        stroke.move_to(144.84, 190)
-        stroke.line_to(154.92, 85.34)
-        stroke.line_to(165, 190)
+    def draw_angle(canvas, angle, x):
+        height = 110
+        line_width = 15
+        angle = angle * pi / 180
+        half_width = height * tan(angle / 2)
+
+        with canvas.root_state.state() as ctx:
+            # Translate to the vertex
+            ctx.translate(x, 85)
+
+            ctx.begin_path()
+            ctx.move_to(half_width, height)
+            ctx.line_to(0, 0)
+            ctx.line_to(-half_width, height)
+
+            ctx.stroke(line_width=line_width)
+            ctx.stroke(line_width=2, color=REBECCAPURPLE)
+
+    # Left two should be mitered, right two should be beveled.
+    # (Windows and Qt don't bevel, they just start truncating the miter.)
+    for i, angle in enumerate([15, 12, 11, 8]):
+        x = 30 + i * 50
+        draw_angle(canvas, angle, x)
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "miter_join", threshold=0.025)
