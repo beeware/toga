@@ -16,7 +16,7 @@ from travertino.size import at_least
 
 from toga.colors import rgb
 from toga.constants import Baseline, FillRule
-from toga.widgets.canvas.geometry import arc_to_bezier, sweepangle
+from toga.widgets.canvas.geometry import arc_to_bezier, round_rect, sweepangle
 
 from ..colors import native_color
 from .base import Widget
@@ -169,6 +169,9 @@ class Context:
 
     def rect(self, x, y, width, height):
         self._path.addRect(x, y, width, height)
+
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
 
     # Drawing Paths
 

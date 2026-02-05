@@ -19,7 +19,7 @@ from org.beeware.android import DrawHandlerView, IDrawHandler
 
 from toga.colors import rgb
 from toga.constants import Baseline, FillRule
-from toga.widgets.canvas import arc_to_bezier, sweepangle
+from toga.widgets.canvas.geometry import arc_to_bezier, round_rect, sweepangle
 
 from ..colors import native_color
 from .base import Widget, suppress_reference_error
@@ -153,6 +153,9 @@ class Context:
 
     def rect(self, x, y, width, height):
         self.path.addRect(x, y, x + width, y + height, Path.Direction.CW)
+
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
 
     # Drawing Paths
 

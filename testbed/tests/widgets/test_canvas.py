@@ -509,6 +509,34 @@ async def test_rect(canvas, probe):
     assert_reference(probe, "rect")
 
 
+async def test_round_rect(canvas, probe):
+    "A rounded rectangle can be drawn"
+
+    class Corner:
+        def __init__(self, x, y):
+            self.x = x
+            self.y = y
+
+    # Draw a rounded rectangle. move_to is implied
+    canvas.root_state.begin_path()
+    canvas.root_state.round_rect(
+        x=20, y=10, width=160, height=80, radii=[5, 30, Corner(50, 30)]
+    )
+    canvas.root_state.fill(color=GOLDENROD)
+    canvas.root_state.stroke(color=REBECCAPURPLE)
+
+    # Draw a rounded rectangle with negative width, height
+    canvas.root_state.begin_path()
+    canvas.root_state.round_rect(
+        x=190, y=180, width=-160, height=-80, radii=[0, 30, Corner(50, 60)]
+    )
+    canvas.root_state.fill(color=CORNFLOWERBLUE)
+    canvas.root_state.stroke(color=BLACK)
+
+    await probe.redraw("Filled and stroked rounded rectangles should be drawn")
+    assert_reference(probe, "round_rect", threshold=0.016)
+
+
 async def test_fill(canvas, probe):
     "A fill can be drawn with primitives"
     # Draw a closed path

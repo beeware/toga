@@ -117,6 +117,14 @@ class Context:
             )
         )
 
+    def round_rect(self, x, y, width, height, radii):
+        self.impl.draw_instructions.append(
+            (
+                "round rect",
+                {"x": x, "y": y, "width": width, "height": height, "radii": radii},
+            )
+        )
+
     # Drawing Paths
     def fill(self, fill_rule):
         self.impl.draw_instructions.append(("fill", {"fill_rule": fill_rule}))
