@@ -62,11 +62,13 @@ class Path2D:
             native_path.Transform(matrix)
             self.native.AddPath(native_path, False)
             if self._subpath_start is None and path._subpath_start is not None:
-                points = [path._subpath_start]
-                self._subpath_start = matrix.TransformPoints(points)[0]
+                points = Array[PointF]([path._subpath_start])
+                matrix.TransformPoints(points)
+                self._subpath_start = points[0]
             if path._subpath_end is not None:
-                points = [path._subpath_end]
-                self._subpath_end = matrix.TransformPoints(points)[0]
+                points = Array[PointF]([path._subpath_end])
+                matrix.TransformPoints(points)
+                self._subpath_end = points[0]
 
     def close_path(self):
         if self._subpath_start is not None:
@@ -225,6 +227,10 @@ class Context:
             points = Array[PointF]([start])
             matrix.TransformPoints(points)
             self.path._subpath_start = points[0]
+        if (end := self.path._subpath_end) is not None:
+            points = Array[PointF]([end])
+            matrix.TransformPoints(points)
+            self.path._subpath_end = points[0]
 
     # Context management
 
