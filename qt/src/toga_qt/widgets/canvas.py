@@ -41,6 +41,7 @@ class State:
             self.stroke.setCapStyle(Qt.PenCapStyle.FlatCap)
             self.stroke.setWidth(2.0)
             self.stroke.setJoinStyle(Qt.MiterJoin)
+            self.stroke.setMiterLimit(10.0)
 
 
 class Context:
