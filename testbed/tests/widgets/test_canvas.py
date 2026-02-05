@@ -1096,6 +1096,11 @@ async def test_path_object(canvas, probe):
         print("draw", _)
         canvas.root_state.fill(CORNFLOWERBLUE, path=path)
         canvas.root_state.stroke(REBECCAPURPLE, path=path)
+
+    # stroke and fill an empty path
+    print("stroke and fill empty")
+    canvas.root_state.fill(path=Path2D())
+    canvas.root_state.stroke(path=Path2D())
     print("done")
 
     await probe.redraw("Image should be drawn")

@@ -124,12 +124,15 @@ class Path2D:
         for method, *args in steps:
             if method == "add_path":
                 add_steps, transform = args
-                context.save()
-                try:
-                    context.transform(transform)
+                if transform is None:
                     self._apply(add_steps, context)
-                finally:
-                    context.restore()
+                else:
+                    context.save()
+                    try:
+                        context.transform(transform)
+                        self._apply(add_steps, context)
+                    finally:
+                        context.restore()
             else:
                 getattr(context, method)(*args)
 

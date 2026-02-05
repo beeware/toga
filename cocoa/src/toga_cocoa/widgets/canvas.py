@@ -390,7 +390,7 @@ class TogaCanvas(NSView):
     def drawRect_(self, rect: NSRect) -> None:
         try:
             self.interface.root_state._draw(Context(self.impl))
-        except Exception as exc:
+        except Exception as exc:  # pragma: no cover
             print(exc)
 
     @objc_method
