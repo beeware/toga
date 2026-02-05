@@ -6,11 +6,18 @@ from PySide6.QtCore import (
     QAbstractListModel,
     QModelIndex,
     QPersistentModelIndex,
+    QRect,
     QSize,
     Qt,
 )
 from PySide6.QtGui import QAction, QFont, QFontMetrics, QIcon, QPainter
-from PySide6.QtWidgets import QListView, QMenu, QStyle, QStyledItemDelegate
+from PySide6.QtWidgets import (
+    QListView,
+    QMenu,
+    QStyle,
+    QStyledItemDelegate,
+    QStyleOptionButton,
+)
 from travertino.size import at_least
 
 from toga.sources import ListSource
@@ -20,6 +27,8 @@ from .base import Widget
 logger = logging.getLogger(__name__)
 
 ICON_SIZE = 32
+BUTTON_PADDING = 6
+BUTTON_MARGIN = 6
 
 MISSING = object()
 
@@ -147,23 +156,129 @@ class DetailedListDelegate(QStyledItemDelegate):
             index.data(Qt.ItemDataRole.UserRole)
         )
 
+        # Draw the normal item background
         options.widget.style().drawControl(
-            QStyle.ControlElement.CE_ItemViewItem, options, painter
+            QStyle.ControlElement.CE_ItemViewItem,
+            options,
+            painter,
+            options.widget,
         )
+
+        # Draw title and subtitle
         title_metrics = QFontMetrics(options.font)
-        line_spacing = title_metrics.lineSpacing()
         subtitle_font = QFont(options.font)
         subtitle_font.setPointSizeF(subtitle_font.pointSizeF() * 0.89)
         subtitle_metrics = QFontMetrics(subtitle_font)
 
-        painter.translate(options.rect.left() + ICON_SIZE + 4, options.rect.top())
-
-        painter.drawText(0, title_metrics.height(), title)
-
+        x_offset = ICON_SIZE + 4
+        y = options.rect.top()
+        painter.drawText(
+            options.rect.left() + x_offset, y + title_metrics.ascent(), title
+        )
+        y += title_metrics.lineSpacing()
         painter.setFont(subtitle_font)
-        painter.drawText(0, line_spacing + subtitle_metrics.height(), subtitle)
+        painter.drawText(
+            options.rect.left() + x_offset, y + subtitle_metrics.ascent(), subtitle
+        )
+
+        primary_text = (
+            self.impl.interface._primary_action
+            if self.impl.primary_action_enabled
+            else None
+        )
+        secondary_text = (
+            self.impl.interface._secondary_action
+            if self.impl.secondary_action_enabled
+            else None
+        )
+
+        if primary_text:
+            primary_rect = self._primary_button_rect(index)
+            self._draw_button(
+                options, painter, primary_text, primary_rect, ("primary", index)
+            )
+
+        if secondary_text:
+            secondary_rect = self._secondary_button_rect(index)
+            self._draw_button(
+                options, painter, secondary_text, secondary_rect, ("secondary", index)
+            )
 
         painter.restore()
+
+    def _draw_button(self, option, painter, text, rect, role):
+        button_option = QStyleOptionButton()
+        button_option.rect = rect
+        button_option.text = text
+        button_option.state = QStyle.StateFlag.State_Enabled
+        if hasattr(self, "_hovered_button") and self._hovered_button == role:
+            button_option.state |= QStyle.StateFlag.State_MouseOver
+        if hasattr(self, "_pressed_button") and role == self._pressed_button:
+            button_option.state |= QStyle.StateFlag.State_Sunken
+
+        option.widget.style().drawControl(
+            QStyle.ControlElement.CE_PushButton, button_option, painter, option.widget
+        )
+
+    def _secondary_button_rect(self, index, rect=None):
+        if rect is None:
+            rect = self.impl.native.visualRect(index)
+        text = (
+            self.impl.interface._secondary_action
+            if self.impl.secondary_action_enabled
+            else None
+        )
+        if not text:
+            return QRect()  # empty rect if no button
+
+        option = QStyleOptionButton()
+        fm = option.fontMetrics
+        width = fm.horizontalAdvance(text) + 2 * BUTTON_PADDING
+        height = fm.height() + 2 * BUTTON_PADDING
+
+        return QRect(
+            rect.right() - width - BUTTON_MARGIN,
+            rect.center().y() - height // 2,
+            width,
+            height,
+        )
+
+    def button_at(self, index: QModelIndex, pos):
+        primary_rect, secondary_rect = (
+            self._primary_button_rect(index),
+            self._secondary_button_rect(index),
+        )
+        if primary_rect and primary_rect.contains(pos):
+            return "primary", index
+        if secondary_rect and secondary_rect.contains(pos):
+            return "secondary", index
+        return None
+
+    def _primary_button_rect(self, index, rect=None):
+        if rect is None:
+            rect = self.impl.native.visualRect(index)
+        text = (
+            self.impl.interface._primary_action
+            if self.impl.primary_action_enabled
+            else None
+        )
+        if text is None:
+            return QRect()
+
+        secondary_rect = self._secondary_button_rect(index, rect)
+        option = QStyleOptionButton()
+        fm = option.fontMetrics
+        width = fm.horizontalAdvance(text) + 2 * BUTTON_PADDING
+        height = fm.height() + 2 * BUTTON_PADDING
+
+        # Position primary to the left of secondary if secondary exists, otherwise
+        # align to right
+        x = (
+            secondary_rect.left() - width - BUTTON_MARGIN
+            if not secondary_rect.isNull()
+            else option.rect.right() - width - BUTTON_MARGIN
+        )
+        return QRect(x, rect.center().y() - height // 2, width, height)
 
     def sizeHint(self, options, index):
         base_size = super().sizeHint(options, index)
@@ -182,6 +297,8 @@ class DetailedListDelegate(QStyledItemDelegate):
             title_metrics.lineSpacing() + subtitle_metrics.lineSpacing() + 4,
             base_size.height(),
         )
+        # options.rect is explicitly passed in here, as the visual rectangle computation
+        # requires the size hint.
         min_width = (
             base_size.width()
             + 4
@@ -189,9 +306,88 @@ class DetailedListDelegate(QStyledItemDelegate):
                 title_metrics.boundingRect(title).width(),
                 subtitle_metrics.boundingRect(subtitle).width(),
             )
+            + (
+                self._primary_button_rect(index, rect=options.rect).width()
+                + BUTTON_MARGIN
+                if self.impl.primary_action_enabled
+                else 0
+            )
+            + (
+                self._secondary_button_rect(index, rect=options.rect).width()
+                + BUTTON_MARGIN
+                if self.impl.secondary_action_enabled
+                else 0
+            )
         )
 
         return QSize(min_width, min_height)
+
+
+class ButtonListView(QListView):
+    """QListView to track button clicks and hover."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setMouseTracking(True)
+        self.viewport().setMouseTracking(True)
+
+    def mouseMoveEvent(self, event):
+        index = self.indexAt(event.position().toPoint())
+        # Defensive safety catch for no index.
+        if not index.isValid():  # pragma: no cover
+            self.delegate._hovered_button = None
+            self.viewport().update()
+            return super().mouseMoveEvent(event)
+
+        pos = event.position().toPoint()
+        self.delegate._hovered_button = self.delegate.button_at(index, pos)
+
+        self.viewport().update()
+        super().mouseMoveEvent(event)
+
+    def mousePressEvent(self, event):
+        index = self.indexAt(event.position().toPoint())
+        if not index.isValid():  # pragma: no cover
+            self.delegate._pressed_button = None
+            return super().mousePressEvent(event)
+
+        pos = event.position().toPoint()
+        self.delegate._pressed_button = self.delegate.button_at(index, pos)
+        # print(self.delegate._pressed_button)
+
+        self.viewport().update()
+        if not self.delegate._pressed_button:
+            super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        index = self.indexAt(event.position().toPoint())
+        handled = False
+        # index.isValid is defensive safety catch; pressed_button is to prevent
+        # dragging into the button without pressing.  The latter does not have a
+        # cross-platform test case, and is tedious to trigger.
+        if index.isValid() and self.delegate._pressed_button:  # pragma: no branch
+            pos = event.position().toPoint()
+            self.delegate._pressed_button = self.delegate.button_at(index, pos)
+            if (
+                self.delegate._pressed_button
+                and self.delegate._pressed_button[0] == "primary"
+            ):
+                self.delegate.impl.qt_primary_action(False, index.row())
+                handled = True
+            elif (
+                self.delegate._pressed_button
+                and self.delegate._pressed_button[0] == "secondary"
+            ):
+                self.delegate.impl.qt_secondary_action(False, index.row())
+                handled = True
+            # else is defensive; no-cover.
+            else:  # pragma: no cover
+                pass
+
+        self.delegate._pressed_button = None
+        self.viewport().update()
+        if not handled:
+            super().mouseReleaseEvent(event)
 
 
 class DetailedList(Widget):
@@ -199,7 +395,7 @@ class DetailedList(Widget):
 
     def create(self):
         # Create the List widget
-        self.native = QListView()
+        self.native = ButtonListView()
         self.native.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
 
         self.native_model = ListSourceModel(
@@ -213,7 +409,11 @@ class DetailedList(Widget):
         self.native.setModel(self.native_model)
 
         self.native_delegate = DetailedListDelegate(self, parent=self.native)
+        # This is necessary, as the result of itemDelegate somehow does not synchronize
+        # attributes such as _hovered_button properly
+        self.native.delegate = self.native_delegate
         self.native.setItemDelegate(self.native_delegate)
+        self.native.setEditTriggers(QListView.NoEditTriggers)
         self.native.setSelectionMode(QListView.SelectionMode.SingleSelection)
         self.native.selectionModel().selectionChanged.connect(self.qt_selection_changed)
 
@@ -249,6 +449,7 @@ class DetailedList(Widget):
                 )
                 secondary_action.triggered.connect(self.qt_secondary_action)
                 actions.append(secondary_action)
+
         if self.refresh_enabled:  # pragma: no branch
             refresh_action = QAction("Refresh", parent=self._menu)
             refresh_action.triggered.connect(self.qt_refresh_action)
@@ -261,15 +462,13 @@ class DetailedList(Widget):
     def qt_context_menu(self, pos):
         self._get_context_menu()
         if not self._menu.isEmpty():  # pragma: no branch
-            self._menu.exec()
+            self._menu.exec(self.native.mapToGlobal(pos))
 
-    def qt_primary_action(self, checked):
-        row = self.get_selection()
+    def qt_primary_action(self, checked, row):
         row_data = self.interface.data[row]
         self.interface.on_primary_action(row=row_data)
 
-    def qt_secondary_action(self, checked):
-        row = self.get_selection()
+    def qt_secondary_action(self, checked, row):
         row_data = self.interface.data[row]
         self.interface.on_secondary_action(row=row_data)
 

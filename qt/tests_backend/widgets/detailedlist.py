@@ -1,6 +1,7 @@
 import asyncio
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEvent, QModelIndex, QPoint, Qt
+from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QListView
 
 import toga
@@ -72,14 +73,14 @@ class DetailedListProbe(SimpleProbe):
         if active:
             assert self.refresh_available()
             # ask for the menu
-            await self._perform_action(0, -1)
+            await self._perform_menu_action(0, -1)
 
             # A short pause to allow the click handler to be processed.
             await asyncio.sleep(0.1)
         else:
             assert not self.refresh_available()
 
-    async def _perform_action(self, row, index):
+    async def _perform_menu_action(self, row, index, noop=False):
         if row is not None:
             pos = self.row_position(row)
         else:
@@ -93,7 +94,8 @@ class DetailedListProbe(SimpleProbe):
 
         def trigger_action():
             action = menu.actions()[index]
-            action.triggered.emit()
+            if not noop:
+                action.triggered.emit()
             if toga.App.app.run_slow:
                 print("Action has been selected")
             menu.close()
@@ -104,8 +106,69 @@ class DetailedListProbe(SimpleProbe):
         self.impl.qt_context_menu(pos)
         await self.redraw("Action menu has been displayed")
 
+    async def _perform_button_action(self, row, button_index):
+        # Scroll into view.
+        self.impl.scroll_to_row(row)
+        await self.redraw("Scrolling into row")
+
+        index = self.native.model().index(row, 0, QModelIndex())
+        rect = (
+            self.impl.native_delegate._primary_button_rect(index)
+            if button_index == 0
+            else self.impl.native_delegate._secondary_button_rect(index)
+        )
+        # width - 25 is an approximate mock, verifying that the position is no longer
+        # clickable.
+        center_pos = (
+            rect.center()
+            if rect
+            else QPoint(self.row_position(row).y(), self.width - 25)
+        )
+
+        hover_event = QMouseEvent(
+            QEvent.MouseMove,
+            center_pos,
+            self.native.mapToGlobal(center_pos),
+            Qt.NoButton,
+            Qt.NoButton,
+            Qt.NoModifier,
+        )
+        self.native.mouseMoveEvent(hover_event)
+
+        await self.redraw("Button has been hovered over")
+
+        press_event = QMouseEvent(
+            QEvent.MouseButtonPress,
+            center_pos,
+            self.native.mapToGlobal(center_pos),
+            Qt.LeftButton,
+            Qt.LeftButton,
+            Qt.NoModifier,
+        )
+        self.native.mousePressEvent(press_event)
+
+        await self.redraw("Button has been pressed down")
+
+        release_event = QMouseEvent(
+            QEvent.MouseButtonRelease,
+            center_pos,
+            self.native.mapToGlobal(center_pos),
+            Qt.LeftButton,
+            Qt.NoButton,
+            Qt.NoModifier,
+        )
+        self.native.mouseReleaseEvent(release_event)
+
+        await self.redraw("Button has been pressed up")
+
     async def perform_primary_action(self, row, active=True):
-        await self._perform_action(row, 0)
+        await self._perform_button_action(row, 0)
+        # Test the context menu, but don't call it again
+        await self._perform_menu_action(row, 0, noop=True)
 
     async def perform_secondary_action(self, row, active=True):
-        await self._perform_action(row, 1 if self.impl.primary_action_enabled else 0)
+        await self._perform_button_action(row, 1)
+        # Test the context menu, but don't call it again
+        await self._perform_menu_action(
+            row, 1 if self.impl.primary_action_enabled else 0, noop=True
+        )
