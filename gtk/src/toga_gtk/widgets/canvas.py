@@ -114,7 +114,7 @@ class Path2D:
         context.begin_path()
         if self._native_cached:
             # if we have a C-level cache of the path, use it
-            context.native.add_path(self._native_cached)
+            context.native.append_path(self._native_cached)
         else:
             self._apply(self._steps, context)
             # Cache the C-level path for reuse

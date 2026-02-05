@@ -76,7 +76,7 @@ class Path2D:
     def move_to(self, x, y):
         self._subpath_end = PointF(x, y)
         if self._subpath_start is None:
-            self._subpath_start = self._subpath_start
+            self._subpath_start = self._subpath_end
         else:
             self.native.StartFigure()
 
