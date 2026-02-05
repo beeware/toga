@@ -13,9 +13,7 @@ from ..base import BasePositronBootstrap
 
 
 class FastAPIPositronBootstrap(BasePositronBootstrap):
-    display_name_annotation = "does not support iOS/Android/Web deployment"
-    # Need a pydantic-core binary to make iOS/Android possible.
-    # display_name_annotation = "does not support Web deployment"
+    display_name_annotation = "does not support Web deployment"
 
     @property
     def template_path(self):
