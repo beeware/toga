@@ -27,6 +27,18 @@ from .base import Widget, suppress_reference_error
 BLACK = jint(native_color(rgb(0, 0, 0)))
 
 
+def matrix_from_transform(transform):
+    a, b, c, d, e, f = transform
+    matrix = Matrix()
+    matrix.MscaleX = a
+    matrix.MskewX = b
+    matrix.MskewY = c
+    matrix.MscaleY = d
+    matrix.MtransX = e
+    matrix.MtransY = f
+    return matrix
+
+
 class Path2D:
     native: NativePath
 
@@ -47,9 +59,10 @@ class Path2D:
             self._last_point = path._last_point
         else:
             native_path = NativePath(path.native)
-            native_path.transform(transform)
+            matrix = matrix_from_transform(transform)
+            native_path.transform(matrix)
             self.native.addPath(native_path)
-            self._last_point = transform.mapPoints([path._last_point])[0]
+            self._last_point = matrix.mapPoints([path._last_point])[0]
 
     def close_path(self):
         self.native.close()

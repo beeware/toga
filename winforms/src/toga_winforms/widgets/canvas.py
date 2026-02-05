@@ -128,7 +128,8 @@ class Path2D:
         matrix.TransformPoints(points)
 
         start = self._subpath_start
-        if start and self.native.GetLastPoint().IsEmpty:
+        last_point = self.native.GetLastPoint()
+        if start and last_point.IsEmpty:
             self.native.AddLine(start, start)
         self.native.AddBeziers(points)
 

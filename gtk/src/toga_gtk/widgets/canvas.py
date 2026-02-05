@@ -47,7 +47,7 @@ class Path2D:
         self._native_cached = None
 
     def close_path(self):
-        self._steps.append("close_path")
+        self._steps.append(("close_path",))
         self._native_cached = None
 
     def move_to(self, x, y):
@@ -113,7 +113,7 @@ class Path2D:
     def apply(self, context):
         context.begin_path()
         if self._native_cached:
-            # if we have a C-leve cache of the path, use it
+            # if we have a C-level cache of the path, use it
             context.native.add_path(self._native_cached)
         else:
             for method, *args in self._steps:
