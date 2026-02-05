@@ -48,7 +48,11 @@ class Path2D:
 
     @property
     def last_point(self):
-        last_point = self.native.GetLastPoint()
+        try:
+            last_point = self.native.GetLastPoint()
+        except Exception as exc:
+            print(exc)
+            return self._subpath_start
         if last_point.IsEmpty:
             return self._subpath_start
         else:
@@ -58,9 +62,14 @@ class Path2D:
         self.native.CloseFigure()
 
     def move_to(self, x, y):
-        last_point = self.native.GetLastPoint()
-        if not last_point.IsEmpty:
+        try:
+            last_point = self.native.GetLastPoint()
+        except Exception as exc:
+            print(exc)
             self.native.StartFigure()
+        else:
+            if not last_point.IsEmpty:
+                self.native.StartFigure()
         self._subpath_start = PointF(x, y)
 
     def line_to(self, x, y):
@@ -128,9 +137,14 @@ class Path2D:
         matrix.TransformPoints(points)
 
         start = self._subpath_start
-        last_point = self.native.GetLastPoint()
-        if start and last_point.IsEmpty:
+        try:
+            last_point = self.native.GetLastPoint()
+        except Exception as exc:
+            print(exc)
             self.native.AddLine(start, start)
+        else:
+            if start and last_point.IsEmpty:
+                self.native.AddLine(start, start)
         self.native.AddBeziers(points)
 
     def rect(self, x, y, width, height):

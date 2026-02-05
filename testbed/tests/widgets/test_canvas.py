@@ -1052,30 +1052,42 @@ async def test_path_object(canvas, probe):
     path = Path2D()
 
     # exercise all of the Path methods
+    print("move_to")
     path.move_to(10, 15)
+    print("line_to")
     path.line_to(20, 30)
+    print("bezier")
     path.bezier_curve_to(20, 10, 40, 15, 50, 10)
+    print("close")
     path.close_path()
 
+    print("rect")
     path.rect(5, 5, 50, 30)
 
     path2 = Path2D()
     path2.move_to(100, 80)
+    print("quadratic")
     path2.quadratic_curve_to(100, 100, 120, 130)
     path2.quadratic_curve_to(150, 120, 150, 100)
+    print("arc")
     path2.arc(130, 100, 20, endangle=pi / 3)
 
+    print("add_path")
     path.add_path(path2, (0.5, 0.0, 0.0, 0.75, 30, 10))
     path.move_to(150, 100)
+    print("ellipse")
     path.ellipse(150, 100, 20, 30, pi / 4, 0, pi, True)
 
+    print("transform")
     canvas.root_state.translate(100, 100)
     canvas.root_state.scale(0.5, 0.5)
     for _ in range(12):
         canvas.root_state.rotate(pi / 6)
         canvas.root_state.scale(0.95, 0.95)
+        print("draw", _)
         canvas.root_state.fill(CORNFLOWERBLUE, path=path)
         canvas.root_state.stroke(REBECCAPURPLE, path=path)
+    print("done")
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "path_object", threshold=0.05)

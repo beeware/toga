@@ -116,19 +116,22 @@ class Path2D:
             # if we have a C-level cache of the path, use it
             context.native.add_path(self._native_cached)
         else:
-            for method, *args in self._steps:
-                if method == "add_path":
-                    path, transform = args
-                    context.save()
-                    try:
-                        context.transform(transform)
-                        path.apply(context)
-                    finally:
-                        context.restore()
-                else:
-                    getattr(context, method)(*args)
+            self._apply(self._steps, context)
             # Cache the C-level path for reuse
             self._native_cached = context.copy_path()
+
+    def _apply(self, steps, context):
+        for method, *args in self.steps:
+            if method == "add_path":
+                steps, transform = args
+                context.save()
+                try:
+                    context.transform(transform)
+                    self._apply(steps, context)
+                finally:
+                    context.restore()
+            else:
+                getattr(context, method)(*args)
 
 
 @dataclass(slots=True)
