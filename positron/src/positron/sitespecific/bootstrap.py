@@ -1,32 +1,20 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from briefcase.config import validate_url
 
-from .base import BasePositronBootstrap
+from ..base import BasePositronBootstrap
 
 
 class SiteSpecificPositronBootstrap(BasePositronBootstrap):
+    @property
+    def template_path(self):
+        return Path(__file__).parent / "templates"
+
     def app_source(self):
-        return f"""\
-import toga
-
-
-class {{{{ cookiecutter.class_name }}}}(toga.App):
-
-    def startup(self):
-        self.web_view = toga.WebView()
-        self.web_view.url = f"{self.site_url}"
-
-        self.main_window = toga.MainWindow()
-        self.main_window.content = self.web_view
-        self.main_window.show()
-
-
-def main():
-    return {{{{ cookiecutter.class_name }}}}()
-"""
+        return self.templated_content("app.py", site_url=self.site_url)
 
     def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:
         """Runs prior to other plugin hooks to provide additional context.

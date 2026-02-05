@@ -85,7 +85,7 @@ build_gradle_dependencies = [
             ),
             description="Initial path",
             default="/",
-            validator=self.validate_path,
+            validator=self.validate_url_path,
             override_value=project_overrides.pop("initial_path", None),
         )
 
@@ -96,7 +96,6 @@ build_gradle_dependencies = [
 
         # App files
         for template_name in ["server.py"]:
-            self.console.debug(f"Writing {template_name}")
             self.templated_file(
                 template_name,
                 app_path,

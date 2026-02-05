@@ -50,7 +50,7 @@ supported = false
             ),
             description="Initial path",
             default="/admin/",
-            validator=self.validate_path,
+            validator=self.validate_url_path,
             override_value=project_overrides.pop("initial_path", None),
         )
 
@@ -60,15 +60,14 @@ supported = false
         app_path = base_path / "src" / self.context["module_name"]
 
         # Top level files
-        self.console.debug("Writing manage.py")
         self.templated_file(
             "manage.py",
             app_path.parent,
             module_name=self.context["module_name"],
         )
+
         # App files
         for template_name in ["settings.py", "urls.py", "wsgi.py"]:
-            self.console.debug(f"Writing {template_name}")
             self.templated_file(
                 template_name,
                 app_path,
