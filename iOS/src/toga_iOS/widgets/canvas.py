@@ -46,11 +46,8 @@ IDENTITY = core_graphics.CGAffineTransformMake(1, 0, 0, 1, 0, 0)
 
 
 class Path2D:
-    def __init__(self, path=None):
-        if path is None:
-            self.native = core_graphics.CGPathCreateMutable()
-        else:
-            self.native = core_graphics.CGPathCreateMutableCopy(path.native)
+    def __init__(self):
+        self.native = core_graphics.CGPathCreateMutable()
 
     def _ensure_subpath(self, x, y):
         if core_graphics.CGPathIsEmpty(self.native):

@@ -34,17 +34,11 @@ BLACK = native_color(rgb(0, 0, 0))
 
 
 class Path2D:
-    def __init__(self, path=None):
-        if path is None:
-            self.native = GraphicsPath()
-            self._subpath_start = None
-            self._subpath_end = None
-            self._subpath_empty = True
-        else:
-            self.native = GraphicsPath(path.native.PathPoints, path.native.PathTypes)
-            self._subpath_start = path._subpath_start
-            self._subpath_end = path._subpath_end
-            self._subpath_empty = path._subpath_empty
+    def __init__(self):
+        self.native = GraphicsPath()
+        self._subpath_start = None
+        self._subpath_end = None
+        self._subpath_empty = True
 
     def _ensure_path(self, x, y):
         if self._subpath_start is None:

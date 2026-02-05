@@ -37,13 +37,9 @@ def matrix_from_transform(transform):
 class Path2D:
     native: NativePath
 
-    def __init__(self, path=None):
-        if path:
-            self.native = NativePath(path.native)
-            self._last_point = path._last_point
-        else:
-            self.native = NativePath()
-            self._last_point = None
+    def __init__(self):
+        self.native = NativePath()
+        self._last_point = None
 
     def _ensure_subpath(self, x, y):
         if self.native.isEmpty():

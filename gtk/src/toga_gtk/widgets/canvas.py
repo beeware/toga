@@ -28,14 +28,8 @@ BLACK = native_color(rgb(0, 0, 0))
 
 
 class Path2D:
-    def __init__(self, path=None):
-        if path is None:
-            steps = []
-        else:
-            steps = path._steps.copy()
-        self._steps = steps
-        # Cache if C-level path.
-        # Any change to the path invalidates it.
+    def __init__(self):
+        self._steps = []
         self._native_cached = None
 
     def _ensure_subpath(self, x, y):
@@ -112,7 +106,7 @@ class Path2D:
 
     def apply(self, context):
         context.begin_path()
-        if self._native_cached:
+        if self._native_cached is not None:
             # if we have a C-level cache of the path, use it
             context.native.append_path(self._native_cached)
         else:
@@ -261,9 +255,9 @@ class Context:
             self.native.fill_preserve()
         else:
             current_path = self.native.copy_path()
-            self.begin_path()
             path.apply(self)
             self.native.fill()
+            # stroke clears path, so we are appending to an empty path
             self.native.append_path(current_path)
 
     def stroke(self, path=None):
@@ -274,6 +268,7 @@ class Context:
             current_path = self.native.copy_path()
             path.apply(self)
             self.native.stroke()
+            # stroke clears path, so we are appending to an empty path
             self.native.append_path(current_path)
 
     # Transformations
