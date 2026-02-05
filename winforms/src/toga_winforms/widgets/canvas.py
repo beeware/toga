@@ -58,7 +58,8 @@ class Path2D:
         self.native.CloseFigure()
 
     def move_to(self, x, y):
-        if not self.native.GetLastPoint().IsEmpty:
+        last_point = self.native.GetLastPoint()
+        if not last_point.IsEmpty:
             self.native.StartFigure()
         self._subpath_start = PointF(x, y)
 

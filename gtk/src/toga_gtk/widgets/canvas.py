@@ -43,7 +43,7 @@ class Path2D:
             self.move_to(x, y)
 
     def add_path(self, path, transform=None):
-        self._steps.append(("add_path", path.steps.copy(), transform))
+        self._steps.append(("add_path", path._steps.copy(), transform))
         self._native_cached = None
 
     def close_path(self):
@@ -103,7 +103,8 @@ class Path2D:
         self._native_cached = None
 
     def round_rect(self, x, y, width, height, radii):
-        round_rect(self, x, y, width, height, radii)
+        self._steps.append(("round_rect", x, y, width, height, radii))
+        self._native_cached = None
 
     # extra utility methods
     def is_empty(self):

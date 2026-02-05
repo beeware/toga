@@ -10,25 +10,34 @@ def path():
 
 def test_compile(path):
     path.move_to(100, 50)
-    path.line_to(200, 100)
+    draw_op = path.line_to(200, 100)
 
     assert path.impl.draw_instructions == [
         ("move to", {"x": 100, "y": 50}),
         ("line to", {"x": 200, "y": 100}),
     ]
 
-    # adding more to the path doesn't change the instructions
+    # adding more to the path prompts recompilation
     path.line_to(100, 200)
     assert path.impl.draw_instructions == [
         ("move to", {"x": 100, "y": 50}),
         ("line to", {"x": 200, "y": 100}),
+        ("line to", {"x": 100, "y": 200}),
     ]
 
-    # until you explicitly compile
-    path.compile()
+    # but if you change an operation it doesn't change the path
+    draw_op.x = 150
     assert path.impl.draw_instructions == [
         ("move to", {"x": 100, "y": 50}),
         ("line to", {"x": 200, "y": 100}),
+        ("line to", {"x": 100, "y": 200}),
+    ]
+
+    # unless you explicitly recompile
+    path.compile()
+    assert path.impl.draw_instructions == [
+        ("move to", {"x": 100, "y": 50}),
+        ("line to", {"x": 150, "y": 100}),
         ("line to", {"x": 100, "y": 200}),
     ]
 

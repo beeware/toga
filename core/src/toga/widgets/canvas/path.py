@@ -47,6 +47,7 @@ class Path2D:
         """
         add_path = AddPath(path, transform)
         self._action_target.drawing_actions.append(add_path)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return add_path
 
@@ -61,6 +62,7 @@ class Path2D:
         """
         close_path = ClosePath()
         self._action_target.drawing_actions.append(close_path)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return close_path
 
@@ -74,6 +76,7 @@ class Path2D:
         """
         move_to = MoveTo(x, y)
         self._action_target.drawing_actions.append(move_to)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return move_to
 
@@ -87,6 +90,7 @@ class Path2D:
         """
         line_to = LineTo(x, y)
         self._action_target.drawing_actions.append(line_to)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return line_to
 
@@ -117,6 +121,7 @@ class Path2D:
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
         self._action_target.drawing_actions.append(bezier_curve_to)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return bezier_curve_to
 
@@ -145,6 +150,7 @@ class Path2D:
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
         self._action_target.drawing_actions.append(quadratic_curve_to)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return quadratic_curve_to
 
@@ -177,6 +183,7 @@ class Path2D:
         """
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
         self._action_target.drawing_actions.append(arc)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return arc
 
@@ -225,6 +232,7 @@ class Path2D:
             anticlockwise,
         )
         self._action_target.drawing_actions.append(ellipse)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return ellipse
 
@@ -241,6 +249,7 @@ class Path2D:
 
         rect = Rect(x, y, width, height)
         self._action_target.drawing_actions.append(rect)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return rect
 
@@ -281,11 +290,15 @@ class Path2D:
         """
         round_rect = RoundRect(x, y, width, height, radii)
         self._action_target.drawing_actions.append(round_rect)
+        self._recompilation_needed()
         self._redraw_with_warning_if_state()
         return round_rect
 
     def _redraw_with_warning_if_state(self):
         pass
+
+    def _recompilation_needed(self):
+        self._impl = None
 
     def compile(self):
         print("compiling")

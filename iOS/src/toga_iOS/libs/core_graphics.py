@@ -39,10 +39,21 @@ class CGAffineTransform(Structure):
 core_graphics.CGAffineTransformIdentity = CGAffineTransform
 core_graphics.CGAffineTransformInvert.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.argtypes = [CGAffineTransform]
+core_graphics.CGAffineTransformMake.restype = CGAffineTransform
+core_graphics.CGAffineTransformMake.argtypes = [
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+]
 core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform
 core_graphics.CGAffineTransformMakeScale.argtypes = [CGFloat, CGFloat]
 core_graphics.CGAffineTransformRotate.restype = CGAffineTransform
 core_graphics.CGAffineTransformRotate.argtypes = [CGAffineTransform, CGFloat]
+core_graphics.CGAffineTransformScale.restype = CGAffineTransform
+core_graphics.CGAffineTransformScale.argtypes = [CGAffineTransform, CGFloat, CGFloat]
 core_graphics.CGAffineTransformTranslate.restype = CGAffineTransform
 core_graphics.CGAffineTransformTranslate.argtypes = [
     CGAffineTransform,
@@ -84,7 +95,12 @@ core_graphics.CGPathAddCurveToPoint.argtypes = [
     CGFloat,
 ]
 core_graphics.CGPathAddLineToPoint.restype = c_void_p
-core_graphics.CGPathAddLineToPoint.argtypes = [CGMutablePathRef, CGFloat, CGFloat]
+core_graphics.CGPathAddLineToPoint.argtypes = [
+    CGMutablePathRef,
+    CGAffineTransform,
+    CGFloat,
+    CGFloat,
+]
 core_graphics.CGPathAddQuadCurveToPoint.restype = c_void_p
 core_graphics.CGPathAddQuadCurveToPoint.argtypes = [
     CGMutablePathRef,

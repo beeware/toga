@@ -46,7 +46,9 @@ class Path2D:
             self.native.addPath(path.native)
             self._last_point = path._last_point
         else:
-            self.native.addPath(NativePath(path.native).transform(transform))
+            native_path = NativePath(path.native)
+            native_path.transform(transform)
+            self.native.addPath(native_path)
             self._last_point = transform.mapPoints([path._last_point])[0]
 
     def close_path(self):
