@@ -25,7 +25,7 @@ from System.IO import MemoryStream
 from toga.colors import TRANSPARENT, rgb
 from toga.constants import Baseline, FillRule
 from toga.handlers import WeakrefCallable
-from toga.widgets.canvas import arc_to_bezier, sweepangle
+from toga.widgets.canvas.geometry import arc_to_bezier, round_rect, sweepangle
 from toga_winforms.colors import native_color
 
 from .box import Box
@@ -270,6 +270,9 @@ class Context:
 
     def rect(self, x, y, width, height):
         self.path.rect(x, y, width, height)
+
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
 
     # Drawing Paths
 
