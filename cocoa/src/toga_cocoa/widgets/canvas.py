@@ -118,6 +118,9 @@ class Path:
         rectangle = CGRectMake(x, y, width, height)
         core_graphics.CGPathAddRect(self.native, IDENTITY, rectangle)
 
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
+
     # extra utility methods
     def is_empty(self):
         return core_graphics.CGPathIsEmpty(self.native)

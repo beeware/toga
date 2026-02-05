@@ -117,8 +117,8 @@ class Path:
     def rect(self, x, y, width, height):
         self.native.addRect(x, y, width, height)
 
-    def round_rect(self, x, y, w, h, radii):
-        raise NotImplementedError()
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
 
 
 class State:
@@ -235,7 +235,7 @@ class Context:
         self.path.rect(x, y, width, height)
 
     def round_rect(self, x, y, width, height, radii):
-        round_rect(self, x, y, width, height, radii)
+        self.path.round_rect(x, y, width, height, radii)
 
     # Drawing Paths
 

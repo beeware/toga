@@ -135,6 +135,9 @@ class Path:
         rect = RectangleF(x, y, width, height)
         self.native.AddRectangle(rect)
 
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
+
 
 class State:
     """Represents a canvas state; can be saved and restored.
@@ -272,7 +275,7 @@ class Context:
         self.path.rect(x, y, width, height)
 
     def round_rect(self, x, y, width, height, radii):
-        round_rect(self, x, y, width, height, radii)
+        self.path.round_rect(x, y, width, height, radii)
 
     # Drawing Paths
 

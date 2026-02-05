@@ -110,6 +110,9 @@ class Path:
         self.native.addRect(x, y, x + width, y + height, NativePath.Direction.CW)
         self._last_point = (x, y)
 
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
+
 
 class State(NamedTuple):
     fill: Paint
@@ -224,7 +227,7 @@ class Context:
         self.path.rect(x, y, width, height)
 
     def round_rect(self, x, y, width, height, radii):
-        round_rect(self, x, y, width, height, radii)
+        self.path.round_rect(x, y, width, height, radii)
 
     # Drawing Paths
 

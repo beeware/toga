@@ -102,6 +102,9 @@ class Path:
         self._steps.append(("rect", x, y, width, height))
         self._native_cached = None
 
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
+
     # extra utility methods
     def is_empty(self):
         return not self._steps
