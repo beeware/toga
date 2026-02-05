@@ -22,6 +22,28 @@ from .geometry import CornerRadiusT
 
 
 class Path2D:
+    """An object that declares reusable shapes to draw on a Canvas
+
+    `Path2D` shares many of the methods of the [`State`][`toga.widget.canvas.State`]
+    object that are used for constructing paths. Unlike paths built using `State`
+    methods, a shape built using `Path2D` is saved and can be used repeatedly to
+    draw the shape without having to repeat the construction.
+
+    To draw a `Path2D`, call `fill` or `stroke` with the path object as its `path`
+    argument.
+
+    Like a `State`, a `Path2D` is built from a sequence of `DrawingAction` objects
+    which can be modified.  The `Path2D` class builds a backend-specific "compiled"
+    representation to be used whenever it is drawn onto the Canvas. Most of the time
+    it is compiled transparently, but if the `DrawingAction` objects are modified
+    then the user has to call [`compile`][`toga.widgets.canvas.Path2D.compile`]
+    before redrawing to ensure that the changes are incorporated into the path.
+
+    The `Path2D` class generally follows the API of the [HTML Canvas class of the same
+    name][https://developer.mozilla.org/en-US/docs/Web/API/Path2D] but with method
+    names changed to match Python style.
+    """
+
     def __init__(self, path: "Path2D | None" = None):
         if path is None:
             self.drawing_actions = []
@@ -48,7 +70,6 @@ class Path2D:
         add_path = AddPath(path, transform)
         self._action_target.drawing_actions.append(add_path)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return add_path
 
     def close_path(self):
@@ -63,7 +84,6 @@ class Path2D:
         close_path = ClosePath()
         self._action_target.drawing_actions.append(close_path)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return close_path
 
     def move_to(self, x: float, y: float) -> MoveTo:
@@ -77,7 +97,6 @@ class Path2D:
         move_to = MoveTo(x, y)
         self._action_target.drawing_actions.append(move_to)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return move_to
 
     def line_to(self, x: float, y: float) -> LineTo:
@@ -122,7 +141,6 @@ class Path2D:
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
         self._action_target.drawing_actions.append(bezier_curve_to)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return bezier_curve_to
 
     def quadratic_curve_to(
@@ -184,7 +202,6 @@ class Path2D:
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
         self._action_target.drawing_actions.append(arc)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return arc
 
     def ellipse(
@@ -233,7 +250,6 @@ class Path2D:
         )
         self._action_target.drawing_actions.append(ellipse)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return ellipse
 
     def rect(self, x: float, y: float, width: float, height: float) -> Rect:
@@ -291,7 +307,6 @@ class Path2D:
         round_rect = RoundRect(x, y, width, height, radii)
         self._action_target.drawing_actions.append(round_rect)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return round_rect
 
     def _redraw_with_warning_if_state(self):
@@ -301,10 +316,8 @@ class Path2D:
         self._impl = None
 
     def compile(self):
-        print("compiling")
         self._impl = self.factory.Path2D()
         for action in self.drawing_actions:
-            print(action)
             action._draw(self._impl)
         return self._impl
 

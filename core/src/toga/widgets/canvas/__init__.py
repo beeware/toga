@@ -21,7 +21,7 @@ from .drawingaction import (
     WriteText,
 )
 from .geometry import arc_to_bezier, sweepangle
-from .path import Path2D
+from .path import AddPath, Path2D
 from .state import ClosedPathContext, FillContext, State, StrokeContext
 
 # Make sure deprecation warnings are shown by default
@@ -70,6 +70,7 @@ __all__ = [
     "WriteText",
     # Path-related
     "Path2D",
+    "AddPath",
     # States
     "ClosedPathContext",
     "State",
