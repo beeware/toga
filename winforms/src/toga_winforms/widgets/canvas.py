@@ -51,12 +51,22 @@ class Path2D:
         try:
             last_point = self.native.GetLastPoint()
         except Exception as exc:
-            print(exc)
+            print("last_point", exc)
+            print(self.native, self.native.PointCount)
             return self._subpath_start
         if last_point.IsEmpty:
             return self._subpath_start
         else:
             return last_point
+
+    def add_path(self, path, transform=None):
+        if transform is None:
+            self.native.AddPath(path.native)
+        else:
+            native_path = GraphicsPath(path.native.PathPoints, path.native.PathTypes)
+            matrix = Matrix(*transform)
+            native_path.Transform(matrix)
+            self.native.AddPath(native_path, False)
 
     def close_path(self):
         self.native.CloseFigure()
@@ -66,6 +76,7 @@ class Path2D:
             last_point = self.native.GetLastPoint()
         except Exception as exc:
             print(exc)
+            print(self.native, self.native.PointCount)
             self.native.StartFigure()
         else:
             if not last_point.IsEmpty:
@@ -139,6 +150,7 @@ class Path2D:
         start = self._subpath_start
         try:
             last_point = self.native.GetLastPoint()
+            print(self.native, self.native.PointCount)
         except Exception as exc:
             print(exc)
             self.native.AddLine(start, start)
