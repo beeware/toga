@@ -70,7 +70,10 @@ class Path2D:
 
     def close_path(self):
         if self._subpath_start is not None:
-            self.native.CloseFigure()
+            # We don't use current_path.CloseFigure, because that causes the dash
+            # pattern to start on the last segment of the path rather than the first
+            # one.
+            self.line_to(self._subpath_start.X, self._subpath_start.Y)
         self._subpath_end = self._subpath_start
 
     def move_to(self, x, y):
@@ -148,6 +151,7 @@ class Path2D:
         matrix.TransformPoints(points)
 
         self._ensure_path(points[0].X, points[0].Y)
+        self.native.AddLine(PointF(self._subpath_end.X, self._subpath_end.Y), points[0])
         self.native.AddBeziers(points)
         self._subpath_end = points[-1]
 

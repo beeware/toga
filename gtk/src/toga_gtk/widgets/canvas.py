@@ -261,7 +261,7 @@ class Context:
             self.begin_path()
             path.apply(self)
             self.native.fill()
-            self.native.add_path(current_path)
+            self.native.append_path(current_path)
 
     def stroke(self, path=None):
         self.native.set_source_rgba(*self.state.stroke_style)
@@ -271,7 +271,7 @@ class Context:
             current_path = self.native.copy_path()
             path.apply(self)
             self.native.stroke()
-            self.native.add_path(current_path)
+            self.native.append_path(current_path)
 
     # Transformations
 
