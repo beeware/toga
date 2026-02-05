@@ -41,6 +41,8 @@ DEBUG_BACKGROUND_PALETTE = [
     "#bde2dc",  # soft turquoise
 ]
 
+TAB = "    "
+
 
 class Widget(Node, PackMixin, ABC):
     _MIN_WIDTH = 100
@@ -365,19 +367,54 @@ class Widget(Node, PackMixin, ABC):
     def enabled(self, value: bool) -> None:
         self._impl.set_enabled(bool(value))
 
+    _layouts = 0
+    _level = 0
+
     def refresh(self) -> None:
-        self._impl.refresh()
+        name = type(self).__name__
+        # print(TAB * self._level + f"Refresh requested on {name}")
+
+        if not self.window:
+            # No need to do anything if the widget hasn't been added to a window.
+            return
+
+        # Is this needed here? Things seem to work fine without it.
+        # self._impl.refresh()
 
         # Refresh the layout
         if self._root:
             # We're not the root of the node hierarchy;
             # defer the refresh call to the root node.
             self._root.refresh()
+
         else:
-            # We can't compute a layout until we have a container
-            if self._impl.container:
-                super().refresh(self._impl.container)
-                self._impl.container.refreshed()
+            # Uncomment to always compute layout:
+
+            # self._refresh_layout()
+            # return
+
+            print(TAB * self._level + f"Adding {name} to dirty set")
+            self.window._dirty_root_widgets.add(self)
+
+            if self.window._pending_layout is None:
+                self.window._pending_layout = self.app.loop.call_soon(
+                    self.window._refresh_layouts
+                )
+
+    def _refresh_layout(self):
+        # print(self._level)
+        name = type(self).__name__
+
+        Widget._layouts += 1
+        print(TAB * self._level + f"#{self._layouts}. Laying out {name}")
+
+        Widget._level += 1
+
+        super().refresh(self._impl.container)
+        self._impl.container.refreshed()
+
+        Widget._level -= 1
+        # print(TAB * self._level + f"Done laying out {name}\n")
 
     def focus(self) -> None:
         """Give this widget the input focus.
