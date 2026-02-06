@@ -30,7 +30,7 @@ BLACK = jint(native_color(rgb(0, 0, 0)))
 def matrix_from_transform(transform):
     a, b, c, d, e, f = transform
     matrix = Matrix()
-    matrix.setValues([a, b, 0, c, d, 0, e, f, 1])
+    matrix.setValues([a, c, e, b, d, f, 0, 0, 1])
     return matrix
 
 
