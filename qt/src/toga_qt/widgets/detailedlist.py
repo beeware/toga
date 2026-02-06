@@ -336,8 +336,8 @@ class ButtonListView(QListView):
         index = self.indexAt(pos)
         # Defensive safety catch for no index.
         if not index.isValid():  # pragma: no cover
-            self._hovered_button = None
             self.viewport().update()
+            return
 
         self._hovered_button = self.delegate.button_at(index, pos)
         self.viewport().update()
