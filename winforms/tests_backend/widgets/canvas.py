@@ -14,7 +14,7 @@ class CanvasProbe(SimpleProbe):
             "multiline_text",
             "write_text",
             "write_text_and_path",
-            "test_deprecated_code",
+            "deprecated_tutorial",
         }:
             return f"{reference}-winforms"
         return reference

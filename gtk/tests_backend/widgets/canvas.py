@@ -16,7 +16,7 @@ class CanvasProbe(SimpleProbe):
                 return f"{reference}-gtk-wayland"
             else:
                 return f"{reference}-gtk-x11"
-        elif reference in {"write_text", "write_text_and_path", "test_deprecated_code"}:
+        elif reference in {"write_text", "write_text_and_path", "deprecated_tutorial"}:
             return f"{reference}-gtk"
         else:
             return reference

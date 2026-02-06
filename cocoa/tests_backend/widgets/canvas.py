@@ -26,7 +26,7 @@ class CanvasProbe(SimpleProbe):
             "multiline_text",
             "write_text",
             "write_text_and_path",
-            "test_deprecated_code",
+            "deprecated_tutorial",
         }:
             # System font and default size is platform dependent.
             return f"{reference}-macOS"
