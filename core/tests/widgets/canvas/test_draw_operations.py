@@ -669,7 +669,7 @@ def test_rect(widget):
 
 def test_round_rect(widget):
     """A rect operation can be added."""
-    draw_op = widget.root_state.round_rect(10, 20, 30, 40, 5)
+    draw_op = widget.round_rect(10, 20, 30, 40, 5)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "RoundRect(x=10, y=20, width=30, height=40, radii=5)"

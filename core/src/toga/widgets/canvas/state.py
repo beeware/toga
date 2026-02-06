@@ -294,7 +294,8 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         round_rect = RoundRect(x, y, width, height, radii)
-        self._action_target.append(round_rect)
+        self._action_target.drawing_actions.append(round_rect)
+        self._redraw_with_warning_if_state()
         return round_rect
 
     def fill(

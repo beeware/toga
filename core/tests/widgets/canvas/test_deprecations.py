@@ -18,6 +18,7 @@ from toga.widgets.canvas import (
     Rect,
     ResetTransform,
     Rotate,
+    RoundRect,
     Scale,
     State,
     Stroke,
@@ -78,6 +79,7 @@ def test_renamed_root_state(widget):
         ("arc", (0, 0, 0), Arc),
         ("ellipse", (0, 0, 0, 0), Ellipse),
         ("rect", (0, 0, 0, 0), Rect),
+        ("round_rect", (0, 0, 0, 0, 0), RoundRect),
         ("fill", (), Fill),
         ("Fill", (), Fill),  # Deprecated alias
         ("stroke", (), Stroke),
