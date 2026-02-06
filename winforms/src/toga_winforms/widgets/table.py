@@ -117,6 +117,9 @@ class Table(Widget):
     def _data(self):
         return self.interface.data
 
+    def __del__(self):
+        self.native.Dispose()
+
     def create(self):
         self.pfn_subclass = SUBCLASSPROC(self._subclass_proc)
         self.native = WinForms.ListView()
