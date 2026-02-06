@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import warnings
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from contextlib import AbstractContextManager
 from dataclasses import dataclass
 from math import pi
@@ -24,11 +25,13 @@ from .drawingaction import (
     Rect,
     ResetTransform,
     Rotate,
+    RoundRect,
     Scale,
     Translate,
     WriteText,
     color_property,
 )
+from .geometry import CornerRadiusT
 
 if TYPE_CHECKING:
     from toga.colors import ColorT
@@ -254,6 +257,45 @@ class DrawingActionDispatch(ABC):
         self._action_target.drawing_actions.append(rect)
         self._redraw_with_warning_if_state()
         return rect
+
+    def round_rect(
+        self,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        radii: float | CornerRadiusT | Iterable[float | CornerRadiusT],
+    ) -> RoundRect:
+        """Draw a rounded rectangle in the canvas state.
+
+        Corner radii can be provided as:
+        - a single numerical radius for both x and y radius for all corners
+        - an object with attributes "x" and "y" for the x and y radius for all corners
+        - a list of 1 to 4 of the above
+
+        If the list has:
+        - length 1, then the item gives the radius of all corners
+        - length 2, then the upper left and lower right corners use the first radius,
+          and upper right and lower left use the second radius
+        - length 3, then the upper left corner uses the first radius, the upper right
+          and lower left use the second radius, and the lower right corner uses the
+          third radius
+        - length 4, then the radii are given in order upper left, upper right, lower
+          left, lower right
+
+        If the radii are too large for the width or height, then they will be scaled.
+
+        :param x: The horizontal coordinate of the left of the rounded rectangle.
+        :param y: The vertical coordinate of the top of the rounded rectangle.
+        :param width: The width of the rounded rectangle.
+        :param height: The height of the roundedrectangle.
+        :param radii: The corner radii of the rounded rectangle.
+        :returns: The `RoundRect` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        round_rect = RoundRect(x, y, width, height, radii)
+        self._action_target.append(round_rect)
+        return round_rect
 
     def fill(
         self,

@@ -436,6 +436,7 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
         return url.startswith("https://beeware.org/")
 
     widget.on_navigation_starting = handler
+
     # test static content can be set
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
     # DOM loads aren't instantaneous; wait for the URL to appear
@@ -447,6 +448,19 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
         content="<h1>Nice page</h1>",
         on_load=on_load,
     )
+
+    # test static content can be set with no URL
+    widget.set_content(None, "<h1>Other page</h1>")
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static content with no URL",
+        url=None,
+        content="<h1>Other page</h1>",
+        on_load=on_load,
+    )
+
     # test url allowed by code
     await wait_for(
         widget.load_url("https://github.com/beeware/"),
@@ -476,6 +490,18 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
     )
     await probe.redraw("Attempt to navigate to allowed URL", delay=5)
     assert widget.url == "https://beeware.org/docs/"
+
+    # The webview can always be cleared to no URL
+    widget.url = None
+    # Wait for the content to be cleared
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been cleared",
+        url=None,
+        content="",
+        on_load=on_load,
+    )
 
 
 @pytest.mark.flaky(retries=5, delay=1)
