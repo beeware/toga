@@ -625,10 +625,9 @@ class State(DrawingAction, DrawingActionDispatch):
         from .canvas import Canvas
 
         # Get the first that matches.
-        for ref in Canvas._instances:
-            if canvas := ref():
-                if self is canvas.root_state or self in canvas.root_state:
-                    return canvas
+        for canvas in Canvas._instances:
+            if self is canvas.root_state or self in canvas.root_state:
+                return canvas
 
         return None
 
@@ -645,10 +644,9 @@ class State(DrawingAction, DrawingActionDispatch):
         from .canvas import Canvas
 
         # Redraw any canvases that contain self; could be multiple.
-        for ref in Canvas._instances:
-            if canvas := ref():
-                if self is canvas.root_state or self in canvas.root_state:
-                    canvas.redraw()
+        for canvas in Canvas._instances:
+            if self is canvas.root_state or self in canvas.root_state:
+                canvas.redraw()
 
     def _warn_list_methods(self) -> None:
         warnings.warn(

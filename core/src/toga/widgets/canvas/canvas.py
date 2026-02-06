@@ -7,7 +7,7 @@ from typing import (
     Literal,
     Protocol,
 )
-from weakref import ref
+from weakref import WeakSet
 
 import toga
 from toga.fonts import (
@@ -55,7 +55,7 @@ class Canvas(Widget, DrawingActionDispatch):
     _MIN_HEIGHT = 0
 
     # 2026-02: Backwards compatibility for <= 0.5.3
-    _instances: list[ref] = []
+    _instances: WeakSet = WeakSet()
 
     def __init__(
         self,
@@ -104,7 +104,7 @@ class Canvas(Widget, DrawingActionDispatch):
         self.on_alt_drag = on_alt_drag
 
         # 2026-02: Backwards compatibility for <= 0.5.3
-        self._instances.append(ref(self))
+        self._instances.add(self)
 
     def _create(self) -> Any:
         return self.factory.Canvas(interface=self)
