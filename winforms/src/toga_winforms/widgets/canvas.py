@@ -49,27 +49,22 @@ class Path2D:
         return self._subpath_end
 
     def add_path(self, path, transform=None):
+        if path.native.PointCount == 0:
+            # Nothing to do
+            return
         if transform is None:
-            try:
-                self.native.AddPath(path.native, False)
-                self._subpath_end = path._subpath_end
-            except Exception as exc:
-                print(exc)
-                from warnings import warn
-
-                warn("Drawing failed!", stacklevel=2)
+            self.native.AddPath(path.native, False)
+            self._subpath_end = path._subpath_end
         else:
             native_path = GraphicsPath(path.native.PathPoints, path.native.PathTypes)
             matrix = Matrix(*transform)
             native_path.Transform(matrix)
             self.native.AddPath(native_path, False)
-            if (
-                self._subpath_start is None and path._subpath_start is not None
-            ):  # pragma: no cover
+            if self._subpath_start is None and path._subpath_start is not None:
                 points = Array[PointF]([path._subpath_start])
                 matrix.TransformPoints(points)
                 self._subpath_start = points[0]
-            if path._subpath_end is not None:  # pragma: no branch
+            if path._subpath_end is not None:
                 points = Array[PointF]([path._subpath_end])
                 matrix.TransformPoints(points)
                 self._subpath_end = points[0]
