@@ -120,16 +120,12 @@ class DetailedListProbe(SimpleProbe):
         await self.redraw("Scrolling into row")
 
         index = self.native.model().index(row, 0, QModelIndex())
-        rect = (
-            self.impl.native_delegate._primary_button_rect(index)
-            if button_index == 0
-            else self.impl.native_delegate._secondary_button_rect(index)
-        )
+        rect = self.impl.native_delegate._button_rects(index)[button_index]
         # width - 25 is an approximate mock, verifying that the position is no longer
         # clickable.
         center_pos = (
             rect.center()
-            if rect
+            if rect.isValid()
             else QPoint(self.row_position(row).y(), self.width - 25)
         )
 

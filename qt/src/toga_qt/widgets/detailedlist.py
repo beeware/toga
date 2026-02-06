@@ -151,6 +151,7 @@ class DetailedListDelegate(QStyledItemDelegate):
     def __init__(self, impl, **kwargs):
         super().__init__(**kwargs)
         self.impl = impl
+        self.native = impl.native
 
     def paint(self, painter: QPainter, options, index):
         self.initStyleOption(options, index)
@@ -196,16 +197,16 @@ class DetailedListDelegate(QStyledItemDelegate):
             else None
         )
 
+        rects = self._button_rects(index)
+
         if primary_text:
-            primary_rect = self._primary_button_rect(index)
             self._draw_button(
-                options, painter, primary_text, primary_rect, ("primary", index)
+                options, painter, primary_text, rects[0], ("primary", index)
             )
 
         if secondary_text:
-            secondary_rect = self._secondary_button_rect(index)
             self._draw_button(
-                options, painter, secondary_text, secondary_rect, ("secondary", index)
+                options, painter, secondary_text, rects[1], ("secondary", index)
             )
 
         painter.restore()
@@ -215,74 +216,69 @@ class DetailedListDelegate(QStyledItemDelegate):
         button_option.rect = rect
         button_option.text = text
         button_option.state = QStyle.StateFlag.State_Enabled
-        if hasattr(self, "_hovered_button") and self._hovered_button == role:
+        if (
+            hasattr(self.native, "_hovered_button")
+            and self.native._hovered_button == role
+        ):
             button_option.state |= QStyle.StateFlag.State_MouseOver
-        if hasattr(self, "_pressed_button") and role == self._pressed_button:
+        if (
+            hasattr(self.native, "_pressed_button")
+            and role == self.native._pressed_button
+        ):
             button_option.state |= QStyle.StateFlag.State_Sunken
 
         option.widget.style().drawControl(
             QStyle.ControlElement.CE_PushButton, button_option, painter, option.widget
         )
 
-    def _secondary_button_rect(self, index, rect=None):
+    def button_at(self, index, pos):
+        primary_rect, secondary_rect = self._button_rects(index)
+        if primary_rect.contains(pos):
+            return "primary", index
+        if secondary_rect.contains(pos):
+            return "secondary", index
+        return None
+
+    def _button_rects(self, index, rect=None):
         if rect is None:
             rect = self.impl.native.visualRect(index)
-        text = (
+
+        option = QStyleOptionButton()
+        fm = option.fontMetrics
+        cy = rect.center().y()
+
+        def make_rect(text, right_edge):
+            if not text:
+                return QRect()
+            w = fm.horizontalAdvance(text) + 2 * BUTTON_PADDING
+            h = fm.height() + 2 * BUTTON_PADDING
+            return QRect(
+                right_edge - w,
+                cy - h // 2,
+                w,
+                h,
+            )
+
+        second_text = (
             self.impl.interface._secondary_action
             if self.impl.secondary_action_enabled
             else None
         )
-        if not text:
-            return QRect()  # empty rect if no button
+        second = make_rect(second_text, rect.right() - BUTTON_MARGIN)
 
-        option = QStyleOptionButton()
-        fm = option.fontMetrics
-        width = fm.horizontalAdvance(text) + 2 * BUTTON_PADDING
-        height = fm.height() + 2 * BUTTON_PADDING
-
-        return QRect(
-            rect.right() - width - BUTTON_MARGIN,
-            rect.center().y() - height // 2,
-            width,
-            height,
-        )
-
-    def button_at(self, index: QModelIndex, pos):
-        primary_rect, secondary_rect = (
-            self._primary_button_rect(index),
-            self._secondary_button_rect(index),
-        )
-        if primary_rect and primary_rect.contains(pos):
-            return "primary", index
-        if secondary_rect and secondary_rect.contains(pos):
-            return "secondary", index
-        return None
-
-    def _primary_button_rect(self, index, rect=None):
-        if rect is None:
-            rect = self.impl.native.visualRect(index)
-        text = (
+        first_text = (
             self.impl.interface._primary_action
             if self.impl.primary_action_enabled
             else None
         )
-        if text is None:
-            return QRect()
-
-        secondary_rect = self._secondary_button_rect(index, rect)
-        option = QStyleOptionButton()
-        fm = option.fontMetrics
-        width = fm.horizontalAdvance(text) + 2 * BUTTON_PADDING
-        height = fm.height() + 2 * BUTTON_PADDING
-
-        # Position primary to the left of secondary if secondary exists, otherwise
-        # align to right
-        x = (
-            secondary_rect.left() - width - BUTTON_MARGIN
-            if not secondary_rect.isNull()
-            else option.rect.right() - width - BUTTON_MARGIN
+        right_edge = (
+            second.left() - BUTTON_MARGIN
+            if not second.isNull()
+            else rect.right() - BUTTON_MARGIN
         )
-        return QRect(x, rect.center().y() - height // 2, width, height)
+        first = make_rect(first_text, right_edge)
+
+        return first, second
 
     def sizeHint(self, options, index):
         base_size = super().sizeHint(options, index)
@@ -311,14 +307,12 @@ class DetailedListDelegate(QStyledItemDelegate):
                 subtitle_metrics.boundingRect(subtitle).width(),
             )
             + (
-                self._primary_button_rect(index, rect=options.rect).width()
-                + BUTTON_MARGIN
+                self._button_rects(index, rect=options.rect)[0].width() + BUTTON_MARGIN
                 if self.impl.primary_action_enabled
                 else 0
             )
             + (
-                self._secondary_button_rect(index, rect=options.rect).width()
-                + BUTTON_MARGIN
+                self._button_rects(index, rect=options.rect)[1].width() + BUTTON_MARGIN
                 if self.impl.secondary_action_enabled
                 else 0
             )
@@ -337,15 +331,15 @@ class ButtonListView(QListView):
         self.verticalScrollBar().valueChanged.connect(self.qtScroll)
 
     def qtScroll(self):
-        self.delegate._hovered_button = None
+        self._hovered_button = None
         pos = self.mouse_position
         index = self.indexAt(pos)
         # Defensive safety catch for no index.
         if not index.isValid():  # pragma: no cover
-            self.delegate._hovered_button = None
+            self._hovered_button = None
             self.viewport().update()
 
-        self.delegate._hovered_button = self.delegate.button_at(index, pos)
+        self._hovered_button = self.delegate.button_at(index, pos)
         self.viewport().update()
 
     def mouseMoveEvent(self, event):
@@ -354,11 +348,11 @@ class ButtonListView(QListView):
         index = self.indexAt(pos)
         # Defensive safety catch for no index.
         if not index.isValid():  # pragma: no cover
-            self.delegate._hovered_button = None
+            self._hovered_button = None
             self.viewport().update()
             return super().mouseMoveEvent(event)
 
-        self.delegate._hovered_button = self.delegate.button_at(index, pos)
+        self._hovered_button = self.delegate.button_at(index, pos)
 
         self.viewport().update()
         super().mouseMoveEvent(event)
@@ -366,43 +360,42 @@ class ButtonListView(QListView):
     # This is hard to get coverage for besides manual invocation, but
     # it's just cosmetic (when a hover at the edge leaves the widget)
     def leaveEvent(self, event):  # pragma: no cover
-        self.delegate._hovered_button = None
+        self._hovered_button = None
         self.viewport().update()
         super().leaveEvent(event)
 
     def mousePressEvent(self, event):
         index = self.indexAt(event.position().toPoint())
         if not index.isValid():  # pragma: no cover
-            self.delegate._pressed_button = None
+            self._pressed_button = None
             return super().mousePressEvent(event)
 
         pos = event.position().toPoint()
-        self.delegate._pressed_button = self.delegate.button_at(index, pos)
-        # print(self.delegate._pressed_button)
+        self._pressed_button = self.delegate.button_at(index, pos)
 
         self.viewport().update()
-        if not self.delegate._pressed_button:
+        if not self._pressed_button:
             super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
         index = self.indexAt(event.position().toPoint())
         handled = False
         # index.isValid is defensive safety catch.
-        old = self.delegate._pressed_button
+        old = self._pressed_button
         if index.isValid():  # pragma: no branch
             pos = event.position().toPoint()
-            self.delegate._pressed_button = self.delegate.button_at(index, pos)
+            self._pressed_button = self.delegate.button_at(index, pos)
             if (
-                self.delegate._pressed_button
-                and self.delegate._pressed_button == old
-                and self.delegate._pressed_button[0] == "primary"
+                self._pressed_button
+                and self._pressed_button == old
+                and self._pressed_button[0] == "primary"
             ):
-                self.delegate.impl.qt_primary_action(False, index.row())
+                self.impl.qt_primary_action(False, index.row())
                 handled = True
             elif (
-                self.delegate._pressed_button
-                and self.delegate._pressed_button == old
-                and self.delegate._pressed_button[0] == "secondary"
+                self._pressed_button
+                and self._pressed_button == old
+                and self._pressed_button[0] == "secondary"
             ):
                 self.delegate.impl.qt_secondary_action(False, index.row())
                 handled = True
@@ -410,7 +403,7 @@ class ButtonListView(QListView):
             else:  # pragma: no cover
                 pass
 
-        self.delegate._pressed_button = None
+        self._pressed_button = None
         self.viewport().update()
         if not handled:
             super().mouseReleaseEvent(event)
@@ -425,6 +418,7 @@ class DetailedList(Widget):
     def create(self):
         # Create the List widget
         self.native = ButtonListView()
+        self.native.impl = self
         self.native.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
         self.refresh_bar = QToolBar()
         self.refresh_bar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -569,9 +563,11 @@ class DetailedList(Widget):
 
     def set_primary_action_enabled(self, enabled):
         self.primary_action_enabled = enabled
+        self.native.viewport().update()
 
     def set_secondary_action_enabled(self, enabled):
         self.secondary_action_enabled = enabled
+        self.native.viewport().repaint()
 
     def after_on_refresh(self, widget, result):
         self.native_model.reset_source()
