@@ -28,11 +28,8 @@ BLACK = native_color(rgb(0, 0, 0))
 
 
 class Path2D:
-    def __init__(self, path=None):
-        if path is None:
-            self.native = QPainterPath()
-        else:
-            self.native = QPainterPath(path.native)
+    def __init__(self):
+        self.native = QPainterPath()
 
     def _ensure_point(self, x, y):
         if self.native.elementCount() == 0:
@@ -73,9 +70,6 @@ class Path2D:
             -degrees(startangle),
             -degrees(sweepangle(startangle, endangle, counterclockwise)),
         )
-
-    def arc_to(self, x1, y1, x2, y2, radius):
-        raise NotImplementedError()
 
     def ellipse(
         self,

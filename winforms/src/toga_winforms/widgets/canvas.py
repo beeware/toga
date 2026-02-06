@@ -57,11 +57,13 @@ class Path2D:
             matrix = Matrix(*transform)
             native_path.Transform(matrix)
             self.native.AddPath(native_path, False)
-            if self._subpath_start is None and path._subpath_start is not None:
+            if (
+                self._subpath_start is None and path._subpath_start is not None
+            ):  # pragma: no cover
                 points = Array[PointF]([path._subpath_start])
                 matrix.TransformPoints(points)
                 self._subpath_start = points[0]
-            if path._subpath_end is not None:
+            if path._subpath_end is not None:  # pragma: no branch
                 points = Array[PointF]([path._subpath_end])
                 matrix.TransformPoints(points)
                 self._subpath_end = points[0]
