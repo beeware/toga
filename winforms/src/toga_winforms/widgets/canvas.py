@@ -50,8 +50,14 @@ class Path2D:
 
     def add_path(self, path, transform=None):
         if transform is None:
-            self.native.AddPath(path.native, False)
-            self._subpath_end = path._subpath_end
+            try:
+                self.native.AddPath(path.native, False)
+                self._subpath_end = path._subpath_end
+            except Exception as exc:
+                print(exc)
+                from warnings import warn
+
+                warn("Drawing failed!", stacklevel=2)
         else:
             native_path = GraphicsPath(path.native.PathPoints, path.native.PathTypes)
             matrix = Matrix(*transform)
