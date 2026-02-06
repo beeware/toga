@@ -50,7 +50,7 @@ class Path2D:
 
     def add_path(self, path, transform=None):
         if transform is None:
-            self.native.AddPath(path.native)
+            self.native.AddPath(path.native, False)
             self._subpath_end = path._subpath_end
         else:
             native_path = GraphicsPath(path.native.PathPoints, path.native.PathTypes)

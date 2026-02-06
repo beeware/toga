@@ -24,7 +24,7 @@ from .geometry import CornerRadiusT
 class Path2D:
     """An object that declares reusable shapes to draw on a Canvas
 
-    `Path2D` shares many of the methods of the [`State`][`toga.widget.canvas.State`]
+    `Path2D` shares many of the methods of the [`State`][toga.widgets.canvas.State]
     object that are used for constructing paths. Unlike paths built using `State`
     methods, a shape built using `Path2D` is saved and can be used repeatedly to
     draw the shape without having to repeat the construction.
@@ -36,11 +36,11 @@ class Path2D:
     which can be modified.  The `Path2D` class builds a backend-specific "compiled"
     representation to be used whenever it is drawn onto the Canvas. Most of the time
     it is compiled transparently, but if the `DrawingAction` objects are modified
-    then the user has to call [`compile`][`toga.widgets.canvas.Path2D.compile`]
+    then the user has to call [`compile`][toga.widgets.canvas.Path2D.compile]
     before redrawing to ensure that the changes are incorporated into the path.
 
     The `Path2D` class generally follows the API of the [HTML Canvas class of the same
-    name][https://developer.mozilla.org/en-US/docs/Web/API/Path2D] but with method
+    name](https://developer.mozilla.org/en-US/docs/Web/API/Path2D) but with method
     names changed to match Python style.
     """
 
@@ -59,7 +59,9 @@ class Path2D:
             self.compile()
         return self._impl
 
-    def add_path(self, path: "Path2D", transform: Sequence[float] | None = None):
+    def add_path(
+        self, path: "Path2D", transform: Sequence[float] | None = None
+    ) -> "AddPath":
         """Adds another path to the current path with an optional transform.
 
         :param path: The Path being added.
@@ -309,17 +311,38 @@ class Path2D:
         self._recompilation_needed()
         return round_rect
 
+    def compile(self):
+        """Compile a backend path for drawing.
+
+        This creates a object which implements the `Path2D` API for the current
+        backend. This is called automatically when needed after adding more
+        drawing actions to the `Path2D`, but needs to be manually called if the
+        `DrawingObject` instances are modified after being drawn or added to another
+        path (for example, when animating):
+
+        ``` python
+        path = Path2D()
+        circle = path.arc(100, 100, 10)
+
+        canvas.root_state.stroke(path)
+
+        # update the radius
+        circle.radius = 20
+        path.compile()
+
+        # draw with new radius
+        canvas.root_state.stroke(path)
+        ```
+        """
+        self._impl = self.factory.Path2D()
+        for action in self.drawing_actions:
+            action._draw(self._impl)
+
     def _redraw_with_warning_if_state(self):
         pass
 
     def _recompilation_needed(self):
         self._impl = None
-
-    def compile(self):
-        self._impl = self.factory.Path2D()
-        for action in self.drawing_actions:
-            action._draw(self._impl)
-        return self._impl
 
 
 @dataclass(repr=False)
