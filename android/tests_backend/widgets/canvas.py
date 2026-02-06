@@ -13,7 +13,12 @@ class CanvasProbe(SimpleProbe):
     native_class = DrawHandlerView
 
     def reference_variant(self, reference):
-        if reference in {"multiline_text", "write_text", "write_text_and_path"}:
+        if reference in {
+            "multiline_text",
+            "write_text",
+            "write_text_and_path",
+            "test_deprecated_code",
+        }:
             return f"{reference}-android"
         return reference
 

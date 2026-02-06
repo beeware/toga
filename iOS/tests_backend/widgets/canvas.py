@@ -25,7 +25,12 @@ class CanvasProbe(SimpleProbe):
 
     def reference_variant(self, reference):
         # System fonts and sizes are platform specific
-        if reference in {"multiline_text", "write_text", "write_text_and_path"}:
+        if reference in {
+            "multiline_text",
+            "write_text",
+            "write_text_and_path",
+            "test_deprecated_code",
+        }:
             return f"{reference}-iOS"
         else:
             return reference
