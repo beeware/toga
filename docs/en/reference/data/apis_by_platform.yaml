@@ -193,7 +193,6 @@ Widgets:
       - android
       - web
       - textual
-      - qt
 
   WebView:
     description: An embedded web browser.
