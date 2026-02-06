@@ -6,17 +6,21 @@ from PySide6.QtCore import (
     QAbstractListModel,
     QModelIndex,
     QPersistentModelIndex,
+    QPoint,
     QRect,
     QSize,
     Qt,
 )
-from PySide6.QtGui import QAction, QFont, QFontMetrics, QIcon, QPainter
+from PySide6.QtGui import QAction, QFont, QFontMetrics, QIcon, QPainter, QPalette
 from PySide6.QtWidgets import (
     QListView,
     QMenu,
+    QSizePolicy,
     QStyle,
     QStyledItemDelegate,
     QStyleOptionButton,
+    QToolBar,
+    QWidget,
 )
 from travertino.size import at_least
 
@@ -328,22 +332,43 @@ class ButtonListView(QListView):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMouseTracking(True)
         self.viewport().setMouseTracking(True)
+        self.mouse_position = QPoint(-1, -1)
+        self.verticalScrollBar().valueChanged.connect(self.qtScroll)
+
+    def qtScroll(self):
+        self.delegate._hovered_button = None
+        pos = self.mouse_position
+        index = self.indexAt(pos)
+        # Defensive safety catch for no index.
+        if not index.isValid():  # pragma: no cover
+            self.delegate._hovered_button = None
+            self.viewport().update()
+
+        self.delegate._hovered_button = self.delegate.button_at(index, pos)
+        self.viewport().update()
 
     def mouseMoveEvent(self, event):
-        index = self.indexAt(event.position().toPoint())
+        pos = event.position().toPoint()
+        self.mouse_position = pos
+        index = self.indexAt(pos)
         # Defensive safety catch for no index.
         if not index.isValid():  # pragma: no cover
             self.delegate._hovered_button = None
             self.viewport().update()
             return super().mouseMoveEvent(event)
 
-        pos = event.position().toPoint()
         self.delegate._hovered_button = self.delegate.button_at(index, pos)
 
         self.viewport().update()
         super().mouseMoveEvent(event)
+
+    # This is hard to get coverage for besides manual invocation, but
+    # it's just cosmetic (when a hover at the edge leaves the widget)
+    def leaveEvent(self, event):  # pragma: no cover
+        self.delegate._hovered_button = None
+        self.viewport().update()
+        super().leaveEvent(event)
 
     def mousePressEvent(self, event):
         index = self.indexAt(event.position().toPoint())
@@ -362,20 +387,21 @@ class ButtonListView(QListView):
     def mouseReleaseEvent(self, event):
         index = self.indexAt(event.position().toPoint())
         handled = False
-        # index.isValid is defensive safety catch; pressed_button is to prevent
-        # dragging into the button without pressing.  The latter does not have a
-        # cross-platform test case, and is tedious to trigger.
-        if index.isValid() and self.delegate._pressed_button:  # pragma: no branch
+        # index.isValid is defensive safety catch.
+        old = self.delegate._pressed_button
+        if index.isValid():  # pragma: no branch
             pos = event.position().toPoint()
             self.delegate._pressed_button = self.delegate.button_at(index, pos)
             if (
                 self.delegate._pressed_button
+                and self.delegate._pressed_button == old
                 and self.delegate._pressed_button[0] == "primary"
             ):
                 self.delegate.impl.qt_primary_action(False, index.row())
                 handled = True
             elif (
                 self.delegate._pressed_button
+                and self.delegate._pressed_button == old
                 and self.delegate._pressed_button[0] == "secondary"
             ):
                 self.delegate.impl.qt_secondary_action(False, index.row())
@@ -393,10 +419,31 @@ class ButtonListView(QListView):
 class DetailedList(Widget):
     """Implementation that wraps a QListView."""
 
+    def __del__(self):
+        self.refresh_bar.setParent(None)
+
     def create(self):
         # Create the List widget
         self.native = ButtonListView()
         self.native.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
+        self.refresh_bar = QToolBar()
+        self.refresh_bar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.refresh_bar.setParent(self.native)
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        self.refresh_bar.addWidget(spacer)
+        self.refreshAction = QAction(
+            QIcon.fromTheme("view-refresh"), "Refresh", self.refresh_bar
+        )
+        self.refresh_bar.addAction(self.refreshAction)
+        self.refreshAction.triggered.connect(self.qt_refresh_action)
+
+        # Assuming self.refresh_bar is your QToolBar
+        pal = self.refresh_bar.palette()
+        bg = pal.color(QPalette.AlternateBase)  # Get theme-appropriate toolbar color
+
+        # Apply via stylesheet
+        self.refresh_bar.setStyleSheet(f"background-color: {bg.name()};")
 
         self.native_model = ListSourceModel(
             self.interface.data,
@@ -426,6 +473,10 @@ class DetailedList(Widget):
         self.native.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.native.customContextMenuRequested.connect(self.qt_context_menu)
         self._menu = QMenu(self.native)
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        self.update_toolbar()
 
     def _format_missing(self, user_data):
         return tuple(
@@ -465,12 +516,12 @@ class DetailedList(Widget):
             self._menu.exec(self.native.mapToGlobal(pos))
 
     def qt_primary_action(self, checked=False, row=None):
-        row = row if row else self.get_selection()
+        row = row if row is not None else self.get_selection()
         row_data = self.interface.data[row]
         self.interface.on_primary_action(row=row_data)
 
     def qt_secondary_action(self, checked=False, row=None):
-        row = row if row else self.get_selection()
+        row = row if row is not None else self.get_selection()
         row_data = self.interface.data[row]
         self.interface.on_secondary_action(row=row_data)
 
@@ -494,10 +545,27 @@ class DetailedList(Widget):
     def clear(self):
         self.native_model.reset_source()
 
+    def update_toolbar(self):
+        if not self.refresh_enabled:
+            self.refresh_bar.hide()
+            self.native.setViewportMargins(0, 0, 0, 0)
+        else:
+            self.refresh_bar.show()
+            self.refresh_bar.setGeometry(
+                0,
+                0,
+                self.native.width() - self.native.verticalScrollBar().width(),
+                self.refresh_bar.sizeHint().height(),
+            )
+            self.native.setViewportMargins(
+                0, self.refresh_bar.sizeHint().height(), 0, 0
+            )
+
     # Toggle actions
 
     def set_refresh_enabled(self, enabled):
         self.refresh_enabled = enabled
+        self.update_toolbar()
 
     def set_primary_action_enabled(self, enabled):
         self.primary_action_enabled = enabled

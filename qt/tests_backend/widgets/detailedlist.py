@@ -63,7 +63,11 @@ class DetailedListProbe(SimpleProbe):
 
     def refresh_available(self):
         # need scroll position 0 to be comptaible with tests for pull-down scroll
-        return self.impl.refresh_enabled and self.scroll_position == 0
+        return (
+            self.impl.refresh_enabled
+            and self.scroll_position == 0
+            and self.impl.refresh_bar.isVisible()
+        )
 
     async def non_refresh_action(self):
         # don't select the menu item... no-op
@@ -72,8 +76,12 @@ class DetailedListProbe(SimpleProbe):
     async def refresh_action(self, active=True):
         if active:
             assert self.refresh_available()
+
             # ask for the menu
-            await self._perform_menu_action(0, -1)
+            await self._perform_menu_action(0, -1, noop=True)
+
+            # Use the button
+            self.impl.refreshAction.triggered.emit()
 
             # A short pause to allow the click handler to be processed.
             await asyncio.sleep(0.1)
