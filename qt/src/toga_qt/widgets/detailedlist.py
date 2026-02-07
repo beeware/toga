@@ -155,6 +155,8 @@ class DetailedListDelegate(QStyledItemDelegate):
     def paint(self, painter: QPainter, options, index):
         style = options.widget.style()
         self.initStyleOption(options, index)
+        if not options.state & QStyle.StateFlag.State_Selected:
+            options.state &= ~QStyle.StateFlag.State_HasFocus
         painter.save()
 
         title, subtitle = self.impl._format_missing(
