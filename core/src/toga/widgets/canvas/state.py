@@ -35,6 +35,7 @@ from .drawingaction import (
     WriteText,
 )
 from .geometry import CornerRadiusT
+from .path import Path2D
 
 if TYPE_CHECKING:
     from toga.colors import ColorT
@@ -295,6 +296,7 @@ class DrawingActionDispatch(ABC):
         self,
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
+        path: Path2D | None = None,
     ) -> Fill:
         """Fill the current path.
 
@@ -306,10 +308,14 @@ class DrawingActionDispatch(ABC):
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
+        :param path: An optional Path2D object to fill.
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        fill = Fill(color, fill_rule)
+        if path is not None:
+            # copy the current state of the path.
+            path = Path2D(path)  # pragma: no cover
+        fill = Fill(color, fill_rule, path)
         self._action_target.append(fill)
         return fill
 
@@ -318,6 +324,7 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
+        path: Path2D | None = None,
     ) -> Stroke:
         """Draw the current path as a stroke.
 
@@ -325,10 +332,14 @@ class DrawingActionDispatch(ABC):
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
+        :param path: An optional Path2D object to draw.
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        stroke = Stroke(color, line_width, line_dash)
+        if path is not None:
+            # copy the current state of the path.
+            path = Path2D(path)  # pragma: no cover
+        stroke = Stroke(color, line_width, line_dash, path)
         self._action_target.append(stroke)
         return stroke
 

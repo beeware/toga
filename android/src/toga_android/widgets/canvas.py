@@ -1,7 +1,7 @@
 import itertools
 import weakref
 from copy import deepcopy
-from math import degrees
+from math import cos, degrees, sin
 from typing import NamedTuple
 
 from android.graphics import (
@@ -10,7 +10,7 @@ from android.graphics import (
     DashPathEffect,
     Matrix,
     Paint,
-    Path,
+    Path as NativePath,
 )
 from android.view import MotionEvent, View
 from java import dynamic_proxy, jint
@@ -27,99 +27,64 @@ from .base import Widget, suppress_reference_error
 BLACK = jint(native_color(rgb(0, 0, 0)))
 
 
-class State(NamedTuple):
-    fill: Paint
-    stroke: Paint
-    transform: Matrix
-
-    def __deepcopy__(self, memo):
-        return type(self)(Paint(self.fill), Paint(self.stroke), Matrix())
+def matrix_from_transform(transform):
+    a, b, c, d, e, f = transform
+    matrix = Matrix()
+    matrix.setValues([a, c, e, b, d, f, 0, 0, 1])
+    return matrix
 
 
-class Context:
-    def __init__(self, impl, native):
-        self.native = native
-        self.impl = impl
-        self.path = Path()
+class Path2D:
+    native: NativePath
 
-        # Backwards compatibility for Toga <= 0.5.3
-        self.in_fill = False
-        self.in_stroke = False
+    def __init__(self):
+        self.native = NativePath()
+        self._last_point = None
 
-        fill = Paint()
-        fill.setAntiAlias(True)
-        fill.setStyle(Paint.Style.FILL)
-        fill.setColor(BLACK)
+    def _ensure_subpath(self, x, y):
+        if self.native.isEmpty():
+            self.native.moveTo(x, y)
 
-        stroke = Paint()
-        stroke.setAntiAlias(True)
-        stroke.setStyle(Paint.Style.STROKE)
-        stroke.setStrokeWidth(2.0)
-        stroke.setColor(BLACK)
-
-        self.states = [State(fill, stroke, Matrix())]
-        self.reset_transform()
-
-    @property
-    def state(self):
-        return self.states[-1]
-
-    # Context management
-
-    def save(self):
-        self.native.save()
-        self.states.append(deepcopy(self.state))
-
-    def restore(self):
-        self.native.restore()
-        # Transform active path to current coordinates
-        self.path.transform(self.state.transform)
-        self.states.pop()
-
-    # Setting attributes
-    def set_fill_style(self, color):
-        self.state.fill.setColor(jint(native_color(color)))
-
-    def set_line_dash(self, line_dash):
-        self.state.stroke.setPathEffect(DashPathEffect(line_dash, 0))
-
-    def set_line_width(self, line_width):
-        self.state.stroke.setStrokeWidth(line_width)
-
-    def set_stroke_style(self, color):
-        self.state.stroke.setColor(jint(native_color(color)))
-
-    # Basic paths
-
-    def begin_path(self):
-        self.path.reset()
+    def add_path(self, path, transform=None):
+        if transform is None:
+            self.native.addPath(path.native)
+            self._last_point = path._last_point
+        else:
+            native_path = NativePath(path.native)
+            matrix = matrix_from_transform(transform)
+            native_path.transform(matrix)
+            self.native.addPath(native_path)
+            if path._last_point is not None:
+                points = list(path._last_point)
+                matrix.mapPoints(points)
+                self._last_point = points[0]
 
     def close_path(self):
-        self.path.close()
+        self.native.close()
+        self._last_point = None
 
     def move_to(self, x, y):
-        self.path.moveTo(x, y)
+        self.native.moveTo(x, y)
+        self._last_point = (x, y)
 
     def line_to(self, x, y):
         self._ensure_subpath(x, y)
-        self.path.lineTo(x, y)
-
-    def _ensure_subpath(self, x, y):
-        if self.path.isEmpty():
-            self.move_to(x, y)
-
-    # Basic shapes
+        self.native.lineTo(x, y)
+        self._last_point = (x, y)
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
         self._ensure_subpath(cp1x, cp1y)
-        self.path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self.native.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self._last_point = (x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         self._ensure_subpath(cpx, cpy)
-        self.path.quadTo(cpx, cpy, x, y)
+        self.native.quadTo(cpx, cpy, x, y)
+        self._last_point = (x, y)
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
         self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
+        self._last_point = (x + radius * cos(endangle), y + sin(endangle))
 
     def ellipse(
         self,
@@ -152,25 +117,147 @@ class Context:
             i += 6
 
     def rect(self, x, y, width, height):
-        self.path.addRect(x, y, x + width, y + height, Path.Direction.CW)
+        self.native.addRect(x, y, x + width, y + height, NativePath.Direction.CW)
+        self._last_point = (x, y)
 
     def round_rect(self, x, y, width, height, radii):
         round_rect(self, x, y, width, height, radii)
 
+
+class State(NamedTuple):
+    fill: Paint
+    stroke: Paint
+    transform: Matrix
+
+    def __deepcopy__(self, memo):
+        return type(self)(Paint(self.fill), Paint(self.stroke), Matrix())
+
+
+class Context:
+    def __init__(self, impl, native):
+        self.native = native
+        self.impl = impl
+        self.path = Path2D()
+
+        # Backwards compatibility for Toga <= 0.5.3
+        self.in_fill = False
+        self.in_stroke = False
+
+        fill = Paint()
+        fill.setAntiAlias(True)
+        fill.setStyle(Paint.Style.FILL)
+        fill.setColor(BLACK)
+
+        stroke = Paint()
+        stroke.setAntiAlias(True)
+        stroke.setStyle(Paint.Style.STROKE)
+        stroke.setStrokeWidth(2.0)
+        stroke.setColor(BLACK)
+
+        self.states = [State(fill, stroke, Matrix())]
+        self.reset_transform()
+
+    @property
+    def state(self):
+        return self.states[-1]
+
+    # Context management
+
+    def save(self):
+        self.native.save()
+        self.states.append(deepcopy(self.state))
+
+    def restore(self):
+        self.native.restore()
+        # Transform active path to current coordinates
+        self.path.native.transform(self.state.transform)
+        self.states.pop()
+
+    # Setting attributes
+    def set_fill_style(self, color):
+        self.state.fill.setColor(jint(native_color(color)))
+
+    def set_line_dash(self, line_dash):
+        self.state.stroke.setPathEffect(DashPathEffect(line_dash, 0))
+
+    def set_line_width(self, line_width):
+        self.state.stroke.setStrokeWidth(line_width)
+
+    def set_stroke_style(self, color):
+        self.state.stroke.setColor(jint(native_color(color)))
+
+    # Basic paths
+
+    def begin_path(self):
+        self.path = Path2D()
+
+    def close_path(self):
+        self.path.close_path()
+
+    def move_to(self, x, y):
+        self.path.move_to(x, y)
+
+    def line_to(self, x, y):
+        self.path.line_to(x, y)
+
+    # Basic shapes
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self.path.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        self.path.quadratic_curve_to(cpx, cpy, x, y)
+
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        self.path.arc(x, y, radius, startangle, endangle, counterclockwise)
+
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
+    ):
+        self.path.ellipse(
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            counterclockwise,
+        )
+
+    def rect(self, x, y, width, height):
+        self.path.rect(x, y, width, height)
+
+    def round_rect(self, x, y, width, height, radii):
+        self.path.round_rect(x, y, width, height, radii)
+
     # Drawing Paths
 
-    def fill(self, fill_rule):
-        self.path.setFillType(
-            {
-                FillRule.EVENODD: Path.FillType.EVEN_ODD,
-                FillRule.NONZERO: Path.FillType.WINDING,
-            }.get(fill_rule, Path.FillType.WINDING)
-        )
-        self.native.drawPath(self.path, self.state.fill)
+    def fill(self, fill_rule, path=None):
+        if path is None:
+            path = self.path
 
-    def stroke(self):
+        path.native.setFillType(
+            {
+                FillRule.EVENODD: NativePath.FillType.EVEN_ODD,
+                FillRule.NONZERO: NativePath.FillType.WINDING,
+            }.get(fill_rule, NativePath.FillType.WINDING)
+        )
+        self.native.drawPath(path.native, self.state.fill)
+
+    def stroke(self, path=None):
         # The stroke respects the canvas transform, so we don't need to scale it here.
-        self.native.drawPath(self.path, self.state.stroke)
+        if path is None:
+            path = self.path
+        self.native.drawPath(path.native, self.state.stroke)
 
     # Transformations
 
@@ -183,7 +270,7 @@ class Context:
         # Transform active path to current coordinates
         inverse = Matrix()
         inverse.setRotate(-degrees(radians))
-        self.path.transform(inverse)
+        self.path.native.transform(inverse)
 
     def scale(self, sx, sy):
         # Can't apply inverse transform if scale is 0,
@@ -201,7 +288,7 @@ class Context:
         # Transform active path to current coordinates
         inverse = Matrix()
         inverse.setScale(1 / sx, 1 / sy)
-        self.path.transform(inverse)
+        self.path.native.transform(inverse)
 
     def translate(self, tx, ty):
         self.native.translate(tx, ty)
@@ -212,7 +299,7 @@ class Context:
         # Transform active path to current coordinates
         inverse = Matrix()
         inverse.setTranslate(-tx, -ty)
-        self.path.transform(inverse)
+        self.path.native.transform(inverse)
 
     def reset_transform(self):
         self.native.setMatrix(None)
@@ -220,7 +307,7 @@ class Context:
         # current matrix needs to unwind all previous states
         # can't just ask for current total transform as `getMatrix` is deprecated
         for state in reversed(self.states):
-            self.path.transform(state.transform)
+            self.path.native.transform(state.transform)
             inverse = Matrix()
             # if we can't invert, ignore for now
             if state.transform.invert(inverse):  # pragma: no branch

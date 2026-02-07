@@ -33,6 +33,150 @@ from .box import Box
 BLACK = native_color(rgb(0, 0, 0))
 
 
+class Path2D:
+    def __init__(self):
+        self.native = GraphicsPath()
+        self._subpath_start = None
+        self._subpath_end = None
+        self._subpath_empty = True
+
+    def _ensure_path(self, x, y):
+        if self._subpath_start is None:
+            self.move_to(x, y)
+
+    @property
+    def last_point(self):
+        return self._subpath_end
+
+    def add_path(self, path, transform=None):
+        if path.native.PointCount == 0:
+            # Nothing to do
+            return
+        if transform is None:
+            self.native.AddPath(path.native, False)
+            self._subpath_end = path._subpath_end
+        else:
+            native_path = GraphicsPath(path.native.PathPoints, path.native.PathTypes)
+            matrix = Matrix(*transform)
+            native_path.Transform(matrix)
+            self.native.AddPath(native_path, False)
+            if self._subpath_start is None and path._subpath_start is not None:
+                points = Array[PointF]([path._subpath_start])
+                matrix.TransformPoints(points)
+                self._subpath_start = points[0]
+            if path._subpath_end is not None:
+                points = Array[PointF]([path._subpath_end])
+                matrix.TransformPoints(points)
+                self._subpath_end = points[0]
+
+    def close_path(self):
+        if self._subpath_start is not None:
+            # We don't use current_path.CloseFigure, because that causes the dash
+            # pattern to start on the last segment of the path rather than the first
+            # one.
+            self.line_to(self._subpath_start.X, self._subpath_start.Y)
+        self._subpath_end = self._subpath_start
+
+    def move_to(self, x, y):
+        self._subpath_end = PointF(x, y)
+        self._subpath_start = self._subpath_end
+        if not self._subpath_empty:
+            self.native.StartFigure()
+            self._subpath_empty = True
+
+    def line_to(self, x, y):
+        self._ensure_path(x, y)
+        self.native.AddLine(self.last_point, PointF(x, y))
+        self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
+
+    # Basic shapes
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self._ensure_path(cp1x, cp1y)
+        self.native.AddBezier(
+            self.last_point,
+            PointF(cp1x, cp1y),
+            PointF(cp2x, cp2y),
+            PointF(x, y),
+        )
+        self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
+
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
+        # we can convert the single Quadratic control point into the
+        # 2 control points required for the cubic Bézier.
+        self._ensure_path(cpx, cpy)
+        x0, y0 = (self.last_point.X, self.last_point.Y)
+        self.native.AddBezier(
+            self.last_point,
+            PointF(
+                x0 + 2 / 3 * (cpx - x0),
+                y0 + 2 / 3 * (cpy - y0),
+            ),
+            PointF(
+                x + 2 / 3 * (cpx - x),
+                y + 2 / 3 * (cpy - y),
+            ),
+            PointF(x, y),
+        )
+        self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
+
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
+
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
+    ):
+        matrix = Matrix()
+        matrix.Translate(x, y)
+        matrix.Rotate(degrees(rotation))
+        matrix.Scale(radiusx, radiusy)
+        matrix.Rotate(degrees(startangle))
+
+        points = Array[PointF](
+            [
+                PointF(x, y)
+                for x, y in arc_to_bezier(
+                    sweepangle(startangle, endangle, counterclockwise)
+                )
+            ]
+        )
+        matrix.TransformPoints(points)
+
+        self._ensure_path(points[0].X, points[0].Y)
+        self.native.AddLine(PointF(self._subpath_end.X, self._subpath_end.Y), points[0])
+        self.native.AddBeziers(points)
+        self._subpath_end = points[-1]
+        self._subpath_empty = False
+
+    def rect(self, x, y, width, height):
+        rect = RectangleF(x, y, width, height)
+        self.native.AddRectangle(rect)
+        if self._subpath_start is None:
+            self._subpath_start = PointF(x, y)
+        self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
+
+    def round_rect(self, x, y, width, height, radii):
+        set_start = self._subpath_start is None
+        round_rect(self, x, y, width, height, radii)
+        if set_start:
+            self._subpath_start = PointF(x, y)
+        self._subpath_end = PointF(x, y)
+        self._subpath_empty = False
+
+
 class State:
     """Represents a canvas state; can be saved and restored.
 
@@ -81,36 +225,17 @@ class Context:
         self.in_stroke = False
 
     # Windows path management
-    @property
-    def current_path(self):
-        return self.paths[-1]
-
-    def add_path(self, start_point=None):
-        self.paths.append(GraphicsPath())
-        self.start_point = start_point
-
-    # Because the GraphicsPath API works in terms of segments rather than points, it has
-    # no equivalent to move_to, and we must save that point manually. In all other
-    # situations, we can get the last point from the GraphicsPath itself.
-    #
-    # default_x and default_y should be set as described in the HTML spec under "ensure
-    # there is a subpath".
-    def get_last_point(self, default_x, default_y):
-        if self.current_path.PointCount:
-            return self.current_path.GetLastPoint()
-        elif self.start_point:
-            return self.start_point
-        else:
-            return PointF(default_x, default_y)
-
     def transform_path(self, matrix):
         """Transform the current path using a matrix."""
-        for path in self.paths:
-            path.Transform(matrix)
-        if self.start_point:
-            points = Array[PointF]([self.start_point])
+        self.path.native.Transform(matrix)
+        if (start := self.path._subpath_start) is not None:
+            points = Array[PointF]([start])
             matrix.TransformPoints(points)
-            self.start_point = points[0]
+            self.path._subpath_start = points[0]
+        if (end := self.path._subpath_end) is not None:
+            points = Array[PointF]([end])
+            matrix.TransformPoints(points)
+            self.path._subpath_end = points[0]
 
     # Context management
 
@@ -144,54 +269,27 @@ class Context:
     # Basic paths
 
     def begin_path(self):
-        self.paths = []
-        self.add_path()
+        self.path = Path2D()
 
-    # We don't use current_path.CloseFigure, because that causes the dash pattern to
-    # start on the last segment of the path rather than the first one.
     def close_path(self):
-        if self.current_path.PointCount:
-            start = self.current_path.PathPoints[0]
-            self.current_path.AddLine(self.current_path.GetLastPoint(), start)
-            self.move_to(start.X, start.Y)
+        self.path.close_path()
 
     def move_to(self, x, y):
-        self.add_path(PointF(x, y))
+        self.path.move_to(x, y)
 
     def line_to(self, x, y):
-        self.current_path.AddLine(self.get_last_point(x, y), PointF(x, y))
+        self.path.line_to(x, y)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self.current_path.AddBezier(
-            self.get_last_point(cp1x, cp1y),
-            PointF(cp1x, cp1y),
-            PointF(cp2x, cp2y),
-            PointF(x, y),
-        )
+        self.path.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
-    # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
-    # we can convert the single Quadratic control point into the
-    # 2 control points required for the cubic Bézier.
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        last_point = self.get_last_point(cpx, cpy)
-        x0, y0 = (last_point.X, last_point.Y)
-        self.current_path.AddBezier(
-            last_point,
-            PointF(
-                x0 + 2 / 3 * (cpx - x0),
-                y0 + 2 / 3 * (cpy - y0),
-            ),
-            PointF(
-                x + 2 / 3 * (cpx - x),
-                y + 2 / 3 * (cpy - y),
-            ),
-            PointF(x, y),
-        )
+        self.path.quadratic_curve_to(cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
-        self.ellipse(x, y, radius, radius, 0, startangle, endangle, counterclockwise)
+        self.path.arc(x, y, radius, startangle, endangle, counterclockwise)
 
     def ellipse(
         self,
@@ -204,55 +302,45 @@ class Context:
         endangle,
         counterclockwise,
     ):
-        matrix = Matrix()
-        matrix.Translate(x, y)
-        matrix.Rotate(degrees(rotation))
-        matrix.Scale(radiusx, radiusy)
-        matrix.Rotate(degrees(startangle))
-
-        points = Array[PointF](
-            [
-                PointF(x, y)
-                for x, y in arc_to_bezier(
-                    sweepangle(startangle, endangle, counterclockwise)
-                )
-            ]
+        self.path.ellipse(
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            counterclockwise,
         )
-        matrix.TransformPoints(points)
-
-        start = self.start_point
-        if start and not self.current_path.PointCount:
-            self.current_path.AddLine(start, start)
-        self.current_path.AddBeziers(points)
 
     def rect(self, x, y, width, height):
-        self.add_path()
-        rect = RectangleF(x, y, width, height)
-        self.current_path.AddRectangle(rect)
-        self.add_path()
+        self.path.rect(x, y, width, height)
 
     def round_rect(self, x, y, width, height, radii):
-        round_rect(self, x, y, width, height, radii)
+        self.path.round_rect(x, y, width, height, radii)
 
     # Drawing Paths
 
-    def fill(self, fill_rule):
+    def fill(self, fill_rule, path=None):
         if self.state.singular:
             # draw nothing
             return
-        for path in self.paths:
-            if fill_rule == FillRule.EVENODD:
-                path.FillMode = FillMode.Alternate
-            else:  # Default to NONZERO
-                path.FillMode = FillMode.Winding
-            self.native.FillPath(self.state.brush, path)
+        if path is None:
+            path = self.path
 
-    def stroke(self):
+        if fill_rule == FillRule.EVENODD:
+            path.native.FillMode = FillMode.Alternate
+        else:  # Default to NONZERO
+            path.native.FillMode = FillMode.Winding
+        self.native.FillPath(self.state.brush, path.native)
+
+    def stroke(self, path=None):
         if self.state.singular:
             # draw nothing
             return
-        for path in self.paths:
-            self.native.DrawPath(self.state.pen, path)
+        if path is None:
+            path = self.path
+        self.native.DrawPath(self.state.pen, path.native)
 
     # Transformations
 
@@ -315,17 +403,12 @@ class Context:
     # Text
 
     def write_text(self, text, x, y, font, baseline, line_height):
-        # Writing text should not affect current path, so save current paths
-        current_paths = self.paths
-        # new path for text
-        self.begin_path()
-        self._text_path(text, x, y, font, baseline, line_height)
+        # Writing text should not affect current path, so create a separate path
+        path = self._text_path(text, x, y, font, baseline, line_height)
         if self.in_fill:
-            self.fill(FillRule.NONZERO)
+            self.fill(FillRule.NONZERO, path)
         if self.in_stroke:
-            self.stroke()
-        # restore previous current paths - this is a bit hacky
-        self.paths = current_paths
+            self.stroke(path)
 
     def _text_path(self, text, x, y, font, baseline, line_height):
         lines = text.splitlines()
@@ -342,8 +425,9 @@ class Context:
             # Default to Baseline.ALPHABETIC
             top = y - font.metric("CellAscent")
 
+        path = Path2D()
         for line_num, line in enumerate(lines):
-            self.current_path.AddString(
+            path.native.AddString(
                 line,
                 font.native.FontFamily,
                 font.native.Style.value__,
@@ -351,6 +435,7 @@ class Context:
                 PointF(x, top + (scaled_line_height * line_num)),
                 self.impl.string_format,
             )
+        return path
 
     def draw_image(self, image, x, y, width, height):
         self.native.DrawImage(image._impl.native, x, y, width, height)

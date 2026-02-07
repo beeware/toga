@@ -92,6 +92,8 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
     options:
         inherited_members: True
 
+::: toga.widgets.canvas.Path2D
+
 ::: toga.widgets.canvas.DrawingAction
 
 ::: toga.widgets.canvas.ClosedPathContext

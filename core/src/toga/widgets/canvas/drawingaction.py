@@ -22,6 +22,8 @@ from .geometry import CornerRadiusT
 if TYPE_CHECKING:
     from toga.colors import ColorT
 
+    from .path import Path2D
+
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
 
@@ -65,24 +67,35 @@ class DrawingAction(ABC):
     [`append()`][toga.widgets.canvas.State.append] or
     [`insert()`][toga.widgets.canvas.State.append] methods. Their constructors take
     the same arguments as the corresponding [`State`][toga.widgets.canvas.State]
-    method, and their classes have the same names, but capitalized:
+    or [`Path2D`][toga.widgets.canvas.Path2D] methods, and their classes have the
+    same names, but capitalized:
 
     * [`toga.widgets.canvas.Arc`][toga.widgets.canvas.State.arc]
-    * [`toga.widgets.canvas.BeginPath`][toga.widgets.canvas.State.begin_path]
     * [`toga.widgets.canvas.BezierCurveTo`][toga.widgets.canvas.State.bezier_curve_to]
     * [`toga.widgets.canvas.ClosePath`][toga.widgets.canvas.State.close_path]
     * [`toga.widgets.canvas.Ellipse`][toga.widgets.canvas.State.ellipse]
-    * [`toga.widgets.canvas.Fill`][toga.widgets.canvas.State.fill]
     * [`toga.widgets.canvas.LineTo`][toga.widgets.canvas.State.line_to]
     * [`toga.widgets.canvas.MoveTo`][toga.widgets.canvas.State.move_to]
     * [`toga.widgets.canvas.QuadraticCurveTo`][toga.widgets.canvas.State.quadratic_curve_to]
     * [`toga.widgets.canvas.Rect`][toga.widgets.canvas.State.rect]
+    * [`toga.widgets.canvas.RoundRect`][toga.widgets.canvas.State.round_rect]
+
+    The following `DrawingActions` can only be used with `State` objects and not
+    `Path2D`:
+
+    * [`toga.widgets.canvas.BeginPath`][toga.widgets.canvas.State.begin_path]
+    * [`toga.widgets.canvas.Fill`][toga.widgets.canvas.State.fill]
     * [`toga.widgets.canvas.ResetTransform`][toga.widgets.canvas.State.reset_transform]
     * [`toga.widgets.canvas.Rotate`][toga.widgets.canvas.State.rotate]
     * [`toga.widgets.canvas.Scale`][toga.widgets.canvas.State.scale]
     * [`toga.widgets.canvas.Stroke`][toga.widgets.canvas.State.stroke]
     * [`toga.widgets.canvas.Translate`][toga.widgets.canvas.State.translate]
     * [`toga.widgets.canvas.WriteText`][toga.widgets.canvas.State.write_text]
+
+    In addition, the `AddPath` `DrawingAction` can be used with `Path2D` objects
+    but not `State` objects:
+
+    * [`toga.widgets.canvas.AddPath`][toga.widgets.canvas.Path2D.add_path]
     """  # noqa: E501
 
     # Disable the line-too-long check as there is no way to properly render the list
@@ -146,12 +159,17 @@ class ClosePath(DrawingAction):
 class Fill(DrawingAction):
     color: ColorT | None = color_property()
     fill_rule: FillRule = FillRule.NONZERO
+    path: Path2D | None = None
 
     def _draw(self, context: Any) -> None:
         context.save()
         if self.color is not None:
             context.set_fill_style(self.color)
-        context.fill(self.fill_rule)
+        if self.path is None:
+            path_impl = None
+        else:
+            path_impl = self.path.impl  # pragma: no cover
+        context.fill(self.fill_rule, path_impl)
         context.restore()
 
 
@@ -160,6 +178,7 @@ class Stroke(DrawingAction):
     color: ColorT | None = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
+    path: Path2D | None = None
 
     def _draw(self, context: Any) -> None:
         context.save()
@@ -169,7 +188,11 @@ class Stroke(DrawingAction):
             context.set_line_width(self.line_width)
         if self.line_dash is not None:
             context.set_line_dash(self.line_dash)
-        context.stroke()
+        if self.path is None:
+            path_impl = None
+        else:
+            path_impl = self.path.impl  # pragma: no cover
+        context.stroke(path_impl)
         context.restore()
 
 
