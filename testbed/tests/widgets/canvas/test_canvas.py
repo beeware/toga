@@ -973,17 +973,17 @@ async def test_miter_join(canvas, probe):
         angle = angle * pi / 180
         half_width = height * tan(angle / 2)
 
-        with canvas.root_state.state() as ctx:
+        with canvas.state():
             # Translate to the vertex
-            ctx.translate(x, 85)
+            canvas.translate(x, 85)
 
-            ctx.begin_path()
-            ctx.move_to(half_width, height)
-            ctx.line_to(0, 0)
-            ctx.line_to(-half_width, height)
+            canvas.begin_path()
+            canvas.move_to(half_width, height)
+            canvas.line_to(0, 0)
+            canvas.line_to(-half_width, height)
 
-            ctx.stroke(line_width=line_width)
-            ctx.stroke(line_width=2, color=REBECCAPURPLE)
+            canvas.stroke(line_width=line_width)
+            canvas.stroke(line_width=2, color=REBECCAPURPLE)
 
     # Left two should be mitered, right two should be beveled.
     # (Windows and Qt don't bevel, they just start truncating the miter.)
