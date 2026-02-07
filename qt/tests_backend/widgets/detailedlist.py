@@ -138,8 +138,16 @@ class DetailedListProbe(SimpleProbe):
             Qt.NoModifier,
         )
         self.native.mouseMoveEvent(hover_event)
-
         await self.redraw("Button has been hovered over")
+
+        if rect.isValid():
+            # With all those assertions below -- the premise for doing them instead of
+            # actually inspecting the button state is that it's not easy to inspect the
+            # actual drawing results.
+            assert self.native._hovered_button == (
+                "primary" if button_index == 0 else "secondary",
+                index,
+            )
 
         press_event = QMouseEvent(
             QEvent.MouseButtonPress,
@@ -150,8 +158,16 @@ class DetailedListProbe(SimpleProbe):
             Qt.NoModifier,
         )
         self.native.mousePressEvent(press_event)
-
+        # This is to get coverage, as actually clicking twice will emit the event
+        # twice.
+        self.native.mouseDoubleClickEvent(press_event)
         await self.redraw("Button has been pressed down")
+
+        if rect.isValid():
+            assert self.native._pressed_button == (
+                "primary" if button_index == 0 else "secondary",
+                index,
+            )
 
         release_event = QMouseEvent(
             QEvent.MouseButtonRelease,
@@ -162,8 +178,32 @@ class DetailedListProbe(SimpleProbe):
             Qt.NoModifier,
         )
         self.native.mouseReleaseEvent(release_event)
-
         await self.redraw("Button has been pressed up")
+
+        if rect.isValid():
+            assert self.native._hovered_button == (
+                "primary" if button_index == 0 else "secondary",
+                index,
+            )
+            assert self.native._pressed_button is None
+
+            # More coverage-grabbing things.
+
+            # Emit a scroll event; this doesn't actually do scrolling,
+            # but verify that the recomputation works correctly
+            _hovered_button = self.native._hovered_button
+            self.native.verticalScrollBar().valueChanged.emit(
+                self.native.verticalScrollBar().value()
+            )
+            await self.redraw("Scrolling occurred")
+            assert _hovered_button == self.native._hovered_button
+
+            # Verify that leaving the area with the mouse
+            # gets you no hover.
+            leave_event = QEvent(QEvent.Leave)
+            self.native.leaveEvent(leave_event)
+            await self.redraw("Mouse has left view")
+            assert self.native._hovered_button is None
 
     async def perform_primary_action(self, row, active=True):
         await self._perform_button_action(row, 0)

@@ -235,16 +235,17 @@ class DetailedListDelegate(QStyledItemDelegate):
     def button_at(self, index, pos):
         primary_rect, secondary_rect = self._button_rects(index)
         if primary_rect.contains(pos):
-            return "primary", index
+            return ("primary", index)
         if secondary_rect.contains(pos):
-            return "secondary", index
+            return ("secondary", index)
         return None
 
     def _button_rects(self, index, rect=None):
         if rect is None:
-            rect = self.impl.native.visualRect(index)
+            rect = self.native.visualRect(index)
 
         option = QStyleOptionButton()
+        option.initFrom(self.native)
         fm = option.fontMetrics
         cy = rect.center().y()
 
@@ -337,7 +338,7 @@ class ButtonListView(QListView):
     # This method is no-covered as it is purely cosmetic
     # and takes lots of effort to test properly across all platforms,
     # most of which doesn't do manual handling like this
-    def qtScroll(self):  # pragma: no cover
+    def qtScroll(self):
         self._hovered_button = None
         pos = self.mouse_position
         index = self.indexAt(pos)
@@ -366,23 +367,32 @@ class ButtonListView(QListView):
 
     # This is hard to get coverage for besides manual invocation, but
     # it's just cosmetic (when a hover at the edge leaves the widget)
-    def leaveEvent(self, event):  # pragma: no cover
+    def leaveEvent(self, event):
         self._hovered_button = None
         self.viewport().update()
         super().leaveEvent(event)
 
-    def mousePressEvent(self, event):
+    def _handle_click(self, event):
         index = self.indexAt(event.position().toPoint())
         if not index.isValid():  # pragma: no cover
             self._pressed_button = None
-            return super().mousePressEvent(event)
+            return False
 
         pos = event.position().toPoint()
         self._pressed_button = self.delegate.button_at(index, pos)
 
         self.viewport().update()
         if not self._pressed_button:
+            return False
+        return True
+
+    def mousePressEvent(self, event):
+        if not self._handle_click(event):
             super().mousePressEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        if not self._handle_click(event):
+            super().mouseDoubleClickEvent(event)
 
     def mouseReleaseEvent(self, event):
         index = self.indexAt(event.position().toPoint())
