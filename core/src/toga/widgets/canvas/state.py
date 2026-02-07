@@ -35,12 +35,12 @@ from .drawingaction import (
     WriteText,
 )
 from .geometry import CornerRadiusT
+from .path import Path2D
 
 if TYPE_CHECKING:
     from toga.colors import ColorT
 
     from .canvas import Canvas
-    from .path import Path2D
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -308,9 +308,13 @@ class DrawingActionDispatch(ABC):
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
+        :param path: An optional Path2D object to fill.
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
+        if path is not None:
+            # copy the current state of the path.
+            path = Path2D(path)  # pragma: no cover
         fill = Fill(color, fill_rule, path)
         self._action_target.append(fill)
         return fill
@@ -328,9 +332,13 @@ class DrawingActionDispatch(ABC):
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
+        :param path: An optional Path2D object to draw.
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
+        if path is not None:
+            # copy the current state of the path.
+            path = Path2D(path)  # pragma: no cover
         stroke = Stroke(color, line_width, line_dash, path)
         self._action_target.append(stroke)
         return stroke

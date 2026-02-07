@@ -168,7 +168,7 @@ class Fill(DrawingAction):
         if self.path is None:
             path_impl = None
         else:
-            path_impl = self.path.impl  # pragma: no cover
+            path_impl = self.path.impl
         context.fill(self.fill_rule, path_impl)
         context.restore()
 
@@ -191,7 +191,7 @@ class Stroke(DrawingAction):
         if self.path is None:
             path_impl = None
         else:
-            path_impl = self.path.impl  # pragma: no cover
+            path_impl = self.path.impl
         context.stroke(path_impl)
         context.restore()
 

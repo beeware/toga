@@ -1,4 +1,3 @@
-import copy
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from math import pi
@@ -47,7 +46,7 @@ class Path2D:
         if path is None:
             self.drawing_actions = []
         else:
-            self.drawing_actions = copy.deepcopy(path.drawing_actions)
+            self.drawing_actions = path.drawing_actions.copy()
         self._action_target = self
         self._impl = None
         self.factory = get_platform_factory()
@@ -111,7 +110,6 @@ class Path2D:
         line_to = LineTo(x, y)
         self._action_target.drawing_actions.append(line_to)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return line_to
 
     def bezier_curve_to(
@@ -170,7 +168,6 @@ class Path2D:
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
         self._action_target.drawing_actions.append(quadratic_curve_to)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return quadratic_curve_to
 
     def arc(
@@ -267,7 +264,6 @@ class Path2D:
         rect = Rect(x, y, width, height)
         self._action_target.drawing_actions.append(rect)
         self._recompilation_needed()
-        self._redraw_with_warning_if_state()
         return rect
 
     def round_rect(
@@ -336,9 +332,6 @@ class Path2D:
         self._impl = self.factory.Path2D()
         for action in self.drawing_actions:
             action._draw(self._impl)
-
-    def _redraw_with_warning_if_state(self):
-        pass
 
     def _recompilation_needed(self):
         self._impl = None
