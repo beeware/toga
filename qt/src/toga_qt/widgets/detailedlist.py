@@ -330,12 +330,15 @@ class ButtonListView(QListView):
         self.mouse_position = QPoint(-1, -1)
         self.verticalScrollBar().valueChanged.connect(self.qtScroll)
 
-    def qtScroll(self):
+    # This method is no-covered as it is purely cosmetic
+    # and takes lots of effort to test properly across all platforms,
+    # most of which doesn't do manual handling like this
+    def qtScroll(self):  # pragma: no cover
         self._hovered_button = None
         pos = self.mouse_position
         index = self.indexAt(pos)
         # Defensive safety catch for no index.
-        if not index.isValid():  # pragma: no cover
+        if not index.isValid():
             self.viewport().update()
             return
 
