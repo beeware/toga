@@ -30,7 +30,6 @@ from .base import Widget
 
 logger = logging.getLogger(__name__)
 
-ICON_SIZE = 32
 BUTTON_PADDING = 6
 BUTTON_MARGIN = 6
 
@@ -154,6 +153,7 @@ class DetailedListDelegate(QStyledItemDelegate):
         self.native = impl.native
 
     def paint(self, painter: QPainter, options, index):
+        style = options.widget.style()
         self.initStyleOption(options, index)
         painter.save()
 
@@ -175,7 +175,11 @@ class DetailedListDelegate(QStyledItemDelegate):
         subtitle_font.setPointSizeF(subtitle_font.pointSizeF() * 0.89)
         subtitle_metrics = QFontMetrics(subtitle_font)
 
-        x_offset = ICON_SIZE + 4
+        text_rect = style.subElementRect(
+            QStyle.SE_ItemViewItemText, options, options.widget
+        )
+
+        x_offset = text_rect.x()
         y = options.rect.top()
         painter.drawText(
             options.rect.left() + x_offset, y + title_metrics.ascent(), title
@@ -213,6 +217,7 @@ class DetailedListDelegate(QStyledItemDelegate):
 
     def _draw_button(self, option, painter, text, rect, role):
         button_option = QStyleOptionButton()
+        button_option.initFrom(option.widget)
         button_option.rect = rect
         button_option.text = text
         button_option.state = QStyle.StateFlag.State_Enabled
@@ -283,6 +288,7 @@ class DetailedListDelegate(QStyledItemDelegate):
     def sizeHint(self, options, index):
         base_size = super().sizeHint(options, index)
         self.initStyleOption(options, index)
+        style = options.widget.style()
 
         title, subtitle = self.impl._format_missing(
             index.data(Qt.ItemDataRole.UserRole)
@@ -297,11 +303,13 @@ class DetailedListDelegate(QStyledItemDelegate):
             title_metrics.lineSpacing() + subtitle_metrics.lineSpacing() + 4,
             base_size.height(),
         )
+        text_rect = style.subElementRect(
+            QStyle.SE_ItemViewItemText, options, options.widget
+        )
         # options.rect is explicitly passed in here, as the visual rectangle computation
         # requires the size hint.
         min_width = (
-            base_size.width()
-            + 4
+            text_rect.x()
             + max(
                 title_metrics.boundingRect(title).width(),
                 subtitle_metrics.boundingRect(subtitle).width(),
@@ -421,8 +429,8 @@ class DetailedList(Widget):
     def create(self):
         # Create the List widget
         self.native = ButtonListView()
+        self.native.setIconSize(QSize(32, 32))
         self.native.impl = self
-        self.native.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
         self.refresh_bar = QToolBar()
         self.refresh_bar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.refresh_bar.setParent(self.native)
@@ -549,9 +557,11 @@ class DetailedList(Widget):
         else:
             self.refresh_bar.show()
             self.refresh_bar.setGeometry(
-                0,
-                0,
-                self.native.width() - self.native.verticalScrollBar().width(),
+                self.native.contentsMargins().top(),
+                self.native.contentsMargins().left(),
+                self.native.width()
+                - self.native.verticalScrollBar().width()
+                - self.native.contentsMargins().right(),
                 self.refresh_bar.sizeHint().height(),
             )
             self.native.setViewportMargins(
