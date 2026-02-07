@@ -176,19 +176,15 @@ class DetailedListDelegate(QStyledItemDelegate):
         subtitle_metrics = QFontMetrics(subtitle_font)
 
         text_rect = style.subElementRect(
-            QStyle.SE_ItemViewItemText, options, options.widget
+            QStyle.SE_ItemViewItemText, options, options.widget.viewport()
         )
 
         x_offset = text_rect.x()
         y = options.rect.top()
-        painter.drawText(
-            options.rect.left() + x_offset, y + title_metrics.ascent(), title
-        )
+        painter.drawText(x_offset, y + title_metrics.ascent(), title)
         y += title_metrics.lineSpacing()
         painter.setFont(subtitle_font)
-        painter.drawText(
-            options.rect.left() + x_offset, y + subtitle_metrics.ascent(), subtitle
-        )
+        painter.drawText(x_offset, y + subtitle_metrics.ascent(), subtitle)
 
         primary_text = (
             self.impl.interface._primary_action
