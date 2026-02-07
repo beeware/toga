@@ -56,6 +56,7 @@ class Context:
         stroke.setStyle(Paint.Style.STROKE)
         stroke.setStrokeWidth(2.0)
         stroke.setColor(BLACK)
+        stroke.setStrokeMiter(10.0)
 
         self.states = [State(fill, stroke, Matrix())]
         self.reset_transform()

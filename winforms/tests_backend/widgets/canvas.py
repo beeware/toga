@@ -15,6 +15,7 @@ class CanvasProbe(SimpleProbe):
             "write_text",
             "write_text_and_path",
             "deprecated_tutorial",
+            "miter_join",
         }:
             return f"{reference}-winforms"
         return reference
