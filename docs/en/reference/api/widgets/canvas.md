@@ -62,6 +62,8 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
 
 ## Notes
 
+- Toga does not guarantee pixel perfect rendering of Canvas content across all platforms. Most drawing instructions will appear identical across all platforms, and in the worst case, any given set of drawing instructions should result in a fundamentally similar image. However, text and other complex curve and line geometries (such as miters on tight corners) will result in minor discrepancies between platforms. Color rendition can also vary slightly between platforms depending on the color profiles of the device being used to render the canvas.
+
 - The Canvas API allows the use of handlers to respond to mouse/pointer events. These event handlers differentiate between "primary" and "alternate" modes of activation. When a mouse is in use, alternate activation will usually be interpreted as a "right click"; however, platforms may not implement an alternate activation mode. To ensure cross-platform compatibility, applications should not use the alternate press handlers as the sole mechanism for accessing critical functionality.
 
 ## Reference
