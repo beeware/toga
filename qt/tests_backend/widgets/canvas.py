@@ -16,6 +16,7 @@ class CanvasProbe(SimpleProbe):
             "multiline_text",
             "write_text",
             "write_text_and_path",
+            "deprecated_tutorial",
             "miter_join",
         }:
             return f"{reference}-qt"
