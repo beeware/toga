@@ -236,6 +236,7 @@ jobs:
           briefcase-run-args: ""
           setup-python: true
           testbed-app: "testbed"
+          pre-copy-cmmand: ""
           copy-command: "cp -r"
 
         # - backend: "macOS-x86_64"
@@ -494,6 +495,7 @@ jobs:
             sudo apt install adb
             adb root
           app-user-data-path: /data/user/0/com.beeware.testbed/files/data/
+          pre-copy-cmmand: adb root
           copy-command: adb pull
     steps:
     # GitHub runners seem to have intermittent connectivity issues.
@@ -547,6 +549,7 @@ jobs:
       if: failure()
       run: |
         mkdir -p testbed/app_data
+        ${{ matrix.pre-copy-cmmand }}
         ${{ matrix.copy-command }} "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
@@ -560,9 +563,9 @@ jobs:
     # only occur in CI, and can't be reproduced locally. When it runs, it will
     # open an SSH server (URL reported in the logs) so you can ssh into the CI
     # machine.
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      if: failure()
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #   if: failure()
 
   # bootstraps:
   #   name: "Bootstrap"
