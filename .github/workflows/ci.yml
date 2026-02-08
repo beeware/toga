@@ -210,7 +210,7 @@ jobs:
 
   testbed:
     name: Testbed (${{ matrix.backend }})
-    needs: [ package, core-and-travertino ]
+    needs: [ package ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
