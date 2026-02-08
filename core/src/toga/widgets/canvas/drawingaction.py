@@ -64,7 +64,7 @@ class DrawingAction(ABC):
     `DrawingActions` can also be created manually, then added to a state's
     [list of drawing actions][toga.widgets.canvas.State.drawing_actions]. Their
     constructors take the same arguments as the corresponding [`Canvas`]
-    [toga.canvas] drawing method, and their classes have the same names, but
+    [toga.Canvas] drawing method, and their classes have the same names, but
     capitalized:
 
     * [`toga.widgets.canvas.Arc`][toga.Canvas.arc]
