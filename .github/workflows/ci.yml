@@ -494,7 +494,7 @@ jobs:
             sudo udevadm trigger --name-match=kvm
             sudo apt install adb
           app-user-data-path: /data/user/0/org.beeware.toga.testbed/files/data/
-          pre-copy-command: adb root  # has to be done *after* emulator is starteed
+          pre-copy-command: adb root  # has to be done *after* emulator is started
           copy-command: adb pull
     steps:
     # GitHub runners seem to have intermittent connectivity issues.
