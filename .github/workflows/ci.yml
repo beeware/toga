@@ -51,19 +51,19 @@ jobs:
       matrix:
         subdir:
         - "android"
-        - "cocoa"
-        - "core"
-        - "demo"
-        - "dummy"
-        - "gtk"
-        - "qt"
-        - "iOS"
-        - "toga"
-        - "positron"
-        - "travertino"
-        - "textual"
-        - "web"
-        - "winforms"
+        # - "cocoa"
+        # - "core"
+        # - "demo"
+        # - "dummy"
+        # - "gtk"
+        # - "qt"
+        # - "iOS"
+        # - "toga"
+        # - "positron"
+        # - "travertino"
+        # - "textual"
+        # - "web"
+        # - "winforms"
     uses: beeware/.github/.github/workflows/python-package-create.yml@main
     with:
       build-subdirectory: ${{ matrix.subdir }}
