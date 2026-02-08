@@ -81,7 +81,6 @@ test_cleanup = build_cleanup_test(
     # Pass a function here to prevent init of toga.Box() in a different thread than
     # toga.OptionContainer. This would raise a runtime error on Windows.
     lambda: toga.OptionContainer(content=[("Tab 1", toga.Box())]),
-    xfail_platforms=("linux",),
 )
 
 

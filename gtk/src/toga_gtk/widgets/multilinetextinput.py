@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..libs import (
     GTK_VERSION,
     Gtk,
@@ -19,7 +21,7 @@ class MultilineTextInput(Widget):
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         self.buffer = Gtk.TextBuffer()
-        self.buffer.connect("changed", self.gtk_on_changed)
+        self.buffer.connect("changed", WeakrefCallable(self.gtk_on_changed))
 
         # The GTK TextView doesn't have an implementation of placeholder. We
         # fake it by using a different buffer that contains placeholder text.
@@ -40,9 +42,15 @@ class MultilineTextInput(Widget):
 
             self.native_textview.set_buffer(self.placeholder)
             self.native_textview.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
-            self.native_textview.connect("focus-in-event", self.gtk_on_focus_in)
-            self.native_textview.connect("focus-out-event", self.gtk_on_focus_out)
-            self.native_textview.connect("key-press-event", self.gtk_on_key_press)
+            self.native_textview.connect(
+                "focus-in-event", WeakrefCallable(self.gtk_on_focus_in)
+            )
+            self.native_textview.connect(
+                "focus-out-event", WeakrefCallable(self.gtk_on_focus_out)
+            )
+            self.native_textview.connect(
+                "key-press-event", WeakrefCallable(self.gtk_on_key_press)
+            )
 
             self.native.add(self.native_textview)
         else:  # pragma: no-cover-if-gtk3

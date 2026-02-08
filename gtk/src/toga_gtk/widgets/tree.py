@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..libs import GTK_VERSION, GdkPixbuf, Gtk
 from .base import Widget
 from .table import TogaRow
@@ -12,7 +14,9 @@ class Tree(Widget):
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self.native_tree = Gtk.TreeView(model=self.store)
-        self.native_tree.connect("row-activated", self.gtk_on_row_activated)
+        self.native_tree.connect(
+            "row-activated", WeakrefCallable(self.gtk_on_row_activated)
+        )
 
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.selection = self.native_tree.get_selection()
@@ -20,7 +24,7 @@ class Tree(Widget):
                 self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
             else:
                 self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-            self.selection.connect("changed", self.gtk_on_select)
+            self.selection.connect("changed", WeakrefCallable(self.gtk_on_select))
 
             self._create_columns()
         else:  # pragma: no-cover-if-gtk3

@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..libs import GTK_VERSION, Gtk, get_color_css, get_font_css
 from .base import Widget
 
@@ -22,7 +24,9 @@ class Switch(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_switch.set_name(f"toga-{self.interface.id}-switch")
             self.native_switch.get_style_context().add_class("toga")
-            self.native_switch.connect("notify::active", self.gtk_notify_active)
+            self.native_switch.connect(
+                "notify::active", WeakrefCallable(self.gtk_notify_active)
+            )
 
             self.native.pack_start(self.native_label, True, True, 0)
             self.native.pack_start(self.native_switch, False, False, 0)
