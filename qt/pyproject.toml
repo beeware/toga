@@ -64,7 +64,7 @@ pyside6-essentials = [
     "PySide6-Essentials == 6.10.1",
 ]
 pyside6 = [
-    "PySide6 == 6.10.1",
+    "PySide6 == 6.10.2",
 ]
 
 [tool.coverage.run]
