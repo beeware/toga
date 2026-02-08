@@ -493,9 +493,10 @@ jobs:
             sudo udevadm control --reload-rules
             sudo udevadm trigger --name-match=kvm
             sudo apt install adb
-          app-user-data-path: /data/user/0/com.beeware.testbed/files/data/
-          pre-copy-cmmand: adb root
-          copy-command: adb pull
+          app-user-data-path: /data/user/0/org.beeware.toga.testbed/files/data/
+          copy-command: |
+            adb root
+            adb pull
     steps:
     # GitHub runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
@@ -548,7 +549,6 @@ jobs:
       if: failure()
       run: |
         mkdir -p testbed/app_data
-        ${{ matrix.pre-copy-cmmand }}
         ${{ matrix.copy-command }} "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
