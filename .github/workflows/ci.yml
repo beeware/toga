@@ -493,7 +493,6 @@ jobs:
             sudo udevadm control --reload-rules
             sudo udevadm trigger --name-match=kvm
             sudo apt install adb
-            adb root
           app-user-data-path: /data/user/0/com.beeware.testbed/files/data/
           pre-copy-cmmand: adb root
           copy-command: adb pull
