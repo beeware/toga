@@ -236,7 +236,7 @@ jobs:
           briefcase-run-args: ""
           setup-python: true
           testbed-app: "testbed"
-          pre-copy-cmmand: ""
+          pre-copy-command: ""
           copy-command: "cp -r"
 
         # - backend: "macOS-x86_64"
@@ -494,9 +494,8 @@ jobs:
             sudo udevadm trigger --name-match=kvm
             sudo apt install adb
           app-user-data-path: /data/user/0/org.beeware.toga.testbed/files/data/
-          copy-command: |
-            adb root
-            adb pull
+          pre-copy-command: adb root  # has to be done *after* emulator is starteed
+          copy-command: adb pull
     steps:
     # GitHub runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
@@ -549,6 +548,7 @@ jobs:
       if: failure()
       run: |
         mkdir -p testbed/app_data
+        ${{ matrix.pre-copy-command }}
         ${{ matrix.copy-command }} "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
