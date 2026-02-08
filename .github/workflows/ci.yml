@@ -236,6 +236,8 @@ jobs:
           briefcase-run-args: ""
           setup-python: true
           testbed-app: "testbed"
+          pre-copy-command: ""
+          copy-command: "cp -r"
 
         - backend: "macOS-x86_64"
           platform: "macOS"
@@ -484,13 +486,16 @@ jobs:
             --Xemulator=-no-snapshot
             --Xemulator=-no-audio
             --Xemulator=-no-boot-anim
-            --shutdown-on-exit
           pre-command: |
             # allow access to KVM to run the emulator
             echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
               | sudo tee /etc/udev/rules.d/99-kvm4all.rules
             sudo udevadm control --reload-rules
             sudo udevadm trigger --name-match=kvm
+            sudo apt install adb
+          app-user-data-path: /data/user/0/org.beeware.toga.testbed/files/data/
+          pre-copy-command: adb root  # has to be done *after* emulator is started
+          copy-command: adb pull
     steps:
     # GitHub runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
@@ -540,14 +545,15 @@ jobs:
         path: testbed/logs/*
 
     - name: Copy App Generated User Data
-      if: failure() && matrix.backend != 'android'
+      if: failure()
       run: |
         mkdir -p testbed/app_data
-        cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
+        ${{ matrix.pre-copy-command }}
+        ${{ matrix.copy-command }} "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
       uses: actions/upload-artifact@v6.0.0
-      if: failure() && matrix.backend != 'android'
+      if: failure()
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
         path: testbed/app_data/*
