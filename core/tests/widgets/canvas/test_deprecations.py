@@ -85,7 +85,7 @@ def test_renamed_root_state(widget):
         ("stroke", (), Stroke),
         ("Stroke", (), Stroke),  # Deprecated alias
         ("write_text", ("",), WriteText),
-        ("draw_image", (), DrawImage),
+        ("draw_image", None, DrawImage),
         ("rotate", (0,), Rotate),
         ("scale", (0, 0), Scale),
         ("translate", (0, 0), Translate),
@@ -181,7 +181,7 @@ def test_deprecated_canvas_methods(widget, method_name, DrawingActionClass):
 
 
 def test_deprecated_list_methods(widget):
-    """The order of state objects can be changed."""
+    """List-like state methods still work, but are deprecated."""
 
     # Initially nothing on the state.
     with pytest.deprecated_call():
@@ -245,9 +245,6 @@ def test_deprecated_list_methods(widget):
     with pytest.deprecated_call():
         assert len(fill) == 1
 
-    from pprint import pprint
-
-    pprint(widget._impl.draw_instructions)
     # Draw instructions no longer have the second
     assert widget._impl.draw_instructions == [
         "save",

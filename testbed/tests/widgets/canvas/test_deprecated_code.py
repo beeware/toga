@@ -15,7 +15,7 @@ async def test_old_tutorial(canvas, probe):
     # Shift the whole thing up a bit so we can see all of it.
     canvas.translate(0, -20)
 
-    with pytest.warns(DeprecationWarning):
+    with pytest.deprecated_call():
         # Fill head
 
         with canvas.Fill(color=rgb(149, 119, 73)) as head_filler:

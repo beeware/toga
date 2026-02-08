@@ -68,7 +68,13 @@ class DrawingActionDispatch(ABC):
 
         This closes the current path as a simple drawing operation. It should be paired
         with a [`begin_path()`][toga.Canvas.begin_path] operation, or else used as a
-        context manager.
+        context manager. If used as a context manager, and both `x` and `y` are
+        specified, the path will begin at those coordinates.
+
+        :param x: The `x` coordinate to move to when beginning the path (if used as a
+            context manager)
+        :param y: The `y` coordinate to move to when beginning the path (if used as a
+            context manager)
 
         :returns: The `ClosePath`
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
@@ -252,7 +258,6 @@ class DrawingActionDispatch(ABC):
         :returns: The `Rect` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-
         rect = Rect(x, y, width, height)
         self._action_target.drawing_actions.append(rect)
         self._redraw_with_warning_if_state()
@@ -312,9 +317,17 @@ class DrawingActionDispatch(ABC):
         [Even-Odd](https://en.wikipedia.org/wiki/Even-odd_rule) winding
         rule for filling paths.
 
+        If used a context manager, this begins a new path, moves to the specified
+        (`x`, `y`) coordinates (if both are specified). When the context is exited, the
+        path is filled.
+
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
+        :param x: The `x` coordinate to move to when beginning the path (if used as a
+            context manager)
+        :param y: The `y` coordinate to move to when beginning the path (if used as a
+            context manager)
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
@@ -333,10 +346,18 @@ class DrawingActionDispatch(ABC):
     ) -> Stroke:
         """Draw the current path as a stroke.
 
+        If used a context manager, this begins a new path, moves to the specified
+        (`x`, `y`) coordinates (if both are specified). When the context is exited, the
+        path is stroked.
+
         :param color: The color for the stroke.
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
+        :param x: The `x` coordinate to move to when beginning the path (if used as a
+            context manager)
+        :param y: The `y` coordinate to move to when beginning the path (if used as a
+            context manager)
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
@@ -709,22 +730,6 @@ class State(DrawingAction, DrawingActionDispatch):
 
 @dataclass(repr=False)
 class ClosePath(State):
-    """A drawing state that will build a closed path, starting from an
-    origin.
-
-    This can be used as a context manager; it creates a new path and moves to the start
-    coordinate; when the state exits, the path is closed. For fine-grained control of a
-    path, you can use [`begin_path`][toga.Canvas.begin_path],[`move_to`]
-    [toga.Canvas.move_to] and,[`close_path`][toga.Canvas.close_path].
-
-    If both an x and y coordinate is provided, the drawing state will begin with
-    a `move_to` operation in that state.
-
-    You should not create a [`ClosePath`][toga.widgets.canvas.ClosePath]
-    state directly; instead, you should use the
-    canvas's [`close_path()`][toga.Canvas.close_path] method.
-    """
-
     x: float | None = None
     y: float | None = None
 
@@ -752,27 +757,6 @@ class ClosePath(State):
 
 @dataclass(repr=False)
 class Fill(State):
-    """A drawing state that will apply a fill to any paths all objects in the
-    state.
-
-    The fill can use either the [Non-Zero](https://en.wikipedia.org/wiki/Nonzero-rule)
-    or [Even-Odd](https://en.wikipedia.org/wiki/Even-odd_rule) winding rule for
-    filling paths.
-
-    This can be used as a context manager; it creates a new path, and moves to the start
-    coordinate; when the state exits, the path is closed with a fill. For fine-grained
-    control of a path, you can use [`begin_path`][toga.Canvas.begin_path],[`move_to`]
-    [toga.Canvas.move_to],[`close_path`][toga.Canvas.close_path] and[`fill`]
-    [toga.Canvas.fill].
-
-    If both an x and y coordinate is provided, the drawing state will begin with
-    a `move_to` operation in that state.
-
-    You should not create a [`Fill`][toga.widgets.canvas.Fill] state
-    directly; instead, you should use the canvas's [`fill()`][toga.Canvas.fill]
-    method.
-    """
-
     color: ColorT | None = color_property()
     fill_rule: FillRule = FillRule.NONZERO
     x: float | None = None
@@ -805,23 +789,6 @@ class Fill(State):
 
 @dataclass(repr=False)
 class Stroke(State):
-    """Construct a drawing state that will draw a stroke on all paths defined
-    within the state.
-
-    This can be used as a context manager; it creates a new path, and moves to the start
-    coordinate; when the state exits, the path is drawn with the stroke. For
-    fine-grained control of a path, you can use [`begin_path`][toga.Canvas.begin_path],
-    [`move_to`][toga.Canvas.move_to],[`close_path`][toga.Canvas.close_path] and
-    [`stroke`][toga.Canvas.stroke].
-
-    If both an x and y coordinate is provided, the drawing state will begin with
-    a `move_to` operation in that state.
-
-    You should not create a [`Stroke`][toga.widgets.canvas.Stroke] state
-    directly; instead, you should use the canvas's
-    [`stroke()`][toga.Canvas.stroke] method.
-    """
-
     color: ColorT | None = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None

@@ -112,12 +112,6 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
 
 ::: toga.widgets.canvas.DrawingAction
 
-::: toga.widgets.canvas.ClosePath
-
-::: toga.widgets.canvas.Fill
-
-::: toga.widgets.canvas.Stroke
-
 ::: toga.widgets.canvas.OnTouchHandler
 
 ::: toga.widgets.canvas.OnResizeHandler

@@ -26,7 +26,6 @@ def test_sub_state(widget):
     assert repr(sub_state) == "State()"
 
     # The first and last instructions can be ignored; they're the root canvas state
-    print(widget._impl.draw_instructions[1:-1])
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
         ("line to", {"x": 30, "y": 40}),
