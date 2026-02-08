@@ -236,6 +236,7 @@ jobs:
           briefcase-run-args: ""
           setup-python: true
           testbed-app: "testbed"
+          copy-command: "cp -r"
 
         # - backend: "macOS-x86_64"
         #   platform: "macOS"
@@ -491,7 +492,9 @@ jobs:
             sudo udevadm control --reload-rules
             sudo udevadm trigger --name-match=kvm
             sudo apt install adb
-            adb start-server
+            adb root
+          app-user-data-path: /data/user/0/com.beeware.testbed/files/data/
+          copy-command: adb pull
     steps:
     # GitHub runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
@@ -541,14 +544,14 @@ jobs:
         path: testbed/logs/*
 
     - name: Copy App Generated User Data
-      if: failure() && matrix.backend != 'android'
+      if: failure()
       run: |
         mkdir -p testbed/app_data
-        cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
+        ${{ matrix.copy-command }} "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
       uses: actions/upload-artifact@v6.0.0
-      if: failure() && matrix.backend != 'android'
+      if: failure()
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
         path: testbed/app_data/*
