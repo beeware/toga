@@ -173,7 +173,6 @@ test_cleanup = build_cleanup_test(
         "android",
         "windows",
     ),
-    xfail_platforms=("linux",),
 )
 
 

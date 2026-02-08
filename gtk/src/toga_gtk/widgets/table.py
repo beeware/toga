@@ -2,6 +2,8 @@ import warnings
 
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..libs import GTK_VERSION, GdkPixbuf, GObject, Gtk
 from .base import Widget
 
@@ -35,14 +37,16 @@ class Table(Widget):
         # The scroll view is the native, because it's the outer container.
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_table = Gtk.TreeView(model=self.store)
-            self.native_table.connect("row-activated", self.gtk_on_row_activated)
+            self.native_table.connect(
+                "row-activated", WeakrefCallable(self.gtk_on_row_activated)
+            )
 
             self.selection = self.native_table.get_selection()
             if self.interface.multiple_select:
                 self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
             else:
                 self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-            self.selection.connect("changed", self.gtk_on_select)
+            self.selection.connect("changed", WeakrefCallable(self.gtk_on_select))
 
             self._create_columns()
         else:  # pragma: no-cover-if-gtk3

@@ -55,7 +55,6 @@ def verify_vertical_text_align():
 test_cleanup = build_cleanup_test(
     toga.Selection,
     kwargs={"items": ["first", "second", "third"]},
-    xfail_platforms=("windows",),
 )
 
 
