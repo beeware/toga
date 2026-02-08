@@ -237,242 +237,242 @@ jobs:
           setup-python: true
           testbed-app: "testbed"
 
-        - backend: "macOS-x86_64"
-          platform: "macOS"
-          runs-on: "macos-15-intel"
-          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
+        # - backend: "macOS-x86_64"
+        #   platform: "macOS"
+        #   runs-on: "macos-15-intel"
+        #   app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
-        - backend: "macOS-arm64"
-          platform: "macOS"
-          runs-on: "macos-latest"
-          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
+        # - backend: "macOS-arm64"
+        #   platform: "macOS"
+        #   runs-on: "macos-latest"
+        #   app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
-        # We use a fixed Ubuntu version rather than `-latest` because at some point,
-        # `-latest` will be updated, but it will be a soft changeover, which would cause
-        # the system Python version to become inconsistent from run to run.
-        - backend: "linux-x11-gtk3"
-          platform: "linux"
-          runs-on: "ubuntu-24.04"
-          # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
-          # tutorial, plus blackbox to provide a window manager. We need a window
-          # manager that is reasonably lightweight, honors full screen mode, and
-          # treats the window position as the top-left corner of the *window*, not the
-          # top-left corner of the window *content*. The default GNOME window managers of
-          # most distros meet these requirements, but they're heavyweight; flwm doesn't
-          # work either. Blackbox is the lightest WM we've found that works.
-          pre-command: |
-            sudo apt update -y
-            sudo apt install -y --no-install-recommends \
-              blackbox pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
-              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
+        # # We use a fixed Ubuntu version rather than `-latest` because at some point,
+        # # `-latest` will be updated, but it will be a soft changeover, which would cause
+        # # the system Python version to become inconsistent from run to run.
+        # - backend: "linux-x11-gtk3"
+        #   platform: "linux"
+        #   runs-on: "ubuntu-24.04"
+        #   # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
+        #   # tutorial, plus blackbox to provide a window manager. We need a window
+        #   # manager that is reasonably lightweight, honors full screen mode, and
+        #   # treats the window position as the top-left corner of the *window*, not the
+        #   # top-left corner of the window *content*. The default GNOME window managers of
+        #   # most distros meet these requirements, but they're heavyweight; flwm doesn't
+        #   # work either. Blackbox is the lightest WM we've found that works.
+        #   pre-command: |
+        #     sudo apt update -y
+        #     sudo apt install -y --no-install-recommends \
+        #       blackbox pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
+        #       gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
-            # Start Virtual X Server
-            echo "Start X server..."
-            Xvfb :99 -screen 0 2048x1536x24 &
-            sleep 1
+        #     # Start Virtual X Server
+        #     echo "Start X server..."
+        #     Xvfb :99 -screen 0 2048x1536x24 &
+        #     sleep 1
 
-            # Start Window Mmanager
-            echo "Start window manager..."
-            DISPLAY=:99 blackbox &
-            sleep 1
-          briefcase-run-prefix: 'DISPLAY=:99'
-          setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed"
+        #     # Start Window Mmanager
+        #     echo "Start window manager..."
+        #     DISPLAY=:99 blackbox &
+        #     sleep 1
+        #   briefcase-run-prefix: 'DISPLAY=:99'
+        #   setup-python: false  # Use the system Python packages
+        #   app-user-data-path: "$HOME/.local/share/testbed"
 
-        - backend: "linux-wayland-gtk3"
-          platform: "linux"
-          runs-on: "ubuntu-24.04"
-          # The package list should be the same as in unix-prerequisites.md, and the BeeWare
-          # tutorial, plus mutter to provide a window manager.
-          pre-command: |
-            sudo apt update -y
-            sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
-              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
+        # - backend: "linux-wayland-gtk3"
+        #   platform: "linux"
+        #   runs-on: "ubuntu-24.04"
+        #   # The package list should be the same as in unix-prerequisites.md, and the BeeWare
+        #   # tutorial, plus mutter to provide a window manager.
+        #   pre-command: |
+        #     sudo apt update -y
+        #     sudo apt install -y --no-install-recommends \
+        #       mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
+        #       gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
-            # Start Virtual X Server
-            echo "Start X server..."
-            Xvfb :99 -screen 0 2048x1536x24 &
-            sleep 1
+        #     # Start Virtual X Server
+        #     echo "Start X server..."
+        #     Xvfb :99 -screen 0 2048x1536x24 &
+        #     sleep 1
 
-            # Start Window Manager
-            echo "Start window manager..."
-            # mutter is being run inside a virtual X server because mutter's headless
-            # mode does not provide a Gdk.Display
-            DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
-              mutter --nested --wayland --no-x11 --wayland-display toga &
-            sleep 1
-          briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
-          setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed"
+        #     # Start Window Manager
+        #     echo "Start window manager..."
+        #     # mutter is being run inside a virtual X server because mutter's headless
+        #     # mode does not provide a Gdk.Display
+        #     DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
+        #       mutter --nested --wayland --no-x11 --wayland-display toga &
+        #     sleep 1
+        #   briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
+        #   setup-python: false  # Use the system Python packages
+        #   app-user-data-path: "$HOME/.local/share/testbed"
 
-        - backend: "linux-wayland-gtk4"
-          platform: "linux"
-          runs-on: "ubuntu-24.04"
-          env:
-            XDG_RUNTIME_DIR: "/tmp"
-          # The package list should be build on the same base as unix-prerequisites.md,
-          # and the BeeWare tutorial. Additional packages will be added for window
-          # management, and features such as web views and geolocation that aren't part
-          # of the default/tutorial environment.
-          pre-command: |
-            sudo apt update -y
-            sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
-              gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
-              gir1.2-gtk-4.0
+        # - backend: "linux-wayland-gtk4"
+        #   platform: "linux"
+        #   runs-on: "ubuntu-24.04"
+        #   env:
+        #     XDG_RUNTIME_DIR: "/tmp"
+        #   # The package list should be build on the same base as unix-prerequisites.md,
+        #   # and the BeeWare tutorial. Additional packages will be added for window
+        #   # management, and features such as web views and geolocation that aren't part
+        #   # of the default/tutorial environment.
+        #   pre-command: |
+        #     sudo apt update -y
+        #     sudo apt install -y --no-install-recommends \
+        #       mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
+        #       gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
+        #       gir1.2-gtk-4.0
 
-            # Start Virtual X Server
-            echo "Start X server..."
-            Xvfb :99 -screen 0 2048x1536x24 &
-            sleep 1
+        #     # Start Virtual X Server
+        #     echo "Start X server..."
+        #     Xvfb :99 -screen 0 2048x1536x24 &
+        #     sleep 1
 
-            # Start Window Manager
-            echo "Start window manager..."
-            # mutter is being run inside a virtual X server because mutter's headless
-            # mode does not provide a Gdk.Display
-            DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
-              mutter --nested --wayland --no-x11 --wayland-display toga &
-            sleep 1
-          briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_GTK=4"
-          setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed"
+        #     # Start Window Manager
+        #     echo "Start window manager..."
+        #     # mutter is being run inside a virtual X server because mutter's headless
+        #     # mode does not provide a Gdk.Display
+        #     DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
+        #       mutter --nested --wayland --no-x11 --wayland-display toga &
+        #     sleep 1
+        #   briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_GTK=4"
+        #   setup-python: false  # Use the system Python packages
+        #   app-user-data-path: "$HOME/.local/share/testbed"
 
-        - backend: "linux-wayland-gtk4-adw"
-          platform: "linux"
-          runs-on: "ubuntu-24.04"
-          env:
-            XDG_RUNTIME_DIR: "/tmp"
-          # The package list should be build on the same base as unix-prerequisites.md,
-          # and the BeeWare tutorial. Additional packages will be added for window
-          # management, and features such as web views and geolocation that aren't part
-          # of the default/tutorial environment.
-          pre-command: |
-            sudo apt update -y
-            sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
-              gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
-              gir1.2-gtk-4.0 gir1.2-adw-1
+        # - backend: "linux-wayland-gtk4-adw"
+        #   platform: "linux"
+        #   runs-on: "ubuntu-24.04"
+        #   env:
+        #     XDG_RUNTIME_DIR: "/tmp"
+        #   # The package list should be build on the same base as unix-prerequisites.md,
+        #   # and the BeeWare tutorial. Additional packages will be added for window
+        #   # management, and features such as web views and geolocation that aren't part
+        #   # of the default/tutorial environment.
+        #   pre-command: |
+        #     sudo apt update -y
+        #     sudo apt install -y --no-install-recommends \
+        #       mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
+        #       gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
+        #       gir1.2-gtk-4.0 gir1.2-adw-1
 
-            # Start Virtual X Server
-            echo "Start X server..."
-            Xvfb :99 -screen 0 2048x1536x24 &
-            sleep 1
+        #     # Start Virtual X Server
+        #     echo "Start X server..."
+        #     Xvfb :99 -screen 0 2048x1536x24 &
+        #     sleep 1
 
-            # Start Window Manager
-            echo "Start window manager..."
-            # mutter is being run inside a virtual X server because mutter's headless
-            # mode does not provide a Gdk.Display
-            DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
-              mutter --nested --wayland --no-x11 --wayland-display toga &
-            sleep 1
-          briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_GTK=4 TOGA_GTKLIB=Adw"
-          setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed"
+        #     # Start Window Manager
+        #     echo "Start window manager..."
+        #     # mutter is being run inside a virtual X server because mutter's headless
+        #     # mode does not provide a Gdk.Display
+        #     DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
+        #       mutter --nested --wayland --no-x11 --wayland-display toga &
+        #     sleep 1
+        #   briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_GTK=4 TOGA_GTKLIB=Adw"
+        #   setup-python: false  # Use the system Python packages
+        #   app-user-data-path: "$HOME/.local/share/testbed"
 
-        - backend: "linux-x11-qt"
-          platform: "linux"
-          runs-on: "ubuntu-24.04"
-          testbed-app: "testbed-qt"
-          # The package list should be dependencies listed in unix-prerequsites.md, plus we need a window
-          # manager that is reasonably lightweight, honors full screen mode, and
-          # treats the window position as the top-left corner of the *window*, not the
-          # top-left corner of the window *content*. The default GNOME window managers of
-          # most distros meet these requirements, but they're heavyweight; flwm doesn't
-          # work either. Blackbox is the lightest WM we've found that works.
-          # PySide6 must be installed in VM to test that system-pyside6 works properly.
-          pre-command: |
-            sudo apt update -y
-            sudo apt install -y --no-install-recommends \
-              blackbox python3-dev xvfb \
-              gnome-session-canberra build-essential \
-              libfontconfig1-dev libfreetype-dev libgtk-3-dev \
-              libx11-dev libx11-xcb-dev libxext-dev \
-              libxfixes-dev libxi-dev libxkbcommon-dev \
-              libxkbcommon-x11-dev libxrender-dev 'libxcb*-dev' \
+        # - backend: "linux-x11-qt"
+        #   platform: "linux"
+        #   runs-on: "ubuntu-24.04"
+        #   testbed-app: "testbed-qt"
+        #   # The package list should be dependencies listed in unix-prerequsites.md, plus we need a window
+        #   # manager that is reasonably lightweight, honors full screen mode, and
+        #   # treats the window position as the top-left corner of the *window*, not the
+        #   # top-left corner of the window *content*. The default GNOME window managers of
+        #   # most distros meet these requirements, but they're heavyweight; flwm doesn't
+        #   # work either. Blackbox is the lightest WM we've found that works.
+        #   # PySide6 must be installed in VM to test that system-pyside6 works properly.
+        #   pre-command: |
+        #     sudo apt update -y
+        #     sudo apt install -y --no-install-recommends \
+        #       blackbox python3-dev xvfb \
+        #       gnome-session-canberra build-essential \
+        #       libfontconfig1-dev libfreetype-dev libgtk-3-dev \
+        #       libx11-dev libx11-xcb-dev libxext-dev \
+        #       libxfixes-dev libxi-dev libxkbcommon-dev \
+        #       libxkbcommon-x11-dev libxrender-dev 'libxcb*-dev' \
 
-            # Start Virtual X Server
-            echo "Start X server..."
-            Xvfb :99 -screen 0 2048x1536x24 &
-            sleep 1
+        #     # Start Virtual X Server
+        #     echo "Start X server..."
+        #     Xvfb :99 -screen 0 2048x1536x24 &
+        #     sleep 1
 
-            # Start Window Mmanager
-            echo "Start window manager..."
-            DISPLAY=:99 blackbox &
-            sleep 1
-          briefcase-run-prefix: 'DISPLAY=:99'
-          setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed-qt"
+        #     # Start Window Mmanager
+        #     echo "Start window manager..."
+        #     DISPLAY=:99 blackbox &
+        #     sleep 1
+        #   briefcase-run-prefix: 'DISPLAY=:99'
+        #   setup-python: false  # Use the system Python packages
+        #   app-user-data-path: "$HOME/.local/share/testbed-qt"
 
-        - backend: "linux-wayland-qt"
-          platform: "linux"
-          runs-on: "ubuntu-24.04"
-          testbed-app: "testbed-qt"
-          # The package list should be unix-prerequisites.md, plus mutter to provide a window
-          # manager.
-          pre-command: |
-            sudo apt update -y
-            sudo apt install -y --no-install-recommends \
-              mutter python3-dev xvfb \
-              gnome-session-canberra \
-              libwayland-dev libwayland-egl1-mesa libwayland-server0 \
-              libgles2-mesa-dev libxkbcommon-dev
+        # - backend: "linux-wayland-qt"
+        #   platform: "linux"
+        #   runs-on: "ubuntu-24.04"
+        #   testbed-app: "testbed-qt"
+        #   # The package list should be unix-prerequisites.md, plus mutter to provide a window
+        #   # manager.
+        #   pre-command: |
+        #     sudo apt update -y
+        #     sudo apt install -y --no-install-recommends \
+        #       mutter python3-dev xvfb \
+        #       gnome-session-canberra \
+        #       libwayland-dev libwayland-egl1-mesa libwayland-server0 \
+        #       libgles2-mesa-dev libxkbcommon-dev
 
-            # Start Virtual X Server
-            echo "Start X server..."
-            Xvfb :99 -screen 0 2048x1536x24 &
-            sleep 1
+        #     # Start Virtual X Server
+        #     echo "Start X server..."
+        #     Xvfb :99 -screen 0 2048x1536x24 &
+        #     sleep 1
 
-            # Start Window Manager
-            echo "Start window manager..."
-            # mutter is being run inside a virtual X server because mutter's headless
-            # mode does not provide a Gdk.Display
-            DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
-              mutter --nested --wayland --no-x11 --wayland-display toga &
-            sleep 1
-          briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
-          setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/.local/share/testbed-qt"
+        #     # Start Window Manager
+        #     echo "Start window manager..."
+        #     # mutter is being run inside a virtual X server because mutter's headless
+        #     # mode does not provide a Gdk.Display
+        #     DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
+        #       mutter --nested --wayland --no-x11 --wayland-display toga &
+        #     sleep 1
+        #   briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
+        #   setup-python: false  # Use the system Python packages
+        #   app-user-data-path: "$HOME/.local/share/testbed-qt"
 
-        - backend: "textual-linux"
-          platform: "linux"
-          runs-on: "ubuntu-latest"
-          setup-python: false  # Use the system Python packages
-          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
-          app-user-data-path: "$HOME/.local/share/testbed"
-          # install the meta-package build-essential since Briefcase explicitly checks for it
-          pre-command: sudo apt update -y && sudo apt install -y build-essential
+        # - backend: "textual-linux"
+        #   platform: "linux"
+        #   runs-on: "ubuntu-latest"
+        #   setup-python: false  # Use the system Python packages
+        #   briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
+        #   app-user-data-path: "$HOME/.local/share/testbed"
+        #   # install the meta-package build-essential since Briefcase explicitly checks for it
+        #   pre-command: sudo apt update -y && sudo apt install -y build-essential
 
-        - backend: "textual-macOS"
-          platform: "macOS"
-          runs-on: "macos-latest"
-          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
-          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
+        # - backend: "textual-macOS"
+        #   platform: "macOS"
+        #   runs-on: "macos-latest"
+        #   briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
+        #   app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
-        - backend: "textual-windows"
-          platform: "windows"
-          runs-on: "windows-latest"
-          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
-          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
+        # - backend: "textual-windows"
+        #   platform: "windows"
+        #   runs-on: "windows-latest"
+        #   briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
+        #   app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
-        - backend: "windows"
-          platform: "windows"
-          runs-on: "windows-latest"
-          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
+        # - backend: "windows"
+        #   platform: "windows"
+        #   runs-on: "windows-latest"
+        #   app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
-        - backend: "iOS"
-          platform: "iOS"
-          runs-on: "macos-latest"
-          pre-command: |
-            # 2025-08-15 - Github Actions are in the process of switching how they
-            # manage Xcode, so they can save disk space.
-            # See https://github.com/actions/runner-images/issues/12541
-            # and https://github.com/actions/runner-images/issues/12751; see
-            # also https://github.com/actions/runner-images/issues/12758 for
-            # a discussion of transition issues.
-            sudo xcode-select --switch /Applications/Xcode_16.4.app
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
-          app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
+        # - backend: "iOS"
+        #   platform: "iOS"
+        #   runs-on: "macos-latest"
+        #   pre-command: |
+        #     # 2025-08-15 - Github Actions are in the process of switching how they
+        #     # manage Xcode, so they can save disk space.
+        #     # See https://github.com/actions/runner-images/issues/12541
+        #     # and https://github.com/actions/runner-images/issues/12751; see
+        #     # also https://github.com/actions/runner-images/issues/12758 for
+        #     # a discussion of transition issues.
+        #     sudo xcode-select --switch /Applications/Xcode_16.4.app
+        #   briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
+        #   app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
           platform: "android"
