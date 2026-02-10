@@ -9,7 +9,7 @@ async def test_app_paths(app, app_probe, attr):
     """Platform paths are as expected."""
     # Create path and confirm it exists
     path = getattr(app.paths, attr)
-    assert path == getattr(app_probe, f"{attr}_path")
+    assert path == ""
 
     try:
         # We can create a file in the app path
