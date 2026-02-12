@@ -12,6 +12,7 @@ class TableProbe(SimpleProbe):
     supports_icons = 2  # All columns
     supports_keyboard_shortcuts = False
     supports_widgets = False
+    supports_column_resize = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -96,6 +97,9 @@ class TableProbe(SimpleProbe):
         await self.select_row(row)
         index = self.native_model.index(row, 0)
         self.native.activated.emit(index)
+
+    async def resize_column(self, index, width):
+        self.native.horizontalHeader().resizeSection(index, width)
 
     async def select_first_row_keyboard(self):
         pytest.skip("test not implemented for this platform")

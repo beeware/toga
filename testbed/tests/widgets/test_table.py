@@ -517,6 +517,26 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
     await _column_change_test(headerless_widget, headerless_probe)
 
 
+async def test_column_resize(widget, probe):
+    """Columns can be resized by the user."""
+    if not getattr(probe, "supports_column_resize", False):
+        pytest.skip("Backend doesn't support column resizing")
+
+    original_width = probe.column_width(0)
+    target_width = original_width + 80
+
+    await probe.resize_column(0, target_width)
+    await probe.redraw("First column resized")
+
+    resized_width = probe.column_width(0)
+    assert resized_width == pytest.approx(target_width, abs=8)
+
+    # Changing source should not reset manually resized columns.
+    widget.data = widget.data
+    await probe.redraw("Table source replaced")
+    assert probe.column_width(0) == pytest.approx(resized_width, abs=8)
+
+
 async def test_remove_all_columns(widget, probe):
     assert probe.column_count == 3
     for _ in range(probe.column_count):
