@@ -536,6 +536,11 @@ async def test_column_resize(widget, probe):
     await probe.redraw("Table source replaced")
     assert probe.column_width(0) == pytest.approx(resized_width, abs=8)
 
+    # A subsequent layout/bounds update should also preserve manual widths.
+    widget._impl.set_bounds(0, 0, probe.width + 40, probe.height)
+    await probe.redraw("Table bounds updated")
+    assert probe.column_width(0) == pytest.approx(resized_width, abs=8)
+
 
 async def test_remove_all_columns(widget, probe):
     assert probe.column_count == 3

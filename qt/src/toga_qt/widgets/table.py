@@ -235,8 +235,6 @@ class Table(Widget):
             return
 
         width = self.native.viewport().width()
-        if width <= 0:
-            return
 
         header = self.native.horizontalHeader()
         section_width = max(header.minimumSectionSize(), width // column_count)
