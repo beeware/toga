@@ -81,6 +81,9 @@ class TableProbe(SimpleProbe):
             right = row.getWidth()
         return (right - left) / self.scale_factor
 
+    async def resize_column(self, index, width):
+        pytest.skip("column resizing probe not implemented for this backend")
+
     async def select_row(self, row, add=False):
         self._row_view(row).performClick()
 

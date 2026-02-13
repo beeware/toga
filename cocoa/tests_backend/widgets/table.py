@@ -86,6 +86,9 @@ class TableProbe(SimpleProbe):
     def column_width(self, col):
         return self.native_table.tableColumns[col].width
 
+    async def resize_column(self, index, width):
+        skip("column resizing probe not implemented for this backend")
+
     def row_position(self, row):
         # Pick a point half way across horizontally, and half way down the row,
         # taking into account the size of the rows and the header

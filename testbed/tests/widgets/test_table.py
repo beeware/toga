@@ -497,6 +497,15 @@ async def test_column_changes(widget, probe):
     assert probe.column_width(1) == pytest.approx(probe.width / 3, abs=25)
     assert probe.column_width(2) == pytest.approx(probe.width / 3, abs=25)
 
+    if toga.backend == "toga_qt":
+        # Before any manual resize, layout changes should retain even proportions.
+        widget.style.flex = 0
+        widget.width = 400
+        await probe.redraw("Qt table width updated without manual column resize")
+        assert probe.column_width(0) == pytest.approx(probe.width / 3, abs=25)
+        assert probe.column_width(1) == pytest.approx(probe.width / 3, abs=25)
+        assert probe.column_width(2) == pytest.approx(probe.width / 3, abs=25)
+
     await _column_change_test(widget, probe)
 
     assert probe.header_titles == ["A", "B", "D", "E"]
@@ -519,9 +528,6 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
 
 async def test_column_resize(widget, probe):
     """Columns can be resized by the user."""
-    if not getattr(probe, "supports_column_resize", False):
-        pytest.skip("Backend doesn't support column resizing")
-
     original_width = probe.column_width(0)
     target_width = original_width + 80
 
@@ -536,9 +542,10 @@ async def test_column_resize(widget, probe):
     await probe.redraw("Table source replaced")
     assert probe.column_width(0) == pytest.approx(resized_width, abs=8)
 
-    # A subsequent layout/bounds update should also preserve manual widths.
-    widget._impl.set_bounds(0, 0, probe.width + 40, probe.height)
-    await probe.redraw("Table bounds updated")
+    # A subsequent layout update should also preserve manual widths.
+    widget.style.flex = 0
+    widget.width = 400
+    await probe.redraw("Table width updated")
     assert probe.column_width(0) == pytest.approx(resized_width, abs=8)
 
 

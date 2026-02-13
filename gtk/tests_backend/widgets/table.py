@@ -46,6 +46,9 @@ class TableProbe(SimpleProbe):
     def column_width(self, col):
         return self.native_table.get_column(col).get_width()
 
+    async def resize_column(self, index, width):
+        pytest.skip("column resizing probe not implemented for this backend")
+
     def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
         if widget:
             pytest.skip("GTK doesn't support widgets in Tables")

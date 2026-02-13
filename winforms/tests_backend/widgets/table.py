@@ -79,6 +79,9 @@ class TableProbe(SimpleProbe):
     def column_width(self, index):
         return round(self.native.Columns[index].Width / self.scale_factor)
 
+    async def resize_column(self, index, width):
+        pytest.skip("column resizing probe not implemented for this backend")
+
     async def select_row(self, row, add=False):
         item = self.native.Items[row]
         if add:

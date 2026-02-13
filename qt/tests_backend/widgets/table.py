@@ -12,7 +12,6 @@ class TableProbe(SimpleProbe):
     supports_icons = 2  # All columns
     supports_keyboard_shortcuts = False
     supports_widgets = False
-    supports_column_resize = True
 
     def __init__(self, widget):
         super().__init__(widget)
