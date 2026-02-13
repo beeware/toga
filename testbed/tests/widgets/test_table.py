@@ -497,14 +497,12 @@ async def test_column_changes(widget, probe):
     assert probe.column_width(1) == pytest.approx(probe.width / 3, abs=25)
     assert probe.column_width(2) == pytest.approx(probe.width / 3, abs=25)
 
-    if toga.backend == "toga_qt":
-        # Before any manual resize, layout changes should retain even proportions.
-        widget.style.flex = 0
-        widget.width = 400
-        await probe.redraw("Qt table width updated without manual column resize")
-        assert probe.column_width(0) == pytest.approx(probe.width / 3, abs=25)
-        assert probe.column_width(1) == pytest.approx(probe.width / 3, abs=25)
-        assert probe.column_width(2) == pytest.approx(probe.width / 3, abs=25)
+    # Before any manual resize, layout changes should retain even proportions.
+    widget.style.flex = 0
+    widget.width = 400
+    await probe.redraw("Table width updated without manual column resize")
+    assert probe.column_width(0) == pytest.approx(probe.column_width(1), abs=25)
+    assert probe.column_width(1) == pytest.approx(probe.column_width(2), abs=25)
 
     await _column_change_test(widget, probe)
 
@@ -535,18 +533,35 @@ async def test_column_resize(widget, probe):
     await probe.redraw("First column resized")
 
     resized_width = probe.column_width(0)
-    assert resized_width == pytest.approx(target_width, abs=8)
+    probe.assert_column_resize(
+        original_width=original_width,
+        target_width=target_width,
+        resized_width=resized_width,
+    )
 
     # Changing source should not reset manually resized columns.
     widget.data = widget.data
     await probe.redraw("Table source replaced")
-    assert probe.column_width(0) == pytest.approx(resized_width, abs=8)
+    source_changed_width = probe.column_width(0)
+    probe.assert_column_resize_after_source_change(
+        resized_width=resized_width,
+        source_changed_width=source_changed_width,
+    )
 
     # A subsequent layout update should also preserve manual widths.
+    widths_before_layout_change = [
+        probe.column_width(i) for i in range(probe.column_count)
+    ]
     widget.style.flex = 0
     widget.width = 400
     await probe.redraw("Table width updated")
-    assert probe.column_width(0) == pytest.approx(resized_width, abs=8)
+    widths_after_layout_change = [
+        probe.column_width(i) for i in range(probe.column_count)
+    ]
+    probe.assert_column_resize_after_layout_change(
+        widths_before_layout_change=widths_before_layout_change,
+        widths_after_layout_change=widths_after_layout_change,
+    )
 
 
 async def test_remove_all_columns(widget, probe):

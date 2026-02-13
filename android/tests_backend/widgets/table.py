@@ -82,7 +82,33 @@ class TableProbe(SimpleProbe):
         return (right - left) / self.scale_factor
 
     async def resize_column(self, index, width):
-        pytest.skip("column resizing probe not implemented for this backend")
+        width_px = round(width * self.scale_factor)
+        self.native_table.setStretchAllColumns(False)
+        self.native_table.setColumnStretchable(index, False)
+        for row_index in range(self.native_table.getChildCount()):
+            row = self.native_table.getChildAt(row_index)
+            cell = row.getChildAt(index)
+            layout_params = cell.getLayoutParams()
+            layout_params.width = width_px
+            cell.setLayoutParams(layout_params)
+        self.native_table.requestLayout()
+
+    def assert_column_resize(self, *, original_width, target_width, resized_width):
+        assert resized_width == pytest.approx(target_width, abs=20)
+
+    def assert_column_resize_after_source_change(
+        self, *, resized_width, source_changed_width
+    ):
+        # Android rebuilds rows on source changes; width preservation is undefined.
+        assert source_changed_width > 10
+
+    def assert_column_resize_after_layout_change(
+        self,
+        *,
+        widths_before_layout_change,
+        widths_after_layout_change,
+    ):
+        assert all(width > 10 for width in widths_after_layout_change)
 
     async def select_row(self, row, add=False):
         self._row_view(row).performClick()

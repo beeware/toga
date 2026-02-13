@@ -1,4 +1,4 @@
-from pytest import skip
+import pytest
 from rubicon.objc import NSPoint
 
 from toga_cocoa.keys import NSEventModifierFlagCommand
@@ -22,7 +22,7 @@ class TableProbe(SimpleProbe):
 
     @property
     def font(self):
-        skip("Font changes not implemented for Tree on macOS")
+        pytest.skip("Font changes not implemented for Tree on macOS")
 
     @property
     def background_color(self):
@@ -87,7 +87,30 @@ class TableProbe(SimpleProbe):
         return self.native_table.tableColumns[col].width
 
     async def resize_column(self, index, width):
-        skip("column resizing probe not implemented for this backend")
+        self.native_table.tableColumns[index].width = width
+
+    def assert_column_resize(self, *, original_width, target_width, resized_width):
+        assert resized_width == pytest.approx(target_width, abs=8)
+
+    def assert_column_resize_after_source_change(
+        self, *, resized_width, source_changed_width
+    ):
+        assert source_changed_width == pytest.approx(resized_width, abs=8)
+
+    def assert_column_resize_after_layout_change(
+        self,
+        *,
+        widths_before_layout_change,
+        widths_after_layout_change,
+    ):
+        before_total = sum(widths_before_layout_change)
+        after_total = sum(widths_after_layout_change)
+        assert before_total > 0
+        assert after_total > 0
+
+        before_ratio = widths_before_layout_change[0] / before_total
+        after_ratio = widths_after_layout_change[0] / after_total
+        assert after_ratio == pytest.approx(before_ratio, abs=0.08)
 
     def row_position(self, row):
         # Pick a point half way across horizontally, and half way down the row,

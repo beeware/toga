@@ -80,7 +80,25 @@ class TableProbe(SimpleProbe):
         return round(self.native.Columns[index].Width / self.scale_factor)
 
     async def resize_column(self, index, width):
-        pytest.skip("column resizing probe not implemented for this backend")
+        self.native.Columns[index].Width = round(width * self.scale_factor)
+
+    def assert_column_resize(self, *, original_width, target_width, resized_width):
+        assert resized_width == pytest.approx(target_width, abs=8)
+
+    def assert_column_resize_after_source_change(
+        self, *, resized_width, source_changed_width
+    ):
+        assert source_changed_width == pytest.approx(resized_width, abs=8)
+
+    def assert_column_resize_after_layout_change(
+        self,
+        *,
+        widths_before_layout_change,
+        widths_after_layout_change,
+    ):
+        assert widths_after_layout_change[0] == pytest.approx(
+            widths_before_layout_change[0], abs=8
+        )
 
     async def select_row(self, row, add=False):
         item = self.native.Items[row]
