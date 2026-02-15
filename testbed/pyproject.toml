@@ -4,7 +4,7 @@ version = "0.0.1"
 
 [project.optional-dependencies]
 test = [
-    "coverage==7.13.2",
+    "coverage==7.13.4",
     "coverage-conditional-plugin == 0.9.0",
     # fonttools is only needed by Android, but we need to use sys.platform == 'linux'
     # for < 3.13 there's no dependency identifier that can target Android exclusively
