@@ -47,15 +47,15 @@ class TableProbe(SimpleProbe):
         return self.native_table.get_column(col).get_width()
 
     async def resize_column(self, index, width):
-        pytest.skip("GTK table column resizing probes are currently unreliable")
+        pytest.skip("GTK table column resizing is currently unreliable")
 
     def assert_column_resize(self, *, original_width, target_width, resized_width):
-        pytest.skip("GTK table column resizing probes are currently unreliable")
+        pytest.skip("GTK table column resizing is currently unreliable")
 
     def assert_column_resize_after_source_change(
         self, *, resized_width, source_changed_width
     ):
-        pytest.skip("GTK table column resizing probes are currently unreliable")
+        pytest.skip("GTK table column resizing is currently unreliable")
 
     def assert_column_resize_after_layout_change(
         self,
@@ -63,7 +63,7 @@ class TableProbe(SimpleProbe):
         widths_before_layout_change,
         widths_after_layout_change,
     ):
-        pytest.skip("GTK table column resizing probes are currently unreliable")
+        pytest.skip("GTK table column resizing is currently unreliable")
 
     def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
         if widget:
