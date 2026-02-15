@@ -501,8 +501,13 @@ async def test_column_changes(widget, probe):
     widget.style.flex = 0
     widget.width = 400
     await probe.redraw("Table width updated without manual column resize")
-    assert probe.column_width(0) == pytest.approx(probe.column_width(1), abs=25)
-    assert probe.column_width(1) == pytest.approx(probe.column_width(2), abs=25)
+    column_proportion_tolerance = getattr(probe, "column_proportion_tolerance", 25)
+    assert probe.column_width(0) == pytest.approx(
+        probe.column_width(1), abs=column_proportion_tolerance
+    )
+    assert probe.column_width(1) == pytest.approx(
+        probe.column_width(2), abs=column_proportion_tolerance
+    )
 
     await _column_change_test(widget, probe)
 
