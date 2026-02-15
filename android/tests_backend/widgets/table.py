@@ -85,13 +85,13 @@ class TableProbe(SimpleProbe):
     async def resize_column(self, index, width):
         pytest.xfail(
             "Android table column resizing is not a supported native interaction "
-            "(see #1392)"
+            "(#1392)"
         )
 
     def assert_column_resize(self, *, original_width, target_width, resized_width):
         pytest.xfail(
             "Android table column resizing is not a supported native interaction "
-            "(see #1392)"
+            "(#1392)"
         )
 
     def assert_column_resize_after_source_change(
@@ -99,7 +99,7 @@ class TableProbe(SimpleProbe):
     ):
         pytest.xfail(
             "Android table column resizing is not a supported native interaction "
-            "(see #1392)"
+            "(#1392)"
         )
 
     def assert_column_resize_after_layout_change(
@@ -110,7 +110,7 @@ class TableProbe(SimpleProbe):
     ):
         pytest.xfail(
             "Android table column resizing is not a supported native interaction "
-            "(see #1392)"
+            "(#1392)"
         )
 
     async def select_row(self, row, add=False):
