@@ -531,27 +531,21 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
 
 async def test_column_resize(widget, probe):
     """Columns can be resized by the user."""
-    original_width = probe.column_width(0)
-    target_width = original_width + 80
+    original_width = [probe.column_width(i) for i in range(probe.column_count)]
+    target_width = original_width[0] + 80
 
     await probe.resize_column(0, target_width)
     await probe.redraw("First column resized")
 
-    resized_width = probe.column_width(0)
-    probe.assert_column_resize(
-        original_width=original_width,
-        target_width=target_width,
-        resized_width=resized_width,
-    )
+    # Assert the column width has changed as requested
+    assert probe.column_width(0) == pytest.approx(target_width, abs=8)
 
     # Changing source should not reset manually resized columns.
     widget.data = widget.data
     await probe.redraw("Table source replaced")
-    source_changed_width = probe.column_width(0)
-    probe.assert_column_resize_after_source_change(
-        resized_width=resized_width,
-        source_changed_width=source_changed_width,
-    )
+
+    # Column width hasn't changed.
+    assert probe.column_width(0) == pytest.approx(target_width, abs=8)
 
     # A subsequent layout update should also preserve manual widths.
     widths_before_layout_change = [
@@ -563,10 +557,16 @@ async def test_column_resize(widget, probe):
     widths_after_layout_change = [
         probe.column_width(i) for i in range(probe.column_count)
     ]
-    probe.assert_column_resize_after_layout_change(
-        widths_before_layout_change=widths_before_layout_change,
-        widths_after_layout_change=widths_after_layout_change,
-    )
+
+    # Assert the column widths all add up as expected
+    before_total = sum(widths_before_layout_change)
+    after_total = sum(widths_after_layout_change)
+    assert before_total > 0
+    assert after_total > 0
+
+    before_ratio = widths_before_layout_change[0] / before_total
+    after_ratio = widths_after_layout_change[0] / after_total
+    assert after_ratio == pytest.approx(before_ratio, abs=0.08)
 
 
 async def test_remove_all_columns(widget, probe):

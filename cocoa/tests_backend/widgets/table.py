@@ -89,29 +89,6 @@ class TableProbe(SimpleProbe):
     async def resize_column(self, index, width):
         self.native_table.tableColumns[index].width = width
 
-    def assert_column_resize(self, *, original_width, target_width, resized_width):
-        assert resized_width == pytest.approx(target_width, abs=8)
-
-    def assert_column_resize_after_source_change(
-        self, *, resized_width, source_changed_width
-    ):
-        assert source_changed_width == pytest.approx(resized_width, abs=8)
-
-    def assert_column_resize_after_layout_change(
-        self,
-        *,
-        widths_before_layout_change,
-        widths_after_layout_change,
-    ):
-        before_total = sum(widths_before_layout_change)
-        after_total = sum(widths_after_layout_change)
-        assert before_total > 0
-        assert after_total > 0
-
-        before_ratio = widths_before_layout_change[0] / before_total
-        after_ratio = widths_after_layout_change[0] / after_total
-        assert after_ratio == pytest.approx(before_ratio, abs=0.08)
-
     def row_position(self, row):
         # Pick a point half way across horizontally, and half way down the row,
         # taking into account the size of the rows and the header
