@@ -175,6 +175,7 @@ class Table(Widget):
         header.setMinimumSectionSize(16)
         header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
         header.sectionResized.connect(self.qt_column_resized)
+        header.setCascadingSectionResizes(True)
 
         self.native.selectionModel().selectionChanged.connect(self.qt_selection_changed)
         self.native.activated.connect(self.qt_activated)
