@@ -10,6 +10,7 @@ class TableProbe(SimpleProbe):
     supports_icons = 2  # All columns
     supports_keyboard_shortcuts = False
     supports_widgets = False
+    column_resize_tolerance = 100
 
     if GTK_VERSION >= (4, 0, 0):
         pytest.skip("GTK4 doesn't support tables yet")
