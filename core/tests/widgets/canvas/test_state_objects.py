@@ -407,3 +407,24 @@ def test_contains(widget):
 
     assert close_path not in fill
     assert scale not in widget.root_state
+
+
+NON_REENTRANT_MATCH = r"A drawing context manager can't be entered more than once\."
+
+
+def test_enter_open_context(widget):
+    """Attempting to enter a currently open context is an error."""
+    with widget.stroke() as stroke:
+        with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH):
+            with stroke:
+                pass
+
+
+def test_enter_closed_context(widget):
+    """Attempting to enter a previously open (now closed) context is an error."""
+    with widget.stroke() as stroke:
+        pass
+
+    with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH):
+        with stroke:
+            pass

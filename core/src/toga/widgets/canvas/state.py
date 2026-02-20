@@ -651,6 +651,11 @@ class State(DrawingAction, DrawingActionDispatch):
         return self
 
     def __enter__(self):
+        if hasattr(self, "_is_open"):
+            raise RuntimeError(
+                "A drawing context manager can't be entered more than once."
+            )
+
         self._is_open = True
         return self
 
