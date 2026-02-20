@@ -150,21 +150,7 @@ class Canvas(Widget, DrawingActionDispatch):
     @property
     def _action_target(self):
         """Return the currently active state."""
-        state = self.root_state
-
-        while state.drawing_actions:
-            for action in reversed(state.drawing_actions):
-                # Look through its drawing actions, from the bottom up.
-                if getattr(action, "_is_open", False):
-                    # If it's currently open as a context manager, assign it to state
-                    # and break out of the for loop.
-                    state = action
-                    break
-            # If none of the drawing actions were open, break out of the while loop.
-            else:
-                break
-
-        return state
+        return self.root_state._active_state
 
     def redraw(self) -> None:
         """Redraw the Canvas.

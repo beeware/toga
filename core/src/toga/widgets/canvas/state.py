@@ -637,6 +637,19 @@ class State(DrawingAction, DrawingActionDispatch):
         # State itself holds its drawing actions.
         return self
 
+    @property
+    def _active_state(self):
+        """Return the currently active state, either this or a sub-state."""
+        if self.drawing_actions:
+            # If a sub-state is active, it must be the last action in the list;
+            # subsequent actions would be added to that sub-state (or a sub-state of
+            # it).
+            last = self.drawing_actions[-1]
+            if getattr(last, "_is_open", False):
+                return last._active_state
+
+        return self
+
     def __enter__(self):
         self._is_open = True
         return self
