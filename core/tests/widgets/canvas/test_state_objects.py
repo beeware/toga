@@ -409,7 +409,10 @@ def test_contains(widget):
     assert scale not in widget.root_state
 
 
-NON_REENTRANT_MATCH = r"A drawing context manager can't be entered more than once\."
+NON_REENTRANT_MATCH = (
+    r"A drawing context manager can only be entered once, and only before any "
+    r"subsequent drawing actions are added\."
+)
 
 
 def test_enter_open_context(widget):
@@ -424,6 +427,16 @@ def test_enter_closed_context(widget):
     """Attempting to enter a previously open (now closed) context is an error."""
     with widget.stroke() as stroke:
         pass
+
+    with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH):
+        with stroke:
+            pass
+
+
+def test_enter_context_out_of_order(widget):
+    """Attempting to enter a context manager after making other actions is an error."""
+    stroke = widget.stroke()
+    widget.rect(0, 0, 0, 0)
 
     with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH):
         with stroke:

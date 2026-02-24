@@ -37,6 +37,7 @@ if TYPE_CHECKING:
     from toga.colors import ColorT
 
     from .canvas import Canvas
+    from .drawingaction import DrawingAction
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -47,6 +48,16 @@ class DrawingActionDispatch(ABC):
     @abstractmethod
     def _action_target(self):
         """The State that should receive the drawing actions."""
+
+    def _add_to_target(self, drawing_action: DrawingAction):
+        if actions := self._action_target.drawing_actions:
+            last = actions[-1]
+            if isinstance(last, State):
+                # If the most recent drawing action is enterable, mark it as closed so
+                # it can't be entered later, out of order.
+                last._is_open = False
+
+        actions.append(drawing_action)
 
     ###########################################################################
     # Path manipulation
@@ -59,7 +70,7 @@ class DrawingActionDispatch(ABC):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         begin_path = BeginPath()
-        self._action_target.drawing_actions.append(begin_path)
+        self._add_to_target(begin_path)
         self._redraw_with_warning_if_state()
         return begin_path
 
@@ -80,7 +91,7 @@ class DrawingActionDispatch(ABC):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         close_path = ClosePath(x=x, y=y)
-        self._action_target.drawing_actions.append(close_path)
+        self._add_to_target(close_path)
         self._redraw_with_warning_if_state()
         return close_path
 
@@ -93,7 +104,7 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         move_to = MoveTo(x, y)
-        self._action_target.drawing_actions.append(move_to)
+        self._add_to_target(move_to)
         self._redraw_with_warning_if_state()
         return move_to
 
@@ -106,7 +117,7 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         line_to = LineTo(x, y)
-        self._action_target.drawing_actions.append(line_to)
+        self._add_to_target(line_to)
         self._redraw_with_warning_if_state()
         return line_to
 
@@ -136,7 +147,7 @@ class DrawingActionDispatch(ABC):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self._action_target.drawing_actions.append(bezier_curve_to)
+        self._add_to_target(bezier_curve_to)
         self._redraw_with_warning_if_state()
         return bezier_curve_to
 
@@ -164,7 +175,7 @@ class DrawingActionDispatch(ABC):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self._action_target.drawing_actions.append(quadratic_curve_to)
+        self._add_to_target(quadratic_curve_to)
         self._redraw_with_warning_if_state()
         return quadratic_curve_to
 
@@ -196,7 +207,7 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
-        self._action_target.drawing_actions.append(arc)
+        self._add_to_target(arc)
         self._redraw_with_warning_if_state()
         return arc
 
@@ -244,7 +255,7 @@ class DrawingActionDispatch(ABC):
             counterclockwise,
             anticlockwise,
         )
-        self._action_target.drawing_actions.append(ellipse)
+        self._add_to_target(ellipse)
         self._redraw_with_warning_if_state()
         return ellipse
 
@@ -259,7 +270,7 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         rect = Rect(x, y, width, height)
-        self._action_target.drawing_actions.append(rect)
+        self._add_to_target(rect)
         self._redraw_with_warning_if_state()
         return rect
 
@@ -299,7 +310,7 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         round_rect = RoundRect(x, y, width, height, radii)
-        self._action_target.drawing_actions.append(round_rect)
+        self._add_to_target(round_rect)
         self._redraw_with_warning_if_state()
         return round_rect
 
@@ -332,7 +343,7 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         fill = Fill(color, fill_rule, x, y)
-        self._action_target.drawing_actions.append(fill)
+        self._add_to_target(fill)
         self._redraw_with_warning_if_state()
         return fill
 
@@ -362,7 +373,7 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         stroke = Stroke(color, line_width, line_dash, x, y)
-        self._action_target.drawing_actions.append(stroke)
+        self._add_to_target(stroke)
         self._redraw_with_warning_if_state()
         return stroke
 
@@ -396,7 +407,7 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         write_text = WriteText(text, x, y, font, baseline, line_height)
-        self._action_target.drawing_actions.append(write_text)
+        self._add_to_target(write_text)
         self._redraw_with_warning_if_state()
         return write_text
 
@@ -438,7 +449,7 @@ class DrawingActionDispatch(ABC):
             no scaling will be done.
         """
         draw_image = DrawImage(image, x, y, width, height)
-        self._action_target.drawing_actions.append(draw_image)
+        self._add_to_target(draw_image)
         self._redraw_with_warning_if_state()
         return draw_image
 
@@ -453,7 +464,7 @@ class DrawingActionDispatch(ABC):
             for the transformation.
         """
         rotate = Rotate(radians)
-        self._action_target.drawing_actions.append(rotate)
+        self._add_to_target(rotate)
         self._redraw_with_warning_if_state()
         return rotate
 
@@ -468,7 +479,7 @@ class DrawingActionDispatch(ABC):
             for the transformation.
         """
         scale = Scale(sx, sy)
-        self._action_target.drawing_actions.append(scale)
+        self._add_to_target(scale)
         self._redraw_with_warning_if_state()
         return scale
 
@@ -481,7 +492,7 @@ class DrawingActionDispatch(ABC):
             for the transformation.
         """
         translate = Translate(tx, ty)
-        self._action_target.drawing_actions.append(translate)
+        self._add_to_target(translate)
         self._redraw_with_warning_if_state()
         return translate
 
@@ -492,7 +503,7 @@ class DrawingActionDispatch(ABC):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
         reset_transform = ResetTransform()
-        self._action_target.drawing_actions.append(reset_transform)
+        self._add_to_target(reset_transform)
         self._redraw_with_warning_if_state()
         return reset_transform
 
@@ -507,7 +518,7 @@ class DrawingActionDispatch(ABC):
         :return: Yields the new [`State`][toga.widgets.canvas.State] object.
         """
         state = State()
-        self._action_target.drawing_actions.append(state)
+        self._add_to_target(state)
         self._redraw_with_warning_if_state()
         return state
 
@@ -653,7 +664,8 @@ class State(DrawingAction, DrawingActionDispatch):
     def __enter__(self):
         if hasattr(self, "_is_open"):
             raise RuntimeError(
-                "A drawing context manager can't be entered more than once."
+                "A drawing context manager can only be entered once, and only before "
+                "any subsequent drawing actions are added."
             )
 
         self._is_open = True
