@@ -53,9 +53,9 @@ class DrawingActionDispatch(ABC):
         if actions := self._action_target.drawing_actions:
             last = actions[-1]
             if isinstance(last, State):
-                # If the most recent drawing action is enterable, mark it as closed so
-                # it can't be entered later, out of order.
-                last._is_open = False
+                # If the most recent drawing action is (potentially) a context manager,
+                # disable it so it can't be entered later, out of order.
+                last._can_be_entered = False
 
         actions.append(drawing_action)
 
@@ -636,6 +636,7 @@ class State(DrawingAction, DrawingActionDispatch):
 
     def __init__(self):
         self.drawing_actions = []
+        self._can_be_entered = True
 
     def _draw(self, context: Any) -> None:
         context.save()
@@ -662,13 +663,14 @@ class State(DrawingAction, DrawingActionDispatch):
         return self
 
     def __enter__(self):
-        if hasattr(self, "_is_open"):
+        if not self._can_be_entered:
             raise RuntimeError(
                 "A drawing context manager can only be entered once, and only before "
                 "any subsequent drawing actions are added."
             )
 
         self._is_open = True
+        self._can_be_entered = False
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -767,8 +769,8 @@ class ClosePath(State):
         super().__init__()
 
     def _draw(self, context: Any) -> None:
-        if not hasattr(self, "_is_open"):
-            # Wasn't used as a context manager
+        if not (hasattr(self, "_is_open") or self.drawing_actions):
+            # Wasn't used as a context manager, nor had drawing actions manually added
             context.close_path()
             return
 
@@ -800,8 +802,8 @@ class Fill(State):
         if self.color is not None:
             context.set_fill_style(self.color)
 
-        if hasattr(self, "_is_open"):
-            # Was used as a context manager
+        if hasattr(self, "_is_open") or self.drawing_actions:
+            # Was used as a context manager (or had drawing actions manually added)
             context.in_fill = True  # Backwards compatibility for Toga <= 0.5.3
             context.begin_path()
 
@@ -837,8 +839,8 @@ class Stroke(State):
         if self.line_dash is not None:
             context.set_line_dash(self.line_dash)
 
-        if hasattr(self, "_is_open"):
-            # Was used as a context manager
+        if hasattr(self, "_is_open") or self.drawing_actions:
+            # Was used as a context manager (or had drawing actions manually added)
             context.in_stroke = True  # Backwards compatibility for Toga <= 0.5.3
             context.begin_path()
 
