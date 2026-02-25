@@ -392,6 +392,15 @@ def test_stroke(widget, kwargs, args_repr, has_move, properties):
     ]
 
 
+def assert_contents(container, contains: list, doesnt_contain: list):
+    """Assert that the container contains (and doesn't contain) specified objects."""
+    for item in contains:
+        assert item in container
+
+    for item in doesnt_contain:
+        assert item not in container
+
+
 def test_contains(widget):
     """Whether a drawing action is in a state can be tested."""
     with widget.stroke() as stroke:
@@ -402,11 +411,45 @@ def test_contains(widget):
 
     scale = Scale(1, 1)
 
-    for action in [stroke, reset_transform, fill, line_to, close_path]:
-        assert action in widget.root_state
+    # Assign a couple of shorthands for testing
+    root = widget.root_state
+    everything = [root, stroke, reset_transform, fill, line_to, close_path, scale]
 
-    assert close_path not in fill
-    assert scale not in widget.root_state
+    assert_contents(
+        widget.root_state,
+        contains=[stroke, reset_transform, fill, line_to, close_path],
+        doesnt_contain=[root, scale],
+    )
+
+    assert_contents(
+        stroke,
+        contains=[reset_transform, fill, line_to, close_path],
+        doesnt_contain=[root, stroke, scale],
+    )
+
+    assert_contents(
+        reset_transform,
+        contains=[],
+        doesnt_contain=everything,
+    )
+
+    assert_contents(
+        fill,
+        contains=[line_to],
+        doesnt_contain=[root, stroke, reset_transform, fill, close_path, scale],
+    )
+
+    assert_contents(
+        close_path,
+        contains=[],
+        doesnt_contain=everything,
+    )
+
+    assert_contents(
+        scale,
+        contains=[],
+        doesnt_contain=everything,
+    )
 
 
 NON_REENTRANT_MATCH = (
