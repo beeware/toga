@@ -29,7 +29,7 @@ def test_close_path(widget):
     draw_op = widget.close_path()
 
     assert_action_performed(widget, "redraw")
-    assert repr(draw_op) == "ClosePath(x=None, y=None)"
+    assert repr(draw_op) == "ClosePath()"
 
     # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == ["close path"]
@@ -41,84 +41,60 @@ def test_close_path(widget):
         # Defaults
         (
             {},
-            "color=None, fill_rule=FillRule.NONZERO, x=None, y=None",
+            "color=None, fill_rule=FillRule.NONZERO",
             [("fill", {"fill_rule": FillRule.NONZERO})],
-            {"color": None, "fill_rule": FillRule.NONZERO, "x": None, "y": None},
+            {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Color as string name
         (
             {"color": REBECCAPURPLE},
-            (
-                f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO, "
-                "x=None, y=None"
-            ),
+            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO",
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
                 ("fill", {"fill_rule": FillRule.NONZERO}),
             ],
-            {
-                "color": REBECCA_PURPLE_COLOR,
-                "fill_rule": FillRule.NONZERO,
-                "x": None,
-                "y": None,
-            },
+            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
         ),
         # Color as RGB object
         (
             {"color": REBECCA_PURPLE_COLOR},
-            (
-                f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO, "
-                "x=None, y=None"
-            ),
+            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO",
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
                 ("fill", {"fill_rule": FillRule.NONZERO}),
             ],
-            {
-                "color": REBECCA_PURPLE_COLOR,
-                "fill_rule": FillRule.NONZERO,
-                "x": None,
-                "y": None,
-            },
+            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
         ),
         # Color explicitly not set
         (
             {"color": None},
-            "color=None, fill_rule=FillRule.NONZERO, x=None, y=None",
+            "color=None, fill_rule=FillRule.NONZERO",
             [("fill", {"fill_rule": FillRule.NONZERO})],
-            {"color": None, "fill_rule": FillRule.NONZERO, "x": None, "y": None},
+            {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Explicit Non-Zero winding
         (
             {"fill_rule": FillRule.NONZERO},
-            "color=None, fill_rule=FillRule.NONZERO, x=None, y=None",
+            "color=None, fill_rule=FillRule.NONZERO",
             [("fill", {"fill_rule": FillRule.NONZERO})],
-            {"color": None, "fill_rule": FillRule.NONZERO, "x": None, "y": None},
+            {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Even-Odd winding
         (
             {"fill_rule": FillRule.EVENODD},
-            "color=None, fill_rule=FillRule.EVENODD, x=None, y=None",
+            "color=None, fill_rule=FillRule.EVENODD",
             [("fill", {"fill_rule": FillRule.EVENODD})],
-            {"color": None, "fill_rule": FillRule.EVENODD, "x": None, "y": None},
+            {"color": None, "fill_rule": FillRule.EVENODD},
         ),
         # All args
         (
             {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
-            (
-                f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD, "
-                "x=None, y=None"
-            ),
+            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD",
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
                 ("fill", {"fill_rule": FillRule.EVENODD}),
             ],
-            {
-                "color": REBECCA_PURPLE_COLOR,
-                "fill_rule": FillRule.EVENODD,
-                "x": None,
-                "y": None,
-            },
+            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
         ),
     ],
 )
@@ -144,100 +120,55 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
         # Defaults
         (
             {},
-            "color=None, line_width=None, line_dash=None, x=None, y=None",
+            "color=None, line_width=None, line_dash=None",
             [],
-            {
-                "color": None,
-                "line_width": None,
-                "line_dash": None,
-                "x": None,
-                "y": None,
-            },
+            {"color": None, "line_width": None, "line_dash": None},
         ),
         # Color as string name
         (
             {"color": REBECCAPURPLE},
-            (
-                f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None, "
-                "x=None, y=None"
-            ),
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
             [("set stroke style", REBECCA_PURPLE_COLOR)],
-            {
-                "color": REBECCA_PURPLE_COLOR,
-                "line_width": None,
-                "line_dash": None,
-                "x": None,
-                "y": None,
-            },
+            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
         ),
         # Color as RGB object
         (
             {"color": REBECCA_PURPLE_COLOR},
-            (
-                f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None, "
-                "x=None, y=None"
-            ),
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
             [("set stroke style", REBECCA_PURPLE_COLOR)],
-            {
-                "color": REBECCA_PURPLE_COLOR,
-                "line_width": None,
-                "line_dash": None,
-                "x": None,
-                "y": None,
-            },
+            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
         ),
         # Color explicitly not set
         (
             {"color": None},
-            "color=None, line_width=None, line_dash=None, x=None, y=None",
+            "color=None, line_width=None, line_dash=None",
             [],
-            {
-                "color": None,
-                "line_width": None,
-                "line_dash": None,
-                "x": None,
-                "y": None,
-            },
+            {"color": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "color=None, line_width=4.500, line_dash=None, x=None, y=None",
+            "color=None, line_width=4.500, line_dash=None",
             [("set line width", 4.5)],
-            {"color": None, "line_width": 4.5, "line_dash": None, "x": None, "y": None},
+            {"color": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "color=None, line_width=None, line_dash=[2, 7], x=None, y=None",
+            "color=None, line_width=None, line_dash=[2, 7]",
             [("set line dash", [2, 7])],
-            {
-                "color": None,
-                "line_width": None,
-                "line_dash": [2, 7],
-                "x": None,
-                "y": None,
-            },
+            {"color": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
         (
             {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
-            (
-                f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7], "
-                "x=None, y=None"
-            ),
+            f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7]",
             [
                 ("set stroke style", REBECCA_PURPLE_COLOR),
                 ("set line width", 4.5),
                 ("set line dash", [2, 7]),
             ],
-            {
-                "color": REBECCA_PURPLE_COLOR,
-                "line_width": 4.5,
-                "line_dash": [2, 7],
-                "x": None,
-                "y": None,
-            },
+            {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
         ),
     ],
 )

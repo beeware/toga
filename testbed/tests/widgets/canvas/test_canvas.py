@@ -143,7 +143,8 @@ async def test_alt_drag(
 
 async def test_image_data(canvas, probe):
     """The canvas can be saved as an image."""
-    with canvas.stroke(x=0, y=0, color=RED):
+    with canvas.stroke(color=RED):
+        canvas.move_to(x=0, y=0)
         canvas.line_to(x=200, y=200)
         canvas.move_to(x=200, y=0)
         canvas.line_to(x=0, y=200)
@@ -537,7 +538,8 @@ async def test_closed_path_state(canvas, probe):
     """A closed path can be built with a state."""
 
     # Build a parallelogram path
-    with canvas.close_path(x=20, y=20):
+    with canvas.close_path():
+        canvas.move_to(x=20, y=20)
         canvas.line_to(x=100, y=20)
         canvas.line_to(x=180, y=180)
         canvas.line_to(x=100, y=180)
@@ -553,7 +555,8 @@ async def test_fill_state(canvas, probe):
     """A fill path can be built with a state."""
 
     # Build a filled parallelogram
-    with canvas.fill(x=20, y=20, color=REBECCAPURPLE):
+    with canvas.fill(color=REBECCAPURPLE):
+        canvas.move_to(x=20, y=20)
         canvas.line_to(x=100, y=20)
         canvas.line_to(x=180, y=180)
         canvas.line_to(x=100, y=180)
@@ -565,13 +568,13 @@ async def test_fill_state(canvas, probe):
 async def test_stroke_state(canvas, probe):
     """A stroke can be drawn with a state."""
     # Draw a thin line
-    with canvas.stroke(x=40, y=20, color=REBECCAPURPLE):
+    with canvas.stroke(color=REBECCAPURPLE):
+        canvas.move_to(x=40, y=20)
         canvas.line_to(x=80, y=180)
 
     # Draw a thick dashed line
-    with canvas.stroke(
-        x=80, y=20, line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE
-    ):
+    with canvas.stroke(line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE):
+        canvas.move_to(x=80, y=20)
         canvas.line_to(x=120, y=180)
 
     await probe.redraw("Stroke should be drawn with state")
@@ -582,8 +585,10 @@ async def test_stroke_and_fill_state(canvas, probe):
     """A shape can be stroked and filled using states."""
 
     # Draw a filled parallelogram
-    with canvas.fill(x=20, y=20, color=REBECCAPURPLE):
+    with canvas.fill(color=REBECCAPURPLE):
+        canvas.move_to(x=20, y=20)
         with canvas.stroke(line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE):
+            # canvas.move_to(x=20, y=20)
             canvas.line_to(x=100, y=20)
             canvas.line_to(x=180, y=180)
             canvas.line_to(x=100, y=180)

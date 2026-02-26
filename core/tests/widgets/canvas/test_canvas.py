@@ -91,40 +91,30 @@ def test_redraw(widget):
 
 def test_closed_path(widget):
     """A canvas can produce a ClosedPath sub-state."""
-    with widget.close_path(x=10, y=20) as closed_path:
+    with widget.close_path() as closed_path:
         # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(closed_path, ClosePath)
         assert closed_path is not widget.root_state
-        assert closed_path.x == 10
-        assert closed_path.y == 20
 
 
 def test_fill(widget):
     """A canvas can produce a Fill sub-state."""
-    with widget.fill(
-        x=10, y=20, color="rebeccapurple", fill_rule=FillRule.EVENODD
-    ) as fill:
+    with widget.fill(color="rebeccapurple", fill_rule=FillRule.EVENODD) as fill:
         # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(fill, Fill)
         assert fill is not widget.root_state
 
-        assert fill.x == 10
-        assert fill.y == 20
         assert fill.color == REBECCA_PURPLE_COLOR
         assert fill.fill_rule == FillRule.EVENODD
 
 
 def test_stroke(widget):
     """A canvas can produce a Stroke sub-state."""
-    with widget.stroke(
-        x=10, y=20, color="rebeccapurple", line_width=5, line_dash=[2, 7]
-    ) as stroke:
+    with widget.stroke(color="rebeccapurple", line_width=5, line_dash=[2, 7]) as stroke:
         # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(stroke, Stroke)
         assert stroke is not widget.root_state
 
-        assert stroke.x == 10
-        assert stroke.y == 20
         assert stroke.color == REBECCA_PURPLE_COLOR
         assert stroke.line_width == 5.0
         assert stroke.line_dash == [2, 7]

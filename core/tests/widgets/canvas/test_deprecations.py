@@ -72,6 +72,7 @@ def test_renamed_root_state(widget):
         ("begin_path", (), BeginPath),
         ("close_path", (), ClosePath),
         ("ClosedPath", (), ClosePath),  # Deprecated alias
+        ("ClosedPath", (0, 0), ClosePath),  # Deprecated alias with removed parameters
         ("move_to", (0, 0), MoveTo),
         ("line_to", (0, 0), LineTo),
         ("bezier_curve_to", (0, 0, 0, 0, 0, 0), BezierCurveTo),
@@ -82,8 +83,10 @@ def test_renamed_root_state(widget):
         ("round_rect", (0, 0, 0, 0, 0), RoundRect),
         ("fill", (), Fill),
         ("Fill", (), Fill),  # Deprecated alias
+        ("Fill", (0, 0), Fill),  # Deprecated alias with removed parameters
         ("stroke", (), Stroke),
         ("Stroke", (), Stroke),  # Deprecated alias
+        ("Stroke", (0, 0), Stroke),  # Deprecated alias with removed parameters
         ("write_text", ("",), WriteText),
         ("draw_image", None, DrawImage),
         ("rotate", (0,), Rotate),
@@ -111,6 +114,65 @@ def test_state_drawing_methods(app, widget, method_name, args, DrawingActionClas
     assert state.drawing_actions == [drawing_action]
     assert isinstance(drawing_action, DrawingActionClass)
     assert_action_performed(widget, "redraw")
+
+
+def test_canvas_context_method(widget):
+    """canvas.Context is deprecated, and appends a state to the root state."""
+
+    # Create a sub-state to ensure the method appends to root, not the active state.
+    with widget.state() as active_state:
+        pass
+
+    with pytest.deprecated_call(
+        # match=f"The Context() drawing method has been renamed to state()"
+    ):
+        with widget.Context() as context:
+            pass
+
+    assert widget.root_state.drawing_actions == [active_state, context]
+
+
+@pytest.mark.parametrize(
+    "args, kwargs, xy_warning, has_move",
+    [
+        ((), {}, False, False),
+        ((10, 20), {}, True, True),
+        ((10,), {}, True, False),
+        ((), {"x": 10, "y": 20}, True, True),
+        ((), {"x": 10}, True, False),
+        ((), {"y": 20}, True, False),
+    ],
+)
+@pytest.mark.parametrize(
+    "method_name, new_name",
+    [
+        ("ClosedPath", "close_path"),
+        ("Fill", "fill"),
+        ("Stroke", "stroke"),
+    ],
+)
+def test_capitalized_canvas_methods_xy(
+    widget, args, kwargs, xy_warning, has_move, method_name, new_name
+):
+    """Capialized methods accepting (x, y) are deprecated, and append to root state."""
+    # Create a sub-state to ensure the method appends to root, not the active state.
+    with widget.state() as active_state:
+        pass
+
+    match = rf"The {method_name}\(\) drawing method has been renamed to {new_name}\(\)"
+    if xy_warning:
+        match += (
+            r", and no longer accepts x and y coordinates as parameters\. Instead, "
+            rf"call move_to\(x, y\) after entering the {new_name} context\."
+        )
+
+    with pytest.deprecated_call():
+        with getattr(widget, method_name)(*args, **kwargs) as state:
+            pass
+
+    assert widget.root_state.drawing_actions == [active_state, state]
+    if has_move:
+        assert state.drawing_actions == [MoveTo(10, 20)]
 
 
 def test_state_canvas_reference(widget):

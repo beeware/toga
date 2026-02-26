@@ -74,23 +74,18 @@ class DrawingActionDispatch(ABC):
         self._redraw_with_warning_if_state()
         return begin_path
 
-    def close_path(self, x: float | None = None, y: float | None = None) -> ClosePath:
+    def close_path(self) -> ClosePath:
         """Close the current path.
 
         This closes the current path as a simple drawing operation. It should be paired
         with a [`begin_path()`][toga.Canvas.begin_path] operation, or else used as a
-        context manager. If used as a context manager, and both `x` and `y` are
-        specified, the path will begin at those coordinates.
-
-        :param x: The `x` coordinate to move to when beginning the path (if used as a
-            context manager)
-        :param y: The `y` coordinate to move to when beginning the path (if used as a
-            context manager)
+        context manager. If used as a context manager, it begins a path when entering,
+        and closes it upon exiting.
 
         :returns: The `ClosePath`
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
-        close_path = ClosePath(x=x, y=y)
+        close_path = ClosePath()
         self._add_to_target(close_path)
         self._redraw_with_warning_if_state()
         return close_path
@@ -318,8 +313,6 @@ class DrawingActionDispatch(ABC):
         self,
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
-        x: float | None = None,
-        y: float | None = None,
     ) -> Fill:
         """Fill the current path.
 
@@ -335,14 +328,10 @@ class DrawingActionDispatch(ABC):
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
-        :param x: The `x` coordinate to move to when beginning the path (if used as a
-            context manager)
-        :param y: The `y` coordinate to move to when beginning the path (if used as a
-            context manager)
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        fill = Fill(color, fill_rule, x, y)
+        fill = Fill(color, fill_rule)
         self._add_to_target(fill)
         self._redraw_with_warning_if_state()
         return fill
@@ -352,8 +341,6 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
-        x: float | None = None,
-        y: float | None = None,
     ) -> Stroke:
         """Draw the current path as a stroke.
 
@@ -365,14 +352,10 @@ class DrawingActionDispatch(ABC):
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
-        :param x: The `x` coordinate to move to when beginning the path (if used as a
-            context manager)
-        :param y: The `y` coordinate to move to when beginning the path (if used as a
-            context manager)
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        stroke = Stroke(color, line_width, line_dash, x, y)
+        stroke = Stroke(color, line_width, line_dash)
         self._add_to_target(stroke)
         self._redraw_with_warning_if_state()
         return stroke
@@ -526,32 +509,45 @@ class DrawingActionDispatch(ABC):
     # 2026-02: Backwards compatibility for <= 0.5.3
     ######################################################################
 
+    def _warn_context_manager(self, old_name, new_name, coordinates):
+        msg = f"The {old_name}() drawing method has been renamed to {new_name}()"
+        if coordinates:
+            msg += (
+                ", and no longer accepts x and y coordinates as parameters. Instead, "
+                f"call move_to(x, y) after entering the {new_name} context."
+            )
+        warnings.warn(msg, DeprecationWarning, stacklevel=3)
+
     # Each of these CamelCase methods, when called on a State, added to that State.
-    # However, when called on a Canvas, they added to that Canvas's root_state.
+    # However, when called on a Canvas, they added to that Canvas's root_state. So we
+    # call the drawing method on the target, suppressing warnings in case that target
+    # is a State.
 
     def Context(self) -> AbstractContextManager[State]:
-        warnings.warn(
-            "The Context() drawing method has been renamed to state()",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        target = self if isinstance(self, State) else self.root_state
+        self._warn_context_manager("Context", "state", False)
 
-        return target.state()
+        target = self if isinstance(self, State) else self.root_state
+        with warnings.catch_warnings():
+            return target.state()
 
     def ClosedPath(
         self,
         x: float | None = None,
         y: float | None = None,
     ) -> AbstractContextManager[ClosePath]:
-        warnings.warn(
-            "The ClosedPath() drawing method has been renamed to close_path()",
-            DeprecationWarning,
-            stacklevel=2,
+        self._warn_context_manager(
+            "ClosedPath",
+            "close_path",
+            x is not None or y is not None,
         )
-        target = self if isinstance(self, State) else self.root_state
 
-        return target.close_path(x=x, y=y)
+        target = self if isinstance(self, State) else self.root_state
+        with warnings.catch_warnings():
+            close_path = target.close_path()
+        if x is not None and y is not None:
+            close_path.drawing_actions.append(MoveTo(x, y))
+
+        return close_path
 
     def Fill(
         self,
@@ -560,14 +556,14 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> AbstractContextManager[Fill]:
-        warnings.warn(
-            "The Fill() drawing method has been renamed to fill()",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        target = self if isinstance(self, State) else self.root_state
+        self._warn_context_manager("Fill", "fill", x is not None or y is not None)
 
-        return target.fill(fill_rule=fill_rule, color=color, x=x, y=y)
+        target = self if isinstance(self, State) else self.root_state
+        with warnings.catch_warnings():
+            fill = target.fill(fill_rule=fill_rule, color=color)
+        if x is not None and y is not None:
+            fill.drawing_actions.append(MoveTo(x, y))
+        return fill
 
     def Stroke(
         self,
@@ -577,20 +573,16 @@ class DrawingActionDispatch(ABC):
         line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> AbstractContextManager[Stroke]:
-        warnings.warn(
-            "The Stroke() drawing method has been renamed to stroke()",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        target = self if isinstance(self, State) else self.root_state
+        self._warn_context_manager("Stroke", "stroke", x is not None or y is not None)
 
-        return target.stroke(
-            color=color,
-            line_width=line_width,
-            line_dash=line_dash,
-            x=x,
-            y=y,
-        )
+        target = self if isinstance(self, State) else self.root_state
+        with warnings.catch_warnings():
+            stroke = target.stroke(
+                color=color, line_width=line_width, line_dash=line_dash
+            )
+        if x is not None and y is not None:
+            stroke.drawing_actions.append(MoveTo(x, y))
+        return stroke
 
     def _redraw_without_warning(self):
         with warnings.catch_warnings():
@@ -762,9 +754,6 @@ class State(DrawingAction, DrawingActionDispatch):
 
 @dataclass(repr=False)
 class ClosePath(State):
-    x: float | None = None
-    y: float | None = None
-
     def __post_init__(self):
         super().__init__()
 
@@ -777,9 +766,6 @@ class ClosePath(State):
         context.save()
         context.begin_path()
 
-        if self.x is not None and self.y is not None:
-            context.move_to(x=self.x, y=self.y)
-
         for action in self.drawing_actions:
             action._draw(context)
 
@@ -791,8 +777,6 @@ class ClosePath(State):
 class Fill(State):
     color: ColorT | None = color_property()
     fill_rule: FillRule = FillRule.NONZERO
-    x: float | None = None
-    y: float | None = None
 
     def __post_init__(self):
         super().__init__()
@@ -806,9 +790,6 @@ class Fill(State):
             # Was used as a context manager (or had drawing actions manually added)
             context.in_fill = True  # Backwards compatibility for Toga <= 0.5.3
             context.begin_path()
-
-            if self.x is not None and self.y is not None:
-                context.move_to(x=self.x, y=self.y)
 
             for action in self.drawing_actions:
                 action._draw(context)
@@ -824,8 +805,6 @@ class Stroke(State):
     color: ColorT | None = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
-    x: float | None = None
-    y: float | None = None
 
     def __post_init__(self):
         super().__init__()
@@ -843,9 +822,6 @@ class Stroke(State):
             # Was used as a context manager (or had drawing actions manually added)
             context.in_stroke = True  # Backwards compatibility for Toga <= 0.5.3
             context.begin_path()
-
-            if self.x is not None and self.y is not None:
-                context.move_to(x=self.x, y=self.y)
 
             for action in self.drawing_actions:
                 action._draw(context)
