@@ -182,6 +182,18 @@ def test_columns_from_headings_and_accessors_failure():
             None,
             LABEL_WIDGET,
         ),
+        # Issue #4135: List of 2 items is just data
+        (Row(x=[None, "test"]), [None, "test"], "[None, 'test']", None, None),
+        # Issue #4135: Tuple of 1 item is undefined; raise an error
+        (Row(x=("test",)), ("test",), ValueError, ValueError, None),
+        # Issue #4135: Tuple of 3+ items is undefined; raise an error
+        (
+            Row(x=(None, "test", 42)),
+            (None, "test", 42),
+            ValueError,
+            ValueError,
+            None,
+        ),
     ],
 )
 def test_accessor_column_values(row, value, text, icon, widget):
@@ -189,9 +201,18 @@ def test_accessor_column_values(row, value, text, icon, widget):
     column = AccessorColumn(None, "x")
 
     assert column.value(row) == value
-    assert column.text(row) == text
-    assert column.icon(row) == icon
     assert column.widget(row) == widget
+
+    if text is ValueError:
+        with pytest.raises(ValueError, match=r"Data tuples must have length 2"):
+            column.text(row)
+
+        with pytest.raises(ValueError, match=r"Data tuples must have length 2"):
+            column.icon(row)
+
+    else:
+        assert column.text(row) == text
+        assert column.icon(row) == icon
 
 
 DEFAULT = "default"

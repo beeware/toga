@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from travertino.size import at_least
 
@@ -13,7 +13,7 @@ from ..libs import (
 )
 
 
-class Widget:
+class Widget(ABC):
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
@@ -37,10 +37,10 @@ class Widget:
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):
+    def set_app(self, app):  # noqa B027
         pass
 
-    def set_window(self, window):
+    def set_window(self, window):  # noqa B027
         pass
 
     @property
@@ -194,7 +194,7 @@ class Widget:
         # Any position changes are applied by the container during do_size_allocate.
         self.container.make_dirty()
 
-    def set_text_align(self, alignment):
+    def set_text_align(self, alignment):  # noqa B027
         # By default, alignment can't be changed
         pass
 

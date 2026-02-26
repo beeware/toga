@@ -10,7 +10,12 @@ class CanvasProbe(SimpleProbe):
     native_class = Panel
 
     def reference_variant(self, reference):
-        if reference in {"multiline_text", "write_text", "write_text_and_path"}:
+        if reference in {
+            "multiline_text",
+            "write_text",
+            "write_text_and_path",
+            "miter_join",
+        }:
             return f"{reference}-winforms"
         return reference
 

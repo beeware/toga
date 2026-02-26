@@ -98,24 +98,27 @@ class AccessorColumn(ColumnT[Value]):
     def text(self, row: Row[Value], default: str | None = None) -> str | None:
         """Get text from the Row or Node of a ListSource or TreeSource.
 
-        If the value is a tuple, the second item is assumed to be text.
-        If the value is not None, it is converted to a string by calling
-        str().
-        If the value ends up being None, and a default is supplied, the default
-        is returned.
+        If the value is a tuple, it must be of length two; the second item is assumed to
+        be text.
+
+        If the value is None, and a default is supplied, the default is returned.
+
+        All other values are converted to a string by calling str().
 
         :param row: A row object from the underlying Source.
         :param default: A default value if the resulting value is otherwise None.
-        :returns: The text to associated with this column's accessor, or
-            None if no text.
+        :returns: The text to associated with this column's accessor, or None if no
+            text.
         """
         match value := self.value(row):
             case Widget():
                 return default
-            case (_, None):
+            case tuple((_, None)):
                 return default
-            case (_, value):
+            case tuple((_, value)):
                 return str(value)
+            case tuple():
+                raise ValueError("Data tuples must have length 2")
             case None:
                 return default
             case _:
@@ -124,19 +127,21 @@ class AccessorColumn(ColumnT[Value]):
     def icon(self, row: Row[Value]) -> Icon | None:
         """Get text from the Row or Node of a ListSource or TreeSource.
 
-        If the value is a tuple, the first item is assumed to be an Icon.
-        Otherwise if the item has an `icon` attribute, that is assumed to
-        be the icon.
+        If the value is a tuple, it must be of length 2, and the first item is assumed
+        to be an Icon. A tuple of any other length will raise a ValueError. Otherwise if
+        the item has an `icon` attribute, that is assumed to be the icon.
 
         :param row: A row object from the underlying Source.
-        :returns: The Icon to associated with this column's accessor, or
-            None if no Icon.
+        :returns: The Icon to associated with this column's accessor, or None if no
+            Icon.
         """
         match value := self.value(row):
             case Widget():
                 return None
-            case (icon, _):
+            case tuple((icon, _)):
                 return icon
+            case tuple():
+                raise ValueError("Data tuples must have length 2")
             case _:
                 return getattr(value, "icon", None)
 

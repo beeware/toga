@@ -234,6 +234,70 @@ def test_assign_to_window(window, optioncontainer, content1, content2, content3)
     assert content3.window == window
 
 
+def test_assign_unassign_window_app_on_content(
+    app, window, content1, content2, content3
+):
+    optioncontainer = toga.OptionContainer()
+
+    # Assign the option container to the app and window
+    optioncontainer.app = app
+    optioncontainer.window = window
+
+    # Initially, content should have no app or window
+    assert content1.app is None
+    assert content1.window is None
+    assert content2.app is None
+    assert content2.window is None
+    assert content3.app is None
+    assert content3.window is None
+
+    # Insert content to the option container
+    optioncontainer.content.append(toga.OptionItem("Item 1", content1))
+    optioncontainer.content.append(toga.OptionItem("Item 2", content2))
+    optioncontainer.content.append(toga.OptionItem("Item 3", content3))
+
+    # Content is also on the app / window
+    assert app.widgets[content1.id] is content1
+    assert window.widgets[content1.id] is content1
+    assert content1.app is app
+    assert content1.window is window
+
+    assert app.widgets[content2.id] is content2
+    assert window.widgets[content2.id] is content2
+    assert content2.app is app
+    assert content2.window is window
+
+    assert app.widgets[content3.id] is content3
+    assert window.widgets[content3.id] is content3
+    assert content3.app == app
+    assert content3.window == window
+
+    # Remove 2 nonselected contents from the option container.
+    optioncontainer.content.remove("Item 2")
+    optioncontainer.content.remove("Item 3")
+
+    # Content should no longer have app or window, except for first content
+    # which is still on the container.
+    assert app.widgets[content1.id] is content1
+    assert window.widgets[content1.id] is content1
+    assert content1.app is app
+    assert content1.window is window
+
+    with pytest.raises(KeyError):
+        app.widgets[content2.id]
+    with pytest.raises(KeyError):
+        window.widgets[content2.id]
+    assert content2.app is None
+    assert content2.window is None
+
+    with pytest.raises(KeyError):
+        app.widgets[content3.id]
+    with pytest.raises(KeyError):
+        window.widgets[content3.id]
+    assert content3.app is None
+    assert content3.window is None
+
+
 def test_assign_to_window_no_content(window):
     """If the widget is assigned to a window, and there is no content, there's no
     error."""

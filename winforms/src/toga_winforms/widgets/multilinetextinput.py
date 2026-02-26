@@ -44,6 +44,9 @@ class MultilineTextInput(TextInput):
         if self.native.Text == "":
             self._set_placeholder_visible(True)
 
+    def get_placeholder(self):
+        return self._placeholder
+
     def set_placeholder(self, value):
         self._placeholder = value
         if self._placeholder_visible:

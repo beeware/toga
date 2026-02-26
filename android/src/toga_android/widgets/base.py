@@ -69,10 +69,10 @@ class Widget(ABC, Scalable):
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):
+    def set_app(self, app):  # noqa B027
         pass
 
-    def set_window(self, window):
+    def set_window(self, window):  # noqa B027
         pass
 
     @property
@@ -122,7 +122,7 @@ class Widget(ABC, Scalable):
         else:
             self.native_toplevel.setVisibility(View.VISIBLE)
 
-    def set_font(self, font):
+    def set_font(self, font):  # noqa B027
         # By default, font can't be changed
         pass
 
@@ -145,10 +145,10 @@ class Widget(ABC, Scalable):
             else PorterDuffColorFilter(native_color(color), PorterDuff.Mode.SRC_IN)
         )
 
-    def set_text_align(self, alignment):
+    def set_text_align(self, alignment):  # noqa B027
         pass  # If appropriate, a widget subclass will implement this.
 
-    def set_color(self, color):
+    def set_color(self, color):  # noqa B027
         pass  # If appropriate, a widget subclass will implement this.
 
     def get_theme_color(self, attr_id: int) -> int:
@@ -181,7 +181,7 @@ class Widget(ABC, Scalable):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
 
-    def rehint(self):
+    def rehint(self):  # noqa B027
         pass
 
 

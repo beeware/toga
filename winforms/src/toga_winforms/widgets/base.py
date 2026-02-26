@@ -21,8 +21,7 @@ class Scalable(ABC):
 
     @property
     @abstractmethod
-    def dpi_scale(self):
-        raise NotImplementedError()
+    def dpi_scale(self): ...
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
@@ -77,7 +76,7 @@ class Widget(Scalable, ABC):
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):
+    def set_app(self, app):  # noqa B027
         # No special handling required
         pass
 
@@ -137,7 +136,7 @@ class Widget(Scalable, ABC):
         self.native.Size = Size(*map(self.scale_in, (width, height)))
         self.native.Location = Point(*map(self.scale_in, (x, y)))
 
-    def set_text_align(self, alignment):
+    def set_text_align(self, alignment):  # noqa B027
         # By default, text alignment can't be changed
         pass
 
@@ -198,5 +197,5 @@ class Widget(Scalable, ABC):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
 
-    def rehint(self):
+    def rehint(self):  # noqa B027
         pass

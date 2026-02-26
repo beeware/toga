@@ -75,7 +75,7 @@ async def widget(
     )
 
 
-test_cleanup = build_cleanup_test(toga.DetailedList, xfail_platforms=("linux",))
+test_cleanup = build_cleanup_test(toga.DetailedList)
 
 
 async def test_scroll(widget, probe):
@@ -292,6 +292,8 @@ async def test_actions(
     await probe.redraw("A secondary action was performed on row 4")
     on_secondary_action_handler.assert_called_once_with(widget, row=widget.data[4])
     on_secondary_action_handler.reset_mock()
+
+    await probe.redraw("Before perform")
 
     # Disable secondary action
     widget.on_secondary_action = None

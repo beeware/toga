@@ -1,9 +1,16 @@
+from ctypes import POINTER, cast
+from ctypes.wintypes import HWND, LPARAM, UINT, WPARAM
 from warnings import warn
 
 import System.Windows.Forms as WinForms
 
 from toga.handlers import WeakrefCallable
 
+from ..libs import windowconstants as wc
+from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass, SetWindowSubclass
+from ..libs.comctl32classes import LVITEMW, NMHDR, NMLVDISPINFOW, SUBCLASSPROC
+from ..libs.user32 import SendMessageW
+from ..libs.win32 import LRESULT
 from .base import Widget
 
 
@@ -25,9 +32,24 @@ class Table(Widget):
     def _data(self):
         return self.interface.data
 
+    def __del__(self):
+        # The object self.pfn_subclass is a python class and is part of the native
+        # Windows process. When a Table is removed by the python GC, self.pfn_subclass
+        # is also removed and the Windows process has a dangling pointer. Calling
+        # Dispose() here fixes the problem by removing the self.pfn_subclass from the
+        # Windows process.
+        self.native.Dispose()
+
     def create(self):
+        self.pfn_subclass = SUBCLASSPROC(self._subclass_proc)
         self.native = WinForms.ListView()
+        self._set_subclass()
+
+        self.native.HandleCreated += WeakrefCallable(self.handle_created)
+        self.native.HandleDestroyed += WeakrefCallable(self.handle_destroyed)
+
         self.native.View = WinForms.View.Details
+        self._enable_multi_icon_style()
         self._cache = []
         self._first_item = 0
         self._pending_resize = True
@@ -67,6 +89,68 @@ class Table(Widget):
         )
         self.add_action_events()
 
+    def _enable_multi_icon_style(self):
+        list_view_handle = int(self.native.Handle.ToString())
+
+        # Use SendMessage over PostMessage since the ListView object is on the same
+        # thread as the messaging call.
+        old_style = SendMessageW(
+            list_view_handle, wc.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0
+        )
+        new_style = old_style | wc.LVS_EX_SUBITEMIMAGES
+
+        SendMessageW(list_view_handle, wc.LVM_SETEXTENDEDLISTVIEWSTYLE, 0, new_style)
+
+    def handle_created(self, sender, e):
+        self._set_subclass()
+
+    def handle_destroyed(self, sender, e):
+        # Remove the subclass when a handle is destroyed to prevent a memory leak.
+        self._remove_subclass()
+
+    def _set_subclass(self):
+        SetWindowSubclass(int(self.native.Handle.ToString()), self.pfn_subclass, 0, 0)
+
+    def _remove_subclass(self):
+        RemoveWindowSubclass(int(self.native.Handle.ToString()), self.pfn_subclass, 0)
+
+    def _subclass_proc(
+        self,
+        hWnd: int,
+        uMsg: int,
+        wParam: int,
+        lParam: int,
+        uIdSubclass: int,
+        dwRefData: int,
+    ) -> LRESULT:
+        # Remove the window subclass in the way recommended by Raymond Chen here:
+        # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
+        if uMsg == wc.WM_NCDESTROY:
+            RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
+
+        if uMsg == wc.WM_REFLECT_NOTIFY:
+            phdr = cast(lParam, POINTER(NMHDR)).contents
+            code = phdr.code
+            if code == wc.LVN_GETDISPINFOW:
+                disp_info = cast(lParam, POINTER(NMLVDISPINFOW)).contents
+                self._set_subitem_icon(disp_info.item)
+
+        # Call the original window procedure
+        return DefSubclassProc(HWND(hWnd), UINT(uMsg), WPARAM(wParam), LPARAM(lParam))
+
+    def _set_subitem_icon(self, lvitem: LVITEMW):
+        row_index = lvitem.iItem
+        column_index = lvitem.iSubItem
+
+        _, icon_indices = self._toga_retrieve_virtual_item(row_index)
+
+        # Add the icon property if it doesn't exist.
+        if lvitem.uiMask == (wc.LVIF_TEXT | wc.LVIF_STATE):
+            lvitem.uiMask = wc.LVIF_TEXT | wc.LVIF_STATE | wc.LVIF_IMAGE
+
+        if lvitem.uiMask & wc.LVIF_IMAGE != 0 and icon_indices[column_index] > -1:
+            lvitem.iImage = icon_indices[column_index]
+
     def add_action_events(self):
         self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
 
@@ -80,14 +164,17 @@ class Table(Widget):
         # Because ListView is in VirtualMode, it's necessary implement
         # VirtualItemsSelectionRangeChanged event to create ListViewItem
         # when it's needed
+        e.Item, _ = self._toga_retrieve_virtual_item(e.ItemIndex)
+
+    def _toga_retrieve_virtual_item(self, item_index):
         if (
             self._cache
-            and e.ItemIndex >= self._first_item
-            and e.ItemIndex < self._first_item + len(self._cache)
+            and item_index >= self._first_item
+            and item_index < self._first_item + len(self._cache)
         ):
-            e.Item = self._cache[e.ItemIndex - self._first_item]
+            return self._cache[item_index - self._first_item]
         else:
-            e.Item = self._new_item(e.ItemIndex)
+            return self._new_item(item_index)
 
     def winforms_cache_virtual_items(self, sender, e):
         if (
@@ -194,28 +281,26 @@ class Table(Widget):
     def change_source(self, source):
         self.update_data()
 
+    def _icon_index(self, row, column) -> int:
+        icon = column.icon(row)
+        return -1 if icon is None else self._image_index(icon._impl)
+
     def _new_item(self, index):
-        item = self._data[index]
+        row = self._data[index]
 
         missing_value = self.interface.missing_value
         lvi = WinForms.ListViewItem(
-            [column.text(item, missing_value) for column in self._columns],
+            [column.text(row, missing_value) for column in self._columns],
         )
-        if any(column.widget(item) is not None for column in self._columns):
+        if any(column.widget(row) is not None for column in self._columns):
             warn(
                 "Winforms does not support the use of widgets in cells",
                 stacklevel=1,
             )
 
-        # If the table has accessors, populate the icons for the table.
-        if self._columns:
-            # TODO: ListView only has built-in support for one icon per row. One
-            # possible workaround is in https://stackoverflow.com/a/46128593.
-            icon = self._columns[0].icon(item)
-            if icon is not None:
-                lvi.ImageIndex = self._image_index(icon._impl)
+        icon_indices = tuple(self._icon_index(row, column) for column in self._columns)
 
-        return lvi
+        return (lvi, icon_indices)
 
     def _image_index(self, icon):
         images = self.native.SmallImageList.Images

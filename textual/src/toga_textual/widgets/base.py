@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 from travertino.size import at_least
 
 from toga.style.pack import ROW
@@ -29,7 +31,7 @@ class Scalable:
             return value * self.VERTICAL_SCALE
 
 
-class Widget(Scalable):
+class Widget(Scalable, ABC):
     def __init__(self, interface):
         self.interface = interface
         self.container = None
@@ -50,13 +52,13 @@ class Widget(Scalable):
     def get_size(self) -> Size:
         return Size(0, 0)
 
-    def create(self):
+    @abstractmethod
+    def create(self): ...
+
+    def set_app(self, app):  # noqa B027
         pass
 
-    def set_app(self, app):
-        pass
-
-    def set_window(self, window):
+    def set_window(self, window):  # noqa B027
         pass
 
     def get_enabled(self):
@@ -65,13 +67,13 @@ class Widget(Scalable):
     def set_enabled(self, value):
         self.native.disabled = not value
 
-    def focus(self):
+    def focus(self):  # noqa B027
         pass
 
     def get_tab_index(self):
         return None
 
-    def set_tab_index(self, tab_index):
+    def set_tab_index(self, tab_index):  # noqa B027
         pass
 
     ######################################################################
@@ -143,19 +145,19 @@ class Widget(Scalable):
             self.scale_in_horizontal(margin_left),
         )
 
-    def set_text_align(self, alignment):
+    def set_text_align(self, alignment):  # noqa B027
         pass
 
-    def set_hidden(self, hidden):
+    def set_hidden(self, hidden):  # noqa B027
         pass
 
-    def set_font(self, font):
+    def set_font(self, font):  # noqa B027
         pass
 
-    def set_color(self, color):
+    def set_color(self, color):  # noqa B027
         pass
 
-    def set_background_color(self, color):
+    def set_background_color(self, color):  # noqa B027
         pass
 
     ######################################################################
@@ -168,7 +170,7 @@ class Widget(Scalable):
         if self.native.is_attached:
             self.native.mount(child.native)
 
-    def insert_child(self, index, child):
+    def insert_child(self, index, child):  # noqa B027
         pass
 
     def remove_child(self, child):

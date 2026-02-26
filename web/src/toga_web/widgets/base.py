@@ -1,7 +1,9 @@
+from abc import ABC, abstractmethod
+
 from toga_web.libs import create_element
 
 
-class Widget:
+class Widget(ABC):
     def __init__(self, interface):
         self.interface = interface
         self._container = None
@@ -46,13 +48,13 @@ class Widget:
 
         return native
 
-    def create(self):
-        raise NotImplementedError()
+    @abstractmethod
+    def create(self): ...
 
-    def set_app(self, app):
+    def set_app(self, app):  # noqa B027
         pass
 
-    def set_window(self, window):
+    def set_window(self, window):  # noqa B027
         pass
 
     @property
@@ -118,7 +120,7 @@ class Widget:
     # INTERFACE
     ######################################################################
 
-    def add_child(self, child):
+    def add_child(self, child):  # noqa B027
         pass
 
     def insert_child(self, index, child):
@@ -130,5 +132,5 @@ class Widget:
     def refresh(self):
         self._reapply_style()
 
-    def rehint(self):
+    def rehint(self):  # noqa B027
         pass

@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from collections.abc import Sequence
 
 from ..constants import BOTTOM, LEFT, RIGHT, TOP
@@ -16,7 +17,7 @@ def _comma_list(items, joiner="and"):
     return ", ".join(items)
 
 
-class shorthand_property:
+class shorthand_property(ABC):
     """A base class for list / composite properties."""
 
     def __set_name__(self, style_class, name):
@@ -29,8 +30,8 @@ class shorthand_property:
 
         return tuple(style[name] for name in self.property_names)
 
-    def __set__(self, style, value):
-        raise NotImplementedError  # pragma: no cover
+    @abstractmethod
+    def __set__(self, style, value): ...
 
     def __delete__(self, style):
         with style.batch_apply():

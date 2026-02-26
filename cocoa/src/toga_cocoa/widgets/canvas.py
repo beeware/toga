@@ -8,6 +8,7 @@ from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, Color
 from toga.constants import Baseline, FillRule
+from toga.widgets.canvas.geometry import round_rect
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     CGFloat,
@@ -149,17 +150,16 @@ class Context:
         self.save()
         self.translate(x, y)
         self.rotate(rotation)
-        if radiusx >= radiusy:
-            self.scale(1, radiusy / radiusx)
-            self.arc(0, 0, radiusx, startangle, endangle, counterclockwise)
-        else:
-            self.scale(radiusx / radiusy, 1)
-            self.arc(0, 0, radiusy, startangle, endangle, counterclockwise)
+        self.scale(radiusx, radiusy)
+        self.arc(0, 0, 1.0, startangle, endangle, counterclockwise)
         self.restore()
 
     def rect(self, x, y, width, height):
         rectangle = CGRectMake(x, y, width, height)
         core_graphics.CGContextAddRect(self.native, rectangle)
+
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
 
     # Drawing Paths
 

@@ -20,6 +20,7 @@ try:
     from .widgets.divider import Divider
     from .widgets.imageview import ImageView
     from .widgets.label import Label
+    from .widgets.mapview import MapView
     from .widgets.multilinetextinput import MultilineTextInput
     from .widgets.numberinput import NumberInput
     from .widgets.optioncontainer import OptionContainer
@@ -28,10 +29,12 @@ try:
     from .widgets.scrollcontainer import ScrollContainer
     from .widgets.selection import Selection
     from .widgets.slider import Slider
+    from .widgets.splitcontainer import SplitContainer
     from .widgets.switch import Switch
     from .widgets.table import Table
     from .widgets.textinput import TextInput
     from .widgets.timeinput import TimeInput
+    from .widgets.tree import Tree
     from .widgets.webview import WebView
     from .window import MainWindow, Window
 except ModuleNotFoundError as exc:  # pragma: no cover
@@ -64,11 +67,13 @@ __all__ = [
     "Container",
     "Box",
     "Label",
+    "MapView",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
     "PasswordInput",
     "ProgressBar",
+    "SplitContainer",
     "Selection",
     "ScrollContainer",
     "Switch",
@@ -76,6 +81,7 @@ __all__ = [
     "Table",
     "TextInput",
     "TimeInput",
+    "Tree",
     "WebView",
     "ImageView",
     "dialogs",

@@ -115,7 +115,6 @@ Widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   MultilineTextInput:
     description: A scrollable panel for displaying and editing multiple lines of text.
@@ -194,7 +193,6 @@ Widgets:
       - android
       - web
       - textual
-      - qt
 
   WebView:
     description: An embedded web browser.
@@ -234,7 +232,6 @@ Container widgets:
       - android
       - web
       - textual
-      - qt
 
   OptionContainer:
     description: A container for displaying multiple labeled tabs of content.

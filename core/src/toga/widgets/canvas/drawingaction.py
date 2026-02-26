@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from dataclasses import InitVar, dataclass, fields, is_dataclass
 from enum import Enum
 from math import pi
@@ -15,6 +16,8 @@ from toga.fonts import (
     Font,
 )
 from toga.images import Image
+
+from .geometry import CornerRadiusT
 
 if TYPE_CHECKING:
     from toga.colors import ColorT
@@ -296,6 +299,18 @@ class Rect(DrawingAction):
 
     def _draw(self, context: Any) -> None:
         context.rect(self.x, self.y, self.width, self.height)
+
+
+@dataclass(repr=False)
+class RoundRect(DrawingAction):
+    x: float
+    y: float
+    width: float
+    height: float
+    radii: float | CornerRadiusT | Iterable[float | CornerRadiusT]
+
+    def _draw(self, context: Any) -> None:
+        context.round_rect(self.x, self.y, self.width, self.height, self.radii)
 
 
 @dataclass(repr=False)

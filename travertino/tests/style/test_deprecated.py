@@ -22,7 +22,11 @@ from .style_classes import (
 @mock_apply
 @dataclass(kw_only=True, repr=False)
 class MockedApplyStyle(BaseStyle):
-    pass
+    def _apply(self, names):
+        pass
+
+    def layout(self, viewport):
+        pass
 
 
 def test_deprecated_copy():
