@@ -70,6 +70,7 @@ jobs:
       attest: ${{ inputs.attest-package }}
 
   docs-lint:
+    name: Documentation linting
     needs: [ pre-commit ]
     runs-on: ubuntu-latest
     timeout-minutes: 5
