@@ -528,6 +528,7 @@ class DrawingActionDispatch(ABC):
 
         target = self if isinstance(self, State) else self.root_state
         with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
             return target.state()
 
     def ClosedPath(
@@ -543,6 +544,7 @@ class DrawingActionDispatch(ABC):
 
         target = self if isinstance(self, State) else self.root_state
         with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
             close_path = target.close_path()
         if x is not None and y is not None:
             close_path.drawing_actions.append(MoveTo(x, y))
@@ -560,6 +562,7 @@ class DrawingActionDispatch(ABC):
 
         target = self if isinstance(self, State) else self.root_state
         with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
             fill = target.fill(fill_rule=fill_rule, color=color)
         if x is not None and y is not None:
             fill.drawing_actions.append(MoveTo(x, y))
@@ -577,6 +580,7 @@ class DrawingActionDispatch(ABC):
 
         target = self if isinstance(self, State) else self.root_state
         with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
             stroke = target.stroke(
                 color=color, line_width=line_width, line_dash=line_dash
             )
