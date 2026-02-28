@@ -895,7 +895,7 @@ async def test_write_text(canvas, probe):
     # and antialiasing introduced by image scaling, edges are the source of error. Of
     # note, though: Gtk on Wayland is the only backend that needs it set this high.
     # Everything else falls below 0.02.
-    assert_reference(probe, "write_text", threshold=0)  # FIXME 0.035
+    assert_reference(probe, "write_text", threshold=0.035)
 
 
 @pytest.mark.xfail(
