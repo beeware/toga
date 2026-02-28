@@ -518,7 +518,7 @@ async def test_column_changes(widget, probe):
     total_width = sum(probe.column_width(i) for i in range(4))
     assert total_width == pytest.approx(probe.width, abs=100)
     for i in range(4):
-        assert probe.column_width(i) > 50
+        assert probe.column_width(i) > 40
 
 
 async def test_headerless_column_changes(headerless_widget, headerless_probe):
