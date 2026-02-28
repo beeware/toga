@@ -100,26 +100,21 @@ class Table(Widget):
             # updates by deferring row rendering until the update is complete.
             self.native_table.set_model(None)
 
-            # If the column structure is unchanged, preserve widths across source
-            # replacement so user-resized columns don't reset.
+            # Preserve widths when columns are re-created.
             existing_columns = self.native_table.get_columns()
-            preserve_widths = len(existing_columns) == len(self.interface._columns)
-            preserved_widths = (
-                [column.get_width() for column in existing_columns]
-                if preserve_widths
-                else None
-            )
+            preserved_widths = [column.get_width() for column in existing_columns]
 
             for column in existing_columns:
                 self.native_table.remove_column(column)
             self._create_columns()
 
-            if preserved_widths is not None:
-                for column, width in zip(
-                    self.native_table.get_columns(), preserved_widths, strict=True
-                ):
-                    if width > 0:
-                        column.set_fixed_width(width)
+            for column, width in zip(
+                self.native_table.get_columns(),
+                preserved_widths,
+                strict=True,
+            ):
+                if width > 0:
+                    column.set_fixed_width(width)
 
             types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._columns)
             self.store = Gtk.ListStore(*types)
