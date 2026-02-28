@@ -34,6 +34,7 @@ try:
     from .widgets.table import Table
     from .widgets.textinput import TextInput
     from .widgets.timeinput import TimeInput
+    from .widgets.tree import Tree
     from .widgets.webview import WebView
     from .window import MainWindow, Window
 except ModuleNotFoundError as exc:  # pragma: no cover
@@ -80,6 +81,7 @@ __all__ = [
     "Table",
     "TextInput",
     "TimeInput",
+    "Tree",
     "WebView",
     "ImageView",
     "dialogs",

@@ -19,6 +19,12 @@ from .properties import (  # noqa: F401
     test_font,
 )
 
+# flag for collapse/expand preservation when changing tree structure
+COLLAPSE_ON_INSERT_DELETE = "collapse_on_insert_delete"
+
+# flag for selection preservation when changing tree structure
+SELECTION_CLEARED_ON_INSERT_DELETE = "selection_cleared_on_insert_delete"
+
 
 @pytest.fixture
 def verify_font_sizes():
@@ -113,7 +119,7 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 
 @pytest.fixture
-def headerless_widget(source, on_select_handler):
+async def headerless_widget(source, on_select_handler):
     skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
         data=source,
@@ -139,7 +145,7 @@ async def headerless_probe(main_window, headerless_widget):
 
 
 @pytest.fixture
-def multiselect_widget(source, on_select_handler):
+async def multiselect_widget(source, on_select_handler):
     # Although Android *has* a table implementation, it needs to be rebuilt.
     skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
@@ -681,6 +687,52 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 4), 0, "A4")
     probe.assert_cell_content((0, 5), 0, "AX")
 
+    # Delete a selected row
+    # - ensure row is visible
+    await probe.expand_tree()
+    await probe.redraw("Tree expanded")
+    # - select row
+    await probe.select_row((0, 2))
+    await probe.redraw("Row has been selected")
+    assert widget.selection == widget.data[0][2]
+    # - delete row
+    del widget.data[0][2]
+    await probe.redraw("Row has been removed")
+    assert probe.child_count((0,)) == 5
+    probe.assert_cell_content((0, 2), 0, "A3")
+    # - nothing should be selected
+    assert widget.selection is None
+    # - parent should still be expanded
+    if not getattr(probe, COLLAPSE_ON_INSERT_DELETE, False):
+        assert probe.is_expanded(widget.data[0])
+    else:
+        assert not probe.is_expanded(widget.data[0])
+
+    # Insert a row at selection
+    # - ensure row is visible
+    await probe.expand_tree()
+    await probe.redraw("Tree expanded")
+    # - select row
+    await probe.select_row((0, 2))
+    await probe.redraw("Row has been selected")
+    assert widget.selection == widget.data[0][2]
+    # - insert row, which is missing a B accessor
+    widget.data[0].insert(2, {"a": "AY", "c": "CY"})
+    await probe.redraw("Partial row has been appended")
+    assert probe.child_count((0,)) == 6
+    probe.assert_cell_content((0, 2), 0, "AY")
+    probe.assert_cell_content((0, 3), 0, "A3")
+    # - check selection is original object or has been cleared
+    if not getattr(probe, SELECTION_CLEARED_ON_INSERT_DELETE, False):
+        assert widget.selection == widget.data[0][3]
+    else:
+        assert widget.selection is None
+    # - parent should still be expanded
+    if not getattr(probe, COLLAPSE_ON_INSERT_DELETE, False):
+        assert probe.is_expanded(widget.data[0])
+    else:
+        assert not probe.is_expanded(widget.data[0])
+
     # Insert a new root
     widget.data.insert(0, {"a": "A!", "b": "B!", "c": "C!"})
     await probe.redraw("New root row has been appended")
@@ -862,8 +914,9 @@ async def test_cell_widget(widget, probe):
     with warning_check:
         widget.data = data
 
-    await probe.expand_tree()
-    await probe.redraw("Tree has data with widgets")
+        # Qt backend doesn't know there are widgets until the row is expanded
+        await probe.expand_tree()
+        await probe.redraw("Tree has data with widgets")
 
     probe.assert_cell_content((0, 0), 0, "A0")
     probe.assert_cell_content((0, 0), 1, "B0")

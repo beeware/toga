@@ -135,16 +135,25 @@ def test_create_fallback_missing(monkeypatch, app, capsys):
 
 
 def test_create_fallback_unloadable(monkeypatch, app, capsys):
-    """If a resource exists, but can't be loaded, an error is raised."""
-    # Prime the dummy so the app icon cannot be loaded
-    monkeypatch.setattr(
-        DummyIcon,
-        "ICON_FAILURE",
-        ValueError("Icon could not be loaded"),
-    )
+    """If a resource exists, but can't be loaded, a fallback icon is used."""
+    original_init = DummyIcon.__init__
 
-    with pytest.raises(ValueError):
-        toga.Icon("resources/sample")
+    def fail_sample_icon(self, interface, path):
+        if interface.path == Path("resources/sample"):
+            raise ValueError("Icon could not be loaded")
+        original_init(self, interface, path)
+
+    monkeypatch.setattr(DummyIcon, "__init__", fail_sample_icon)
+
+    icon = toga.Icon("resources/sample")
+
+    assert icon._impl is not None
+    assert icon._impl.interface == toga.Icon.DEFAULT_ICON
+
+    assert (
+        "WARNING: Unable to load icon resources/sample"
+        in capsys.readouterr().out.replace("\\", "/")
+    )
 
 
 def test_create_fallback_variants(monkeypatch, app, capsys):
@@ -196,6 +205,31 @@ def test_create_app_icon_missing(monkeypatch, app, capsys):
 
     # No warning was printed, as we're running as a script.
     assert capsys.readouterr().out == ""
+
+
+def test_create_app_icon_unloadable(monkeypatch, app, capsys):
+    """If the app icon exists, but can't be loaded, a fallback icon is used."""
+    # Patch the app name to a name that will exist
+    monkeypatch.setattr(app, "_app_name", "sample")
+
+    original_init = DummyIcon.__init__
+
+    def fail_sample_icon(self, interface, path):
+        if interface.path == Path("resources/sample"):
+            raise ValueError("Icon could not be loaded")
+        original_init(self, interface, path)
+
+    monkeypatch.setattr(DummyIcon, "__init__", fail_sample_icon)
+
+    icon = toga.Icon(_APP_ICON)
+
+    assert icon._impl is not None
+    assert icon._impl.interface == toga.Icon.DEFAULT_ICON
+
+    assert (
+        "WARNING: Unable to load app icon resources/sample"
+        in capsys.readouterr().out.replace("\\", "/")
+    )
 
 
 def test_create_app_icon_non_script(monkeypatch, app, capsys):
