@@ -59,7 +59,16 @@ If the value provided by the title or subtitle accessor is `None`, or the access
 
 The icon accessor should return an [`Icon`][toga.Icon]. If it returns `None`, or the accessor isn't defined, then no icon will be displayed, but space for the icon will remain in the layout.
 
-Items in a DetailedList can respond to a primary and secondary action. On platforms that use swipe interactions, the primary action will be associated with "swipe left", and the secondary action will be associated with "swipe right". Other platforms may implement the primary and secondary actions using a different UI interaction (e.g., a right-click context menu). The primary and secondary actions will only be enabled in the DetailedList UI if a handler has been provided.
+Items in a DetailedList can respond to a primary and secondary action. 
+
+* In **Android**: Long press an item, a menu pops up, primary and secondary are inside.
+* In **iOS**: "swipe left" is the primary action, and "swipe right" the secondary action. 
+* In **GTK**: Right click displays buttons for available actions.
+* In **macOS**: Right click displays a context menu with available actions.
+* In **Qt**: Buttons for all actions are provided without any additional action.
+* **Windows** doesn't currently support actions or delete.
+
+The primary and secondary actions will only be enabled in the DetailedList UI if a handler has been provided.
 
 By default, the primary and secondary action will be labeled as "Delete" and "Action", respectively. These names can be overridden by providing a `primary_action` and `secondary_action` argument when constructing the DetailedList. Although the primary action is labeled "Delete" by default, the DetailedList will not perform any data deletion as part of the UI interaction. It is the responsibility of the application to implement any data deletion behavior as part of the `on_primary_action` handler.
 
