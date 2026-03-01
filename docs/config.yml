@@ -30,6 +30,7 @@ extra:
   "not_supported": ^&#x274C;^
   "fully_supported": ●
   "partly_supported": ○
+  generator: false
 
 extra_css:
   - stylesheets/toga.css
@@ -42,6 +43,8 @@ theme:
   features:
     - content.tabs.link
     - toc.follow
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.indexes
     - navigation.footer
     - search.suggest
@@ -70,23 +73,60 @@ theme:
         name: Switch to system preference
 
 markdown_extensions:
+  # PyMdown Extensions
+  pymdownx.caret: {}
   pymdownx.highlight: {}
   pymdownx.superfences: {}
-  pymdownx.blocks.admonition: {}
   pymdownx.blocks.caption: {}
-  pymdownx.details: {}
-  pymdownx.caret: {}
+  pymdownx.blocks.admonition:  # Enables admonitions.
+    types:
+      - note
+      - abstract
+      - info
+      - tip
+      - success
+      - question
+      - warning
+      - failure
+      - danger
+      - bug
+      - example
+      - quote
+  pymdownx.blocks.details:  # Enables collapsible content.
+    types:
+      - {name: details-note, class: note}
+      - {name: details-abstract, class: abstract}
+      - {name: details-info, class: info}
+      - {name: details-tip, class: tip}
+      - {name: details-success, class: success}
+      - {name: details-question, class: question}
+      - {name: details-warning, class: warning}
+      - {name: details-failure, class: failure}
+      - {name: details-danger, class: danger}
+      - {name: details-bug, class: bug}
+      - {name: details-example, class: example}
+      - {name: details-quote, class: quote}
+  pymdownx.magiclink:  # Among other things, enables GitHub shorthand references.
+    provider: "github"
+    user: "beeware"
+    repo: "toga"
+    repo_url_shortener: true
+    repo_url_shorthand: true
+    normalize_issue_symbols: true
   pymdownx.blocks.tab:
     alternate_style: true
   pymdownx.snippets:
     base_path: ["docs/en", "examples"]
     url_download: true
     check_paths: true
+  # Python Markdown Extensions
+  attr_list: {}
+  footnotes: {}
+  smarty:  # Enables easy em and en dashes.
+    smart_quotes: false
   toc:
     permalink: true
     title: On this page
-  attr_list: {}
-  footnotes: {}
 
 plugins:
   search: {}

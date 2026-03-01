@@ -293,6 +293,8 @@ async def test_actions(
     on_secondary_action_handler.assert_called_once_with(widget, row=widget.data[4])
     on_secondary_action_handler.reset_mock()
 
+    await probe.redraw("Before perform")
+
     # Disable secondary action
     widget.on_secondary_action = None
     await probe.perform_secondary_action(5, active=False)

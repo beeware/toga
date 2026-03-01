@@ -5,3 +5,6 @@ docs_dir: en
 
 theme:
   language: en
+
+extra:
+  header: {}
