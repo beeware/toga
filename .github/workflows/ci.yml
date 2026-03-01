@@ -69,6 +69,39 @@ jobs:
       build-subdirectory: ${{ matrix.subdir }}
       attest: ${{ inputs.attest-package }}
 
+  docs-lint:
+    name: Documentation linting
+    needs: [ pre-commit ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.X"
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            .pre-commit-config.yaml
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get install aspell aspell-en
+
+      - name: Update pip
+        run: python -m pip install -U pip
+
+      - name: Install Tox
+        run: python -m pip install --group 'tox-uv'
+
+      - name: Perform lint checks
+        run: python -m tox -e docs-lint
+
   core-and-travertino:
     name: Test ${{ matrix.package }} (${{ matrix.platform }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
@@ -236,7 +269,6 @@ jobs:
           briefcase-run-args: ""
           setup-python: true
           testbed-app: "testbed"
-          pre-copy-command: ""
           copy-command: "cp -r"
 
         - backend: "macOS-x86_64"
@@ -492,10 +524,8 @@ jobs:
               | sudo tee /etc/udev/rules.d/99-kvm4all.rules
             sudo udevadm control --reload-rules
             sudo udevadm trigger --name-match=kvm
-            sudo apt install adb
           app-user-data-path: /data/user/0/org.beeware.toga.testbed/files/data/
-          pre-copy-command: adb root  # has to be done *after* emulator is started
-          copy-command: adb pull
+          copy-command: ADB=$ANDROID_HOME/platform-tools/adb && $ADB root && $ADB pull
     steps:
     # GitHub runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
@@ -548,7 +578,6 @@ jobs:
       if: failure()
       run: |
         mkdir -p testbed/app_data
-        ${{ matrix.pre-copy-command }}
         ${{ matrix.copy-command }} "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
