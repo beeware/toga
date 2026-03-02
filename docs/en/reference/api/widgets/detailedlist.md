@@ -63,8 +63,8 @@ Items in a DetailedList can respond to a primary and secondary action.
 
 * On **Android**, when an item is long-pressed, a menu with the primary and secondary actions is displayed.
 * On **iOS**, the primary action is displayed when swiping to the left, and the secondary action is displayed when swiping to the right. 
-* On **GTK**, a right click on the selected row displays the buttons for primary and secondary action.
-* On **macOS**, a right click displays a context menu with the primary and secondary actions.
+* On **GTK**, a right click on the selected row, displays the buttons for primary and secondary action.
+* On **macOS**, a right click on the selected row, displays a context menu with the primary and secondary actions.
 * On **Qt**, primary and secondary actions are displayed as buttons shown in the rows of the DetailedList.
 * On **Windows**, the implementation does not currently support primary or secondary actions.
 
