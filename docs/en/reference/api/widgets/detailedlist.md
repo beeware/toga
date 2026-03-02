@@ -61,12 +61,12 @@ The icon accessor should return an [`Icon`][toga.Icon]. If it returns `None`, or
 
 Items in a DetailedList can respond to a primary and secondary action. 
 
-* In **Android**: Long press an item, a menu with the primary and secondary actions is displayed.
-* In **iOS**: Swipe left is the primary action, and swipe right the secondary action. 
-* In **GTK**: Right click displays buttons for primary and secondary action.
-* In **macOS**: Right click displays a context menu with primary and secondary action.
-* In **Qt**: Primary and secondary actions are displayed as standalone buttons.
-* **Windows** doesn't currently support actions or delete.
+* On **Android**, when an item is long-pressed, a menu with the primary and secondary actions is displayed.
+* On **iOS**, the primary action is displayed when swiping to the left, and the secondary action is displayed when swiping to the right. 
+* On **GTK**, a right click on the selected row displays the buttons for primary and secondary action.
+* On **macOS**, a right click displays a context menu with the primary and secondary actions.
+* On **Qt**, primary and secondary actions are displayed as buttons shown in the rows of the DetailedList.
+* On **Windows**, the implementation does not currently support primary or secondary actions.
 
 The primary and secondary actions will only be enabled in the DetailedList UI if a handler has been provided.
 
