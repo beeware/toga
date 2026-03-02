@@ -59,7 +59,7 @@ If the value provided by the title or subtitle accessor is `None`, or the access
 
 The icon accessor should return an [`Icon`][toga.Icon]. If it returns `None`, or the accessor isn't defined, then no icon will be displayed, but space for the icon will remain in the layout.
 
-Items in a DetailedList can respond to a primary and secondary action. 
+Items in a DetailedList can respond to a primary and secondary action through mechanisms specific to each platform:
 
 * On **Android**, when an item is long-pressed, a menu with the primary and secondary actions is displayed.
 * On **iOS**, the primary action is displayed when swiping to the left, and the secondary action is displayed when swiping to the right. 
