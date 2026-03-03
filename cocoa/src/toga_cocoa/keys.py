@@ -34,7 +34,7 @@ KEY_CHARS_TO_TOGA = {
     chr(0xF714): Key.F17,
     chr(0xF715): Key.F18,
     chr(0xF716): Key.F19,
-    chr(0xF717): Key.F20,
+    # chr(0xF717): Key.F20,
     chr(0xF729): Key.HOME,
     chr(0xF72B): Key.END,
     chr(0xF728): Key.DELETE,
