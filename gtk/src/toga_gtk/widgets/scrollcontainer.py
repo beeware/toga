@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..container import TogaContainer
 from ..libs import GTK_VERSION, Gtk
 from .base import Widget
@@ -9,8 +11,12 @@ class ScrollContainer(Widget):
     def create(self):
         self.native = Gtk.ScrolledWindow()
 
-        self.native.get_hadjustment().connect("changed", self.gtk_on_changed)
-        self.native.get_vadjustment().connect("changed", self.gtk_on_changed)
+        self.native.get_hadjustment().connect(
+            "changed", WeakrefCallable(self.gtk_on_changed)
+        )
+        self.native.get_vadjustment().connect(
+            "changed", WeakrefCallable(self.gtk_on_changed)
+        )
 
         # Set this minimum size of scroll windows because we must reserve space for
         # scrollbars when splitter resized. See

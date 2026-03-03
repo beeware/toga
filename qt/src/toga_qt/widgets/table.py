@@ -150,6 +150,8 @@ class Table(Widget):
     def create(self):
         # Create the List widget
         self.native = QTableView()
+        self._autofit_columns = True
+        self._resizing_columns = False
 
         self.native_model = TableSourceModel(
             getattr(self.interface, "_data", ListSource(self.interface.accessors)),
@@ -169,12 +171,15 @@ class Table(Widget):
             # Hide the header
             self.native.horizontalHeader().hide()
 
-        self.native.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.Stretch
-        )
+        header = self.native.horizontalHeader()
+        header.setMinimumSectionSize(16)
+        header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+        header.sectionResized.connect(self.qt_column_resized)
+        header.setCascadingSectionResizes(True)
 
         self.native.selectionModel().selectionChanged.connect(self.qt_selection_changed)
         self.native.activated.connect(self.qt_activated)
+        self._resize_columns()
 
     def qt_selection_changed(self, added, removed):
         self.interface.on_select()
@@ -184,9 +189,12 @@ class Table(Widget):
         if index.isValid():  # pragma: no branch
             self.interface.on_activate(row=self.interface.data[index.row()])
 
+    def qt_column_resized(self, index, old_size, new_size):
+        if not self._resizing_columns:
+            self._autofit_columns = False
+
     def change_source(self, source):
         self.native_model.set_source(source)
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
 
     # Listener Protocol implementation
 
@@ -213,19 +221,46 @@ class Table(Widget):
         index = self.native.model().index(row, 0, QModelIndex())
         self.native.scrollTo(index)
 
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        if self._autofit_columns:
+            self._resize_columns()
+
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
+
+    def _resize_columns(self):
+        column_count = self.native_model.columnCount()
+        if column_count == 0:
+            return
+
+        width = self.native.viewport().width()
+
+        header = self.native.horizontalHeader()
+        section_width = max(header.minimumSectionSize(), width // column_count)
+        remainder = max(width - section_width * column_count, 0)
+
+        self._resizing_columns = True
+        try:
+            for index in range(column_count):
+                header.resizeSection(
+                    index,
+                    section_width + (1 if index < remainder else 0),
+                )
+        finally:
+            self._resizing_columns = False
 
     def insert_column(self, index, heading, accessor):
         self.native_model._columns.insert(index, self.interface._columns[index])
         self.native_model.beginInsertColumns(QModelIndex(), index, index)
         self.native_model.endInsertColumns()
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
+        self._autofit_columns = True
+        self._resize_columns()
 
     def remove_column(self, index):
         del self.native_model._columns[index]
         self.native_model.beginRemoveColumns(QModelIndex(), index, index)
         self.native_model.endRemoveColumns()
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
+        self._autofit_columns = True
+        self._resize_columns()

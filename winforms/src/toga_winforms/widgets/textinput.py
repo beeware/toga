@@ -1,5 +1,5 @@
-from ctypes import c_uint, windll
-from ctypes.wintypes import HWND, WPARAM
+from ctypes import c_void_p, c_wchar_p, cast
+from ctypes.wintypes import WPARAM
 from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
@@ -8,6 +8,8 @@ from toga.handlers import WeakrefCallable
 from toga_winforms.colors import native_color
 from toga_winforms.libs.fonts import HorizontalTextAlignment
 
+from ..libs.user32 import SendMessageW
+from ..libs.windowconstants import EM_SETCUEBANNER
 from .base import Widget
 
 
@@ -20,7 +22,7 @@ class TextInput(Widget):
         self.native.GotFocus += WeakrefCallable(self.winforms_got_focus)
         self.native.LostFocus += WeakrefCallable(self.winforms_lost_focus)
 
-        self._placeholder = ""
+        self._placeholder = c_wchar_p("")
 
         self.error_provider = WinForms.ErrorProvider()
         self.error_provider.SetIconAlignment(
@@ -36,21 +38,21 @@ class TextInput(Widget):
         self.native.ReadOnly = value
 
     def get_placeholder(self):
-        return self._placeholder
+        return self._placeholder.value
 
-    def set_placeholder(self, value):
-        self._placeholder = value
+    def set_placeholder(self, value: str):
+        self._placeholder = c_wchar_p(value)
         # This solution is based on https://stackoverflow.com/questions/4902565.
-        EM_SETCUEBANNER = c_uint(0x1501)
         # value 0 means placeholder is hidden as soon the input gets focus
         # value 1 means placeholder is hidden only after something is typed into input
         show_placeholder_on_focus = WPARAM(1)
-        window_handle = HWND(self.native.Handle.ToInt32())
-        windll.user32.SendMessageW(
+        window_handle = int(self.native.Handle.ToString())
+        placeholder_address = cast(self._placeholder, c_void_p).value
+        SendMessageW(
             window_handle,
             EM_SETCUEBANNER,
             show_placeholder_on_focus,
-            self._placeholder,
+            placeholder_address,
         )
 
     def get_value(self):

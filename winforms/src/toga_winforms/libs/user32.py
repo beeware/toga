@@ -1,6 +1,9 @@
-from ctypes import c_void_p, windll, wintypes
+from ctypes import c_void_p, windll
+from ctypes.wintypes import BOOL, DWORD, HMONITOR, HWND, LPARAM, LPRECT, UINT, WPARAM
 
 from System import Environment
+
+from .win32 import LRESULT
 
 user32 = windll.user32
 
@@ -13,7 +16,7 @@ DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = -4
 win_version = Environment.OSVersion.Version
 if (win_version.Major, win_version.Minor, win_version.Build) >= (10, 0, 15063):
     SetProcessDpiAwarenessContext = user32.SetProcessDpiAwarenessContext
-    SetProcessDpiAwarenessContext.restype = wintypes.BOOL
+    SetProcessDpiAwarenessContext.restype = BOOL
     SetProcessDpiAwarenessContext.argtypes = [c_void_p]
 
     SetThreadDpiAwarenessContext = user32.SetThreadDpiAwarenessContext
@@ -32,5 +35,11 @@ else:  # pragma: no cover
 MONITOR_DEFAULTTONEAREST = 2
 
 MonitorFromRect = user32.MonitorFromRect
-MonitorFromRect.restype = wintypes.HMONITOR
-MonitorFromRect.argtypes = [wintypes.LPRECT, wintypes.DWORD]
+MonitorFromRect.restype = HMONITOR
+MonitorFromRect.argtypes = [LPRECT, DWORD]
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendmessagew
+SendMessageW = user32.SendMessageW
+SendMessageW.restype = LRESULT
+SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM]

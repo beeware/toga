@@ -2,6 +2,8 @@ import warnings
 
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..libs import GTK_VERSION, GdkPixbuf, GObject, Gtk
 from .base import Widget
 
@@ -35,14 +37,16 @@ class Table(Widget):
         # The scroll view is the native, because it's the outer container.
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_table = Gtk.TreeView(model=self.store)
-            self.native_table.connect("row-activated", self.gtk_on_row_activated)
+            self.native_table.connect(
+                "row-activated", WeakrefCallable(self.gtk_on_row_activated)
+            )
 
             self.selection = self.native_table.get_selection()
             if self.interface.multiple_select:
                 self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
             else:
                 self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-            self.selection.connect("changed", self.gtk_on_select)
+            self.selection.connect("changed", WeakrefCallable(self.gtk_on_select))
 
             self._create_columns()
         else:  # pragma: no-cover-if-gtk3
@@ -78,6 +82,9 @@ class Table(Widget):
             column.pack_start(value, True)
             column.add_attribute(value, "text", i * 2 + 2)
 
+            # Preserve a reference to the accessor for the column
+            column.accessor = toga_column.accessor
+
             self.native_table.append_column(column)
 
     def focus(self):
@@ -96,9 +103,25 @@ class Table(Widget):
             # updates by deferring row rendering until the update is complete.
             self.native_table.set_model(None)
 
-            for column in self.native_table.get_columns():
+            # Preserve widths when columns are re-created.
+            existing_columns = self.native_table.get_columns()
+            preserved_widths = {
+                column.accessor: column.get_width() for column in existing_columns
+            }
+
+            for column in existing_columns:
                 self.native_table.remove_column(column)
+
             self._create_columns()
+
+            for column in self.native_table.get_columns():
+                try:
+                    width = preserved_widths[column.accessor]
+                    if width > 0:
+                        column.set_fixed_width(width)
+                except KeyError:
+                    # It's a new or unknown column
+                    pass
 
             types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._columns)
             self.store = Gtk.ListStore(*types)

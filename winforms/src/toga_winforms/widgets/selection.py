@@ -8,23 +8,17 @@ from toga.handlers import WeakrefCallable
 from .base import Widget
 
 
-class TogaComboBox(WinForms.ComboBox):
-    def __init__(self, impl):
-        super().__init__()
-        self.impl = impl
-        self.DropDownStyle = WinForms.ComboBoxStyle.DropDownList
-        self.SelectedIndexChanged += WeakrefCallable(
-            self.winforms_selected_index_changed
-        )
-
-    def winforms_selected_index_changed(self, sender, event):
-        self.impl.on_change()
-
-
 class Selection(Widget):
     def create(self):
-        self.native = TogaComboBox(self)
+        self.native = WinForms.ComboBox()
+        self.native.DropDownStyle = WinForms.ComboBoxStyle.DropDownList
+        self.native.SelectedIndexChanged += WeakrefCallable(
+            self.winforms_selected_index_changed
+        )
         self._send_notifications = True
+
+    def winforms_selected_index_changed(self, sender, event):
+        self.on_change()
 
     @contextmanager
     def suspend_notifications(self):

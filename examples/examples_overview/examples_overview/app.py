@@ -2,7 +2,10 @@ import os
 import platform
 import subprocess
 import sys
+import webbrowser
 from pathlib import Path
+
+import markdown
 
 import toga
 from toga.constants import COLUMN
@@ -39,7 +42,11 @@ class ExamplesOverviewApp(toga.App):
         except OSError:
             readme_text = "README could not be loaded"
 
-        self.info_view.value = readme_text
+        self.info_view.set_content(None, markdown.markdown(readme_text))
+
+    def no_navigation(self, widget, url, **kwargs):
+        webbrowser.open(url)
+        return False
 
     def startup(self):
         # ==== Set up main window ======================================================
@@ -87,8 +94,10 @@ class ExamplesOverviewApp(toga.App):
 
         # ==== View of example README ==================================================
 
-        self.info_view = toga.MultilineTextInput(
-            placeholder="Please select example", readonly=True, margin=1
+        self.info_view = toga.WebView(
+            content="Please select example",
+            margin=1,
+            on_navigation_starting=self.no_navigation,
         )
 
         # ==== Assemble layout =========================================================

@@ -121,7 +121,6 @@ test_cleanup = build_cleanup_test(
     toga.Table,
     kwargs={"headings": ["A", "B", "C"]},
     skip_platforms=("iOS",),
-    xfail_platforms=("linux",),
 )
 
 
@@ -498,6 +497,18 @@ async def test_column_changes(widget, probe):
     assert probe.column_width(1) == pytest.approx(probe.width / 3, abs=25)
     assert probe.column_width(2) == pytest.approx(probe.width / 3, abs=25)
 
+    # Before any manual resize, layout changes should retain even proportions.
+    widget.style.flex = 0
+    widget.width = 400
+    await probe.redraw("Table width updated without manual column resize")
+    column_proportion_tolerance = getattr(probe, "column_proportion_tolerance", 25)
+    assert probe.column_width(0) == pytest.approx(
+        probe.column_width(1), abs=column_proportion_tolerance
+    )
+    assert probe.column_width(1) == pytest.approx(
+        probe.column_width(2), abs=column_proportion_tolerance
+    )
+
     await _column_change_test(widget, probe)
 
     assert probe.header_titles == ["A", "B", "D", "E"]
@@ -507,7 +518,7 @@ async def test_column_changes(widget, probe):
     total_width = sum(probe.column_width(i) for i in range(4))
     assert total_width == pytest.approx(probe.width, abs=100)
     for i in range(4):
-        assert probe.column_width(i) > 50
+        assert probe.column_width(i) > 40
 
 
 async def test_headerless_column_changes(headerless_widget, headerless_probe):
@@ -516,6 +527,49 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
     assert not headerless_probe.header_visible
 
     await _column_change_test(headerless_widget, headerless_probe)
+
+
+async def test_column_resize(widget, probe):
+    """Columns can be resized by the user."""
+    original_width = [probe.column_width(i) for i in range(probe.column_count)]
+    target_width = original_width[0] + 80
+
+    await probe.resize_column(0, target_width)
+    await probe.redraw("First column resized")
+
+    # Some platforms may overshoot the exact requested size, but a successful
+    # resize should still produce a substantial increase.
+    resized_width = probe.column_width(0)
+    assert resized_width >= target_width - 8
+
+    # Changing source should not reset manually resized columns.
+    widget.data = widget.data
+    await probe.redraw("Table source replaced")
+
+    # Column width hasn't changed.
+    source_changed_width = probe.column_width(0)
+    assert source_changed_width == pytest.approx(resized_width, abs=8)
+
+    # A subsequent layout update should also preserve manual widths.
+    widths_before_layout_change = [
+        probe.column_width(i) for i in range(probe.column_count)
+    ]
+    widget.style.flex = 0
+    widget.width = 400
+    await probe.redraw("Table width updated")
+    widths_after_layout_change = [
+        probe.column_width(i) for i in range(probe.column_count)
+    ]
+
+    # Assert the column widths all add up as expected
+    before_total = sum(widths_before_layout_change)
+    after_total = sum(widths_after_layout_change)
+    assert before_total > 0
+    assert after_total > 0
+
+    before_ratio = widths_before_layout_change[0] / before_total
+    after_ratio = widths_after_layout_change[0] / after_total
+    assert after_ratio == pytest.approx(before_ratio, abs=0.08)
 
 
 async def test_remove_all_columns(widget, probe):

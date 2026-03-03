@@ -17,6 +17,7 @@ sources = ["examples_overview"]
 requires = [
     "../../travertino",
     "../../core",
+    "markdown",
 ]
 
 

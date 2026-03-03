@@ -598,6 +598,26 @@ def test_rect(widget):
     assert draw_op.height == 40
 
 
+def test_round_rect(widget):
+    """A rect operation can be added."""
+    draw_op = widget.root_state.round_rect(10, 20, 30, 40, 5)
+
+    assert_action_performed(widget, "redraw")
+    assert repr(draw_op) == "RoundRect(x=10, y=20, width=30, height=40, radii=5)"
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == [
+        ("round rect", {"x": 10, "y": 20, "width": 30, "height": 40, "radii": 5}),
+    ]
+
+    # All the attributes can be retrieved.
+    assert draw_op.x == 10
+    assert draw_op.y == 20
+    assert draw_op.width == 30
+    assert draw_op.height == 40
+    assert draw_op.radii == 5
+
+
 SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
 
 

@@ -2,6 +2,7 @@ import html
 
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
 from toga_gtk.libs import GTK_VERSION, Gdk, Gio, Gtk, Pango
 
 from .base import Widget
@@ -117,7 +118,9 @@ class DetailedList(Widget):
         self.native_detailedlist = Gtk.ListBox()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_detailedlist.set_selection_mode(Gtk.SelectionMode.SINGLE)
-            self.native_detailedlist.connect("row-selected", self.gtk_on_row_selected)
+            self.native_detailedlist.connect(
+                "row-selected", WeakrefCallable(self.gtk_on_row_selected)
+            )
         else:  # pragma: no-cover-if-gtk3
             pass
 
@@ -142,7 +145,9 @@ class DetailedList(Widget):
 
         self.native_vadj = scrolled_window.get_vadjustment()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.native_vadj.connect("value-changed", self.gtk_on_value_changed)
+            self.native_vadj.connect(
+                "value-changed", WeakrefCallable(self.gtk_on_value_changed)
+            )
         else:  # pragma: no-cover-if-gtk3
             pass
 
@@ -162,7 +167,9 @@ class DetailedList(Widget):
                 "view-refresh-symbolic", Gtk.IconSize.BUTTON
             )
             self.native_refresh_button.set_can_focus(False)
-            self.native_refresh_button.connect("clicked", self.gtk_on_refresh_clicked)
+            self.native_refresh_button.connect(
+                "clicked", WeakrefCallable(self.gtk_on_refresh_clicked)
+            )
 
             style_context = self.native_refresh_button.get_style_context()
             style_context.add_class("osd")
@@ -185,7 +192,7 @@ class DetailedList(Widget):
             self.gesture = Gtk.GestureMultiPress.new(self.native_detailedlist)
             self.gesture.set_button(3)
             self.gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
-            self.gesture.connect("pressed", self.gtk_on_right_click)
+            self.gesture.connect("pressed", WeakrefCallable(self.gtk_on_right_click))
 
             # Set up a box that contains action buttons. This widget can be reused
             # for any row when it is activated.
@@ -205,7 +212,7 @@ class DetailedList(Widget):
         )
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_primary_action_button.connect(
-                "clicked", self.gtk_on_primary_clicked
+                "clicked", WeakrefCallable(self.gtk_on_primary_clicked)
             )
             action_buttons_hbox.pack_start(
                 self.native_primary_action_button, False, False, 10
@@ -222,7 +229,7 @@ class DetailedList(Widget):
         )
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_secondary_action_button.connect(
-                "clicked", self.gtk_on_secondary_clicked
+                "clicked", WeakrefCallable(self.gtk_on_secondary_clicked)
             )
             action_buttons_hbox.pack_start(
                 self.native_secondary_action_button, False, False, 10

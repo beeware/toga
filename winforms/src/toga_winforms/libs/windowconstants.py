@@ -1,0 +1,23 @@
+# Window constants
+
+# Edit Messages
+EM_SETCUEBANNER = 0x1501
+
+# List-View Item Format
+LVIF_TEXT = 0x0001
+LVIF_IMAGE = 0x0002
+LVIF_STATE = 0x0008
+
+# List-View Management
+LVM_GETEXTENDEDLISTVIEWSTYLE = 0x1037
+LVM_SETEXTENDEDLISTVIEWSTYLE = 0x1036
+
+# List-View Notification
+LVN_GETDISPINFOW = 0xFFFFFF4F
+
+# List-View Styles (Extended)
+LVS_EX_SUBITEMIMAGES = 0x2
+
+# Window Message
+WM_NCDESTROY = 0x0082
+WM_REFLECT_NOTIFY = 0x204E
