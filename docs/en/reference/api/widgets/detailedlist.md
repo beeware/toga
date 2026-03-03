@@ -59,9 +59,8 @@ If the value provided by the title or subtitle accessor is `None`, or the access
 
 The icon accessor should return an [`Icon`][toga.Icon]. If it returns `None`, or the accessor isn't defined, then no icon will be displayed, but space for the icon will remain in the layout.
 
-Items in a DetailedList can respond to a primary action, a secondary action, and a refresh action. The implementation of each action varies by platform:
+Items in a DetailedList will respond to a primary and secondary action if the `on_primary_action` and `on_secondary_action` handlers are set:
 
-**Primary and secondary actions:**
 * On **Android**, a long press displays a menu with the primary and secondary actions.
 * On **iOS**, swiping left triggers the primary action, and swiping right triggers the secondary action.
 * On **GTK**, a right click displays buttons for the primary and secondary actions.
@@ -71,11 +70,9 @@ Items in a DetailedList can respond to a primary action, a secondary action, and
 
 By default, the primary and secondary action will be labeled as "Delete" and "Action", respectively. These names can be overridden by providing a `primary_action` and `secondary_action` argument when constructing the DetailedList. Although the primary action is labeled "Delete" by default, the DetailedList will not perform any data deletion as part of the UI interaction. It is the responsibility of the application to implement any data deletion behavior as part of the `on_primary_action` handler.
 
-The DetailedList as a whole can also respond to a refresh UI action. This is usually implemented as a "pull down" action, such as you might see on a social media timeline. This action will only be enabled in the UI if an `on_refresh` handler has been provided.
+The DetailedList as a whole will also respond to a refresh UI action if an `on_refresh` handler is set:
 
-The refresh implementation varies by platform:
-* On **macOS**, pulling on the trackpad triggers a refresh.
-* On **iOS** and **Android**, pulling the list triggers a refresh.
+* On **macOS**, **iOS** and **Android**, pulling down at the top of the list triggers a refresh.
 * On **Qt**, a button bar displays a refresh button.
 * On **GTK**, a floating refresh button is displayed when scrolled to the top.
 * On **Windows**, the implementation does not currently support refresh.
