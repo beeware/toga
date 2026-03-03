@@ -74,7 +74,7 @@ By default, the primary and secondary action will be labeled as "Delete" and "Ac
 The DetailedList as a whole can also respond to a refresh UI action. This is usually implemented as a "pull down" action, such as you might see on a social media timeline. This action will only be enabled in the UI if an `on_refresh` handler has been provided.
 
 The refresh implementation varies by platform:
-* On **macOS**, pulling on the scrollpad triggers a refresh.
+* On **macOS**, pulling on the trackpad triggers a refresh.
 * On **iOS** and **Android**, pulling the list triggers a refresh.
 * On **Qt**, a button bar displays a refresh button.
 * On **GTK**, a floating refresh button is displayed when scrolled to the top.
