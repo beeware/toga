@@ -111,6 +111,8 @@ and then add the following to the application's `pyproject.toml`:
 [project.entry-points."toga_core.backend.toga_textual"]
 Switch = "my_app.textual_switch:Switch"
 ```
+The project metadata needs to be updated in your environment, so that Python's `importlib.metadata` is aware of the new widget, which means you will likely like need to re-run `pip install -e .` on your project in your development environment. It should automatically get picked up when you run code or tests using tools like `hatch` or `tox`, which install your project into a clean environment when run, or when you build and install wheels from your project.
+
 With this set-up, you can import and use `toga.Switch` within your application normally.
 
 Ideally, if you have a working implementation of a missing widget, you'd make a pull-request to add it to the appropriate Toga backend.
@@ -131,7 +133,7 @@ freeBSD = "togax_wx"
 App = "togax_wx.app:App"
 Command = "togax_wx.command:Command"
 ```
-and so on.
+and so on, and then update your development environment using `pip` if needed every time you add a new widget to the `pyproject.toml`.
 
 ### Implementing New Interfaces
 
@@ -187,7 +189,7 @@ Checkbox = "extra_switches.gtk_checkbox:Checkbox"
 Toggle = "extra_switches.cocoa_toggle:Toggle"
 Checkbox = "extra_switches.cocoa_checkbox:Checkbox"
 ```
-and so on.
+and so on, and then update your development environment using `pip` if needed.
 
 ## Other Backend-Dependent Objects
 
