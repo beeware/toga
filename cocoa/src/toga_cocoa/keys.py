@@ -2,7 +2,6 @@
 
 from toga import Key
 from toga_cocoa.libs import (
-    NSEventModifierFlagCapsLock,
     NSEventModifierFlagCommand,
     NSEventModifierFlagControl,
     NSEventModifierFlagOption,
@@ -10,7 +9,7 @@ from toga_cocoa.libs import (
 )
 
 # Mapping from Cocoa Event.characters to toga.Key
-KEY_CHARS_TO_TOGA = {
+NON_PRINTABLE_KEYS_TO_TOGA = {
     chr(0x001B): Key.ESCAPE,
     chr(0x0009): Key.TAB,
     chr(0x0008): Key.BACKSPACE,
@@ -47,13 +46,38 @@ KEY_CHARS_TO_TOGA = {
 }
 
 # Add in all the standard printable keys
-KEY_CHARS_TO_TOGA.update(
-    {
-        key.value: key
-        for key in Key
-        if key.is_printable() and not key.value.startswith("numpad")
-    }
-)
+KEY_CHARS_TO_TOGA = {
+    key.value: key
+    for key in Key
+    if key.is_printable() and not key.value.startswith("numpad")
+}
+KEY_CHARS_TO_TOGA.update(NON_PRINTABLE_KEYS_TO_TOGA)
+
+# Shifted punctuation on QWERTY keyboards
+SHIFTED_KEY_CHARS = {
+    "`": "~",
+    "1": "!",
+    "2": "@",
+    "3": "#",
+    "4": "$",
+    "5": "%",
+    "6": "^",
+    "7": "&",
+    "8": "*",
+    "9": "(",
+    "0": ")",
+    "-": "_",
+    "=": "+",
+    "[": "{",
+    "]": "}",
+    ";": ":",
+    "'": '"',
+    "\\": "|",
+    ",": "<",
+    ".": ">",
+    "/": "?",
+    "§": "±",  # International English keyboards
+}
 
 # Numpad needs actual keys pressed to tell difference from other
 # ways of getting the character.
@@ -171,41 +195,71 @@ def cocoa_key(shortcut):
 
 def toga_key(event):
     """Convert a Cocoa NSKeyEvent into a Toga Key."""
-    # Get text for lightweight key input
-    # text = str(event.characters)
-
+    # In general, we can get something close to the Toga keys by using
+    # charactersByApplyingModifiers with command or command-shift set
+    #
+    # Experimentation shows the following behaviour
+    # - on English keyboards, command and command-shift give same key always
+    # - on Latin alphabet keyboards, command uses native layout and
+    #   command-shift gives shifted version of the key, if any
+    # - on non-latin keyboards, command uses QWERTY layout and
+    #   command-shift gives shifted version of the key
+    #
+    # This gives the following heuristic:
+    # - special case numpad and non-printing characters
+    # - look to see what character we get if just Command pressed
+    # - if shift is down
+    #   - see what we get if Command-shift pressed
+    #   - if it is upper-case of unshifted key
+    #     - add the shift modifier, use the original (lower-case) key
+    #   - if shifted and unshifted are different
+    #     - no shift modifier, but use the shifted key
+    #   - if key is a punctuation key:
+    #     - we're likely on an English keyboard, so use shifted QWERTY key
+    #   - otherwise:
+    #     - add the shift modifier and use the original key
+    #
+    # Numpad keys are not differentiated by charactersByApplyingModifiers,
+    # so we'll handle them separately
     modifiers = set()
 
-    # Get unicode for key that was pressed
-    if event.modifierFlags & (NSEventModifierFlagShift):
-        key = str(
-            event.charactersByApplyingModifiers(
-                NSEventModifierFlagCommand | NSEventModifierFlagShift
-            )
-        )
-        if key != key.lower():
-            key = key.lower()
+    if event.keyCode in NUMPAD_KEYCODES:
+        toga_key = NUMPAD_KEYCODES[event.keyCode]
+        if event.modifierFlags & NSEventModifierFlagShift:
+            modifiers.add(Key.SHIFT)
+    elif str(event.charactersIgnoringModifiers) in NON_PRINTABLE_KEYS_TO_TOGA:
+        key = str(event.characters)
+        toga_key = NON_PRINTABLE_KEYS_TO_TOGA[key]
+        if event.modifierFlags & NSEventModifierFlagShift:
             modifiers.add(Key.SHIFT)
     else:
         key = str(event.charactersByApplyingModifiers(NSEventModifierFlagCommand))
+        if event.modifierFlags & NSEventModifierFlagShift:
+            shift_key = str(
+                event.charactersByApplyingModifiers(
+                    NSEventModifierFlagCommand | NSEventModifierFlagShift
+                )
+            )
+            if shift_key != key:
+                if shift_key == key.upper():
+                    modifiers.add(Key.SHIFT)
+                else:
+                    key = shift_key
+            elif key in SHIFTED_KEY_CHARS:
+                # Likely English keyboard
+                key = SHIFTED_KEY_CHARS[key]
+            else:
+                modifiers.add(Key.SHIFT)
+
+        toga_key = KEY_CHARS_TO_TOGA.get(key)
 
     # Handle Modifiers
     if event.modifierFlags & NSEventModifierFlagCommand:
         modifiers.add(Key.MOD_1)
-        # Key is being typed in a command context, no text
-        # text = ""
     if event.modifierFlags & NSEventModifierFlagOption:
         modifiers.add(Key.MOD_2)
     if event.modifierFlags & NSEventModifierFlagControl:
         modifiers.add(Key.MOD_3)
-    if event.modifierFlags & NSEventModifierFlagCapsLock:
-        modifiers.add(Key.CAPSLOCK)
-
-    # Convert key to Toga.Key
-    if event.keyCode in NUMPAD_KEYCODES:
-        toga_key = NUMPAD_KEYCODES[event.keyCode]
-    else:
-        toga_key = KEY_CHARS_TO_TOGA.get(key)
 
     return {"key": toga_key, "modifiers": modifiers}
 
@@ -213,6 +267,7 @@ def toga_key(event):
 # Addendum
 # --------
 # This is no longer used, but may be a useful reference in future
+# Eg. for a game or other app where physical key layout matters
 #
 # A map of Cocoa keycodes to Toga key values, when no Shift is pressed.
 # These are derived from the old Apple Extended Keyboard's internal codes,
@@ -285,7 +340,7 @@ def toga_key(event):
 # # 60: Key.RIGHT_SHIFT,
 # # 61: Key.RIGHT_OPTION,
 # # 62: Key.RIGHT_CONTROL,
-# 63: Key.FUNCTION,
+# 63: Key.FUNCTION / WORLD,
 # 64: Key.F17,
 # 65: Key.NUMPAD_DECIMAL_POINT,
 # # 66
