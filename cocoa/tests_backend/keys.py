@@ -12,6 +12,9 @@ from toga_cocoa.libs import (
 # and represent physical keys. The mapping is to typical US/International
 # English key layouts; different key layouts will associate the same key
 # codes with different characters (eg. on an AZERTY layout, key code 12 is 'A')
+#
+# Note that there are key codes which are unused on any Apple keyboard.
+#
 # For a comprehensive list see:
 # https://macbiblioblog.blogspot.com/2014/12/key-codes-for-function-and-special-keys.html
 KEY_CODES = {
