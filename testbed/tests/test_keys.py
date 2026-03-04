@@ -58,8 +58,8 @@ from toga.keys import Key
         (Key.MOD_1 + Key.PIPE, {"key": Key.PIPE, "modifiers": {Key.MOD_1}}),
         # This may fail on non-English key layouts
         (
-            Key.MOD_1 + Key.EQUAL + Key.SHIFT,
-            {"key": Key.PLUS, "modifiers": {Key.MOD_1}},
+            Key.MOD_1 + Key.SHIFT + Key._1,
+            {"key": Key.EXCLAMATION, "modifiers": {Key.MOD_1}},
         ),
     ],
 )

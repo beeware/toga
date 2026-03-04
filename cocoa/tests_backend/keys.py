@@ -105,7 +105,7 @@ KEY_CODES = {
     Key.NUMPAD_5.value: 87,
     Key.NUMPAD_6.value: 88,
     Key.NUMPAD_7.value: 89,
-    Key.F20.value: 90,
+    # Key.F20.value: 90,
     Key.NUMPAD_8.value: 91,
     Key.NUMPAD_9.value: 92,
     Key.F5.value: 96,
