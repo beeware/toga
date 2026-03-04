@@ -165,8 +165,9 @@ def qt_to_toga_key(code):
 
     qt_key_code = code[0].key()
     toga_value = QT_TO_TOGA.get(qt_key_code)
-    if toga_value is None:
-        # unmapped key (frequenly a bare modifier key)
+    if toga_value is None:  # pragma: no cover
+        # An unmapped key (frequently a bare modifier key)
+        # These are not currently tested.
         return None
 
     # Qt uses a separate modifier for numpad

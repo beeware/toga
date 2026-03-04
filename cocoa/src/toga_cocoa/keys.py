@@ -240,10 +240,10 @@ def toga_key(event):
                     NSEventModifierFlagCommand | NSEventModifierFlagShift
                 )
             )
-            if shift_key != key:
-                if shift_key == key.upper():  # pragma: no cover
-                    # An English layout keyboard will never reach here
-                    # so the tests currently don't exercise it
+            if shift_key != key:  # pragma: no cover
+                # An English layout keyboard will never reach here
+                # so the tests currently don't exercise it
+                if shift_key == key.upper():
                     modifiers.add(Key.SHIFT)
                 else:
                     key = shift_key
