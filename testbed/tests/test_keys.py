@@ -33,12 +33,28 @@ from toga.keys import Key
         # Special keys
         (Key.F5, {"key": Key.F5, "modifiers": set()}),
         (Key.HOME, {"key": Key.HOME, "modifiers": set()}),
+        (Key.HOME + Key.SHIFT, {"key": Key.HOME, "modifiers": {Key.SHIFT}}),
         (Key.HOME + Key.MOD_1, {"key": Key.HOME, "modifiers": {Key.MOD_1}}),
+        (Key.HOME + Key.MOD_2, {"key": Key.HOME, "modifiers": {Key.MOD_2}}),
+        (Key.HOME + Key.MOD_3, {"key": Key.HOME, "modifiers": {Key.MOD_3}}),
+        (
+            Key.HOME + Key.MOD_1 + Key.MOD_2,
+            {"key": Key.HOME, "modifiers": {Key.MOD_1, Key.MOD_2}},
+        ),
+        (
+            Key.HOME + Key.SHIFT + Key.MOD_1,
+            {"key": Key.HOME, "modifiers": {Key.SHIFT, Key.MOD_1}},
+        ),
         # Numpad keys
         (Key.NUMPAD_5 + Key.MOD_1, {"key": Key.NUMPAD_5, "modifiers": {Key.MOD_1}}),
+        (Key.NUMPAD_5 + Key.SHIFT, {"key": Key.NUMPAD_5, "modifiers": {Key.SHIFT}}),
         # Key where platforms have odd representations
         (Key.MOD_1 + Key.SEMICOLON, {"key": Key.SEMICOLON, "modifiers": {Key.MOD_1}}),
         (Key.MOD_1 + Key.SPACE, {"key": Key.SPACE, "modifiers": {Key.MOD_1}}),
+        (
+            Key.MOD_1 + Key.SHIFT + Key.SPACE,
+            {"key": Key.SPACE, "modifiers": {Key.SHIFT, Key.MOD_1}},
+        ),
         (Key.MOD_1 + Key.QUOTE, {"key": Key.QUOTE, "modifiers": {Key.MOD_1}}),
         (Key.MOD_1 + Key.PIPE, {"key": Key.PIPE, "modifiers": {Key.MOD_1}}),
     ],
