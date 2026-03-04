@@ -242,7 +242,9 @@ def toga_key(event):
             )
             if shift_key != key:
                 if shift_key == key.upper():
-                    modifiers.add(Key.SHIFT)
+                    # An English layout keyboard will never reach here
+                    # so the tests currently don't exercise it
+                    modifiers.add(Key.SHIFT)  # pragma: no cover
                 else:
                     key = shift_key
             elif key in SHIFTED_KEY_CHARS:

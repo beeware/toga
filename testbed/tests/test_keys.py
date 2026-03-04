@@ -47,6 +47,7 @@ from toga.keys import Key
         ),
         # Numpad keys
         (Key.NUMPAD_5 + Key.MOD_1, {"key": Key.NUMPAD_5, "modifiers": {Key.MOD_1}}),
+        (Key.NUMPAD_5 + Key.SHIFT, {"key": Key.NUMPAD_5, "modifiers": {Key.SHIFT}}),
         # Key where platforms have odd representations
         (Key.MOD_1 + Key.SEMICOLON, {"key": Key.SEMICOLON, "modifiers": {Key.MOD_1}}),
         (Key.MOD_1 + Key.SPACE, {"key": Key.SPACE, "modifiers": {Key.MOD_1}}),
@@ -56,11 +57,6 @@ from toga.keys import Key
         ),
         (Key.MOD_1 + Key.QUOTE, {"key": Key.QUOTE, "modifiers": {Key.MOD_1}}),
         (Key.MOD_1 + Key.PIPE, {"key": Key.PIPE, "modifiers": {Key.MOD_1}}),
-        # This may fail on non-English key layouts
-        (
-            Key.MOD_1 + Key.SHIFT + Key._1,
-            {"key": Key.EXCLAMATION, "modifiers": {Key.MOD_1}},
-        ),
     ],
 )
 def test_key_combinations(app_probe, key_combo, key_data):

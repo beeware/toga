@@ -26,6 +26,8 @@ modified_shift_a = Key.MOD_1 + Key.SHIFT + Key.A
 
 The order of addition is not significant. `Key.SHIFT + Key.A` and `Key.A + Key.SHIFT` will produce the same key representation.
 
+Key combinations involving shifted punctuation characters, such as `Key.EXCLAMATION` or `Key.QUESTION` do not need to supply `Key.SHIFT`, and should be preferred over expressions like `Key.SLASH + Key.SHIFT` which may be difficult or impossible to type on non-QWERTY keyboards.
+
 ## Reference
 
 ::: toga.Key
