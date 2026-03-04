@@ -43,7 +43,7 @@ class Tutorial2App(toga.App):
 
         data = [(f"root {i}", f"value {i}") for i in range(1, 100)]
 
-        left_container = toga.Table(headings=["Hello", "World"], data=data)
+        left_container = toga.Table(columns=["Hello", "World"], data=data)
 
         right_content = toga.Box(direction=COLUMN, margin_top=50)
 

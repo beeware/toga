@@ -154,7 +154,7 @@ class Table(Widget):
         self._resizing_columns = False
 
         self.native_model = TableSourceModel(
-            getattr(self.interface, "_data", ListSource(self.interface.accessors)),
+            getattr(self.interface, "_data", None),
             self.interface._columns[:],
             self.interface.missing_value,
             parent=self.native,
@@ -251,16 +251,16 @@ class Table(Widget):
         finally:
             self._resizing_columns = False
 
-    def insert_column(self, index, heading, accessor):
-        self.native_model._columns.insert(index, self.interface._columns[index])
+    def insert_column(self, index, column):
         self.native_model.beginInsertColumns(QModelIndex(), index, index)
+        self.native_model._columns.insert(index, column)
         self.native_model.endInsertColumns()
         self._autofit_columns = True
         self._resize_columns()
 
     def remove_column(self, index):
-        del self.native_model._columns[index]
         self.native_model.beginRemoveColumns(QModelIndex(), index, index)
+        del self.native_model._columns[index]
         self.native_model.endRemoveColumns()
         self._autofit_columns = True
         self._resize_columns()

@@ -221,8 +221,8 @@ class Table(Widget):
 
         column.headerCell.stringValue = toga_column.heading
 
-    def insert_column(self, index, heading, accessor):
-        self._insert_column(index, self.interface._columns[index])
+    def insert_column(self, index, column):
+        self._insert_column(index, column)
         self.native_table.sizeToFit()
 
     def remove_column(self, index):

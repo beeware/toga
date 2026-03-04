@@ -150,14 +150,14 @@ class TableSourceApp(toga.App):
         # of the second reads from the first.
         # The headings are also in a different order.
         self.table1 = toga.Table(
-            headings=["Year", "Title", "Rating", "Genre"],
+            columns=["Year", "Title", "Rating", "Genre"],
             data=MovieSource(),
             flex=1,
             on_select=self.on_select_handler,
         )
 
         self.table2 = toga.Table(
-            headings=["Rating", "Title", "Year", "Genre"],
+            columns=["Rating", "Title", "Year", "Genre"],
             data=GoodMovieSource(self.table1.data),
             flex=1,
         )

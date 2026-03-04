@@ -94,7 +94,7 @@ class TreeApp(toga.App):
         self.label = toga.Label("Ready.", margin=10)
 
         self.tree = toga.Tree(
-            headings=["Year", "Title", "Rating", "Genre"],
+            columns=["Year", "Title", "Rating", "Genre"],
             on_select=self.on_select_handler,
             flex=1,
             missing_value="?",

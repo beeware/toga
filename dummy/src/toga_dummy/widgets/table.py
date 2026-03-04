@@ -30,8 +30,8 @@ class Table(Widget):
     def scroll_to_row(self, row):
         self._action("scroll to row", row=row)
 
-    def insert_column(self, index, heading, accessor):
-        self._action("insert column", index=index, heading=heading, accessor=accessor)
+    def insert_column(self, index, column):
+        self._action("insert column", index=index, column=column)
 
     def remove_column(self, index):
         self._action("remove column", index=index)

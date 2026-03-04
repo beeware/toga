@@ -344,8 +344,7 @@ class Table(Widget):
         self.update_data()
         self._resize_columns()
 
-    def insert_column(self, index, heading, accessor):
-        column = self.interface._columns[index]
+    def insert_column(self, index, column):
         self.native.Columns.Insert(index, self._create_column(column))
         self.update_data()
         self._resize_columns()

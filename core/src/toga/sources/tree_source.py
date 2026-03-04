@@ -220,6 +220,11 @@ class TreeSource(Source):
         else:
             self._roots = []
 
+    @property
+    def accessors(self) -> list[str]:
+        """The attribute names for accessing the value in each column of a row."""
+        return self._accessors.copy()
+
     ######################################################################
     # Methods required by the TreeSource interface
     ######################################################################

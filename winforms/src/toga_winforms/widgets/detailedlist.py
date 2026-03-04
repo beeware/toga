@@ -1,5 +1,4 @@
-from toga.sources import Row
-from toga.sources.columns import AccessorColumn
+from toga.sources import AccessorColumn, Row
 
 from .table import Table
 

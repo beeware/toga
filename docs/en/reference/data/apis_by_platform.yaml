@@ -288,6 +288,10 @@ Data representation:
     description: Abstractions of managed atomic values.
     display: hide
 
+  Column:
+    description: Abstractions of tabular columns.
+    display: hide
+
   Types:
     description: Utility data structures used by Toga APIs.
     display: hide

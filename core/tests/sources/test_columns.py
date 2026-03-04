@@ -1,7 +1,7 @@
 import pytest
 
 from toga.icons import Icon
-from toga.sources.columns import AccessorColumn
+from toga.sources import AccessorColumn, Column
 from toga.sources.list_source import Row
 from toga.widgets.label import Label
 
@@ -33,7 +33,43 @@ class ValueWithoutIcon:
         return isinstance(other, type(self)) and self.text == other.text
 
 
+class SimpleColumn(Column):
+    def value(self, row):
+        return row
+
+
 LABEL_WIDGET = Label("Test")
+
+
+@pytest.mark.parametrize(
+    "heading, heading_property",
+    [
+        ("Heading", "Heading"),
+        (None, ""),
+    ],
+)
+def test_column_abc(heading, heading_property):
+    dummy_row = object()
+    column = Column(heading)
+
+    assert column.heading == heading_property
+    assert column.value(dummy_row) is None
+    assert column.text(dummy_row) is None
+    assert column.text(dummy_row, "default") == "default"
+    assert column.icon(dummy_row) is None
+    assert column.widget(dummy_row) is None
+
+
+def test_column_subclass():
+    dummy_row = ("row",)
+    column = SimpleColumn("test")
+
+    assert column.heading == "test"
+    assert column.value(dummy_row) == ("row",)
+    assert column.text(dummy_row) == "('row',)"
+    assert column.text(dummy_row, "default") == "('row',)"
+    assert column.icon(dummy_row) is None
+    assert column.widget(dummy_row) is None
 
 
 @pytest.mark.parametrize(
@@ -50,6 +86,30 @@ def test_accessor_column(heading, accessor, heading_property, accessor_property)
 
     assert column.heading == heading_property
     assert column.accessor == accessor_property
+
+
+def test_accessor_column_equality():
+    """AccessorColumns can be compared for equality."""
+    column = AccessorColumn("title", "attribute")
+
+    assert column == AccessorColumn("title", "attribute")
+    assert column != AccessorColumn("title")
+    assert column != AccessorColumn(accessor="attribute")
+    assert column != Column("test")
+
+
+def test_accessor_column_repr():
+    """AccessorColumn have a repr()."""
+    column = AccessorColumn("title", "attribute")
+
+    assert repr(column) == "AccessorColumn(heading='title', accessor='attribute')"
+
+
+def test_accessor_column_hash():
+    """AccessorColumns can be hashed."""
+    column = AccessorColumn("title", "attribute")
+
+    assert hash(column) == hash((AccessorColumn, "title", "attribute"))
 
 
 def test_accessor_column_failure():

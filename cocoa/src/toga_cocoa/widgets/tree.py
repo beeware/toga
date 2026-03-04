@@ -264,8 +264,8 @@ class Tree(Widget):
             self.native_tree.moveColumn(len(self.columns) - 1, toColumn=index)
         column.headerCell.stringValue = toga_column.heading
 
-    def insert_column(self, index, heading, accessor):
-        self._insert_column(index, self.interface._columns[index])
+    def insert_column(self, index, column):
+        self._insert_column(index, column)
         self.native_tree.sizeToFit()
 
     def remove_column(self, index):

@@ -213,6 +213,7 @@ plugins:
       reference/api/resources/sources/list_source.md: reference/api/data-representation/listsource.md
       reference/api/resources/sources/tree_source.md: reference/api/data-representation/treesource.md
       reference/api/resources/sources/value_source.md: reference/api/data-representation/valuesource.md
+      reference/api/resources/sources/column.md: reference/api/data-representation/column.md
       reference/api/types.md: reference/api/data-representation/types.md
       reference/api/resources/validators.md: reference/api/data-representation/validators.md
 
