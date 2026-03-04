@@ -9,6 +9,20 @@ from toga_dummy.utils import (
     assert_action_performed_with,
 )
 
+ACCESSOR_OVERRIDES_EXCEPTION_MESSAGE = (
+    r"The `accessor` argument is deprecated. To specify a non-default "
+    r"accessor for a column, use an `AccessorColumn`\. To specify the "
+    r"ordering of accessors use a `TreeSource` with an `accessors` "
+    r"argument for the data\."
+)
+
+ACCESSORS_OVERRIDES_EXCEPTION_MESSAGE = (
+    r"The `accessors` argument is deprecated. To specify a non-default "
+    r"accessor for a column, use an `AccessorColumn`\. To specify the "
+    r"ordering of accessors use a `TreeSource` with an `accessors` "
+    r"argument for the data\."
+)
+
 
 class CustomNode:
     def __init__(self, key=None, value=None, other=None, children=None):
@@ -122,7 +136,7 @@ def test_tree_created():
     assert tree.headings == ["First", "Second"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["first", "second"]
     assert tree.data.accessors == ["first", "second"]
@@ -147,7 +161,7 @@ def test_tree_created_explicit_show_headings():
     assert tree.headings == ["First", "Second"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["first", "second"]
     assert tree.data.accessors == ["first", "second"]
@@ -172,7 +186,7 @@ def test_tree_created_explicit_show_headings_false():
     assert tree.headings is None
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["first", "second"]
     assert tree.data.accessors == ["first", "second"]
@@ -202,7 +216,7 @@ def test_tree_create_columns():
     assert tree.headings == ["First", "Second"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["first", "second"]
     assert tree.data.accessors == ["first", "second"]
@@ -227,7 +241,7 @@ def test_tree_create_columns_with_accessors():
     assert tree.headings == ["First", "Second"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["primus", "secundus"]
     assert tree.data.accessors == ["primus", "secundus"]
@@ -241,10 +255,7 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     """A Tree can be created with initial values."""
     with pytest.warns(
         DeprecationWarning,
-        match=r"The `accessors` argument is deprecated. To specify a non-default "
-        r"accessor for a column, use an AccessorColumn. To specify the "
-        r"ordering of accessors use a `TreeSource` with an `accessors` "
-        r"argument for the data.",
+        match=ACCESSORS_OVERRIDES_EXCEPTION_MESSAGE,
     ):
         tree = toga.Tree(
             ["First", "Second"],
@@ -266,7 +277,7 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     assert tree.headings == ["First", "Second"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["primus", "secondus"]
     assert tree.data.accessors == ["key", "value"]
@@ -281,10 +292,7 @@ def test_create_with_accessor_overrides():
     """A Tree can partially override accessors."""
     with pytest.warns(
         DeprecationWarning,
-        match=r"The `accessors` argument is deprecated. To specify a non-default "
-        r"accessor for a column, use an AccessorColumn. To specify the "
-        r"ordering of accessors use a `TreeSource` with an `accessors` "
-        r"argument for the data.",
+        match=ACCESSORS_OVERRIDES_EXCEPTION_MESSAGE,
     ):
         tree = toga.Tree(
             ["First", "Second"],
@@ -297,7 +305,7 @@ def test_create_with_accessor_overrides():
     assert tree.headings == ["First", "Second"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["override", "second"]
     assert tree.data.accessors == ["override", "second"]
@@ -309,21 +317,22 @@ def test_create_with_accessor_overrides():
 
 def test_create_headings():
     """A Tree can be created with headings instead of columns."""
-    with pytest.warns(
-        DeprecationWarning,
-        match="The 'headings' keyword argument is deprecated, use 'columns' instead.",
-    ):
-        with pytest.warns(
+    with (
+        pytest.warns(
             DeprecationWarning,
-            match=r"The `accessors` argument is deprecated. To specify a non-default "
-            r"accessor for a column, use an AccessorColumn. To specify the "
-            r"ordering of accessors use a `TreeSource` with an `accessors` "
-            r"argument for the data.",
-        ):
-            tree = toga.Tree(
-                headings=["First", "Second"],
-                accessors=["primus", "secondus"],
-            )
+            match=(
+                r"The 'headings' keyword argument is deprecated; use 'columns' instead."
+            ),
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=ACCESSORS_OVERRIDES_EXCEPTION_MESSAGE,
+        ),
+    ):
+        tree = toga.Tree(
+            headings=["First", "Second"],
+            accessors=["primus", "secondus"],
+        )
     assert tree._impl.interface == tree
     assert_action_performed(tree, "create Tree")
 
@@ -331,7 +340,7 @@ def test_create_headings():
     assert tree.headings == ["First", "Second"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["primus", "secondus"]
     assert tree.data.accessors == ["primus", "secondus"]
@@ -345,10 +354,7 @@ def test_create_no_columns():
     """A Tree can be created with no columns."""
     with pytest.warns(
         DeprecationWarning,
-        match=r"The `accessors` argument is deprecated. To specify a non-default "
-        r"accessor for a column, use an AccessorColumn. To specify the "
-        r"ordering of accessors use a `TreeSource` with an `accessors` "
-        r"argument for the data.",
+        match=ACCESSORS_OVERRIDES_EXCEPTION_MESSAGE,
     ):
         tree = toga.Tree(
             headings=None,
@@ -361,7 +367,7 @@ def test_create_no_columns():
     assert tree.headings is None
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["primus", "secondus"]
     assert tree.data.accessors == ["primus", "secondus"]
@@ -376,10 +382,7 @@ def test_create_no_columns_show_headings():
     """A Tree can be created with no columns and show_headings True."""
     with pytest.warns(
         DeprecationWarning,
-        match=r"The `accessors` argument is deprecated. To specify a non-default "
-        r"accessor for a column, use an AccessorColumn. To specify the "
-        r"ordering of accessors use a `TreeSource` with an `accessors` "
-        r"argument for the data.",
+        match=ACCESSORS_OVERRIDES_EXCEPTION_MESSAGE,
     ):
         tree = toga.Tree(
             headings=None,
@@ -393,7 +396,7 @@ def test_create_no_columns_show_headings():
     assert tree.headings == ["", ""]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["primus", "secondus"]
     assert tree.data.accessors == ["primus", "secondus"]
@@ -558,7 +561,7 @@ def test_create_data(data, all_attributes, extra_attributes):
     # The tree's accessors are what we expect
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value"]
 
@@ -722,7 +725,7 @@ def test_set_data(tree, on_select_handler, data, all_attributes, extra_attribute
     # The tree's accessors are what we expect
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value"]
 
@@ -788,7 +791,7 @@ def test_set_data_override_acessors(tree, on_select_handler):
     # The tree's accessors have not changed
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value"]
 
@@ -810,7 +813,7 @@ def test_set_data_override_acessors(tree, on_select_handler):
     # The accessors have not changed
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value"]
     assert tree.data.accessors == ["key", "value", "extra"]
@@ -832,7 +835,7 @@ def test_set_data_override_acessors(tree, on_select_handler):
     # The tree accessors have not changed
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value"]
 
@@ -854,7 +857,7 @@ def test_set_data_override_acessors(tree, on_select_handler):
     # The tree's accessors have not changed
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value"]
 
@@ -952,7 +955,7 @@ def test_insert_column_object_by_index(tree):
     assert tree.headings == ["Title", "New Column", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "extra", "value"]
     assert tree.columns == [
@@ -964,9 +967,15 @@ def test_insert_column_object_by_index(tree):
 
 def test_insert_column_heading_by_accessor(tree):
     """A column heading being inserted at an accessor is deprecated."""
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=ACCESSOR_OVERRIDES_EXCEPTION_MESSAGE,
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Using accessors is deprecated; use columns instead.",
+        ),
     ):
         tree.insert_column("value", "New Column", accessor="extra")
 
@@ -980,7 +989,7 @@ def test_insert_column_heading_by_accessor(tree):
     assert tree.headings == ["Title", "New Column", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "extra", "value"]
     assert tree.columns == [
@@ -992,9 +1001,15 @@ def test_insert_column_heading_by_accessor(tree):
 
 def test_insert_column_unknown_accessor(tree):
     """If the insertion index accessor is unknown, an error is raised."""
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=ACCESSOR_OVERRIDES_EXCEPTION_MESSAGE,
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Using accessors is deprecated; use columns instead.",
+        ),
     ):
         with pytest.raises(ValueError, match=r"not in list"):
             tree.insert_column("unknown", "New Column", accessor="extra")
@@ -1004,7 +1019,11 @@ def test_insert_column_heading_column_object_index(tree):
     """A column can be inserted before another column object."""
 
     index_column = AccessorColumn("Value", "value")
-    tree.insert_column(index_column, "New Column", accessor="extra")
+    with pytest.warns(
+        DeprecationWarning,
+        match=ACCESSOR_OVERRIDES_EXCEPTION_MESSAGE,
+    ):
+        tree.insert_column(index_column, "New Column", accessor="extra")
 
     # The column was added
     assert_action_performed_with(
@@ -1016,7 +1035,7 @@ def test_insert_column_heading_column_object_index(tree):
     assert tree.headings == ["Title", "New Column", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "extra", "value"]
     assert tree.columns == [
@@ -1036,7 +1055,11 @@ def test_insert_column_object_index_unknown_column(tree):
 def test_insert_column_heading_by_index(tree):
     """A column can be inserted."""
 
-    tree.insert_column(1, "New Column", accessor="extra")
+    with pytest.warns(
+        DeprecationWarning,
+        match=ACCESSOR_OVERRIDES_EXCEPTION_MESSAGE,
+    ):
+        tree.insert_column(1, "New Column", accessor="extra")
 
     # The column was added
     assert_action_performed_with(
@@ -1048,7 +1071,7 @@ def test_insert_column_heading_by_index(tree):
     assert tree.headings == ["Title", "New Column", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "extra", "value"]
     assert tree.columns == [
@@ -1061,9 +1084,17 @@ def test_insert_column_heading_by_index(tree):
 def test_insert_column_heading_by_index_heading_argument(tree):
     """A column can be inserted with the deprecated heading argument."""
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"The 'heading' keyword argument is deprecated, use 'column' instead\.",
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"The 'heading' keyword argument is deprecated; use 'column' instead\."
+            ),
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=ACCESSOR_OVERRIDES_EXCEPTION_MESSAGE,
+        ),
     ):
         tree.insert_column(1, heading="New Column", accessor="extra")
 
@@ -1077,7 +1108,7 @@ def test_insert_column_heading_by_index_heading_argument(tree):
     assert tree.headings == ["Title", "New Column", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "extra", "value"]
     assert tree.columns == [
@@ -1110,9 +1141,17 @@ def test_insert_nothing(tree):
 def test_warn_accessor_ignored(tree):
     """Accessor ignored when inserting a column object."""
 
-    with pytest.warns(
-        UserWarning,
-        match=r"The 'accessor' argument is ignored when a column object is supplied\.",
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=ACCESSOR_OVERRIDES_EXCEPTION_MESSAGE,
+        ),
+        pytest.warns(
+            UserWarning,
+            match=(
+                r"The 'accessor' argument is ignored when a column object is supplied\."
+            ),
+        ),
     ):
         tree.insert_column(1, AccessorColumn("New Column"), accessor="extra")
 
@@ -1126,7 +1165,7 @@ def test_warn_accessor_ignored(tree):
     assert tree.headings == ["Title", "New Column", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "new_column", "value"]
     assert tree.columns == [
@@ -1151,7 +1190,7 @@ def test_insert_column_big_index(tree):
     assert tree.headings == ["Title", "Value", "New Column"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value", "extra"]
     assert tree.columns == [
@@ -1176,7 +1215,7 @@ def test_insert_column_negative_index(tree):
     assert tree.headings == ["New Column", "Title", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["extra", "key", "value"]
     assert tree.columns == [
@@ -1202,7 +1241,7 @@ def test_insert_column_big_negative_index(tree):
     assert tree.headings == ["New Column", "Title", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["extra", "key", "value"]
     assert tree.columns == [
@@ -1227,7 +1266,7 @@ def test_insert_column_no_accessor(tree):
     assert tree.headings == ["Title", "New Column", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "new_column", "value"]
     assert tree.columns == [
@@ -1241,10 +1280,7 @@ def test_insert_column_no_headings(source):
     """A column can be inserted into a tree with no headings."""
     with pytest.warns(
         DeprecationWarning,
-        match=r"The `accessors` argument is deprecated. To specify a non-default "
-        r"accessor for a column, use an AccessorColumn. To specify the "
-        r"ordering of accessors use a `TreeSource` with an `accessors` "
-        r"argument for the data.",
+        match=ACCESSORS_OVERRIDES_EXCEPTION_MESSAGE,
     ):
         tree = toga.Tree(columns=None, accessors=["key", "value"], data=source)
 
@@ -1260,7 +1296,7 @@ def test_insert_column_no_headings(source):
     assert tree.headings is None
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "extra", "value"]
     assert tree.columns == [
@@ -1274,10 +1310,7 @@ def test_insert_column_no_headings_missing_accessor(source):
     """An accessor is mandatory when adding a column to a tree with no headings."""
     with pytest.warns(
         DeprecationWarning,
-        match=r"The `accessors` argument is deprecated. To specify a non-default "
-        r"accessor for a column, use an AccessorColumn. To specify the "
-        r"ordering of accessors use a `TreeSource` with an `accessors` "
-        r"argument for the data.",
+        match=ACCESSORS_OVERRIDES_EXCEPTION_MESSAGE,
     ):
         tree = toga.Tree(headings=None, accessors=["key", "value"], data=source)
 
@@ -1315,7 +1348,7 @@ def test_insert_column_deprecated_implementation(tree):
     assert tree.headings == ["Title", "New Column", "Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "extra", "value"]
     assert tree.columns == [
@@ -1339,7 +1372,7 @@ def test_append_column_object(tree):
     assert tree.headings == ["Title", "Value", "New Column"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value", "extra"]
     assert tree.columns == [
@@ -1351,7 +1384,11 @@ def test_append_column_object(tree):
 
 def test_append_column_str(tree):
     """A column can be appended using heading and accessor."""
-    tree.append_column("New Column", accessor="extra")
+    with pytest.warns(
+        DeprecationWarning,
+        match=ACCESSOR_OVERRIDES_EXCEPTION_MESSAGE,
+    ):
+        tree.append_column("New Column", accessor="extra")
 
     # The column was added
     assert_action_performed_with(
@@ -1363,7 +1400,7 @@ def test_append_column_str(tree):
     assert tree.headings == ["Title", "Value", "New Column"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value", "extra"]
     assert tree.columns == [
@@ -1375,9 +1412,17 @@ def test_append_column_str(tree):
 
 def test_append_heading_deprecated(tree):
     """Appending a column via heading keyword is deprecated."""
-    with pytest.warns(
-        DeprecationWarning,
-        match="The 'heading' keyword argument is deprecated, use 'column' instead.",
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=ACCESSOR_OVERRIDES_EXCEPTION_MESSAGE,
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"The 'heading' keyword argument is deprecated; use 'column' instead\."
+            ),
+        ),
     ):
         tree.append_column(heading="New Column", accessor="extra")
 
@@ -1391,7 +1436,7 @@ def test_append_heading_deprecated(tree):
     assert tree.headings == ["Title", "Value", "New Column"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key", "value", "extra"]
     assert tree.columns == [
@@ -1425,7 +1470,7 @@ def test_remove_column_object(tree):
     assert tree.headings == ["Title"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key"]
     assert tree.columns == [
@@ -1438,7 +1483,7 @@ def test_remove_column_accessor(tree):
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         tree.remove_column("value")
 
@@ -1451,7 +1496,7 @@ def test_remove_column_accessor(tree):
     assert tree.headings == ["Title"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key"]
     assert tree.columns == [
@@ -1464,7 +1509,7 @@ def test_remove_column_unknown_accessor(tree):
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         with pytest.raises(ValueError, match=r"not in list"):
             tree.remove_column("unknown")
@@ -1490,7 +1535,7 @@ def test_remove_column_index(tree):
     assert tree.headings == ["Title"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["key"]
     assert tree.columns == [
@@ -1512,7 +1557,7 @@ def test_remove_column_negative_index(tree):
     assert tree.headings == ["Value"]
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["value"]
     assert tree.columns == [
@@ -1524,10 +1569,7 @@ def test_remove_column_no_headings(tree):
     """A column can be removed when there are no headings."""
     with pytest.warns(
         DeprecationWarning,
-        match=r"The `accessors` argument is deprecated. To specify a non-default "
-        r"accessor for a column, use an AccessorColumn. To specify the "
-        r"ordering of accessors use a `TreeSource` with an `accessors` "
-        r"argument for the data.",
+        match=ACCESSORS_OVERRIDES_EXCEPTION_MESSAGE,
     ):
         tree = toga.Tree(
             columns=None,
@@ -1545,7 +1587,7 @@ def test_remove_column_no_headings(tree):
     assert tree.headings is None
     with pytest.warns(
         DeprecationWarning,
-        match=r"Using accessors is deprecated, use columns instead.",
+        match=r"Using accessors is deprecated; use columns instead.",
     ):
         assert tree.accessors == ["primus"]
     assert tree.columns == [

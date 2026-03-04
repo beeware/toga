@@ -465,7 +465,7 @@ async def _column_change_test(widget, probe):
     assert probe.column_count == 3
     probe.assert_cell_content(0, 2, "C0")
 
-    widget.append_column("E", accessor="e")
+    widget.append_column(AccessorColumn("E", "e"))
     await probe.redraw("E column appended")
 
     # 4 columns; the new content on row 0 is "E1"
@@ -473,7 +473,7 @@ async def _column_change_test(widget, probe):
     probe.assert_cell_content(0, 2, "C0")
     probe.assert_cell_content(0, 3, "E0")
 
-    widget.insert_column(3, "D", accessor="d")
+    widget.insert_column(3, AccessorColumn("D", "d"))
     await probe.redraw("E column appended")
 
     # 5 columns; the new content on row 0 is "D1", between C1 and E1
