@@ -4,7 +4,7 @@
 
 Columns are abstractions that allow you to specify how the data in a Table or Tree widget should be displayed. Each column object is responsible for taking a row from the data source and providing text, icon and other display elements suitable for the Table and Tree widgets to use.
 
-The protocol, [`ColumnT`][toga.sources.ColumnT], describes what custom Column implementations need to provide so that they can be used by the widget. Toga provides the [`Column`][toga.sources.Column] and [`AccessorColumn`][toga.sources.AccessorColumn]as implementations of the `ColumnT` protocol.  The [`Column`][toga.sources.Column] class is a base class suitable for custom sub-classing, while the [`AccessorColumn`][toga.sources.AccessorColumn] is used by default in the [`Table`][toga.widgets.table.Table] and [`Tree`][toga.widgets.tree.Tree] widgets.
+The protocol, [`ColumnT`][toga.sources.ColumnT], describes what custom Column implementations need to provide so that they can be used by the widget. Toga provides the [`Column`][toga.sources.Column] and [`AccessorColumn`][toga.sources.AccessorColumn] as implementations of the `ColumnT` protocol. The [`Column`][toga.sources.Column] class is a base class suitable for custom sub-classing, while the [`AccessorColumn`][toga.sources.AccessorColumn] is used by default in the [`Table`][toga.widgets.table.Table] and [`Tree`][toga.widgets.tree.Tree] widgets.
 
 Column objects are usually immutable, and can be shared between widgets freely if desired.
 
@@ -12,7 +12,7 @@ Column objects are usually immutable, and can be shared between widgets freely i
 
 `AccessorColumn` objects are designed to work with the [`ListSource`][toga.sources.ListSource] and [`TreeSource`][toga.sources.TreeSource] objects: each `AccessorColumn` holds the heading text and an attribute name, or "accessor", that is used to get values from each row of the source to use in the column.
 
-The `Table` and `Tree` widgets will automatically create `AccessorColumn` objects from column headings, but they can also be created manually if desired.  Each column object expects a heading and an accessor as arguments, but will automatically generate an accessor from the heading if needed.
+The `Table` and `Tree` widgets will automatically create `AccessorColumn` objects from column headings, but they can also be created manually if desired. Each column object expects a heading and an accessor as arguments, but will automatically generate an accessor from the heading if needed.
 ``` python
 table = Table(
     columns=[
@@ -29,7 +29,7 @@ table = Table(
 
 ### Custom Columns
 
-You can define your own subclasses that can override the way that text and icons are computed to provide custom formatting of text.  Any object which implements the [`ColumnT`][toga.sources.ColumnT] protocol can be used. This protocol requires:
+You can define your own subclasses that can override the way that text and icons are computed to provide custom formatting of text. Any object which implements the [`ColumnT`][toga.sources.ColumnT] protocol can be used. This protocol requires:
 
 - a read-only [`heading`][toga.sources.ColumnT.heading] property that is the column heding text or `None` for no heading text.;
 - a [`value`][toga.sources.ColumnT.value] method that takes a row object and gives the value for the column in that row.
@@ -57,7 +57,7 @@ table = Table(
 ```
 so a row providing the value `["Drama", "Action"]` would be displayed in the table cell as `"Drama, Action"`.
 
-Custom columns can even override the default way of looking up values to allow such things as combining values from multiple attributes, looking up values by index rather than attribute, or using a method or function on the row to get the display values.  The [`Column`][toga.sources.Column] class provides a convenient minimal base class for implementing custom columns.
+Custom columns can even override the default way of looking up values to allow such things as combining values from multiple attributes, looking up values by index rather than attribute, or using a method or function on the row to get the display values. The [`Column`][toga.sources.Column] class provides a convenient minimal base class for implementing custom columns.
 ```python
 class TotalCostColumn(Column):
 
