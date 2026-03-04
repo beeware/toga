@@ -82,6 +82,9 @@ class Table(Widget):
             column.pack_start(value, True)
             column.add_attribute(value, "text", i * 2 + 2)
 
+            # Preserve a reference to the accessor for the column
+            column.accessor = toga_column.accessor
+
             self.native_table.append_column(column)
 
     def focus(self):
@@ -100,9 +103,25 @@ class Table(Widget):
             # updates by deferring row rendering until the update is complete.
             self.native_table.set_model(None)
 
-            for column in self.native_table.get_columns():
+            # Preserve widths when columns are re-created.
+            existing_columns = self.native_table.get_columns()
+            preserved_widths = {
+                column.accessor: column.get_width() for column in existing_columns
+            }
+
+            for column in existing_columns:
                 self.native_table.remove_column(column)
+
             self._create_columns()
+
+            for column in self.native_table.get_columns():
+                try:
+                    width = preserved_widths[column.accessor]
+                    if width > 0:
+                        column.set_fixed_width(width)
+                except KeyError:
+                    # It's a new or unknown column
+                    pass
 
             types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._columns)
             self.store = Gtk.ListStore(*types)
