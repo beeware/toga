@@ -49,7 +49,7 @@ More complex widgets will obviously have a lot more to them, but this will often
 
 The previous section is fine as long as you only care about one backend implementation, but as soon as you have multiple backends that you care about you are faced with the problem of how does the interface know which implementation to use?
 
-Toga solves this with "factory" objects which are namespaces that lazily load implementations based on the [`toga.backend`][toga.backend]. The default factory object uses the Python standard library [`importlib.metadata`][importlib.metadata] "entry point" system to load backend widgets in a plugin-style system.  Every backend advertises where to find the widget implementations as part of its `pyproject.toml`. So if you look at the Qt `pyproject.toml` you will see a section that looks like:
+Toga solves this with "factory" objects which are name-spaces that lazily load implementations based on the [`toga.backend`][toga.backend]. The default factory object uses the Python standard library [`importlib.metadata`][importlib.metadata] "entry point" system to load backend widgets in a plugin-style system.  Every backend advertises where to find the widget implementations as part of its `pyproject.toml`. So if you look at the Qt `pyproject.toml` you will see a section that looks like:
 ``` toml
 [project.entry-points."toga_core.backend.toga_qt"]
 App = "toga_qt.app:App"
@@ -119,7 +119,7 @@ Ideally, if you have a working implementation of a missing widget, you'd make a 
 
 ### Implementing a New Backend
 
-You can use these ideas to implement a new backend for Toga.  To do this, you would need to write as many of the backend class implementations as is possible in a project, and then in the `pyproject.toml` list entrypoints in the `toga.backend` group for each platform that supports the backend, and then have entrypoints for each backend implementation.
+You can use these ideas to implement a new backend for Toga.  To do this, you would need to write as many of the backend class implementations as is possible in a project, and then in the `pyproject.toml` list entry points in the `toga.backend` group for each platform that supports the backend, and then have entry points for each backend implementation.
 
 For example, Toga is not likely to ever have a WxPython backend as part of the core library because WxPython is not a native UI toolkit.  But there may be value in such a backend for applications that are already using WxPython.  Since this is not an official backend, you might call it `togax_wx`, and your `pyproject.toml` would look like:
 ``` toml
@@ -141,7 +141,7 @@ All of the examples with multiple backends rely on widgets which already exist a
 
 We could implement them using the `toga_core.backend.*` groups, but this runs the risk of colliding with other libraries, or with future widgets added to Toga by the core team.  The solution in this case is to create your own custom `togax_*` interface and use it instead of `toga_core`.
 
-For example, at the time of writing the Toga core does not provide a `Toggle Button` widget (ie. a push-button which toggles state when pressed) or a checkbox widget, relying on the similar `Switch` for this sort of UI interaction.  We could write a library which provides these extra button widgets in the following way.
+For example, at the time of writing the Toga core does not provide a `Toggle Button` widget (ie.. a push-button which toggles state when pressed) or a checkbox widget, relying on the similar `Switch` for this sort of UI interaction.  We could write a library which provides these extra button widgets in the following way.
 
 We will call the library `extra_switches` and write a collection of implementations as `extra_switches.cocoa_toggle`, `extra_switches.cocoa_checkbox`, `extra_switches.qt_toggle`, `extra_switches.qt_checkbox`, and so-on.  For example `extra_switches.qt_toggle` might look something like:
 ``` python
@@ -159,7 +159,7 @@ class Toggle(Switch):
 ```
 Other backends would be implemented similarly.
 
-When it comes time to write the interface class for `Toggle` we can base it directly on `Switch`, but instead of being in the `toga_core` set of widge interfaces, it is in the `togax_extra_switches` interface group and so we need to override the `factory` property of the interface widget to return a factory for this interface group.
+When it comes time to write the interface class for `Toggle` we can base it directly on `Switch`, but instead of being in the `toga_core` set of widget interfaces, it is in the `togax_extra_switches` interface group and so we need to override the `factory` property of the interface widget to return a factory for this interface group.
 ``` python
 from functools import cached_property
 

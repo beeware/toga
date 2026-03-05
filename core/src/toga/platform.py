@@ -124,6 +124,11 @@ def get_platform_factory() -> ModuleType:
 
     :returns: The factory for the host platform.
     """
+    warnings.warn(
+        "The 'get_platform_factory' function is deprecated, use 'get_factory' instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     backend = get_backend()
     try:
         factory = importlib.import_module(f"{backend}.factory")
@@ -141,7 +146,7 @@ def get_platform_factory() -> ModuleType:
 
 
 class Factory:
-    """An object that lazily loads backend implementations from entrypoints."""
+    """An object that lazily loads backend implementations from entry points."""
 
     def __init__(self, interface=None):
         if interface is None:
@@ -225,7 +230,19 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
     # system using a factory module
     print(interface, factory.group, entry_points(group=factory.group))
     if interface is None and len(entry_points(group=factory.group)) == 0:
-        factory = get_platform_factory()
+        backend = get_backend()
+        try:
+            factory = importlib.import_module(f"{backend}.factory")
+        except ModuleNotFoundError as exc:
+            toga_backends_values = ", ".join([f"{b.value!r}" for b in find_backends()])
+            # Android doesn't report Python exception chains in crashes
+            # (https://github.com/chaquo/chaquopy/issues/890), so include the original
+            # exception message in case the backend does exist but throws a
+            # ModuleNotFoundError from one of its internal imports.
+            raise RuntimeError(
+                f"The backend specified by TOGA_BACKEND ({backend!r}) could "
+                f"not be loaded ({exc}). It should be one of: {toga_backends_values}."
+            ) from exc
     # -------------------------------------------------------------------------
     # End backwards compatibility
     # -------------------------------------------------------------------------

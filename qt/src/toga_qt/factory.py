@@ -1,3 +1,5 @@
+import warnings
+
 from toga import NotImplementedWarning
 
 try:
@@ -44,6 +46,13 @@ except ModuleNotFoundError as exc:  # pragma: no cover
         ) from exc
     else:
         raise
+
+warnings.warn(
+    "Factory modules are deprecated. Use 'toga.platform.get_factory' instead.",
+    DeprecationWarning,
+    stacklevel=1,
+)
+
 
 __all__ = [
     "not_implemented",
