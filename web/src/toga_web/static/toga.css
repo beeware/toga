@@ -106,3 +106,9 @@ main.toga.window > .container {
 .toga .label {
     white-space: nowrap;
 }
+
+/***** Table **********************************************************/
+
+.toga tr.selected {
+    background-color: var(--sl-color-primary-200);
+}
