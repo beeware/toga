@@ -69,10 +69,17 @@ Image = "toga_gtk.images:Image"
 Paths = "toga_gtk.paths:Paths"
 dialogs = "toga_gtk.dialogs"
 resources = "toga_gtk.resources"
+
+# Hardware
+# Camera = "toga_dummy.hardware.camera:Camera"
 Location = "toga_gtk.hardware.location:Location"
+
+# Status Icons
 MenuStatusIcon = "toga_gtk.statusicons:MenuStatusIcon"
 SimpleStatusIcon = "toga_gtk.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_gtk.statusicons:StatusIconSet"
+
+# Widgets
 ActivityIndicator = "toga_gtk.widgets.activityindicator:ActivityIndicator"
 Box = "toga_gtk.widgets.box:Box"
 Button = "toga_gtk.widgets.button:Button"
@@ -95,8 +102,11 @@ SplitContainer = "toga_gtk.widgets.splitcontainer:SplitContainer"
 Switch = "toga_gtk.widgets.switch:Switch"
 Table = "toga_gtk.widgets.table:Table"
 TextInput = "toga_gtk.widgets.textinput:TextInput"
+# TimeInput = "toga_gtk.widgets.timeinput:TimeInput"
 Tree = "toga_gtk.widgets.tree:Tree"
 WebView = "toga_gtk.widgets.webview:WebView"
+
+# Windows
 MainWindow = "toga_gtk.window:MainWindow"
 Window = "toga_gtk.window:Window"
 

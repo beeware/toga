@@ -59,6 +59,7 @@ android = "toga_android"
 
 [project.entry-points."toga_core.backend.toga_android"]
 App = "toga_android.app:App"
+# DocumentApp = "toga_dummy.app:DocumentApp"
 Command = "toga_android.command:Command"
 Font = "toga_android.fonts:Font"
 Icon = "toga_android.icons:Icon"
@@ -66,11 +67,17 @@ Image = "toga_android.images:Image"
 Paths = "toga_android.paths:Paths"
 dialogs = "toga_android.dialogs"
 resources = "toga_android.resources"
+
+# Hardware
 Camera = "toga_android.hardware.camera:Camera"
 Location = "toga_android.hardware.location:Location"
+
+# Status Icons
 MenuStatusIcon = "toga_android.statusicons:MenuStatusIcon"
 SimpleStatusIcon = "toga_android.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_android.statusicons:StatusIconSet"
+
+# Widgets
 ActivityIndicator = "toga_android.widgets.activityindicator:ActivityIndicator"
 Box = "toga_android.widgets.box:Box"
 Button = "toga_android.widgets.button:Button"
@@ -89,11 +96,15 @@ ProgressBar = "toga_android.widgets.progressbar:ProgressBar"
 ScrollContainer = "toga_android.widgets.scrollcontainer:ScrollContainer"
 Selection = "toga_android.widgets.selection:Selection"
 Slider = "toga_android.widgets.slider:Slider"
+# SplitContainer = "toga_android.widgets.splitcontainer:SplitContainer"
 Switch = "toga_android.widgets.switch:Switch"
 Table = "toga_android.widgets.table:Table"
 TextInput = "toga_android.widgets.textinput:TextInput"
 TimeInput = "toga_android.widgets.timeinput:TimeInput"
+# Tree = "toga_android.widgets.tree:Tree"
 WebView = "toga_android.widgets.webview:WebView"
+
+# Windows
 MainWindow = "toga_android.window:MainWindow"
 Window = "toga_android.window:Window"
 

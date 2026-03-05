@@ -63,19 +63,52 @@ freeBSD = "toga_textual"
 
 [project.entry-points."toga_core.backend.toga_textual"]
 App = "toga_textual.app:App"
+# DocumentApp = "toga_textual.app:DocumentApp"
 Command = "toga_textual.command:Command"
 Font = "toga_textual.fonts:Font"
 Icon = "toga_textual.icons:Icon"
+# Image = "toga_textual.images:Image"
 Paths = "toga_textual.paths:Paths"
 dialogs = "toga_textual.dialogs"
 resources = "toga_textual.resources"
+
+# Hardware
+# Camera = "toga_textual.hardware.camera:Camera"
+#Location = "toga_textual.hardware.location:Location"
+
+# Status Icons
 MenuStatusIcon = "toga_textual.statusicons:MenuStatusIcon"
 SimpleStatusIcon = "toga_textual.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_textual.statusicons:StatusIconSet"
+
+# Widgets
+# ActivityIndicator = "toga_textual.widgets.activityindicator:ActivityIndicator"
 Box = "toga_textual.widgets.box:Box"
 Button = "toga_textual.widgets.button:Button"
+# Canvas = "toga_textual.widgets.canvas:Canvas"
+# DateInput = "toga_textual.widgets.dateinput:DateInput"
+# DetailedList = "toga_textual.widgets.detailedlist:DetailedList"
+# Divider = "toga_textual.widgets.divider:Divider"
+# ImageView = "toga_textual.widgets.imageview:ImageView"
 Label = "toga_textual.widgets.label:Label"
+# MapView = "toga_textual.widgets.mapview:MapView"
+# MultilineTextInput = "toga_textual.widgets.multilinetextinput:MultilineTextInput"
+# NumberInput = "toga_textual.widgets.numberinput:NumberInput"
+# OptionContainer = "toga_textual.widgets.optioncontainer:OptionContainer"
+# PasswordInput = "toga_textual.widgets.passwordinput:PasswordInput"
+# ProgressBar = "toga_textual.widgets.progressbar:ProgressBar"
+# ScrollContainer = "toga_textual.widgets.scrollcontainer:ScrollContainer"
+# Selection = "toga_textual.widgets.selection:Selection"
+# Slider = "toga_textual.widgets.slider:Slider"
+# SplitContainer = "toga_textual.widgets.splitcontainer:SplitContainer"
+# Switch = "toga_textual.widgets.switch:Switch"
+# Table = "toga_textual.widgets.table:Table"
 TextInput = "toga_textual.widgets.textinput:TextInput"
+# TimeInput = "toga_textual.widgets.timeinput:TimeInput"
+# Tree = "toga_textual.widgets.tree:Tree"
+# WebView = "toga_textual.widgets.webview:WebView"
+
+# Windows
 MainWindow = "toga_textual.window:MainWindow"
 Window = "toga_textual.window:Window"
 

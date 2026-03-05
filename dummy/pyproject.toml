@@ -66,11 +66,17 @@ Image = "toga_dummy.images:Image"
 Paths = "toga_dummy.paths:Paths"
 dialogs = "toga_dummy.dialogs"
 resources = "toga_dummy.resources"
+
+# Hardware
 Camera = "toga_dummy.hardware.camera:Camera"
 Location = "toga_dummy.hardware.location:Location"
+
+# Status Icons
 MenuStatusIcon = "toga_dummy.statusicons:MenuStatusIcon"
 SimpleStatusIcon = "toga_dummy.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_dummy.statusicons:StatusIconSet"
+
+# Widgets
 ActivityIndicator = "toga_dummy.widgets.activityindicator:ActivityIndicator"
 Box = "toga_dummy.widgets.box:Box"
 Button = "toga_dummy.widgets.button:Button"
@@ -96,8 +102,11 @@ TextInput = "toga_dummy.widgets.textinput:TextInput"
 TimeInput = "toga_dummy.widgets.timeinput:TimeInput"
 Tree = "toga_dummy.widgets.tree:Tree"
 WebView = "toga_dummy.widgets.webview:WebView"
+
+# Windows
 MainWindow = "toga_dummy.window:MainWindow"
 Window = "toga_dummy.window:Window"
+
 # Widget is also required for testing purposes
 # Real backends shouldn't expose Widget.
 Widget = "toga_dummy.widgets.base:Widget"

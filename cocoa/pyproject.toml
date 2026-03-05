@@ -67,11 +67,17 @@ Image = "toga_cocoa.images:Image"
 Paths = "toga_cocoa.paths:Paths"
 dialogs = "toga_cocoa.dialogs"
 resources = "toga_cocoa.resources"
+
+# Hardware
 Camera = "toga_cocoa.hardware.camera:Camera"
 Location = "toga_cocoa.hardware.location:Location"
+
+# Status Icons
 MenuStatusIcon = "toga_cocoa.statusicons:MenuStatusIcon"
 SimpleStatusIcon = "toga_cocoa.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_cocoa.statusicons:StatusIconSet"
+
+# Widgets
 ActivityIndicator = "toga_cocoa.widgets.activityindicator:ActivityIndicator"
 Box = "toga_cocoa.widgets.box:Box"
 Button = "toga_cocoa.widgets.button:Button"
@@ -97,6 +103,8 @@ TextInput = "toga_cocoa.widgets.textinput:TextInput"
 TimeInput = "toga_cocoa.widgets.timeinput:TimeInput"
 Tree = "toga_cocoa.widgets.tree:Tree"
 WebView = "toga_cocoa.widgets.webview:WebView"
+
+# Windows
 MainWindow = "toga_cocoa.window:MainWindow"
 Window = "toga_cocoa.window:Window"
 

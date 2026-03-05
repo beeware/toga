@@ -67,11 +67,17 @@ Paths = "toga_iOS.paths:Paths"
 native_color = "toga_iOS.colors:native_color"
 dialogs = "toga_iOS.dialogs"
 resources = "toga_iOS.resources"
+
+# Hardware
 Camera = "toga_iOS.hardware.camera:Camera"
 Location = "toga_iOS.hardware.location:Location"
+
+# Status Icons
 MenuStatusIcon = "toga_iOS.statusicons:MenuStatusIcon"
 SimpleStatusIcon = "toga_iOS.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_iOS.statusicons:StatusIconSet"
+
+# Widgets
 ActivityIndicator = "toga_iOS.widgets.activityindicator:ActivityIndicator"
 Box = "toga_iOS.widgets.box:Box"
 Button = "toga_iOS.widgets.button:Button"
@@ -88,13 +94,17 @@ OptionContainer = "toga_iOS.widgets.optioncontainer:OptionContainer"
 PasswordInput = "toga_iOS.widgets.passwordinput:PasswordInput"
 ProgressBar = "toga_iOS.widgets.progressbar:ProgressBar"
 ScrollContainer = "toga_iOS.widgets.scrollcontainer:ScrollContainer"
+# SplitContainer = "toga_iOS.widgets.splitcontainer:SplitContainer"
 Selection = "toga_iOS.widgets.selection:Selection"
 Slider = "toga_iOS.widgets.slider:Slider"
 Switch = "toga_iOS.widgets.switch:Switch"
 Table = "toga_iOS.widgets.table:Table"
+# Tree = "toga_iOS.widgets.tree:Tree"
 TextInput = "toga_iOS.widgets.textinput:TextInput"
 TimeInput = "toga_iOS.widgets.timeinput:TimeInput"
 WebView = "toga_iOS.widgets.webview:WebView"
+
+# Windows
 MainWindow = "toga_iOS.window:MainWindow"
 Window = "toga_iOS.window:Window"
 

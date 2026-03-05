@@ -52,6 +52,7 @@ linux = "toga_qt"
 
 [project.entry-points."toga_core.backend.toga_qt"]
 App = "toga_qt.app:App"
+# DocumentApp = "toga_qt.app:DocumentApp"
 Command = "toga_qt.command:Command"
 Font = "toga_qt.fonts:Font"
 Icon = "toga_qt.icons:Icon"
@@ -59,9 +60,17 @@ Image = "toga_qt.images:Image"
 Paths = "toga_qt.paths:Paths"
 dialogs = "toga_qt.dialogs"
 resources = "toga_qt.resources"
+
+# Hardware
+# Camera = "toga_qt.hardware.camera:Camera"
+# Location = "toga_qt.hardware.location:Location"
+
+# Status Icons
 MenuStatusIcon = "toga_qt.statusicons:MenuStatusIcon"
 SimpleStatusIcon = "toga_qt.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_qt.statusicons:StatusIconSet"
+
+# Widgets
 ActivityIndicator = "toga_qt.widgets.activityindicator:ActivityIndicator"
 Box = "toga_qt.widgets.box:Box"
 Button = "toga_qt.widgets.button:Button"
@@ -87,6 +96,8 @@ TextInput = "toga_qt.widgets.textinput:TextInput"
 TimeInput = "toga_qt.widgets.timeinput:TimeInput"
 Tree = "toga_qt.widgets.tree:Tree"
 WebView = "toga_qt.widgets.webview:WebView"
+
+# Windows
 MainWindow = "toga_qt.window:MainWindow"
 Window = "toga_qt.window:Window"
 

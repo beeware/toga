@@ -61,27 +61,52 @@ web = "toga_web"
 
 [project.entry-points."toga_core.backend.toga_web"]
 App = "toga_web.app:App"
+# DocumentApp = "toga_web.app:DocumentApp"
 Command = "toga_web.command:Command"
 Font = "toga_web.fonts:Font"
 Icon = "toga_web.icons:Icon"
+# Image = "toga_web.images:Image"
 Paths = "toga_web.paths:Paths"
 dialogs = "toga_web.dialogs"
 resources = "toga_web.resources"
+
+# Hardware
+# Camera = "toga_web.hardware.camera:Camera"
+# Location = "toga_web.hardware.location:Location"
+
+# Status Icons
 MenuStatusIcon = "toga_web.statusicons:MenuStatusIcon"
 SimpleStatusIcon = "toga_web.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_web.statusicons:StatusIconSet"
+
+# Widgets
+# ActivityIndicator = "toga_web.widgets.activityindicator:ActivityIndicator"
 Box = "toga_web.widgets.box:Box"
 Button = "toga_web.widgets.button:Button"
+Canvas = "toga_web.widgets.canvas:Canvas"
 DateInput = "toga_web.widgets.dateinput:DateInput"
+# DetailedList = "toga_web.widgets.detailedlist:DetailedList"
 Divider = "toga_web.widgets.divider:Divider"
+# ImageView = "toga_web.widgets.imageview:ImageView"
 Label = "toga_web.widgets.label:Label"
+# MapView = "toga_web.widgets.mapview:MapView"
+# MultilineTextInput = "toga_web.widgets.multilinetextinput:MultilineTextInput"
+# NumberInput = "toga_web.widgets.numberinput:NumberInput"
+# OptionContainer = "toga_web.widgets.optioncontainer:OptionContainer"
 PasswordInput = "toga_web.widgets.passwordinput:PasswordInput"
 ProgressBar = "toga_web.widgets.progressbar:ProgressBar"
 ScrollContainer = "toga_web.widgets.scrollcontainer:ScrollContainer"
 Selection = "toga_web.widgets.selection:Selection"
 Slider = "toga_web.widgets.slider:Slider"
+# SplitContainer = "toga_web.widgets.splitcontainer:SplitContainer"
 Switch = "toga_web.widgets.switch:Switch"
+# Table = "toga_web.widgets.table:Table"
 TextInput = "toga_web.widgets.textinput:TextInput"
+# TimeInput = "toga_web.widgets.timeinput:TimeInput"
+# Tree = "toga_web.widgets.tree:Tree"
+# WebView = "toga_web.widgets.webview:WebView"
+
+# Windows
 MainWindow = "toga_web.window:MainWindow"
 Window = "toga_web.window:Window"
 
