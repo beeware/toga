@@ -48,7 +48,7 @@ warnings.warn(
 )
 
 
-def not_implemented(feature):
+def not_implemented(feature):  # pragma: no cover
     NotImplementedWarning.warn("Cocoa", feature)
 
 

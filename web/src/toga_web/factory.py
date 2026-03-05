@@ -49,7 +49,7 @@ warnings.warn(
 )
 
 
-def not_implemented(feature):
+def not_implemented(feature):  # pragma: no cover
     NotImplementedWarning.warn("Web", feature)  # pragma: nocover
 
 

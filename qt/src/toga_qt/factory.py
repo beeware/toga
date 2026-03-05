@@ -97,7 +97,7 @@ __all__ = [
 ]
 
 
-def not_implemented(feature):
+def not_implemented(feature):  # pragma: no cover
     NotImplementedWarning.warn("Qt", feature)
 
 

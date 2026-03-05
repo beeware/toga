@@ -43,8 +43,8 @@ warnings.warn(
 )
 
 
-def not_implemented(feature):
-    NotImplementedWarning.warn("Winforms", feature)  # pragma: nocover
+def not_implemented(feature):  # pragma: no cover
+    NotImplementedWarning.warn("Winforms", feature)
 
 
 __all__ = [

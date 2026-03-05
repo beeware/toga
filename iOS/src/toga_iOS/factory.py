@@ -52,7 +52,7 @@ warnings.warn(
 )
 
 
-def not_implemented(feature):
+def not_implemented(feature):  # pragma: no cover
     NotImplementedWarning.warn("iOS", feature)
 
 
