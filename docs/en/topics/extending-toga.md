@@ -58,7 +58,7 @@ Font = "toga_qt.fonts:Font"
 ```
 and so-on.  This tells [`importlib.metadata`][importlib.metadata] that there is a group of entry points called `toga_core.backend.toga_qt` and each entry point consists of an interface name (like `App`) and the location of the implementation (like `toga_qt.app:App`, which means the `App` class in the `toga_at.app` module).
 
-We can get a factory object by calling [`toga.platform.get_factory`][toga.platform.getfactory] and then get the implementation as an attribute on the factory. So `get_factory().Slider` will give you the implementation class for the slider in the current backend.  If you look at the widget interface classes in Toga, you will see that most of their [`_create`][toga.widgets.base.Widget._create] methods look like:
+The  factory object is a property on the widget which calls out to [`toga.platform.get_factory`][toga.platform.get_factory] with an appropriate parameter: `"toga_core"` by default, but custom widgets can override this property to get the appropriate `Factory` instance for the widget.  The factory widget has the implementation classes as lazily looked-up attributes.  So `factory.Slider` will give you the implementation class for the slider in the current backend.  If you look at the widget interface classes in Toga, you will see that most of their `_create` methods look like:
 ``` python
 class Slider(Widget):
 
@@ -169,6 +169,7 @@ class Toggle(Switch)
 
     @cached_property
     def factory(self):
+        # ensure we get the factory for the "togax_extra_switches" entry points
         return get_factory("togax_extra_switches")
 
     def _create(self):

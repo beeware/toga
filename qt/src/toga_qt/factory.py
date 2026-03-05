@@ -101,7 +101,7 @@ def not_implemented(feature):  # pragma: no cover
     NotImplementedWarning.warn("Qt", feature)
 
 
-def __getattr__(name):
+def __getattr__(name):  # pragma: no cover
     if get_testing():
         import pytest
 
