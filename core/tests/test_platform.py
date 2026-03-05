@@ -419,4 +419,5 @@ def test_get_platform_factory_deprecated():
             r"use 'get_factory' instead."
         ),
     ):
-        _get_platform_factory()
+        factory = _get_platform_factory()
+        assert factory.__name__ == "toga_dummy.factory"

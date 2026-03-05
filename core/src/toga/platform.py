@@ -132,7 +132,8 @@ def get_platform_factory() -> ModuleType:
     backend = get_backend()
     try:
         factory = importlib.import_module(f"{backend}.factory")
-    except ModuleNotFoundError as exc:
+    except ModuleNotFoundError as exc:  # pragma: no cover
+        # This is difficult to test now that it is not used directly.
         toga_backends_values = ", ".join([f"{b.value!r}" for b in find_backends()])
         # Android doesn't report Python exception chains in crashes
         # (https://github.com/chaquo/chaquopy/issues/890), so include the original
