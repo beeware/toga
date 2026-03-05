@@ -127,6 +127,11 @@ class ListSource(Source):
         else:
             self._data = []
 
+    @property
+    def accessors(self) -> list[str]:
+        """The attribute names for accessing the value in each column of a row."""
+        return self._accessors.copy()
+
     ######################################################################
     # Methods required by the ListSource interface
     ######################################################################

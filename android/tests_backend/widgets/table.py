@@ -11,6 +11,7 @@ class TableProbe(SimpleProbe):
     supports_icons = False
     supports_keyboard_shortcuts = False
     supports_widgets = False
+    column_proportion_tolerance = 35
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -80,6 +81,9 @@ class TableProbe(SimpleProbe):
         else:
             right = row.getWidth()
         return (right - left) / self.scale_factor
+
+    async def resize_column(self, index, width):
+        pytest.xfail("Table columns cannot be resized on Android")
 
     async def select_row(self, row, add=False):
         self._row_view(row).performClick()

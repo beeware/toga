@@ -76,7 +76,7 @@ class Table(Widget):
         self.table_layout.removeAllViews()
 
         # StretchAllColumns mode causes a divide by zero error if there are no columns.
-        self.table_layout.setStretchAllColumns(bool(self.interface.accessors))
+        self.table_layout.setStretchAllColumns(bool(self.interface.columns))
 
         if source is not None:
             if self.interface._show_headings:
@@ -194,7 +194,7 @@ class Table(Widget):
             True,  # Immediate, not animated
         )
 
-    def insert_column(self, index, heading, accessor):
+    def insert_column(self, index, column):
         self.change_source(getattr(self.interface, "data", None))
 
     def remove_column(self, index):

@@ -54,8 +54,8 @@ class Tree(Widget):
     def collapse_all(self):
         self._action("collapse all")
 
-    def insert_column(self, index, heading, accessor):
-        self._action("insert column", index=index, heading=heading, accessor=accessor)
+    def insert_column(self, index, column):
+        self._action("insert column", index=index, column=column)
 
     def remove_column(self, index):
         self._action("remove column", index=index)
