@@ -24,8 +24,7 @@
     min-width: unset;
 }
 
-:is(#availability-title, .api-reference) + .md-typeset__scrollwrap :is(th, td:first-child),
-.md-typeset table:not([class]) {
+:is(#availability-title, .api-reference) + .md-typeset__scrollwrap :is(th, td:first-child) {
     font-size: 1rem;
 }
 
