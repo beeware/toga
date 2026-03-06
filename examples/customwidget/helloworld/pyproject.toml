@@ -31,3 +31,6 @@ HelloWorld = "hello_world_widget.textual_hello_world:HelloWorld"
 
 [project.entry-points."togax_hello_world.backend.toga_web"]
 HelloWorld = "hello_world_widget.web_hello_world:HelloWorld"
+
+[project.entry-points."togax_hello_world.backend.toga_winforms"]
+HelloWorld = "hello_world_widget.winforms_hello_world:HelloWorld"

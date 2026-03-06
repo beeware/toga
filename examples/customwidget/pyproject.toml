@@ -35,6 +35,12 @@ requires = [
     "../../gtk",
 ]
 
+[tool.briefcase.app.customwidget-qt.linux]
+requires = [
+    "../../qt",
+    "PySide6",
+]
+
 [tool.briefcase.app.customwidget.windows]
 requires = [
     "../../winforms",
