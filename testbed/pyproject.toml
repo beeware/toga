@@ -143,13 +143,13 @@ formal_name = "Toga Testbed (Qt)"
 sources = [
     "src/testbed_qt",
     "src/testbed",
+]
+
+test_sources = [
     "../qt/tests_backend",
 ]
 
 [tool.briefcase.app.testbed-qt.linux]
-test_sources = [
-    "../qt/tests_backend",
-]
 requires = [
     "../qt",
     "PySide6-Essentials~=6.10.0",
