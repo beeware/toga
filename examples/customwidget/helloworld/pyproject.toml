@@ -11,11 +11,23 @@ name = "helloworld"
 version = "0.0.1"
 
 # New Widgets
-[project.entry-points."togax_hello_world.backend.toga_qt"]
-HelloWorld = "hello_world_widget.qt_hello_world:HelloWorld"
+[project.entry-points."togax_hello_world.backend.toga_android"]
+HelloWorld = "hello_world_widget.android_hello_world:HelloWorld"
 
 [project.entry-points."togax_hello_world.backend.toga_cocoa"]
 HelloWorld = "hello_world_widget.cocoa_hello_world:HelloWorld"
+
+[project.entry-points."togax_hello_world.backend.toga_gtk"]
+HelloWorld = "hello_world_widget.gtk_hello_world:HelloWorld"
+
+[project.entry-points."togax_hello_world.backend.toga_iOS"]
+HelloWorld = "hello_world_widget.iOS_hello_world:HelloWorld"
+
+[project.entry-points."togax_hello_world.backend.toga_qt"]
+HelloWorld = "hello_world_widget.qt_hello_world:HelloWorld"
+
+[project.entry-points."togax_hello_world.backend.toga_textual"]
+HelloWorld = "hello_world_widget.textual_hello_world:HelloWorld"
 
 [project.entry-points."togax_hello_world.backend.toga_web"]
 HelloWorld = "hello_world_widget.web_hello_world:HelloWorld"
