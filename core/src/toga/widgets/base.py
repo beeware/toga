@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from builtins import id as identifier
+from functools import cached_property
 from os import environ
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
@@ -9,7 +10,7 @@ from warnings import warn
 from travertino.node import Node
 from travertino.style import BaseStyle
 
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 from toga.style import Pack, TogaApplicator
 from toga.style.mixin import style_mixin
 
@@ -93,9 +94,6 @@ class Widget(Node, PackMixin, ABC):
         self._window: Window | None = None
         self._app: App | None = None
 
-        # Get factory and assign implementation
-        self.factory = get_platform_factory()
-
         ##################################################################
         # 2024-12: Backwards compatibility for Toga < 0.5.0
         ##################################################################
@@ -117,6 +115,10 @@ class Widget(Node, PackMixin, ABC):
         #############################
 
         self.applicator = TogaApplicator()
+
+    @cached_property
+    def factory(self):
+        return get_factory()
 
     def _create(self) -> Any:
         """Create a platform-specific implementation of this widget.

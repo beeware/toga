@@ -342,7 +342,7 @@ def test_disabled_on_select(widget):
         # Setting the handler raises a warning
         with pytest.warns(
             toga.NotImplementedWarning,
-            match=r"\[Dummy\] Not implemented: MapView\.on_select",
+            match=r"\[toga_dummy\] Not implemented: MapView\.on_select",
         ):
             widget.on_select = handler
 

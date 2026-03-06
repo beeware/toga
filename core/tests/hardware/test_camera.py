@@ -3,7 +3,7 @@ import pytest
 import toga
 from toga.constants import FlashMode
 from toga.hardware.camera import CameraDevice
-from toga_dummy import factory
+from toga.platform import get_factory
 from toga_dummy.hardware.camera import (
     Camera as DummyCamera,
     CameraDevice as DummyCameraDevice,
@@ -23,11 +23,12 @@ def photo(app):
 def test_no_camera(monkeypatch, app):
     """If there's no camera, and no factory implementation, accessing camera raises an
     exception."""
+    factory = get_factory()
     try:
         monkeypatch.delattr(app, "_camera")
     except AttributeError:
         pass
-    monkeypatch.delattr(factory, "Camera")
+    monkeypatch.delitem(factory._entrypoints, "Camera")
 
     # Accessing the camera object should raise NotImplementedError
     with pytest.raises(NotImplementedError):
