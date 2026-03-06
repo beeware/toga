@@ -68,9 +68,9 @@ class Slider(Widget):
 
 ### Implementing Missing Widgets
 
-Not every widget is available in every backend. If a backend doesn't provide a widget, it will raise `NotImplementedError`. However, you can fill gaps in Toga's widget availability by providing an implementation as part of your application code, and then add an entry point for that widget.
+Not every widget is available in every backend. If a backend doesn't provide a widget, it will raise `NotImplementedError`. However, you can fill gaps in Toga's widget availability by providing a Python project that contains an implementation and an entry point for that widget.
 
-For example, at the time of writing, the `toga_textual` backend doesn't implement the [`toga.Switch`][toga.Switch] widget. We could write one something like this in a module `my_app.textual_switch`:
+For example, at the time of writing, the `toga_textual` backend doesn't implement the [`toga.Switch`][toga.Switch] widget. We could write one something like this in a module `my_project.textual_switch`:
 ``` python
 from textual.widgets import Checkbox as TextualCheckbox
 from travertino.size import at_least
@@ -106,16 +106,20 @@ class Switch(Widget):
         self.interface.intrinsic.width = at_least(len(self.native.label) + 8)
         self.interface.intrinsic.height = 3
 ```
-and then add the following to the application's `pyproject.toml`:
+and then add the following to the project's `pyproject.toml`:
 ``` toml
 [project.entry-points."toga_core.backend.toga_textual"]
-Switch = "my_app.textual_switch:Switch"
+Switch = "my_project.textual_switch:Switch"
 ```
 The project metadata needs to be updated in your environment, so that Python's `importlib.metadata` is aware of the new widget, which means you will likely need to re-run `pip install` on your project in your development environment. It should automatically get picked up when you run code or tests using tools like `hatch` or `tox`, which install your project into a clean environment when run, or when you build and install wheels from your project.
 
 With this set-up, you can import and use `toga.Switch` within your application that uses the `toga_textual` backend.
 
 Ideally, if you have a working implementation of a missing widget, you'd make a pull-request to add it to the appropriate Toga backend.
+
+### A Note About Briefcase Applications
+
+Briefcase projects don't use Python's entry point system, so you can't just add the entry points to a Briefcase project's `pyroject.toml`.  Instead any widgets you need have to be implemented as a separate Python project with it's own `pyproject.toml` that contains the entry points, and which is a dependency of your application.  The `customwidget` example in the Toga examples shows how you might do this.
 
 ### Implementing a New Backend
 
