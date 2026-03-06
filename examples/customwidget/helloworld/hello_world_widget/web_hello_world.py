@@ -1,7 +1,7 @@
 from toga_web.widgets.base import Widget
 
 
-class Label(Widget):
+class HelloWorld(Widget):
     def create(self):
         self.native = self._create_native_widget("span")
         self.native.innerHTML = "Hello World!"
