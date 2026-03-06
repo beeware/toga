@@ -229,7 +229,6 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
     # -------------------------------------------------------------------------
     # If we can't find the entrypoint group we expect, drop back to the old
     # system using a factory module
-    print(interface, factory.group, entry_points(group=factory.group))
     if interface is None and len(entry_points(group=factory.group)) == 0:
         backend = get_backend()
         try:
