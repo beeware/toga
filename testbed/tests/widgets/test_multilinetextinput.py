@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 import toga
@@ -116,3 +118,36 @@ async def test_scroll_after_text_change(widget, probe):
 
     scroll_offset = probe.document_height - probe.height
     assert probe.vertical_scroll_position == pytest.approx(scroll_offset, abs=30)
+
+
+async def test_mouse_scrolling(widget, probe, other, other_probe):
+    if not probe.supports_simulate_mouse_wheel:
+        pytest.skip("This backend doesn't support mouse wheel simulation")
+
+    "Mouse scrolling only when widget has focus."
+    # Add a lot of content
+    widget.value = "Topline\n" + "Lorem ipsum\n " * 100
+    await probe.redraw("The document now contains a lot of content")
+
+    # The scroll position is at the origin.
+    widget.scroll_to_top()
+    assert probe.vertical_scroll_position == pytest.approx(0, abs=1)
+
+    # simulate down scrolling with focused widget
+    widget.focus()
+    await probe.redraw("The widget should be given focus")
+    assert probe.has_focus
+    probe.simulate_mouse_wheel(-120)
+    await probe.wait_for_scroll_completion()
+    await asyncio.sleep(1)
+    assert probe.vertical_scroll_position == pytest.approx(44, abs=5)
+
+    # simulate down scrolling with unfocused widget
+    # the widget should still scroll because it is not inside a ScrollBar
+    other.focus()
+    await other_probe.redraw("A separate widget should be given focus")
+    assert other_probe.has_focus
+    probe.simulate_mouse_wheel(-120)
+    await probe.wait_for_scroll_completion()
+    await asyncio.sleep(1)
+    assert probe.vertical_scroll_position == pytest.approx(88, abs=5)
