@@ -121,6 +121,9 @@ async def test_scroll_after_text_change(widget, probe):
 
 
 async def test_mouse_scrolling(widget, probe, other, other_probe):
+    if not probe.supports_simulate_mouse_wheel:
+        pytest.skip("This backend doesn't support mouse wheel simulation")
+
     "Mouse scrolling only when widget has focus."
     # Add a lot of content
     widget.value = "Topline\n" + "Lorem ipsum\n " * 100

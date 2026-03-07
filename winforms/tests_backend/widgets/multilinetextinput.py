@@ -19,6 +19,7 @@ SendMessageW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes
 class MultilineTextInputProbe(TextInputProbe):
     native_class = System.Windows.Forms.RichTextBox
     fixed_height = None
+    supports_simulate_mouse_wheel = True
 
     @property
     def value(self):
