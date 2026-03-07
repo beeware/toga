@@ -60,3 +60,7 @@ You can use a Python version other than the system default by replacing `python3
 ### Other distributions
 
 If you're not using one of these, you'll need to work out how to install the developer libraries for `python3`, [Qt's X11 dependencies](https://doc.qt.io/qt-6/linux-requirements.html), [Qt's Wayland dependencies](https://doc.qt.io/qt-6/wayland-requirements.html), and the executable ``canberra-gtk-play`` (and please let us know so we can improve this documentation!)
+
+### Using System PySide6
+
+To integrate with system themes, you can use the system PySide6 runtime instead of installing PySide6 through pip. This requires installing PySide6 through your system package manager, which automatically installs Qt as a dependency. The available PySide6 system packages, along with minimum distribution versions, can be found in the [system-pyside6 README](https://github.com/beeware/system-pyside6).
