@@ -14,7 +14,6 @@ license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
-formal_name = "Custom Widget"
 description = "A testing app"
 requires = [
     "../../travertino",
@@ -23,9 +22,11 @@ requires = [
 ]
 
 [tool.briefcase.app.customwidget]
+formal_name = "Custom Widget"
 sources = ["customwidget"]
 
 [tool.briefcase.app.customwidget-qt]
+formal_name = "Custom Widget (Qt)"
 sources = ["customwidget", "customwidget_qt"]
 
 [tool.briefcase.app.customwidget.macOS]
