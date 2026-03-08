@@ -66,6 +66,9 @@ pyside6-essentials = [
 pyside6 = [
     "PySide6 == 6.10.2",
 ]
+system = [
+    "system-pyside6 == 0.1.0",
+]
 
 [tool.coverage.run]
 parallel = true

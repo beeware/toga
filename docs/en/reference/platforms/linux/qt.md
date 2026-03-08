@@ -39,3 +39,15 @@ This will install the full `PySide6` package, which includes both `PySide6-Essen
 The `toga-qt` backend uses Qt 6.
 
 The native APIs are accessed using the [PySide6 bindings](https://www.qt.io/development/qt-framework/python-bindings).
+
+## Using System Qt
+
+If you want to use the system Qt runtime installed through your system package manager (which provides better integration with system-provided themes), you can install `toga-qt` with the `system` extra:
+
+```console
+$ python -m pip install toga-qt[system]
+```
+
+This installs `system-pyside6`, which allows using the system-provided PySide6 runtime. Since PySide6 bindings are static and specific to one version of Qt, they need to be provided through the system package manager to use the system Qt runtime. This approach enables integration with system-provided themes.
+
+To use this option, you must also install the PySide6 system packages. The PySide6 system packages, with minimum distribution versions, may be found in the [system-pyside6 README](https://github.com/beeware/system-pyside6).
