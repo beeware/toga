@@ -1,4 +1,4 @@
-# Release History
+# Release history
 
 <!-- rumdl-disable MD024 -->
 
@@ -48,7 +48,7 @@
 * `OptionContainer` and `ScrollContainer` widgets will now resize continuously during the drag of a parent SplitContainer on macOS. ([#3787](https://github.com/beeware/toga/issues/3787))
 * The `toga-demo` app now correctly identifies its icon when run as a Python module. ([#3926](https://github.com/beeware/toga/issues/3926))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 * In order to better match CSS, the `rgb` and `hsl` constructors now silently clip (or in the case of hue, wrap) out-of-range values rather than throwing errors. They also convert them to consistent types: integers for red, blue, green, and hue; and floats for saturation, lightness, and alpha. ([#3611](https://github.com/beeware/toga/issues/3611))
 * `rgb` and `hsl` color objects are now read-only; their `r`/`g`/`b`/`a` or `h`/`s`/`l`/`a` attributes can't be altered after creation. Because of this, format conversions (`rgb(...).hsl` or `hsl(...).rgb`) can now cache their results, only performing calculations once. "Converting" a color object to its own type (`rgb(...).rgb` or `hsl(...).hsl`) now returns the original object, rather than a new instance with the same values. ([#3611](https://github.com/beeware/toga/issues/3611))
@@ -99,7 +99,7 @@
 - When an app has no windows, GTK no longer returns an error when requesting `toga.App.current_window`. ([#3570](https://github.com/beeware/toga/issues/3570))
 - The conversion of HSL values with a hue between 240 and 330 has been corrected. The previous calculation reversed the red and green components of the converted colors. ([#3584](https://github.com/beeware/toga/issues/3584))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 - `toga.Font` objects now raise an *UnknownFontError* instead of silently falling back to system font if the font family can't be successfully loaded. ([#3526](https://github.com/beeware/toga/issues/3526))
 
@@ -135,7 +135,7 @@
 - A crash caused by the `name` argument added to asynchronous tasks in Python 3.13.3 has been corrected. ([#3394](https://github.com/beeware/toga/issues/3394))
 - The type annotation for directional style properties (`margin`, and the deprecated `padding` alias) has been corrected. ([#3396](https://github.com/beeware/toga/issues/3396))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 - Supplying multiple arguments to `BaseStyle.apply()` (and therefore `Pack.apply()`) has been deprecated. If you want to apply multiple arguments at once, apply them within the `with style_object.batch_apply()` context manager. ([#3273](https://github.com/beeware/toga/issues/3273))
 - The `anticlockwise` parameter to the Canvas drawing context's `arc` and `ellipse` methods (and the `Arc` and `Ellipse` drawing objects) has been deprecated; use `counterclockwise` instead. ([#3300](https://github.com/beeware/toga/issues/3300))
@@ -190,7 +190,7 @@
 - On Android, `DetailedList` and `Table` widgets now correctly unset the highlight color when a row is deselected. ([#3156](https://github.com/beeware/toga/issues/3156))
 - ([#3163](https://github.com/beeware/toga/issues/3163))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 - "Full screen mode" on an app has been renamed "Presentation mode" to avoid the ambiguity with "full screen mode" on a window. The `toga.App.enter_full_screen` and `toga.App.exit_full_screen` APIs have been renamed `toga.App.enter_presentation_mode` and `toga.App.exit_presentation_mode`, respectively. ([#1857](https://github.com/beeware/toga/issues/1857))
 - The use of generators as event handlers has been deprecated. Any generator-based event handler can be converted into an asynchronous co-routine by converting the handler to `async def`, and using `await asyncio.sleep(t)` in place of `yield t` (for some sleep interval `t`). ([#2721](https://github.com/beeware/toga/issues/2721))
@@ -234,7 +234,7 @@ This release contains no new features. The primary purpose of this release is to
 - On macOS, apps that specify both *document_types* and a *main_window* no longer display the document selection dialog on startup. ([#2860](https://github.com/beeware/toga/issues/2860))
 - The integration with Android's event loop has been updated to support Python 3.13. ([#2907](https://github.com/beeware/toga/issues/2907))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 - Toga no longer supports Python 3.8. ([#2888](https://github.com/beeware/toga/issues/2888))
 - Android applications should update their Gradle requirements to use version 1.12.0 of the Material library (`com.google.android.material:material:1.12.0`). ([#2890](https://github.com/beeware/toga/issues/2890))
@@ -300,7 +300,7 @@ This release contains no new features. The primary purpose of this release is to
 - The WebView can now be loaded when using Python from the Windows Store. ([#2752](https://github.com/beeware/toga/issues/2752))
 - The WebView and MapView widgets now log an error if initialization fails. ([#2779](https://github.com/beeware/toga/issues/2779))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 - The `add_background_task()` API on `toga.App` has been deprecated. Background tasks can be implemented using the new `on_running` event handler, or by using `asyncio.create_task`{.interpreted-text role="any"}. ([#2099](https://github.com/beeware/toga/issues/2099))
 
@@ -392,7 +392,7 @@ This release contains no new features. The primary purpose of this release is to
 - Widget IDs can now be reused after the associated widget's window is closed. ([#2514](https://github.com/beeware/toga/issues/2514))
 - [WebView][toga.WebView] is now compatible with Linux GTK environments only providing WebKit2 version 4.1 without version 4.0. ([#2527](https://github.com/beeware/toga/issues/2527))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 - The macOS implementations of `Window.as_image()` and `Canvas.as_image()` APIs now return images in native device resolution, not CSS pixel resolution. This will result in images that are double the previous size on Retina displays. ([#1930](https://github.com/beeware/toga/issues/1930))
 
@@ -430,7 +430,7 @@ This release contains no new features. The primary purpose of this release is to
 - On macOS, `toga.Image` objects can now be created from raw data that didn't originate from a file. ([#2355](https://github.com/beeware/toga/issues/2355))
 - Winforms no longer generates a system beep when pressing Enter in a TextInput. ([#2374](https://github.com/beeware/toga/issues/2374))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 - Widgets must now be added to a window to be available in the widget registry for lookup by ID. ([#2190](https://github.com/beeware/toga/issues/2190))
 - If the label for a Selection contains newlines, only the text up to the first newline will be displayed. ([#2319](https://github.com/beeware/toga/issues/2319))
@@ -468,7 +468,7 @@ This release contains no new features. The primary purpose of this release is to
 - Font handling on older versions of iOS has been corrected. ([#2265](https://github.com/beeware/toga/issues/2265))
 - ImageViews with `flex=1` will now shrink to fit if the image is larger than the available space. ([#2275](https://github.com/beeware/toga/issues/2275))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 - The `toga.Image` constructor now takes a single argument (`src`); the `path` and `data` arguments are deprecated. ([#2142](https://github.com/beeware/toga/issues/2142))
 - The use of Caps Lock as a keyboard modifier for commands was removed. ([#2198](https://github.com/beeware/toga/issues/2198))
@@ -548,7 +548,7 @@ This release contains no new features. The primary purpose of this release is to
 - An error on Winforms when a window has no content has been resolved. ([#2095](https://github.com/beeware/toga/issues/2095))
 - iOS container views are now set to automatically resize with their parent view ([#2161](https://github.com/beeware/toga/issues/2161))
 
-### Backward Incompatible Changes
+### Backward incompatible changes
 
 - The `weight`, `style` and `variant` arguments for `Font` and `Font.register` are now keyword-only. ([#1903](https://github.com/beeware/toga/issues/1903))
 - The `clear()` method for resetting the value of a MultilineTextInput, TextInput and PasswordInput has been removed. This method was an ambiguous override of the `clear()` method on Widget that removed all child nodes. To remove all content from a text input widget, use `widget.value = ""`. ([#1938](https://github.com/beeware/toga/issues/1938))
