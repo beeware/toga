@@ -1,4 +1,5 @@
 from toga_cocoa.libs import (
+    SUPPORTS_LIQUID_GLASS,
     NSMakePoint,
     NSNotificationCenter,
     NSScrollView,
@@ -47,3 +48,11 @@ class ScrollContainerProbe(SimpleProbe):
     async def wait_for_scroll_completion(self):
         # No animation associated with scroll, so this is a no-op
         pass
+
+    def assert_top_bleed(self):
+        if (
+            SUPPORTS_LIQUID_GLASS
+            and self.native.frame.origin.y == 0
+            and self.impl.container == self.widget.window._impl.container
+        ):
+            assert self.native.contentInsets.top == 0

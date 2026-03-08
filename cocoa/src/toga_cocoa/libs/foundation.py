@@ -78,3 +78,13 @@ class NSCalendarUnit(IntFlag):
 
 
 NSDateComponents = ObjCClass("NSDateComponents")
+
+######################################################################
+# NSKeyValueObserving.h
+
+
+class NSKeyValueObservingOptions(IntFlag):
+    New = 0x01
+    Old = 0x02
+    Initial = 0x04
+    Prior = 0x08

@@ -350,6 +350,9 @@ class Window:
     def set_content(self, widget):
         self.container.content = widget
 
+    def set_bleed_top(self, bleed_top):
+        pass
+
 
 class MainWindow(Window):
     def _submenu(self, group, group_cache):

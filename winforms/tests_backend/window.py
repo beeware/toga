@@ -148,3 +148,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     def press_toolbar_button(self, index):
         self._native_toolbar_item(index).OnClick(EventArgs.Empty)
+
+    def assert_top_bleed(self):
+        pass

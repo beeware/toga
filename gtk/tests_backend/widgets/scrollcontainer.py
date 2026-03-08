@@ -36,3 +36,6 @@ class ScrollContainerProbe(SimpleProbe):
     async def wait_for_scroll_completion(self):
         # Scroll isn't animated, so this is a no-op.
         pass
+
+    def assert_top_bleed(self):
+        pass

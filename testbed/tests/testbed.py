@@ -161,6 +161,25 @@ def main(main_package_name, backend_override=None):
     )
     cov.start()
 
+    # Testbed will not be distributed, so "iOS 18 SDK running on
+    # iOS 26" will not be possible.  We therefore enable the relevant
+    # flags.
+    # This needs to be done after coverage starts in order to capture
+    # the side effects of import toga_iOS.
+    try:
+        import toga_iOS
+
+        toga_iOS.ENABLE_LIQUID_GLASS_ADAPTATION = True
+    except ImportError:
+        pass
+
+    try:
+        import toga_cocoa
+
+        toga_cocoa.ENABLE_LIQUID_GLASS_ADAPTATION = True
+    except ImportError:
+        pass
+
     # Determine pytest arguments
     args = sys.argv[1:]
 

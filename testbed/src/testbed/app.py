@@ -2,6 +2,7 @@ import asyncio
 from unittest.mock import Mock
 
 import toga
+import toga.platform
 
 
 class ExampleDoc(toga.Document):

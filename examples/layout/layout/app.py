@@ -1,5 +1,16 @@
 import toga
+import toga.platform
 from toga.constants import CENTER, HIDDEN, VISIBLE
+
+if toga.platform.current_platform == "iOS":
+    import toga_iOS
+
+    toga_iOS.ENABLE_LIQUID_GLASS_ADAPTATION = True
+
+if toga.platform.current_platform == "macOS":
+    import toga_cocoa
+
+    toga_cocoa.ENABLE_LIQUID_GLASS_ADAPTATION = True
 
 
 class LayoutApp(toga.App):
@@ -38,17 +49,43 @@ class LayoutApp(toga.App):
             gap=20,
         )
 
-        self.box = toga.Row(
+        self.row_box = toga.Row(
             children=[],
             margin=20,
             gap=20,
             align_items=CENTER,
             justify_content=CENTER,
+            flex=1,
         )
 
-        # this tests adding children when we already have an impl but no window or app
-        self.box.add(self.button_box)
-        self.box.add(self.content_box)
+        # This tests adding children when we already have an impl but no window or app.
+        # Empty boxes are used to work around cross-axis alignment issue (#2213)
+        self.row_box.add(toga.Row(flex=1))
+        self.row_box.add(self.button_box)
+        self.row_box.add(self.content_box)
+        self.row_box.add(toga.Row(flex=1))
+
+        self.box = toga.Column(
+            children=[
+                toga.ScrollContainer(
+                    content=toga.Column(
+                        children=[
+                            toga.Box(
+                                height=200,
+                                background_color="cornflowerblue",
+                            ),
+                            toga.Label(
+                                text="Hello World",
+                                margin_top=20,
+                            ),
+                        ],
+                    ),
+                    horizontal=False,
+                    height=200,
+                ),
+                self.row_box,
+            ],
+        )
 
         # add a couple of labels to get us started
         self.labels = []
@@ -57,6 +94,7 @@ class LayoutApp(toga.App):
 
         self.main_window = toga.MainWindow()
         self.main_window.content = self.box
+        self.main_window.bleed_top = True
         self.main_window.show()
 
     def hide_label(self, sender):
