@@ -160,7 +160,6 @@ Widgets:
     description: A labeled on/off button.
     beta:
       - web
-    unsupported:
       - textual
 
   Table:
