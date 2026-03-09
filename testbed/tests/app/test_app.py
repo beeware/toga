@@ -8,9 +8,14 @@ import toga
 
 async def test_unsupported_widget(app):
     """If a widget isn't implemented, the factory raises NotImplementedError."""
-    with pytest.raises(NotImplementedError) as exc:
+    with pytest.raises(
+        NotImplementedError,
+        match=(
+            rf"The '{toga.backend}' backend for the toga_core interface "
+            f"doesn't implement NoSuchWidget"
+        ),
+    ):
         _ = app.factory.NoSuchWidget
-    assert "backend doesn't implement NoSuchWidget" in str(exc)
 
 
 async def test_main_window_toolbar(app, main_window, main_window_probe):

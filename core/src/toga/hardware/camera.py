@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from toga.constants import FlashMode
 from toga.handlers import AsyncResult, PermissionResult
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 if TYPE_CHECKING:
     from toga.app import App
@@ -46,7 +46,7 @@ class CameraDevice:
 
 class Camera:
     def __init__(self, app: App):
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._app = app
         self._impl = self.factory.Camera(self)
 

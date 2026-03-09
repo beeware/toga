@@ -18,7 +18,7 @@ from toga.documents import Document, DocumentSet
 from toga.handlers import simple_handler, wrapped_handler
 from toga.icons import Icon
 from toga.paths import Paths
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 from toga.statusicons import StatusIconSet
 from toga.window import MainWindow, Window, WindowSet
 
@@ -307,7 +307,7 @@ class App:
             self._description = self.metadata.get("Summary", None)
 
         # Get a platform factory.
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
 
         # Instantiate the paths instance for this app.
         self._paths = Paths()

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from toga.images import Image
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 from toga.types import Position, Size
 
 if TYPE_CHECKING:
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class Screen:
     def __init__(self, _impl: Any):
         self._impl = _impl
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
 
     @property
     def name(self) -> str:

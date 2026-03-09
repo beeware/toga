@@ -1,3 +1,5 @@
+import warnings
+
 from toga import NotImplementedWarning
 
 try:
@@ -45,6 +47,13 @@ except ModuleNotFoundError as exc:  # pragma: no cover
     else:
         raise
 
+warnings.warn(
+    "Factory modules are deprecated. Use 'toga.platform.get_factory' instead.",
+    DeprecationWarning,
+    stacklevel=1,
+)
+
+
 __all__ = [
     "not_implemented",
     "ActivityIndicator",
@@ -88,11 +97,11 @@ __all__ = [
 ]
 
 
-def not_implemented(feature):
+def not_implemented(feature):  # pragma: no cover
     NotImplementedWarning.warn("Qt", feature)
 
 
-def __getattr__(name):
+def __getattr__(name):  # pragma: no cover
     if get_testing():
         import pytest
 

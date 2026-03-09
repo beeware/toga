@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import toga
-from toga.platform import get_platform_factory
+from toga.platform import Factory, get_factory
 
 if TYPE_CHECKING:
     from typing import TypeAlias
@@ -94,7 +94,7 @@ class Icon:
             [Icon.DEFAULT_ICON][toga.Icon.DEFAULT_ICON] will be used.
         :param system: **For internal use only**
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         try:
             # Try to load the icon with the given path snippet. If the request is for
             # the app icon, use `resources/<app name>` as the path.
@@ -105,7 +105,13 @@ class Icon:
 
             self.system = system
             if self.system:
-                resource_path = Path(self.factory.__file__).parent / "resources"
+                if isinstance(self.factory, Factory):
+                    resource_path = Path(self.factory.resources.__file__).parent
+                else:
+                    # doesn't get covered in core tests
+                    resource_path = (
+                        Path(self.factory.__file__).parent / "resources"
+                    )  # pragma: no cover
             else:
                 resource_path = toga.App.app.paths.app
 

@@ -145,10 +145,11 @@ sources = [
     "src/testbed",
 ]
 
-[tool.briefcase.app.testbed-qt.linux]
 test_sources = [
     "../qt/tests_backend",
 ]
+
+[tool.briefcase.app.testbed-qt.linux]
 requires = [
     "../qt",
     "PySide6-Essentials~=6.10.0",

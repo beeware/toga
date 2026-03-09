@@ -109,7 +109,7 @@ async def widget(on_load):
 
     yield widget
 
-    if toga.platform.get_platform_factory().__package__ == "toga_gtk":
+    if toga.backend == "toga_gtk":
         # On Gtk, ensure that the MapView evades garbage collection by keeping a
         # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
         # thread disposing of it is not the same thread running the event loop. Since
