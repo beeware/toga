@@ -523,6 +523,12 @@ NSOpenGLPFAVirtualScreenCount = 128  # number of virtual screens in this format
 NSOpenGLCPSwapInterval = 222
 
 ######################################################################
+# NSOpenGLView.h
+NSOpenGLView = ObjCClass("NSOpenGLView")
+NSOpenGLContext = ObjCClass("NSOpenGLContext")
+NSOpenGLPixelFormat = ObjCClass("NSOpenGLPixelFormat")
+
+######################################################################
 # NSOpenPanel.h
 NSOpenPanel = ObjCClass("NSOpenPanel")
 

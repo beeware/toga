@@ -47,6 +47,7 @@ from toga.widgets.multilinetextinput import MultilineTextInput as MultilineTextI
 from toga.widgets.numberinput import NumberInput as NumberInput
 from toga.widgets.optioncontainer import OptionContainer as OptionContainer
 from toga.widgets.optioncontainer import OptionItem as OptionItem
+from toga.widgets.gl.openglview import OpenGLView as OpenGLView
 from toga.widgets.passwordinput import PasswordInput as PasswordInput
 from toga.widgets.progressbar import ProgressBar as ProgressBar
 from toga.widgets.box import Row as Row
