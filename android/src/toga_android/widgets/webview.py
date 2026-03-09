@@ -121,10 +121,11 @@ class WebView(Widget):
                     "Unable to display large HTML content", "text/html", "utf-8"
                 )
         else:
-            # There is a loadDataWithBaseURL method, but it's inconsistent about
-            # whether getUrl returns the given URL or a data: URL. Rather than support
-            # this feature intermittently, it's better to not support it at all.
-            self.native.loadData(content, "text/html", "utf-8")
+            # loadData() has known issues with special characters in HTML content,
+            # including those in <style> tags. Use loadDataWithBaseURL() instead,
+            # which handles content correctly. Pass None for baseUrl to match the
+            # behavior of loadData().
+            self.native.loadDataWithBaseURL(None, content, "text/html", "utf-8", None)
 
     def get_user_agent(self):
         return self.settings.getUserAgentString()
