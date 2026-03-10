@@ -64,6 +64,21 @@ class StateNode:
             return 0
         else:
             return len(self.children)
+        
+    def __getitem__(self, row_path: list[int] | tuple[int]):
+        """Gets an item based on a row path list or tuple
+        
+        :param list[int] | tuple[int] row_path: A list or tuple of indices. The first
+            is an index of a child, say A, in the list of children, the next is an 
+            index in the list of children of A, and so on...
+        :return: The StateNode at the end of the path. 
+        """
+        if len(row_path) < 1:
+            return self
+        elif len(row_path) == 1:
+            return self.children[row_path[0]]
+        else:
+            return self.children[row_path[0]][row_path[1:]]
 
     def __iter__(self) -> Iterator:
         return iter(self.children or [])
