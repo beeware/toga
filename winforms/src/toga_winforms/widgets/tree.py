@@ -5,6 +5,7 @@ from functools import partial
 from warnings import warn
 
 import System.Windows.Forms as WinForms
+from System.Drawing import ColorTranslator
 
 from toga.handlers import WeakrefCallable
 from toga.sources.tree_source import Node, TreeSourceT
@@ -16,7 +17,7 @@ from ..libs.comctl32 import (
     RemoveWindowSubclass,
 )
 from ..libs.comctl32classes import NMHDR, NMLVCUSTOMDRAW, NMLVDISPINFOW
-from ..libs.gdi32 import SetTextColor
+from ..libs.gdi32 import CreateSolidBrush, DeleteObject, SetTextColor
 from ..libs.user32 import DrawTextW, FillRect, GetSysColor
 from ..libs.win32 import LRESULT
 from .table import Table
@@ -466,6 +467,13 @@ class Tree(Table):
         self._indent = self.native.SmallImageList.ImageSize.Width
         self._rect_right = 0
 
+        self._hbrush_back = CreateSolidBrush(
+            ColorTranslator.ToWin32(self.native.BackColor)
+        )
+        self.native.BackColorChanged += WeakrefCallable(
+            self.winforms_back_color_changed
+        )
+
         self.native.MouseMove += WeakrefCallable(self.winforms_mouse_move)
         self.native.MouseLeave += WeakrefCallable(self.winforms_mouse_leave)
         self.native.MouseDown += WeakrefCallable(self.winforms_mouse_down)
@@ -482,10 +490,12 @@ class Tree(Table):
         dwRefData: int,
     ) -> LRESULT:
         """Override from Table: Same method, but also responds to NM_CUSTOMDRAW."""
-
-        # Remove the window subclass in the way recommended by Raymond Chen here:
-        # devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
         if uMsg == wc.WM_NCDESTROY:
+            # Delete the brushes
+            DeleteObject(self._hbrush_back)
+
+            # Remove the window subclass in the way recommended by Raymond Chen here:
+            # devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
             RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
 
         elif uMsg == wc.WM_REFLECT_NOTIFY:
@@ -701,6 +711,15 @@ class Tree(Table):
 
         self._mouse_down_hit = -1
 
+    def winforms_back_color_changed(self, sender, e):
+        """Updates the win32 brush for the background color"""
+        # Delete the old brush
+        DeleteObject(self._hbrush_back)
+        # Create the new brush
+        self._hbrush_back = CreateSolidBrush(
+            ColorTranslator.ToWin32(self.native.BackColor)
+        )
+
     def _set_widths(self, hdc, rect):
         """Determines _left_padding and _arrow_width during the first custom draw."""
         text_format = wc.DT_CALCRECT | wc.DT_NOCLIP
@@ -726,7 +745,7 @@ class Tree(Table):
             state_node = self.display_list[index]
             if not state_node.is_leaf:
                 hdc = HDC(nmlvcd.nmcd.hdc)
-                FillRect(hdc, byref(nmlvcd.nmcd.rc), wc.COLOR_WINDOW + 1)
+                FillRect(hdc, byref(nmlvcd.nmcd.rc), self._hbrush_back)
 
                 self._rect_right = nmlvcd.nmcd.rc.right
 
@@ -751,12 +770,15 @@ class Tree(Table):
                 self._set_widths(hdc, nmlvcd.nmcd.rc)
 
             # Set the colors based on whether the item is selected.
+            # The "+1" is needed for system brushes with FillRect, documented here:
+            # learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-fillrect
             if is_selected:
                 text_color = wc.COLOR_HIGHLIGHTTEXT
-                back_color = wc.COLOR_HIGHLIGHT
+                back_color = wc.COLOR_HIGHLIGHT + 1
             else:
                 text_color = wc.COLOR_HOTLIGHT
-                back_color = wc.COLOR_WINDOW
+                back_color = self._hbrush_back
+
             SetTextColor(hdc, GetSysColor(text_color))
             text_format = wc.DT_SINGLELINE | wc.DT_VCENTER | wc.DT_WORD_ELLIPSIS
 
@@ -775,7 +797,7 @@ class Tree(Table):
             # Draw the background (mainly for selection)
             rect.left = rect.left + self._indent
             rect.right = self._rect_right
-            FillRect(hdc, byref(rect), back_color + 1)
+            FillRect(hdc, byref(rect), back_color)
 
             # Draw the arrow, making sure the click location is in its center.
             rect.right = rect.left + self._arrow_width
