@@ -1,19 +1,12 @@
-import ctypes
-from ctypes import wintypes
-
 import System.Windows.Forms
 from System.Drawing import SystemColors
+
+from toga_winforms.libs import user32
 
 from .properties import toga_x_text_align
 from .textinput import TextInputProbe
 
 WM_MOUSEWHEEL = 0x020A
-
-user32 = ctypes.WinDLL("user32", use_last_error=True)
-
-SendMessageW = user32.SendMessageW
-SendMessageW.restype = wintypes.LPARAM
-SendMessageW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM]
 
 
 class MultilineTextInputProbe(TextInputProbe):
@@ -77,6 +70,6 @@ class MultilineTextInputProbe(TextInputProbe):
         hwnd = self.native.Handle.ToInt64()  # WinForms Control Handle
         # WPARAM: High word = delta
         wparam = delta << 16
-        # LPARAM: Mausposition (0 = ignore)
+        # LPARAM: mouse position (0 = ignore)
         lparam = 0
-        SendMessageW(int(hwnd), WM_MOUSEWHEEL, wparam, lparam)
+        user32.SendMessageW(int(hwnd), WM_MOUSEWHEEL, wparam, lparam)
