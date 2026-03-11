@@ -65,15 +65,16 @@ class StateNode:
         else:
             return len(self.children)
         
-    def __getitem__(self, row_path: list[int] | tuple[int]):
+    def __getitem__(self, row_path: list[int] | tuple[int] | None):
         """Gets an item based on a row path list or tuple
         
         :param list[int] | tuple[int] row_path: A list or tuple of indices. The first
             is an index of a child, say A, in the list of children, the next is an 
             index in the list of children of A, and so on...
-        :return: The StateNode at the end of the path. 
+        :return: The StateNode at the end of the path. None returns the StateNode
+            itself.
         """
-        if len(row_path) < 1:
+        if row_path is None or len(row_path) < 1:
             return self
         elif len(row_path) == 1:
             return self.children[row_path[0]]
@@ -96,38 +97,35 @@ class StateNode:
         """Is the node open (expanded)? Leaf nodes are always closed (contracted)."""
         return self._is_open
 
-    @is_open.setter
-    def is_open(self, value) -> None:
-        if self.is_leaf:
-            self._is_open = False
-        else:
-            self._is_open = value
-
-    def toggle_state(self, notify_tree: bool = True) -> bool:
+    def toggle_state(self, update_display: bool) -> bool:
         """Toggles the state (open/closed) of the StateNode.
 
-        :param bool notify_tree: Whether a notify is sent to the StateTree. A toggle
-            command from the StateTree would have notify_tree=False, otherwise this
-            should be notify_tree=True.
+        :param bool update_display: Whether the display list should be updated. If 
+            the StateNode is visible this should most likely be True. Otherwise this
+            should be False.
         :return: A bool indicating whether a change of selection has occurred.
         """
         if not self.is_leaf:
-            self.is_open = not self.is_open
-            if notify_tree:
+            self._is_open = not self._is_open
+            if update_display:
                 return self.tree._display_list_toggle(self)
 
         return False
 
-    def set_all_states(self, all_open: bool) -> None:
-        """Sets the state (open/closed) of all the child StateNode instances.
+    def set_branch_state(self, set_open: bool, is_visible: bool) -> bool:
+        """Sets the state (open/closed) for a StateNode and all its descendants.
 
-        :param bool all_open: Should the children be open (expanded) or closed
-            (contracted)?
+        :param bool set_open: Should the state be set to open?
+        :param bool is_visible: Is the state_node in the display list?
+        :return: A bool indicating whether a change of selection has occurred.
         """
-        self.is_open = all_open
-        if not self.is_leaf:
-            for child in self.children:
-                child.set_all_states(all_open)
+        if self.is_open != set_open: 
+            self.toggle_state(update_display=is_visible)
+
+        notify_select = False
+        for child in self: 
+            child_visible = self.is_open and is_visible
+            notify_select = child.set_branch_state(set_open, child_visible) or notify_select
 
     def insert(self, index: int, node: Node) -> bool:
         """Inserts a child StateNode for a given Node at a given index.
@@ -154,12 +152,8 @@ class StateNode:
         :return: A bool indicating whether a change of selection has occurred.
         """
         child = self.children[index]
-        notify_select = False
-        # Close the child node if it is open.
-        if child.is_open:
-            notify_select = child.toggle_state()
 
-        notify_select = self.tree._display_list_adjust(False, child) or notify_select
+        notify_select = self.tree._display_list_adjust(False, child)
 
         del self.children[index]
         return notify_select
@@ -220,7 +214,7 @@ class StateTree(StateNode):
     def is_open(self, value) -> None:
         pass
 
-    def toggle_state(self, notify_tree: bool = False) -> bool:
+    def toggle_state(self, update_display: bool = False) -> bool:
         """A StateTree is always open (expanded)."""
         return False
 
@@ -253,7 +247,7 @@ class StateTree(StateNode):
         :return: A bool indicating whether a change of selection has occurred.
         """
         state_node = self._display_list[index]
-        state_node.toggle_state(notify_tree=False)
+        state_node.toggle_state(update_display=False)
 
         insert: bool = state_node.is_open
         sublist: list[StateNode] = list(state_node.branch_iter(display=True))
@@ -261,7 +255,7 @@ class StateTree(StateNode):
 
         return self._display_list_modifier(insert, sublist, start_index)
 
-    def _display_list_adjust(self, insert: bool, item: StateNode) -> bool:
+    def _display_list_adjust(self, insert: bool, state_node: StateNode) -> bool:
         """Adjusts the display list based on an item insertion or removal.
 
         :param bool insert: Is an item being inserted or removed?
@@ -270,19 +264,26 @@ class StateTree(StateNode):
             needed. For insert=False, a bool indicating whether a change of selection
             has occurred.
         """
-        # Find the index of item in the display list.
-        start_index = -1
-        for index, state_node in enumerate(self.branch_iter(display=True)):
-            if item == state_node:
-                start_index = index
+        # Find the index of state_node in the display list.
+        index = -1
+        for index_loop, state_node_loop in enumerate(self.branch_iter(display=True)):
+            if state_node == state_node_loop:
+                index = index_loop
 
-        # If the item is not in the display list there's no need to modify the
+        # If state_node is not in the display list there's no need to modify the
         # display list.
-        if start_index == -1:
+        if index == -1:
             return False
 
-        notify_select = self._display_list_modifier(insert, [item], start_index)
-        if not self.insert:
+        # The remainder of this code block is only accessed if state_node is visible.
+        notify_select = False
+
+        # If state_node is open and being removed, also remove its branch.
+        if state_node.is_open and not insert:
+            notify_select = self.display_list_toggle_index(index) or notify_select
+
+        notify_select = self._display_list_modifier(insert, [state_node], index) or notify_select
+        if not insert:
             return notify_select
 
         return False
@@ -705,6 +706,7 @@ class Tree(Table):
         if hit_index >= 0:
             notify_select = self._state_tree.display_list_toggle_index(hit_index)
             self._update_list(notify_select)
+            self.native.RedrawItems(hit_index, hit_index, False)
 
     def winforms_mouse_click(self, sender, e):
         """Corrects the UI selection based on the hit-test.
@@ -910,42 +912,36 @@ class Tree(Table):
                 )
 
             return state_parent
+        
+    def set_branch_state(self, set_open: bool, branch: Node | None):
+        if branch == None:
+            state_node = self._state_tree
+        else:
+            state_node = self._state_tree.find_state_node(branch)
 
-    def expand_node(self, node):
-        state_node = self._state_tree.find_state_node(node)
-        if state_node is None:
+        if state_node is None or state_node.is_leaf:
             return
 
-        if not state_node.is_open:
-            state_node.toggle_state()
-            self._update_list()
-
-    def expand_all(self):
-        selection = None
-        for state_node in self._state_tree.full_open_iter():
-            if not state_node.is_open:
-                state_node.toggle_state()
-
-        self._update_list(selection)
-
-    def collapse_node(self, node):
-        state_node = self._state_tree.find_state_node(node)
-        if state_node is None:
-            return
-
-        if state_node.is_open:
-            notify_select = state_node.toggle_state()
-            self._update_list(notify_select)
-
-    def collapse_all(self):
-        notify_select = False
-        # Close the roots first using _toggle_node_state so that the selection is
-        # updated correctly.
-        for state_node in self._state_tree.roots:
-            if state_node.is_open:
-                notify_select = state_node.toggle_state() or notify_select
-
+        if isinstance(state_node, StateTree):
+            is_visible = True
+        else:
+            try:
+                self.display_list.index(state_node)
+                is_visible = True
+            except ValueError:
+                is_visible = False
+        
+        notify_select = state_node.set_branch_state(set_open, is_visible)
         self._update_list(notify_select)
 
-        # Close the non-visible nodes.
-        self._state_tree.set_all_states(is_open=False)
+    def expand_node(self, node):
+        self.set_branch_state(set_open = True, branch = node)
+
+    def expand_all(self):
+        self.set_branch_state(set_open = True, branch = None)
+
+    def collapse_node(self, node):
+        self.set_branch_state(set_open = False, branch = node)
+
+    def collapse_all(self):
+        self.set_branch_state(set_open = False, branch = None)
