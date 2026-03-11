@@ -64,12 +64,12 @@ class StateNode:
             return 0
         else:
             return len(self.children)
-        
+
     def __getitem__(self, row_path: list[int] | tuple[int] | None):
         """Gets an item based on a row path list or tuple
-        
+
         :param list[int] | tuple[int] row_path: A list or tuple of indices. The first
-            is an index of a child, say A, in the list of children, the next is an 
+            is an index of a child, say A, in the list of children, the next is an
             index in the list of children of A, and so on...
         :return: The StateNode at the end of the path. None returns the StateNode
             itself.
@@ -100,7 +100,7 @@ class StateNode:
     def toggle_state(self, update_display: bool) -> bool:
         """Toggles the state (open/closed) of the StateNode.
 
-        :param bool update_display: Whether the display list should be updated. If 
+        :param bool update_display: Whether the display list should be updated. If
             the StateNode is visible this should most likely be True. Otherwise this
             should be False.
         :return: A bool indicating whether a change of selection has occurred.
@@ -119,13 +119,15 @@ class StateNode:
         :param bool is_visible: Is the state_node in the display list?
         :return: A bool indicating whether a change of selection has occurred.
         """
-        if self.is_open != set_open: 
+        if self.is_open != set_open:
             self.toggle_state(update_display=is_visible)
 
         notify_select = False
-        for child in self: 
+        for child in self:
             child_visible = self.is_open and is_visible
-            notify_select = child.set_branch_state(set_open, child_visible) or notify_select
+            notify_select = (
+                child.set_branch_state(set_open, child_visible) or notify_select
+            )
 
     def insert(self, index: int, node: Node) -> bool:
         """Inserts a child StateNode for a given Node at a given index.
@@ -282,7 +284,9 @@ class StateTree(StateNode):
         if state_node.is_open and not insert:
             notify_select = self.display_list_toggle_index(index) or notify_select
 
-        notify_select = self._display_list_modifier(insert, [state_node], index) or notify_select
+        notify_select = (
+            self._display_list_modifier(insert, [state_node], index) or notify_select
+        )
         if not insert:
             return notify_select
 
@@ -790,8 +794,12 @@ class Tree(Table):
             # The "+1" is needed for system brushes with FillRect, documented here:
             # learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-fillrect
             if is_selected:
-                text_color = wc.COLOR_HIGHLIGHTTEXT
-                back_color = wc.COLOR_HIGHLIGHT + 1
+                if self.native.Focused:
+                    text_color = wc.COLOR_HIGHLIGHTTEXT
+                    back_color = wc.COLOR_HIGHLIGHT + 1
+                else:
+                    text_color = wc.COLOR_BTNTEXT  # Color is undocumented
+                    back_color = wc.COLOR_BTNFACE + 1  # Color is undocumented
             else:
                 text_color = wc.COLOR_HOTLIGHT
                 back_color = self._hbrush_back
@@ -912,9 +920,9 @@ class Tree(Table):
                 )
 
             return state_parent
-        
+
     def set_branch_state(self, set_open: bool, branch: Node | None):
-        if branch == None:
+        if branch is None:
             state_node = self._state_tree
         else:
             state_node = self._state_tree.find_state_node(branch)
@@ -930,18 +938,18 @@ class Tree(Table):
                 is_visible = True
             except ValueError:
                 is_visible = False
-        
+
         notify_select = state_node.set_branch_state(set_open, is_visible)
         self._update_list(notify_select)
 
     def expand_node(self, node):
-        self.set_branch_state(set_open = True, branch = node)
+        self.set_branch_state(set_open=True, branch=node)
 
     def expand_all(self):
-        self.set_branch_state(set_open = True, branch = None)
+        self.set_branch_state(set_open=True, branch=None)
 
     def collapse_node(self, node):
-        self.set_branch_state(set_open = False, branch = node)
+        self.set_branch_state(set_open=False, branch=node)
 
     def collapse_all(self):
-        self.set_branch_state(set_open = False, branch = None)
+        self.set_branch_state(set_open=False, branch=None)
