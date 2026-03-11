@@ -592,12 +592,12 @@ class Tree(Table):
         self._update_list(notify_select)
 
     def get_selection(self):
-        if len(self.selected_indices) < 1:
-            return None
-        elif not self._multiple_select:
-            return self.display_list[self.selected_indices[0]].node
-        else:
+        if self._multiple_select:
             return [self.display_list[i].node for i in self.selected_indices]
+        elif len(self.selected_indices) == 0:
+            return None
+        else:
+            return self.display_list[self.selected_indices[0]].node
 
     #################################################################################
     # The following methods are not from Table.
