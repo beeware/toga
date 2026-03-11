@@ -110,7 +110,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
+        platform: [ "macos-latest", "ubuntu-latest", "windows-latest", "windows-11-arm" ]
         python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
         package: ["core", "travertino"]
         exclude:
