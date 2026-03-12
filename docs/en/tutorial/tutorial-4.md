@@ -2,7 +2,7 @@
 
 One of the main capabilities needed to create many types of GUI applications is the ability to draw and manipulate lines, shapes, text, and other graphics. To do this in Toga, we use the Canvas Widget.
 
-Utilizing the Canvas is as easy as determining the drawing operations you want to perform and then creating a new Canvas. All drawing objects that are created with one of the drawing operations are returned so that they can be modified or removed.
+Utilizing the Canvas is as easy as determining the drawing operations you want to perform and then creating a new Canvas. All drawing actions that are created with one of the drawing operations are returned so that they can be modified or removed.
 
 1. We first define the drawing operations we want to perform in a new function:
 
