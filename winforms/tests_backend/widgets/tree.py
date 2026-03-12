@@ -1,18 +1,16 @@
-import asyncio, pytest
+import asyncio
 
-from .table import TableProbe
-
+import pytest
+from System.Drawing import Bitmap
 from System.Windows.Forms import (
-    ColumnHeaderStyle,
-    ListView,
     MouseButtons,
     MouseEventArgs,
 )
 
+from .table import TableProbe
 
 
 class TreeProbe(TableProbe):
-
     def state_node(self, row_path):
         self.state_tree = self.impl._state_tree
         return self.state_tree[row_path]
@@ -20,7 +18,6 @@ class TreeProbe(TableProbe):
     def display_index(self, row_path):
         state_node = self.state_node(row_path)
         return self.impl.display_list.index(state_node)
-        
 
     async def expand_tree(self):
         self.impl.expand_all()
@@ -29,7 +26,7 @@ class TreeProbe(TableProbe):
     def is_expanded(self, node):
         self.state_tree = self.impl._state_tree
         state_node = self.state_tree.find_state_node(node)
-        
+
         return state_node.is_open
 
     def child_count(self, row_path=None):
@@ -60,12 +57,12 @@ class TreeProbe(TableProbe):
             pytest.skip("This backend doesn't support widgets in Tables")
             return
         # Use the table  assert_cell_content for non-leaf cells. However, the branch
-        # containing the node must be expanded to check that (otherwise the node is 
+        # containing the node must be expanded to check that (otherwise the node is
         # not in the display list). So expand that branch and then restore it after.
-        
+
         state_node = self.state_node(row_path)
         row_path_states = self.open_row_path(row_path)
-        
+
         display_index = self.impl.display_list.index(state_node)
 
         if state_node.is_leaf:
@@ -74,17 +71,17 @@ class TreeProbe(TableProbe):
             # Try to access the row in the UI to make sure the row is created.
             self.native.Items[display_index]
 
-            if col==0:
+            if col == 0:
                 text = state_node.text.value[1:]
-            else: 
-                #For non-leaf nodes, only column 0 is displayed."
+            else:
+                # For non-leaf nodes, only column 0 is displayed."
                 column = self.impl._columns[col]
                 node = state_node.node
                 text = column.text(node, self.impl.interface.missing_value)
 
             assert text == value
-            
-            if col==0 and icon is not None:
+
+            if col == 0 and icon is not None:
                 imagelist = self.native.SmallImageList
                 size = imagelist.ImageSize
                 assert size.Width == size.Height == 16
@@ -99,54 +96,40 @@ class TreeProbe(TableProbe):
 
         self.restore_row_path(row_path, row_path_states)
 
-
-
     def open_row_path(self, row_path):
         # Expand all nodes along a row_path to make the specified node visible.
 
         # Keep a record of the node states along the row_path:
         # True=Open/Expanded, False=Closed/Collapsed.
         row_path_states = []
-        
+
         if row_path is None or len(row_path) < 2:
             return row_path_states
-        
+
         state_node = self.impl._state_tree
         for i in row_path[:-1]:
             state_node = state_node[(i,)]
 
             row_path_states.append(state_node.is_open)
-            if not state_node.is_open: 
-                state_node.toggle_state(update_display = True)
+            if not state_node.is_open:
+                state_node.toggle_state(update_display=True)
                 self.impl._update_list(True)
 
         return row_path_states
-    
 
     def restore_row_path(self, row_path, row_path_states):
         if row_path is None or len(row_path) < 2:
             return
-        
+
         state_tree = self.impl._state_tree
         for i, _ in enumerate(row_path[:-1]):
             if i == 0:
                 state_node = state_tree[row_path[:-1]]
             else:
-                state_node = state_tree[row_path[:-(i+1)]]
-            
-            original_state = row_path_states[-(i+1)]
+                state_node = state_tree[row_path[: -(i + 1)]]
 
-            if state_node.is_open != original_state: 
-                state_node.toggle_state(update_display = True)
+            original_state = row_path_states[-(i + 1)]
+
+            if state_node.is_open != original_state:
+                state_node.toggle_state(update_display=True)
                 self.impl._update_list(True)
-            
-
-
-
-
-
-
-
-    
-
-    
