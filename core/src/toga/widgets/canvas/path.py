@@ -1,0 +1,346 @@
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
+from math import pi
+
+from toga.platform import get_platform_factory
+
+from .drawingaction import (
+    Arc,
+    BezierCurveTo,
+    ClosePath,
+    DrawingAction,
+    Ellipse,
+    LineTo,
+    MoveTo,
+    QuadraticCurveTo,
+    Rect,
+    RoundRect,
+)
+from .geometry import CornerRadiusT
+
+
+class Path2D:
+    """An object that declares reusable shapes to draw on a Canvas
+
+    `Path2D` shares many of the methods of the [`State`][toga.widgets.canvas.State]
+    object that are used for constructing paths. Unlike paths built using `State`
+    methods, a shape built using `Path2D` is saved and can be used repeatedly to
+    draw the shape without having to repeat the construction.
+
+    To draw a `Path2D`, call `fill` or `stroke` with the path object as its `path`
+    argument.
+
+    Like a `State`, a `Path2D` is built from a sequence of `DrawingAction` objects
+    which can be modified.  The `Path2D` class builds a backend-specific "compiled"
+    representation to be used whenever it is drawn onto the Canvas. Most of the time
+    it is compiled transparently, but if the `DrawingAction` objects are modified
+    then the user has to call [`compile`][toga.widgets.canvas.Path2D.compile]
+    before redrawing to ensure that the changes are incorporated into the path.
+
+    The `Path2D` class generally follows the API of the [HTML Canvas class of the same
+    name](https://developer.mozilla.org/en-US/docs/Web/API/Path2D) but with method
+    names changed to match Python style.
+    """
+
+    def __init__(self, path: "Path2D | None" = None):
+        if path is None:
+            self.drawing_actions = []
+        else:
+            self.drawing_actions = path.drawing_actions.copy()
+        self._action_target = self
+        self._impl = None
+        self.factory = get_platform_factory()
+
+    @property
+    def impl(self):
+        if self._impl is None:
+            self.compile()
+        return self._impl
+
+    def add_path(
+        self, path: "Path2D", transform: Sequence[float] | None = None
+    ) -> "AddPath":
+        """Adds another path to the current path with an optional transform.
+
+        :param path: The Path being added.
+        :param transform: The Transform to apply to the added path.
+        :returns: The `AddPath` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        add_path = AddPath(path, transform)
+        self._action_target.drawing_actions.append(add_path)
+        self._recompilation_needed()
+        return add_path
+
+    def close_path(self):
+        """Close the current path in the canvas state.
+
+        This closes the current subpath by drawing a line from the current point
+        to the starting point of the current subpath.
+
+        :returns: The `ClosePath`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        close_path = ClosePath()
+        self._action_target.drawing_actions.append(close_path)
+        self._recompilation_needed()
+        return close_path
+
+    def move_to(self, x: float, y: float) -> MoveTo:
+        """Moves the current point without drawing.
+
+        :param x: The x coordinate of the new current point.
+        :param y: The y coordinate of the new current point.
+        :returns: The `MoveTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        move_to = MoveTo(x, y)
+        self._action_target.drawing_actions.append(move_to)
+        self._recompilation_needed()
+        return move_to
+
+    def line_to(self, x: float, y: float) -> LineTo:
+        """Draw a line segment ending at a point.
+
+        :param x: The x coordinate for the end point of the line segment.
+        :param y: The y coordinate for the end point of the line segment.
+        :returns: The `LineTo` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        line_to = LineTo(x, y)
+        self._action_target.drawing_actions.append(line_to)
+        self._recompilation_needed()
+        return line_to
+
+    def bezier_curve_to(
+        self,
+        cp1x: float,
+        cp1y: float,
+        cp2x: float,
+        cp2y: float,
+        x: float,
+        y: float,
+    ) -> BezierCurveTo:
+        """Draw a Bézier curve.
+
+        A Bézier curve requires three points. The first two are control points; the
+        third is the end point for the curve. The starting point is the last point in
+        the current path, which can be changed using `move_to()` before creating the
+        Bézier curve.
+
+        :param cp1y: The y coordinate for the first control point of the Bézier curve.
+        :param cp1x: The x coordinate for the first control point of the Bézier curve.
+        :param cp2x: The x coordinate for the second control point of the Bézier curve.
+        :param cp2y: The y coordinate for the second control point of the Bézier curve.
+        :param x: The x coordinate for the end point.
+        :param y: The y coordinate for the end point.
+        :returns: The `BezierCurveTo`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self._action_target.drawing_actions.append(bezier_curve_to)
+        self._recompilation_needed()
+        return bezier_curve_to
+
+    def quadratic_curve_to(
+        self,
+        cpx: float,
+        cpy: float,
+        x: float,
+        y: float,
+    ) -> QuadraticCurveTo:
+        """Draw a quadratic curve.
+
+        A quadratic curve requires two points. The first point is a control point; the
+        second is the end point. The starting point of the curve is the last point in
+        the current path, which can be changed using `moveTo()` before creating the
+        quadratic curve.
+
+        :param cpx: The x axis of the coordinate for the control point of the quadratic
+            curve.
+        :param cpy: The y axis of the coordinate for the control point of the quadratic
+            curve.
+        :param x: The x axis of the coordinate for the end point.
+        :param y: The y axis of the coordinate for the end point.
+        :returns: The `QuadraticCurveTo`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
+        self._action_target.drawing_actions.append(quadratic_curve_to)
+        self._recompilation_needed()
+        return quadratic_curve_to
+
+    def arc(
+        self,
+        x: float,
+        y: float,
+        radius: float,
+        startangle: float = 0.0,
+        endangle: float = 2 * pi,
+        counterclockwise: bool | None = None,
+        anticlockwise: bool | None = None,  # DEPRECATED
+    ) -> Arc:
+        """Draw a circular arc.
+
+        A full circle will be drawn by default; an arc can be drawn by specifying a
+        start and end angle.
+
+        :param x: The X coordinate of the circle's center.
+        :param y: The Y coordinate of the circle's center.
+        :param startangle: The start angle in radians, measured clockwise from the
+            positive X axis.
+        :param endangle: The end angle in radians, measured clockwise from the positive
+            X axis.
+        :param counterclockwise: If true, the arc is swept counterclockwise. The default
+            is clockwise.
+        :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
+        :returns: The `Arc` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
+        self._action_target.drawing_actions.append(arc)
+        self._recompilation_needed()
+        return arc
+
+    def ellipse(
+        self,
+        x: float,
+        y: float,
+        radiusx: float,
+        radiusy: float,
+        rotation: float = 0.0,
+        startangle: float = 0.0,
+        endangle: float = 2 * pi,
+        counterclockwise: bool | None = None,
+        anticlockwise: bool | None = None,  # DEPRECATED
+    ) -> Ellipse:
+        """Draw an elliptical arc.
+
+        A full ellipse will be drawn by default; an arc can be drawn by specifying a
+        start and end angle.
+
+        :param x: The X coordinate of the ellipse's center.
+        :param y: The Y coordinate of the ellipse's center.
+        :param radiusx: The ellipse's horizontal axis radius.
+        :param radiusy: The ellipse's vertical axis radius.
+        :param rotation: The ellipse's rotation in radians, measured clockwise around
+            its center.
+        :param startangle: The start angle in radians, measured clockwise from the
+            positive X axis.
+        :param endangle: The end angle in radians, measured clockwise from the positive
+            X axis.
+        :param counterclockwise: If true, the arc is swept counterclockwise. The default
+            is clockwise.
+        :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
+        :returns: The `Ellipse` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        ellipse = Ellipse(
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            counterclockwise,
+            anticlockwise,
+        )
+        self._action_target.drawing_actions.append(ellipse)
+        self._recompilation_needed()
+        return ellipse
+
+    def rect(self, x: float, y: float, width: float, height: float) -> Rect:
+        """Draw a rectangle.
+
+        :param x: The horizontal coordinate of the left of the rectangle.
+        :param y: The vertical coordinate of the top of the rectangle.
+        :param width: The width of the rectangle.
+        :param height: The height of the rectangle.
+        :returns: The `Rect` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+
+        rect = Rect(x, y, width, height)
+        self._action_target.drawing_actions.append(rect)
+        self._recompilation_needed()
+        return rect
+
+    def round_rect(
+        self,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        radii: float | CornerRadiusT | Iterable[float | CornerRadiusT],
+    ) -> RoundRect:
+        """Draw a rounded rectangle in the canvas state.
+
+        Corner radii can be provided as:
+        - a single numerical radius for both x and y radius for all corners
+        - an object with attributes "x" and "y" for the x and y radius for all corners
+        - a list of 1 to 4 of the above
+
+        If the list has:
+        - length 1, then the item gives the radius of all corners
+        - length 2, then the upper left and lower right corners use the first radius,
+          and upper right and lower left use the second radius
+        - length 3, then the upper left corner uses the first radius, the upper right
+          and lower left use the second radius, and the lower right corner uses the
+          third radius
+        - length 4, then the radii are given in order upper left, upper right, lower
+          left, lower right
+
+        If the radii are too large for the width or height, then they will be scaled.
+
+        :param x: The horizontal coordinate of the left of the rounded rectangle.
+        :param y: The vertical coordinate of the top of the rounded rectangle.
+        :param width: The width of the rounded rectangle.
+        :param height: The height of the roundedrectangle.
+        :param radii: The corner radii of the rounded rectangle.
+        :returns: The `RoundRect` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        round_rect = RoundRect(x, y, width, height, radii)
+        self._action_target.drawing_actions.append(round_rect)
+        self._recompilation_needed()
+        return round_rect
+
+    def compile(self):
+        """Compile a backend path for drawing.
+
+        This creates a object which implements the `Path2D` API for the current
+        backend. This is called automatically when needed after adding more
+        drawing actions to the `Path2D`, but needs to be manually called if the
+        `DrawingObject` instances are modified after being drawn or added to another
+        path (for example, when animating):
+
+        ``` python
+        path = Path2D()
+        circle = path.arc(100, 100, 10)
+
+        canvas.root_state.stroke(path)
+
+        # update the radius
+        circle.radius = 20
+        path.compile()
+
+        # draw with new radius
+        canvas.root_state.stroke(path)
+        ```
+        """
+        self._impl = self.factory.Path2D()
+        for action in self.drawing_actions:
+            action._draw(self._impl)
+
+    def _recompilation_needed(self):
+        self._impl = None
+
+
+@dataclass(repr=False)
+class AddPath(DrawingAction):
+    path: Path2D
+    transform: Sequence[float] | None = None
+
+    def _draw(self, context):
+        context.add_path(self.path.impl, self.transform)

@@ -203,7 +203,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         "begin path",
         ("move to", {"x": properties["x"], "y": properties["y"]}) if has_move else None,
         ("line to", {"x": 30, "y": 40}),
-        ("fill", {"fill_rule": properties["fill_rule"]}),
+        ("fill", {"fill_rule": properties["fill_rule"], "path": None}),
         "restore",
     ]
 
@@ -373,7 +373,7 @@ def test_stroke(widget, kwargs, args_repr, has_move, properties):
         "begin path",
         ("move to", {"x": properties["x"], "y": properties["y"]}) if has_move else None,
         ("line to", {"x": 30, "y": 40}),
-        "stroke",
+        ("stroke", {"path": None}),
         "restore",
     ]
 
@@ -415,7 +415,7 @@ def test_order_change(widget):
         "save",
         "begin path",
         ("line to", {"x": 25, "y": 25}),
-        ("fill", {"fill_rule": FillRule.NONZERO}),
+        ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
         "restore",
         # End fill
         ("line to", {"x": 30, "y": 40}),
@@ -448,7 +448,7 @@ def test_order_change(widget):
         "save",
         "begin path",
         ("line to", {"x": 25, "y": 25}),
-        ("fill", {"fill_rule": FillRule.NONZERO}),
+        ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
         "restore",
         # End fill
         ("line to", {"x": 30, "y": 40}),
@@ -476,7 +476,7 @@ def test_order_change(widget):
         "save",
         "begin path",
         ("line to", {"x": 25, "y": 25}),
-        ("fill", {"fill_rule": FillRule.NONZERO}),
+        ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
         "restore",
         # End fill
         ("line to", {"x": 30, "y": 40}),
@@ -523,7 +523,7 @@ def test_order_change(widget):
         "save",
         "begin path",
         ("line to", {"x": 25, "y": 25}),
-        ("fill", {"fill_rule": FillRule.NONZERO}),
+        ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
         "restore",
         # End fill
         ("line to", {"x": 40, "y": 50}),

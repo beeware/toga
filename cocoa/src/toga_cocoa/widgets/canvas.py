@@ -34,6 +34,94 @@ from toga_cocoa.libs import (
 
 from .base import Widget
 
+IDENTITY = core_graphics.CGAffineTransformMake(1, 0, 0, 1, 0, 0)
+
+
+class Path2D:
+    def __init__(self):
+        self.native = core_graphics.CGPathCreateMutable()
+
+    def _ensure_subpath(self, x, y):
+        if core_graphics.CGPathIsEmpty(self.native):
+            self.move_to(x, y)
+
+    def add_path(self, path, transform=None):
+        if transform is None:
+            transform = IDENTITY
+        else:
+            transform = core_graphics.CGAffineTransformMake(*transform)
+        core_graphics.CGPathAddPath(self.native, transform, path.native)
+
+    def close_path(self):
+        core_graphics.CGPathCloseSubpath(self.native)
+
+    def move_to(self, x, y):
+        core_graphics.CGPathMoveToPoint(self.native, IDENTITY, x, y)
+
+    def line_to(self, x, y):
+        core_graphics.CGPathAddLineToPoint(self.native, IDENTITY, x, y)
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self._ensure_subpath(cp1x, cp1y)
+        core_graphics.CGPathAddCurveToPoint(
+            self.native,
+            IDENTITY,
+            cp1x,
+            cp1y,
+            cp2x,
+            cp2y,
+            x,
+            y,
+        )
+
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        self._ensure_subpath(cpx, cpy)
+        core_graphics.CGPathAddQuadCurveToPoint(self.native, IDENTITY, cpx, cpy, x, y)
+
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        # Cocoa Path is using a flipped coordinate system, so clockwise
+        # is actually counterclockwise
+        clockwise = counterclockwise
+        core_graphics.CGPathAddArc(
+            self.native,
+            IDENTITY,
+            x,
+            y,
+            radius,
+            startangle,
+            endangle,
+            clockwise,
+        )
+
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
+    ):
+        transform = core_graphics.CGAffineTransformMake(1, 0, 0, 1, x, y)
+        transform = core_graphics.CGAffineTransformRotate(transform, rotation)
+        transform = core_graphics.CGAffineTransformScale(transform, radiusx, radiusy)
+        core_graphics.CGPathAddArc(
+            self.native, transform, 0, 0, 1.0, startangle, endangle, counterclockwise
+        )
+
+    def rect(self, x, y, width, height):
+        rectangle = CGRectMake(x, y, width, height)
+        core_graphics.CGPathAddRect(self.native, IDENTITY, rectangle)
+
+    def round_rect(self, x, y, width, height, radii):
+        round_rect(self, x, y, width, height, radii)
+
+    # extra utility methods
+    def is_empty(self):
+        return core_graphics.CGPathIsEmpty(self.native)
+
 
 @dataclass(slots=True)
 class State:
@@ -128,10 +216,7 @@ class Context:
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
         # is actually counterclockwise
-        if counterclockwise:
-            clockwise = 1
-        else:
-            clockwise = 0
+        clockwise = counterclockwise
         core_graphics.CGContextAddArc(
             self.native, x, y, radius, startangle, endangle, clockwise
         )
@@ -163,22 +248,48 @@ class Context:
 
     # Drawing Paths
 
-    def fill(self, fill_rule):
+    def fill(self, fill_rule, path=None):
+        current_path = core_graphics.CGContextCopyPath(self.native)
+        if path is not None:
+            if path.is_empty():
+                # nothing to draw
+                return
+            # replace context path with path.native
+            core_graphics.CGContextBeginPath(self.native)
+            core_graphics.CGContextAddPath(self.native, path.native)
+        elif core_graphics.CGPathIsEmpty(current_path):
+            # nothing to draw
+            return
+
+        # draw
         if fill_rule == FillRule.EVENODD:
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)
-        if not core_graphics.CGContextIsPathEmpty(self.native):
-            path = core_graphics.CGContextCopyPath(self.native)
-            core_graphics.CGContextDrawPath(self.native, mode)
-            core_graphics.CGContextAddPath(self.native, path)
+        core_graphics.CGContextDrawPath(self.native, mode)
 
-    def stroke(self):
+        # restore original path
+        core_graphics.CGContextAddPath(self.native, current_path)
+
+    def stroke(self, path=None):
+        current_path = core_graphics.CGContextCopyPath(self.native)
+        if path is not None:
+            if path.is_empty():
+                # nothing to draw
+                return
+            # replace context path with path.native
+            core_graphics.CGContextBeginPath(self.native)
+            core_graphics.CGContextAddPath(self.native, path.native)
+        elif core_graphics.CGPathIsEmpty(current_path):
+            # nothing to draw
+            return
+
+        # draw
         mode = CGPathDrawingMode(kCGPathStroke)
-        if not core_graphics.CGContextIsPathEmpty(self.native):
-            path = core_graphics.CGContextCopyPath(self.native)
-            core_graphics.CGContextDrawPath(self.native, mode)
-            core_graphics.CGContextAddPath(self.native, path)
+        core_graphics.CGContextDrawPath(self.native, mode)
+
+        # restore original path
+        core_graphics.CGContextAddPath(self.native, current_path)
 
     # Transformations
     def rotate(self, radians):
@@ -274,7 +385,10 @@ class TogaCanvas(NSView):
 
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
-        self.interface.root_state._draw(Context(self.impl))
+        try:
+            self.interface.root_state._draw(Context(self.impl))
+        except Exception as exc:  # pragma: no cover
+            print(exc)
 
     @objc_method
     def isFlipped(self) -> bool:
