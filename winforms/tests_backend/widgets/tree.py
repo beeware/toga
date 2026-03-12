@@ -72,7 +72,7 @@ class TreeProbe(TableProbe):
             self.native.Items[display_index]
 
             if col == 0:
-                text = state_node.text.value[1:]
+                text = state_node.text.value
             else:
                 # For non-leaf nodes, only column 0 is displayed."
                 column = self.impl._columns[col]

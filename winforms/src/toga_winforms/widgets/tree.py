@@ -56,7 +56,7 @@ class StateNode:
             self.children = [StateNode(child, self.tree, depth + 1) for child in node]
 
         self.text = c_wchar_p("")
-        self.arrow = c_wchar_p("")
+        self.mouse_hover: bool
         self.icon: int
 
     def __len__(self) -> int:
@@ -643,7 +643,7 @@ class Tree(Table):
         if state_node.is_leaf:
             return -1
 
-        x_arrow = self._left_padding + (state_node.depth + 1) * self._indent
+        x_arrow = self._left_padding + state_node.depth * self._indent
         x_arrow += self._arrow_width / 2
         y_arrow = item.Bounds.Y + item.Bounds.Height / 2
 
@@ -753,7 +753,7 @@ class Tree(Table):
 
         self._left_padding = rect.left
         self._arrow_width = max(lengths)
-        self._widths_set = False
+        self._widths_set = True
 
     def _nm_customdraw(self, nmlvcd) -> int | None:
         """Paints the non-leaf node items."""
@@ -804,11 +804,21 @@ class Tree(Table):
                 text_color = wc.COLOR_HOTLIGHT
                 back_color = self._hbrush_back
 
-            SetTextColor(hdc, GetSysColor(text_color))
+            # Determine the state-change arrow.
+            if state_node.mouse_hover:
+                arrow = "\u25bc" if state_node.is_open else "\u25b6"
+            else:
+                arrow = "\u25bd" if state_node.is_open else "\u25b7"
+
+            # Draw the arrow, making sure the click location is in its center.
+            rect.left = rect.left + state_node.depth * self._indent
+            rect.right = rect.left + self._arrow_width
+            SetTextColor(hdc, GetSysColor(wc.COLOR_HOTLIGHT))
             text_format = wc.DT_SINGLELINE | wc.DT_VCENTER | wc.DT_WORD_ELLIPSIS
+            DrawTextW(hdc, arrow, -1, byref(rect), text_format | wc.DT_HCENTER)
 
             # Draw the icon
-            rect.left = rect.left + state_node.depth * self._indent
+            rect.left = rect.right + 2
             if state_node.icon >= 0:
                 ImageList_Draw(
                     HWND(int(self.native.SmallImageList.Handle.ToString())),
@@ -824,15 +834,10 @@ class Tree(Table):
             rect.right = self._rect_right
             FillRect(hdc, byref(rect), back_color)
 
-            # Draw the arrow, making sure the click location is in its center.
-            rect.right = rect.left + self._arrow_width
-            DrawTextW(
-                hdc, state_node.arrow, -1, byref(rect), text_format | wc.DT_HCENTER
-            )
-
             # Draw the text
-            rect.left = rect.left + self._arrow_width
+            rect.left = rect.left + 2
             rect.right = self._rect_right
+            SetTextColor(hdc, GetSysColor(text_color))
             DrawTextW(hdc, state_node.text, -1, byref(rect), text_format)
 
             # Get the bounding rectangle of the drawn text.
@@ -864,15 +869,10 @@ class Tree(Table):
         column = self._columns[0]
         node = state_node.node
 
-        if index == self._mouse_move_hit:
-            arrow = "\u25bc" if state_node.is_open else "\u25b6"
-        else:
-            arrow = "\u25bd" if state_node.is_open else "\u25b7"
-
         # Store the c_wchar_p objects on the StateNodes to prevent them from being
         # garbage collected.
-        state_node.arrow = c_wchar_p(arrow)
-        state_node.text = c_wchar_p(" " + column.text(node, missing_value))
+        state_node.mouse_hover = index == self._mouse_move_hit
+        state_node.text = c_wchar_p(column.text(node, missing_value))
         state_node.icon = self._icon_index(node, column)
 
         return (
