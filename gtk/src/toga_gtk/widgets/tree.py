@@ -86,7 +86,7 @@ class Tree(Widget):
             self.store = Gtk.TreeStore(*types)
 
             for i, row in enumerate(self.interface.data):
-                self.insert(parent=None, index=i, item=row)
+                self.source_insert(parent=None, index=i, item=row)
 
             self.native_tree.set_model(self.store)
             self.refresh()

@@ -127,7 +127,7 @@ class Table(Widget):
             self.store = Gtk.ListStore(*types)
 
             for i, row in enumerate(self.interface.data):
-                self.insert(i, row)
+                self.source_insert(index=i, item=row)
 
             self.native_table.set_model(self.store)
             self.refresh()
