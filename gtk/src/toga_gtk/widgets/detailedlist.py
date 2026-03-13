@@ -286,7 +286,20 @@ class DetailedList(Widget):
     def source_change(self, *, item):
         item._impl.update(self.interface, item)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, item, index):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item)
+
+    def source_remove(self, *, index, item):
         self.hide_actions()
         self.store.remove(index)
         self.update_refresh_button()
