@@ -944,3 +944,26 @@ def test_tree_listener(widget):
     TreeListener APIs"""
     assert isinstance(widget._impl, ListListener)
     assert isinstance(widget._impl, TreeListener)
+
+
+@pytest.mark.parametrize(
+    "method_name,args",
+    [
+        ("clear", {}),
+    ],
+)
+def test_deprecated_methods(widget, method_name, args):
+    """Does the widget warn about the old ListListener API"""
+    impl = widget._impl
+    mock_method = Mock()
+    setattr(impl, f"source_{method_name}", mock_method)
+    method = getattr(impl, method_name)
+    warning_pattern = (
+        f"The {method_name}\\(\\) method is deprecated. "
+        f"Use source_{method_name}\\(\\) instead."
+    )
+
+    with pytest.warns(DeprecationWarning, match=warning_pattern):
+        method(**args)
+
+    mock_method.assert_called_once_with(**args)
