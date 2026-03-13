@@ -126,7 +126,7 @@ class Tree(Widget):
         item._impl = self.store.insert(iter, index, values)
 
         for i, child in enumerate(item):
-            self.insert(parent=item, index=i, item=child)
+            self.source_insert(parent=item, index=i, item=child)
 
     # Alias for backwards compatibility:
     # March 2026: In 0.5.3 and earlier, notification methods
