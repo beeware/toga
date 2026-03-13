@@ -947,12 +947,33 @@ def test_tree_listener(widget):
 
 
 @pytest.mark.parametrize(
-    "method_name,args",
+    "method_name,args,expected_args",
     [
-        ("clear", {}),
+        ("clear", {}, {}),
+        ("change", {"item": "item"}, {"item": "item"}),
+        (
+            "insert",
+            {"index": 0, "item": "item"},
+            {"index": 0, "item": "item", "parent": None},
+        ),
+        (
+            "insert",
+            {"index": 0, "item": "item", "parent": "parent"},
+            {"index": 0, "item": "item", "parent": "parent"},
+        ),
+        (
+            "remove",
+            {"index": 0, "item": "item"},
+            {"index": 0, "item": "item", "parent": None},
+        ),
+        (
+            "remove",
+            {"index": 0, "item": "item", "parent": "parent"},
+            {"index": 0, "item": "item", "parent": "parent"},
+        ),
     ],
 )
-def test_deprecated_methods(widget, method_name, args):
+def test_deprecated_methods(widget, method_name, args, expected_args):
     """Does the widget warn about the old ListListener API"""
     impl = widget._impl
     mock_method = Mock()
@@ -966,4 +987,4 @@ def test_deprecated_methods(widget, method_name, args):
     with pytest.warns(DeprecationWarning, match=warning_pattern):
         method(**args)
 
-    mock_method.assert_called_once_with(**args)
+    mock_method.assert_called_once_with(**expected_args)

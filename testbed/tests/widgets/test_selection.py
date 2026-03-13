@@ -338,6 +338,9 @@ def test_list_listener(widget):
     "method_name,args",
     [
         ("clear", {}),
+        ("change", {"item": "item"}),
+        ("insert", {"index": 0, "item": "item"}),
+        ("remove", {"index": 0, "item": "item"}),
     ],
 )
 def test_deprecated_methods(widget, method_name, args):
