@@ -291,7 +291,10 @@ class StateTree(StateNode):
         return False
 
     def _display_list_modifier(
-        self, insert: bool, sublist: list[StateNode], start_index: int
+        self,
+        insert: bool,
+        sublist: list[StateNode],
+        start_index: int,
     ) -> bool:
         """Modifies the display list by either inserting or removing a sublist.
 
@@ -347,7 +350,10 @@ class StateTree(StateNode):
         self._selected_indices = selected_indices
 
     def _selection_modifier(
-        self, insert: bool, start_index: int, range_size: int
+        self,
+        insert: bool,
+        start_index: int,
+        range_size: int,
     ) -> bool:
         """Modifies the selected indices list based on changes to the display list.
 
@@ -395,7 +401,8 @@ class StateTree(StateNode):
 
 
 def display_branch_iter(
-    roots: Iterable[StateNode | StateTree], ignore_closed: bool = False
+    roots: Iterable[StateNode | StateTree],
+    ignore_closed: bool = False,
 ):
     """An iterator for a branch of a StateTree or Node."""
     for root in roots:
