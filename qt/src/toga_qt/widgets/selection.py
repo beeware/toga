@@ -85,7 +85,6 @@ class Selection(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-
         index = self.interface._items.index(item)
         self.native.setItemText(index, self.interface._title_for_item(item))
         self.interface.refresh()

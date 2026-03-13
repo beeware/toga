@@ -39,7 +39,6 @@ class Table(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-
         self._action("change row", item=item)
 
     # Alias for backwards compatibility:

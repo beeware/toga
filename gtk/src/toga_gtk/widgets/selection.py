@@ -59,7 +59,6 @@ class Selection(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-
         index = self.interface._items.index(item)
         selection = self.native.get_active()
         # Insert a new entry at the same index,

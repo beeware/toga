@@ -83,8 +83,8 @@ class Selection(Widget):
     def source_change(self, *, item):
         index = self.interface._items.index(item)
         with self.suspend_notifications():
-            self.insert(index, item)
-            self.remove(index + 1, item)
+            self.source_insert(index=index, item=item)
+            self.source_remove(index=index + 1, item=item)
 
         # Changing the item text can change the layout size.
         self.interface.refresh()

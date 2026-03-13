@@ -250,7 +250,20 @@ class DetailedList(Widget):
         for item in source:
             self.store.append(self.row_factory(item))
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item)
+
+    def source_insert(self, *, index, item):
         self.hide_actions()
         item_impl = self.row_factory(item)
         self.store.insert(index, item_impl)
@@ -271,7 +284,6 @@ class DetailedList(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-
         item._impl.update(self.interface, item)
 
     def remove(self, item, index):

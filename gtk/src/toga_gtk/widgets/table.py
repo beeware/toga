@@ -176,7 +176,6 @@ class Table(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-
         index = self.interface.data.index(item)
         row = self.store[index]
         for i, column in enumerate(self.interface._columns):

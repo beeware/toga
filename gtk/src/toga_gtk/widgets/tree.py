@@ -142,7 +142,6 @@ class Tree(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-
         row = self.store[item._impl]
         for i, column in enumerate(self.interface._columns):
             row[i * 2 + 1] = row[0].icon(column)

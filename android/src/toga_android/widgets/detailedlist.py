@@ -262,7 +262,7 @@ class DetailedList(Widget):
     # Alias for backwards compatibility:
     # March 2026: In 0.5.3 and earlier, notification methods
     # didn't start with 'source_'
-    def clear(self, item):
+    def clear(self):
         import warnings
 
         warnings.warn(

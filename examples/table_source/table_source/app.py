@@ -81,6 +81,8 @@ class GoodMovieSource(Source):
     def index(self, entry):
         return self._filtered().index(entry)
 
+    # A listener that passes on all notifications, but only if they apply
+    # to the filtered data source
     def source_insert(self, *, index, item):
         # If the item exists in the filtered list, propagate the notification
         for i, filtered_item in enumerate(self._filtered()):

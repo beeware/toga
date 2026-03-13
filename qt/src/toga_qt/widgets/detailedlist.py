@@ -576,7 +576,6 @@ class DetailedList(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-
         self.native_model.item_changed(item)
 
     # Alias for backwards compatibility:

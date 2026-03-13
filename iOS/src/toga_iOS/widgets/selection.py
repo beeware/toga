@@ -154,7 +154,6 @@ class Selection(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-
         index = self.interface.items.index(item)
         if self.native_picker.selectedRowInComponent(0) == index:
             self.native.text = self.interface._title_for_item(item)

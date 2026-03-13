@@ -49,7 +49,6 @@ class Tree(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-
         self._action("change node", item=item)
 
     # Alias for backwards compatibility:

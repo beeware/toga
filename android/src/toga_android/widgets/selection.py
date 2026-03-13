@@ -84,7 +84,20 @@ class Selection(ContainedWidget):
         self.adapter.insert(self.interface._title_for_item(item), index)
         self.adapter.remove(self.adapter.getItem(index + 1))
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, index, item=None):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item)
+
+    def source_remove(self, *, index, item=None):
         self.adapter.remove(self.adapter.getItem(index))
 
         # Adjust the selection index, but only generate an event if the selected item
@@ -111,7 +124,7 @@ class Selection(ContainedWidget):
     # Alias for backwards compatibility:
     # March 2026: In 0.5.3 and earlier, notification methods
     # didn't start with 'source_'
-    def clear(self, item):
+    def clear(self):
         import warnings
 
         warnings.warn(
