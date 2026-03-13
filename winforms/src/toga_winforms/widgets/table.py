@@ -164,7 +164,7 @@ class Table(Widget):
             return selected_indices[0]
 
     #################################################################################
-    # The following methods are shared (non-overridden) with  DetailedList and Tree
+    # The following methods are shared (non-overridden) with DetailedList and Tree
     #################################################################################
 
     def __del__(self):

@@ -39,10 +39,9 @@ class StateNode:
     def __init__(self, node: Node, state_tree, depth: int):
         """Initializes an instance for a given node and its relation to a StateTree.
 
-        :param Node node: The underlying Node.
-        :param StateTree state_tree: The StateTree of which the StateNode is a part.
-        :param int depth: The smallest number of nodes between the StateNode and a
-            root.
+        :param node: The underlying Node.
+        :param state_tree: The StateTree of which the StateNode is a part.
+        :param depth: The smallest number of nodes between the StateNode and a root.
         """
 
         self.node = node
@@ -68,9 +67,9 @@ class StateNode:
     def __getitem__(self, row_path: list[int] | tuple[int] | None):
         """Gets an item based on a row path list or tuple
 
-        :param list[int] | tuple[int] row_path: A list or tuple of indices. The first
-            is an index of a child, say A, in the list of children, the next is an
-            index in the list of children of A, and so on...
+        :param row_path: A list or tuple of indices. The first is an index of a child,
+            say A, in the list of children, the next is an index in the list of children
+            of A, and so on...
         :return: The StateNode at the end of the path. None returns the StateNode
             itself.
         """
@@ -100,9 +99,9 @@ class StateNode:
     def toggle_state(self, update_display: bool) -> bool:
         """Toggles the state (open/closed) of the StateNode.
 
-        :param bool update_display: Whether the display list should be updated. If
-            the StateNode is visible this should most likely be True. Otherwise this
-            should be False.
+        :param update_display: Whether the display list should be updated. If the
+            StateNode is visible this should most likely be True. Otherwise this should
+            be False.
         :return: A bool indicating whether a change of selection has occurred.
         """
         if not self.is_leaf:
@@ -115,8 +114,8 @@ class StateNode:
     def set_branch_state(self, set_open: bool, is_visible: bool) -> bool:
         """Sets the state (open/closed) for a StateNode and all its descendants.
 
-        :param bool set_open: Should the state be set to open?
-        :param bool is_visible: Is the state_node in the display list?
+        :param set_open: Should the state be set to open?
+        :param is_visible: Is the state_node in the display list?
         :return: A bool indicating whether a change of selection has occurred.
         """
         if self.is_open != set_open:
@@ -132,9 +131,9 @@ class StateNode:
     def insert(self, index: int, node: Node) -> bool:
         """Inserts a child StateNode for a given Node at a given index.
 
-        :param int index: The index where the child StateNode will be placed in the
-            children list.
-        :param Node node: The Node from which to make a child StateNode.
+        :param index: The index where the child StateNode will be placed in the children
+            list.
+        :param node: The Node from which to make a child StateNode.
         :return: A bool indicating whether a refresh of the ListView is needed.
         """
         refresh_needed = self.is_leaf
@@ -150,7 +149,7 @@ class StateNode:
     def remove(self, index: int) -> bool:
         """Removes a child at a given index.
 
-        :param int index: The index of the StateNode to be deleted.
+        :param index: The index of the StateNode to be deleted.
         :return: A bool indicating whether a change of selection has occurred.
         """
         child = self.children[index]
@@ -189,7 +188,7 @@ class StateTree(StateNode):
     def __init__(self, tree_source: TreeSourceT):
         """Initializes the instance for a TreeSourceT.
 
-        :param TreeSourceT tree_source: The TreeSourceT used to build the StateTree.
+        :param tree_source: The TreeSourceT used to build the StateTree.
         """
         self.tree_source = tree_source
         self.children = [
@@ -223,8 +222,7 @@ class StateTree(StateNode):
     def set_all_states(self, all_open: bool) -> None:
         """Sets the state (open/closed) of all the child StateNode instances.
 
-        :param bool all_open: Should the children be open (expanded) or closed
-            (contracted)?
+        :param all_open: Should the children be open (expanded) or closed (contracted)?
         """
         super().set_all_states(all_open)
         self.display_list_refresh()
@@ -245,7 +243,7 @@ class StateTree(StateNode):
     def display_list_toggle_index(self, index) -> bool:
         """Toggles the state (open/closed) of a StateNode in the display list.
 
-        :param int index: The index of the StateNode in the display list.
+        :param index: The index of the StateNode in the display list.
         :return: A bool indicating whether a change of selection has occurred.
         """
         state_node = self._display_list[index]
@@ -260,8 +258,8 @@ class StateTree(StateNode):
     def _display_list_adjust(self, insert: bool, state_node: StateNode) -> bool:
         """Adjusts the display list based on an item insertion or removal.
 
-        :param bool insert: Is an item being inserted or removed?
-        :param StateNode item: The item being inserted or removed.
+        :param insert: Is an item being inserted or removed?
+        :param item: The item being inserted or removed.
         :return: For insert=True, a bool indicating whether a ListView refresh is
             needed. For insert=False, a bool indicating whether a change of selection
             has occurred.
@@ -300,9 +298,9 @@ class StateTree(StateNode):
         The sublist contains either a single element, or a whole branch which will be
         expanded/contracted during a toggle operation.
 
-        :param bool insert: Is the sublist being inserted or removed?
-        :param int start_index: The index in the display list where the first item
-            of the sublist is/will be.
+        :param insert: Is the sublist being inserted or removed?
+        :param start_index: The index in the display list where the first item of the
+            sublist is/will be.
         :return: A bool indicating whether a change of selection has occurred.
         """
         if insert:
@@ -322,7 +320,7 @@ class StateTree(StateNode):
     def _display_list_toggle(self, state_node: StateNode) -> bool:
         """Updates the display list to reflect a node being toggled.
 
-        :param StateNode state_node: The StateNode being toggled.
+        :param state_node: The StateNode being toggled.
         :return: A bool indicating whether a change of selection has occurred.
         """
         insert: bool = state_node.is_open
@@ -359,10 +357,10 @@ class StateTree(StateNode):
         item in the sublist is also removed. The other indices are shifted up or
         down based on the size of the sublist.
 
-        :param bool insert: Is the sublist being inserted or removed?
-        :param int start_index: The index in the display list where the first item
-            of the sublist is/will be.
-        :param int range_size: The size of the sublist being inserted/removed.
+        :param insert: Is the sublist being inserted or removed?
+        :param start_index: The index in the display list where the first item of the
+            sublist is/will be.
+        :param range_size: The size of the sublist being inserted/removed.
         :return: A bool indicating whether a change of selection has occurred.
         """
         selection_updater = extend_indices if insert else reduce_indices
@@ -386,7 +384,7 @@ class StateTree(StateNode):
     def find_state_node(self, node: Node) -> StateNode | None:
         """Searches in the StateTree for a StateNode associated to a given Node.
 
-        :param Node node: The node for which to find the corresponding StateNode.
+        :param node: The node for which to find the corresponding StateNode.
         :return: If found the StateNode is returned, otherwise None is returned.
         """
         for state_node in self.branch_iter(display=False):
@@ -628,8 +626,8 @@ class Tree(Table):
     def _hit_test_arrow(self, x: int, y: int) -> int:
         """Tests whether given coordinates are over a state-change arrow.
 
-        :param int x: The horizontal coordinate relative to the UI client area.
-        :param int y: The vertical coordinate relative to the UI client area.
+        :param x: The horizontal coordinate relative to the UI client area.
+        :param y: The vertical coordinate relative to the UI client area.
         :return: If the (x,y) position is over a state-change arrow then the test
             returns the index of the StateNode. If the (x,y) position is not over
             any items -2 is returned. Otherwise -1 is returned (this corresponds
@@ -886,10 +884,9 @@ class Tree(Table):
         This method is called when toggling a StateNode, when adding/removing nodes,
         and when modifying an item.
 
-        :param bool notify_select: A bool indicating whether a change of selection
-            has occurred, and hence whether self.interface should be notified.
-        :param bool refresh: A bool indicating whether the ListView needs to be
-            repainted.
+        :param notify_select: A bool indicating whether a change of selection has
+            occurred, and hence whether self.interface should be notified.
+        :param refresh: A bool indicating whether the ListView needs to be repainted.
         """
         self.native.VirtualListSize = len(self.display_list)
         self._cache = []
@@ -899,11 +896,10 @@ class Tree(Table):
         if refresh:
             self.native.Refresh()
 
-    def _get_state_parent(self, parent=None):
+    def _get_state_parent(self, parent: Node | None = None):
         """Gets the StateNode/StateTree associated to parent.
 
-        :param Node | None parent: The object for which to find the associated
-            StateNode/StateTree.
+        :param parent: The object for which to find the associated StateNode/StateTree.
         :return: If parent=None, then the state tree is returned. If parent is a Node
             and no corresponding StateNode can be found None is returned.
             Otherwise the StateNode corresponding to node is returned.
