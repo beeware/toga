@@ -11,6 +11,7 @@ from toga.types import Position, Size
 from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
+    SUPPORTS_LIQUID_GLASS,
     NSData,
     UIColor,
     UIGraphicsImageRenderer,
@@ -55,7 +56,7 @@ class Window:
         # RootContainer provides a titlebar for the window.
         self.container = RootContainer(
             on_refresh=self.content_refreshed,
-            on_native_layout=self.content_native_layout,
+            on_native_layout=self.update_insets,
         )
 
     ######################################################################
@@ -108,7 +109,7 @@ class Window:
 
     # The testbed won't instantiate a simple app, so we can't test this
     # handler
-    def content_native_layout(self, container):  # pragma: no cover
+    def update_insets(self, container):  # pragma: no cover
         # When status bar heights change, a relayout of the window will
         # be triggered by the native layer, which is how we can catch this
         # and use this value correctly here.
@@ -120,11 +121,16 @@ class Window:
         # the status bar height is influencing the safe area insets of
         # the container, as iPadOS window corners are smaller than the
         # top status bar.
-        if container.native.safeAreaInsets.top >= status_bar_height:
+        if container.native.safeAreaInsets.top >= status_bar_height and not (
+            self.interface.bleed_top
+        ):
             container.top_inset = status_bar_height
         else:
             container.top_inset = 0
         self.notify_resize(container)
+
+    def set_bleed_top(self, bleed_top):
+        self.update_insets(self.container)
 
     def set_content(self, widget):
         self.container.content = widget
@@ -265,20 +271,23 @@ class MainWindow(Window):
         # NavigationContainer provides a titlebar for the window.
         self.container = NavigationContainer(
             on_refresh=self.content_refreshed,
-            on_native_layout=self.content_native_layout,
+            on_native_layout=self.update_insets,
         )
 
-    def content_native_layout(self, container):
+    def update_insets(self, container):
         # Instead of manually computing the geometry at the top,
         # this check is used because iOS's algorithms to place the
         # navigation bar at an appropriate height appears to be
         # a mystery... also, when the navigation bar metrics change,
         # a layout appears to be triggered in the innner subview,
         # and that's how we can catch it.
-        container.top_inset = (
-            container.controller.navigationBar.frame.origin.y
-            + container.controller.navigationBar.frame.size.height
-        )
+        if self.interface.bleed_top and SUPPORTS_LIQUID_GLASS:  # pragma: no cover
+            container.top_inset = 0
+        else:
+            container.top_inset = (
+                container.controller.navigationBar.frame.origin.y
+                + container.controller.navigationBar.frame.size.height
+            )
         self.notify_resize(container)
 
     def create_toolbar(self):

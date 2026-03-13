@@ -54,6 +54,9 @@ core_graphics.CGImageGetWidth.restype = c_size_t
 core_graphics.CGImageGetHeight.argtypes = [CGImageRef]
 core_graphics.CGImageGetHeight.restype = c_size_t
 
+core_graphics.CGImageCreateWithImageInRect.argtypes = [CGImageRef, CGRect]
+core_graphics.CGImageCreateWithImageInRect.restype = CGImageRef
+
 kCGImageAlphaNone = 0
 kCGImageAlphaPremultipliedLast = 1
 kCGImageAlphaPremultipliedFirst = 2

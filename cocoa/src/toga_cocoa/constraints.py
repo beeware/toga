@@ -109,8 +109,8 @@ class Constraints:
         #     f"UPDATE CONSTRAINTS {self.widget} in {self.container} "
         #     f"{width}x{height}@{x},{y}"
         # )
-        self.left_constraint.constant = x
-        self.top_constraint.constant = y
+        self.left_constraint.constant = x + self.container.left_inset
+        self.top_constraint.constant = y + self.container.top_inset
 
         self.width_constraint.constant = width
         self.height_constraint.constant = height

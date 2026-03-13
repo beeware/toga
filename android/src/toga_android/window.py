@@ -107,6 +107,11 @@ class Window(Container):
 
         super().refreshed()
 
+    def set_bleed_top(self, bleed_top):
+        # TODO: Implement this and hide the title bar when we do it
+        # after edge-to-edge layout is done correctly.
+        pass
+
     ######################################################################
     # Window size
     ######################################################################
