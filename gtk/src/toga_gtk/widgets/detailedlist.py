@@ -257,7 +257,21 @@ class DetailedList(Widget):
         self.native_detailedlist.show_all()
         self.update_refresh_button()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
+        import warnings
+
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
+
         item._impl.update(self.interface, item)
 
     def remove(self, item, index):
@@ -265,7 +279,20 @@ class DetailedList(Widget):
         self.store.remove(index)
         self.update_refresh_button()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
         self.hide_actions()
         self.store.remove_all()
         self.update_refresh_button()

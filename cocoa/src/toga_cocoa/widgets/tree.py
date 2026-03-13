@@ -191,7 +191,20 @@ class Tree(Widget):
     def change_source(self, source):
         self.native_tree.reloadData()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item, parent=None):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item, parent=parent)
+
+    def source_insert(self, *, index, item, parent=None):
         index_set = NSIndexSet.indexSetWithIndex(index)
         self.native_tree.insertItemsAtIndexes(
             index_set,
@@ -199,10 +212,36 @@ class Tree(Widget):
             withAnimation=NSTableViewAnimation.SlideDown.value,
         )
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
+        import warnings
+
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
         self.native_tree.reloadItem(node_impl(item))
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, index, item, parent=None):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item, parent=parent)
+
+    def source_remove(self, *, index, item, parent=None):
         try:
             index = self.native_tree.childIndexForItem(item._impl)
             index_set = NSIndexSet.indexSetWithIndex(index)
@@ -215,7 +254,20 @@ class Tree(Widget):
         except AttributeError:
             pass
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
         self.native_tree.reloadData()
 
     def get_selection(self):
