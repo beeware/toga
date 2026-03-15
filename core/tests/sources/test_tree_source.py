@@ -59,7 +59,6 @@ def source(listener):
 @pytest.mark.parametrize(
     "value",
     [
-        None,
         42,
         "not a list",
     ],
@@ -73,13 +72,64 @@ def test_invalid_accessors(value):
         TreeSource(accessors=value)
 
 
-def test_accessors_required():
-    """A list source must specify *some* accessors."""
+def test_accessors_optional_for_mapping_data():
+    """A tree source can omit accessors if node data is mapping-based."""
+    source = TreeSource(
+        accessors=[],
+        data=[
+            (
+                {"value": "root"},
+                [
+                    ({"value": "child"}, None),
+                ],
+            )
+        ],
+    )
+
+    assert len(source) == 1
+    assert source.accessors == []
+    assert source[0].value == "root"
+    assert source[0][0].value == "child"
+
+
+def test_accessors_omitted_for_mapping_data():
+    """A tree source defaults to no accessors when omitted."""
+    source = TreeSource(data=[({"value": "root"}, None)])
+
+    assert len(source) == 1
+    assert source.accessors == []
+    assert source[0].value == "root"
+
+
+def test_non_mapping_data_requires_accessors():
+    """A tree source without accessors rejects non-mapping node data."""
     with pytest.raises(
         ValueError,
-        match=r"TreeSource must be provided a list of accessors",
+        match=r"TreeSource requires accessors for non-mapping node data",
     ):
-        TreeSource(accessors=[], data=[1, 2, 3])
+        TreeSource(accessors=[], data=[(("root", 1), None)])
+
+
+def test_non_mapping_insert_requires_accessors():
+    """Inserting non-mapping node data requires accessors."""
+    source = TreeSource(data=[({"value": "root"}, None)])
+
+    with pytest.raises(
+        ValueError,
+        match=r"TreeSource requires accessors for non-mapping node data",
+    ):
+        source.insert(0, ("new", 2))
+
+
+def test_scalar_insert_requires_accessors():
+    """Inserting scalar node data requires accessors."""
+    source = TreeSource(data=[({"value": "root"}, None)])
+
+    with pytest.raises(
+        ValueError,
+        match=r"TreeSource requires accessors for non-mapping node data",
+    ):
+        source.insert(0, "new")
 
 
 def test_accessors_copied():

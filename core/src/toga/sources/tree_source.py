@@ -205,15 +205,17 @@ class Node(Row[T]):
 class TreeSource(Source):
     _roots: list[Node]
 
-    def __init__(self, accessors: Iterable[str], data: object | None = None):
+    def __init__(
+        self, accessors: Iterable[str] | None = None, data: object | None = None
+    ):
         super().__init__()
-        if isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
+        if accessors is None:
+            self._accessors = []
+        elif isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
             raise ValueError("accessors should be a list of attribute names")
-
-        # Copy the list of accessors
-        self._accessors = list(accessors)
-        if len(self._accessors) == 0:
-            raise ValueError("TreeSource must be provided a list of accessors")
+        else:
+            # Copy the list of accessors
+            self._accessors = list(accessors)
 
         if data is not None:
             self._roots = self._create_nodes(parent=None, value=data)
@@ -254,8 +256,12 @@ class TreeSource(Source):
         if isinstance(data, Mapping):
             node = Node(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
+            if len(self._accessors) == 0:
+                raise ValueError("TreeSource requires accessors for non-mapping node data")
             node = Node(**dict(zip(self._accessors, data, strict=False)))
         else:
+            if len(self._accessors) == 0:
+                raise ValueError("TreeSource requires accessors for non-mapping node data")
             node = Node(**{self._accessors[0]: data})
 
         node._parent = parent

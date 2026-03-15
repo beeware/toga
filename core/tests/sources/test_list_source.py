@@ -20,7 +20,6 @@ def source():
 @pytest.mark.parametrize(
     "value",
     [
-        None,
         42,
         "not a list",
     ],
@@ -34,13 +33,53 @@ def test_invalid_accessors(value):
         ListSource(accessors=value)
 
 
-def test_accessors_required():
-    """A list source must specify *some* accessors."""
+def test_accessors_optional_for_mapping_data():
+    """A list source can omit accessors if rows are mapping-based."""
+    source = ListSource(data=[{"value": 1}], accessors=[])
+
+    assert len(source) == 1
+    assert source.accessors == []
+    assert source[0].value == 1
+
+
+def test_accessors_omitted_for_mapping_data():
+    """A list source defaults to no accessors when omitted."""
+    source = ListSource(data=[{"value": 1}])
+
+    assert len(source) == 1
+    assert source.accessors == []
+    assert source[0].value == 1
+
+
+def test_non_mapping_data_requires_accessors():
+    """A list source without accessors rejects non-mapping row data."""
     with pytest.raises(
         ValueError,
-        match=r"ListSource must be provided a list of accessors",
+        match=r"ListSource requires accessors for non-mapping row data",
     ):
         ListSource(accessors=[], data=[1, 2, 3])
+
+
+def test_non_mapping_setitem_requires_accessors():
+    """Setting non-mapping row data requires accessors."""
+    source = ListSource(data=[{"value": 1}])
+
+    with pytest.raises(
+        ValueError,
+        match=r"ListSource requires accessors for non-mapping row data",
+    ):
+        source[0] = ("new", 2)
+
+
+def test_non_mapping_find_requires_accessors():
+    """Finding non-mapping row data requires accessors."""
+    source = ListSource(data=[{"value": 1}])
+
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot search for non-mapping data without accessors",
+    ):
+        source.find(1)
 
 
 def test_accessors_copied():
