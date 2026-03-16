@@ -160,7 +160,6 @@ Widgets:
     description: A labeled on/off button.
     beta:
       - web
-    unsupported:
       - textual
 
   Table:
@@ -286,6 +285,10 @@ Data representation:
 
   ValueSource:
     description: Abstractions of managed atomic values.
+    display: hide
+
+  Column:
+    description: Abstractions of tabular columns.
     display: hide
 
   Types:

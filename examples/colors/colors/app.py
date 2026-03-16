@@ -46,7 +46,7 @@ class ColorsApp(toga.App):
         slider = toga.Slider()
         switch = toga.Switch("Switch")
         table = toga.Table(
-            headings=["Heading 1", "Heading 2"],
+            columns=["Heading 1", "Heading 2"],
             data=[
                 ("value 1", "value 2"),
                 ("value 1", "value 2"),

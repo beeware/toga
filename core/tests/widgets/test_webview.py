@@ -81,7 +81,7 @@ def test_webview_load_disabled(monkeypatch):
         # Setting the handler raises a warning
         with pytest.warns(
             toga.NotImplementedWarning,
-            match=r"\[Dummy\] Not implemented: WebView\.on_webview_load",
+            match=r"\[toga_dummy\] Not implemented: WebView\.on_webview_load",
         ):
             widget.on_webview_load = handler
 
@@ -352,7 +352,7 @@ def test_webview_navigation_starting_disabled(monkeypatch):
     # Setting the handler raises a warning
     with pytest.warns(
         toga.NotImplementedWarning,
-        match=r"\[Dummy\] Not implemented: WebView\.on_navigation_starting",
+        match=r"\[toga_dummy\] Not implemented: WebView\.on_navigation_starting",
     ):
         widget.on_navigation_starting = handler
 

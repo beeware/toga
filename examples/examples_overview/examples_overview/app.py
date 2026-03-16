@@ -74,7 +74,7 @@ class ExamplesOverviewApp(toga.App):
         self.examples.sort(key=lambda e: e["path"])
 
         self.table = toga.Table(
-            headings=["Name", "Path"],
+            columns=["Name", "Path"],
             data=self.examples,
             on_activate=self.run,
             on_select=self.on_example_selected,

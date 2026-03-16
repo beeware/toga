@@ -9,8 +9,8 @@ test = [
     # fonttools is only needed by Android, but we need to use sys.platform == 'linux'
     # for < 3.13 there's no dependency identifier that can target Android exclusively
     # before 3.13.
-    "fonttools==4.61.1 ; python_version < '3.13' and sys_platform == 'linux'",
-    "fonttools==4.61.1 ; python_version >= '3.13' and sys_platform == 'android'",
+    "fonttools==4.62.1 ; python_version < '3.13' and sys_platform == 'linux'",
+    "fonttools==4.62.1 ; python_version >= '3.13' and sys_platform == 'android'",
     "psutil==7.2.2 ; python_version >= '3.13' and (sys_platform == 'linux' or sys_platform == 'darwin' or sys_platform == 'win32')",
     "pillow==11.0.0",
     "pytest==9.0.2",
@@ -145,10 +145,11 @@ sources = [
     "src/testbed",
 ]
 
-[tool.briefcase.app.testbed-qt.linux]
 test_sources = [
     "../qt/tests_backend",
 ]
+
+[tool.briefcase.app.testbed-qt.linux]
 requires = [
     "../qt",
     "PySide6-Essentials~=6.10.0",

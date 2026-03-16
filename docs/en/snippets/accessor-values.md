@@ -1,7 +1,5 @@
 <!-- rumdl-disable-line MD041 -->
 
-Accessor names (whether explicitly provided, or automatically generated from the header names) should be unique. If they are not, column data will be duplicated, as Toga has no way to tell which version of an accessor to use when populating data for a column.
-
 The value provided by an accessor is interpreted as follows:
 
 - If the value is a [Widget][], that widget will be displayed in the cell. Note that this is currently a beta API: see the Notes section.

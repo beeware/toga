@@ -11,8 +11,6 @@ from PySide6.QtCore import (
 from PySide6.QtWidgets import QHeaderView, QTreeView
 from travertino.size import at_least
 
-from toga.sources import ListSource
-
 from .base import Widget
 
 logger = logging.getLogger(__name__)
@@ -231,7 +229,7 @@ class Tree(Widget):
         self.native = QTreeView()
 
         self.native_model = TreeSourceModel(
-            getattr(self.interface, "_data", ListSource(self.interface.accessors)),
+            getattr(self.interface, "_data", None),
             self.interface._columns[:],
             self.interface.missing_value,
             parent=self.native,
@@ -314,9 +312,9 @@ class Tree(Widget):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.native.header().resizeSections(QHeaderView.ResizeMode.Stretch)
 
-    def insert_column(self, index, heading, accessor):
+    def insert_column(self, index, column):
         self.native_model.beginInsertColumns(QModelIndex(), index, index)
-        self.native_model._columns.insert(index, self.interface._columns[index])
+        self.native_model._columns.insert(index, column)
         self.native_model.endInsertColumns()
         self.native.header().resizeSections(QHeaderView.ResizeMode.Stretch)
 

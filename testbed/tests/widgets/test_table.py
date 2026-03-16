@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.sources import ListListener, ListSource
+from toga.sources import AccessorColumn, ListListener, ListSource
 from toga.style.pack import Pack
 
 from ..conftest import skip_on_platforms
@@ -69,10 +69,15 @@ async def widget(source, on_select_handler, on_activate_handler):
 async def headerless_widget(source, on_select_handler):
     skip_on_platforms("iOS")
     return toga.Table(
+        columns=[
+            AccessorColumn(None, "a"),
+            AccessorColumn(None, "b"),
+            AccessorColumn(None, "c"),
+        ],
         data=source,
         missing_value="MISSING!",
-        accessors=["a", "b", "c"],
         on_select=on_select_handler,
+        show_headings=False,
         style=Pack(flex=1),
     )
 
@@ -119,7 +124,7 @@ async def multiselect_probe(main_window, multiselect_widget):
 
 test_cleanup = build_cleanup_test(
     toga.Table,
-    kwargs={"headings": ["A", "B", "C"]},
+    kwargs={"columns": ["A", "B", "C"]},
     skip_platforms=("iOS",),
 )
 
@@ -460,7 +465,7 @@ async def _column_change_test(widget, probe):
     assert probe.column_count == 3
     probe.assert_cell_content(0, 2, "C0")
 
-    widget.append_column("E", accessor="e")
+    widget.append_column(AccessorColumn("E", "e"))
     await probe.redraw("E column appended")
 
     # 4 columns; the new content on row 0 is "E1"
@@ -468,7 +473,7 @@ async def _column_change_test(widget, probe):
     probe.assert_cell_content(0, 2, "C0")
     probe.assert_cell_content(0, 3, "E0")
 
-    widget.insert_column(3, "D", accessor="d")
+    widget.insert_column(3, AccessorColumn("D", "d"))
     await probe.redraw("E column appended")
 
     # 5 columns; the new content on row 0 is "D1", between C1 and E1

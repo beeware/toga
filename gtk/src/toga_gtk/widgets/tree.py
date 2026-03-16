@@ -82,7 +82,7 @@ class Tree(Widget):
                 self.native_tree.remove_column(column)
             self._create_columns()
 
-            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface.accessors)
+            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface.columns)
             self.store = Gtk.TreeStore(*types)
 
             for i, row in enumerate(self.interface.data):
@@ -153,11 +153,11 @@ class Tree(Widget):
     def collapse_all(self):
         self.native_tree.collapse_all()
 
-    def insert_column(self, index, heading, accessor):
+    def insert_column(self, index, columns):
         # Adding/removing a column means completely rebuilding the ListStore
         self.change_source(self.interface.data)
 
-    def remove_column(self, accessor):
+    def remove_column(self, index):
         self.change_source(self.interface.data)
 
     def rehint(self):

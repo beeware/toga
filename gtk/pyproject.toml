@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==82.0.0",
+    "setuptools==82.0.1",
     "setuptools_scm==9.2.2",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -59,6 +59,56 @@ Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
 [project.entry-points."toga.backends"]
 linux = "toga_gtk"
 freeBSD = "toga_gtk"
+
+[project.entry-points."toga_core.backend.toga_gtk"]
+App = "toga_gtk.app:App"
+Command = "toga_gtk.command:Command"
+Font = "toga_gtk.fonts:Font"
+Icon = "toga_gtk.icons:Icon"
+Image = "toga_gtk.images:Image"
+Paths = "toga_gtk.paths:Paths"
+dialogs = "toga_gtk.dialogs"
+resources = "toga_gtk.resources"
+
+# Hardware
+# Camera = "toga_dummy.hardware.camera:Camera"
+Location = "toga_gtk.hardware.location:Location"
+
+# Status Icons
+MenuStatusIcon = "toga_gtk.statusicons:MenuStatusIcon"
+SimpleStatusIcon = "toga_gtk.statusicons:SimpleStatusIcon"
+StatusIconSet = "toga_gtk.statusicons:StatusIconSet"
+
+# Widgets
+ActivityIndicator = "toga_gtk.widgets.activityindicator:ActivityIndicator"
+Box = "toga_gtk.widgets.box:Box"
+Button = "toga_gtk.widgets.button:Button"
+Canvas = "toga_gtk.widgets.canvas:Canvas"
+DateInput = "toga_gtk.widgets.dateinput:DateInput"
+DetailedList = "toga_gtk.widgets.detailedlist:DetailedList"
+Divider = "toga_gtk.widgets.divider:Divider"
+ImageView = "toga_gtk.widgets.imageview:ImageView"
+Label = "toga_gtk.widgets.label:Label"
+MapView = "toga_gtk.widgets.mapview:MapView"
+MultilineTextInput = "toga_gtk.widgets.multilinetextinput:MultilineTextInput"
+NumberInput = "toga_gtk.widgets.numberinput:NumberInput"
+OptionContainer = "toga_gtk.widgets.optioncontainer:OptionContainer"
+PasswordInput = "toga_gtk.widgets.passwordinput:PasswordInput"
+ProgressBar = "toga_gtk.widgets.progressbar:ProgressBar"
+ScrollContainer = "toga_gtk.widgets.scrollcontainer:ScrollContainer"
+Selection = "toga_gtk.widgets.selection:Selection"
+Slider = "toga_gtk.widgets.slider:Slider"
+SplitContainer = "toga_gtk.widgets.splitcontainer:SplitContainer"
+Switch = "toga_gtk.widgets.switch:Switch"
+Table = "toga_gtk.widgets.table:Table"
+TextInput = "toga_gtk.widgets.textinput:TextInput"
+# TimeInput = "toga_gtk.widgets.timeinput:TimeInput"
+Tree = "toga_gtk.widgets.tree:Tree"
+WebView = "toga_gtk.widgets.webview:WebView"
+
+# Windows
+MainWindow = "toga_gtk.window:MainWindow"
+Window = "toga_gtk.window:Window"
 
 [tool.setuptools_scm]
 root = ".."

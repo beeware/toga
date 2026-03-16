@@ -216,7 +216,7 @@ class ScreenshotGeneratorApp(toga.App):
 
     def create_table(self):
         return toga.Table(
-            headings=["Name", "Age", "Planet"],
+            columns=["Name", "Age", "Planet"],
             data=[
                 ("Arthur Dent", 42, "Earth"),
                 ("Ford Prefect", 37, "Betelgeuse Five"),
@@ -252,7 +252,7 @@ class ScreenshotGeneratorApp(toga.App):
 
     def create_tree(self):
         tree = toga.Tree(
-            headings=["Name", "Age", "Status"],
+            columns=["Name", "Age", "Status"],
             data={
                 "Earth": {
                     ("Arthur Dent", 42, "Anxious"): None,

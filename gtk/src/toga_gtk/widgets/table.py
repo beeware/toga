@@ -83,7 +83,7 @@ class Table(Widget):
             column.add_attribute(value, "text", i * 2 + 2)
 
             # Preserve a reference to the accessor for the column
-            column.accessor = toga_column.accessor
+            column.interface = toga_column
 
             self.native_table.append_column(column)
 
@@ -106,7 +106,7 @@ class Table(Widget):
             # Preserve widths when columns are re-created.
             existing_columns = self.native_table.get_columns()
             preserved_widths = {
-                column.accessor: column.get_width() for column in existing_columns
+                column.interface: column.get_width() for column in existing_columns
             }
 
             for column in existing_columns:
@@ -116,7 +116,7 @@ class Table(Widget):
 
             for column in self.native_table.get_columns():
                 try:
-                    width = preserved_widths[column.accessor]
+                    width = preserved_widths[column.interface]
                     if width > 0:
                         column.set_fixed_width(width)
                 except KeyError:
@@ -179,7 +179,7 @@ class Table(Widget):
         pos = row / n_rows * self.native.get_vadjustment().get_upper()
         self.native.get_vadjustment().set_value(pos)
 
-    def insert_column(self, index, heading, accessor):
+    def insert_column(self, index, column):
         # Adding/removing a column means completely rebuilding the ListStore
         self.change_source(self.interface.data)
 

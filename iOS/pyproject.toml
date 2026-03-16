@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==82.0.0",
+    "setuptools==82.0.1",
     "setuptools_scm==9.2.2",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -56,6 +56,57 @@ Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
 
 [project.entry-points."toga.backends"]
 iOS = "toga_iOS"
+
+[project.entry-points."toga_core.backend.toga_iOS"]
+App = "toga_iOS.app:App"
+Command = "toga_iOS.command:Command"
+Font = "toga_iOS.fonts:Font"
+Icon = "toga_iOS.icons:Icon"
+Image = "toga_iOS.images:Image"
+Paths = "toga_iOS.paths:Paths"
+native_color = "toga_iOS.colors:native_color"
+dialogs = "toga_iOS.dialogs"
+resources = "toga_iOS.resources"
+
+# Hardware
+Camera = "toga_iOS.hardware.camera:Camera"
+Location = "toga_iOS.hardware.location:Location"
+
+# Status Icons
+MenuStatusIcon = "toga_iOS.statusicons:MenuStatusIcon"
+SimpleStatusIcon = "toga_iOS.statusicons:SimpleStatusIcon"
+StatusIconSet = "toga_iOS.statusicons:StatusIconSet"
+
+# Widgets
+ActivityIndicator = "toga_iOS.widgets.activityindicator:ActivityIndicator"
+Box = "toga_iOS.widgets.box:Box"
+Button = "toga_iOS.widgets.button:Button"
+Canvas = "toga_iOS.widgets.canvas:Canvas"
+DateInput = "toga_iOS.widgets.dateinput:DateInput"
+DetailedList = "toga_iOS.widgets.detailedlist:DetailedList"
+Divider = "toga_iOS.widgets.divider:Divider"
+ImageView = "toga_iOS.widgets.imageview:ImageView"
+Label = "toga_iOS.widgets.label:Label"
+MapView = "toga_iOS.widgets.mapview:MapView"
+MultilineTextInput = "toga_iOS.widgets.multilinetextinput:MultilineTextInput"
+NumberInput = "toga_iOS.widgets.numberinput:NumberInput"
+OptionContainer = "toga_iOS.widgets.optioncontainer:OptionContainer"
+PasswordInput = "toga_iOS.widgets.passwordinput:PasswordInput"
+ProgressBar = "toga_iOS.widgets.progressbar:ProgressBar"
+ScrollContainer = "toga_iOS.widgets.scrollcontainer:ScrollContainer"
+# SplitContainer = "toga_iOS.widgets.splitcontainer:SplitContainer"
+Selection = "toga_iOS.widgets.selection:Selection"
+Slider = "toga_iOS.widgets.slider:Slider"
+Switch = "toga_iOS.widgets.switch:Switch"
+Table = "toga_iOS.widgets.table:Table"
+# Tree = "toga_iOS.widgets.tree:Tree"
+TextInput = "toga_iOS.widgets.textinput:TextInput"
+TimeInput = "toga_iOS.widgets.timeinput:TimeInput"
+WebView = "toga_iOS.widgets.webview:WebView"
+
+# Windows
+MainWindow = "toga_iOS.window:MainWindow"
+Window = "toga_iOS.window:Window"
 
 [tool.setuptools_scm]
 root = ".."

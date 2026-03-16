@@ -12,7 +12,7 @@ from toga.command import CommandSet
 from toga.constants import WindowState
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 from toga.types import Position, Size
 
 if TYPE_CHECKING:
@@ -252,7 +252,7 @@ class Window:
         if App.app is None:
             raise RuntimeError("Cannot create a Window before creating an App")
 
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
             title=title if title else self._default_title,
