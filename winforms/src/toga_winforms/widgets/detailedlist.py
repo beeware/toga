@@ -23,7 +23,10 @@ class TableSource:
 
 
 class DetailedList(Table):
+    #################################################################################
     # The following methods are overridden from Table.
+    #################################################################################
+
     @property
     def _show_headings(self):
         return False
@@ -47,6 +50,10 @@ class DetailedList(Table):
     def add_action_events(self):
         # DetailedList doesn't have an on_activate_handler.
         pass
+
+    #################################################################################
+    # The following methods and class variable are not from Table.
+    #################################################################################
 
     def set_primary_action_enabled(self, enabled):
         self.primary_action_enabled = enabled
