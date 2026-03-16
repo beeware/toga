@@ -4,7 +4,7 @@ Toga's API is structured around the following principles:
 
 ## Coding style
 
-For general coding style, see our [code style guide][{code-style}]. The rest of _this_ document is about Toga-specific preferences in API design.
+For general coding style, see our [code style guide][code-style]. The rest of _this_ document is about Toga-specific preferences in API design.
 
 ## Properties
 
