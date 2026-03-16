@@ -50,3 +50,16 @@
 #api-status-key + .md-typeset__scrollwrap th {
     display: none;
 }
+
+/* Force icon corner rounding on rendered success stories table cells. */
+.md-typeset__table > table:nth-child(1) > tbody:nth-child(2) > tr > td:nth-child(1) > img:nth-child(1),
+.md-typeset__table > table:nth-child(1) > tbody:nth-child(2) > tr > td:nth-child(1) > p > img:nth-child(1) {
+    border-radius: 0.65rem !important;
+}
+
+/* Align content in the first column of the success stories table. */
+.md-typeset__table > table:nth-child(1) > tbody:nth-child(2) > tr > td:first-child {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
