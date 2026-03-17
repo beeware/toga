@@ -347,15 +347,15 @@ class Table(Widget):
             images.Add(key, icon.bitmap)
         return index
 
-    def _construct_new_item(self, raw_item, indent: None | int = None):
-        missing_value = self.interface.missing_value
+    def _construct_new_item(self, raw_item, use_missing_value: bool = True):
+        if use_missing_value:
+            missing_value = self.interface.missing_value
+        else:
+            missing_value = ""
+
         lvi = WinForms.ListViewItem(
             [column.text(raw_item, missing_value) for column in self._columns],
         )
-
-        if indent is not None:
-            lvi.IndentCount = indent
-
         icon_indices = tuple(
             self._icon_index(raw_item, column) for column in self._columns
         )

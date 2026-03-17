@@ -4,21 +4,13 @@ from ctypes.wintypes import HDC, HWND, LPARAM, RECT, UINT, WPARAM
 from functools import partial
 from warnings import warn
 
-import System.Windows.Forms as WinForms
-from System.Drawing import ColorTranslator
-
 from toga.handlers import WeakrefCallable
 from toga.sources.tree_source import Node, TreeSourceT
 
 from ..libs import windowconstants as wc
-from ..libs.comctl32 import (
-    DefSubclassProc,
-    ImageList_Draw,
-    RemoveWindowSubclass,
-)
+from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass
 from ..libs.comctl32classes import NMHDR, NMLVCUSTOMDRAW, NMLVDISPINFOW
-from ..libs.gdi32 import CreateSolidBrush, DeleteObject, SetTextColor
-from ..libs.user32 import DrawTextW, FillRect, GetSysColor
+from ..libs.user32 import DrawTextW
 from ..libs.win32 import LRESULT
 from .table import Table
 
@@ -31,9 +23,10 @@ class StateNode:
         tree: The StateTree which the StateNode is a part of.
         depth: The smallest number of nodes between the StateNode and a root.
         children: A list of child StateNode instances. This is None for leaf nodes.
-        text (non-leaf only): The display text of the Node.
-        arrow (non-leaf only): The expansion/contraction arrow of the StateNode.
-        icon (non-leaf only): The icon of the Node.
+        arrow_center_x (non-leaf only): The horizontal coordinate (relative to the
+            client area) of the expansion/contraction arrow of the StateNode.
+        mouse_hover (non-leaf only): A bool indicating whether the mouse is hovering
+            over the state-change arrow.
     """
 
     def __init__(self, node: Node, state_tree, depth: int):
@@ -54,9 +47,8 @@ class StateNode:
         if self.node.can_have_children():
             self.children = [StateNode(child, self.tree, depth + 1) for child in node]
 
-        self.text = c_wchar_p("")
+        self.arrow_center_x: float = 0.0
         self.mouse_hover: bool
-        self.icon: int
 
     def __len__(self) -> int:
         if self.children is None:
@@ -476,28 +468,21 @@ class Tree(Table):
         # _mouse_move_hit is a record of the latest hit-test for a MouseMove event.
         # This is used in the _new_branch method to assign the correct state-change
         # arrow to the non-leaf node display rows.
-        self._mouse_move_hit = -1
+        self._mouse_move_hit: int = -1
 
         # _mouse_down_hit is a record of the latest hit-test for a MouseDown event.
         # This is used by the _process_selection_change method to determine whether
         # a MouseDown event should trigger a change of selection in the UI.
-        self._mouse_down_hit = -1
+        self._mouse_down_hit: int = -1
 
-        # These are widths that are used in the painting of the non-leaf node rows.
-        # The 4 here is undocumented left padding of the ListView UI. The amount is
-        # confirmed/updated during the drawing process.
-        self._left_padding = 4
-        self._arrow_width = 21
-        self._widths_set = False
-        self._indent = self.native.SmallImageList.ImageSize.Width
-        self._rect_right = 0
+        # This is the size of the "indent" used when constructing items in _new_item
+        self._indent: int = self.native.SmallImageList.ImageSize.Width
 
-        self._hbrush_back = CreateSolidBrush(
-            ColorTranslator.ToWin32(self.native.BackColor)
-        )
-        self.native.BackColorChanged += WeakrefCallable(
-            self.winforms_back_color_changed
-        )
+        # These measurements deal with the arrow size. They are checked/updated during
+        # the drawing process. They need to be constantly monitored since a change in
+        # screen scaling will produce a different sized arrow.
+        self._arrow_indent: int = 2
+        self._arrow_width: float = 21.0
 
         self.native.MouseMove += WeakrefCallable(self.winforms_mouse_move)
         self.native.MouseLeave += WeakrefCallable(self.winforms_mouse_leave)
@@ -516,9 +501,6 @@ class Tree(Table):
     ) -> LRESULT:
         """Override from Table: Same method, but also responds to NM_CUSTOMDRAW."""
         if uMsg == wc.WM_NCDESTROY:
-            # Delete the brushes
-            DeleteObject(self._hbrush_back)
-
             # Remove the window subclass in the way recommended by Raymond Chen here:
             # devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
             RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
@@ -535,7 +517,7 @@ class Tree(Table):
                 nmlvcd = cast(lParam, POINTER(NMLVCUSTOMDRAW)).contents
                 return_flag = self._nm_customdraw(nmlvcd)
                 if return_flag is not None:
-                    return self._nm_customdraw(nmlvcd)
+                    return return_flag
 
         # Call the original window procedure
         return DefSubclassProc(HWND(hWnd), UINT(uMsg), WPARAM(wParam), LPARAM(lParam))
@@ -551,9 +533,14 @@ class Tree(Table):
             )
 
         if state_node.is_leaf:
-            return self._construct_new_item(node, state_node.depth)
+            lvi, icon_indices = self._construct_new_item(node)
+        else:
+            lvi, icon_indices = self._construct_new_item(node, use_missing_value=False)
+            state_node.mouse_hover = index == self._mouse_move_hit
 
-        return self._new_branch(index, state_node)
+        lvi.IndentCount = state_node.depth + self._arrow_indent
+
+        return (lvi, icon_indices)
 
     def _process_activation(self, x, y, list_view_item):
         """Activates for double-click on an item but not on state-change arrows."""
@@ -648,12 +635,11 @@ class Tree(Table):
         if state_node.is_leaf:
             return -1
 
-        x_arrow = self._left_padding + state_node.depth * self._indent
-        x_arrow += self._arrow_width / 2
+        x_arrow = state_node.arrow_center_x
         y_arrow = item.Bounds.Y + item.Bounds.Height / 2
 
         norm = (float(x - x_arrow)) ** 2 + (float(y - y_arrow)) ** 2
-        if norm < (self._arrow_width**2) / 2:
+        if norm * 2 < float(self._arrow_width) ** 2:
             return item.Index
 
         return -1
@@ -667,7 +653,7 @@ class Tree(Table):
         self._cache = []
         for i in {index, old_index}:
             if i >= 0:
-                self.native.RedrawItems(i, i, False)
+                self.native.Invalidate(self.native.Items[i].Bounds, False)
 
     def _selected_indices_ui_to_tree(self):
         """This method updates the state tree to reflect the UI selection."""
@@ -715,7 +701,7 @@ class Tree(Table):
         if hit_index >= 0:
             notify_select = self._state_tree.display_list_toggle_index(hit_index)
             self._update_list(notify_select)
-            self.native.RedrawItems(hit_index, hit_index, False)
+            self.native.Invalidate(self.native.Items[hit_index].Bounds, False)
 
     def winforms_mouse_click(self, sender, e):
         """Corrects the UI selection based on the hit-test.
@@ -737,153 +723,72 @@ class Tree(Table):
 
         self._mouse_down_hit = -1
 
-    def winforms_back_color_changed(self, sender, e):
-        """Updates the win32 brush for the background color"""
-        # Delete the old brush
-        DeleteObject(self._hbrush_back)
-        # Create the new brush
-        self._hbrush_back = CreateSolidBrush(
-            ColorTranslator.ToWin32(self.native.BackColor)
-        )
-
-    def _set_widths(self, hdc, rect):
-        """Determines _left_padding and _arrow_width during the first custom draw."""
+    def _check_measurments(self, hdc, rect):
+        """Checks/updates arrow width and that there are enough indents."""
         text_format = wc.DT_CALCRECT | wc.DT_NOCLIP
         lengths = []
 
         for arrow in ["\u25bc", "\u25b6", "\u25bd", "\u25b7"]:
-            rect_copy = RECT.from_buffer_copy(rect)
-            DrawTextW(hdc, c_wchar_p(arrow), -1, byref(rect_copy), text_format)
-            lengths.append(rect_copy.right - rect_copy.left)
+            DrawTextW(hdc, c_wchar_p(arrow), -1, byref(rect), text_format)
+            lengths.append(rect.right - rect.left)
 
-        self._left_padding = rect.left
         self._arrow_width = max(lengths)
-        self._widths_set = True
+        quotient, remaider = divmod(self._arrow_width, self._indent)
+
+        if remaider == 0 and self._arrow_indent != quotient:
+            self._arrow_indent = quotient
+            self._update_list(refresh=True)
+        elif remaider != 0 and self._arrow_indent != quotient + 1:
+            self._arrow_indent = quotient + 1
+            self._update_list(refresh=True)
+
+    def _draw_state_change_arrow(self, hdc, rect, index: int):
+        state_node: StateNode = self.display_list[index]
+
+        # Determine the state-change arrow.
+        if state_node.mouse_hover:
+            arrow = "\u25bc" if state_node.is_open else "\u25b6"
+        else:
+            arrow = "\u25bd" if state_node.is_open else "\u25b7"
+
+        rect.right = rect.left
+        rect.left = rect.right - self._indent * self._arrow_indent
+
+        state_node.arrow_center_x = (rect.right + rect.left) / 2
+
+        text_format = (
+            wc.DT_SINGLELINE | wc.DT_VCENTER | wc.DT_WORD_ELLIPSIS | wc.DT_HCENTER
+        )
+        DrawTextW(hdc, c_wchar_p(arrow), -1, byref(rect), text_format)
 
     def _nm_customdraw(self, nmlvcd) -> int | None:
         """Paints the non-leaf node items."""
         # learn.microsoft.com/en-us/windows/win32/controls/using-custom-draw
-        if nmlvcd.nmcd.dwDrawStage == wc.CDDS_PREPAINT:
+        draw_stage = nmlvcd.nmcd.dwDrawStage
+
+        if draw_stage == wc.CDDS_PREPAINT:
             return wc.CDRF_NOTIFYITEMDRAW
 
-        elif nmlvcd.nmcd.dwDrawStage == wc.CDDS_ITEMPREPAINT:
+        elif draw_stage == wc.CDDS_ITEMPREPAINT:
             index = nmlvcd.nmcd.dwItemSpec
-            state_node = self.display_list[index]
-            if not state_node.is_leaf:
-                hdc = HDC(nmlvcd.nmcd.hdc)
-                FillRect(hdc, byref(nmlvcd.nmcd.rc), self._hbrush_back)
+            rect = nmlvcd.nmcd.rc
 
-                self._rect_right = nmlvcd.nmcd.rc.right
+            # Account for known bugs in the custom draw process.
+            if index < 0 or index >= len(self.display_list) or rect.top == rect.bottom:
+                return
 
+            # Check/update the current measurements.
+            self._check_measurments(nmlvcd.nmcd.hdc, RECT.from_buffer_copy(rect))
+
+            # If the item is not a leaf node, proceed to the next draw stage.
+            if not self.display_list[index].is_leaf:
                 return wc.CDRF_NOTIFYSUBITEMDRAW
 
-        elif wc.CDDS_SUBITEM | wc.CDDS_ITEMPREPAINT:
-            # Don't need to check state_node.is_leaf since this block is only
-            # accessed after CDRF_NOTIFYSUBITEMDRAW is returned.
-
-            # Skip drawing for subitems
-            if nmlvcd.iSubItem > 0:
-                return wc.CDRF_SKIPDEFAULT
-
-            hdc = HDC(nmlvcd.nmcd.hdc)
-            rect = RECT.from_buffer_copy(nmlvcd.nmcd.rc)
-            index = nmlvcd.nmcd.dwItemSpec
-            state_node = self.display_list[index]
-            is_selected = self.native.Items[index].Selected
-
-            # Set the width constants
-            if not self._widths_set:
-                self._set_widths(hdc, nmlvcd.nmcd.rc)
-
-            # Set the colors based on whether the item is selected.
-            # The "+1" is needed for system brushes with FillRect, documented here:
-            # learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-fillrect
-            if is_selected:
-                if self.native.Focused:
-                    text_color = wc.COLOR_HIGHLIGHTTEXT
-                    back_color = wc.COLOR_HIGHLIGHT + 1
-                else:
-                    text_color = wc.COLOR_BTNTEXT  # Color is undocumented
-                    back_color = wc.COLOR_BTNFACE + 1  # Color is undocumented
-            else:
-                text_color = wc.COLOR_HOTLIGHT
-                back_color = self._hbrush_back
-
-            # Determine the state-change arrow.
-            if state_node.mouse_hover:
-                arrow = "\u25bc" if state_node.is_open else "\u25b6"
-            else:
-                arrow = "\u25bd" if state_node.is_open else "\u25b7"
-
-            # Draw the arrow, making sure the click location is in its center.
-            rect.left = rect.left + state_node.depth * self._indent
-            rect.right = rect.left + self._arrow_width
-            SetTextColor(hdc, GetSysColor(wc.COLOR_HOTLIGHT))
-            text_format = wc.DT_SINGLELINE | wc.DT_VCENTER | wc.DT_WORD_ELLIPSIS
-            DrawTextW(hdc, arrow, -1, byref(rect), text_format | wc.DT_HCENTER)
-
-            # Draw the icon
-            rect.left = rect.right + 2
-            if state_node.icon >= 0:
-                ImageList_Draw(
-                    HWND(int(self.native.SmallImageList.Handle.ToString())),
-                    state_node.icon,
-                    hdc,
-                    rect.left,
-                    divmod(rect.top + rect.bottom - self._indent, 2)[0],
-                    wc.ILD_SELECTED if is_selected else wc.ILD_NORMAL,
-                )
-
-            # Draw the background (mainly for selection)
-            rect.left = rect.left + self._indent
-            rect.right = self._rect_right
-            FillRect(hdc, byref(rect), back_color)
-
-            # Draw the text
-            rect.left = rect.left + 2
-            rect.right = self._rect_right
-            SetTextColor(hdc, GetSysColor(text_color))
-            DrawTextW(hdc, state_node.text, -1, byref(rect), text_format)
-
-            # Get the bounding rectangle of the drawn text.
-            DrawTextW(
-                hdc, state_node.text, -1, byref(rect), text_format | wc.DT_CALCRECT
-            )
-
-            rect.left = rect.right + self._indent
-            rect.top = (
-                nmlvcd.nmcd.rc.top
-                + divmod(nmlvcd.nmcd.rc.bottom - nmlvcd.nmcd.rc.top, 2)[0]
-            )
-            rect.right = self._rect_right - self._indent
-            rect.bottom = rect.top + 1
-
-            if rect.left < rect.right:
-                FillRect(hdc, byref(rect), text_color + 1)
-
-            return wc.CDRF_SKIPDEFAULT
-
-    def _new_branch(self, index: int, state_node: StateNode):
-        """Collects the data corresponding to a non-leaf node item.
-
-        The state-change arrow, text and icon index are all stored on the StateTree.
-        A blank listview item is returned so that the ListView instance doesn't throw
-        errors.
-        """
-        missing_value = self.interface.missing_value
-        column = self._columns[0]
-        node = state_node.node
-
-        # Store the c_wchar_p objects on the StateNodes to prevent them from being
-        # garbage collected.
-        state_node.mouse_hover = index == self._mouse_move_hit
-        state_node.text = c_wchar_p(column.text(node, missing_value))
-        state_node.icon = self._icon_index(node, column)
-
-        return (
-            WinForms.ListViewItem([""] * len(self._columns)),
-            (-1,) * len(self._columns),
-        )
+        elif draw_stage == wc.CDDS_SUBITEM | wc.CDDS_ITEMPREPAINT:
+            if nmlvcd.iSubItem == 0:
+                rect = RECT.from_buffer_copy(nmlvcd.nmcd.rc)
+                hdc = HDC(nmlvcd.nmcd.hdc)
+                self._draw_state_change_arrow(hdc, rect, nmlvcd.nmcd.dwItemSpec)
 
     def _update_list(self, notify_select: bool = False, refresh: bool = False):
         """Updates the display list and the UI.

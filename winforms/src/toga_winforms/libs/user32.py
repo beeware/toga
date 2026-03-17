@@ -15,7 +15,7 @@ from ctypes.wintypes import (
 
 from System import Environment
 
-from .win32 import HBRUSH, LRESULT, RECT_PTR
+from .win32 import LRESULT
 
 user32 = windll.user32
 
@@ -29,18 +29,6 @@ DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = -4
 DrawTextW = user32.DrawTextW
 DrawTextW.restype = INT
 DrawTextW.argtypes = [HDC, LPCWSTR, INT, LPRECT, UINT]
-
-
-# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-fillrect
-FillRect = user32.FillRect
-FillRect.restype = INT
-FillRect.argtypes = [HDC, RECT_PTR, HBRUSH]
-
-
-# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsyscolor
-GetSysColor = user32.GetSysColor
-GetSysColor.restype = DWORD
-GetSysColor.argtypes = [INT]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-monitorfromrect
