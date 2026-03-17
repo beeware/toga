@@ -50,7 +50,11 @@ class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
     """
 
     def source_insert(
-        self, *, index: int, item: object, parent: ItemT | None = None
+        self,
+        *,
+        index: int,
+        item: object,
+        parent: ItemT | None = None,
     ) -> None:
         """An item has been added to the data source.
 
@@ -61,7 +65,11 @@ class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
         """
 
     def source_remove(
-        self, *, index: int, item: object, parent: ItemT | None = None
+        self,
+        *,
+        index: int,
+        item: object,
+        parent: ItemT | None = None,
     ) -> None:
         """An item has been removed from the data source.
 
