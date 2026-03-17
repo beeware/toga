@@ -780,15 +780,18 @@ class Tree(Table):
             # Check/update the current measurements.
             self._check_measurments(nmlvcd.nmcd.hdc, RECT.from_buffer_copy(rect))
 
-            # If the item is not a leaf node, proceed to the next draw stage.
-            if not self.display_list[index].is_leaf:
-                return wc.CDRF_NOTIFYSUBITEMDRAW
+            return wc.CDRF_NOTIFYSUBITEMDRAW
 
         elif draw_stage == wc.CDDS_SUBITEM | wc.CDDS_ITEMPREPAINT:
             if nmlvcd.iSubItem == 0:
-                rect = RECT.from_buffer_copy(nmlvcd.nmcd.rc)
-                hdc = HDC(nmlvcd.nmcd.hdc)
-                self._draw_state_change_arrow(hdc, rect, nmlvcd.nmcd.dwItemSpec)
+                index = nmlvcd.nmcd.dwItemSpec
+                if not self.display_list[index].is_leaf:
+                    rect = RECT.from_buffer_copy(nmlvcd.nmcd.rc)
+                    hdc = HDC(nmlvcd.nmcd.hdc)
+                    self._draw_state_change_arrow(hdc, rect, index)
+
+            # CDRF_SKIPPOSTPAINT means that the focus rectangle is not drawn.
+            return wc.CDRF_SKIPPOSTPAINT
 
     def _update_list(self, notify_select: bool = False, refresh: bool = False):
         """Updates the display list and the UI.
