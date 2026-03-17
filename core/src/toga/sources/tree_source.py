@@ -257,11 +257,15 @@ class TreeSource(Source):
             node = Node(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
             if len(self._accessors) == 0:
-                raise ValueError("TreeSource requires accessors for non-mapping node data")
+                raise ValueError(
+                    "TreeSource requires accessors for non-mapping node data"
+                )
             node = Node(**dict(zip(self._accessors, data, strict=False)))
         else:
             if len(self._accessors) == 0:
-                raise ValueError("TreeSource requires accessors for non-mapping node data")
+                raise ValueError(
+                    "TreeSource requires accessors for non-mapping node data"
+                )
             node = Node(**{self._accessors[0]: data})
 
         node._parent = parent

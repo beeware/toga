@@ -166,11 +166,15 @@ class ListSource(Source):
             row = Row(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
             if len(self._accessors) == 0:
-                raise ValueError("ListSource requires accessors for non-mapping row data")
+                raise ValueError(
+                    "ListSource requires accessors for non-mapping row data"
+                )
             row = Row(**dict(zip(self._accessors, data, strict=False)))
         else:
             if len(self._accessors) == 0:
-                raise ValueError("ListSource requires accessors for non-mapping row data")
+                raise ValueError(
+                    "ListSource requires accessors for non-mapping row data"
+                )
             row = Row(**{self._accessors[0]: data})
         row._source = self
         return row
