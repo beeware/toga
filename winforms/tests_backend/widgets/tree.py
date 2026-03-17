@@ -1,7 +1,6 @@
 import asyncio
 
 import pytest
-from System.Drawing import Bitmap
 from System.Windows.Forms import (
     MouseButtons,
     MouseEventArgs,
@@ -65,34 +64,7 @@ class TreeProbe(TableProbe):
 
         display_index = self.impl.display_list.index(state_node)
 
-        if state_node.is_leaf:
-            super().assert_cell_content(display_index, col, value, icon, widget)
-        else:
-            # Try to access the row in the UI to make sure the row is created.
-            self.native.Items[display_index]
-
-            if col == 0:
-                text = state_node.text.value
-            else:
-                # For non-leaf nodes, only column 0 is displayed."
-                column = self.impl._columns[col]
-                node = state_node.node
-                text = column.text(node, self.impl.interface.missing_value)
-
-            assert text == value
-
-            if col == 0 and icon is not None:
-                imagelist = self.native.SmallImageList
-                size = imagelist.ImageSize
-                assert size.Width == size.Height == 16
-
-                icon_index = state_node.icon_index
-
-                actual = imagelist.Images[icon_index]
-                expected = Bitmap(icon._impl.bitmap, size)
-                for x in range(size.Width):
-                    for y in range(size.Height):
-                        assert actual.GetPixel(x, y) == expected.GetPixel(x, y)
+        super().assert_cell_content(display_index, col, value, icon, widget)
 
         self.restore_row_path(row_path, row_path_states)
 
