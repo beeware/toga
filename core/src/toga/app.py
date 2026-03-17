@@ -875,6 +875,11 @@ class App:
             not have content.
         """
         if windows:
+            # Exit any existing presentation mode before entering with new windows.
+            # Presentation mode is not cumulative — a new call replaces the previous one.
+            if self.in_presentation_mode:
+                self.exit_presentation_mode()
+
             screen_window_dict = {}
             if isinstance(windows, list):
                 for window, screen in zip(windows, self.screens, strict=False):
