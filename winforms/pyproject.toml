@@ -103,7 +103,7 @@ Switch = "toga_winforms.widgets.switch:Switch"
 Table = "toga_winforms.widgets.table:Table"
 TextInput = "toga_winforms.widgets.textinput:TextInput"
 TimeInput = "toga_winforms.widgets.timeinput:TimeInput"
-# Tree = "toga_winforms.widgets.tree:Tree"
+Tree = "toga_winforms.widgets.tree:Tree"
 WebView = "toga_winforms.widgets.webview:WebView"
 
 # Windows
