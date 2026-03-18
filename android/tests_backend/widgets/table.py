@@ -13,6 +13,7 @@ class TableProbe(SimpleProbe):
     supports_icons = False
     supports_keyboard_shortcuts = False
     supports_widgets = False
+    supports_colors = True
     column_proportion_tolerance = 35
 
     def __init__(self, widget):
@@ -45,7 +46,8 @@ class TableProbe(SimpleProbe):
         if widget:
             pytest.skip("This backend doesn't support widgets in Tables")
         else:
-            assert self._cell_text(row, col) == value
+            if value is not None:
+                assert self._cell_text(row, col) == value
             assert icon is None
             if color is not None:
                 assert self._cell_color(row, col) == native_color(color)
