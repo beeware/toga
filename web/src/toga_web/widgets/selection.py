@@ -13,11 +13,37 @@ class Selection(Widget):
     def dom_sl_change(self, event):
         self.interface.on_change()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
         while self.native.firstElementChild:
             self.native.removeChild(self.native.firstElementChild)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item)
+
+    def source_insert(self, *, index, item):
         display_text = self.interface._title_for_item(item)
         option = self._create_native_widget("sl-option")
         option.value = str(index)
