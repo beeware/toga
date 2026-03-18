@@ -6,6 +6,8 @@ from PySide6.QtWidgets import QTableView
 from toga_qt.colors import native_color
 from toga_qt.libs import qt_text_align
 
+from toga.constants import CENTER
+
 from .base import SimpleProbe
 
 
@@ -81,7 +83,7 @@ class TableProbe(SimpleProbe):
                     )
 
                 if text_align:
-                    assert qt_text_align(color) == self.native_model.data(
+                    assert qt_text_align(text_align, CENTER) == self.native_model.data(
                         index,
                         Qt.ItemDataRole.TextAlignmentRole,
                     )
