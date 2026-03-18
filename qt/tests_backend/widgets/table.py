@@ -3,6 +3,7 @@ import warnings
 import pytest
 from PySide6.QtCore import QAbstractTableModel, QItemSelection, QItemSelectionModel, Qt
 from PySide6.QtWidgets import QTableView
+from toga_qt.colors import native_color
 
 from .base import SimpleProbe
 
@@ -12,6 +13,7 @@ class TableProbe(SimpleProbe):
     supports_icons = 2  # All columns
     supports_keyboard_shortcuts = False
     supports_widgets = False
+    supports_colors = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -44,7 +46,16 @@ class TableProbe(SimpleProbe):
     def column_width(self, col):
         return self.native.horizontalHeader().sectionSize(col)
 
-    def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
+    def assert_cell_content(
+        self,
+        row,
+        col,
+        value=None,
+        icon=None,
+        widget=None,
+        color=None,
+        background_color=None,
+    ):
         if widget:
             pytest.skip("Qt doesn't support widgets in Tables")
         else:
@@ -53,7 +64,7 @@ class TableProbe(SimpleProbe):
             with warnings.catch_warnings(category=UserWarning):
                 warnings.simplefilter("ignore")
                 index = self.native_model.index(row, col)
-                if value:
+                if value is not None:
                     assert value == self.native_model.data(
                         index,
                         Qt.ItemDataRole.DisplayRole,
@@ -65,6 +76,18 @@ class TableProbe(SimpleProbe):
                             index,
                             Qt.ItemDataRole.DecorationRole,
                         ).cacheKey()
+                    )
+
+                if color:
+                    assert native_color(color) == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.ForegroundRole,
+                    )
+
+                if background_color:
+                    assert native_color(background_color) == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.BackgroundRole,
                     )
 
     @property

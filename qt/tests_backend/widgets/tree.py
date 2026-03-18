@@ -10,6 +10,7 @@ from PySide6.QtCore import (
     Qt,
 )
 from PySide6.QtWidgets import QTreeView
+from toga_qt.colors import native_color
 
 from .base import SimpleProbe
 
@@ -18,6 +19,7 @@ class TreeProbe(SimpleProbe):
     native_class = QTreeView
     supports_keyboard_shortcuts = False
     supports_widgets = False
+    supports_colors = True
     selection_cleared_on_insert_delete = True
     collapse_on_insert_delete = True
 
@@ -69,7 +71,16 @@ class TreeProbe(SimpleProbe):
     def column_width(self, col):
         return self.native.header().sectionSize(col)
 
-    def assert_cell_content(self, row_path, col, value=None, icon=None, widget=None):
+    def assert_cell_content(
+        self,
+        row_path,
+        col,
+        value=None,
+        icon=None,
+        widget=None,
+        color=None,
+        background_color=None,
+    ):
         if widget:
             pytest.skip("Qt doesn't support widgets in Trees")
         else:
@@ -90,6 +101,18 @@ class TreeProbe(SimpleProbe):
                             index,
                             Qt.ItemDataRole.DecorationRole,
                         ).cacheKey()
+                    )
+
+                if color:
+                    assert native_color(color) == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.ForegroundRole,
+                    )
+
+                if background_color:
+                    assert native_color(background_color) == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.BackgroundRole,
                     )
 
     @property

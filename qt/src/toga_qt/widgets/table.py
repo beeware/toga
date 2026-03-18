@@ -8,6 +8,7 @@ from travertino.size import at_least
 
 from toga.sources import ListSource
 
+from ..colors import native_color
 from .base import Widget
 
 logger = logging.getLogger(__name__)
@@ -120,6 +121,14 @@ class TableSourceModel(QAbstractTableModel):
                         return icon._impl.native
                 elif role == Qt.ItemDataRole.DisplayRole:
                     return column.text(row, self._missing_value)
+                elif role == Qt.ItemDataRole.ForegroundRole:
+                    color = column.color(row)
+                    if color is not None:
+                        return native_color(color)
+                elif role == Qt.ItemDataRole.BackgroundRole:
+                    color = column.background_color(row)
+                    if color is not None:
+                        return native_color(color)
             except Exception:  # pragma: no cover
                 logger.exception(
                     f"Could not get data for row {row_index}, column {column_index}"
