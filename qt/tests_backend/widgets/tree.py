@@ -11,6 +11,7 @@ from PySide6.QtCore import (
 )
 from PySide6.QtWidgets import QTreeView
 from toga_qt.colors import native_color
+from toga_qt.libs import qt_text_align
 
 from .base import SimpleProbe
 
@@ -19,7 +20,7 @@ class TreeProbe(SimpleProbe):
     native_class = QTreeView
     supports_keyboard_shortcuts = False
     supports_widgets = False
-    supports_colors = True
+    supports_styles = True
     selection_cleared_on_insert_delete = True
     collapse_on_insert_delete = True
 
@@ -78,6 +79,7 @@ class TreeProbe(SimpleProbe):
         value=None,
         icon=None,
         widget=None,
+        text_align=None,
         color=None,
         background_color=None,
     ):
@@ -101,6 +103,12 @@ class TreeProbe(SimpleProbe):
                             index,
                             Qt.ItemDataRole.DecorationRole,
                         ).cacheKey()
+                    )
+
+                if text_align:
+                    assert qt_text_align(color) == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.TextAlignmentRole,
                     )
 
                 if color:

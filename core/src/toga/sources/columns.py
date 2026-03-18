@@ -47,6 +47,19 @@ class ColumnT(Protocol, Generic[Value]):
         """
 
     @abstractmethod
+    def text_align(self, row: Any) -> str | None:
+        """Get the text alignment use for the row in this column.
+
+        This should return one of "left", "right", "center", "justify" or
+        None.  If the return value is None the text will align according
+        to the style of the widget.
+
+        :param row: A row object from the underlying Source.
+        :returns: The text alignment, or None.
+        """
+        return None
+
+    @abstractmethod
     def color(self, row: Any) -> Color | None:
         """Get the color use for the row in this column.
 
@@ -132,6 +145,18 @@ class Column(ColumnT[Value], Generic[Value]):
 
         :param row: A row object from the underlying Source.
         :returns: The icon to display, or None if no Icon.
+        """
+        return None
+
+    def text_align(self, row: Any) -> str | None:
+        """Get the text alignment use for the row in this column.
+
+        This should return one of "left", "right", "center", "justify" or
+        None.  The default behaviour is to return None, which will cause
+        text to align according to the style of the widget.
+
+        :param row: A row object from the underlying Source.
+        :returns: The text alignment, or None.
         """
         return None
 

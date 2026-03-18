@@ -11,7 +11,9 @@ from PySide6.QtCore import (
 from PySide6.QtWidgets import QHeaderView, QTreeView
 from travertino.size import at_least
 
+from toga.constants import CENTER
 from toga_qt.colors import native_color
+from toga_qt.libs import qt_text_align
 
 from .base import Widget
 
@@ -198,6 +200,11 @@ class TreeSourceModel(QAbstractItemModel):
                         return icon._impl.native
                 elif role == Qt.ItemDataRole.DisplayRole:
                     return column.text(node, self._missing_value)
+                elif role == Qt.ItemDataRole.TextAlignmentRole:
+                    text_align = column.text_align(node)
+                    if text_align is not None:
+                        print("here", text_align, qt_text_align(text_align, CENTER))
+                        return qt_text_align(text_align, CENTER)
                 elif role == Qt.ItemDataRole.ForegroundRole:
                     color = column.color(node)
                     if color is not None:

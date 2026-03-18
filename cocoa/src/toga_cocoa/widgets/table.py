@@ -10,6 +10,7 @@ from toga_cocoa.libs import (
     NSTableView,
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
+    NSTextAlignment,
 )
 
 from ..colors import native_color
@@ -44,6 +45,7 @@ class TogaTable(NSTableView):
 
         icon = column.toga_column.icon(data_row)
         text = column.toga_column.text(data_row, self.interface.missing_value)
+        text_align = column.toga_column.text_align(data_row)
         color = column.toga_column.color(data_row)
         background_color = column.toga_column.background_color(data_row)
 
@@ -62,6 +64,11 @@ class TogaTable(NSTableView):
             tcv.setImage(icon._impl.native)
         else:
             tcv.setImage(None)
+
+        if text_align is not None:
+            tcv.textField.alignment = NSTextAlignment(text_align)
+        else:
+            tcv.textField.alignment = self.alignment
 
         if color is not None:
             tcv.textField.textColor = native_color(color)

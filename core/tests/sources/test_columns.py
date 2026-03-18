@@ -1,5 +1,9 @@
+from typing import Any
+
 import pytest
 
+from toga.colors import rgb
+from toga.constants import RIGHT
 from toga.icons import Icon
 from toga.sources import AccessorColumn, Column
 from toga.sources.list_source import Row
@@ -38,6 +42,20 @@ class SimpleColumn(Column):
         return row
 
 
+class StyleColumn(Column):
+    def value(self, row):
+        return row
+
+    def text_align(self, row: Any):
+        return RIGHT
+
+    def color(self, row: Any):
+        return rgb(255, 0, 0)
+
+    def background_color(self, row: Any):
+        return rgb(255, 0, 0)
+
+
 LABEL_WIDGET = Label("Test")
 
 
@@ -57,6 +75,7 @@ def test_column_abc(heading, heading_property):
     assert column.text(dummy_row) is None
     assert column.text(dummy_row, "default") == "default"
     assert column.icon(dummy_row) is None
+    assert column.text_align(dummy_row) is None
     assert column.color(dummy_row) is None
     assert column.background_color(dummy_row) is None
     assert column.widget(dummy_row) is None
@@ -71,8 +90,24 @@ def test_column_subclass():
     assert column.text(dummy_row) == "('row',)"
     assert column.text(dummy_row, "default") == "('row',)"
     assert column.icon(dummy_row) is None
+    assert column.text_align(dummy_row) is None
     assert column.color(dummy_row) is None
     assert column.background_color(dummy_row) is None
+    assert column.widget(dummy_row) is None
+
+
+def test_column_style():
+    dummy_row = ("row",)
+    column = StyleColumn("test")
+
+    assert column.heading == "test"
+    assert column.value(dummy_row) == ("row",)
+    assert column.text(dummy_row) == "('row',)"
+    assert column.text(dummy_row, "default") == "('row',)"
+    assert column.icon(dummy_row) is None
+    assert column.text_align(dummy_row) is RIGHT
+    assert column.color(dummy_row) == rgb(255, 0, 0)
+    assert column.background_color(dummy_row) == rgb(255, 0, 0)
     assert column.widget(dummy_row) is None
 
 
@@ -265,6 +300,7 @@ def test_accessor_column_values(row, value, text, icon, widget):
     column = AccessorColumn(None, "x")
 
     assert column.value(row) == value
+    assert column.text_align(row) is None
     assert column.color(row) is None
     assert column.background_color(row) is None
     assert column.widget(row) == widget

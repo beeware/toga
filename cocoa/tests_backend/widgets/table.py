@@ -3,7 +3,7 @@ from rubicon.objc import NSPoint
 
 from toga_cocoa.colors import native_color
 from toga_cocoa.keys import NSEventModifierFlagCommand
-from toga_cocoa.libs import NSEventType, NSScrollView, NSTableView
+from toga_cocoa.libs import NSEventType, NSScrollView, NSTableView, NSTextAlignment
 
 from .base import SimpleProbe
 from .properties import toga_color
@@ -15,7 +15,7 @@ class TableProbe(SimpleProbe):
     supports_keyboard_shortcuts = True
     supports_keyboard_boundary_shortcuts = False
     supports_widgets = True
-    supports_colors = True
+    supports_styles = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -53,6 +53,7 @@ class TableProbe(SimpleProbe):
         icon=None,
         widget=None,
         color=None,
+        text_align=None,
         background_color=None,
     ):
         view = self.native_table.tableView(
@@ -69,6 +70,9 @@ class TableProbe(SimpleProbe):
                 assert view.imageView.image == icon._impl.native
             else:
                 assert view.imageView.image is None
+
+            if text_align:
+                assert view.textField.alignment == NSTextAlignment(text_align)
 
             if color:
                 assert view.textField.textColor == native_color(color)

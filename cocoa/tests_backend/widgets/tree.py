@@ -5,7 +5,7 @@ from rubicon.objc import NSPoint
 
 from toga_cocoa.colors import native_color
 from toga_cocoa.keys import NSEventModifierFlagCommand
-from toga_cocoa.libs import NSEventType, NSOutlineView, NSScrollView
+from toga_cocoa.libs import NSEventType, NSOutlineView, NSScrollView, NSTextAlignment
 
 from .base import SimpleProbe
 from .properties import toga_color
@@ -15,7 +15,7 @@ class TreeProbe(SimpleProbe):
     native_class = NSScrollView
     supports_keyboard_shortcuts = True
     supports_widgets = True
-    supports_colors = True
+    supports_styles = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -82,6 +82,7 @@ class TreeProbe(SimpleProbe):
         value=None,
         icon=None,
         widget=None,
+        text_align=None,
         color=None,
         background_color=None,
     ):
@@ -99,6 +100,9 @@ class TreeProbe(SimpleProbe):
                 assert view.imageView.image == icon._impl.native
             else:
                 assert view.imageView.image is None
+
+            if text_align:
+                assert view.textField.alignment == NSTextAlignment(text_align)
 
             if color:
                 assert view.textField.textColor == native_color(color)

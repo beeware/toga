@@ -6,9 +6,11 @@ from PySide6.QtCore import QAbstractTableModel, QModelIndex, QPersistentModelInd
 from PySide6.QtWidgets import QHeaderView, QTableView
 from travertino.size import at_least
 
+from toga.constants import CENTER
 from toga.sources import ListSource
+from toga_qt.colors import native_color
+from toga_qt.libs import qt_text_align
 
-from ..colors import native_color
 from .base import Widget
 
 logger = logging.getLogger(__name__)
@@ -121,6 +123,10 @@ class TableSourceModel(QAbstractTableModel):
                         return icon._impl.native
                 elif role == Qt.ItemDataRole.DisplayRole:
                     return column.text(row, self._missing_value)
+                elif role == Qt.ItemDataRole.TextAlignmentRole:
+                    text_align = column.text_align(row)
+                    if text_align is not None:
+                        return qt_text_align(text_align, CENTER)
                 elif role == Qt.ItemDataRole.ForegroundRole:
                     color = column.color(row)
                     if color is not None:

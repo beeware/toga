@@ -5,6 +5,7 @@ import pytest
 
 import toga
 from toga.colors import rgb
+from toga.constants import RIGHT
 from toga.sources import AccessorColumn, ListListener, ListSource
 from toga.style.pack import Pack
 
@@ -690,7 +691,14 @@ def test_list_listener(widget):
     assert isinstance(widget._impl, ListListener)
 
 
-class ColorTestColumn(AccessorColumn):
+class StyledTestColumn(AccessorColumn):
+    def text_align(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return RIGHT
+        else:
+            return None
+
     def color(self, row):
         value = self.value(row)
         if isinstance(value, (float, int)):
@@ -710,13 +718,13 @@ class ColorTestColumn(AccessorColumn):
 
 
 @pytest.fixture
-async def colored_widget(source, on_select_handler, on_activate_handler):
+async def styled_widget(source, on_select_handler, on_activate_handler):
     skip_on_platforms("iOS")
     return toga.Table(
         [
-            ColorTestColumn("A"),
-            ColorTestColumn("B"),
-            ColorTestColumn("C"),
+            StyledTestColumn("A"),
+            StyledTestColumn("B"),
+            StyledTestColumn("C"),
         ],
         data=source,
         missing_value="MISSING!",
@@ -727,12 +735,12 @@ async def colored_widget(source, on_select_handler, on_activate_handler):
 
 
 @pytest.fixture
-async def color_probe(main_window, colored_widget):
+async def style_probe(main_window, styled_widget):
     old_content = main_window.content
 
-    box = toga.Box(children=[colored_widget])
+    box = toga.Box(children=[styled_widget])
     main_window.content = box
-    probe = get_probe(colored_widget)
+    probe = get_probe(styled_widget)
     await probe.redraw("Constructing color Table probe")
     probe.assert_container(box)
     yield probe
@@ -740,12 +748,12 @@ async def color_probe(main_window, colored_widget):
     main_window.content = old_content
 
 
-async def test_cell_color(colored_widget, color_probe):
-    "A cell can have colors"
-    if not getattr(color_probe, "supports_colors", False):
-        pytest.skip("Backend does not support colors in cells.")
+async def test_cell_style(styled_widget, style_probe):
+    "A cell can have data-driven styles"
+    if not getattr(style_probe, "supports_styles", False):
+        pytest.skip("Backend does not support styled cells.")
 
-    colored_widget.data = [
+    styled_widget.data = [
         {
             # A number from -1 to 1
             "a": (i - 25) / 25,
@@ -754,16 +762,16 @@ async def test_cell_color(colored_widget, color_probe):
         }
         for i in range(50)
     ]
-    await color_probe.redraw("Table has data with colors")
+    await style_probe.redraw("Table has data with colors")
 
-    color_probe.assert_cell_content(
-        0, 0, "-1.0", color=rgb(255, 0, 0), background_color=None
+    style_probe.assert_cell_content(
+        0, 0, "-1.0", text_align=RIGHT, color=rgb(255, 0, 0), background_color=None
     )
-    color_probe.assert_cell_content(
+    style_probe.assert_cell_content(
         0, 1, "B0", color=None, background_color=rgb(255, 0, 0)
     )
-    color_probe.assert_cell_content(
-        25, 0, "0.0", color=rgb(0, 128, 0), background_color=None
+    style_probe.assert_cell_content(
+        25, 0, "0.0", text_align=RIGHT, color=rgb(0, 128, 0), background_color=None
     )
 
 

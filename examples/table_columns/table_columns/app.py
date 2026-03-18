@@ -11,7 +11,7 @@ from babel.dates import format_date, format_time
 
 import toga
 from toga.colors import rgb
-from toga.constants import COLUMN
+from toga.constants import COLUMN, RIGHT
 from toga.sources import AccessorColumn, Column
 
 
@@ -49,6 +49,12 @@ class RatingColumn(AccessorColumn):
             return self.green
         else:
             return self.red
+
+    def text_align(self, row):
+        value = self.value(row)
+        if isinstance(value, (int, float)):
+            return RIGHT
+        return super().text_align(row)
 
     def color(self, row):
         value = self.value(row)

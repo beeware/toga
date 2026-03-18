@@ -10,6 +10,7 @@ from toga_cocoa.libs import (
     NSTableColumn,
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
+    NSTextAlignment,
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaIconView
@@ -65,6 +66,7 @@ class TogaTree(NSOutlineView):
             return widget._impl.native
         icon = column.toga_column.icon(node)
         text = column.toga_column.text(node, self.interface.missing_value)
+        text_align = column.toga_column.text_align(node)
         color = column.toga_column.color(node)
         background_color = column.toga_column.background_color(node)
 
@@ -86,6 +88,11 @@ class TogaTree(NSOutlineView):
             tcv.setImage(icon._impl.native)
         else:
             tcv.setImage(None)
+
+        if text_align is not None:
+            tcv.textField.alignment = NSTextAlignment(text_align)
+        else:
+            tcv.textField.alignment = self.alignment
 
         if color is not None:
             tcv.textField.textColor = native_color(color)

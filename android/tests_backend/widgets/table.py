@@ -2,6 +2,7 @@ import pytest
 from android.widget import ScrollView, TableLayout, TextView
 
 from toga_android.colors import native_color
+from toga_android.widgets.base import android_text_align
 
 from .base import SimpleProbe
 
@@ -13,7 +14,7 @@ class TableProbe(SimpleProbe):
     supports_icons = False
     supports_keyboard_shortcuts = False
     supports_widgets = False
-    supports_colors = True
+    supports_styles = True
     column_proportion_tolerance = 35
 
     def __init__(self, widget):
@@ -40,6 +41,7 @@ class TableProbe(SimpleProbe):
         value=None,
         icon=None,
         widget=None,
+        text_align=None,
         color=None,
         background_color=None,
     ):
@@ -49,6 +51,8 @@ class TableProbe(SimpleProbe):
             if value is not None:
                 assert self._cell_text(row, col) == value
             assert icon is None
+            if text_align is not None:
+                assert self._cell_gravity(row, col) & android_text_align(text_align)
             if color is not None:
                 assert self._cell_color(row, col) == native_color(color)
             if background_color is not None:
@@ -64,12 +68,17 @@ class TableProbe(SimpleProbe):
     def _cell_color(self, row, col):
         tv = self._row_view(row).getChildAt(col)
         assert isinstance(tv, TextView)
-        return tv.getTextColor()
+        return tv.getCurrentTextColor()
 
     def _cell_background_color(self, row, col):
         tv = self._row_view(row).getChildAt(col)
         assert isinstance(tv, TextView)
-        return tv.getBackgroundColor()
+        return tv.getBackground().getColor()
+
+    def _cell_gravity(self, row, col):
+        tv = self._row_view(row).getChildAt(col)
+        assert isinstance(tv, TextView)
+        return tv.getGravity()
 
     def _row_view(self, row):
         if row == HEADER:

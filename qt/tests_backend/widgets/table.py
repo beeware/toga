@@ -4,6 +4,7 @@ import pytest
 from PySide6.QtCore import QAbstractTableModel, QItemSelection, QItemSelectionModel, Qt
 from PySide6.QtWidgets import QTableView
 from toga_qt.colors import native_color
+from toga_qt.libs import qt_text_align
 
 from .base import SimpleProbe
 
@@ -13,7 +14,7 @@ class TableProbe(SimpleProbe):
     supports_icons = 2  # All columns
     supports_keyboard_shortcuts = False
     supports_widgets = False
-    supports_colors = True
+    supports_styles = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -53,6 +54,7 @@ class TableProbe(SimpleProbe):
         value=None,
         icon=None,
         widget=None,
+        text_align=None,
         color=None,
         background_color=None,
     ):
@@ -76,6 +78,12 @@ class TableProbe(SimpleProbe):
                             index,
                             Qt.ItemDataRole.DecorationRole,
                         ).cacheKey()
+                    )
+
+                if text_align:
+                    assert qt_text_align(color) == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.TextAlignmentRole,
                     )
 
                 if color:

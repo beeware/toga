@@ -18,6 +18,18 @@ def set_textview_font(textview, font, default_typeface, default_size):
     textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, font.size(default=default_size))
 
 
+def set_alignment(textview, value, vertical_gravity):
+    # Justified text wasn't added until API level 26.
+    # We only run the test suite on API 31, so we need to disable branch coverage.
+    if Build.VERSION.SDK_INT >= 26:  # pragma: no branch
+        textview.setJustificationMode(
+            Layout.JUSTIFICATION_MODE_INTER_WORD
+            if value == JUSTIFY
+            else Layout.JUSTIFICATION_MODE_NONE
+        )
+    textview.setGravity(vertical_gravity | android_text_align(value))
+
+
 class TextViewWidget(Widget):
     def cache_textview_defaults(self):
         self._default_text_color = self.native.getCurrentTextColor()
@@ -36,16 +48,7 @@ class TextViewWidget(Widget):
             self.native.setTextColor(native_color(value))
 
     def set_textview_alignment(self, value, vertical_gravity):
-        # Justified text wasn't added until API level 26.
-        # We only run the test suite on API 31, so we need to disable branch coverage.
-        if Build.VERSION.SDK_INT >= 26:  # pragma: no branch
-            self.native.setJustificationMode(
-                Layout.JUSTIFICATION_MODE_INTER_WORD
-                if value == JUSTIFY
-                else Layout.JUSTIFICATION_MODE_NONE
-            )
-
-        self.native.setGravity(vertical_gravity | android_text_align(value))
+        set_alignment(self.native, value, vertical_gravity)
 
 
 class Label(TextViewWidget):
