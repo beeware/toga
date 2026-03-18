@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==82.0.0",
+    "setuptools==82.0.1",
     "setuptools_scm==9.2.2",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -57,6 +57,56 @@ Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
 
 [project.entry-points."toga.backends"]
 macOS = "toga_cocoa"
+
+[project.entry-points."toga_core.backend.toga_cocoa"]
+App = "toga_cocoa.app:App"
+Command = "toga_cocoa.command:Command"
+Font = "toga_cocoa.fonts:Font"
+Icon = "toga_cocoa.icons:Icon"
+Image = "toga_cocoa.images:Image"
+Paths = "toga_cocoa.paths:Paths"
+dialogs = "toga_cocoa.dialogs"
+resources = "toga_cocoa.resources"
+
+# Hardware
+Camera = "toga_cocoa.hardware.camera:Camera"
+Location = "toga_cocoa.hardware.location:Location"
+
+# Status Icons
+MenuStatusIcon = "toga_cocoa.statusicons:MenuStatusIcon"
+SimpleStatusIcon = "toga_cocoa.statusicons:SimpleStatusIcon"
+StatusIconSet = "toga_cocoa.statusicons:StatusIconSet"
+
+# Widgets
+ActivityIndicator = "toga_cocoa.widgets.activityindicator:ActivityIndicator"
+Box = "toga_cocoa.widgets.box:Box"
+Button = "toga_cocoa.widgets.button:Button"
+Canvas = "toga_cocoa.widgets.canvas:Canvas"
+DateInput = "toga_cocoa.widgets.dateinput:DateInput"
+DetailedList = "toga_cocoa.widgets.detailedlist:DetailedList"
+Divider = "toga_cocoa.widgets.divider:Divider"
+ImageView = "toga_cocoa.widgets.imageview:ImageView"
+Label = "toga_cocoa.widgets.label:Label"
+MapView = "toga_cocoa.widgets.mapview:MapView"
+MultilineTextInput = "toga_cocoa.widgets.multilinetextinput:MultilineTextInput"
+NumberInput = "toga_cocoa.widgets.numberinput:NumberInput"
+OptionContainer = "toga_cocoa.widgets.optioncontainer:OptionContainer"
+PasswordInput = "toga_cocoa.widgets.passwordinput:PasswordInput"
+ProgressBar = "toga_cocoa.widgets.progressbar:ProgressBar"
+ScrollContainer = "toga_cocoa.widgets.scrollcontainer:ScrollContainer"
+Selection = "toga_cocoa.widgets.selection:Selection"
+Slider = "toga_cocoa.widgets.slider:Slider"
+SplitContainer = "toga_cocoa.widgets.splitcontainer:SplitContainer"
+Switch = "toga_cocoa.widgets.switch:Switch"
+Table = "toga_cocoa.widgets.table:Table"
+TextInput = "toga_cocoa.widgets.textinput:TextInput"
+TimeInput = "toga_cocoa.widgets.timeinput:TimeInput"
+Tree = "toga_cocoa.widgets.tree:Tree"
+WebView = "toga_cocoa.widgets.webview:WebView"
+
+# Windows
+MainWindow = "toga_cocoa.window:MainWindow"
+Window = "toga_cocoa.window:Window"
 
 [tool.setuptools_scm]
 root = ".."

@@ -1,3 +1,5 @@
+import warnings
+
 from toga import NotImplementedWarning
 
 from . import dialogs
@@ -35,9 +37,15 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import MainWindow, Window
 
+warnings.warn(
+    "Factory modules are deprecated. Use 'toga.platform.get_factory' instead.",
+    DeprecationWarning,
+    stacklevel=1,
+)
 
-def not_implemented(feature):
-    NotImplementedWarning.warn("Winforms", feature)  # pragma: nocover
+
+def not_implemented(feature):  # pragma: no cover
+    NotImplementedWarning.warn("Winforms", feature)
 
 
 __all__ = [

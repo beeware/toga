@@ -4,9 +4,7 @@ Toga's API is structured around the following principles:
 
 ## Coding style
 
-The public API follows a "Pythonic" style, using Python language idioms (e.g., context managers and iterators) and naming conventions (e.g., `snake_case`, not `CamelCase`), even if the underlying platforms don't lean that way.
-
-Names are spelled according to US English.
+For general coding style, see our [code style guide][code-style]. The rest of _this_ document is about Toga-specific preferences in API design.
 
 ## Properties
 

@@ -24,3 +24,13 @@ It's a reflection of the long-running joke about [yak shaving](https://en.wiktio
 > shaving a yak. And all you wanted to do was wash your car.
 
 An easy-to-use widget toolkit is the yak standing in the way of progress of a number of [BeeWare](https://beeware.org/) projects, and the original creator of Toga has been tinkering with various widget toolkits for over 20 years, so the metaphor seemed appropriate.
+
+## How do I open files with Toga? { #how-do-i-open-files-with-toga }
+
+Toga is standard Python, so any Python file operations (including `open()`, and libraries like `json`, `csv` and `tomllib`) will work exactly as you expect.
+
+## Why can't my Toga app find my files? { #why-cant-my-toga-app-find-my-files }
+
+When you run a Toga app, especially when it is packaged, you cannot rely on the "current working directory" being what you expect. You should use **absolute paths** instead of relative paths. Toga provides `self.paths` (an instance of [`toga.paths.Paths`](../reference/api/data-representation/paths.md)) to help you locate files in a cross-platform way.
+
+For more details, see the [File management](../topics/file-management.md) guide.

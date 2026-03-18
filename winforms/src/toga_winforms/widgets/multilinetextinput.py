@@ -31,6 +31,9 @@ class MultilineTextInput(TextInput):
         # has changed since the last time the on_change event was triggered.
         self._text_history = ""
 
+        # Forward mouse wheel event to parent scrollable when the control is not focused
+        self.native.MouseWheel += WeakrefCallable(self.on_mouse_wheel)
+
     def winforms_got_focus(self, sender, event):
         # If the placeholder is visible when we gain focus, the widget is empty;
         # so make the native text empty and hide the placeholder.
@@ -115,3 +118,15 @@ class MultilineTextInput(TextInput):
     def scroll_to_top(self):
         self.native.SelectionStart = 0
         self.native.ScrollToCaret()
+
+    def on_mouse_wheel(self, s, e):
+        # When the control has focus, allow normal MultilineTextInput scrolling
+        if self.native.Focused:
+            return
+        # Find the parent container and forward the event
+        parent = self.container.native
+        if (
+            isinstance(parent, WinForms.ScrollableControl) and parent.AutoScroll
+        ):  # pragma: nocover
+            parent.OnMouseWheel(e)
+            e.Handled = True

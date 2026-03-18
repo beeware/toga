@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 from warnings import warn
 
 import toga
-from toga.platform import entry_points, get_platform_factory
+from toga.platform import entry_points, get_factory
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -158,7 +158,7 @@ class Image:
         # End backwards compatibility
         ######################################################################
 
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._path = None
 
         # Any "lump of bytes" should be valid here.

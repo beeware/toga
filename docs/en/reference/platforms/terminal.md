@@ -22,4 +22,4 @@ The `toga-textual` backend uses the [Textual API](https://textual.textualize.io)
 
 ### macOS Terminal.app limitations  { #macos-terminal.app-limitations }
 
-There are some [known issues with the default macOS Terminal.app](https://github.com/Textualize/textual/blob/main/FAQ.md#why-doesnt-textual-look-good-on-macos). In some layouts, box outlines render badly; this can *sometimes* be resolved by altering the line spacing of the font used in the terminal. The default Terminal.app also has a limited color palette. The maintainers of Textual recommend using an alternative terminal application to avoid these problems.
+There are some [known issues with the default macOS Terminal.app](https://textual.textualize.io/FAQ/#why-doesnt-textual-look-good-on-macos). In some layouts, box outlines render badly; this can *sometimes* be resolved by altering the line spacing of the font used in the terminal. The default Terminal.app also has a limited color palette. The maintainers of Textual recommend using an alternative terminal application to avoid these problems.
