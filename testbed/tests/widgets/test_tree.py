@@ -1025,3 +1025,47 @@ async def test_cell_color(colored_widget, color_probe):
     color_probe.assert_cell_content(
         (25,), 0, "0.0", color=rgb(0, 128, 0), background_color=None
     )
+
+
+@pytest.mark.parametrize(
+    "method_name,args,expected_args",
+    [
+        ("clear", {}, {}),
+        ("change", {"item": "item"}, {"item": "item"}),
+        (
+            "insert",
+            {"index": 0, "item": "item"},
+            {"index": 0, "item": "item", "parent": None},
+        ),
+        (
+            "insert",
+            {"index": 0, "item": "item", "parent": "parent"},
+            {"index": 0, "item": "item", "parent": "parent"},
+        ),
+        (
+            "remove",
+            {"index": 0, "item": "item"},
+            {"index": 0, "item": "item", "parent": None},
+        ),
+        (
+            "remove",
+            {"index": 0, "item": "item", "parent": "parent"},
+            {"index": 0, "item": "item", "parent": "parent"},
+        ),
+    ],
+)
+def test_deprecated_methods(widget, method_name, args, expected_args):
+    """Does the widget warn about the old ListListener API"""
+    impl = widget._impl
+    mock_method = Mock()
+    setattr(impl, f"source_{method_name}", mock_method)
+    method = getattr(impl, method_name)
+    warning_pattern = (
+        f"The {method_name}\\(\\) method is deprecated. "
+        f"Use source_{method_name}\\(\\) instead."
+    )
+
+    with pytest.warns(DeprecationWarning, match=warning_pattern):
+        method(**args)
+
+    mock_method.assert_called_once_with(**expected_args)
