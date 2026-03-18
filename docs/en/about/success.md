@@ -2,6 +2,41 @@
 
 Want to see examples of Toga in use? Here are some.
 
+<div class="success-story" markdown="1">
+
+## ![Travel Tips icon](../images/success_stories/travel_tips/travel_tips_logo.webp){ .success-story-icon } [Travel Tips](https://apps.apple.com/au/app/travel-tips/id1336372310)
+
+<div class="success-story-content" markdown="1">
+
+[![Travel Tips iPad screenshot](../images/success_stories/travel_tips/travel_tips_ipad_screenshot.webp)](../images/success_stories/travel_tips/travel_tips_ipad_screenshot.webp){ .success-story-screenshot }
+
+**Platform:** iOS
+
+App Store app that uses Toga to define its user interface.
+
+</div>
+</div>
+
+<!-- This section is the formula to follow for the rest of the apps:
+
+<div class="success-story" markdown="1">
+
+## (Icon){ .success-story-icon } (App title)
+
+<div class="success-story-content" markdown="1">
+
+(App screenshot){ .success-story-screenshot }
+
+**Platform or Platforms:** (Platform list)
+
+(App description)
+
+</div>
+</div>
+
+This whole section can be deleted when the page is completed. -->
+
+<!--
 | Application | Screenshot(s) | Description |
 | --- | --- | --- |
 | ![Travel Tips icon](../images/success_stories/travel_tips/travel_tips_logo.webp){ .success-story-icon } [**Travel Tips**](https://apps.apple.com/au/app/travel-tips/id1336372310)(iOS) | [![Travel Tips iPad screenshot](../images/success_stories/travel_tips/travel_tips_ipad_screenshot.webp)](../images/success_stories/travel_tips/travel_tips_ipad_screenshot.webp) | App Store app that uses Toga to define its user interface. |
@@ -14,3 +49,4 @@ Want to see examples of Toga in use? Here are some.
 | ![Patent Toolkit icon](../images/success_stories/patent_toolkit/patent_toolkit_logo.webp){ .success-story-icon } [**Patent Toolkit**](https://patenttk.com)(Windows, macOS) | Coming soon | Suite of productivity tools for patent professionals. |
 | ![Easy Media Server icon](../images/success_stories/easy_media_server/easy_media_server_logo.webp){ .success-story-icon } [**Easy Media Server**](https://apps.rsmail.co/easy-media-server)(macOS) | Coming soon | DLNA media server for streaming content to devices such as Smart TVs. |
 | ![Beanquick icon](../images/success_stories/beanquick/beanquick_logo.webp){ .success-story-icon } [**Beanquick**](https://twobitsware.com/beanquick)(macOS) | Coming soon | Fast desktop app for double-entry bookkeeping. |
+-->
