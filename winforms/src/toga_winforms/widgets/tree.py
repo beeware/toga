@@ -567,7 +567,20 @@ class Tree(Table):
         self.native.VirtualListSize = len(self.display_list)
         self._cache = []
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item, parent=None):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item, parent=parent)
+
+    def source_insert(self, *, index, item, parent=None):
         state_parent = self._get_state_parent(parent)
         if state_parent is None:
             return
@@ -575,10 +588,35 @@ class Tree(Table):
         refresh_needed = state_parent.insert(index, item)
         self._update_list(refresh=refresh_needed)
 
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
+        import warnings
+
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
         self._update_list(refresh=True)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, index, item, parent=None):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item, parent=parent)
+
+    def source_remove(self, *, index, item, parent=None):
         state_parent = self._get_state_parent(parent)
         if state_parent is None:
             return
