@@ -85,6 +85,7 @@ class TreeProbe(SimpleProbe):
         text_align=None,
         color=None,
         background_color=None,
+        font=None,
     ):
         view = self.native_tree.outlineView(
             self.native_tree,
@@ -109,6 +110,9 @@ class TreeProbe(SimpleProbe):
 
             if background_color:
                 assert view.backgroundColor == native_color(background_color)
+
+            if font:
+                assert view.textField.font == font._impl.native
 
     @property
     def max_scroll_position(self):

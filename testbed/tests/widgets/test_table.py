@@ -5,7 +5,7 @@ import pytest
 
 import toga
 from toga.colors import rgb
-from toga.constants import RIGHT
+from toga.constants import BOLD, ITALIC, RIGHT, SERIF, SMALL_CAPS, SYSTEM
 from toga.sources import AccessorColumn, ListListener, ListSource
 from toga.style.pack import Pack
 
@@ -716,6 +716,36 @@ class StyledTestColumn(AccessorColumn):
         else:
             return rgb(255, 0, 0)
 
+    def font_family(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return None
+        else:
+            return [SERIF]
+
+    def font_style(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return ITALIC
+        else:
+            return None
+
+    def font_variant(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return None
+        else:
+            return SMALL_CAPS
+
+    def font_weight(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)) and value >= 0:
+            return BOLD
+        return None
+
+    def font_size(self, row):
+        return 18
+
 
 @pytest.fixture
 async def styled_widget(source, on_select_handler, on_activate_handler):
@@ -764,14 +794,33 @@ async def test_cell_style(styled_widget, style_probe):
     ]
     await style_probe.redraw("Table has data with colors")
 
+    negative_number_font = toga.Font(SYSTEM, 18, style=ITALIC)
+    positive_number_font = toga.Font(SYSTEM, 18, style=ITALIC, weight=BOLD)
+    text_font = toga.Font(SERIF, 18, variant=SMALL_CAPS)
+
     style_probe.assert_cell_content(
-        0, 0, "-1.0", text_align=RIGHT, color=rgb(255, 0, 0), background_color=None
+        0,
+        0,
+        "-1.0",
+        text_align=RIGHT,
+        color=rgb(255, 0, 0),
+        font=negative_number_font,
     )
     style_probe.assert_cell_content(
-        0, 1, "B0", color=None, background_color=rgb(255, 0, 0)
+        0,
+        1,
+        "B0",
+        color=None,
+        background_color=rgb(255, 0, 0),
+        font=text_font,
     )
     style_probe.assert_cell_content(
-        25, 0, "0.0", text_align=RIGHT, color=rgb(0, 128, 0), background_color=None
+        25,
+        0,
+        "0.0",
+        text_align=RIGHT,
+        color=rgb(0, 128, 0),
+        font=positive_number_font,
     )
 
 

@@ -11,7 +11,7 @@ from babel.dates import format_date, format_time
 
 import toga
 from toga.colors import rgb
-from toga.constants import COLUMN, RIGHT
+from toga.constants import BOLD, COLUMN, ITALIC, RIGHT, SERIF
 from toga.sources import AccessorColumn, Column
 
 
@@ -23,6 +23,16 @@ class TitleIconColumn(Column):
 
     def icon(self, row):
         return getattr(row, "icon", None)
+
+    def font_style(self, row):
+        if not hasattr(row, "icon"):
+            return ITALIC
+        return super().font_style(row)
+
+    def font_weight(self, row):
+        if hasattr(row, "icon"):
+            return BOLD
+        return super().font_style(row)
 
 
 class RatingColumn(AccessorColumn):
@@ -211,6 +221,8 @@ class TableColumnApp(toga.App):
             ],
             data=self.bee_movies,
             flex=1,
+            font_family=[SERIF],
+            font_size=12,
         )
 
         self.table2 = toga.Table(

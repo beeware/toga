@@ -24,11 +24,12 @@ INVALID_INDEX = QModelIndex()
 
 
 class TreeSourceModel(QAbstractItemModel):
-    def __init__(self, source, columns, missing_value, **kwargs):
+    def __init__(self, interface, **kwargs):
         super().__init__(**kwargs)
-        self._source = source
-        self._columns = columns
-        self._missing_value = missing_value
+        self._interface = interface
+        self._source = getattr(interface, "_data", None)
+        self._columns = interface.columns
+        self._missing_value = interface.missing_value
 
     def set_source(self, source):
         self.beginResetModel()
@@ -213,6 +214,10 @@ class TreeSourceModel(QAbstractItemModel):
                     color = column.background_color(node)
                     if color is not None:
                         return native_color(color)
+                elif role == Qt.ItemDataRole.FontRole:
+                    font = column.font(node, self._interface)
+                    if font is not None:
+                        return font._impl.native
             except Exception:  # pragma: no cover
                 logger.exception(
                     f"Could not get data for node {node}, column {column_index}"
@@ -246,9 +251,7 @@ class Tree(Widget):
         self.native = QTreeView()
 
         self.native_model = TreeSourceModel(
-            getattr(self.interface, "_data", None),
-            self.interface._columns[:],
-            self.interface.missing_value,
+            self.interface,
             parent=self.native,
         )
         self.native.setModel(self.native_model)

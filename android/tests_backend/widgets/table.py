@@ -44,6 +44,7 @@ class TableProbe(SimpleProbe):
         text_align=None,
         color=None,
         background_color=None,
+        font=None,
     ):
         if widget:
             pytest.skip("This backend doesn't support widgets in Tables")
@@ -58,6 +59,11 @@ class TableProbe(SimpleProbe):
             if background_color is not None:
                 assert self._cell_background_color(row, col) == native_color(
                     background_color
+                )
+            if font is not None:
+                assert self._cell_font(row, col) == (
+                    font._impl.typeface(),
+                    font._impl.size(),
                 )
 
     def _cell_text(self, row, col):
@@ -79,6 +85,11 @@ class TableProbe(SimpleProbe):
         tv = self._row_view(row).getChildAt(col)
         assert isinstance(tv, TextView)
         return tv.getGravity()
+
+    def _cell_font(self, row, col):
+        tv = self._row_view(row).getChildAt(col)
+        assert isinstance(tv, TextView)
+        return tv.getTypeface(), tv.getTextSize()
 
     def _row_view(self, row):
         if row == HEADER:

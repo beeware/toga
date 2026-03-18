@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 
 from toga.colors import rgb
-from toga.constants import RIGHT
+from toga.constants import BOLD, ITALIC, RIGHT, SERIF, SMALL_CAPS
 from toga.icons import Icon
 from toga.sources import AccessorColumn, Column
 from toga.sources.list_source import Row
@@ -55,6 +55,21 @@ class StyleColumn(Column):
     def background_color(self, row: Any):
         return rgb(255, 0, 0)
 
+    def font_family(self, row: Any):
+        return [SERIF, "Times New Roman"]
+
+    def font_style(self, row: Any):
+        return ITALIC
+
+    def font_variant(self, row: Any):
+        return SMALL_CAPS
+
+    def font_weight(self, row: Any):
+        return BOLD
+
+    def font_size(self, row: Any):
+        return 24
+
 
 LABEL_WIDGET = Label("Test")
 
@@ -78,6 +93,11 @@ def test_column_abc(heading, heading_property):
     assert column.text_align(dummy_row) is None
     assert column.color(dummy_row) is None
     assert column.background_color(dummy_row) is None
+    assert column.font_family(dummy_row) is None
+    assert column.font_style(dummy_row) is None
+    assert column.font_variant(dummy_row) is None
+    assert column.font_weight(dummy_row) is None
+    assert column.font_size(dummy_row) is None
     assert column.widget(dummy_row) is None
 
 
@@ -93,6 +113,11 @@ def test_column_subclass():
     assert column.text_align(dummy_row) is None
     assert column.color(dummy_row) is None
     assert column.background_color(dummy_row) is None
+    assert column.font_family(dummy_row) is None
+    assert column.font_style(dummy_row) is None
+    assert column.font_variant(dummy_row) is None
+    assert column.font_weight(dummy_row) is None
+    assert column.font_size(dummy_row) is None
     assert column.widget(dummy_row) is None
 
 
@@ -108,6 +133,11 @@ def test_column_style():
     assert column.text_align(dummy_row) is RIGHT
     assert column.color(dummy_row) == rgb(255, 0, 0)
     assert column.background_color(dummy_row) == rgb(255, 0, 0)
+    assert column.font_family(dummy_row) == [SERIF, "Times New Roman"]
+    assert column.font_style(dummy_row) == ITALIC
+    assert column.font_variant(dummy_row) == SMALL_CAPS
+    assert column.font_weight(dummy_row) == BOLD
+    assert column.font_size(dummy_row) == 24
     assert column.widget(dummy_row) is None
 
 

@@ -84,6 +84,7 @@ class TreeProbe(SimpleProbe):
         text_align=None,
         color=None,
         background_color=None,
+        font=None,
     ):
         if widget:
             pytest.skip("Qt doesn't support widgets in Trees")
@@ -123,6 +124,12 @@ class TreeProbe(SimpleProbe):
                     assert native_color(background_color) == self.native_model.data(
                         index,
                         Qt.ItemDataRole.BackgroundRole,
+                    )
+
+                if font:
+                    assert font._impl.native == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.FontRole,
                     )
 
     @property

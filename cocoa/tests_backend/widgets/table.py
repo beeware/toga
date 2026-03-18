@@ -24,7 +24,7 @@ class TableProbe(SimpleProbe):
 
     @property
     def font(self):
-        pytest.skip("Font changes not implemented for Tree on macOS")
+        pytest.skip("Font changes not implemented for Table on macOS")
 
     @property
     def background_color(self):
@@ -55,6 +55,7 @@ class TableProbe(SimpleProbe):
         color=None,
         text_align=None,
         background_color=None,
+        font=None,
     ):
         view = self.native_table.tableView(
             self.native_table,
@@ -79,6 +80,9 @@ class TableProbe(SimpleProbe):
 
             if background_color:
                 assert view.backgroundColor == native_color(background_color)
+
+            if font:
+                assert view.textField.font == font._impl.native
 
     @property
     def max_scroll_position(self):

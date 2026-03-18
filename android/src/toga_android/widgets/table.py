@@ -153,14 +153,19 @@ class Table(Widget):
             text_align = toga_column.text_align(data_row)
             color = toga_column.color(data_row)
             background_color = toga_column.background_color(data_row)
+            font = toga_column.font(data_row, self.interface)
 
             if color is not None:
                 text_view.setTextColor(native_color(color))
             if background_color is not None:
                 text_view.setBackgroundColor(native_color(background_color))
+            if font is None:
+                font_impl = self._font_impl
+            else:
+                font_impl = font._impl
             set_textview_font(
                 text_view,
-                self._font_impl,
+                font_impl,
                 text_view.getTypeface(),
                 text_view.getTextSize(),
             )

@@ -23,11 +23,12 @@ class TableSourceModel(QAbstractTableModel):
     _source: ListSource | None
     headings: list[str]
 
-    def __init__(self, source, columns, missing_value, **kwargs):
+    def __init__(self, interface, **kwargs):
         super().__init__(**kwargs)
-        self._source = source
-        self._columns = columns
-        self._missing_value = missing_value
+        self._interface = interface
+        self._source = getattr(interface, "_data", None)
+        self._columns = interface._columns
+        self._missing_value = interface.missing_value
 
     def set_source(self, source):
         self.beginResetModel()
@@ -135,6 +136,10 @@ class TableSourceModel(QAbstractTableModel):
                     color = column.background_color(row)
                     if color is not None:
                         return native_color(color)
+                elif role == Qt.ItemDataRole.FontRole:
+                    font = column.font(row, self._interface)
+                    if font is not None:
+                        return font._impl.native
             except Exception:  # pragma: no cover
                 logger.exception(
                     f"Could not get data for row {row_index}, column {column_index}"
@@ -169,9 +174,7 @@ class Table(Widget):
         self._resizing_columns = False
 
         self.native_model = TableSourceModel(
-            getattr(self.interface, "_data", None),
-            self.interface._columns[:],
-            self.interface.missing_value,
+            self.interface,
             parent=self.native,
         )
         self.native.setModel(self.native_model)

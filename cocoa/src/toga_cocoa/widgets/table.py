@@ -48,6 +48,7 @@ class TogaTable(NSTableView):
         text_align = column.toga_column.text_align(data_row)
         color = column.toga_column.color(data_row)
         background_color = column.toga_column.background_color(data_row)
+        font = column.toga_column.font(data_row, self.interface)
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
@@ -79,6 +80,9 @@ class TogaTable(NSTableView):
             tcv.backgroundColor = native_color(background_color)
         else:
             tcv.textField.drawsBackground = False
+
+        if font is not None:
+            tcv.textField.font = font._impl.native
 
         return tcv
 

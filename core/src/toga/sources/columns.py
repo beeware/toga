@@ -3,6 +3,8 @@ from collections.abc import Iterable
 from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 
 from ..colors import Color
+from ..constants import SYSTEM
+from ..fonts import Font, UnknownFontError
 from ..icons import Icon
 from ..widgets.base import Widget
 from .accessors import build_accessors, to_accessor
@@ -81,6 +83,104 @@ class ColumnT(Protocol, Generic[Value]):
         :param row: A row object from the underlying Source.
         :returns: The background color, or None if the default color is to be used.
         """
+
+    @abstractmethod
+    def font_family(self, row: Any) -> list[str] | None:
+        """Get the font family use for the row in this column.
+
+        The value returned should be a list of acceptable font
+        family names, or None.
+
+        :param row: A row object from the underlying Source.
+        :returns: The acceptable font family names, or None.
+        """
+        return None
+
+    @abstractmethod
+    def font_style(self, row: Any) -> str | None:
+        """Get the font style use for the row in this column.
+
+        The value should be one of "normal", "italic", "oblique",
+        or None.
+
+        :param row: A row object from the underlying Source.
+        :returns: The style of the font, or None.
+        """
+        return None
+
+    @abstractmethod
+    def font_variant(self, row: Any) -> str | None:
+        """Get the font variant use for the row in this column.
+
+        The value should be one of "normal", "small_caps" or None.
+
+        Note: Windows and Android do not support "small_caps".
+
+        :param row: A row object from the underlying Source.
+        :returns: The font variant, or None.
+        """
+        return None
+
+    @abstractmethod
+    def font_weight(self, row: Any) -> str | None:
+        """Get the font weight use for the row in this column.
+
+        The value should be one of "normal", "bold" or None.
+
+        :param row: A row object from the underlying Source.
+        :returns: The weight of the font, or None.
+        """
+        return None
+
+    @abstractmethod
+    def font_size(self, row: Any) -> int | None:
+        """Get the font size to use for the row in this column.
+
+        The value should a positive integer or None.
+
+        :param row: A row object from the underlying Source.
+        :returns: The size of the font, or None.
+        """
+        return None
+
+    def font(self, row: Any, widget: Any) -> Font | None:
+        """Get the Font object to use for the row in this column.
+
+        The value should a Font or None.  The default implementation
+        returns takes the Table or Tree widget's font and adjusts it
+        according to the other font methods.
+
+        :param row: A row object from the underlying Source.
+        :param widget: The Table or Tree widget the column is displayed in.
+        :returns: The size of the font, or None.
+        """
+        family = self.font_family(row)
+        style = self.font_style(row)
+        variant = self.font_variant(row)
+        weight = self.font_weight(row)
+        size = self.font_size(row)
+
+        font = widget.style.font
+        font_args = {
+            "style": style if style is not None else font[0],
+            "variant": variant if variant is not None else font[1],
+            "weight": weight if weight is not None else font[2],
+            "size": size if size is not None else font[3],
+        }
+        font_family = family if family is not None else font[4]
+
+        for family in font_family:
+            try:
+                return Font(family, **font_args)
+            except UnknownFontError:
+                pass
+        else:
+            try:
+                return Font(SYSTEM, **font_args)
+            except UnknownFontError:
+                pass
+
+        return None
 
     def widget(self, row: Row[Value]) -> Widget | None:
         """Get a widget from the Row or Node of a ListSource or TreeSource.
@@ -179,6 +279,77 @@ class Column(ColumnT[Value], Generic[Value]):
         :returns: The background color, or None if the default color is to be used.
         """
         return None
+
+    def font_family(self, row: Any) -> list[str] | None:
+        """Get the font family use for the row in this column.
+
+        The value returned should be a list of acceptable font
+        family names, or None.  The default implementation returns
+        None.
+
+        :param row: A row object from the underlying Source.
+        :returns: The acceptable font family names, or None.
+        """
+        return None
+
+    def font_style(self, row: Any) -> str | None:
+        """Get the font style use for the row in this column.
+
+        The value should be one of "normal", "italic", "oblique",
+        or None.  The default implementation returns None.
+
+        :param row: A row object from the underlying Source.
+        :returns: The style of the font, or None.
+        """
+        return None
+
+    def font_variant(self, row: Any) -> str | None:
+        """Get the font variant use for the row in this column.
+
+        The value should be one of "normal", "small_caps" or None.
+        The default implementation returns None.
+
+        Note: Windows and Android do not support "small_caps".
+
+        :param row: A row object from the underlying Source.
+        :returns: The font variant, or None.
+        """
+        return None
+
+    def font_weight(self, row: Any) -> str | None:
+        """Get the font weight use for the row in this column.
+
+        The value should be one of "normal", "bold" or None.
+        The default implementation returns None.
+
+        :param row: A row object from the underlying Source.
+        :returns: The weight of the font, or None.
+        """
+        return None
+
+    def font_size(self, row: Any) -> int | None:
+        """Get the font size to use for the row in this column.
+
+        The value should a positive integer or None.
+        The default implementation returns None.
+
+        :param row: A row object from the underlying Source.
+        :returns: The size of the font, or None.
+        """
+        return None
+
+    def font(self, row: Any, widget: Any) -> Font | None:
+        """Get the Font object to use for the row in this column.
+
+        The value should a Font or None.  The default implementation
+        returns takes the Table or Tree widget's font and adjusts it
+        according to the other font methods.
+
+        :param row: A row object from the underlying Source.
+        :param widget: The Table or Tree widget the column is displayed in.
+        :returns: The size of the font, or None.
+        """
+        return super().font(row, widget)
 
     def widget(self, row: Any) -> Widget | None:
         """Get a widget from the Row or Node of a ListSource or TreeSource.
