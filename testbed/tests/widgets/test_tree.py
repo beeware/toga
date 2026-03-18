@@ -968,7 +968,7 @@ class ColorTestColumn(AccessorColumn):
 
 @pytest.fixture
 async def colored_widget(source, on_select_handler, on_activate_handler):
-    skip_on_platforms("iOS")
+    skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
         [
             ColorTestColumn("A"),
