@@ -430,7 +430,10 @@ def extend_indices(extension_start_index: int, extension_size: int, index: int) 
 
 
 def index_modifier(
-    indices: list[int], insert: bool, start_index: int, range_size: int
+    indices: list[int],
+    insert: bool,
+    start_index: int,
+    range_size: int,
 ) -> list[int]:
     selection_updater = extend_indices if insert else reduce_indices
     selection_updater = partial(selection_updater, start_index, range_size)
