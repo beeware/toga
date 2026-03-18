@@ -6,6 +6,7 @@ from android.view import Gravity, View
 from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
 from java import dynamic_proxy
 
+from ..colors import native_color
 from .base import Widget
 from .label import set_textview_font
 
@@ -149,6 +150,12 @@ class Table(Widget):
                 )
             text_view = TextView(self._native_activity)
             text_view.setText(toga_column.text(data_row, missing_value))
+            color = toga_column.color(data_row)
+            background_color = toga_column.background_color(data_row)
+            if color is not None:
+                text_view.setTextColor(native_color(color))
+            if background_color is not None:
+                text_view.setBackgroundColor(native_color(background_color))
             set_textview_font(
                 text_view,
                 self._font_impl,

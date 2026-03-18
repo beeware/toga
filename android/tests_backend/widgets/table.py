@@ -1,6 +1,8 @@
 import pytest
 from android.widget import ScrollView, TableLayout, TextView
 
+from toga_android.colors import native_color
+
 from .base import SimpleProbe
 
 HEADER = "HEADER"
@@ -30,17 +32,42 @@ class TableProbe(SimpleProbe):
     def column_count(self):
         return self._row_view(HEADER).getChildCount()
 
-    def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
+    def assert_cell_content(
+        self,
+        row,
+        col,
+        value=None,
+        icon=None,
+        widget=None,
+        color=None,
+        background_color=None,
+    ):
         if widget:
             pytest.skip("This backend doesn't support widgets in Tables")
         else:
             assert self._cell_text(row, col) == value
             assert icon is None
+            if color is not None:
+                assert self._cell_color(row, col) == native_color(color)
+            if background_color is not None:
+                assert self._cell_background_color(row, col) == native_color(
+                    background_color
+                )
 
     def _cell_text(self, row, col):
         tv = self._row_view(row).getChildAt(col)
         assert isinstance(tv, TextView)
         return str(tv.getText())
+
+    def _cell_color(self, row, col):
+        tv = self._row_view(row).getChildAt(col)
+        assert isinstance(tv, TextView)
+        return tv.getTextColor()
+
+    def _cell_background_color(self, row, col):
+        tv = self._row_view(row).getChildAt(col)
+        assert isinstance(tv, TextView)
+        return tv.getBackgroundColor()
 
     def _row_view(self, row):
         if row == HEADER:
