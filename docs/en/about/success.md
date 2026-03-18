@@ -1,14 +1,134 @@
 # Success Stories
 
-Want to see examples of Toga in use? Here's some:
+Want to see examples of Toga in use? Here are some.
 
-- [Travel Tips](https://apps.apple.com/au/app/travel-tips/id1336372310) is an app in the iOS App Store that uses Toga to describe it's user interface.
-- [Eddington](https://github.com/EddLabs/eddington-gui) is a data fitting tool based on *Toga* and *Briefcase*
-- [taRpnCalcTG](https://www.tanapro.ch/joomla3/index.php/downloads) is a Toga based calculator for Android, Windows and MacOS which is extensible with Python scripts.
-- [pyPlayground](https://www.tanapro.ch/joomla3/index.php/downloads) is a Toga based app for Android and Windows which can be modified to try Toga without additional tool chain.
-- [taAppLister](https://play.google.com/store/apps/details?id=ch.tanapro.taapplister) is a Toga based Android app for listing and exporting all installed apps.
-- [RemoteCommand](https://www.tanapro.ch/joomla3/index.php/downloads) is a Toga based app for synchronizing the clipboard between Windows and MacOS.
-- [ChariotGazer](https://insanesharpness.gitlab.io/ChariotGazer/) is a Toga based app for Android and Windows, which provides detailed information about UK registered vehicles.
-- [Patent Toolkit](https://patenttk.com) is a Toga based app for Windows and MacOS, which contains a suite of tools for patent professionals.
-- [Easy Media Server](https://apps.rsmail.co/easy-media-server) is a macOS DLNA media server for streaming content to devices such as Smart TVs. It uses Toga for the graphical interface.
-- [Beanquick](https://twobitsware.com/beanquick) is a fast, offline, and intuitive desktop macOS app for double-entry bookkeeping. Built on Beancount with lightning-fast natural language input.
+<div class="success-story" markdown="1">
+
+## ![Travel Tips icon](../images/success_stories/travel_tips/travel_tips_logo.webp){ .success-story-icon } [Travel Tips](https://apps.apple.com/au/app/travel-tips/id1336372310)
+
+
+<div class="success-story-content" markdown="1">
+
+[![Travel Tips iPad screenshot](../images/success_stories/travel_tips/travel_tips_ipad_screenshot.webp)](../images/success_stories/travel_tips/travel_tips_ipad_screenshot.webp){ .success-story-screenshot }
+
+**Platform:** iOS
+
+App Store app that uses Toga to define its user interface.
+
+</div>
+</div>
+
+<div class="success-story" markdown="1">
+
+## ![Eddington icon](../images/success_stories/eddington/eddington_logo.webp){ .success-story-icon } [Eddington](https://github.com/EddLabs/eddington-gui)
+
+<div class="success-story-content" markdown="1">
+
+Data fitting tool based on Toga and Briefcase.
+
+</div>
+</div>
+
+<div class="success-story" markdown="1">
+
+## ![taRpnCalcTG icon](../images/success_stories/taRpnCalcTG/taRpnCalcTG_logo.webp){ .success-story-icon } [taRpnCalcTG](https://www.tanapro.ch/joomla3/index.php/downloads)
+
+<div class="success-story-content" markdown="1">
+
+**Platforms:** Android, Windows, macOS
+
+Extensible calculator with Python scripting support.
+
+</div>
+</div>
+
+<div class="success-story" markdown="1">
+
+## ![pyPlayground icon](../images/success_stories/pyPlayground/pyPlayground_logo.webp){ .success-story-icon } [pyPlayground](https://www.tanapro.ch/joomla3/index.php/downloads)
+
+<div class="success-story-content" markdown="1">
+
+**Platforms:** Android, Windows
+
+App for experimenting with Toga without setting up the full development tooling.
+
+</div>
+</div>
+
+<div class="success-story" markdown="1">
+
+## ![taAppLister icon](../images/success_stories/taAppLister/taAppLister_logo.webp){ .success-story-icon } [taAppLister](https://play.google.com/store/apps/details?id=ch.tanapro.taapplister)
+
+<div class="success-story-content" markdown="1">
+
+**Platform:** Android
+
+App for listing and exporting installed apps.
+
+</div>
+</div>
+
+<div class="success-story" markdown="1">
+
+## [RemoteCommand](https://www.tanapro.ch/joomla3/index.php/downloads)
+
+<div class="success-story-content" markdown="1">
+
+**Platforms:** Windows, macOS
+
+App for clipboard synchronization between desktop systems.
+
+</div>
+</div>
+
+<div class="success-story" markdown="1">
+
+## ![ChariotGazer icon](../images/success_stories/chariotGazer/chariot_gazer_logo.ico){ .success-story-icon } [ChariotGazer](https://insanesharpness.gitlab.io/ChariotGazer/)
+
+<div class="success-story-content" markdown="1">
+
+**Platforms:** Android, Windows
+
+Provides detailed information about UK registered vehicles.
+
+</div>
+</div>
+
+<div class="success-story" markdown="1">
+
+## ![Patent Toolkit icon](../images/success_stories/patent_toolkit/patent_toolkit_logo.webp){ .success-story-icon } [Patent Toolkit](https://patenttk.com)
+
+<div class="success-story-content" markdown="1">
+
+**Platforms:** Windows, macOS
+
+Suite of productivity tools for patent professionals.
+
+</div>
+</div>
+
+<div class="success-story" markdown="1">
+
+## ![Easy Media Server icon](../images/success_stories/easy_media_server/easy_media_server_logo.webp){ .success-story-icon } [Easy Media Server](https://apps.rsmail.co/easy-media-server)
+
+<div class="success-story-content" markdown="1">
+
+**Platform:** macOS
+
+DLNA media server for streaming content to devices such as Smart TVs.
+
+</div>
+</div>
+
+<div class="success-story" markdown="1">
+
+## ![Beanquick icon](../images/success_stories/beanquick/beanquick_logo.webp){ .success-story-icon } [Beanquick](https://twobitsware.com/beanquick)
+
+<div class="success-story-content" markdown="1">
+
+**Platform:** macOS
+
+Fast desktop app for double-entry bookkeeping.
+
+</div>
+</div>

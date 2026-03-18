@@ -50,3 +50,29 @@
 #api-status-key + .md-typeset__scrollwrap th {
     display: none;
 }
+
+/* Success stories */
+.success-story-icon {
+    border-radius: 0.85rem;
+    width: 30px;
+    margin-right: 1rem;
+}
+
+.success-story-screenshot img {
+    width: 5rem;
+    float: left;
+    margin-right: 2rem;
+}
+
+.success-story {
+    margin-bottom: 1.5rem;
+}
+
+.success-story-content {
+    display: flow-root;
+}
+
+.success-story > h2 {
+    display: flex;
+    align-items: center;
+}

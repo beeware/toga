@@ -122,6 +122,7 @@ markdown_extensions:
   # Python Markdown Extensions
   attr_list: {}
   footnotes: {}
+  md_in_html: {}
   smarty:  # Enables easy em and en dashes.
     smart_quotes: false
   toc:

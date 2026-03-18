@@ -7,6 +7,10 @@ matrix:
   aspell:
     lang: en
     d: en_US
+    mode:
+      - markdown
+      - url
+      - email
   sources:
   - 'docs/**/*.md'
   pipeline:
