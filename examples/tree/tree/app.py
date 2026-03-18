@@ -16,7 +16,12 @@ bee_movies = [
         "rating": "6.1",
         "genre": "Animation, Adventure, Comedy",
     },
-    {"year": 1998, "title": "Bees", "rating": "6.3", "genre": "Horror"},
+    {
+        "year": 1998,
+        "title": "Bees",
+        "rating": "6.3",
+        "genre": "Horror",
+    },
     {
         "year": 2007,
         "title": "The Girl Who Swallowed Bees",
@@ -64,7 +69,9 @@ class TreeApp(toga.App):
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
         item = choice(bee_movies)
-        if (year := item["year"]) >= 2000:
+        if (year := item["year"]) >= 2010:
+            root = self.decade_2010s
+        elif year >= 2000:
             root = self.decade_2000s
         elif year >= 1990:
             root = self.decade_1990s
@@ -100,26 +107,37 @@ class TreeApp(toga.App):
             missing_value="?",
         )
 
-        self.decade_1940s = self.tree.data.append(
-            {"year": "1940s", "title": "", "rating": "", "genre": ""}
+        century_1900s = self.tree.data.append(
+            {"year": "2000s", "title": "20th Century", "rating": "", "genre": ""}
         )
-        self.decade_1950s = self.tree.data.append(
-            {"year": "1950s", "title": "", "rating": "", "genre": ""}
+        century_2000s = self.tree.data.append(
+            {"year": "2000s", "title": "21st Century", "rating": "", "genre": ""}
         )
-        self.decade_1960s = self.tree.data.append(
-            {"year": "1960s", "title": "", "rating": "", "genre": ""}
+
+        self.decade_1940s = century_1900s.append(
+            {"year": "1940s", "title": "Roaring 40s", "rating": "", "genre": ""}
         )
-        self.decade_1970s = self.tree.data.append(
-            {"year": "1970s", "title": "", "rating": "", "genre": ""}
+        self.decade_1950s = century_1900s.append(
+            {"year": "1950s", "title": "Golden 50s", "rating": "", "genre": ""}
         )
-        self.decade_1980s = self.tree.data.append(
-            {"year": "1980s", "title": "", "rating": "", "genre": ""}
+        self.decade_1960s = century_1900s.append(
+            {"year": "1960s", "title": "Swinging 60s", "rating": "", "genre": ""}
         )
-        self.decade_1990s = self.tree.data.append(
-            {"year": "1990s", "title": "", "rating": "", "genre": ""}
+        self.decade_1970s = century_1900s.append(
+            {"year": "1970s", "title": "Groovy 70s", "rating": "", "genre": ""}
         )
-        self.decade_2000s = self.tree.data.append(
-            {"year": "2000s", "title": "", "rating": "", "genre": ""}
+        self.decade_1980s = century_1900s.append(
+            {"year": "1980s", "title": "Radical 80s", "rating": "", "genre": ""}
+        )
+        self.decade_1990s = century_1900s.append(
+            {"year": "1990s", "title": "Grunge 90s", "rating": "", "genre": ""}
+        )
+
+        self.decade_2000s = century_2000s.append(
+            {"year": "2000s", "title": "Naughty 00s", "rating": "", "genre": ""}
+        )
+        self.decade_2010s = century_2000s.append(
+            {"year": "2010s", "title": "Modern 10s", "rating": "", "genre": ""}
         )
 
         # Buttons
