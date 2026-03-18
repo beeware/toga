@@ -385,7 +385,8 @@ class Window:
             else:
                 # If the app is in presentation mode, but this window isn't, then exit
                 # app presentation mode before setting the requested state — unless
-                # we're entering presentation mode ourselves (to allow multiple windows).
+                # we're entering presentation mode ourselves (i.e., to allow multiple
+                # windows).
                 if state != WindowState.PRESENTATION and any(
                     window.state == WindowState.PRESENTATION
                     for window in self.interface.app.windows

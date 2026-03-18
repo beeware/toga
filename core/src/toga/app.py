@@ -876,7 +876,7 @@ class App:
         """
         if windows:
             # Exit any existing presentation mode before entering with new windows.
-            # Presentation mode is not cumulative — a new call replaces the previous one.
+            # Presentation mode is not cumulative: a new call replaces the previous one.
             if self.in_presentation_mode:
                 self.exit_presentation_mode()
 
@@ -899,9 +899,19 @@ class App:
 
     def exit_presentation_mode(self) -> None:
         """Exit presentation mode."""
-        for window in self.windows:
-            if window.state == WindowState.PRESENTATION:
-                window._impl.set_window_state(WindowState.NORMAL)
+        # Guard against recursion: backend set_window_state guards may call
+        # exit_presentation_mode() when they see other windows still in
+        # presentation mode during the exit loop.
+        if getattr(self, "_exiting_presentation", False):
+            return
+        self._exiting_presentation = True
+
+        try:
+            for window in self.windows:
+                if window.state == WindowState.PRESENTATION:
+                    window._impl.set_window_state(WindowState.NORMAL)
+        finally:
+            self._exiting_presentation = False
 
     ######################################################################
     # App events
