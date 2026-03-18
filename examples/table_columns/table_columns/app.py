@@ -10,6 +10,7 @@ from operator import itemgetter
 from babel.dates import format_date, format_time
 
 import toga
+from toga.colors import rgb
 from toga.constants import COLUMN
 from toga.sources import AccessorColumn, Column
 
@@ -49,6 +50,15 @@ class RatingColumn(AccessorColumn):
         else:
             return self.red
 
+    def color(self, row):
+        value = self.value(row)
+        if value is None:
+            return None
+        elif value >= 7.0:
+            return rgb(0, 128, 0)
+        else:
+            return rgb(255, 0, 0)
+
 
 class ListStrColumn(AccessorColumn):
     """A column that displays a comma-separated list of strings."""
@@ -68,6 +78,14 @@ class DateColumn(AccessorColumn):
             return str(value)
         else:
             return default
+
+    def background_color(self, row):
+        value = self.value(row)
+        if isinstance(value, datetime.date):
+            return None
+        else:
+            # error
+            return rgb(255, 255, 128)
 
 
 class TimeColumn(AccessorColumn):
@@ -140,7 +158,7 @@ class TableColumnApp(toga.App):
         # generate some synthetic screening information
         today = datetime.date.today()
         times = [
-            datetime.datetime(today.year, today.month, today.day + 1, hour)
+            datetime.datetime(today.year, today.month, today.day, hour)
             for hour in [12, 16, 18, 20]
         ]
         screens = [i + 1 for i in range(len(self.bee_movies))]

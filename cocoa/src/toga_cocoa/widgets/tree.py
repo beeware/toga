@@ -1,6 +1,7 @@
 from rubicon.objc import SEL, at, objc_method, objc_property
 from travertino.size import at_least
 
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -64,6 +65,8 @@ class TogaTree(NSOutlineView):
             return widget._impl.native
         icon = column.toga_column.icon(node)
         text = column.toga_column.text(node, self.interface.missing_value)
+        color = column.toga_column.color(node)
+        background_color = column.toga_column.background_color(node)
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
@@ -83,6 +86,16 @@ class TogaTree(NSOutlineView):
             tcv.setImage(icon._impl.native)
         else:
             tcv.setImage(None)
+
+        if color is not None:
+            tcv.textField.textColor = native_color(color)
+        else:
+            tcv.textField.textColor = None
+        if background_color is not None:
+            tcv.drawsBackground = True
+            tcv.backgroundColor = native_color(background_color)
+        else:
+            tcv.textField.drawsBackground = False
 
         return tcv
 

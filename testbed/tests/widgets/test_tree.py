@@ -4,6 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.colors import rgb
 from toga.sources import AccessorColumn, ListListener, TreeListener, TreeSource
 from toga.style.pack import Pack
 
@@ -944,3 +945,83 @@ def test_tree_listener(widget):
     TreeListener APIs"""
     assert isinstance(widget._impl, ListListener)
     assert isinstance(widget._impl, TreeListener)
+
+
+class ColorTestColumn(AccessorColumn):
+    def color(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            if value < 0:
+                return rgb(255, 0, 0)
+            else:
+                return rgb(0, 128, 0)
+        else:
+            return None
+
+    def background_color(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return None
+        else:
+            return rgb(255, 0, 0)
+
+
+@pytest.fixture
+async def colored_widget(source, on_select_handler, on_activate_handler):
+    skip_on_platforms("iOS")
+    return toga.Tree(
+        [
+            ColorTestColumn("A"),
+            ColorTestColumn("B"),
+            ColorTestColumn("C"),
+        ],
+        data=source,
+        missing_value="MISSING!",
+        on_select=on_select_handler,
+        on_activate=on_activate_handler,
+        style=Pack(flex=1),
+    )
+
+
+@pytest.fixture
+async def color_probe(main_window, colored_widget):
+    old_content = main_window.content
+
+    box = toga.Box(children=[colored_widget])
+    main_window.content = box
+    probe = get_probe(colored_widget)
+    await probe.redraw("Constructing color Table probe")
+    probe.assert_container(box)
+    yield probe
+
+    main_window.content = old_content
+
+
+async def test_cell_color(colored_widget, color_probe):
+    "A cell can have colors"
+    if not getattr(color_probe, "supports_colors", False):
+        pytest.skip("Backend does not support colors in cells.")
+
+    colored_widget.data = [
+        (
+            {
+                # A number from -1 to 1
+                "a": (i - 25) / 25,
+                # Normal text,
+                "b": f"B{i}",
+            },
+            [],
+        )
+        for i in range(50)
+    ]
+    await color_probe.redraw("Tree has data with colors")
+
+    color_probe.assert_cell_content(
+        (0,), 0, "-1.0", color=rgb(255, 0, 0), background_color=None
+    )
+    color_probe.assert_cell_content(
+        (0,), 1, "B0", color=None, background_color=rgb(255, 0, 0)
+    )
+    color_probe.assert_cell_content(
+        (25,), 0, "0.0", color=rgb(0, 128, 0), background_color=None
+    )

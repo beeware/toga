@@ -3,6 +3,7 @@ import asyncio
 from pytest import skip
 from rubicon.objc import NSPoint
 
+from toga_cocoa.colors import native_color
 from toga_cocoa.keys import NSEventModifierFlagCommand
 from toga_cocoa.libs import NSEventType, NSOutlineView, NSScrollView
 
@@ -14,6 +15,7 @@ class TreeProbe(SimpleProbe):
     native_class = NSScrollView
     supports_keyboard_shortcuts = True
     supports_widgets = True
+    supports_colors = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -73,7 +75,16 @@ class TreeProbe(SimpleProbe):
     def column_count(self):
         return len(self.native_tree.tableColumns)
 
-    def assert_cell_content(self, row_path, col, value=None, icon=None, widget=None):
+    def assert_cell_content(
+        self,
+        row_path,
+        col,
+        value=None,
+        icon=None,
+        widget=None,
+        color=None,
+        background_color=None,
+    ):
         view = self.native_tree.outlineView(
             self.native_tree,
             viewForTableColumn=self.native_tree.tableColumns[col],
@@ -88,6 +99,12 @@ class TreeProbe(SimpleProbe):
                 assert view.imageView.image == icon._impl.native
             else:
                 assert view.imageView.image is None
+
+            if color:
+                assert view.textField.textColor == native_color(color)
+
+            if background_color:
+                assert view.backgroundColor == native_color(background_color)
 
     @property
     def max_scroll_position(self):

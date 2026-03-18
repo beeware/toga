@@ -2,6 +2,7 @@ from abc import abstractmethod
 from collections.abc import Iterable
 from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 
+from ..colors import Color
 from ..icons import Icon
 from ..widgets.base import Widget
 from .accessors import build_accessors, to_accessor
@@ -43,6 +44,29 @@ class ColumnT(Protocol, Generic[Value]):
 
         :param row: A row object from the underlying Source.
         :returns: The icon to display, or None if no Icon.
+        """
+
+    @abstractmethod
+    def color(self, row: Any) -> Color | None:
+        """Get the color use for the row in this column.
+
+        This is intended to be used for data-based coloring of the
+        text in a cell (eg. displaying red text for negative numbers).
+
+        :param row: A row object from the underlying Source.
+        :returns: The color, or None if the default color is to be used.
+        """
+
+    @abstractmethod
+    def background_color(self, row: Any) -> Color | None:
+        """Get the background color use for the row in this column.
+
+        This is intended to be used for data-based coloring of the
+        text in a cell (eg. using a colormap to display different
+        colors in a cell based on the value, or to highlight outliers).
+
+        :param row: A row object from the underlying Source.
+        :returns: The background color, or None if the default color is to be used.
         """
 
     def widget(self, row: Row[Value]) -> Widget | None:
@@ -108,6 +132,26 @@ class Column(ColumnT[Value], Generic[Value]):
 
         :param row: A row object from the underlying Source.
         :returns: The icon to display, or None if no Icon.
+        """
+        return None
+
+    def color(self, row: Any) -> Color | None:
+        """Get the color use for the row in this column.
+
+        The default behaviour is to do nothing.
+
+        :param row: A row object from the underlying Source.
+        :returns: The color, or None if the default color is to be used.
+        """
+        return None
+
+    def background_color(self, row: Any) -> Color | None:
+        """Get the background color use for the row in this column.
+
+        The default behaviour is to do nothing.
+
+        :param row: A row object from the underlying Source.
+        :returns: The background color, or None if the default color is to be used.
         """
         return None
 

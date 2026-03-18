@@ -57,6 +57,8 @@ def test_column_abc(heading, heading_property):
     assert column.text(dummy_row) is None
     assert column.text(dummy_row, "default") == "default"
     assert column.icon(dummy_row) is None
+    assert column.color(dummy_row) is None
+    assert column.background_color(dummy_row) is None
     assert column.widget(dummy_row) is None
 
 
@@ -69,6 +71,8 @@ def test_column_subclass():
     assert column.text(dummy_row) == "('row',)"
     assert column.text(dummy_row, "default") == "('row',)"
     assert column.icon(dummy_row) is None
+    assert column.color(dummy_row) is None
+    assert column.background_color(dummy_row) is None
     assert column.widget(dummy_row) is None
 
 
@@ -261,6 +265,8 @@ def test_accessor_column_values(row, value, text, icon, widget):
     column = AccessorColumn(None, "x")
 
     assert column.value(row) == value
+    assert column.color(row) is None
+    assert column.background_color(row) is None
     assert column.widget(row) == widget
 
     if text is ValueError:

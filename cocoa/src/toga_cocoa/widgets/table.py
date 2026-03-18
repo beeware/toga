@@ -12,6 +12,7 @@ from toga_cocoa.libs import (
     NSTableViewColumnAutoresizingStyle,
 )
 
+from ..colors import native_color
 from .base import Widget
 from .internal.cells import TogaIconView
 
@@ -43,6 +44,8 @@ class TogaTable(NSTableView):
 
         icon = column.toga_column.icon(data_row)
         text = column.toga_column.text(data_row, self.interface.missing_value)
+        color = column.toga_column.color(data_row)
+        background_color = column.toga_column.background_color(data_row)
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
@@ -59,6 +62,16 @@ class TogaTable(NSTableView):
             tcv.setImage(icon._impl.native)
         else:
             tcv.setImage(None)
+
+        if color is not None:
+            tcv.textField.textColor = native_color(color)
+        else:
+            tcv.textField.textColor = None
+        if background_color is not None:
+            tcv.drawsBackground = True
+            tcv.backgroundColor = native_color(background_color)
+        else:
+            tcv.textField.drawsBackground = False
 
         return tcv
 

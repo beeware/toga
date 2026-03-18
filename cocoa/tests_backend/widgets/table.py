@@ -1,6 +1,7 @@
 import pytest
 from rubicon.objc import NSPoint
 
+from toga_cocoa.colors import native_color
 from toga_cocoa.keys import NSEventModifierFlagCommand
 from toga_cocoa.libs import NSEventType, NSScrollView, NSTableView
 
@@ -14,6 +15,7 @@ class TableProbe(SimpleProbe):
     supports_keyboard_shortcuts = True
     supports_keyboard_boundary_shortcuts = False
     supports_widgets = True
+    supports_colors = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -43,7 +45,16 @@ class TableProbe(SimpleProbe):
     def column_count(self):
         return len(self.native_table.tableColumns)
 
-    def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
+    def assert_cell_content(
+        self,
+        row,
+        col,
+        value=None,
+        icon=None,
+        widget=None,
+        color=None,
+        background_color=None,
+    ):
         view = self.native_table.tableView(
             self.native_table,
             viewForTableColumn=self.native_table.tableColumns[col],
@@ -58,6 +69,12 @@ class TableProbe(SimpleProbe):
                 assert view.imageView.image == icon._impl.native
             else:
                 assert view.imageView.image is None
+
+            if color:
+                assert view.textField.textColor == native_color(color)
+
+            if background_color:
+                assert view.backgroundColor == native_color(background_color)
 
     @property
     def max_scroll_position(self):
