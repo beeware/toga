@@ -14,7 +14,7 @@ readme = "README.md"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
-    "LICENSE"
+    "LICENSE",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
