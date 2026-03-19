@@ -15,7 +15,17 @@ Value = TypeVar("Value", contravariant=False, covariant=False)
 
 @runtime_checkable
 class ColumnT(Protocol, Generic[Value]):
-    """Protocol that Column types must adhere to."""
+    """Protocol that Column types must adhere to.
+
+    Notes:
+
+    - The styling and font methods should be considered to be a beta API
+      and may change in the future, particularly to integrate more closely with
+      the Widget style system.
+
+    - The styling and font methods are currently only supported in the Android,
+      Cocoa, and Qt backends.
+    """
 
     @property
     @abstractmethod
@@ -77,7 +87,7 @@ class ColumnT(Protocol, Generic[Value]):
         """Get the background color use for the row in this column.
 
         This is intended to be used for data-based coloring of the
-        text in a cell (eg. using a colormap to display different
+        text in a cell (eg. using a color-map to display different
         colors in a cell based on the value, or to highlight outliers).
 
         :param row: A row object from the underlying Source.
@@ -160,6 +170,8 @@ class ColumnT(Protocol, Generic[Value]):
         returns takes defaults, overrides them according to the other font
         methods and returns a matching Font object, if it can.
 
+        Most subclasses will not need to override this method.
+
         :param row: A row object from the underlying Source.
         :param defaults: A tuple of default values for style, variant,
             weight, size and family.
@@ -190,6 +202,8 @@ class ColumnT(Protocol, Generic[Value]):
             except UnknownFontError:
                 pass
 
+        # Can't find *any* font, this will use whatever the underlying widget
+        # supplies.
         return None
 
     def widget(self, row: Row[Value]) -> Widget | None:
@@ -214,6 +228,15 @@ class Column(ColumnT[Value], Generic[Value]):
 
     Subclasses should override the value method at a minimum, and other methods
     as needed.
+
+    Notes:
+
+    - The styling and font methods should be considered to be a beta API
+      and may change in the future, particularly to integrate more closely with
+      the Widget style system.
+
+    - The styling and font methods are currently only supported in the Android,
+      Cocoa, and Qt backends.
     """
 
     def __init__(self, heading: str | None):
@@ -364,6 +387,8 @@ class Column(ColumnT[Value], Generic[Value]):
         The value should a Font or None.  The default implementation
         returns takes defaults, overrides them according to the other font
         methods and returns a matching Font object, if it can.
+
+        Most subclasses will not need to override this method.
 
         :param row: A row object from the underlying Source.
         :param defaults: A tuple of default values for style, variant,

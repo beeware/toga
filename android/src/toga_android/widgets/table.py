@@ -161,9 +161,9 @@ class Table(Widget):
                 text_view.setBackgroundColor(native_color(background_color))
             # font is only None if something is very wrong (eg. can't find system font)
             # so can't test
-            if font is not None:  # pragma: no branch
+            if font is not None:
                 font_impl = font._impl
-            else:
+            else:  # pragma: no cover
                 font_impl = self._font_impl
             set_textview_font(
                 text_view,
