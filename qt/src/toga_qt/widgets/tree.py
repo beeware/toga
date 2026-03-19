@@ -217,7 +217,9 @@ class TreeSourceModel(QAbstractItemModel):
                         return native_color(color)
                 elif role == Qt.ItemDataRole.FontRole:
                     font = column.font(node, self._font_data)
-                    if font is not None:
+                    # font is only None if something is very wrong (eg. can't find
+                    # system font) so can't test
+                    if font is not None:  # pragma: no branch
                         return font._impl.native
             except Exception:  # pragma: no cover
                 logger.exception(

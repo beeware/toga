@@ -81,7 +81,9 @@ class TogaTable(NSTableView):
         else:
             tcv.textField.drawsBackground = False
 
-        if font is not None:
+        # font is only None if something is very wrong (eg. can't find system font)
+        # so can't test
+        if font is not None:  # pragma: no branch
             tcv.textField.font = font._impl.native
 
         return tcv
