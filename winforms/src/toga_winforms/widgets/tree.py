@@ -622,7 +622,7 @@ class Tree(Table):
         """The list of currently selected indices.
 
         Note that this list is modified by the StateTree and StateNode instances."""
-        return self._state_tree._selected_indices
+        return self._state_tree.selected_indices
 
     def _hit_test_arrow(self, x: int, y: int) -> int:
         """Tests whether given coordinates are over a state-change arrow.
@@ -697,6 +697,7 @@ class Tree(Table):
         movement beginning at the state-change arrow will not register as a
         MouseClick or MouseUp event.
         """
+        print("here")
         self._mouse_down_hit = -1
         self._set_mouse_move_hit(-1)
 

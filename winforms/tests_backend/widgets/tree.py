@@ -45,14 +45,9 @@ class TreeProbe(TableProbe):
         await super().select_row(row=display_index)
 
         bounds = self.native.Items[display_index].Bounds
-        self.native.OnMouseDoubleClick(
-            MouseEventArgs(
-                MouseButtons.Left,
-                clicks=2,
-                x=int((bounds.Left + bounds.Right) / 2),
-                y=int((bounds.Top + bounds.Bottom) / 2),
-                delta=0,
-            )
+        self.mouse_double_click_event(
+            x=int((bounds.Left + bounds.Right) / 2),
+            y=int((bounds.Top + bounds.Bottom) / 2),
         )
 
     def assert_cell_content(self, row_path, col, value=None, icon=None, widget=None):
@@ -109,3 +104,160 @@ class TreeProbe(TableProbe):
             if state_node.is_open != original_state:
                 state_node.toggle_state(update_display=True)
                 self.impl._update_list(True)
+
+    ####################################################################################
+    # The following are mouse events used for testing
+    ####################################################################################
+
+    def mouse_move_event(self, x: int, y: int):
+        self.native.OnMouseMove(
+            MouseEventArgs(
+                getattr(MouseButtons, "None"),
+                clicks=0,
+                x=x,
+                y=y,
+                delta=0,
+            )
+        )
+
+    def mouse_double_click_event(self, x: int, y: int):
+        self.native.OnMouseDoubleClick(
+            MouseEventArgs(
+                MouseButtons.Left,
+                clicks=2,
+                x=x,
+                y=y,
+                delta=0,
+            )
+        )
+
+    def full_mouse_click_event(self, x: int, y: int):
+        # According to the documentation the "standard Click event behavior" is the
+        # sequence MouseDown, Click, MouseClick, MouseUp.
+        # https://learn.microsoft.com/en-us/dotnet/desktop/winforms/input-mouse/events
+
+        mouse_event_args = MouseEventArgs(
+            MouseButtons.Left,
+            clicks=1,
+            x=x,
+            y=y,
+            delta=0,
+        )
+
+        self.native.OnMouseDown(mouse_event_args)
+
+        # A simulated click doesn't change selection. Note: This basic implementation is
+        # not compatible with multiple_select=True.
+        lvi = self.native.HitTest(x, y).Item
+        if lvi is None:
+            for index in self.native.SelectedIndices:
+                self.native.Items[index].Selected = False
+        else:
+            lvi.Selected = True
+
+        self.native.OnClick(mouse_event_args)
+        self.native.OnMouseClick(mouse_event_args)
+        self.native.OnMouseUp(mouse_event_args)
+
+    def mouse_leave_event(self):
+        self.native.OnMouseLeave(
+            MouseEventArgs(
+                getattr(MouseButtons, "None"),
+                clicks=0,
+                x=0,
+                y=0,
+                delta=0,
+            )
+        )
+
+    ####################################################################################
+    # The following are tests based on mouse events
+    ####################################################################################
+
+    async def assert_item_mouse_hover(self, row_path):
+        state_node = self.state_node(row_path)
+        display_index = self.impl.display_list.index(state_node)
+        lvi = self.native.Items[display_index]
+        bounds = lvi.Bounds
+
+        assert not state_node.mouse_hover
+        assert self.impl._mouse_move_hit in {-1, -2}
+
+        # Move mouse over state-change arrow
+        self.mouse_move_event(
+            x=int(state_node.arrow_center_x),
+            y=int((bounds.Top + bounds.Bottom) / 2),
+        )
+        await asyncio.sleep(0.1)
+        assert state_node.mouse_hover
+        assert self.impl._mouse_move_hit == 0
+
+        # Move mouse away from state-change arrow, but still on the item.
+        self.mouse_move_event(
+            x=int(state_node.arrow_center_x + 40),
+            y=int((bounds.Top + bounds.Bottom) / 2),
+        )
+        await asyncio.sleep(0.1)
+        assert not state_node.mouse_hover
+        assert self.impl._mouse_move_hit == -1
+
+        # Move mouse away within item range but not on arrow.
+        self.mouse_move_event(
+            x=int(state_node.arrow_center_x + 80),
+            y=int((bounds.Top + bounds.Bottom) / 2),
+        )
+        await asyncio.sleep(0.1)
+        assert not state_node.mouse_hover
+        assert self.impl._mouse_move_hit == -1
+
+        # Move mouse to client area with no items
+        self.mouse_move_event(
+            x=int(state_node.arrow_center_x),
+            y=int((bounds.Top + bounds.Bottom) / 2 + 3 * (bounds.Bottom - bounds.Top)),
+        )
+        await asyncio.sleep(0.1)
+        assert not state_node.mouse_hover
+        assert self.impl._mouse_move_hit == -2
+
+    async def single_click(self, row_path, toggle: bool, on_item: bool):
+        # Item must be visible and drawing finished.
+        state_node = self.state_node(row_path)
+        display_index = self.impl.display_list.index(state_node)
+        bounds = self.native.Items[display_index].Bounds
+
+        old_is_open = state_node.is_open
+
+        if toggle:
+            x = int(state_node.arrow_center_x)
+        else:
+            x = int(state_node.arrow_center_x + 40)
+
+        if on_item:
+            y = int((bounds.Top + bounds.Bottom) / 2)
+        else:
+            y = int((bounds.Top + bounds.Bottom) / 2 + 3 * (bounds.Bottom - bounds.Top))
+        self.full_mouse_click_event(x=x, y=y)
+
+        await asyncio.sleep(0.1)
+        if toggle and on_item:
+            assert old_is_open != state_node.is_open
+        else:
+            assert old_is_open == state_node.is_open
+
+    async def double_click_state_change_arrow(self, row_path):
+        # Note that item drawing must be finished for state_node.arrow_center_x to be
+        # correct.
+        state_node = self.state_node(row_path)
+        display_index = self.impl.display_list.index(state_node)
+        bounds = self.native.Items[display_index].Bounds
+
+        self.mouse_double_click_event(
+            x=int(state_node.arrow_center_x),
+            y=int((bounds.Top + bounds.Bottom) / 2),
+        )
+
+    async def assert_mouse_leave(self):
+        self.mouse_leave_event()
+
+        assert self.impl._mouse_move_hit == -1
+        assert self.impl._mouse_down_hit == -1

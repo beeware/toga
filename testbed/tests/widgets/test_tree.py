@@ -1096,3 +1096,52 @@ def test_deprecated_methods(widget, method_name, args, expected_args):
         method(**args)
 
     mock_method.assert_called_once_with(**expected_args)
+
+
+async def test_mouse_events(widget, probe, on_activate_handler):
+    skip_on_platforms("android", "iOS", "linux", "macOS")
+    """Does the widget implement mouse events correctly?"""
+
+    # Use the small data
+    small_data = [
+        (
+            {"a": "A0", "b": "", "c": ""},
+            [({"a": f"A{i}", "b": i, "c": "C"}, None) for i in range(2)],
+        )
+    ]
+
+    widget.data = small_data
+    widget.collapse()
+    await probe.redraw("Tree is collapsed and awaiting hover of state-change arrow")
+    assert not probe.is_expanded(widget.data[0])
+    await probe.assert_item_mouse_hover((0,))
+
+    widget.expand(widget.data[0])
+    await probe.redraw("A node is expanded and awaiting hover of state-change arrow")
+    assert probe.is_expanded(widget.data[0])
+    await probe.assert_item_mouse_hover((0,))
+
+    # Simulate clicks on the state change arrow.
+    widget.collapse()
+    await probe.redraw("Tree is collapsed and awaiting toggle by mouse click")
+    await probe.single_click((0,), toggle=True, on_item=True)
+    assert widget.selection is None
+    await probe.single_click((0,), toggle=True, on_item=True)
+    assert widget.selection is None
+
+    # Simulate a normal item selection click.
+    await probe.redraw("Tree is collapsed and awaiting an item selection mouse click")
+    await probe.single_click((0,), toggle=False, on_item=True)
+    assert widget.selection == widget.data[0]
+
+    # Simulate a normal selection click in the client area, but away from items.
+    await probe.redraw("Tree is collapsed and awaiting an item selection mouse click")
+    await probe.single_click((0,), toggle=False, on_item=False)
+    assert widget.selection is None
+
+    # Double clicking on a state-change arrow doesn't activate the row.")
+    await probe.double_click_state_change_arrow((0,))
+    on_activate_handler.assert_not_called()
+
+    # Test the mouse cursor leaving the client area
+    await probe.assert_mouse_leave()
