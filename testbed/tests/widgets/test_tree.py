@@ -224,6 +224,64 @@ async def test_select(widget, probe, source, on_select_handler):
         await probe.redraw("A non-shortcut key was pressed")
         assert widget.selection == source[1][2][0]
 
+    # Test selection remains after node with lower index is expanded
+    widget.collapse()
+    assert not probe.is_expanded(source[3])
+    await probe.select_row((1,))
+    await probe.redraw("A row that is below a row to be expanded is selected")
+    widget.expand(source[3])
+    assert widget.selection == source[1]
+    widget.collapse(source[3])
+    assert not probe.is_expanded(source[3])
+
+    # Test selection remains after the selected node is expanded
+    assert not probe.is_expanded(source[3])
+    await probe.select_row((3,))
+    await probe.redraw("A row that is to be expanded is selected")
+    widget.expand(source[3])
+    assert widget.selection == source[3]
+    widget.collapse(source[3])
+    assert not probe.is_expanded(source[3])
+
+    # Test selection remains after node with higher index is expanded
+    assert not probe.is_expanded(source[3])
+    await probe.select_row((4,))
+    await probe.redraw("A row that is to be expanded is selected")
+    widget.expand(source[3])
+    assert widget.selection == source[4]
+    widget.collapse(source[3])
+    assert not probe.is_expanded(source[3])
+
+    # Test selection remains after node with lower index is collapsed
+    widget.expand(source[3])
+    assert probe.is_expanded(source[3])
+    await probe.select_row((1,))
+    await probe.redraw("A node is expanded and a row with lower index is selected")
+    widget.collapse(source[3])
+    assert widget.selection == source[1]
+    assert not probe.is_expanded(source[3])
+
+    # Test selection remains after root node with higher index is collapsed
+    widget.expand(source[3])
+    assert probe.is_expanded(source[3])
+    await probe.select_row((4,))
+    await probe.redraw(
+        "A node is expanded and a root-row with higher index is selected"
+    )
+    widget.collapse(source[3])
+    assert widget.selection == source[4]
+    assert not probe.is_expanded(source[3])
+
+    if toga.platform.current_platform in {"macOS", "windows"}:
+        # Test that selection is lost after a node containing selection is collapsed.
+        widget.expand(source[3])
+        assert probe.is_expanded(source[3])
+        await probe.select_row((3, 1))
+        await probe.redraw("A node is expanded and a child is selected")
+        widget.collapse(source[3])
+        assert widget.selection is None
+        assert not probe.is_expanded(source[3])
+
 
 async def test_expand_collapse(widget, probe, source):
     """Nodes can be expanded and collapsed"""
@@ -456,6 +514,59 @@ async def test_expand_collapse(widget, probe, source):
     assert not probe.is_expanded(source[1][2])
     assert not probe.is_expanded(source[2])
     assert not probe.is_expanded(source[2][2])
+
+    # Expand non-visible node.
+    widget.expand(source[0][2])
+    await probe.redraw("A non-visible node is expanded.")
+    assert not probe.is_expanded(source[0])
+    assert probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    assert not probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Collapse non-visible node.
+    widget.collapse(source[0][2])
+    await probe.redraw("A non-visible node is collapsed.")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    assert not probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Test WinForms node toggle functionality.
+    if toga.platform.current_platform == "windows":
+        # Toggle non-visible node to open.
+        widget.collapse()
+        probe.toggle_node(
+            (
+                0,
+                2,
+            )
+        )
+        await probe.redraw("A non-visible node is toggled to open.")
+        assert not probe.is_expanded(source[0])
+        assert probe.is_expanded(source[0][2])
+        assert not probe.is_expanded(source[1])
+        assert not probe.is_expanded(source[1][2])
+        assert not probe.is_expanded(source[2])
+        assert not probe.is_expanded(source[2][2])
+
+        # Toggle non-visible node to closed.
+        probe.toggle_node(
+            (
+                0,
+                2,
+            )
+        )
+        await probe.redraw("A non-visible node is toggled to closed.")
+        assert not probe.is_expanded(source[0])
+        assert not probe.is_expanded(source[0][2])
+        assert not probe.is_expanded(source[1])
+        assert not probe.is_expanded(source[1][2])
+        assert not probe.is_expanded(source[2])
+        assert not probe.is_expanded(source[2][2])
 
 
 async def test_activate(

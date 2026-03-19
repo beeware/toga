@@ -18,6 +18,10 @@ class TreeProbe(TableProbe):
         state_node = self.state_node(row_path)
         return self.impl.display_list.index(state_node)
 
+    def toggle_node(self, row_path):
+        state_node = self.state_node(row_path)
+        state_node.toggle_state(True)
+
     async def expand_tree(self):
         self.impl.expand_all()
         await asyncio.sleep(0.1)
