@@ -24,13 +24,12 @@ INVALID_INDEX = QModelIndex()
 
 
 class TreeSourceModel(QAbstractItemModel):
-    def __init__(self, interface, **kwargs):
+    def __init__(self, source, columns, missing_value, font_data, **kwargs):
         super().__init__(**kwargs)
-        self._interface = interface
-        self._source = getattr(interface, "_data", None)
-        self._columns = interface.columns
-        self._missing_value = interface.missing_value
-        self._font_data = interface.style.font
+        self._source = source
+        self._columns = columns
+        self._missing_value = missing_value
+        self._font_data = font_data
 
     def set_source(self, source):
         self.beginResetModel()
@@ -254,7 +253,10 @@ class Tree(Widget):
         self.native = QTreeView()
 
         self.native_model = TreeSourceModel(
-            self.interface,
+            getattr(self.interface, "_data", None),
+            self.interface._columns[:],
+            self.interface.missing_value,
+            self.interface.style.font,
             parent=self.native,
         )
         self.native.setModel(self.native_model)
@@ -281,6 +283,12 @@ class Tree(Widget):
         # Invalid index shouldn't occur in normal operation.
         if index.isValid():  # pragma: no branch
             self.interface.on_activate(node=self.native_model._get_node(index))
+
+    def set_font(self, font):
+        super().set_font(font)
+        # Update the fonts of all visible cells
+        self.native_model._font_data = self.interface.style.font
+        self.native_model.reset_source()
 
     def change_source(self, source):
         self.native_model.set_source(source)

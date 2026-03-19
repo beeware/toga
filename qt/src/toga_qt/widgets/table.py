@@ -23,13 +23,12 @@ class TableSourceModel(QAbstractTableModel):
     _source: ListSource | None
     headings: list[str]
 
-    def __init__(self, interface, **kwargs):
+    def __init__(self, source, columns, missing_value, font_data, **kwargs):
         super().__init__(**kwargs)
-        self._interface = interface
-        self._source = getattr(interface, "_data", None)
-        self._columns = interface._columns
-        self._missing_value = interface.missing_value
-        self._font_data = interface.style.font
+        self._source = source
+        self._columns = columns
+        self._missing_value = missing_value
+        self._font_data = font_data
 
     def set_source(self, source):
         self.beginResetModel()
@@ -177,7 +176,10 @@ class Table(Widget):
         self._resizing_columns = False
 
         self.native_model = TableSourceModel(
-            self.interface,
+            getattr(self.interface, "_data", None),
+            self.interface._columns[:],
+            self.interface.missing_value,
+            self.interface.style.font,
             parent=self.native,
         )
         self.native.setModel(self.native_model)
@@ -213,6 +215,11 @@ class Table(Widget):
     def qt_column_resized(self, index, old_size, new_size):
         if not self._resizing_columns:
             self._autofit_columns = False
+
+    def set_font(self, font):
+        super().set_font(font)
+        self.native_model._font_data = self.interface.style.font
+        self.native_model.reset_source()
 
     def change_source(self, source):
         self.native_model.set_source(source)
