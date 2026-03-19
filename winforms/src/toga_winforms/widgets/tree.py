@@ -203,21 +203,9 @@ class StateTree(StateNode):
         """A StateTree is always open (expanded)."""
         return True
 
-    @is_open.setter
-    def is_open(self, value) -> None:
-        pass
-
     def toggle_state(self, update_display: bool = False) -> bool:
         """A StateTree is always open (expanded)."""
         return False
-
-    def set_all_states(self, all_open: bool) -> None:
-        """Sets the state (open/closed) of all the child StateNode instances.
-
-        :param all_open: Should the children be open (expanded) or closed (contracted)?
-        """
-        super().set_all_states(all_open)
-        self.display_list_refresh()
 
     #################################################################################
     # Display list methods
@@ -361,14 +349,14 @@ class StateTree(StateNode):
         :param range_size: The size of the sublist being inserted/removed.
         :return: A bool indicating whether a change of selection has occurred.
         """
-        selection_updater = extend_indices if insert else reduce_indices
-        selection_updater = partial(selection_updater, start_index, range_size)
+        index_modifier = extend_indices if insert else reduce_indices
+        index_modifier = partial(index_modifier, start_index, range_size)
 
         def non_negative(x: int) -> bool:
             return x >= 0
 
         modified_indices = list(
-            filter(non_negative, map(selection_updater, self._selected_indices))
+            filter(non_negative, map(index_modifier, self._selected_indices))
         )
         notify_select = len(modified_indices) < len(self._selected_indices)
 
@@ -389,7 +377,9 @@ class StateTree(StateNode):
             if state_node.node == node:
                 return state_node
 
-        return None
+        # This method is only called by _get_state_parent, where a StateNode should
+        # always be found.
+        return None  # pragma: no cover
 
 
 def display_branch_iter(
@@ -427,21 +417,6 @@ def extend_indices(extension_start_index: int, extension_size: int, index: int) 
         return index
     else:
         return index + extension_size
-
-
-def index_modifier(
-    indices: list[int],
-    insert: bool,
-    start_index: int,
-    range_size: int,
-) -> list[int]:
-    selection_updater = extend_indices if insert else reduce_indices
-    selection_updater = partial(selection_updater, start_index, range_size)
-
-    def non_negative(x: int) -> bool:
-        return x >= 0
-
-    return list(filter(non_negative, map(selection_updater, indices)))
 
 
 class Tree(Table):
@@ -483,7 +458,8 @@ class Tree(Table):
 
         # These measurements deal with the arrow size. They are checked/updated during
         # the drawing process. They need to be constantly monitored since a change in
-        # screen scaling will produce a different sized arrow.
+        # screen scaling will produce a different sized arrow. These values are the
+        # expected values for 200% scaling.
         self._arrow_indent: int = 2
         self._arrow_width: float = 21.0
 
@@ -582,8 +558,6 @@ class Tree(Table):
 
     def source_insert(self, *, index, item, parent=None):
         state_parent = self._get_state_parent(parent)
-        if state_parent is None:
-            return
 
         refresh_needed = state_parent.insert(index, item)
         self._update_list(refresh=refresh_needed)
@@ -618,8 +592,6 @@ class Tree(Table):
 
     def source_remove(self, *, index, item, parent=None):
         state_parent = self._get_state_parent(parent)
-        if state_parent is None:
-            return
 
         notify_select = state_parent.remove(index)
         self._update_list(notify_select)
@@ -651,12 +623,6 @@ class Tree(Table):
 
         Note that this list is modified by the StateTree and StateNode instances."""
         return self._state_tree._selected_indices
-
-    @selected_indices.setter
-    def selected_indices(self, indices: list[int]):
-        notify_select = self._state_tree._selected_indices != indices
-        self._state_tree._selected_indices = indices
-        self._selected_indices_tree_to_ui(notify_select)
 
     def _hit_test_arrow(self, x: int, y: int) -> int:
         """Tests whether given coordinates are over a state-change arrow.
@@ -776,7 +742,11 @@ class Tree(Table):
         self._arrow_width = max(lengths)
         quotient, remaider = divmod(self._arrow_width, self._indent)
 
-        if remaider == 0 and self._arrow_indent != quotient:
+        if remaider == 0 and self._arrow_indent != quotient:  # pragma: no cover
+            # The arrow widths should be 10,21 and 31 pixels for 100%, 200% and 300%
+            # scaling. Also, rect.right - rect.left should be of the form 4 + 16 * n,
+            # which is not satisfied by the above widths. So under normal usage this
+            # block is not accessed.
             self._arrow_indent = quotient
             self._update_list(refresh=True)
         elif remaider != 0 and self._arrow_indent != quotient + 1:
@@ -834,6 +804,12 @@ class Tree(Table):
             # CDRF_SKIPPOSTPAINT means that the focus rectangle is not drawn.
             return wc.CDRF_SKIPPOSTPAINT
 
+        else:  # pragma: no cover
+            # The draw stage messages after CDDS_PREPAINT of custom draw should only be
+            # received if they are requested using appropriate return flags. However,
+            # custom draw is known to occasionally send incorrect messages.
+            pass
+
     def _update_list(self, notify_select: bool = False, refresh: bool = False):
         """Updates the display list and the UI.
 
@@ -864,11 +840,11 @@ class Tree(Table):
             return self._state_tree
         else:
             state_parent = self._state_tree.find_state_node(parent)
-            if state_parent is None:
-                warn(
+            if state_parent is None:  # pragma: no cover
+                # A StateNode associated to a Node should always be found.
+                raise NameError(
                     f"Could not find an object managed by {self._state_tree} that "
-                    + f"corresponds to {parent}",
-                    stacklevel=1,
+                    + f"corresponds to {parent}"
                 )
 
             return state_parent
