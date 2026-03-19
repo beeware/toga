@@ -899,8 +899,8 @@ class App:
 
     def exit_presentation_mode(self) -> None:
         """Exit presentation mode."""
-        # No-op if no windows are in presentation mode. This also ensures we
-        # don't access _exiting_presentation on backends that don't support it.
+        # No-op if no windows are in presentation mode, and ensure we
+        # don't access _exiting_presentation on backends that don't support it
         if not self.in_presentation_mode:
             return
 
