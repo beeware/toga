@@ -29,6 +29,7 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+        self._exiting_presentation = False
 
         self.policy = GLibEventLoopPolicy()
         asyncio.set_event_loop_policy(self.policy)
