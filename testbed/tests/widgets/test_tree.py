@@ -515,36 +515,33 @@ async def test_expand_collapse(widget, probe, source):
     assert not probe.is_expanded(source[2])
     assert not probe.is_expanded(source[2][2])
 
-    # Expand non-visible node.
-    widget.expand(source[0][2])
-    await probe.redraw("A non-visible node is expanded.")
-    assert not probe.is_expanded(source[0])
-    assert probe.is_expanded(source[0][2])
-    assert not probe.is_expanded(source[1])
-    assert not probe.is_expanded(source[1][2])
-    assert not probe.is_expanded(source[2])
-    assert not probe.is_expanded(source[2][2])
+    # Test WinForms expand/collapse for non-visible nodes.
+    if toga.platform.current_platform == "windows":
+        # Expand non-visible node.
+        widget.expand(source[0][2])
+        await probe.redraw("A non-visible node is expanded.")
+        assert not probe.is_expanded(source[0])
+        assert probe.is_expanded(source[0][2])
+        assert not probe.is_expanded(source[1])
+        assert not probe.is_expanded(source[1][2])
+        assert not probe.is_expanded(source[2])
+        assert not probe.is_expanded(source[2][2])
 
-    # Collapse non-visible node.
-    widget.collapse(source[0][2])
-    await probe.redraw("A non-visible node is collapsed.")
-    assert not probe.is_expanded(source[0])
-    assert not probe.is_expanded(source[0][2])
-    assert not probe.is_expanded(source[1])
-    assert not probe.is_expanded(source[1][2])
-    assert not probe.is_expanded(source[2])
-    assert not probe.is_expanded(source[2][2])
+        # Collapse non-visible node.
+        widget.collapse(source[0][2])
+        await probe.redraw("A non-visible node is collapsed.")
+        assert not probe.is_expanded(source[0])
+        assert not probe.is_expanded(source[0][2])
+        assert not probe.is_expanded(source[1])
+        assert not probe.is_expanded(source[1][2])
+        assert not probe.is_expanded(source[2])
+        assert not probe.is_expanded(source[2][2])
 
     # Test WinForms node toggle functionality.
     if toga.platform.current_platform == "windows":
         # Toggle non-visible node to open.
         widget.collapse()
-        probe.toggle_node(
-            (
-                0,
-                2,
-            )
-        )
+        probe.toggle_node((0, 2))
         await probe.redraw("A non-visible node is toggled to open.")
         assert not probe.is_expanded(source[0])
         assert probe.is_expanded(source[0][2])
@@ -554,12 +551,7 @@ async def test_expand_collapse(widget, probe, source):
         assert not probe.is_expanded(source[2][2])
 
         # Toggle non-visible node to closed.
-        probe.toggle_node(
-            (
-                0,
-                2,
-            )
-        )
+        probe.toggle_node((0, 2))
         await probe.redraw("A non-visible node is toggled to closed.")
         assert not probe.is_expanded(source[0])
         assert not probe.is_expanded(source[0][2])
@@ -1101,6 +1093,9 @@ def test_deprecated_methods(widget, method_name, args, expected_args):
 async def test_mouse_events(widget, probe, on_activate_handler):
     skip_on_platforms("android", "iOS", "linux", "macOS")
     """Does the widget implement mouse events correctly?"""
+    # These tests are WinForms specific
+    if toga.platform.current_platform != "windows":
+        return
 
     # Use the small data
     small_data = [
