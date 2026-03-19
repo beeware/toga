@@ -529,11 +529,11 @@ async def test_exit_presentation_mode_recursion_guard():
 
     # Simulate the recursion scenario: set the flag as if we're already exiting,
     # then call exit_presentation_mode — it should be a no-op.
-    app._exiting_presentation = True
+    app._impl._exiting_presentation = True
     app.exit_presentation_mode()
     # Window should still be in presentation since the exit was short-circuited
     assert window1.state == WindowState.PRESENTATION
-    app._exiting_presentation = False
+    app._impl._exiting_presentation = False
 
     # Now a real exit should work
     app.exit_presentation_mode()
