@@ -48,7 +48,7 @@ class TogaTable(NSTableView):
         text_align = column.toga_column.text_align(data_row)
         color = column.toga_column.color(data_row)
         background_color = column.toga_column.background_color(data_row)
-        font = column.toga_column.font(data_row, self.interface)
+        font = column.toga_column.font(data_row, self.interface.style.font)
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting

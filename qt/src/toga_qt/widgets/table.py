@@ -29,6 +29,7 @@ class TableSourceModel(QAbstractTableModel):
         self._source = getattr(interface, "_data", None)
         self._columns = interface._columns
         self._missing_value = interface.missing_value
+        self._font_data = interface.style.font
 
     def set_source(self, source):
         self.beginResetModel()
@@ -137,7 +138,7 @@ class TableSourceModel(QAbstractTableModel):
                     if color is not None:
                         return native_color(color)
                 elif role == Qt.ItemDataRole.FontRole:
-                    font = column.font(row, self._interface)
+                    font = column.font(row, self._font_data)
                     if font is not None:
                         return font._impl.native
             except Exception:  # pragma: no cover

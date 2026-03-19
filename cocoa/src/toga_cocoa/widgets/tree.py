@@ -69,7 +69,7 @@ class TogaTree(NSOutlineView):
         text_align = column.toga_column.text_align(node)
         color = column.toga_column.color(node)
         background_color = column.toga_column.background_color(node)
-        font = column.toga_column.font(node, self.interface)
+        font = column.toga_column.font(node, self.interface.style.font)
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting

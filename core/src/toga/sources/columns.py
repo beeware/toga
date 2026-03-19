@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 
 from ..colors import Color
-from ..constants import SYSTEM
+from ..constants import NORMAL, SYSTEM
 from ..fonts import Font, UnknownFontError
 from ..icons import Icon
 from ..widgets.base import Widget
@@ -143,16 +143,27 @@ class ColumnT(Protocol, Generic[Value]):
         """
         return None
 
-    def font(self, row: Any, widget: Any) -> Font | None:
+    def font(
+        self,
+        row: Any,
+        defaults: tuple[str, str, str, int, list[str]] = (
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            -1,
+            [SYSTEM],
+        ),
+    ) -> Font | None:
         """Get the Font object to use for the row in this column.
 
         The value should a Font or None.  The default implementation
-        returns takes the Table or Tree widget's font and adjusts it
-        according to the other font methods.
+        returns takes defaults, overrides them according to the other font
+        methods and returns a matching Font object, if it can.
 
         :param row: A row object from the underlying Source.
-        :param widget: The Table or Tree widget the column is displayed in.
-        :returns: The size of the font, or None.
+        :param defaults: A tuple of default values for style, variant,
+            weight, size and family.
+        :returns: A Toga Font object, or None.
         """
         family = self.font_family(row)
         style = self.font_style(row)
@@ -160,14 +171,13 @@ class ColumnT(Protocol, Generic[Value]):
         weight = self.font_weight(row)
         size = self.font_size(row)
 
-        font = widget.style.font
         font_args = {
-            "style": style if style is not None else font[0],
-            "variant": variant if variant is not None else font[1],
-            "weight": weight if weight is not None else font[2],
-            "size": size if size is not None else font[3],
+            "style": style if style is not None else defaults[0],
+            "variant": variant if variant is not None else defaults[1],
+            "weight": weight if weight is not None else defaults[2],
+            "size": size if size is not None else defaults[3],
         }
-        font_family = family if family is not None else font[4]
+        font_family = family if family is not None else defaults[4]
 
         for family in font_family:
             try:
@@ -338,18 +348,29 @@ class Column(ColumnT[Value], Generic[Value]):
         """
         return None
 
-    def font(self, row: Any, widget: Any) -> Font | None:
+    def font(
+        self,
+        row: Any,
+        defaults: tuple[str, str, str, int, list[str]] = (
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            -1,
+            [SYSTEM],
+        ),
+    ) -> Font | None:
         """Get the Font object to use for the row in this column.
 
         The value should a Font or None.  The default implementation
-        returns takes the Table or Tree widget's font and adjusts it
-        according to the other font methods.
+        returns takes defaults, overrides them according to the other font
+        methods and returns a matching Font object, if it can.
 
         :param row: A row object from the underlying Source.
-        :param widget: The Table or Tree widget the column is displayed in.
-        :returns: The size of the font, or None.
+        :param defaults: A tuple of default values for style, variant,
+            weight, size and family.
+        :returns: A Toga Font object, or None.
         """
-        return super().font(row, widget)
+        return super().font(row, defaults)
 
     def widget(self, row: Any) -> Widget | None:
         """Get a widget from the Row or Node of a ListSource or TreeSource.

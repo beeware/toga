@@ -30,6 +30,7 @@ class TreeSourceModel(QAbstractItemModel):
         self._source = getattr(interface, "_data", None)
         self._columns = interface.columns
         self._missing_value = interface.missing_value
+        self._font_data = interface.style.font
 
     def set_source(self, source):
         self.beginResetModel()
@@ -215,7 +216,7 @@ class TreeSourceModel(QAbstractItemModel):
                     if color is not None:
                         return native_color(color)
                 elif role == Qt.ItemDataRole.FontRole:
-                    font = column.font(node, self._interface)
+                    font = column.font(node, self._font_data)
                     if font is not None:
                         return font._impl.native
             except Exception:  # pragma: no cover

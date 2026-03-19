@@ -3,7 +3,17 @@ from typing import Any
 import pytest
 
 from toga.colors import rgb
-from toga.constants import BOLD, ITALIC, RIGHT, SERIF, SMALL_CAPS
+from toga.constants import (
+    BOLD,
+    ITALIC,
+    NORMAL,
+    RIGHT,
+    SERIF,
+    SMALL_CAPS,
+    SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE,
+)
+from toga.fonts import Font
 from toga.icons import Icon
 from toga.sources import AccessorColumn, Column
 from toga.sources.list_source import Row
@@ -98,6 +108,7 @@ def test_column_abc(heading, heading_property):
     assert column.font_variant(dummy_row) is None
     assert column.font_weight(dummy_row) is None
     assert column.font_size(dummy_row) is None
+    assert column.font(dummy_row) == Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)
     assert column.widget(dummy_row) is None
 
 
@@ -118,6 +129,7 @@ def test_column_subclass():
     assert column.font_variant(dummy_row) is None
     assert column.font_weight(dummy_row) is None
     assert column.font_size(dummy_row) is None
+    assert column.font(dummy_row) == Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)
     assert column.widget(dummy_row) is None
 
 
@@ -138,6 +150,9 @@ def test_column_style():
     assert column.font_variant(dummy_row) == SMALL_CAPS
     assert column.font_weight(dummy_row) == BOLD
     assert column.font_size(dummy_row) == 24
+    assert column.font(dummy_row, (NORMAL, NORMAL, NORMAL, 12, [SYSTEM])) == Font(
+        SERIF, 24, style=ITALIC, variant=SMALL_CAPS, weight=BOLD
+    )
     assert column.widget(dummy_row) is None
 
 
