@@ -170,8 +170,6 @@ class ColumnT(Protocol, Generic[Value]):
         variant = self.font_variant(row)
         weight = self.font_weight(row)
         size = self.font_size(row)
-        if all(property is None for property in [family, style, variant, weight, size]):
-            return None
 
         font_args = {
             "style": style if style is not None else defaults[0],

@@ -11,6 +11,7 @@ from toga.constants import (
     SERIF,
     SMALL_CAPS,
     SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE,
 )
 from toga.fonts import Font
 from toga.icons import Icon
@@ -107,7 +108,7 @@ def test_column_abc(heading, heading_property):
     assert column.font_variant(dummy_row) is None
     assert column.font_weight(dummy_row) is None
     assert column.font_size(dummy_row) is None
-    assert column.font(dummy_row) is None
+    assert column.font(dummy_row) == Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)
     assert column.widget(dummy_row) is None
 
 
@@ -128,7 +129,7 @@ def test_column_subclass():
     assert column.font_variant(dummy_row) is None
     assert column.font_weight(dummy_row) is None
     assert column.font_size(dummy_row) is None
-    assert column.font(dummy_row) is None
+    assert column.font(dummy_row) == Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)
     assert column.widget(dummy_row) is None
 
 
