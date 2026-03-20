@@ -60,6 +60,7 @@ class App:
 
         self.cursorhidden = False
         self._is_exiting = False
+        self._exiting_presentation = False
 
         self.native = create_qapplication()
         self.loop = QEventLoop(self.native)

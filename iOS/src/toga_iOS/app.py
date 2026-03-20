@@ -53,11 +53,14 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
         # Native instance doesn't exist until the lifecycle completes.
         self.native = None
 
         # Add a reference for the PythonAppDelegate class to use.
         App.app = self
+
+        self._exiting_presentation = False
 
         self.loop = RubiconEventLoop()
 

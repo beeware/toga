@@ -16,6 +16,7 @@ class App(LoggedObject):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
+        self._exiting_presentation = False
         self.dialog_responses = {}
 
         # In pytest-asyncio conditions, there will be an existing event loop.

@@ -237,10 +237,12 @@ class Window:
             self._pending_state_transition = state
             return
 
-        # Exit app presentation mode if another window is in it
-        if any(
-            window.state == WindowState.PRESENTATION and window != self.interface
+        # Exit app presentation mode if another window is in it — unless we're
+        # entering presentation mode ourselves (to allow multiple windows).
+        if state != WindowState.PRESENTATION and any(
+            window.state == WindowState.PRESENTATION
             for window in self.interface.app.windows
+            if window != self.interface
         ):
             self.interface.app.exit_presentation_mode()
 
