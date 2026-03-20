@@ -13,7 +13,7 @@ description = "A Briefcase plugin for generating Positron apps."
 readme = "README.md"
 license = "BSD-3-Clause"
 license-files = [
-    "LICENSE"
+    "LICENSE",
 ]
 dynamic = ["version"]
 dependencies = ["briefcase >= 0.3.21"]
