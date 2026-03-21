@@ -1,8 +1,7 @@
 import ctypes
+import ctypes.util
 
-import moderngl
-from OpenGL import GL
-from rubicon.objc import objc_method, objc_property
+from rubicon.objc import NSMakeRect, objc_method
 from travertino.size import at_least
 
 from toga.widgets.gl.openglcontext import OpenGLContext
@@ -14,51 +13,57 @@ from toga_cocoa.libs import (
     NSOpenGLPFADepthSize,
     NSOpenGLPFADoubleBuffer,
     NSOpenGLPFANoRecovery,
+    NSOpenGLPFAOpenGLProfile,
     NSOpenGLPFAStencilSize,
     NSOpenGLPFAWindow,
     NSOpenGLPixelFormat,
+    NSOpenGLProfileVersion4_1Core,
     NSOpenGLView,
     NSRect,
 )
 
 from .base import Widget
 
+# possibly use PyOpenGL instead?
+GL = ctypes.cdll.LoadLibrary(ctypes.util.find_library("OpenGL"))
+
 
 class CocoaOpenGLContext(OpenGLContext):
     def __init__(self, impl):
         self.impl = impl
         self.native = impl.native.openGLContext
-        print(self.native)
 
     def clear_color(self, r: float, g: float, b: float, a: float):
-        GL.glClearColor(r, g, b, a)
+        GL.glClearColor(
+            ctypes.c_float(r), ctypes.c_float(g), ctypes.c_float(b), ctypes.c_float(a)
+        )
         print("here")
 
     def clear(self, mask: int):
         GL.glClear(mask)
-        print("and here")
 
 
 class TogaOpenGLView(NSOpenGLView):
-    interface = objc_property(object, weak=True)
-    impl = objc_property(object, weak=True)
+    # interface = objc_property(object, weak=True)
+    # impl = objc_property(object, weak=True)
 
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
         self.openGLContext.makeCurrentContext()
-        context = moderngl.create_context()
-        context.clear(1.0, 0.0, 0.0, 1.0)
-        # context = CocoaOpenGLContext(self.impl)
-        # context.native.makeCurrentContext()
-        # GL.glViewport(0, 0, int(rect.size.width), int(rect.size.height))
-        # GL.glClearColor(1.0, 0.0, 0.0, 1.0)
-        # GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-        # print('here')
-        # # self.interface.on_render(context)
-        self.openGLContext.flushBuffer()
+        context = self.openGLContext
+        GL.glViewport(0, 0, int(rect.size.width), int(rect.size.height))
+        GL.glClearColor(
+            ctypes.c_float(1.0),
+            ctypes.c_float(0.0),
+            ctypes.c_float(0.0),
+            ctypes.c_float(1.0),
+        )
+        GL.glClear(0x00004000)
+        context.flushBuffer()
 
     @objc_method
     def initWithFrame(self, frame: NSRect):
+        # XXX This doesn't seem to be being called?
         a = (
             NSOpenGLPFANoRecovery,
             NSOpenGLPFAWindow,
@@ -73,16 +78,20 @@ class TogaOpenGLView(NSOpenGLView):
             NSOpenGLPFAStencilSize,
             8,
             NSOpenGLPFAAccumSize,
+            NSOpenGLPFAOpenGLProfile,
+            NSOpenGLProfileVersion4_1Core,
             0,
         )
         attributes = (ctypes.c_uint32 * len(a))(*a)
         pixel_format = NSOpenGLPixelFormat.alloc().initWithAttributes(attributes)
-        self.initWithFrame_pixelFormat(frame, pixel_format)
+        return self.initWithFrame_pixelFormat(frame, pixel_format)
 
 
 class OpenGLView(Widget):
     def create(self):
-        self.native = TogaOpenGLView.alloc().init()
+        # XXX This doesn't seem quite right - rect is arbitrary, but don't know size yet
+        rect = NSMakeRect(0, 0, 500, 200)
+        self.native = TogaOpenGLView.alloc().initWithFrame(rect)
         self.native.interface = self.interface
         self.native.impl = self
 
