@@ -713,13 +713,7 @@ class Tree(Table):
         if self._mouse_down_hit >= 0:
             self._focused_index_tree_to_ui()
         else:
-            self._focused_index_ui_to_tree(focused_index)
-
-    def _focused_index_ui_to_tree(self, focused_index):
-        if focused_index < 0:
-            focused_index = None
-
-        self._state_tree.focused_index_from_ui(focused_index)
+            self._state_tree.focused_index_from_ui(focused_index)
 
     def _focused_index_tree_to_ui(self):
         focus_index = self.focused_index
@@ -827,9 +821,9 @@ class Tree(Table):
         # when deselecting items. So, the change of focus is retrieved directly from the
         # Win32 messages.
         #
-        # According to the documentation, a change of focused index is recorded in
-        # nmlv.uChanged. This has values coming from the uiMask attribute of the LVITEMW
-        # structure, and a change of focused index is recorded in LVIF_STATE.
+        # nmlv.uChanged contains flags for the attributes have been changed. These flag
+        # values come from the uiMask attribute of the LVITEMW structure, and a change
+        # of focused index is recorded in LVIF_STATE.
         if nmlv.uChanged & wc.LVIF_STATE != 0:
             # uNewState and uOldState have values determined by List-View Item States
             # learn.microsoft.com/en-us/windows/win32/controls/list-view-item-states
@@ -838,6 +832,13 @@ class Tree(Table):
 
             if is_focused and is_focused != is_focused_old:
                 self._process_focus_change(nmlv.iItem)
+
+        else:  # pragma: no cover
+            # The List-View UI is in virtual mode and changes to the data occur in
+            # python. At which point the cache is deleted and rebuilt. This means that
+            # the only changes which trigger LVN_ITEMCHANGED are state changes. So
+            # this block should never be accessed.
+            pass
 
     def _nm_customdraw(self, nmlvcd) -> int | None:
         """Paints the non-leaf node items."""
@@ -865,11 +866,14 @@ class Tree(Table):
         elif draw_stage == wc.CDDS_SUBITEM | wc.CDDS_ITEMPREPAINT:
             index = nmlvcd.nmcd.dwItemSpec
 
-            if nmlvcd.iSubItem == 0:
-                if not self.display_list[index].is_leaf:
-                    rect = RECT.from_buffer_copy(nmlvcd.nmcd.rc)
-                    hdc = HDC(nmlvcd.nmcd.hdc)
-                    self._draw_state_change_arrow(hdc, rect, index)
+            # This draw state is only accessed when CDRF_NOTIFYSUBITEMDRAW is returned
+            # during CDDS_ITEMPREPAINT. Hence this block should only be accessed when
+            # self.display_list[index].is_leaf is not true. However due to the existence
+            # of occasional incorrect custom draw messages, this is checked again here.
+            if nmlvcd.iSubItem == 0 and not self.display_list[index].is_leaf:
+                rect = RECT.from_buffer_copy(nmlvcd.nmcd.rc)
+                hdc = HDC(nmlvcd.nmcd.hdc)
+                self._draw_state_change_arrow(hdc, rect, index)
 
         else:  # pragma: no cover
             # The draw stage messages after CDDS_PREPAINT of custom draw should only be
