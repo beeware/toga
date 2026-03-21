@@ -156,7 +156,7 @@ class Window:
 class MainWindow(Window):
     def _create_submenu(self, group, items):
         submenu = create_element(
-            "sl-dropdown",
+            "wa-dropdown",
             children=[
                 create_element(
                     "span",
@@ -165,11 +165,8 @@ class MainWindow(Window):
                     slot="trigger",
                     content=group.text,
                 ),
-                create_element(
-                    "sl-menu",
-                    children=items,
-                ),
-            ],
+            ]
+            + items,
         )
         return submenu
 
@@ -187,7 +184,7 @@ class MainWindow(Window):
                 submenu = self._menu_groups.setdefault(cmd.group, [])
 
                 menu_item = create_element(
-                    "sl-menu-item",
+                    "wa-dropdown-item",
                     content=cmd.text,
                     disabled=not cmd.enabled,
                 )

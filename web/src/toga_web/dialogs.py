@@ -11,7 +11,7 @@ class BaseDialog:
             # modal dialogs.
             toga.App.app._impl.native.appendChild(self.native)
 
-            self.native.show()
+            self.native.open = True
         else:
             # Dialog doesn't have an implementation
             self.future.set_result(None)
@@ -21,7 +21,7 @@ class InfoDialog(BaseDialog):
     def __init__(self, title, message):
         super().__init__()
         self.native = create_element(
-            "sl-dialog",
+            "wa-dialog",
             id="toga-info-dialog",
             label=title,
             children=[
@@ -32,7 +32,7 @@ class InfoDialog(BaseDialog):
 
     def create_buttons(self):
         close_button = create_element(
-            "sl-button", slot="footer", variant="primary", content="Ok"
+            "wa-button", slot="footer", variant="brand", content="Ok"
         )
         # Handle the close of the dialog
         close_button.onclick = self.dialog_close
@@ -40,7 +40,7 @@ class InfoDialog(BaseDialog):
         return [close_button]
 
     def dialog_close(self, event):
-        self.native.hide()
+        self.native.open = False
         self.native.parentElement.removeChild(self.native)
 
         self.future.set_result(None)
