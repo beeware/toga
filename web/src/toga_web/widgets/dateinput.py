@@ -15,12 +15,12 @@ def native_date(py_date_obj):
 
 class DateInput(Widget):
     def create(self):
-        self.native = self._create_native_widget("sl-input")
+        self.native = self._create_native_widget("wa-input")
         self.native.type = "date"
         self.native.value = native_date(datetime.date.today())
-        self.native.addEventListener("sl-change", create_proxy(self.dom_sl_change))
+        self.native.addEventListener("change", create_proxy(self.dom_change))
 
-    def dom_sl_change(self, event):
+    def dom_change(self, event):
         try:
             input_date = py_date(self.native.value)
         except Exception:

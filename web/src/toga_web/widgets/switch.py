@@ -5,8 +5,8 @@ from .base import Widget
 
 class Switch(Widget):
     def create(self):
-        self.native = self._create_native_widget("sl-switch")
-        self.native.addEventListener("sl-change", create_proxy(self.dom_onchange))
+        self.native = self._create_native_widget("wa-switch")
+        self.native.addEventListener("change", create_proxy(self.dom_onchange))
 
     def dom_onchange(self, event):
         self.interface.on_change()

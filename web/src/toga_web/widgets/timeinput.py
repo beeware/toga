@@ -27,13 +27,13 @@ def native_time(py_time):
 
 class TimeInput(Widget):
     def create(self):
-        self.native = self._create_native_widget("sl-input")
+        self.native = self._create_native_widget("wa-input")
         self.native.setAttribute("step", "1")  # force seconds to show
         self.native.type = "time"
         self.native.value = native_time(datetime.datetime.now())
-        self.native.addEventListener("sl-change", create_proxy(self.dom_sl_change))
+        self.native.addEventListener("change", create_proxy(self.dom_change))
 
-    def dom_sl_change(self, event):
+    def dom_change(self, event):
         try:
             input_time = py_time(self.native.value)
         except Exception:

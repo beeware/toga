@@ -3,7 +3,7 @@ from .base import Widget
 
 class ActivityIndicator(Widget):
     def create(self):
-        self.native = self._create_native_widget("sl-spinner")
+        self.native = self._create_native_widget("wa-spinner")
         self.stop()
 
     # Actions

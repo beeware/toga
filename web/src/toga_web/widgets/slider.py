@@ -5,14 +5,14 @@ from .base import Widget
 
 class Slider(Widget):
     def create(self):
-        self.native = self._create_native_widget("sl-range")
-        self.native.addEventListener("sl-input", create_proxy(self.dom_sl_input))
+        self.native = self._create_native_widget("wa-slider")
+        self.native.addEventListener("input", create_proxy(self.dom_input))
         self.native.addEventListener(
             "pointerdown", create_proxy(self.dom_onpointerdown)
         )
         self.native.addEventListener("pointerup", create_proxy(self.dom_onpointerup))
 
-    def dom_sl_input(self, event):
+    def dom_input(self, event):
         self.interface.value = float(self.native.value)
         if self.interface.on_change:
             self.interface.on_change()

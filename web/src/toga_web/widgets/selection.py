@@ -7,10 +7,10 @@ from .base import Widget
 
 class Selection(Widget):
     def create(self):
-        self.native = self._create_native_widget("sl-select")
-        self.native.addEventListener("sl-change", create_proxy(self.dom_sl_change))
+        self.native = self._create_native_widget("wa-select")
+        self.native.addEventListener("change", create_proxy(self.dom_change))
 
-    def dom_sl_change(self, event):
+    def dom_change(self, event):
         self.interface.on_change()
 
     # Alias for backwards compatibility:
@@ -45,7 +45,7 @@ class Selection(Widget):
 
     def source_insert(self, *, index, item):
         display_text = self.interface._title_for_item(item)
-        option = self._create_native_widget("sl-option")
+        option = self._create_native_widget("wa-option")
         option.value = str(index)
         option.textContent = display_text
         if self.native.value == "":
@@ -62,7 +62,7 @@ class Selection(Widget):
 
     def select_item(self, index, item):
         self.native.value = str(index)
-        self.native.dispatchEvent(CustomEvent.new("sl-change"))
+        self.native.dispatchEvent(CustomEvent.new("change"))
 
     def rehint(self):
         pass
