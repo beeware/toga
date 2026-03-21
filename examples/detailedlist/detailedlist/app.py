@@ -122,9 +122,37 @@ class DetailedListApp(toga.App):
             flex=1,
         )
 
+        self.dl2 = toga.DetailedList(
+            data=[
+                {},  # Missing values
+                {"icon": None, "title": None, "subtitle": None},  # None values
+            ]
+            + [
+                {
+                    "icon": toga.Icon("resources/brutus.png"),
+                    "title": translation["string"],
+                    "subtitle": translation["country"],
+                }
+                for translation in bee_translations
+            ],
+            missing_value="MISSING",
+            on_select=self.on_select_handler,
+            on_primary_action=self.on_delete_handler,
+            secondary_action="Visit",
+            on_secondary_action=self.on_visit_handler,
+            on_refresh=self.on_refresh_handler,
+            flex=1,
+        )
+
         # Outermost box
         outer_box = toga.Box(
-            children=[self.btn_box, self.switch_box, self.dl, self.label],
+            children=[
+                self.btn_box,
+                self.switch_box,
+                self.dl,
+                self.label,
+                toga.TextInput(placeholder="Focus test"),
+            ],
             flex=1,
             direction=COLUMN,
             margin=10,
