@@ -9,7 +9,7 @@ from toga.sources.tree_source import Node, TreeSourceT
 
 from ..libs import windowconstants as wc
 from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass
-from ..libs.comctl32classes import NMHDR, NMLVCUSTOMDRAW, NMLVDISPINFOW
+from ..libs.comctl32classes import NMHDR, NMLISTVIEW, NMLVCUSTOMDRAW, NMLVDISPINFOW
 from ..libs.user32 import DrawTextW
 from ..libs.win32 import LRESULT
 from .table import Table
@@ -192,6 +192,7 @@ class StateTree(StateNode):
         self._display_list: list[StateNode] = []
         self.display_list_refresh()
         self._selected_indices: list[int] = []
+        self._focused_index: int | None = None
 
     @property
     def is_leaf(self) -> bool:
@@ -298,7 +299,7 @@ class StateTree(StateNode):
                 + self._display_list[start_index + len(sublist) :]
             )
 
-        return self._selection_modifier(insert, start_index, len(sublist))
+        return self._selection_and_focus_modifier(insert, start_index, len(sublist))
 
     def _display_list_toggle(self, state_node: StateNode) -> bool:
         """Updates the display list to reflect a node being toggled.
@@ -317,7 +318,7 @@ class StateTree(StateNode):
         return self._display_list_modifier(insert, sublist, start_index)
 
     #################################################################################
-    # Selected Indices list methods
+    # Selected indices list and focused item methods
     #################################################################################
 
     @property
@@ -329,7 +330,16 @@ class StateTree(StateNode):
         """Updates the selected indices list of the StateNode to match the UI."""
         self._selected_indices = selected_indices
 
-    def _selection_modifier(
+    @property
+    def focused_index(self) -> int | None:
+        """Index of the display list that corresponds to the focused item."""
+        return self._focused_index
+
+    def focused_index_from_ui(self, focused_index: int | None):
+        """Updates the focused index of the StateTree to match the UI."""
+        self._focused_index = focused_index
+
+    def _selection_and_focus_modifier(
         self,
         insert: bool,
         start_index: int,
@@ -359,8 +369,12 @@ class StateTree(StateNode):
             filter(non_negative, map(index_modifier, self._selected_indices))
         )
         notify_select = len(modified_indices) < len(self._selected_indices)
-
         self._selected_indices = modified_indices
+
+        if self._focused_index is not None:
+            modified_focus = index_modifier(self._focused_index)
+            self._focused_index = None if modified_focus < 0 else modified_focus
+
         return notify_select
 
     #################################################################################
@@ -498,6 +512,10 @@ class Tree(Table):
                 if return_flag is not None:
                     return return_flag
 
+            elif code == wc.LVN_ITEMCHANGED:
+                nmlv = cast(lParam, POINTER(NMLISTVIEW)).contents
+                self._lvn_item_changed(nmlv)
+
         # Call the original window procedure
         return DefSubclassProc(HWND(hWnd), UINT(uMsg), WPARAM(wParam), LPARAM(lParam))
 
@@ -624,6 +642,13 @@ class Tree(Table):
         Note that this list is modified by the StateTree and StateNode instances."""
         return self._state_tree.selected_indices
 
+    @property
+    def focused_index(self) -> int | None:
+        """The index of the currently focused item.
+
+        Note that this is modified by the StateTree and StateNode instances."""
+        return self._state_tree.focused_index
+
     def _hit_test_arrow(self, x: int, y: int) -> int:
         """Tests whether given coordinates are over a state-change arrow.
 
@@ -683,6 +708,26 @@ class Tree(Table):
         if notify_select:
             self.interface.on_select()
 
+    def _process_focus_change(self, focused_index: int):
+        """Overrides state-change-arrow focus-change events and allows the rest."""
+        if self._mouse_down_hit >= 0:
+            self._focused_index_tree_to_ui()
+        else:
+            self._focused_index_ui_to_tree(focused_index)
+
+    def _focused_index_ui_to_tree(self, focused_index):
+        if focused_index < 0:
+            focused_index = None
+
+        self._state_tree.focused_index_from_ui(focused_index)
+
+    def _focused_index_tree_to_ui(self):
+        focus_index = self.focused_index
+        if focus_index is not None:
+            self.native.Items[focus_index].Focused = True
+        elif self.native.FocusedItem is not None:
+            self.native.FocusedItem.Focused = False
+
     def winforms_mouse_move(self, sender, e):
         self._set_mouse_move_hit(self._hit_test_arrow(e.X, e.Y))
 
@@ -697,7 +742,6 @@ class Tree(Table):
         movement beginning at the state-change arrow will not register as a
         MouseClick or MouseUp event.
         """
-        print("here")
         self._mouse_down_hit = -1
         self._set_mouse_move_hit(-1)
 
@@ -773,6 +817,28 @@ class Tree(Table):
         )
         DrawTextW(hdc, c_wchar_p(arrow), -1, byref(rect), text_format)
 
+    def _lvn_item_changed(self, nmlv):
+        """Processes List-View item changes to listen for a change of focused item."""
+        # learn.microsoft.com/en-us/windows/win32/controls/lvn-itemchanged
+        # learn.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-nmlistview
+        #
+        # There is no WinForms focused-item change event and the using the WinForms
+        # selection change events with ListView.FocusedItem gives unreliable results
+        # when deselecting items. So, the change of focus is retrieved directly from the
+        # Win32 messages.
+        #
+        # According to the documentation, a change of focused index is recorded in
+        # nmlv.uChanged. This has values coming from the uiMask attribute of the LVITEMW
+        # structure, and a change of focused index is recorded in LVIF_STATE.
+        if nmlv.uChanged & wc.LVIF_STATE != 0:
+            # uNewState and uOldState have values determined by List-View Item States
+            # learn.microsoft.com/en-us/windows/win32/controls/list-view-item-states
+            is_focused_old = nmlv.uOldState & wc.LVIS_FOCUSED != 0
+            is_focused = nmlv.uNewState & wc.LVIS_FOCUSED != 0
+
+            if is_focused and is_focused != is_focused_old:
+                self._process_focus_change(nmlv.iItem)
+
     def _nm_customdraw(self, nmlvcd) -> int | None:
         """Paints the non-leaf node items."""
         # learn.microsoft.com/en-us/windows/win32/controls/using-custom-draw
@@ -792,18 +858,18 @@ class Tree(Table):
             # Check/update the current measurements.
             self._check_measurments(nmlvcd.nmcd.hdc, RECT.from_buffer_copy(rect))
 
-            return wc.CDRF_NOTIFYSUBITEMDRAW
+            # Progress to next subitem draw stage for non-leaf nodes to draw arrow.
+            if not self.display_list[index].is_leaf:
+                return wc.CDRF_NOTIFYSUBITEMDRAW
 
         elif draw_stage == wc.CDDS_SUBITEM | wc.CDDS_ITEMPREPAINT:
+            index = nmlvcd.nmcd.dwItemSpec
+
             if nmlvcd.iSubItem == 0:
-                index = nmlvcd.nmcd.dwItemSpec
                 if not self.display_list[index].is_leaf:
                     rect = RECT.from_buffer_copy(nmlvcd.nmcd.rc)
                     hdc = HDC(nmlvcd.nmcd.hdc)
                     self._draw_state_change_arrow(hdc, rect, index)
-
-            # CDRF_SKIPPOSTPAINT means that the focus rectangle is not drawn.
-            return wc.CDRF_SKIPPOSTPAINT
 
         else:  # pragma: no cover
             # The draw stage messages after CDDS_PREPAINT of custom draw should only be
@@ -825,6 +891,7 @@ class Tree(Table):
         self._cache = []
         # This _selected_indices_tree_to_ui is needed for responsiveness.
         self._selected_indices_tree_to_ui(notify_select)
+        self._focused_index_tree_to_ui()
 
         if refresh:
             self.native.Refresh()

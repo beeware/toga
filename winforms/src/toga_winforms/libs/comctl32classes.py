@@ -10,6 +10,7 @@ from ctypes.wintypes import (
     INT,
     LPARAM,
     LPWSTR,
+    POINT,
     RECT,
     UINT,
     WPARAM,
@@ -58,6 +59,20 @@ class NMCUSTOMDRAW(c_Structure):
         ("dwItemSpec", DWORD_PTR),
         ("uItemState", UINT),
         ("lItemlParam", LPARAM),
+    ]
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-nmlistview
+class NMLISTVIEW(c_Structure):
+    _fields_ = [
+        ("hdr", NMHDR),
+        ("iItem", INT),
+        ("iSubItem", INT),
+        ("uNewState", UINT),
+        ("uOldState", UINT),
+        ("uChanged", UINT),
+        ("ptAction", POINT),
+        ("lParam", LPARAM),
     ]
 
 
