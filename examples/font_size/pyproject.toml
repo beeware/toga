@@ -61,4 +61,4 @@ build_gradle_dependencies = [
 requires = [
     "../../web",
 ]
-style_framework = "Shoelace v2.3"
+style_framework = "WebAwesome v3.3"

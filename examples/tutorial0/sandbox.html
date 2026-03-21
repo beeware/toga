@@ -11,9 +11,9 @@
         <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
 
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.3.0/dist/themes/light.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.3.0/dist/themes/dark.css">
-        <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.3.0/dist/shoelace-autoloader.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.3.1/dist/styles/themes/shoelace.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.3.1/dist/styles/webawesome.css">
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.3.1/dist/webawesome.loader.js"></script>
 <style>
 * {
     box-sizing: border-box;
@@ -79,38 +79,32 @@ main.toga.window > .container {
 </style>
     </head>
     <body id="app-placeholder">
-        <header class="toga sl-theme-dark">
+        <header class="toga">
             <a class="brand"><img src="static/logo-32.png" alt="First App logo" loading="lazy"></a>
             <nav class="menubar">
                 <span slot="trigger" class="app">First App</span>
-                <sl-dropdown>
+                <wa-dropdown>
                     <span slot="trigger" class="menu">File</span>
-                    <sl-menu class="sl-theme-light">
-                        <sl-menu-item>About</sl-menu-item>
-                        <sl-menu-item>Preferences</sl-menu-item>
-                    </sl-menu>
-                </sl-dropdown>
-                <sl-dropdown>
+                    <wa-dropdown-item>About</wa-dropdown-item>
+                    <wa-dropdown-item>Preferences</wa-dropdown-item>
+                </wa-dropdown>
+                <wa-dropdown>
                     <span slot="trigger" class="menu">Command</span>
-                    <sl-menu class="sl-theme-light">
-                        <sl-menu-item>About</sl-menu-item>
-                        <sl-menu-item>Preferences</sl-menu-item>
-                    </sl-menu>
-                </sl-dropdown>
+                    <wa-dropdown-item>About</wa-dropdown-item>
+                    <wa-dropdown-item>Preferences</wa-dropdown-item>
+                </wa-dropdown>
             </nav>
             <nav class="menubar">
-                <sl-dropdown>
+                <wa-dropdown>
                     <span slot="trigger" class="menu">Help</span>
-                    <sl-menu class="sl-theme-light">
-                        <sl-menu-item>About</sl-menu-item>
-                        <sl-menu-item>Preferences</sl-menu-item>
-                    </sl-menu>
-                </sl-dropdown>
+                    <wa-dropdown-item>About</wa-dropdown-item>
+                    <wa-dropdown-item>Preferences</wa-dropdown-item>
+                </wa-dropdown>
             </nav>
         </header>
         <main class="toga window container">
             <div id="toga_19512792" class="box container" style="flex-direction: row; flex: 0 0 0px;">
-                <sl-button id="toga_18434560" class="button" style="flex-direction: row; flex: 1 0 0px; margin:50px;">Hello world</sl-button>
+                <wa-button id="toga_18434560" class="button" style="flex-direction: row; flex: 1 0 0px; margin:50px;">Hello world</wa-button>
             </div>
         </main>
     </body>

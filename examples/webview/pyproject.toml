@@ -66,4 +66,4 @@ chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
 requires = [
     "../../web",
 ]
-style_framework = "Shoelace v2.3"
+style_framework = "WebAwesome v3.3"
