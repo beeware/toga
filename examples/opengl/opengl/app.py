@@ -19,7 +19,7 @@ class OpenGLApp(toga.App):
         self.main_window.show()
 
     def callback_render(self, widget, context, **kwargs):
-        context.clear_color(1.0, 0.0, 0.0, 1.0)
+        context.clear_color(1.0, 1.0, 0.0, 1.0)
         context.clear(context.COLOR_BUFFER_BIT)
 
 
