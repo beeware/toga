@@ -1,5 +1,6 @@
 import ctypes
-import ctypes.util
+from ctypes import c_float, cdll
+from ctypes.util import find_library
 
 from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
@@ -23,18 +24,39 @@ from toga_cocoa.libs import (
 from .base import Widget
 
 # possibly use PyOpenGL instead?
-GL = ctypes.cdll.LoadLibrary(ctypes.util.find_library("OpenGL"))
+GL = cdll.LoadLibrary(find_library("OpenGL"))
 
 
 class CocoaOpenGLContext(OpenGLContext):
     def clear_color(self, r: float, g: float, b: float, a: float):
-        GL.glClearColor(
-            ctypes.c_float(r), ctypes.c_float(g), ctypes.c_float(b), ctypes.c_float(a)
-        )
-        print("here")
+        GL.glClearColor(c_float(r), c_float(g), c_float(b), c_float(a))
 
     def clear(self, mask: int):
         GL.glClear(mask)
+
+    def create_shader(self, type: int):
+        return GL.glCreateShader(type)
+
+    def shader_source(self, shader: int, source: str):
+        GL.glShaderSource(shader, source)
+
+    def compile_shader(self, shader: int):
+        GL.glCompileShader(shader)
+
+    def delete_shader(self, shader: int):
+        GL.glDeleteShader(shader)
+
+    def create_program(self) -> int:
+        return GL.glCreateProgram()
+
+    def attach_shader(self, program: int, shader: int):
+        GL.glAttachShader(program, shader)
+
+    def link_program(self, program: int):
+        GL.glLinkProgram(program)
+
+    def delete_program(self, program):
+        GL.glDeleteProgram(program)
 
 
 class TogaOpenGLView(NSOpenGLView):

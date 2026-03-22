@@ -9,38 +9,35 @@ from .base import Widget
 class AndroidOpenGLContext(OpenGLContext):
     """The implementation layer of a Qt OpenGL context."""
 
-    def __init__(self):
-        self.native = GL
-
     def clear_color(self, r: float, g: float, b: float, a: float):
-        self.native.glClearColor(r, g, b, a)
+        GL.glClearColor(r, g, b, a)
 
     def clear(self, mask: int):
-        self.native.glClear(mask)
+        GL.glClear(mask)
 
     def create_shader(self, type: int):
-        return self.native.glCreateShader(type)
+        return GL.glCreateShader(type)
 
     def shader_source(self, shader: int, source: str):
-        self.native.glShaderSource(shader, source)
+        GL.glShaderSource(shader, source)
 
     def compile_shader(self, shader: int):
-        self.native.glCompileShader(shader)
+        GL.glCompileShader(shader)
 
     def delete_shader(self, shader):
-        self.native.glDeleteShader(shader)
+        GL.glDeleteShader(shader)
 
     def create_program(self) -> int:
-        return self.native.glCreateProgram()
+        return GL.glCreateProgram()
 
     def attach_shader(self, program: int, shader: int):
-        self.native.glAttachShader(program, shader)
+        GL.glAttachShader(program, shader)
 
     def link_program(self, program: int):
-        self.native.glLinkProgram(program)
+        GL.glLinkProgram(program)
 
     def delete_program(self, program):
-        self.native.glDeleteProgram(program)
+        GL.glDeleteProgram(program)
 
 
 class TogaGLRenderer(dynamic_proxy(GLSurfaceView.Renderer)):
