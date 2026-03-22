@@ -39,6 +39,7 @@ class TreeProbe(TableProbe):
     async def select_row(self, row_path, add=False):
         display_index = self.display_index(row_path)
         await super().select_row(row=display_index, add=add)
+        self.native.Items[display_index].Focused = True
 
     async def activate_row(self, row_path):
         display_index = self.display_index(row_path)
@@ -146,14 +147,15 @@ class TreeProbe(TableProbe):
 
         self.native.OnMouseDown(mouse_event_args)
 
-        # A simulated click doesn't change selection. Note: This basic implementation is
-        # not compatible with multiple_select=True.
+        # A simulated click doesn't change selection or focused index. Note: This basic
+        # implementation is not compatible with multiple_select=True.
         lvi = self.native.HitTest(x, y).Item
         if lvi is None:
             for index in self.native.SelectedIndices:
                 self.native.Items[index].Selected = False
         else:
             lvi.Selected = True
+            lvi.Focused = True
 
         self.native.OnClick(mouse_event_args)
         self.native.OnMouseClick(mouse_event_args)
@@ -213,7 +215,7 @@ class TreeProbe(TableProbe):
         # Move mouse to client area with no items
         self.mouse_move_event(
             x=int(state_node.arrow_center_x),
-            y=int((bounds.Top + bounds.Bottom) / 2 + 3 * (bounds.Bottom - bounds.Top)),
+            y=int((bounds.Top + bounds.Bottom) / 2 + 5 * (bounds.Bottom - bounds.Top)),
         )
         await asyncio.sleep(0.1)
         assert not state_node.mouse_hover

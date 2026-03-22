@@ -1097,12 +1097,16 @@ async def test_mouse_events(widget, probe, on_activate_handler):
     if toga.platform.current_platform != "windows":
         return
 
-    # Use the small data
+    # Use some small data
     small_data = [
         (
             {"a": "A0", "b": "", "c": ""},
-            [({"a": f"A{i}", "b": i, "c": "C"}, None) for i in range(2)],
-        )
+            [({"a": f"A0{i}", "b": i, "c": "C"}, None) for i in range(2)],
+        ),
+        (
+            {"a": "A1", "b": "", "c": ""},
+            [({"a": f"A1{i}", "b": i, "c": "C"}, None) for i in range(2)],
+        ),
     ]
 
     widget.data = small_data
@@ -1129,9 +1133,14 @@ async def test_mouse_events(widget, probe, on_activate_handler):
     await probe.single_click((0,), toggle=False, on_item=True)
     assert widget.selection == widget.data[0]
 
+    # Simulate a normal item selection click on a different item.
+    await probe.redraw("Tree is awaiting a different item selection mouse click")
+    await probe.single_click((1,), toggle=False, on_item=True)
+    assert widget.selection == widget.data[1]
+
     # Simulate a normal selection click in the client area, but away from items.
     await probe.redraw("Tree is collapsed and awaiting an item selection mouse click")
-    await probe.single_click((0,), toggle=False, on_item=False)
+    await probe.single_click((1,), toggle=False, on_item=False)
     assert widget.selection is None
 
     # Double clicking on a state-change arrow doesn't activate the row.")
