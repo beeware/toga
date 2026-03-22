@@ -93,15 +93,11 @@ class TreeProbe(TableProbe):
         if row_path is None or len(row_path) < 2:
             return
 
-        state_tree = self.impl._state_tree
-        for i, _ in enumerate(row_path[:-1]):
-            if i == 0:
-                state_node = state_tree[row_path[:-1]]
-            else:
-                state_node = state_tree[row_path[: -(i + 1)]]
+        state_node = self.impl._state_tree
+        for j, i in enumerate(row_path[:-1]):
+            state_node = state_node[(i,)]
 
-            original_state = row_path_states[-(i + 1)]
-
+            original_state = row_path_states[j]
             if state_node.is_open != original_state:
                 state_node.toggle_state(update_display=True)
                 self.impl._update_list(True)

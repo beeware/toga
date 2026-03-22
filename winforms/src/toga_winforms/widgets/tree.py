@@ -307,13 +307,14 @@ class StateTree(StateNode):
         :param state_node: The StateNode being toggled.
         :return: A bool indicating whether a change of selection has occurred.
         """
-        insert: bool = state_node.is_open
-        sublist: list[StateNode] = list(state_node.branch_iter(display=True))
         try:
             start_index: int = self._display_list.index(state_node) + 1
         except ValueError:
             # state_node is not in the display list, so no need to change it.
             return False
+
+        insert: bool = state_node.is_open
+        sublist: list[StateNode] = list(state_node.branch_iter(display=True))
 
         return self._display_list_modifier(insert, sublist, start_index)
 
