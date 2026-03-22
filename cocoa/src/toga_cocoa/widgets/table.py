@@ -109,7 +109,7 @@ class TogaTable(NSTableView):
     def onDoubleClick_(self, sender) -> None:
         if self.clickedRow >= 0:
             clicked = self.interface.data[self.clickedRow]
-    
+
             self.interface.on_activate(row=clicked)
 
 
