@@ -2,6 +2,7 @@ from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
+    NSFocusRingType,
     NSIndexSet,
     NSMenu,
     NSTableColumn,
@@ -144,6 +145,7 @@ class DetailedList(Widget):
         self.native_detailedlist.columnAutoresizingStyle = (
             NSTableViewColumnAutoresizingStyle.Uniform
         )
+        self.native_detailedlist.focusRingType = NSFocusRingType.None_
         self.native_detailedlist.allowsMultipleSelection = False
 
         # Disable all actions by default.
