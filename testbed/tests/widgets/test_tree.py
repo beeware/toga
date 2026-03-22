@@ -1052,11 +1052,9 @@ def test_deprecated_methods(widget, method_name, args, expected_args):
 
 
 async def test_mouse_events(widget, probe, on_activate_handler):
-    skip_on_platforms("android", "iOS", "linux", "macOS")
     """Does the widget implement mouse events correctly?"""
-    # These tests are WinForms specific
-    if toga.platform.current_platform != "windows":
-        return
+    # These tests are needed on the Windows platform and are implemented as
+    # pytest.skip() on the platforms macOS, GTK and QT.
 
     # Use some small data
     small_data = [
