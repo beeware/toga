@@ -152,12 +152,9 @@ class TableProbe(SimpleProbe):
             clickCount=2,
         )
 
-    async def assert_invalid_row_noop(self, on_activate_handler):
+    async def activate_header(self):
         await self.activate_row(-1)
         await self.redraw("Activating header")
-
-        on_activate_handler.assert_not_called()
-        on_activate_handler.reset_mock()
 
     async def select_first_row_keyboard(self):
         # Use the keyboard to ensure first row is selected.

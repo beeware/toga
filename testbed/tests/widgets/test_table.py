@@ -193,9 +193,7 @@ async def test_keyboard_navigation(widget, source, probe):
         await assert_selection("Last row is selected", widget.data[-1])
         # Navigate by 1 item, wrapping around.
         await probe.type_character("a")
-        await assert_selection(
-            "Letter pressed - first row is selected", widget.data[0]
-        )
+        await assert_selection("Letter pressed - first row is selected", widget.data[0])
     else:
         await probe.type_character("<up>")
         await probe.type_character("<up>")
@@ -275,10 +273,11 @@ async def test_activate(
     on_activate_handler.assert_called_once_with(widget, row=source[1])
     on_activate_handler.reset_mock()
 
-    # Some platforms can emit invalid row numbers.  Make sure those
-    # don't trigger anything.
-    if hasattr(probe, "assert_invalid_row_noop"):
-        await probe.assert_invalid_row_noop(on_activate_handler)
+    # Some platforms can emit invalid row numbers when header pressed.
+    # Make sure those don't trigger anything.
+    await probe.activate_header()
+    on_activate_handler.assert_not_called()
+    on_activate_handler.reset_mock()
 
 
 async def test_multiselect(
