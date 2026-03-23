@@ -187,7 +187,6 @@ Widgets:
   Tree:
     description: A hierarchical tree of tabular data.
     unsupported:
-      - winforms
       - iOS
       - android
       - web

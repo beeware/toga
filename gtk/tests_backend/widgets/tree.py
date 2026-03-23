@@ -104,3 +104,6 @@ class TreeProbe(SimpleProbe):
             Gtk.TreePath(row_path),
             self.native_tree.get_columns()[0],
         )
+
+    async def assert_item_mouse_hover(self, row_path):
+        pytest.skip("Test not implemented for this platform")

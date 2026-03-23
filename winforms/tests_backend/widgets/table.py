@@ -12,7 +12,7 @@ from .base import SimpleProbe
 
 class TableProbe(SimpleProbe):
     native_class = ListView
-    supports_icons = 1  # First column only
+    supports_icons = 2  # All columns
     supports_keyboard_shortcuts = False
     supports_keyboard_boundary_shortcuts = True
     supports_widgets = False
