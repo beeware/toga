@@ -63,4 +63,3 @@ build_gradle_dependencies = [
 requires = [
     "../../web",
 ]
-style_framework = "WebAwesome v3.3"
