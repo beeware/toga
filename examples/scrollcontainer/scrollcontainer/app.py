@@ -19,8 +19,6 @@ class ScrollContainerApp(toga.App):
     TOGGLE_CHUNK = 10
 
     def startup(self):
-        main_box = toga.Box(direction=COLUMN)
-
         self.hswitch = toga.Switch(
             "Horizontal",
             value=False,
@@ -46,10 +44,6 @@ class ScrollContainerApp(toga.App):
             value=False,
             on_change=lambda widget: self.update_content(),
         )
-        main_box.add(
-            toga.Box(children=[self.hswitch, self.vswitch]),
-            toga.Box(children=[self.wide_switch, self.tall_switch, self.nested_switch]),
-        )
 
         self.inner_box = toga.Box(
             direction=COLUMN, margin=10, background_color="yellow"
@@ -59,13 +53,18 @@ class ScrollContainerApp(toga.App):
             vertical=self.vswitch.value,
             on_scroll=self.on_scroll,
             flex=1,
-            margin=10,
             background_color="pink",
         )
         self.update_content()
 
         self.scroller.content = self.inner_box
+
+        main_box = toga.Box(direction=COLUMN, margin_bottom=10)
         main_box.add(self.scroller)
+        main_box.add(
+            toga.Box(children=[self.hswitch, self.vswitch]),
+            toga.Box(children=[self.wide_switch, self.tall_switch, self.nested_switch]),
+        )
 
         self.main_window = toga.MainWindow(size=(400, 700))
         self.main_window.content = main_box

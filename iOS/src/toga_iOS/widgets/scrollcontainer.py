@@ -90,6 +90,7 @@ class ScrollContainer(Widget):
 
     def set_vertical(self, value):
         self._allow_vertical = value
+        self.native.alwaysBounceVertical = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:
@@ -102,8 +103,17 @@ class ScrollContainer(Widget):
     def get_horizontal(self):
         return self._allow_horizontal
 
+    @property
+    def scroll_vertical(self):
+        return self._allow_vertical
+
+    @property
+    def scroll_horizontal(self):
+        return self._allow_horizontal
+
     def set_horizontal(self, value):
         self._allow_horizontal = value
+        self.native.alwaysBounceHorizontal = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:

@@ -112,6 +112,11 @@ class Container(BaseContainer):
         self.bottom_inset = 0
         self.right_inset = 0
 
+        self.top_unset = False
+        self.left_unset = False
+        self.bottom_unset = False
+        self.right_unset = False
+
     def __del__(self):
         # Mark the contained native object as explicitly None so that the
         # constraints know the object has been deleted.

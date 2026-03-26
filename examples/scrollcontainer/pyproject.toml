@@ -45,6 +45,7 @@ requires = [
     "../../iOS",
     "std-nslog>=1.0.0",
 ]
+info."UIDesignRequiresCompatibility" = true
 
 [tool.briefcase.app.scrollcontainer.android]
 requires = [
