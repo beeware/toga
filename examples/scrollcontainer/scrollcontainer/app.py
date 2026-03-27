@@ -116,7 +116,9 @@ class ScrollContainerApp(toga.App):
             label_text = f"Label {x}"
             if self.nested_switch.value:
                 self.inner_box.add(
-                    toga.ScrollContainer(content=Item(width, label_text)),
+                    toga.ScrollContainer(
+                        content=Item(width, label_text), vertical=False
+                    ),
                 )
             else:
                 self.inner_box.add(Item(width, label_text))
