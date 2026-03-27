@@ -16,7 +16,10 @@ license-files = [
     "LICENSE",
 ]
 dynamic = ["version"]
-dependencies = ["briefcase >= 0.3.21"]
+dependencies = [
+    "briefcase >= 0.3.21",
+    "offliner",
+]
 
 [project.entry-points."briefcase.bootstraps"]
 "Toga Positron (Django server)" = "positron.django.bootstrap:DjangoPositronBootstrap"

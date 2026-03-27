@@ -25,6 +25,12 @@ class PyScriptPositronBootstrap(FastAPIPositronBootstrap):
         self.select_content_path(project_overrides.pop("content_path", None))
         return {}
 
+    def positron_requires(self):
+        return super().positron_requires() + [
+            "flatted-view",
+            "reflected-ffi",
+        ]
+
     def post_generate(self, base_path: Path):
         app_path = base_path / "src" / self.context["module_name"]
         resource_path = app_path / "resources"
