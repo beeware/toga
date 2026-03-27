@@ -48,16 +48,22 @@ class Selection(Widget):
         option = self._create_native_widget("wa-option")
         option.value = str(index)
         option.textContent = display_text
-        if self.native.value == "":
-            self.native.value = option.value
+        # Band-aid: wa-select may not be upgraded yet (async element registration).
+        # If .value isn't available, we default to "" and try to auto-select the
+        # first item — but the assignment may not stick, so the dropdown can appear
+        # blank until the user interacts with it.
+        native_value = self._get_native_attr("value", "")
+        if native_value == "":
+            self._set_native_attr("value", option.value)
         if index >= len(self.native.children):
             self.native.appendChild(option)
         else:
             self.native.insertBefore(option, self.native.children[index])
 
     def get_selected_index(self):
-        if self.native.value:
-            return int(self.native.value)
+        value = self._get_native_attr("value", "")
+        if value:
+            return int(value)
         return None
 
     def select_item(self, index, item):

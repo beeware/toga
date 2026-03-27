@@ -18,7 +18,7 @@ class Switch(Widget):
         self.native.innerHTML = text
 
     def get_value(self):
-        return self.native.checked
+        return self._get_native_attr("checked", False)
 
     def set_value(self, value):
         old_value = self.get_value()

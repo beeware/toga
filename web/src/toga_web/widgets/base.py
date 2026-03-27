@@ -51,6 +51,38 @@ class Widget(ABC):
     @abstractmethod
     def create(self): ...
 
+    def _get_native_attr(self, attr, default):
+        """Get a native element property, with a fallback if the element isn't
+        upgraded yet. WebAwesome registers custom elements asynchronously, so
+        properties may not exist when Python code runs during init."""
+        try:
+            return getattr(self.native, attr)
+        except AttributeError:
+            import warnings
+
+            tag = getattr(self.native, "tagName", "unknown")
+            warnings.warn(
+                f"{tag} element not yet upgraded; defaulting {attr} to {default!r}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            return default
+
+    def _set_native_attr(self, attr, value):
+        """Set a native element property, ignoring if the element isn't
+        upgraded yet."""
+        try:
+            setattr(self.native, attr, value)
+        except AttributeError:
+            import warnings
+
+            tag = getattr(self.native, "tagName", "unknown")
+            warnings.warn(
+                f"{tag} element not yet upgraded; ignoring set {attr}={value!r}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
     def set_app(self, app):  # noqa B027
         pass
 

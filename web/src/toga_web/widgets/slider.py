@@ -24,31 +24,35 @@ class Slider(Widget):
         self.interface.on_release()
 
     def get_value(self):
-        return float(self.native.value)
+        return float(self._get_native_attr("value", 0.0))
 
     def set_value(self, value):
-        self.native.value = value
+        self._set_native_attr("value", value)
 
     def get_min(self):
-        return float(self.native.min)
+        return float(self._get_native_attr("min", 0.0))
 
     def set_min(self, value):
-        self.native.min = value
+        self._set_native_attr("min", value)
 
     def get_max(self):
-        return float(self.native.max)
+        return float(self._get_native_attr("max", 1.0))
 
     def set_max(self, value):
-        self.native.max = value
+        self._set_native_attr("max", value)
 
     def get_tick_count(self):
-        step = float(self.native.step or 0)
-        return int((float(self.native.max) - float(self.native.min)) / step) + 1
+        try:
+            step = float(self.native.step or 0)
+            return int((float(self.native.max) - float(self.native.min)) / step) + 1
+        except AttributeError:
+            return None
 
     def set_tick_count(self, tick_count):
         if tick_count:
-            self.native.step = (self.interface.max - self.interface.min) / (
-                tick_count - 1
+            self._set_native_attr(
+                "step",
+                (self.interface.max - self.interface.min) / (tick_count - 1),
             )
         else:
-            self.native.step = 0.0001
+            self._set_native_attr("step", 0.0001)
