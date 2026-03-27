@@ -106,3 +106,12 @@ main.toga.window > .container {
 .toga .label {
     white-space: nowrap;
 }
+
+/***** Slider *********************************************************/
+/* wa-slider defaults to display:inline (custom element default), which
+   ignores width and doesn't stretch in flex containers. sl-range set
+   display:block internally; wa-slider does not. */
+.toga wa-slider {
+    display: block;
+    width: 100%;
+}
