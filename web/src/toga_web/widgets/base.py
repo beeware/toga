@@ -73,8 +73,6 @@ class Widget(ABC):
         try:
             setattr(self.native, attr, value)
         except AttributeError:
-            import warnings
-
             tag = getattr(self.native, "tagName", "unknown")
             warnings.warn(
                 f"{tag} element not yet upgraded; ignoring set {attr}={value!r}",
