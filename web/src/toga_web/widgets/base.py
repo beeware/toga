@@ -1,3 +1,4 @@
+import warnings
 from abc import ABC, abstractmethod
 
 from toga_web.libs import create_element
@@ -58,8 +59,6 @@ class Widget(ABC):
         try:
             return getattr(self.native, attr)
         except AttributeError:
-            import warnings
-
             tag = getattr(self.native, "tagName", "unknown")
             warnings.warn(
                 f"{tag} element not yet upgraded; defaulting {attr} to {default!r}",
