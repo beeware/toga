@@ -1,3 +1,6 @@
+from ctypes import windll
+from ctypes.wintypes import HWND
+
 import System.Windows.Forms as WinForms
 from System.Drawing import SystemColors
 from travertino.size import at_least
@@ -112,8 +115,20 @@ class MultilineTextInput(TextInput):
         self.native.SelectionStart, self.native.SelectionLength = original_selection
 
     def scroll_to_bottom(self):
-        self.native.SelectionStart = len(self.native.Text)
-        self.native.ScrollToCaret()
+        # For consistent scroll to bottom behavior
+        # using ScrollToCaret() method results in alternating behaviors between
+        # scrolling to the bottom, and scrolling one line short of the bottom.
+        # This solution is based on https://stackoverflow.com/questions/8535102,
+        # by sending the explicit low-level message to scroll
+        WM_SCROLL = 277
+        SB_PAGEBOTTOM = 7
+        window_handle = HWND(self.native.Handle.ToInt32())
+        windll.user32.SendMessageW(
+            window_handle,
+            WM_SCROLL,
+            SB_PAGEBOTTOM,
+            0,
+        )
 
     def scroll_to_top(self):
         self.native.SelectionStart = 0
@@ -129,4 +144,5 @@ class MultilineTextInput(TextInput):
             isinstance(parent, WinForms.ScrollableControl) and parent.AutoScroll
         ):  # pragma: nocover
             parent.OnMouseWheel(e)
+            e.Handled = True
             e.Handled = True
