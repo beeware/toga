@@ -15,11 +15,11 @@ class OpenGLView(Widget):
         """Initialize the OpenGL context."""
         ctx = self.native.get_context()
         ctx.make_current()
-        self.interface.on_init(self.interface)
+        self.interface.renderer.on_init(self.interface)
 
     def gtk_render(self, native, context):
         """Render to the OpenGL context."""
-        self.interface.on_render(self.interface, size=self._size())
+        self.interface.renderer.on_render(self.interface, size=self._size())
         return True
 
     def _size(self):

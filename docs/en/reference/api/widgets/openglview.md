@@ -2,7 +2,7 @@
 
 ## Usage
 
-OpenGLView provides a surface for rendering 2D and 3D graphics using OpenGL.  It is agnostic to the library used to actually perform the OpenGL rendering: some platforms, such as Qt and Android, provide native OpenGL interfaces while for others, notably Cocoa and Gtk, can use existing Python OpenGL wrappers such as PyOpenGL or ModernGL.  Currently Toga doesn't provide a cross-platform OpenGL API layer, although it may in the future.
+OpenGLView provides a surface for rendering 2D and 3D graphics using OpenGL.  It is agnostic to the library used to actually perform the OpenGL rendering: some platforms, such as Qt and Android, provide native OpenGL interfaces while for others, notably Cocoa and GTK, can use existing Python OpenGL wrappers such as PyOpenGL or ModernGL.  Currently Toga doesn't provide a cross-platform OpenGL API layer, although it may in the future.
 
 The OpenGLView expects to be given a renderer object which conforms to the [`RendererT`][toga.widgets.openglview.RendererT] protocol: it needs an `on_init` method which gets called by the implementation layer to perform any OpenGL initialization that is needed (eg. creating shader programs, setting up buffers); and an `on_render` method which gets called to do the actual OpenGL drawing. Both methods get called with the OpenGL context for the view set up and ready to be accessed by OpenGL library calls.
 
@@ -31,7 +31,7 @@ If the renderer changes state and a re-rendering is required, the `redraw` metho
 
 - The OpenGLView API should be considered a beta API and may change in the future.
 - The renderer object used by the OpenGLView can't be changed after the view is created, but it can hold state and change the way that it renders based on that.
-- The OpenGLView is currently only available on the Android, Cocoa, Gtk, iOS and Qt backends.
+- The OpenGLView is currently only available on the Android, Cocoa, GTK, iOS and Qt backends.
 - OpenGL is deprecated on macOS and iOS, but it is likely to be available for the foreseeable future.
 - There are currently no Python OpenGL wrappers for iOS, but `ctypes` can be used to wrap the iOS `opengles` DLL and call out to OpenGL.
 - Linux relies on the appropriate OpenGL driver libraries being installed on the system with the system's package manager.
