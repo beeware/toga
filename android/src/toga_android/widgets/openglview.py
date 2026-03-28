@@ -5,13 +5,13 @@ from .base import Widget
 
 
 class TogaGLRenderer(dynamic_proxy(GLSurfaceView.Renderer)):
-    def onSurfaceCreated(self, unused, config):
+    def onSurfaceCreated(self, gl_api, config):
         self.interface.renderer.on_init(self.interface)
 
-    def onDrawFrame(self, unused):
+    def onDrawFrame(self, gl_api):
         self._redraw()
 
-    def onSurfaceChanged(self, unused, width, height):
+    def onSurfaceChanged(self, gl_api, width, height):
         self._redraw()
 
     def _redraw(self):
