@@ -112,7 +112,7 @@ dependencies = [
 
 [project.optional-dependencies]
 pyside6-essentials = [
-    "PySide6-Essentials == 6.10.2",
+    "PySide6-Essentials == 6.11.0",
 ]
 pyside6 = [
     "PySide6 == 6.11.0",
