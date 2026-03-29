@@ -3,6 +3,8 @@ from abc import abstractmethod
 from toga_iOS.colors import native_color
 from toga_iOS.constraints import Constraints
 
+from ..libs import supports_liquid_glass
+
 
 class Widget:
     def __init__(self, interface):
@@ -87,24 +89,25 @@ class Widget:
 
     def set_bounds(self, x, y, width, height):
         # print("SET BOUNDS", self, x, y, width, height, self.container.top_inset)
-        if self.scroll_vertical and self.container.top_unset and y == 0:
-            y -= self.container.top_inset
-            height += self.container.top_inset
-        if (
-            self.scroll_vertical
-            and self.container.bottom_unset
-            and y + height == self.container.height
-        ):
-            height += self.container.bottom_inset
-        if self.scroll_horizontal and self.container.left_unset and x == 0:
-            x -= self.container.left_inset
-            width += self.container.left_inset
-        if (
-            self.scroll_horizontal
-            and self.container.right_unset
-            and x + width == self.container.width
-        ):
-            width += self.container.right_inset
+        if supports_liquid_glass or self.container.content == self:
+            if self.scroll_vertical and self.container.top_unset and y == 0:
+                y -= self.container.top_inset
+                height += self.container.top_inset
+            if (
+                self.scroll_vertical
+                and self.container.bottom_unset
+                and y + height == self.container.height
+            ):
+                height += self.container.bottom_inset
+            if self.scroll_horizontal and self.container.left_unset and x == 0:
+                x -= self.container.left_inset
+                width += self.container.left_inset
+            if (
+                self.scroll_horizontal
+                and self.container.right_unset
+                and x + width == self.container.width
+            ):
+                width += self.container.right_inset
         self.constraints.update(x, y, width, height)
 
     def set_text_align(self, alignment):
