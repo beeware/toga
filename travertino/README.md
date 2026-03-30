@@ -13,7 +13,7 @@ Travertino is a set of constants and utilities for describing user interfaces, i
 - text alignment
 - sizes
 
-# Usage
+## Usage
 
 Install Travertino:
 
