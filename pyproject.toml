@@ -105,6 +105,9 @@ disable = ["MD014", "MD042", "MD052"]
 "docs/en/reference/api/**/*.md" = ["MD041"]
 "docs/en/snippets/**/*.md" = ["MD041"]
 
+[tool.rumdl.MD007]
+indent = 4
+
 [tool.rumdl.MD013]  # Line length
 line_length = 999999  # Force reflow to paragraph content to remove linebreaks
 reflow = true
