@@ -17,12 +17,12 @@ $ ./venv/bin/activate
 
 To run in development mode:
 
-```
+```console
 (venv) $ briefcase dev
 ```
 
 To run as a packaged app:
 
-```
+```console
 (venv) $ briefcase run
 ```

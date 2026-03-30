@@ -19,19 +19,19 @@ $ ./venv/bin/activate
 
 To run Django management commands:
 
-```
+```console
 (venv) PYTHONPATH=src python src/manage.py
 ```
 
 To run in development mode:
 
-```
+```console
 (venv) $ briefcase dev
 ```
 
 To run as a packaged app:
 
-```
+```console
 (venv) $ briefcase run
 ```
 
@@ -50,7 +50,7 @@ starting point.
 
 To create an initial database, use `manage.py` - e.g.,:
 
-```
+```console
 (venv) PYTHONPATH=src python src/manage.py migrate
 (venv) PYTHONPATH=src python src/manage.py createsuperuser
 ```

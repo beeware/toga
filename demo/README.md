@@ -36,7 +36,7 @@ $ pip install -e ./winforms   # Windows
 
 Finally navigate to the demo directory and run the application:
 
-```
+```console
 $ cd demo
 $ python -m toga_demo
 ```
