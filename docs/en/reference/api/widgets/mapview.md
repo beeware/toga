@@ -45,7 +45,7 @@ mapview.pins.clear()
 
 Pins can respond to being pressed. When a pin is pressed, the map generates an `on_select` event, which receives the pin as an argument.
 
-## System requirements  { #mapview-system-requires }
+## System requirements { #mapview-system-requires }
 
 - Using MapView on Windows 10 requires that your users have installed the [Edge WebView2 Evergreen Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download). This is installed by default on Windows 11.
 
@@ -57,7 +57,7 @@ Pins can respond to being pressed. When a pin is pressed, the map generates an `
     - OpenSUSE Tumbleweed: `libwebkit2gtk3 typelib(WebKit2)`
     - FreeBSD: `webkit2-gtk3`
 
-  MapView is not fully supported on GTK4. If you want to contribute to   the GTK4 MapView implementation, you will require v6.0 of the WebKit2   libraries. This is provided by `gir1.2-webkit-6.0` on Ubuntu/Debian,   and `webkitgtk6.0` on Fedora; for other distributions, consult your   distribution's platform documentation.
+  MapView is not fully supported on GTK4. If you want to contribute to the GTK4 MapView implementation, you will require v6.0 of the WebKit2 libraries. This is provided by `gir1.2-webkit-6.0` on Ubuntu/Debian, and `webkitgtk6.0` on Fedora; for other distributions, consult your distribution's platform documentation.
 
 - Using MapView on Android requires the OSMDroid package in your project's Gradle dependencies. Ensure your app declares a dependency on `org\.osmdroid:osmdroid-android:6.1.20` or later.
 

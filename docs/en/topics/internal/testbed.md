@@ -1,4 +1,4 @@
-# How the testbed works  { #testbed-probe }
+# How the testbed works { #testbed-probe }
 
 The testbed works by providing a generic collection of behavioral tests on a live app, and then providing an API to instrument the live app to verify that those behaviors have been implemented. That API is then implemented by each backend.
 

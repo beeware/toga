@@ -23,7 +23,7 @@ Once you have everything working, you can [submit a pull request](submit-pr.md) 
 
 {% block testing_running_additional %}
 
-#### Testing Core  { #run-core-test-suite }
+#### Testing Core { #run-core-test-suite }
 
 To run the core test suite:
 
@@ -53,7 +53,7 @@ To run the core test suite:
 
 As with the full test suite, this should report [100% test coverage][code-coverage]
 
-#### Testing Travertino  { #run-travertino-test-suite }
+#### Testing Travertino { #run-travertino-test-suite }
 
 In addition to the core library, the Toga repository also includes Travertino, a package that defines the lower-level layout mechanisms and style definitions which core then builds on. Its test suite can be run just like that of core:
 
@@ -148,7 +148,7 @@ To run a Travertino test instead, add `-trav`:
 
 {% block testing_additional %}
 
-### The testbed  { #run-testbed }
+### The testbed { #run-testbed }
 
 The above test suites exercise `toga-core` and `travertino` - but what about the backends? To verify the behavior of the backends, Toga has a testbed app. This app uses the core API to exercise all the behaviors that the backend APIs need to perform - but uses an actual platform backend to implement that behavior.
 

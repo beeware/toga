@@ -129,7 +129,7 @@ Ideally, if you have a working implementation of a missing widget, you'd make a 
 
 ### A Note About Briefcase Applications
 
-Briefcase projects don't use Python's entry point system, so you can't just add the entry points to a Briefcase project's `pyroject.toml`.  Instead any widgets you need have to be implemented as a separate Python project with it's own `pyproject.toml` that contains the entry points, and which is a dependency of your application.  The `customwidget` example in the Toga examples shows how you might do this.
+Briefcase projects don't use Python's entry point system, so you can't just add the entry points to a Briefcase project's `pyroject.toml`. Instead any widgets you need have to be implemented as a separate Python project with it's own `pyproject.toml` that contains the entry points, and which is a dependency of your application. The `customwidget` example in the Toga examples shows how you might do this.
 
 ### Implementing a New Backend
 

@@ -1,4 +1,4 @@
-# FAQ  { #togas-and-yaks }
+# FAQ { #togas-and-yaks }
 
 ## So... why the name Toga? { #so-why-the-name-toga }
 

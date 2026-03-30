@@ -30,9 +30,9 @@ Toga currently has support for 8 backends - but there's room for more!
 
 The first steps of any new platform backend are always the same:
 
-1. Implement enough of the Toga Application and Window classes to allow  you to create an empty application window, integrated with the  Python `asyncio` event loop.
-2. Work out how to use native platform APIs to position a widget at a  specific position on the window. Most widget frameworks will have  some sort of native layout scheme; we need to replace that scheme  with Toga's layout algorithm. If you can work out how to place a  button with a fixed size at a specific position on the screen,  that's usually sufficient.
-3. Get Tutorial 0 working. This is the simple case of a single box that  contains a single button. To get this tutorial working, you'll need  to implement the factory class for your new backend so that Toga can  instantiate widgets on your new backend, and connect the Toga style  applicator methods on the base widget that sets the position of  widgets on the screen.
+1. Implement enough of the Toga Application and Window classes to allow you to create an empty application window, integrated with the Python `asyncio` event loop.
+2. Work out how to use native platform APIs to position a widget at a specific position on the window. Most widget frameworks will have some sort of native layout scheme; we need to replace that scheme with Toga's layout algorithm. If you can work out how to place a button with a fixed size at a specific position on the screen, that's usually sufficient.
+3. Get Tutorial 0 working. This is the simple case of a single box that contains a single button. To get this tutorial working, you'll need to implement the factory class for your new backend so that Toga can instantiate widgets on your new backend, and connect the Toga style applicator methods on the base widget that sets the position of widgets on the screen.
 
 Once you have those core features in place, you can start implementing widgets and other Toga features (like fonts, images, and so on).
 

@@ -1,6 +1,6 @@
 # API reference
 
-## Key  {: id="api-status-key" }
+## Key {: id="api-status-key" }
 |                        |                                                          |
 |------------------------|----------------------------------------------------------|
 | {{ partly_supported }} | Partly supported: functionality or testing is incomplete |
