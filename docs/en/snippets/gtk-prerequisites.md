@@ -32,7 +32,6 @@ You can use a Python version other than the system default by replacing `python3
 
 ### Arch / Manjaro
 
-
 ```console
 (venv) $ sudo pacman -Syu git base-devel pkgconf python3 gobject-introspection cairo gtk3 libcanberra
 ```

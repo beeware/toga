@@ -12,7 +12,6 @@ Some properties, despite always storing their value in a consistent form, are mo
 
 Toga has a [layout debug mode][debug-layout] to aid in visually debugging or exploring Pack layouts.
 
-
 ## Reference
 
 ::: toga.style.pack.Pack

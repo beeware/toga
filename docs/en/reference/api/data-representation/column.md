@@ -82,7 +82,6 @@ table = Table(
 )
 ```
 
-
 ## Reference
 
 ::: toga.sources.ColumnT
