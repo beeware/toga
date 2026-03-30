@@ -1,5 +1,6 @@
 # Writing, running, and testing code
 
+<!-- rumdl-disable MD001 -->
 {% extends "contribute/how/write-code.md" %}
 
 {% block front_matter %}
@@ -112,7 +113,6 @@ You can run both the core and Travertino tests with one command:
 ///
 
 This will run both test suites, and report the two coverage results one after the other. As with the previous tests, this should report [100% test coverage][code-coverage].
-
 
 {% endblock %}
 
