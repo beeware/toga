@@ -14,7 +14,8 @@ $ python -m pip install -e ./helloworld
 $ python -m customwidget
 ```
 
-To run with the Textual backend
+To run with the Textual backend:
+
 ```console
 $ python -m pip install toga[textual]
 $ python -m pip install -e ./helloworld
