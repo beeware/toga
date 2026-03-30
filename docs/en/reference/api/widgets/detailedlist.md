@@ -79,9 +79,9 @@ The DetailedList as a whole will also respond to a refresh UI action if an `on_r
 
 ## Notes
 
-- The iOS Human Interface Guidelines differentiate between "Normal" and "Destructive" actions on a row. Toga will interpret any action with a name of "Delete" or "Remove" as destructive, and will render the action appropriately.
-- The WinForms implementation currently uses a column layout similar to [`Table`][toga.Table], and does not support the primary, secondary or refresh actions.
-- Using DetailedList on Android requires the AndroidX SwipeRefreshLayout widget in your project's Gradle dependencies. Ensure your app declares a dependency on `androidx.swiperefreshlayout:swiperefreshlayout:1.1.0` or later.
+* The iOS Human Interface Guidelines differentiate between "Normal" and "Destructive" actions on a row. Toga will interpret any action with a name of "Delete" or "Remove" as destructive, and will render the action appropriately.
+* The WinForms implementation currently uses a column layout similar to [`Table`][toga.Table], and does not support the primary, secondary or refresh actions.
+* Using DetailedList on Android requires the AndroidX SwipeRefreshLayout widget in your project's Gradle dependencies. Ensure your app declares a dependency on `androidx.swiperefreshlayout:swiperefreshlayout:1.1.0` or later.
 
 ## Reference
 
