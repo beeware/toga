@@ -90,7 +90,7 @@ known-first-party = [
 [tool.rumdl]
 flavor = "mkdocs"
 include = ["**/*.md"]
-exclude = ["CONTRIBUTING.md", "README.md", "changes/template.md", "winforms", "comment.md"]
+exclude = ["changes/template.md", "comment.md", "CODE_OF_CONDUCT.md"]
 respect-gitignore = true
 force-exclude = true
 
@@ -103,6 +103,7 @@ disable = ["MD013", "MD014", "MD042", "MD052"]
 
 [tool.rumdl.per-file-ignores]
 "changes/**/*.md" = ["MD041"]
+"docs/en/reference/api/**/*.md" = ["MD041"]
 
 #[tool.rumdl.MD013]  # Line length
 #line_length = 999999  # Force reflow to paragraph content to remove linebreaks
