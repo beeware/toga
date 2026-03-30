@@ -22,7 +22,7 @@ For all development beyond 0.5.0, any changes made to Travertino will be logged 
 
 ### Backward Incompatible Changes
 
-- The <span class="title-ref">default</span> parameter for Choice has been deprecated. ([#139](https://github.com/beeware/travertino/issues/139))
+- The `default` parameter for Choice has been deprecated. ([#139](https://github.com/beeware/travertino/issues/139))
 - Python 3.8 is no longer supported. ([#223](https://github.com/beeware/travertino/issues/223))
 - The mechanisms for assigning styles and applicators to nodes, and applying styles, have been reworked. A node will now attempt to apply its style as soon as it is assigned an applicator. This means you should not assign an applicator to a node until the node is sufficiently initialized to apply its style. To accommodate uses that currently do not follow this order, any exceptions resulting from a failed style application are caught, and a runtime warning is issued. In a future version, this will be an exception. ([#224](https://github.com/beeware/travertino/issues/224))
 - Supplying an applicator to BaseStyle.copy() has been deprecated. If you need to manually assign an applicator to a style, do it separately, after the copy. ([#224](https://github.com/beeware/travertino/issues/224))
