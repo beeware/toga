@@ -8,7 +8,7 @@ To run this example:
 
 Set up a development environment:
 
-```
+```console
 $ python -m venv venv
 $ ./venv/bin/activate
 (venv) $ python -m pip install briefcase

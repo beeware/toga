@@ -9,7 +9,7 @@ Includes buttons that exercise all the WebView features.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m webview
 ```

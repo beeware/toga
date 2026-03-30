@@ -9,7 +9,7 @@ This example demonstrates both horizontal and vertical dividers.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m divider
 ```

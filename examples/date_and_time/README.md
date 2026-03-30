@@ -12,14 +12,14 @@ Date & Time Input is available only on Android, macOS and Win platforms.
 
 To run this example on Windows or macOS:
 
-```
+```console
 $ python -m pip install toga
 $ python -m date_and_time
 ```
 
 To run this example on Android:
 
-```
+```console
 $ python -m pip install briefcase
 $ briefcase run android
 ```

@@ -12,7 +12,7 @@ The following features are present in this example:
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m progressbar
 ```

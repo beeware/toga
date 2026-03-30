@@ -9,7 +9,7 @@ The app creates a box layout containing 50 labels, and adds it to a scroll conta
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m scrollcontainer
 ```

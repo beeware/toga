@@ -9,7 +9,7 @@ The app provides various controls for the content and properties of the containe
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m splitcontainer
 ```

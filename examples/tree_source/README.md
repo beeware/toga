@@ -12,7 +12,7 @@ what you'd do in practice with a tree.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m tree_source
 ```

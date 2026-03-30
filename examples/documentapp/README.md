@@ -12,13 +12,13 @@ directory, and open one of the two `*.exampledoc` files.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m documentapp
 ```
 
 Or, pass in a file at the command line:
 
-```
+```console
 $ python -m documentapp Jabberwocky.exampledoc
 ```

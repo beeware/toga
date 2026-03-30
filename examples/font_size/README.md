@@ -8,7 +8,7 @@ Interact with any widget to reset its font to the default size.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m font_size
 ```

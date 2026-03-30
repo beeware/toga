@@ -11,7 +11,7 @@ in the status bar/tray of the operating system.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m statusiconapp
 ```

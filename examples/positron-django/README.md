@@ -11,7 +11,7 @@ contents of this folder are a stock version of what is produced by
 
 To set up a development environment:
 
-```
+```console
 $ python -m venv venv
 $ ./venv/bin/activate
 (venv) $ python -m pip install briefcase

@@ -9,7 +9,7 @@ Adds a textfield with an initial value and placeholder.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m multilinetextinput
 ```

@@ -15,7 +15,7 @@ will match the changes.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m table_source
 ```

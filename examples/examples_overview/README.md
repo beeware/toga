@@ -8,7 +8,7 @@ the user interface.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m examples_overview
 ```

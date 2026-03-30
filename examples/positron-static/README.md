@@ -9,7 +9,7 @@ It serves a static site from the `src/positron/resources/webapp` folder.
 
 To set up a development environment:
 
-```
+```console
 $ python -m venv venv
 $ ./venv/bin/activate
 (venv) $ python -m pip install briefcase

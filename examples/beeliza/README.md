@@ -15,7 +15,7 @@ your conversation partner.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m beeliza
 ```

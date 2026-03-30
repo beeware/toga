@@ -30,7 +30,7 @@ gray rectangle with the words "Pillow image" on it in green text.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m imageview
 ```
