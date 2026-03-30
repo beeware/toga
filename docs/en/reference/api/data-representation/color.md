@@ -8,6 +8,8 @@ When specifying colors for style properties such as [color][toga.style.pack.Pack
 
 ::: toga.colors.ColorT
 
+<!-- REMOVE WHEN FIXED -->
+<!-- rumdl-disable MD013 -->
 ::: toga.colors.Color
 	options:
         members: [rgb, hsl]
@@ -22,3 +24,4 @@ When specifying colors for style properties such as [color][toga.style.pack.Pack
 	options:
 		members: [h, s, l, a]
 		inherited_members: [a]
+<!-- rumdl-enable MD013 -->
