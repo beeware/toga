@@ -90,7 +90,7 @@ known-first-party = [
 [tool.rumdl]
 flavor = "mkdocs"
 include = ["**/*.md"]
-exclude = ["changes/template.md", "comment.md", "CODE_OF_CONDUCT.md", "SUMMARY.md"]
+exclude = ["changes/template.md", "comment.md", "CODE_OF_CONDUCT.md", "docs/en/SUMMARY.md"]
 respect-gitignore = true
 force-exclude = true
 

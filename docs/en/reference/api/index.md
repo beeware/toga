@@ -1,6 +1,7 @@
 # API reference
 
 ## Key {: id="api-status-key" }
+
 |                        |                                                          |
 |------------------------|----------------------------------------------------------|
 | {{ partly_supported }} | Partly supported: functionality or testing is incomplete |
@@ -16,6 +17,7 @@
     "Resources",
     "Hardware",
 ] %}
+
 ## {{ category }} { .api-reference }
 
 {{ api_table(category) }}
