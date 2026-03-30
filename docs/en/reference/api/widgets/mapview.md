@@ -19,8 +19,6 @@ mapview.zoom = 15
 
 A map can also display pins. A map pin must have a title, and can optionally have a subtitle. Pins can be added at time of map construction, or can be dynamically added, updated and removed at runtime:
 
-<!-- rumdl-disable MD007 -->
-
 ```python
 import toga
 
@@ -44,8 +42,6 @@ mapview.pins.remove(brutus)
 # Remove all pins
 mapview.pins.clear()
 ```
-
-<!-- rumdl-enable MD007 -->
 
 Pins can respond to being pressed. When a pin is pressed, the map generates an `on_select` event, which receives the pin as an argument.
 
