@@ -1,8 +1,10 @@
 # toga-textual
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-textual.svg)](https://pypi.python.org/pypi/toga-textual)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-textual.svg)](https://github.com/beeware/toga-textual/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-textual.svg)](https://pypi.python.org/pypi/toga-textual)
+<!-- rumdl-enable MD013 -->
 
 A Textual backend for the [Toga widget toolkit](https://beeware.org/toga).
 

@@ -41,7 +41,7 @@ def dialog_dismissed(self, task):
 
 In this example, when `my_sync_handler` is triggered, a dialog will be created, the display of that dialog will be scheduled as an asynchronous task, and a message will be logged saying the dialog has been created. When the user responds, the `dialog_dismissed` callback will be invoked, with the dialog task provided as an argument. The result of the task can then be interrogated to handle the response.
 
-## Notes  { #dialog-notes }
+## Notes { #dialog-notes }
 
 - On macOS, app-modal dialogs will *not* prevent the user from interacting with the rest of the app.
 - On Linux (Qt), the `SelectFolderDialog` does not support multiple selection.
