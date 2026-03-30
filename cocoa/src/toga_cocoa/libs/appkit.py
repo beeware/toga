@@ -734,6 +734,8 @@ NSToolbarItem = ObjCClass("NSToolbarItem")
 NSToolbarItem.declare_property("itemIdentifier")
 ######################################################################
 # NSTrackingArea.h
+NSTrackingArea = ObjCClass("NSTrackingArea")
+
 NSTrackingMouseEnteredAndExited = 0x01
 NSTrackingMouseMoved = 0x02
 NSTrackingCursorUpdate = 0x04

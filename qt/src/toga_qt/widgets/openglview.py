@@ -11,7 +11,6 @@ class TogaOpenGLWidget(QOpenGLWidget):
         self.interface = impl.interface
 
     def initializeGL(self):
-        print("here")
         self.interface.renderer.on_init(self.interface)
 
     def resizeGL(self, w, h):
@@ -21,10 +20,20 @@ class TogaOpenGLWidget(QOpenGLWidget):
         self._redraw()
 
     def _redraw(self):
+        pixel_ratio = self.devicePixelRatio()
         size = self.impl.native.size()
-        width = size.width()
-        height = size.height()
-        self.interface.renderer.on_render(self.interface, size=(width, height))
+        width = size.width() * pixel_ratio
+        height = size.height() * pixel_ratio
+        mouse_postion = self.mapFromGlobal(self.cursor().pos())
+        pointer = (
+            mouse_postion.x() * pixel_ratio,
+            height - mouse_postion.y() * pixel_ratio,
+        )
+        self.interface.renderer.on_render(
+            self.interface,
+            size=(width, height),
+            pointer=pointer,
+        )
 
 
 class OpenGLView(Widget):

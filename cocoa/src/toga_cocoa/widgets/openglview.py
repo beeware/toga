@@ -18,18 +18,42 @@ from .base import Widget
 class TogaOpenGLView(NSOpenGLView):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
+    mouse_state = objc_property(object)
 
     @objc_method
     def prepareOpenGL(self) -> None:
-        # super().prepareOpenGL()
         self.openGLContext.makeCurrentContext()
-        self.interface.renderer.on_init(self.interface)
+        try:
+            self.interface.renderer.on_init(self.interface)
+        except Exception as exc:
+            print(exc)
+            raise
 
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
-        size = (int(rect.size.width), int(rect.size.height))
+        # Get size in GL pixels
+        backingBounds = self.convertRectToBacking(self.bounds)
+        size = (backingBounds.size.width, backingBounds.size.height)
+
+        # Get current mouse position in GL pixels
+        position = self.convertPoint(
+            self.window.mouseLocationOutsideOfEventStream(),
+            fromView=None,
+        )
+        scale = self.backingScaleFactor
+        pointer = (position.x * scale, position.y * scale)
+
         self.openGLContext.makeCurrentContext()
-        self.interface.renderer.on_render(self.interface, size=size)
+        try:
+            self.interface.renderer.on_render(
+                self.interface,
+                size=size,
+                pointer=pointer,
+                buttons=tuple(self.mouse_state),
+            )
+        except Exception as exc:
+            print(exc)
+            raise
         self.openGLContext.flushBuffer()
 
     @objc_method
@@ -50,6 +74,30 @@ class TogaOpenGLView(NSOpenGLView):
 
         return self.initWithFrame_pixelFormat_(frame, pixel_format)
 
+    @objc_method
+    def mouseDown_(self, event) -> None:
+        self.mouse_state[0] = True
+
+    @objc_method
+    def mouseUp_(self, event) -> None:
+        self.mouse_state[0] = False
+
+    @objc_method
+    def otherMouseDown_(self, event) -> None:
+        self.mouse_state[1] = True
+
+    @objc_method
+    def otherMouseUp_(self, event) -> None:
+        self.mouse_state[1] = False
+
+    @objc_method
+    def rightMouseDown_(self, event) -> None:
+        self.mouse_state[2] = True
+
+    @objc_method
+    def rightMouseUp_(self, event) -> None:
+        self.mouse_state[2] = False
+
 
 class OpenGLView(Widget):
     def create(self):
@@ -60,6 +108,7 @@ class OpenGLView(Widget):
             raise RuntimeError("Can't create native OpenGLView widget.")
         self.native.interface = self.interface
         self.native.impl = self
+        self.native.mouse_state = [False, False, False]
 
         # Add the layout constraints
         self.add_constraints()
