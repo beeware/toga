@@ -6,7 +6,7 @@ Test app that demonstrates adding and removing widgets from box.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m layout
 ```

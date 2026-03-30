@@ -6,7 +6,7 @@ Test app for the [Table widget](https://toga.beeware.org/en/stable/reference/api
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga babel
 $ python -m table_columns
 ```

@@ -1,8 +1,10 @@
 # toga-dummy
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-dummy.svg)](https://pypi.python.org/pypi/toga-dummy)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-dummy.svg)](https://github.com/beeware/toga-dummy/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-dummy.svg)](https://pypi.python.org/pypi/toga-dummy)
+<!-- rumdl-enable MD013 -->
 
 A Dummy backend for the [Toga widget toolkit](https://beeware.org/toga). This doesn't actually display anything; it exists purely as a testing environment.
 

@@ -1,8 +1,10 @@
 # toga-web
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-web.svg)](https://pypi.python.org/pypi/toga-web)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-web.svg)](https://github.com/beeware/toga-web/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-web.svg)](https://pypi.python.org/pypi/toga-web)
+<!-- rumdl-enable MD013 -->
 
 A backend for the [Toga widget toolkit](https://beeware.org/toga) on web platforms. It uses [Shoelace](https://shoelace.style) to provide web components.
 

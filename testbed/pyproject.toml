@@ -44,7 +44,6 @@ permission.fine_location = "The testbed needs to exercise fine-grained geolocati
 permission.coarse_location = "The testbed needs to exercise coarse-grained geolocation services."
 permission.background_location = "The testbed needs to exercise capturing your location while in the background"
 
-
 formal_name = "Toga Testbed"
 description = "A testbed for Toga visual tests"
 icon = "icons/testbed"
@@ -70,7 +69,7 @@ requires = [
     # psutil would ideally go only in test dependencies above, so Dependabot can see it.
     # However, for Python < 3.13, we have no way to avoid trying to install it on
     # Android.
-    "psutil==7.2.1 ; python_version < '3.13'",
+    "psutil==7.2.2 ; python_version < '3.13'",
 ]
 test_sources = [
     "../cocoa/tests_backend",
@@ -82,7 +81,9 @@ test_sources = [
 ]
 requires = [
     "../gtk",
-    "psutil==7.2.1 ; python_version < '3.13'",
+    # psutil would ideally be top-level test dependency. However, for Python < 3.13,
+    # Android identifies as Linux, and psutil isn't available for Android.
+    "psutil==7.2.2 ; python_version < '3.13'",
 ]
 
 [tool.briefcase.app.testbed.windows]
@@ -91,7 +92,9 @@ test_sources = [
 ]
 requires = [
     "../winforms",
-    "psutil==7.2.1 ; python_version < '3.13'",
+    # psutil would ideally be top-level test dependency. However, for Python < 3.13,
+    # Android identifies as Linux, and psutil isn't available for Android.
+    "psutil==7.2.2 ; python_version < '3.13'",
 ]
 
 # Mobile deployments
@@ -151,8 +154,8 @@ test_sources = [
 
 [tool.briefcase.app.testbed-qt.linux]
 requires = [
-    "../qt",
-    "PySide6-Essentials~=6.10.0",
-    "PySide6-Addons~=6.10.0",
-    "psutil==7.2.1 ; python_version < '3.13'",
+    "../qt[pyside6]",
+    # psutil would ideally be top-level test dependency. However, for Python < 3.13,
+    # Android identifies as Linux, and psutil isn't available for Android.
+    "psutil==7.2.2 ; python_version < '3.13'",
 ]

@@ -47,7 +47,7 @@ A Toga app will install a number of default commands to reflect core application
 
 As part of application startup, apps will also ensure that the locale has been set to match the language settings of the operating system.
 
-## Assigning a main window  { #assigning-main-window }
+## Assigning a main window { #assigning-main-window }
 
 An app *must* assign `main_window` as part of the startup process. However, the value that is assigned as the main window will affect the behavior of the app.
 
