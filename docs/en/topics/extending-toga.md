@@ -14,7 +14,7 @@ As an example, the Qt library has a `QDial` class that acts a lot like a [`Slide
 
 In `dial.py` we create a subclass of [`Slider`][toga.Slider] with a `_create` method that imports the qt `Dial` implementation and instantiates it:
 
-``` python
+```python
 from toga import Slider
 
 class Dial(Slider):
@@ -27,7 +27,7 @@ class Dial(Slider):
 
 Then in `qt_dial.py` we create a subclass of `toga_qt.widgets.slider.Slider` that creates a `QDial`:
 
-``` python
+```python
 from PySide6.QtWidgets import QDial
 from toga_qt.widgets.slider import Slider
 
@@ -54,7 +54,7 @@ The previous section is fine as long as you only care about one backend implemen
 
 Toga solves this with "factory" objects which are name-spaces that lazily load implementations based on the [`toga.backend`][toga.backend]. The default factory object uses the Python standard library [`importlib.metadata`][importlib.metadata] "entry point" system to load backend widgets in a plugin-style system. Every backend advertises where to find the widget implementations as part of its `pyproject.toml`. So if you look at the `toga_qt`'s `pyproject.toml` you will see a section that looks like:
 
-``` toml
+```toml
 [project.entry-points."toga_core.backend.toga_qt"]
 App = "toga_qt.app:App"
 Command = "toga_qt.command:Command"
@@ -65,7 +65,7 @@ and so-on. This tells [`importlib.metadata`][importlib.metadata] that there is a
 
 The factory object is a property on the widget which calls out to [`toga.platform.get_factory`][toga.platform.get_factory] with an appropriate parameter: `"toga_core"` by default, but custom widgets can override this property to get the appropriate `Factory` instance for the widget. The factory widget has the implementation classes as lazily looked-up attributes. For example, if you have an instance of a factory called `my_factory`, `my_factory.Slider` will give you the implementation class for the Slider widget in the current backend. If you look at the widget interface classes in Toga, you will see that most of their `_create` methods look like:
 
-``` python
+```python
 class Slider(Widget):
 
     def _create(self):
@@ -78,7 +78,7 @@ Not every widget is available in every backend. If a backend doesn't provide a w
 
 For example, at the time of writing, the `toga_textual` backend doesn't implement the [`toga.Switch`][toga.Switch] widget. We could write one something like this in a module `my_project.textual_switch`:
 
-``` python
+```python
 from textual.widgets import Checkbox as TextualCheckbox
 from travertino.size import at_least
 from toga_textual.widgets.base import Widget
@@ -116,7 +116,7 @@ class Switch(Widget):
 
 and then add the following to the project's `pyproject.toml`:
 
-``` toml
+```toml
 [project.entry-points."toga_core.backend.toga_textual"]
 Switch = "my_project.textual_switch:Switch"
 ```
@@ -137,7 +137,7 @@ You can use these ideas to implement a new backend for Toga. To do this, you wou
 
 For example, Toga is not likely to ever have an official WxPython backend as part of the core library because WxPython is not a native UI toolkit. But there may be value in such a backend for applications that are already using WxPython. Since this is not an official backend, you might call it `togax_wx`, and your `pyproject.toml` would look like:
 
-``` toml
+```toml
 [project.entry-points."toga.backends"]
 linux = "togax_wx"
 windows = "togax_wx"
@@ -161,7 +161,7 @@ For example, at the time of writing the Toga core does not provide a `Toggle But
 
 We will call the library `togax_extra_switches` and write a collection of implementations as `extra_switches.cocoa.toggle`, `extra_switches.cocoa.checkbox`, `extra_switches.qt.toggle`, `extra_switches.qt.checkbox`, and so-on. For example `extra_switches.qt.toggle` might look something like:
 
-``` python
+```python
 from PySide6.QtWidgets import QPushButton
 from travertino.size import at_least
 
@@ -179,7 +179,7 @@ Other backends would be implemented similarly. We could even include `extra_swit
 
 When it comes time to write the interface class for `Toggle` we can base it directly on `Switch`, but instead of being in the `toga_core` set of widget interfaces, it is in the `togax_extra_switches` interface group. As a result, we need to override the `factory` property of the interface widget to return a factory for this interface group.
 
-``` python
+```python
 from functools import cached_property
 
 from toga import Switch
@@ -197,7 +197,7 @@ class Toggle(Switch)
 
 Once this is written, we can add the entry points to the `pyproject.toml`:
 
-``` toml
+```toml
 [project.entry-points."togax_extra_switches.backend.toga_qt"]
 Toggle = "extra_switches.qt.toggle:Toggle"
 Checkbox = "extra_switches.qt.checkbox:Checkbox"
@@ -221,7 +221,7 @@ To extend Toga in this way, ensure that you get the appropriate factory for your
 
 For example, an accelerometer hardware interface as part of a `togax_sensors` library could look something like:
 
-``` python
+```python
 from toga.platform import get_factory
 
 class Accelerometer:
@@ -238,7 +238,7 @@ class Accelerometer:
 
 with the corresponding backend for Qt looking something like:
 
-``` python
+```python
 from PySide6.QtSensors import QAccelerometer
 
 class Accelerometer:
@@ -254,7 +254,7 @@ class Accelerometer:
 
 and entry points like:
 
-``` toml
+```toml
 [project.entry-points."togax_sensors.backend.toga_qt"]
 Accelerometer = "togax_sensors.qt.accelerometer:Accelerometer"
 ```

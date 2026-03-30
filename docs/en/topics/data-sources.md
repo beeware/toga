@@ -37,7 +37,7 @@ You can add a listener by calling the [`add_listener`][toga.sources.base.Source.
 
 This is particularly important if you might change the source that the listener is listening to. When you change data source you should make sure that you remove from the old one and connect to the new one:
 
-``` python
+```python
 class DataSourceListener:
     ...
     @property

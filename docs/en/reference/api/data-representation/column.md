@@ -14,7 +14,7 @@ Column objects are usually immutable, and can be shared between widgets freely i
 
 The `Table` and `Tree` widgets will automatically create `AccessorColumn` objects from column headings, but they can also be created manually if desired. Each column object expects a heading and an accessor as arguments, but will automatically generate an accessor from the heading if needed.
 
-``` python
+```python
 table = Table(
     columns=[
         AccessorColumn("Title", "title"),
