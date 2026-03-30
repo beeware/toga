@@ -1,7 +1,6 @@
 # Hardware
 
-Test app for the
-[hardware device features](https://toga.beeware.org/en/stable/reference/api/hardware/index.html).
+Test app for the [hardware device features](https://toga.beeware.org/en/stable/reference/api/hardware/index.html).
 
 ## Quickstart
 

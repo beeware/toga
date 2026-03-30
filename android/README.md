@@ -1,8 +1,10 @@
 # toga-android
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-android.svg)](https://pypi.python.org/pypi/toga-android)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-android.svg)](https://github.com/beeware/toga-android/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-android.svg)](https://pypi.python.org/pypi/toga-android)
+<!-- rumdl-enable MD013 -->
 
 An Android backend for the [Toga widget toolkit](https://beeware.org/toga).
 

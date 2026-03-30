@@ -1,7 +1,6 @@
 # Simple App
 
-A demonstration of a [Simple Toga App](https://toga.beeware.org) - an app with a
-minimum of decoration.
+A demonstration of a [Simple Toga App](https://toga.beeware.org) - an app with a minimum of decoration.
 
 ## Quickstart
 

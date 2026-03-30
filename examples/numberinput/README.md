@@ -1,7 +1,6 @@
 # NumberInput
 
-Test app for the
-[NumberInput widget](https://toga.beeware.org/en/stable/reference/api/widgets/numberinput.html).
+Test app for the [NumberInput widget](https://toga.beeware.org/en/stable/reference/api/widgets/numberinput.html).
 
 ## Quickstart
 

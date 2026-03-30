@@ -1,8 +1,10 @@
 # toga-qt
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-qt.svg)](https://pypi.python.org/pypi/toga-qt)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-qt.svg)](https://github.com/beeware/toga-qt/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-qt.svg)](https://pypi.python.org/pypi/toga-qt)
+<!-- rumdl-enable MD013 -->
 
 A Qt backend for the [Toga widget toolkit](https://beeware.org/toga).
 

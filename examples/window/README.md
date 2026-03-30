@@ -1,7 +1,6 @@
 # Window
 
-Test app for the
-[Window widget](https://toga.beeware.org/en/stable/reference/api/window.html).
+Test app for the [Window widget](https://toga.beeware.org/en/stable/reference/api/window.html).
 
 ## Quickstart
 

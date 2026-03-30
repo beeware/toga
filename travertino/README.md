@@ -1,8 +1,10 @@
 # Travertino
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/travertino.svg)](https://pypi.python.org/pypi/travertino)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/travertino.svg)](https://github.com/beeware/toga/blob/main/travertino/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/travertino.svg)](https://pypi.python.org/pypi/travertino)
+<!-- rumdl-enable MD013 -->
 
 Travertino is a set of constants and utilities for describing user interfaces, including:
 

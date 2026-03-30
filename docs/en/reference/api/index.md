@@ -6,6 +6,7 @@
 | {{ partly_supported }} | Partly supported: functionality or testing is incomplete |
 | {{ fully_supported }}  | Fully supported                                          |
 
+<!-- rumdl-disable MD013 -->
 {% for category in [
 	"Application components",
 	"Widgets",

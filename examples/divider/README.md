@@ -1,7 +1,6 @@
 # Divider example
 
-Test app for the
-[Divider widget](https://toga.beeware.org/en/stable/reference/api/widgets/divider.html).
+Test app for the [Divider widget](https://toga.beeware.org/en/stable/reference/api/widgets/divider.html).
 
 This example demonstrates both horizontal and vertical dividers.
 

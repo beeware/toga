@@ -1,8 +1,6 @@
 # Examples Overview
 
-This example provides an overview of all other [Toga](https://toga.beeware.org)
-examples in a table. You can view their READMEs and run individual examples from
-the user interface.
+This example provides an overview of all other [Toga](https://toga.beeware.org) examples in a table. You can view their READMEs and run individual examples from the user interface.
 
 ## Quickstart
 

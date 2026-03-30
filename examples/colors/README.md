@@ -1,8 +1,6 @@
 # Colors
 
-Test app to test the color abilities on various
-[Toga widgets](https://toga.beeware.org).
-Not all widgets have color support yet.
+Test app to test the color abilities on various [Toga widgets](https://toga.beeware.org). Not all widgets have color support yet.
 
 ## Quickstart
 

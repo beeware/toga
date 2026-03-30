@@ -1,7 +1,6 @@
 # Tree
 
-Test app for the
-[Tree widget](https://toga.beeware.org/en/stable/reference/api/widgets/tree.html).
+Test app for the [Tree widget](https://toga.beeware.org/en/stable/reference/api/widgets/tree.html).
 
 ## Quickstart
 

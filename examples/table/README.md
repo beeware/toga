@@ -1,7 +1,6 @@
 # Table
 
-Test app for the
-[Table widget](https://toga.beeware.org/en/stable/reference/api/widgets/table.html).
+Test app for the [Table widget](https://toga.beeware.org/en/stable/reference/api/widgets/table.html).
 
 ## Quickstart
 

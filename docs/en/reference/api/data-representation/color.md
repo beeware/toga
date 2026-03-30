@@ -10,13 +10,13 @@ When specifying colors for style properties such as [color][toga.style.pack.Pack
 
 ::: toga.colors.Color
 	options:
-		members: [rgb, hsl]
-		show_signature_annotations: false
+        members: [rgb, hsl]
+        show_signature_annotations: false
 
 ::: toga.colors.rgb
-	options:
-		members: [r, g, b, a]
-		inherited_members: [a]
+    options:
+        members: [r, g, b, a]
+        inherited_members: [a]
 
 ::: toga.colors.hsl
 	options:

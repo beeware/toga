@@ -1,7 +1,6 @@
 # Slider
 
-Test app for the
-[Slider widget](https://toga.beeware.org/en/stable/reference/api/widgets/slider.html).
+Test app for the [Slider widget](https://toga.beeware.org/en/stable/reference/api/widgets/slider.html).
 
 The following slider features are present in this example:
 

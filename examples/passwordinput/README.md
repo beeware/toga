@@ -1,7 +1,6 @@
 # Password Input
 
-Test app for the
-[Password Input widget](https://toga.beeware.org/en/stable/reference/api/widgets/passwordinput.html).
+Test app for the [Password Input widget](https://toga.beeware.org/en/stable/reference/api/widgets/passwordinput.html).
 
 ## Quickstart
 

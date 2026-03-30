@@ -1,7 +1,6 @@
 # Text Input
 
-Test app for the
-[TextInput widget](https://toga.beeware.org/en/stable/reference/api/widgets/textinput.html).
+Test app for the [TextInput widget](https://toga.beeware.org/en/stable/reference/api/widgets/textinput.html).
 
 ## Quickstart
 

@@ -1,7 +1,6 @@
 # Button
 
-Test app for the
-[Button widget](https://toga.beeware.org/en/stable/reference/api/widgets/button.html).
+Test app for the [Button widget](https://toga.beeware.org/en/stable/reference/api/widgets/button.html).
 
 The following button features are present in this example:
 

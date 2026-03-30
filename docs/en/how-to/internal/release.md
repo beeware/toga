@@ -17,7 +17,7 @@ The procedure for cutting a new release is as follows:
       $ git checkout --detach upstream/main
       ```
 
-      Check that the HEAD of release now matches upstream/main.
+    Check that the HEAD of release now matches upstream/main.
 
 2. Ensure that the release notes are up to date. Run:
 
@@ -25,13 +25,13 @@ The procedure for cutting a new release is as follows:
       $ tox -e towncrier -- --draft
       ```
 
-      to review the release notes that will be included, and then:
+    to review the release notes that will be included, and then:
 
       ```console
       $ tox -e towncrier
       ```
 
-      to generate the updated release notes.
+    to generate the updated release notes.
 
 3. Build the documentation to ensure that the new release notes don't include any spelling errors or markup problems:
 
@@ -49,9 +49,9 @@ The procedure for cutting a new release is as follows:
 
 5. Pushing the tag will start a workflow to create a draft release on GitHub. You can [follow the progress of the workflow on GitHub](https://github.com/beeware/toga/actions?query=workflow%3A%22Create+Release%22); once the workflow completes, there should be a new [draft release](https://github.com/beeware/toga/releases), and entries on the TestPyPI server for [toga-core](https://test.pypi.org/project/toga-core/), [toga-cocoa](https://test.pypi.org/project/toga-cocoa/), etc. Confirm that this action successfully completes. If it fails, there's a couple of possible causes:
 
-      a. The final upload to TestPyPI failed. TestPyPI doesn't have the same service monitoring as PyPI-proper, so it sometimes has problems. However, it's not critical to the release process.
+    a. The final upload to TestPyPI failed. TestPyPI doesn't have the same service monitoring as PyPI-proper, so it sometimes has problems. However, it's not critical to the release process.
 
-      b. Something else fails in the build process. If the problem can be fixed without a code change to the Toga repository (e.g., a transient problem with build machines not being available), you can re-run the action that failed through the GitHub Actions GUI. If the fix requires a code change, delete the old tag, make the code change, and re-tag the release.
+    b. Something else fails in the build process. If the problem can be fixed without a code change to the Toga repository (e.g., a transient problem with build machines not being available), you can re-run the action that failed through the GitHub Actions GUI. If the fix requires a code change, delete the old tag, make the code change, and re-tag the release.
 
 6. Create a clean virtual environment, install the new release from Test PyPI, and perform any pre-release testing that may be appropriate:
 

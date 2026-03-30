@@ -1,7 +1,6 @@
 # WebView
 
-Test app for the
-[WebView widget](https://toga.beeware.org/en/stable/reference/api/widgets/webview.html).
+Test app for the [WebView widget](https://toga.beeware.org/en/stable/reference/api/widgets/webview.html).
 
 Includes buttons that exercise all the WebView features.
 

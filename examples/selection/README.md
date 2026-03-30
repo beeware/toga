@@ -1,7 +1,6 @@
 # Selection
 
-Test app for the
-[Selection widget](https://toga.beeware.org/en/stable/reference/api/widgets/selection.html).
+Test app for the [Selection widget](https://toga.beeware.org/en/stable/reference/api/widgets/selection.html).
 
 ## Quickstart
 

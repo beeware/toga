@@ -1,7 +1,6 @@
 # Map View
 
-Test app for the
-[Map View widget](https://toga.beeware.org/en/stable/reference/api/widgets/mapview.html).
+Test app for the [Map View widget](https://toga.beeware.org/en/stable/reference/api/widgets/mapview.html).
 
 ## Quickstart
 

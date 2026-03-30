@@ -1,7 +1,6 @@
 # Option Container
 
-Test app for the
-[Option Container widget](https://toga.beeware.org/en/stable/reference/api/containers/optioncontainer.html).
+Test app for the [Option Container widget](https://toga.beeware.org/en/stable/reference/api/containers/optioncontainer.html).
 
 ## Quickstart
 

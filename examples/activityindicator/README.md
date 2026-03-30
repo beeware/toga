@@ -1,7 +1,6 @@
 # Activity Indicator
 
-Test app for the
-[Activity Indicator widget](https://toga.beeware.org/en/stable/reference/api/widgets/activityindicator.html).
+Test app for the [Activity Indicator widget](https://toga.beeware.org/en/stable/reference/api/widgets/activityindicator.html).
 
 ## Quickstart
 

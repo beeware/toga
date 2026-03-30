@@ -1,7 +1,6 @@
 # Box
 
-Test app for the
-[Box widget](https://toga.beeware.org/en/stable/reference/api/containers/box.html).
+Test app for the [Box widget](https://toga.beeware.org/en/stable/reference/api/containers/box.html).
 
 The following features are present in this example:
 

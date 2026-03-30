@@ -1,8 +1,10 @@
 # toga-iOS
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-ios.svg)](https://pypi.python.org/pypi/toga-ios)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-ios.svg)](https://github.com/beeware/toga-ios/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-ios.svg)](https://pypi.python.org/pypi/toga-ios)
+<!-- rumdl-enable MD013 -->
 
 An iOS backend for the [Toga widget toolkit](https://beeware.org/toga).
 
