@@ -5,11 +5,12 @@ by [Toga](https://toga.beeware.org).
 
 It also contains working copies of the tutorial code.
 
-# Running the examples
+## Running the examples
 
 Each of the examples can run by copying the example code to your computer
 (either by cloning this repository, or by manually duplicating the specific
 files), installing Toga, and running the application as a Python module:
+
 ```console
 $ cd <example name>
 $ python -m <example name>

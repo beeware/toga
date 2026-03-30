@@ -1,5 +1,3 @@
-[<img src="https://beeware.org/project/toga/toga.png" width="72" alt="logo" />](https://beeware.org/toga)
-
 # Toga
 
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga.svg)](https://pypi.python.org/pypi/toga)
@@ -8,6 +6,8 @@
 [![Project status](https://img.shields.io/pypi/status/toga.svg)](https://pypi.python.org/pypi/toga)
 [![Build Status](https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main)](https://github.com/beeware/toga/actions)
 [![Discord server](https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic)](https://beeware.org/bee/chat/)
+
+[![Toga logo](https://beeware.org/project/toga/toga.png)](https://beeware.org/toga)
 
 A Python native, OS native GUI toolkit.
 
@@ -20,8 +20,10 @@ for details.
 
 To get a demonstration of the capabilities of Toga, run the following:
 
-    $ pip install toga-demo
-    $ toga-demo
+```console
+$ pip install toga-demo
+$ toga-demo
+```
 
 This will pop up a GUI window with some sample widgets.
 

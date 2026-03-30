@@ -14,33 +14,37 @@ Create a fresh virtual environment, then install `toga-positron`. This will inst
 Briefcase, plus the Positron bootstrap. You can then use the Briefcase wizard to create
 a new Toga app:
 
-    $ python -m venv venv
-    $ source venv/bin/activate
-    (venv) $ pip install toga-positron
-    (venv) $ briefcase new
+```console
+$ python -m venv venv
+$ source venv/bin/activate
+(venv) $ pip install toga-positron
+(venv) $ briefcase new
+```
 
 This will ask you a number of questions about the app you want to generate, such as the
 app's name, the authors name, and the project license. You'll then be asked which GUI
 framework you want to use:
 
-    -- GUI framework -------------------------------------------------------------
+```console
+-- GUI framework -------------------------------------------------------------
 
-    What GUI toolkit do you want to use for this project?
+What GUI toolkit do you want to use for this project?
 
-    Additional GUI bootstraps are available from the community.
+Additional GUI bootstraps are available from the community.
 
-    Check them out at https://beeware.org/bee/briefcase-bootstraps
+Check them out at https://beeware.org/bee/briefcase-bootstraps
 
-    1) Toga
-    2) PySide6                               (does not support iOS/Android/Web deployment)
-    3) Pygame                                (does not support iOS/Android/Web deployment)
-    4) Console                               (does not support iOS/Android/Web deployment)
-    5) Toga Positron (Django server)         (does not support Web deployment)
-    6) Toga Positron (Site-specific browser) (does not support Web deployment)
-    7) Toga Positron (Static server)         (does not support Web deployment)
-    8) None
+1) Toga
+2) PySide6                               (does not support iOS/Android/Web deployment)
+3) Pygame                                (does not support iOS/Android/Web deployment)
+4) Console                               (does not support iOS/Android/Web deployment)
+5) Toga Positron (Django server)         (does not support Web deployment)
+6) Toga Positron (Site-specific browser) (does not support Web deployment)
+7) Toga Positron (Static server)         (does not support Web deployment)
+8) None
 
-    GUI framework [1]:
+GUI framework [1]:
+```
 
 This provides 3 options for a Toga Positron-based app:
 
@@ -62,7 +66,9 @@ of the Django site).
 
 To run Django management commands, use::
 
-    (venv) PYTHONPATH=src python src/manage.py <command> <args...>
+```console
+(venv) PYTHONPATH=src python src/manage.py <command> <args...>
+```
 
 The Django app will run on a SQLite3 database, stored in the user's data directory (the
 location of this directory is platform specific). This database file will be created if
@@ -76,8 +82,10 @@ database file will be copied into the user's data folder as a starting point.
 
 To create an initial database, use `manage.py` - e.g.,:
 
-    (venv) PYTHONPATH=src python src/manage.py migrate
-    (venv) PYTHONPATH=src python src/manage.py createsuperuser
+```console
+(venv) PYTHONPATH=src python src/manage.py migrate
+(venv) PYTHONPATH=src python src/manage.py createsuperuser
+```
 
 This will create an initial `db.sqlite3` file with a superuser account. All users
 of the app will have this superuser account in their database.
