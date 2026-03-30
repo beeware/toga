@@ -8,13 +8,13 @@
 
 <!-- rumdl-disable MD013 -->
 {% for category in [
-	"Application components",
-	"Widgets",
-	"Container widgets",
-	"Style",
-	"Data representation",
-	"Resources",
-	"Hardware",
+    "Application components",
+    "Widgets",
+    "Container widgets",
+    "Style",
+    "Data representation",
+    "Resources",
+    "Hardware",
 ] %}
 ## {{ category }} { .api-reference }
 

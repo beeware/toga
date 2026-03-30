@@ -11,7 +11,7 @@ When specifying colors for style properties such as [color][toga.style.pack.Pack
 <!-- REMOVE WHEN FIXED -->
 <!-- rumdl-disable MD013 -->
 ::: toga.colors.Color
-	options:
+    options:
         members: [rgb, hsl]
         show_signature_annotations: false
 
