@@ -4,6 +4,11 @@ from typing import Any, Literal, Protocol
 
 from .base import StyleT, Widget
 
+# Button constants
+LEFT = TOUCH = 0
+MIDDLE = 1
+RIGHT = 2
+
 
 class RendererT(Protocol):
     """A protocol that encapsulates OpenGL rendering operations."""
@@ -16,12 +21,23 @@ class RendererT(Protocol):
         """
 
     def on_render(
-        self, widget: OpenGLView, size: tuple[int, int], **kwargs: Any
+        self,
+        widget: OpenGLView,
+        size: tuple[int, int],
+        pointer: tuple[int, int] | None = None,
+        buttons: frozenset[int] = frozenset(),
+        **kwargs: Any,
     ) -> None:
         """The method called when the OpenGLView needs to re-draw its content.
 
+        This is called with basic information about the state of the UI.
+
         :param widget: The view that is being rendered.
-        :param size: The size of the current OpenGL viewport.
+        :param size: The size of the current OpenGL viewport in OpenGL pixels.
+        :param pointer: The location of the pointer (mouse or touch) in OpenGL
+            coordinates, or None if not known (eg. when no touch on mobile)
+        :param buttons: The set of mouse buttons that is currently down,
+            or `{TOUCH}` if currently being touched.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 

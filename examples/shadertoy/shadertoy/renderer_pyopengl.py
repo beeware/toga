@@ -323,7 +323,7 @@ class Renderer:
         widget,
         size,
         pointer=(-1, -1),
-        buttons=(False, False, False),
+        buttons=frozenset(),
         **kwargs,
     ):
         GL.glClearColor(0.0, 0.0, 1.0, 1.0)

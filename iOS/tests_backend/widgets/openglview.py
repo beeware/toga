@@ -5,3 +5,4 @@ from .base import SimpleProbe
 
 class OpenGLViewProbe(SimpleProbe):
     native_class = TogaGLKView
+    buttons = frozenset()

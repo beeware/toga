@@ -330,6 +330,10 @@ class NSEventType(IntEnum):
     KeyDown = 10
     KeyUp = 11
 
+    OtherMouseDown = 25
+    OtherMouseUp = 26
+    OtherMouseDreagged = 27
+
 
 ######################################################################
 # NSFont.h

@@ -3,6 +3,7 @@ import ctypes
 from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
+from toga.widgets.openglview import LEFT, MIDDLE, RIGHT
 from toga_cocoa.libs import (
     NSOpenGLPFADoubleBuffer,
     NSOpenGLPFAOpenGLProfile,
@@ -18,7 +19,7 @@ from .base import Widget
 class TogaOpenGLView(NSOpenGLView):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
-    mouse_state = objc_property(object)
+    buttons: set = objc_property(object)
 
     @objc_method
     def prepareOpenGL(self) -> None:
@@ -45,7 +46,7 @@ class TogaOpenGLView(NSOpenGLView):
                 self.interface,
                 size=size,
                 pointer=pointer,
-                buttons=tuple(self.mouse_state),
+                buttons=frozenset(self.buttons),
             )
         finally:
             # show what was drawn up to any error
@@ -71,27 +72,27 @@ class TogaOpenGLView(NSOpenGLView):
 
     @objc_method
     def mouseDown_(self, event) -> None:
-        self.mouse_state[0] = True
+        self.buttons.add(LEFT)
 
     @objc_method
     def mouseUp_(self, event) -> None:
-        self.mouse_state[0] = False
+        self.buttons.discard(LEFT)
 
     @objc_method
     def otherMouseDown_(self, event) -> None:
-        self.mouse_state[1] = True
+        self.buttons.add(MIDDLE)
 
     @objc_method
     def otherMouseUp_(self, event) -> None:
-        self.mouse_state[1] = False
+        self.buttons.discard(MIDDLE)
 
     @objc_method
     def rightMouseDown_(self, event) -> None:
-        self.mouse_state[2] = True
+        self.buttons.add(RIGHT)
 
     @objc_method
     def rightMouseUp_(self, event) -> None:
-        self.mouse_state[2] = False
+        self.buttons.discard(RIGHT)
 
 
 class OpenGLView(Widget):
@@ -103,7 +104,7 @@ class OpenGLView(Widget):
             raise RuntimeError("Can't create native OpenGLView widget.")
         self.native.interface = self.interface
         self.native.impl = self
-        self.native.mouse_state = [False, False, False]
+        self.native.buttons = set()
 
         # Add the layout constraints
         self.add_constraints()
