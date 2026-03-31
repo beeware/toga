@@ -35,15 +35,17 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 class ShadertoyApp(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(
-            size=(960, 960), resizable=True, minimizable=False
+            size=(960, 800), resizable=True, minimizable=False
         )
 
         self.shadertoy_source = toga.MultilineTextInput(
             value=SOURCE,
             on_change=self.source_changed,
             font_family=["Noto Sans Mono", MONOSPACE],
+            font_size=12,
             flex=1.0,
         )
+        self.message = toga.Label("Starting...", flex=1.0)
 
         if toga.backend in {"toga_cocoa", "toga_qt", "toga_gtk"}:
             from .renderer_pyopengl import Renderer
@@ -52,12 +54,12 @@ class ShadertoyApp(toga.App):
 
         self.renderer = Renderer(SOURCE)
 
-        opengl_view = toga.OpenGLView(self.renderer, flex=1.5)
+        opengl_view = toga.OpenGLView(self.renderer, width=640, height=360)
 
         async def animate():
             while True:
-                await asyncio.sleep(0.01)
-                # print('here')
+                self.message.text = self.renderer.message
+                await asyncio.sleep(0.005)
                 opengl_view.redraw()
 
         loop = asyncio.get_running_loop()
@@ -66,10 +68,21 @@ class ShadertoyApp(toga.App):
         #  Create the outer box with 2 rows
         outer_box = toga.Box(
             children=[
-                opengl_view,
+                toga.Box(
+                    children=[
+                        opengl_view,
+                        toga.ScrollContainer(
+                            content=self.message,
+                            flex=1.0,
+                            height=360,
+                        ),
+                    ],
+                    gap=4,
+                ),
                 self.shadertoy_source,
             ],
             direction=COLUMN,
+            gap=4,
         )
 
         # Add the content on the main window
@@ -78,7 +91,7 @@ class ShadertoyApp(toga.App):
         # Show the main window
         self.main_window.show()
 
-    def source_changed(self, widget, **kwargs):
+    async def source_changed(self, widget, **kwargs):
         self.renderer.set_source(widget.value)
 
 

@@ -23,11 +23,7 @@ class TogaOpenGLView(NSOpenGLView):
     @objc_method
     def prepareOpenGL(self) -> None:
         self.openGLContext.makeCurrentContext()
-        try:
-            self.interface.renderer.on_init(self.interface)
-        except Exception as exc:
-            print(exc)
-            raise
+        self.interface.renderer.on_init(self.interface)
 
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
@@ -51,10 +47,9 @@ class TogaOpenGLView(NSOpenGLView):
                 pointer=pointer,
                 buttons=tuple(self.mouse_state),
             )
-        except Exception as exc:
-            print(exc)
-            raise
-        self.openGLContext.flushBuffer()
+        finally:
+            # show what was drawn up to any error
+            self.openGLContext.flushBuffer()
 
     @objc_method
     def initWithFrame_(self, frame: NSRect):

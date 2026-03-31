@@ -1,6 +1,7 @@
 import array
 import datetime
 import time
+import traceback
 from contextlib import contextmanager
 from dataclasses import dataclass
 
@@ -64,6 +65,10 @@ uniform_setters = {
 }
 
 
+class OpenGLError(RuntimeError):
+    pass
+
+
 @dataclass
 class Shader:
     shader_type: int
@@ -78,13 +83,14 @@ class Shader:
         status = GL.glGetShaderiv(self.id, GL.GL_COMPILE_STATUS)
         if status == GL.GL_FALSE:
             info_log = GL.glGetShaderInfoLog(self.id).decode("utf-8")
-            raise RuntimeError(
+            raise OpenGLError(
                 f"Compilation failure for {self.shader_type} shader:\n{info_log}"
             )
 
     def delete(self):
-        GL.glDeleteShader(self.id)
-        del self.id
+        if hasattr(self, "id"):
+            GL.glDeleteShader(self.id)
+            del self.id
 
 
 @dataclass
@@ -105,7 +111,7 @@ class Program:
         status = GL.glGetProgramiv(self.id, GL.GL_LINK_STATUS)
         if status == GL.GL_FALSE:
             strInfoLog = GL.glGetProgramInfoLog(self.id).decode("utf-8")
-            raise RuntimeError("Linker failure: \n" + strInfoLog)
+            raise OpenGLError("Linker failure: \n" + strInfoLog)
 
         for shader in self.shaders:
             GL.glDetachShader(self.id, shader.id)
@@ -207,10 +213,27 @@ class VertexArray:
         return False
 
 
+RENDER_MESSAGE = """Rendering...
+Frame: {iFrame[0]}
+Frame rate: {iFrameRate[0]:.3f} fps
+
+Resolution: {iResolution}
+Mouse: {iMouse}
+
+Time: {iTime[0]:.3f} s
+Time delta: {iTimeDelta[0]:.3f} s
+Date: {iDate[0]}-{iDate[1]}-{iDate[2]} {iDate[3]:.3f}
+
+{deltas}
+"""
+
+
 class Renderer:
     source: str
+    message: str
 
     def __init__(self, source):
+        self.message = "Uninitialized."
         self.set_source(source)
 
     def set_source(self, source):
@@ -244,43 +267,6 @@ class Renderer:
     def update_program(self):
         self.initialize_program(vertext_shader_source, self.fragment_shader_source)
         self.initialize_vao("position")
-
-    def on_init(self, widget, **kwargs):
-        self.source_updated = False
-        vertex_positions = bytes(
-            array.array(
-                "f",
-                [
-                    1.0,
-                    1.0,
-                    0.0,
-                    1.0,  # triangle 1
-                    1.0,
-                    -1.0,
-                    0.0,
-                    1.0,
-                    -1.0,
-                    -1.0,
-                    0.0,
-                    1.0,
-                    1.0,
-                    1.0,
-                    0.0,
-                    1.0,  # triangle 2
-                    -1.0,
-                    -1.0,
-                    0.0,
-                    1.0,
-                    -1.0,
-                    1.0,
-                    0.0,
-                    1.0,
-                ],
-            )
-        )
-        self.initialize_vbo(vertex_positions)
-        self.update_program()
-
         self.start = time.time()
         self.timestamp = 0
         self.frame = 0
@@ -288,6 +274,49 @@ class Renderer:
         self.pointer = (0, 0)
         self.mouse_down = False
         self.drag_start = (0, 0)
+
+    def on_init(self, widget, **kwargs):
+        try:
+            self.source_updated = False
+            vertex_positions = bytes(
+                array.array(
+                    "f",
+                    [
+                        1.0,
+                        1.0,
+                        0.0,
+                        1.0,  # triangle 1
+                        1.0,
+                        -1.0,
+                        0.0,
+                        1.0,
+                        -1.0,
+                        -1.0,
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.0,
+                        1.0,  # triangle 2
+                        -1.0,
+                        -1.0,
+                        0.0,
+                        1.0,
+                        -1.0,
+                        1.0,
+                        0.0,
+                        1.0,
+                    ],
+                )
+            )
+            self.initialize_vbo(vertex_positions)
+            self.update_program()
+        except OpenGLError as exc:
+            self.message = exc.args[0]
+        except Exception:
+            self.message = traceback.format_exc()
+        else:
+            self.message = "Initialization successful"
 
     def on_render(
         self,
@@ -297,56 +326,77 @@ class Renderer:
         buttons=(False, False, False),
         **kwargs,
     ):
-        if self.source_updated:
-            self.program.delete()
-            self.on_init(widget)
-        n_vertices = 6
-        if 0 <= pointer[0] < size[0] and 0 <= pointer[1] < size[1]:
-            mouse_down = any(buttons)
-            if mouse_down:
-                self.pointer = pointer
-                if not self.mouse_down:
-                    # new mouse down
-                    self.drag_start = pointer
-                    self.mouse_down = True
-                elif self.drag_start[1] > 0:
-                    # mouse was newly down, still down
-                    self.drag_start = (self.drag_start[0], -self.drag_start[1])
-            elif self.mouse_down:
-                # new mouse up
-                self.drag_start = (-self.drag_start[0], self.drag_start[1])
-                self.mouse_down = False
-
         GL.glClearColor(0.0, 0.0, 1.0, 1.0)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 
-        t = time.time() - self.start
-        self.deltas.append(t - self.timestamp)
-        frame_rate = len(self.deltas) / sum(self.deltas)
-        self.timestamp = t
-        dt = datetime.datetime.now()
+        if self.source_updated:
+            try:
+                self.program.delete()
+                self.update_program()
+            except OpenGLError as exc:
+                self.message = exc.args[0]
+                return
+            except Exception:
+                self.message = traceback.format_exc()
+                return
+            else:
+                self.source_updated = False
+                self.message = "Update successful"
+                return
 
-        uniforms = {
-            "iResolution": (*size, 1.0),
-            "iMouse": (*self.pointer, *self.drag_start),
-            "iTime": (self.timestamp,),
-            "iTimeDelta": (self.deltas[-1],),
-            "iFrame": (self.frame,),
-            "iFrameRate": (frame_rate,),
-            "iDate": (
-                dt.year - 1,
-                dt.month - 1,
-                dt.day,
-                dt.hour * 3600 + dt.minute * 60 + dt.second + dt.microsecond / 1e-6,
-            ),
-        }
+        try:
+            n_vertices = 6
+            if 0 <= pointer[0] < size[0] and 0 <= pointer[1] < size[1]:
+                mouse_down = any(buttons)
+                if mouse_down:
+                    self.pointer = pointer
+                    if not self.mouse_down:
+                        # new mouse down
+                        self.drag_start = pointer
+                        self.mouse_down = True
+                    elif self.drag_start[1] > 0:
+                        # mouse was newly down, still down
+                        self.drag_start = (self.drag_start[0], -self.drag_start[1])
+                elif self.mouse_down:
+                    # new mouse up
+                    self.drag_start = (-self.drag_start[0], self.drag_start[1])
+                    self.mouse_down = False
 
-        with self.program.use():
-            with self.vao:
-                self.program.set_uniforms(uniforms)
+            t = time.time() - self.start
+            self.deltas.append(t - self.timestamp + 1e-6)
+            frame_rate = len(self.deltas) / sum(self.deltas)
+            self.timestamp = t
+            dt = datetime.datetime.now()
 
-                GL.glDrawArrays(GL.GL_TRIANGLES, 0, n_vertices)
+            uniforms = {
+                "iResolution": (*size, 1.0),
+                "iMouse": (*self.pointer, *self.drag_start),
+                "iTime": (self.timestamp,),
+                "iTimeDelta": (self.deltas[-1],),
+                "iFrame": (self.frame,),
+                "iFrameRate": (frame_rate,),
+                "iDate": (
+                    dt.year,
+                    dt.month,
+                    dt.day,
+                    dt.hour * 3600
+                    + dt.minute * 60
+                    + dt.second
+                    + (dt.microsecond / 1e6),
+                ),
+            }
 
-        self.frame += 1
-        if len(self.deltas) > 100:
-            del self.deltas[0]
+            with self.program.use():
+                with self.vao:
+                    self.program.set_uniforms(uniforms)
+
+                    GL.glDrawArrays(GL.GL_TRIANGLES, 0, n_vertices)
+
+            self.frame += 1
+            if len(self.deltas) > 100:
+                del self.deltas[0]
+        except Exception:
+            self.message = traceback.format_exc()
+            raise
+        else:
+            self.message = RENDER_MESSAGE.format(**uniforms, deltas=len(self.deltas))
