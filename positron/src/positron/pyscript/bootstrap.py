@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-import tarfile
 from pathlib import Path
 from typing import Any
-
-from briefcase.integrations.base import ToolCache
-from briefcase.integrations.file import File
 
 from ..fastapi.bootstrap import FastAPIPositronBootstrap
 
@@ -31,37 +27,14 @@ class PyScriptPositronBootstrap(FastAPIPositronBootstrap):
 
     def positron_requires(self):
         return super().positron_requires() + [
-            "flatted-view",
-            "reflected-ffi",
-            "next-resolver",
+            # "microdriver"
+            # For now, we need a patched version.
+            "microdriver @ git+https://github.com/freakboy3742/microdriver@pythonic#subdirectory=package"
         ]
 
     def post_generate(self, base_path: Path):
         app_path = base_path / "src" / self.context["module_name"]
         resource_path = app_path / "resources"
-
-        tools = ToolCache(
-            console=self.console,
-            base_path=base_path,
-        )
-        File.verify(tools=tools)
-
-        # Download and install service worker support code
-        tag = "v0.2.6"
-        reflected_path = tools.file.download(
-            url=f"https://github.com/WebReflection/reflected/raw/refs/tags/{tag}/reflected.tar.gz",
-            download_path=base_path / "downloads",
-            role=f"service worker support ({tag})",
-        )
-        with tarfile.open(reflected_path, "r:gz") as tar:
-            for member in [
-                m for m in tar.getmembers() if m.name.startswith("./reflected/")
-            ]:
-                member.name = member.name.removeprefix("./reflected/")
-                tar.extract(member, path=resource_path / "js")
-        (resource_path / "js/sw.js").rename(resource_path / "sw.js")
-
-        # TODO ensure mpy content is also available
 
         # FastAPI server
         for template_name in ["server.py"]:
@@ -85,7 +58,7 @@ class PyScriptPositronBootstrap(FastAPIPositronBootstrap):
                 )
 
             # Then add content that is PyScript specific
-            for template_name in ["index.html", "main.py", "pyscript.toml"]:
+            for template_name in ["index.html", "main.py"]:
                 self.templated_file(
                     TEMPLATE_PATH / template_name,
                     resource_path,
