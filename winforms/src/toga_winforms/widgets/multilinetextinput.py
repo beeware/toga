@@ -145,4 +145,3 @@ class MultilineTextInput(TextInput):
         ):  # pragma: nocover
             parent.OnMouseWheel(e)
             e.Handled = True
-            e.Handled = True
