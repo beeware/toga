@@ -93,14 +93,12 @@ async def test_scroll_position(widget, probe):
     assert probe.vertical_scroll_position == pytest.approx(scroll_offset, abs=30)
 
     # Record the vertical_scroll_position for comparison.
-    first_vertical_scroll_pos = probe.vertical_scroll_position
+    initial_vertical_scroll_position = probe.vertical_scroll_position
 
-    # Invoke the scroll_to_bottom again while the vertical scroll position of the
-    # document stay at the bottom. This is to make sure repeated call of
-    # scroll_to_bottom method would not make the vertical scroll position change up and
-    # down.
+    # We're already at the bottom; call scroll_to_bottom again (See #3872)
     widget.scroll_to_bottom()
-    assert probe.vertical_scroll_position == first_vertical_scroll_pos
+    await probe.wait_for_scroll_completion()
+    assert probe.vertical_scroll_position == initial_vertical_scroll_position
 
     widget.scroll_to_top()
     await probe.wait_for_scroll_completion()
