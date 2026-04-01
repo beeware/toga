@@ -66,7 +66,7 @@ async def test_buttons(probe, widget, renderer):
         await probe.redraw("Reset buttons", 0.01)
         renderer.on_render.reset_mock()
 
-        await probe.mouse_state(buttons)
+        await probe.button_state(buttons)
         await probe.redraw(f"Mouse events sent {buttons}", 0.01)
         widget.redraw()
         await probe.redraw("OpenGLView widget redraw requested", 0.1)

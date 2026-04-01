@@ -1,6 +1,7 @@
 from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
+from toga.widgets.openglview import TOUCH
 from toga_iOS.libs import (
     CGRect,
     CGSize,
@@ -20,6 +21,8 @@ class TogaGLKView(GLKView):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
     initialized = objc_property(bool)
+    pointer = objc_property(object)
+    buttons = objc_property(set)
 
     @objc_method
     def drawRect_(self, rect: CGRect) -> None:
@@ -29,7 +32,30 @@ class TogaGLKView(GLKView):
 
         width = rect.size.width
         height = rect.size.height
-        self.interface.renderer.on_render(self.interface, size=(width, height))
+        self.interface.renderer.on_render(
+            self.interface,
+            size=(width, height),
+            pointer=self.pointer,
+            buttons=frozenset(self.buttons),
+        )
+
+    @objc_method
+    def touchesBegan_withEvent_(self, touches, event) -> None:
+        position = touches.allObjects()[0].locationInView(self)
+        self.buttons.add(TOUCH)
+        self.pointer = (position.x, position.y)
+
+    @objc_method
+    def touchesMoved_withEvent_(self, touches, event) -> None:
+        position = touches.allObjects()[0].locationInView(self)
+        self.buttons.add(TOUCH)
+        self.pointer = (position.x, position.y)
+
+    @objc_method
+    def touchesEnded_withEvent_(self, touches, event) -> None:
+        position = touches.allObjects()[0].locationInView(self)
+        self.buttons.discard(TOUCH)
+        self.pointer = (position.x, position.y)
 
 
 class OpenGLView(Widget):
@@ -37,17 +63,19 @@ class OpenGLView(Widget):
         self.native = TogaGLKView.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
+        self.native.pointer = None
+        self.native.buttons = set()
         self.native.initialized = False
         self.native.context = EAGLContext.alloc().initWithAPI_(
             kEAGLRenderingAPIOpenGLES3
         )
 
-        # # Configure renderbuffers created by the view
+        # Configure renderbuffers created by the view
         self.native.drawableColorFormat = GLKViewDrawableColorFormatRGBA8888
         self.native.drawableDepthFormat = GLKViewDrawableDepthFormat24
         self.native.drawableStencilFormat = GLKViewDrawableStencilFormat8
 
-        # # Enable multisampling
+        # Enable multisampling
         self.native.drawableMultisample = GLKViewDrawableMultisample4X
 
         # Add the layout constraints

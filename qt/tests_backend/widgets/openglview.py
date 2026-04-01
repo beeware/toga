@@ -9,7 +9,7 @@ class OpenGLViewProbe(SimpleProbe):
     native_class = TogaOpenGLWidget
     buttons = frozenset()
 
-    async def mouse_state(self, buttons: frozenset, x=0, y=0):
+    async def button_state(self, buttons: frozenset, x=0, y=0):
         methods = [
             self.left_mouse_down,
             self.middle_mouse_down,
@@ -25,7 +25,7 @@ class OpenGLViewProbe(SimpleProbe):
             self.middle_mouse_up,
             self.right_mouse_up,
         ]:
-            method(x, y)
+            await method(x, y)
         await self.redraw("Buttons cleared")
 
     async def left_mouse_down(self, x=0, y=0):

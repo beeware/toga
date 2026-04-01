@@ -8,7 +8,7 @@ class OpenGLViewProbe(SimpleProbe):
     native_class = NSOpenGLView
     buttons = frozenset({LEFT, MIDDLE, RIGHT})
 
-    async def mouse_state(self, buttons: frozenset, x=0, y=0):
+    async def button_state(self, buttons: frozenset, x=0, y=0):
         methods = [
             self.left_mouse_down,
             self.middle_mouse_down,

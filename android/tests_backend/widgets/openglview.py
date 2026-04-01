@@ -11,6 +11,14 @@ class OpenGLViewProbe(SimpleProbe):
     native_class = GLSurfaceView
     buttons = frozenset({TOUCH})
 
+    async def button_state(self, buttons: frozenset, x=0, y=0):
+        if TOUCH in buttons:
+            await self.touch_down(x, y)
+
+    async def reset_buttons(self, buttons: frozenset, x=0, y=0):
+        await self.touch_up(x, y)
+        await self.redraw("Touch cleared")
+
     def motion_event(self, action, x, y):
         time = SystemClock.uptimeMillis()
         super().motion_event(
