@@ -1,8 +1,10 @@
 # toga-qt
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-qt.svg)](https://pypi.python.org/pypi/toga-qt)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-qt.svg)](https://github.com/beeware/toga-qt/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-qt.svg)](https://pypi.python.org/pypi/toga-qt)
+<!-- rumdl-enable MD013 -->
 
 A Qt backend for the [Toga widget toolkit](https://beeware.org/toga).
 
@@ -16,9 +18,9 @@ For more details, see the [Toga project on GitHub](https://github.com/beeware/to
 
 Toga is part of the [BeeWare suite](https://beeware.org). You can talk to the community through:
 
--   [@beeware@fosstodon.org on Mastodon](https://fosstodon.org/@beeware)
--   [Discord](https://beeware.org/bee/chat/)
--   The Toga [GitHub Discussions forum](https://github.com/beeware/toga/discussions)
+- [@beeware@fosstodon.org on Mastodon](https://fosstodon.org/@beeware)
+- [Discord](https://beeware.org/bee/chat/)
+- The Toga [GitHub Discussions forum](https://github.com/beeware/toga/discussions)
 
 We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/behavior/).
 

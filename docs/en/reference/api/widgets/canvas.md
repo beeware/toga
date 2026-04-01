@@ -68,6 +68,8 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
 
 ## Reference
 
+<!-- REMOVE WHEN RESOLVED -->
+<!-- rumdl-disable MD013 -->
 ::: toga.Canvas
     options:
         members:
@@ -93,6 +95,8 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
 ::: toga.widgets.canvas.State
     options:
         inherited_members: True
+<!-- REMOVE WHEN RESOLVED -->
+<!-- rumdl-enable MD013 -->
 
 ::: toga.widgets.canvas.DrawingAction
 

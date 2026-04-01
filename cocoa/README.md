@@ -1,8 +1,10 @@
 # toga-cocoa
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-cocoa.svg)](https://pypi.python.org/pypi/toga-cocoa)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-cocoa.svg)](https://github.com/beeware/toga-cocoa/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-cocoa.svg)](https://pypi.python.org/pypi/toga-cocoa)
+<!-- rumdl-enable MD013 -->
 
 A Cocoa backend for the [Toga widget toolkit](https://beeware.org/toga).
 

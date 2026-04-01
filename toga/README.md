@@ -1,8 +1,10 @@
 # toga
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga.svg)](https://pypi.python.org/pypi/toga)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga.svg)](https://github.com/beeware/toga/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga.svg)](https://pypi.python.org/pypi/toga)
+<!-- rumdl-enable MD013 -->
 
 A meta-package for installing the [Toga widget toolkit](https://beeware.org/toga).
 

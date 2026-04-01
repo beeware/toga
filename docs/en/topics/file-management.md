@@ -214,4 +214,4 @@ This updates the handler to first try to load content from an existing `config.t
 
 ### Footnotes
 
-[^1]: More precisely, `paths.app` is the path of the directory that     contains the Python file that defines the class that is being     executed as the app, specifically the Python file that includes the     app class definition (i.e., `class MyApp(toga.App)`). This is     essentially the same as `Path(__file__).parent` inside `app.py`; but     in more complex applications, `__file__` will refer to the current     file, whereas `paths.app` will return the same location no matter     where it is used.
+[^1]: More precisely, `paths.app` is the path of the directory that contains the Python file that defines the class that is being executed as the app, specifically the Python file that includes the app class definition (i.e., `class MyApp(toga.App)`). This is essentially the same as `Path(__file__).parent` inside `app.py`; but in more complex applications, `__file__` will refer to the current file, whereas `paths.app` will return the same location no matter where it is used.
