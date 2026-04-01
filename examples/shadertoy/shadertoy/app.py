@@ -34,9 +34,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 class ShadertoyApp(toga.App):
     def startup(self):
-        self.main_window = toga.MainWindow(
-            size=(960, 800), resizable=True, minimizable=False
-        )
+        if toga.backend == "toga_android":
+            self.main_window = toga.MainWindow()
+        else:
+            self.main_window = toga.MainWindow(
+                size=(960, 800), resizable=True, minimizable=False
+            )
 
         self.shadertoy_source = toga.MultilineTextInput(
             value=SOURCE,
@@ -49,6 +52,8 @@ class ShadertoyApp(toga.App):
 
         if toga.backend in {"toga_cocoa", "toga_qt", "toga_gtk"}:
             from .renderer_pyopengl import Renderer
+        elif toga.backend == "toga_android":
+            from .renderer_android import Renderer
         else:
             raise RuntimeError(f"Toga backend {toga.backend} is not supported.")
 
@@ -65,25 +70,39 @@ class ShadertoyApp(toga.App):
         loop = asyncio.get_running_loop()
         loop.create_task(animate())
 
-        #  Create the outer box with 2 rows
-        outer_box = toga.Box(
-            children=[
-                toga.Box(
-                    children=[
-                        opengl_view,
-                        toga.ScrollContainer(
-                            content=self.message,
-                            flex=1.0,
-                            height=360,
-                        ),
-                    ],
-                    gap=4,
-                ),
-                self.shadertoy_source,
-            ],
-            direction=COLUMN,
-            gap=4,
-        )
+        if toga.backend == "toga_android":
+            # vertical layout
+            outer_box = toga.Box(
+                children=[
+                    opengl_view,
+                    toga.ScrollContainer(
+                        content=self.message,
+                    ),
+                    self.shadertoy_source,
+                ],
+                direction=COLUMN,
+                gap=4,
+            )
+        else:
+            #  Create the outer box with 2 rows
+            outer_box = toga.Box(
+                children=[
+                    toga.Box(
+                        children=[
+                            opengl_view,
+                            toga.ScrollContainer(
+                                content=self.message,
+                                flex=1.0,
+                                height=360,
+                            ),
+                        ],
+                        gap=4,
+                    ),
+                    self.shadertoy_source,
+                ],
+                direction=COLUMN,
+                gap=4,
+            )
 
         # Add the content on the main window
         self.main_window.content = outer_box

@@ -62,7 +62,7 @@ class TouchListener(dynamic_proxy(GLSurfaceView.OnTouchListener)):
 class OpenGLView(Widget):
     def create(self):
         self.pointer = None
-        self.button = (False,)
+        self.buttons = frozenset()
         self.native = GLSurfaceView(self._native_activity)
         self.renderer = TogaGLRenderer(self)
         self.listener = TouchListener(self)

@@ -3,7 +3,7 @@ import datetime
 import time
 import traceback
 
-from .utils_pyopengl import (
+from .utils_android import (
     GL,
     Buffer,
     BufferType,
@@ -15,17 +15,20 @@ from .utils_pyopengl import (
     VertexArray,
 )
 
-vertext_shader_source = """
-#version 330 core
+vertext_shader_source = """#version 300 es
 
-layout(location = 0) in vec4 position;
+precision highp float;
+
+in vec4 position;
 
 void main()
 {
    gl_Position = position;
 }
 """
-FRAGMENT_SHADER_TEMPLATE = """#version 330 core
+FRAGMENT_SHADER_TEMPLATE = """#version 300 es
+
+precision highp float;
 
 uniform vec3 iResolution;
 uniform float iTime;
@@ -94,7 +97,7 @@ class Renderer:
         with self.vao:
             with self.vbo:
                 GL.glEnableVertexAttribArray(attribute_loc)
-                GL.glVertexAttribPointer(0, 4, GL.GL_FLOAT, GL.GL_FALSE, 0, None)
+                GL.glVertexAttribPointer(0, 4, GL.GL_FLOAT, False, 0, 0)
 
     def update_program(self):
         self.initialize_program(vertext_shader_source, self.fragment_shader_source)
