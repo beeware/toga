@@ -168,44 +168,50 @@ async def test_scroll(widget, probe):
     assert -100 < probe.scroll_position <= 0
 
 
+async def assert_selection(probe, message, data):
+    widget = probe.widget
+    await probe.redraw(message, wait_for=lambda: widget.selection == data)
+    assert widget.selection == data
+
+
 async def test_keyboard_navigation(widget, source, probe):
     """The list can be navigated using a keyboard."""
     widget.focus()
 
-    async def assert_selection(message, data):
-        await probe.redraw(message, wait_for=lambda: widget.selection == data)
-        assert widget.selection == data
-
     await probe.select_first_row_keyboard()
-    await assert_selection("First row selected", widget.data[0])
+    await assert_selection(probe, "First row selected", widget.data[0])
 
     # Navigate down with letter, arrow, letter.
     await probe.type_character("a")
-    await assert_selection("Letter pressed - second row selected", widget.data[1])
+    await assert_selection(probe, "Letter pressed - second row selected", widget.data[1])
     await probe.type_character("<down>")
-    await assert_selection("Down arrow pressed - third row selected", widget.data[2])
+    await assert_selection(probe, "Down arrow pressed - third row selected", widget.data[2])
     await probe.type_character("a")
-    await assert_selection("Letter pressed - fourth row selected", widget.data[3])
+    await assert_selection(probe, "Letter pressed - fourth row selected", widget.data[3])
 
     # Select the last item with the end key if supported then wrap around.
     if probe.supports_keyboard_boundary_shortcuts:
         await probe.type_character("<end>")
-        await assert_selection("Last row is selected", widget.data[-1])
+        await assert_selection(probe, "Last row is selected", widget.data[-1])
         # Navigate by 1 item, wrapping around.
         await probe.type_character("a")
-        await assert_selection("Letter pressed - first row is selected", widget.data[0])
+        await assert_selection(probe, "Letter pressed - first row is selected", widget.data[0])
     else:
         await probe.type_character("<up>")
         await probe.type_character("<up>")
         await probe.type_character("<up>")
         await assert_selection(
-            "Up arrow pressed thrice - first row is selected", widget.data[0]
+            probe,
+            "Up arrow pressed thrice - first row is selected",
+            widget.data[0],
         )
 
     # Type a letter that no items start with to verify the selection doesn't change.
     await probe.type_character("x")
     await assert_selection(
-        "Invalid letter pressed - first row is still selected", widget.data[0]
+        probe,
+        "Invalid letter pressed - first row is still selected",
+        widget.data[0],
     )
 
     # clear the table and verify with an empty selection.
@@ -339,31 +345,28 @@ async def test_multiselect_keyboard_control(
     so we need to test keyboard selection independent of mouse selection.
     """
 
-    async def assert_selection(message, data):
-        await multiselect_probe.redraw(
-            message, wait_for=lambda: multiselect_widget.selection == data
-        )
-        assert multiselect_widget.selection == data
-
     # Initial selection is empty
-    await assert_selection("No row is selected in multiselect table", [])
+    await assert_selection(multiselect_probe, "No row is selected in multiselect table", [])
     on_select_handler.assert_not_called()
 
     multiselect_widget.focus()
 
     # A single row can be added to the selection
     await multiselect_probe.select_first_row_keyboard()
-    await assert_selection("First row selected", [source[0]])
+    await assert_selection(multiselect_probe, "First row selected", [source[0]])
 
     await multiselect_probe.type_character("<down>", shift=True)
     await assert_selection(
-        "Down arrow pressed - second row added to the selection", [source[0], source[1]]
+        multiselect_probe,
+        "Down arrow pressed - second row added to the selection",
+        [source[0], source[1]],
     )
     on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     await multiselect_probe.type_character("<down>", shift=True)
     await assert_selection(
+        multiselect_probe,
         "Down arrow pressed - third row added to the selection",
         [source[0], source[1], source[2]],
     )
@@ -372,6 +375,7 @@ async def test_multiselect_keyboard_control(
 
     await multiselect_probe.type_character("<up>", shift=True)
     await assert_selection(
+        multiselect_probe,
         "Up arrow pressed - third row removed from the selection",
         [source[0], source[1]],
     )
