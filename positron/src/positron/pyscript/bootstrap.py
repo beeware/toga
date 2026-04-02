@@ -27,9 +27,7 @@ class PyScriptPositronBootstrap(FastAPIPositronBootstrap):
 
     def positron_requires(self):
         return super().positron_requires() + [
-            # "microdriver"
-            # For now, we need a patched version.
-            "microdriver @ git+https://github.com/freakboy3742/microdriver@pythonic#subdirectory=package"
+            "microdriver",
         ]
 
     def post_generate(self, base_path: Path):
