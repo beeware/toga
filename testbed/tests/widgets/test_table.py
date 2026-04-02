@@ -183,11 +183,23 @@ async def test_keyboard_navigation(widget, source, probe):
 
     # Navigate down with letter, arrow, letter.
     await probe.type_character("a")
-    await assert_selection(probe, "Letter pressed - second row selected", widget.data[1])
+    await assert_selection(
+        probe,
+        "Letter pressed - second row selected",
+        widget.data[1],
+    )
     await probe.type_character("<down>")
-    await assert_selection(probe, "Down arrow pressed - third row selected", widget.data[2])
+    await assert_selection(
+        probe,
+        "Down arrow pressed - third row selected",
+        widget.data[2],
+    )
     await probe.type_character("a")
-    await assert_selection(probe, "Letter pressed - fourth row selected", widget.data[3])
+    await assert_selection(
+        probe,
+        "Letter pressed - fourth row selected",
+        widget.data[3],
+    )
 
     # Select the last item with the end key if supported then wrap around.
     if probe.supports_keyboard_boundary_shortcuts:
@@ -195,7 +207,11 @@ async def test_keyboard_navigation(widget, source, probe):
         await assert_selection(probe, "Last row is selected", widget.data[-1])
         # Navigate by 1 item, wrapping around.
         await probe.type_character("a")
-        await assert_selection(probe, "Letter pressed - first row is selected", widget.data[0])
+        await assert_selection(
+            probe,
+            "Letter pressed - first row is selected",
+            widget.data[0],
+        )
     else:
         await probe.type_character("<up>")
         await probe.type_character("<up>")
@@ -346,7 +362,11 @@ async def test_multiselect_keyboard_control(
     """
 
     # Initial selection is empty
-    await assert_selection(multiselect_probe, "No row is selected in multiselect table", [])
+    await assert_selection(
+        multiselect_probe,
+        "No row is selected in multiselect table",
+        [],
+    )
     on_select_handler.assert_not_called()
 
     multiselect_widget.focus()
