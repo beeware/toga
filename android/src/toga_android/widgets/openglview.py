@@ -25,12 +25,20 @@ class TogaGLRenderer(dynamic_proxy(GLSurfaceView.Renderer)):
         self._redraw()
 
     def _redraw(self):
-        width = self.impl.native.getWidth()
-        height = self.impl.native.getHeight()
+        native = self.impl.native
+        width = native.getWidth()
+        height = native.getHeight()
+        # Pointer coordinates are in device-independent, top-left origin coords
+        # We need drawing pixel, bottom-left origin coordinates
+        scale = native.getContext().getResources().getDisplayMetrics().densityDpi / 160
+        pointer = self.impl.pointer
+        if pointer:
+            x, y = pointer
+            pointer = (scale * x, height - (scale * y))
         self.interface.renderer.on_render(
             self.interface,
             size=(width, height),
-            pointer=self.impl.pointer,
+            pointer=pointer,
             buttons=self.impl.buttons,
         )
 
@@ -44,18 +52,15 @@ class TouchListener(dynamic_proxy(GLSurfaceView.OnTouchListener)):
     def onTouch(self, canvas, event):
         with suppress_reference_error():
             x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
+            self.impl.pointer = (x, y)
             if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
-                self.interface.pointer = (x, y)
-                self.interface.buttons = frozenset([TOUCH])
+                self.impl.buttons = frozenset([TOUCH])
             elif action == MotionEvent.ACTION_MOVE:
-                self.interface.pointer = (x, y)
-                self.interface.buttons = frozenset([TOUCH])
+                self.impl.buttons = frozenset([TOUCH])
             elif action == MotionEvent.ACTION_UP:
-                self.interface.on_release(x, y)
-                self.interface.buttons = frozenset()
+                self.impl.buttons = frozenset()
             else:  # pragma: no cover
-                self.interface.pointer = None
-                self.interface.buttons = frozenset()
+                self.impl.buttons = frozenset()
         return True
 
 
@@ -69,6 +74,7 @@ class OpenGLView(Widget):
 
         self.native.setEGLContextClientVersion(3)
         self.native.setRenderer(self.renderer)
+        self.native.setOnTouchListener(self.listener)
 
     def redraw(self):
         self.native.invalidate()

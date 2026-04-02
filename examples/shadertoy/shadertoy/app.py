@@ -1,12 +1,16 @@
 import asyncio
 
 import toga
-import toga.sources
 from toga.constants import COLUMN, MONOSPACE
 
+from .shadertoy_renderer import ShadertoyRenderer
+
+# The default shadertoy mainImage fragment shader source to use.
+# This should display slowly changing hues.
 SOURCE = """
 // Replace this with shaders from shadertoy.com
-// This is a simple example, so it doesn't handle channel, video or sound.
+// This is a simple example, so it doesn't handle channels, video or
+// sound, so not all shaders on shadertoy.com will work.
 //
 // Good examples to try:
 // - Protean Clouds: https://www.shadertoy.com/view/3l23Rh
@@ -16,18 +20,33 @@ SOURCE = """
 // - Seascape: https://www.shadertoy.com/view/Ms2SD1
 // - Flame: https://www.shadertoy.com/view/MdX3zr
 // - Input - Mouse - https://www.shadertoy.com/view/Mss3zH
+//
+// Or write your own: replace mainImage with shader code that sets
+// fragColor based on fragCoord.  Uniforms provided by the renderer
+// are:
+//
+//     iResolution: vec3 - w, h, pixel shape
+//     iTime: float - seconds since start of shader
+//     iTimeDelta: float - seconds since last frame
+//     iFrame: float - count of frames since start of shader
+//     iFrameRate: float - frames per second
+//     iMouse: vec4 - (x, y, start_x, start_y)
+//     iDate: vec4 - (year, month, day, seconds)
+//
+// See the docs on Shadertoy, particularly for the values in iMouse
+// where the signs of start_x, start_y convey button state info.
 
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    // Set the color values for each pixel.
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
     // Normalized pixel coordinates (from 0 to 1)
     vec2 uv = fragCoord/iResolution.xy;
 
     // Time varying pixel color
-    vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
+    vec3 col = 0.5 + 0.5 * cos(iTime + uv.xyx + vec3(0, 2, 4));
 
     // Output to screen
-    fragColor = vec4(col,1.0);
+    fragColor = vec4(col, 1.0);
 }
 """
 
@@ -49,15 +68,7 @@ class ShadertoyApp(toga.App):
             flex=1.0,
         )
         self.message = toga.Label("Starting...", flex=1.0)
-
-        if toga.backend in {"toga_cocoa", "toga_qt", "toga_gtk"}:
-            from .renderer_pyopengl import Renderer
-        elif toga.backend == "toga_android":
-            from .renderer_android import Renderer
-        else:
-            raise RuntimeError(f"Toga backend {toga.backend} is not supported.")
-
-        self.renderer = Renderer(SOURCE)
+        self.renderer = ShadertoyRenderer(SOURCE)
 
         opengl_view = toga.OpenGLView(self.renderer, width=640, height=360)
 
@@ -84,7 +95,7 @@ class ShadertoyApp(toga.App):
                 gap=4,
             )
         else:
-            #  Create the outer box with 2 rows
+            # Desktop layout
             outer_box = toga.Box(
                 children=[
                     toga.Box(
@@ -111,7 +122,8 @@ class ShadertoyApp(toga.App):
         self.main_window.show()
 
     async def source_changed(self, widget, **kwargs):
-        self.renderer.set_source(widget.value)
+        """Update the mainImage source in the renderer with the widget value."""
+        self.renderer.source = widget.value
 
 
 def main():
