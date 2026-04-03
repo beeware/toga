@@ -81,7 +81,7 @@ class ShadertoyApp(toga.App):
         loop = asyncio.get_running_loop()
         loop.create_task(animate())
 
-        if toga.backend == "toga_android":
+        if toga.backend in {"toga_android", "toga_iOS"}:
             # vertical layout
             outer_box = toga.Box(
                 children=[

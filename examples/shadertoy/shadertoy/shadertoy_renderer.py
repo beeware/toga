@@ -19,38 +19,18 @@ import datetime
 import time
 import traceback
 
-import toga
-
-# Import appropriate utility objects for OpenGL implementation
-if toga.backend in {"toga_cocoa", "toga_gtk", "toga_qt"}:
-    from .utils_pyopengl import (
-        GL,
-        VERSION_HEADER,
-        Buffer,
-        BufferType,
-        BufferUsage,
-        OpenGLError,
-        Program,
-        Shader,
-        ShaderType,
-        VertexArrayObject,
-    )
-elif toga.backend == "toga_android":
-    from .utils_android import (
-        GL,
-        VERSION_HEADER,
-        Buffer,
-        BufferType,
-        BufferUsage,
-        OpenGLError,
-        Program,
-        Shader,
-        ShaderType,
-        VertexArrayObject,
-    )
-else:
-    raise RuntimeError("No renderer for backend.")
-
+from .utils import (
+    GL,
+    VERSION_HEADER,
+    Buffer,
+    BufferType,
+    BufferUsage,
+    OpenGLError,
+    Program,
+    Shader,
+    ShaderType,
+    VertexArrayObject,
+)
 
 #: Vertex shader: displays triangles in 2D.
 VERTEX_SHADER_SOURCE = f"""{VERSION_HEADER}
@@ -92,7 +72,7 @@ UNIFORM_VALUES = """Frame: {iFrame[0]}
 Frame rate: {iFrameRate[0]:.3f} fps
 
 Resolution: {iResolution}
-Mouse: {iMouse}
+Mouse: ({iMouse[0]:.1f}, {iMouse[1]:.1f}) ({iMouse[2]:.1f}, {iMouse[3]:.1f})
 
 Time: {iTime[0]:.3f} s
 Time delta: {iTimeDelta[0]:.3f} s
@@ -183,9 +163,9 @@ class ShadertoyRenderer:
         """Initialize the OpenGL state."""
         self.message = "Initializing...\n\n"
         try:
-            self.source_updated = False
             self._initialize_vbo(VERTEX_POSITIONS)
             self._update_program()
+            self.source_updated = False
         except OpenGLError as exc:
             # Add OpenGL error to messages
             # This is most likely an error in the source, so this is important
@@ -217,7 +197,8 @@ class ShadertoyRenderer:
         # Handle a pending source update.
         if self.source_updated:
             try:
-                self.program.delete()
+                if hasattr(self, "program"):
+                    self.program.delete()
                 self._update_program()
             except OpenGLError as exc:
                 # Add OpenGL error to messages

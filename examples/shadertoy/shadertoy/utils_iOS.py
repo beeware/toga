@@ -1,16 +1,17 @@
-"""Utility objects and methods for android.opengl"""
+"""Utility objects and methods for iOS"""
 
-from android.opengl import GLES32 as GL
-from java import jarray, jbyte, jint
-from java.nio import ByteBuffer, ByteOrder
+from ctypes import byref, c_char_p, c_int, c_uint, create_string_buffer
+
+from toga_iOS.libs import opengles as GL
 
 #: Shader version header: we want OpenGL ES GLSL 3
 VERSION_HEADER = """#version 300 es"""
 
+
 # Adapt some functions to common API
 
 
-def v_func(v_size=1, jtype=jint):
+def v_func(v_size=1, ctype=c_int):
     """Decorator for functions expecting a pointer to an output vector.
 
     A number of OpenGL functions have a suffix of the form {l}{t}v,
@@ -25,8 +26,8 @@ def v_func(v_size=1, jtype=jint):
 
     def wrapper(func):
         def call_v_function(*args):
-            data = jarray(jtype)([0] * v_size)
-            func(*args, data, 0)
+            data = (ctype * v_size)(*([0] * v_size))
+            func(*args, byref(data))
             if v_size == 1:
                 return data[0]
             else:
@@ -43,39 +44,39 @@ glGenBuffers = v_func()(GL.glGenBuffers)
 glGenVertexArrays = v_func()(GL.glGenVertexArrays)
 
 
-def glVertexAttribPointer(loc, size, type, normalize, stride, offset):
-    offset = 0 if offset is None else offset
-    GL.glVertexAttribPointer(loc, size, type, bool(normalize), stride, offset)
+def glShaderSource(id, source):
+    source_bytes = c_char_p(source.encode("utf-8"))
+    GL.glShaderSource(
+        id,
+        1,
+        source_bytes,
+        None,
+    )
 
 
 def glGetActiveUniform(id, loc):
-    length = jarray(jint)([0])
-    size = jarray(jint)([0])
-    type = jarray(jint)([0])
-    name = jarray(jbyte)(b"\0x00" * 255)
+    size = c_int()
+    type = c_uint()
+    name = create_string_buffer(255)
     GL.glGetActiveUniform(
         id,
         loc,
         255,
-        length,
-        0,
-        size,
-        0,
-        type,
-        0,
+        None,
+        byref(size),
+        byref(type),
         name,
-        0,
     )
-    return bytes(name[: length[0]]).decode("utf-8"), size[0], type[0]
+    return name.value.decode("utf-8"), size.value, type.value
 
 
-def glBufferData(buffer_type, data, usage):
-    nbytes = len(data)
-    buffer = ByteBuffer.allocateDirect(nbytes)
-    buffer.order(ByteOrder.nativeOrder())
-    buffer.put(data)
-    buffer.position(0)
-    GL.glBufferData(buffer_type, nbytes, buffer, usage)
+def glGetAttribLocation(id, item):
+    buffer = create_string_buffer(item.encode("utf-8"))
+    return GL.glGetAttribLocation(id, buffer)
+
+
+def glBufferData(buffer_type, data: bytes, usage):
+    GL.glBufferData(buffer_type, len(data), data, usage)
 
 
 def __getattr__(name):

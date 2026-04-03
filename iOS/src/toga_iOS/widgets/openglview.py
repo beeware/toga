@@ -20,9 +20,9 @@ from .base import Widget
 class TogaGLKView(GLKView):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
-    initialized = objc_property(bool)
+    initialized = objc_property(object)
     pointer = objc_property(object)
-    buttons = objc_property(set)
+    buttons = objc_property(object)
 
     @objc_method
     def drawRect_(self, rect: CGRect) -> None:

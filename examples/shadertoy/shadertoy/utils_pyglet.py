@@ -1,269 +1,85 @@
-"""Utility objects and methods for PyOpenGL"""
+"""Utility objects and methods for Pyglet"""
 
-from contextlib import contextmanager
 from ctypes import POINTER, byref, c_char, c_char_p, c_int, cast, create_string_buffer
-from dataclasses import dataclass
-from enum import IntEnum
 
 from pyglet.gl import gl as GL
 
 #: Shader version header: this should work on most modern desktops
 VERSION_HEADER = "#version 330 core"
 
-
-class ShaderType(IntEnum):
-    """Enum for the different OpenGL shader types."""
-
-    vertex = GL.GL_VERTEX_SHADER
-    fragment = GL.GL_FRAGMENT_SHADER
+# Adapt some functions to common API
 
 
-class BufferType(IntEnum):
-    """Enum for the different OpenGL buffer types."""
-
-    array = GL.GL_ARRAY_BUFFER
-
-
-class BufferUsage(IntEnum):
-    """Enum for the different OpenGL buffer usage hints."""
-
-    dynamic_draw = GL.GL_DYNAMIC_DRAW
-    static_draw = GL.GL_STATIC_DRAW
+def glShaderSource(id, source):
+    source_bytes = source.encode("utf-8")
+    GL.glShaderSource(
+        id,
+        1,
+        cast(c_char_p(source_bytes), POINTER(c_char)),
+        c_int(len(source_bytes)),
+    )
 
 
-#: Map from OpenGL data types to corresponding setter functions
-#: This is far from complete.
-uniform_setters = {
-    (GL.GL_FLOAT, False): GL.glUniform1f,
-    (GL.GL_FLOAT_VEC2, False): GL.glUniform2f,
-    (GL.GL_FLOAT_VEC3, False): GL.glUniform3f,
-    (GL.GL_FLOAT_VEC4, False): GL.glUniform4f,
-    (GL.GL_FLOAT, True): GL.glUniform1fv,
-    (GL.GL_FLOAT_VEC2, True): GL.glUniform2fv,
-    (GL.GL_FLOAT_VEC3, True): GL.glUniform3fv,
-    (GL.GL_FLOAT_VEC4, True): GL.glUniform4fv,
-}
+def glGetShaderiv(id, param):
+    status = c_int(0)
+    GL.glGetShaderiv(id, param, byref(status))
+    return status.value
 
 
-class OpenGLError(RuntimeError):
-    """OpenGL-specific runtime errors."""
-
-    pass
+def glGetShaderInfoLog(id):
+    raise NotImplementedError()
 
 
-@dataclass
-class Shader:
-    """A dataclass that encapsulates an OpenGL shader."""
-
-    shader_type: int
-    source: str
-
-    def create(self):
-        """Create and compile the shader."""
-        self.id = GL.glCreateShader(self.shader_type)
-        source_bytes = self.source.encode("utf-8")
-        GL.glShaderSource(
-            self.id,
-            1,
-            cast(c_char_p(source_bytes), POINTER(c_char)),
-            c_int(len(source_bytes)),
-        )
-
-        GL.glCompileShader(self.id)
-
-        # Handle errors
-        status = c_int(0)
-        GL.glGetShaderiv(self.id, GL.GL_COMPILE_STATUS, byref(status))
-        if status == GL.GL_FALSE:
-            info_log = GL.glGetShaderInfoLog(self.id).decode("utf-8")
-            raise OpenGLError(
-                f"Compilation failure for {self.shader_type} shader:\n{info_log}"
-            )
-
-    def delete(self):
-        """Delete the shader."""
-        if hasattr(self, "id"):
-            GL.glDeleteShader(self.id)
-            del self.id
+def glGetProgramiv(id, param):
+    status = c_int(0)
+    GL.glGetProgramiv(id, param, byref(status))
+    return status.value
 
 
-@dataclass
-class Program:
-    """A dataclass that encapsulates an OpenGL program."""
-
-    shaders: list[Shader]
-
-    def create(self):
-        """Create the program and its shaders and link them."""
-        for shader in self.shaders:
-            shader.create()
-
-        self.id = GL.glCreateProgram()
-
-        for shader in self.shaders:
-            GL.glAttachShader(self.id, shader.id)
-
-        GL.glLinkProgram(self.id)
-
-        # Handle errors
-        status = c_int(0)
-        GL.glGetProgramiv(self.id, GL.GL_LINK_STATUS, byref(status))
-        if status == GL.GL_FALSE:
-            strInfoLog = GL.glGetProgramInfoLog(self.id).decode("utf-8")
-            raise OpenGLError("Linker failure: \n" + strInfoLog)
-
-        # clean up shaders
-        for shader in self.shaders:
-            GL.glDetachShader(self.id, shader.id)
-        for shader in self.shaders:
-            shader.delete()
-
-    def delete(self):
-        """Delete the program."""
-        if hasattr(self, "id"):
-            GL.glDeleteProgram(self.id)
-            del self.id
-
-    @contextmanager
-    def use(self):
-        """Context manager that sets the program for use and resets it when done."""
-        GL.glUseProgram(self.id)
-        try:
-            yield
-        finally:
-            GL.glUseProgram(0)
-
-    def active_attributes(self):
-        """Get information about the program's active attributes.
-
-        Returns a dictionary of attribute names mapping to the location, size and
-        type of the attribute.
-        """
-        data = [
-            GL.glGetActiveAttrib(self.id, i)
-            for i in range(GL.glGetProgramiv(self.id, GL.GL_ACTIVE_ATTRIBUTES))
-        ]
-        return {
-            name.decode("utf-8"): (i, size, uniform_type)
-            for i, (name, size, uniform_type) in enumerate(data)
-        }
-
-    def active_uniforms(self):
-        """Get information about the program's active uniforms.
-
-        Returns a dictionary of uniform names mapping to the location, size,
-        type and setter function of the attribute.
-        """
-        n_uniforms = c_int(0)
-        GL.glGetProgramiv(self.id, GL.GL_ACTIVE_UNIFORMS, byref(n_uniforms))
-        uniforms = {}
-        for i in range(n_uniforms.value):
-            size = GL.GLint()
-            uniform_type = GL.GLenum()
-            buf_size = 192
-            name = create_string_buffer(buf_size)
-            GL.glGetActiveUniform(self.id, i, buf_size, None, size, uniform_type, name)
-            uniforms[name.value.decode("utf-8")] = (
-                i,
-                size.value,
-                uniform_type.value,
-                uniform_setters[uniform_type.value, size.value > 1],
-            )
-        return uniforms
-
-    def attribute(self, item):
-        """Return the location of an active attribute."""
-        buffer = create_string_buffer(item.encode("utf-8"))
-        return GL.glGetAttribLocation(self.id, buffer)
-
-    def set_uniforms(self, uniforms):
-        """Set the values of active uniforms from a dictionary of values."""
-        for uniform, (loc, size, _, setter) in self.active_uniforms().items():
-            if uniform in uniforms:
-                if size == 1:
-                    setter(loc, *uniforms[uniform])
-                else:
-                    setter(loc, size, uniforms[uniform])
-
-    def bind_attribute_buffer(self, attribute, vbo, *, size=4):
-        """Bind an active attribute to a vertex buffer object."""
-        loc = self.attribute(attribute)
-        with vbo:
-            GL.glEnableVertexAttribArray(loc)
-            GL.glVertexAttribPointer(loc, size, GL.GL_FLOAT, GL.GL_FALSE, 0, None)
+def glGetProgramInfoLog(id):
+    raise NotImplementedError()
 
 
-@dataclass
-class Buffer:
-    """A dataclass that encapsulates an OpenGL buffer.
+def glGetActiveUniform(id, loc):
+    size = GL.GLint()
+    uniform_type = GL.GLenum()
+    buf_size = 192
+    name = create_string_buffer(buf_size)
+    GL.glGetActiveUniform(id, loc, buf_size, None, size, uniform_type, name)
+    return name.value.decode("utf-8"), size.value, uniform_type.value
 
-    This can be used as a context manager to automatically bind and unbind
-    the buffer for use.
-    """
 
-    buffer_type: int
-    usage: int
+def glGetAttribLocation(id, attrib):
+    buffer = create_string_buffer(attrib.encode("utf-8"))
+    return GL.glGetAttribLocation(id, buffer)
 
-    def create(self, data):
-        """Generate a new buffer and set the data into it."""
+
+def glBufferData(buffer_type, data: bytes, usage):
+    GL.glBufferData(buffer_type, GL.GLsizeiptr(len(data)), data, usage)
+
+
+def glGenBuffers(n):
+    if n == 1:
         buffer_id = GL.GLuint()
-        GL.glGenBuffers(1, buffer_id)
-        self.id = buffer_id.value
-        self.set_data(data)
-
-    def set_data(self, data):
-        """Set data into a buffer.
-
-        This automatically binds the buffer..
-        """
-        with self:
-            GL.glBufferData(self.buffer_type, len(data), data, self.usage)
-
-    def bind(self):
-        """Bind the buffer so that it is the current buffer."""
-        GL.glBindBuffer(self.buffer_type, self.id)
-
-    def unbind(self):
-        """Unbind the buffer so that it is no longer the current buffer."""
-        GL.glBindBuffer(self.buffer_type, 0)
-
-    def __enter__(self):
-        """Enter the context manager, binding the buffer."""
-        self.bind()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Exit the context manager, unbinding the buffer."""
-        self.unbind()
-        return False
+        GL.glGenBuffers(n, buffer_id)
+        return buffer_id.value
+    else:
+        raise NotImplementedError()
 
 
-@dataclass
-class VertexArrayObject:
-    """A dataclass that encapsulates an OpenGL vertex array object.
-
-    This can be used as a context manager to automatically bind and unbind
-    the vertex array object for use.
-    """
-
-    def create(self):
-        """Generate a new vertex array object."""
+def glGenVertexArrays(n):
+    if n == 1:
         id = GL.GLuint()
         GL.glGenVertexArrays(1, id)
-        self.id = id.value
+        return id.value
+    else:
+        raise NotImplementedError()
 
-    def bind(self):
-        """Make the vertex array object the current vertex array object."""
-        GL.glBindVertexArray(self.id)
 
-    def unbind(self):
-        """Make the vertex array object no longer the current vertex array object."""
-        GL.glBindVertexArray(0)
-
-    def __enter__(self):
-        """Enter the context manager, binding the vertex array object."""
-        self.bind()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Exit the context manager, unbinding the vertex array object."""
-        self.unbind()
-        return False
+def __getattr__(name):
+    value = getattr(GL, name, None)
+    if value is not None:
+        globals()[name] = value
+        return value
+    else:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
