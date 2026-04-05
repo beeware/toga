@@ -107,9 +107,9 @@ class ScrollContainer(Widget):
     def scroll_vertical(self):
         return self._allow_vertical
 
-    @property
-    def scroll_horizontal(self):
-        return self._allow_horizontal
+    # @property
+    # def scroll_horizontal(self):
+    #     return self._allow_horizontal
 
     def set_horizontal(self, value):
         self._allow_horizontal = value
