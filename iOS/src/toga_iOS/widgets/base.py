@@ -28,9 +28,9 @@ class Widget:
     def scroll_vertical(self):
         return False
 
-    @property
-    def scroll_horizontal(self):
-        return False
+    # @property
+    # def scroll_horizontal(self):
+    #     return False
 
     @abstractmethod
     def create(self): ...
