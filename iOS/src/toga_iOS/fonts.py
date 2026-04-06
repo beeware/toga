@@ -102,6 +102,9 @@ class Font:
         # the requested name. If a font wasn't loaded, or the loaded font name doesn't
         # match the font request, assume the font wasn't found.
         if self.native is None or self.native.fontName != self.interface.family:
+            # If it wasn't a match, purge the font cache of the loaded font
+            self.native = None
+            del _IMPL_CACHE[self.interface]
             raise UnknownFontError(f"Unknown system font: {self.interface.family}")
 
     def _assign_native(self, font_name):
