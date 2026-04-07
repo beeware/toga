@@ -513,7 +513,7 @@ jobs:
           runs-on: "ubuntu-latest"
           briefcase-run-prefix: JAVA_HOME=${JAVA_HOME_17_X64}
           briefcase-run-args: >-
-            --device '{"avd":"beePhone","skin":"pixel_3a"}'
+            --device '{"avd":"beePhone","device_type":"pixel"}'
             --Xemulator=-no-window
             --Xemulator=-no-snapshot
             --Xemulator=-no-audio
