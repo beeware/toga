@@ -5,6 +5,7 @@ from travertino.size import at_least
 
 from toga.widgets.openglview import LEFT, MIDDLE, RIGHT
 from toga_cocoa.libs import (
+    NSOpenGLPFADepthSize,
     NSOpenGLPFADoubleBuffer,
     NSOpenGLPFAOpenGLProfile,
     NSOpenGLPixelFormat,
@@ -55,6 +56,8 @@ class TogaOpenGLView(NSOpenGLView):
     @objc_method
     def initWithFrame_(self, frame: NSRect):
         a = (
+            NSOpenGLPFADepthSize,
+            24,
             NSOpenGLPFADoubleBuffer,
             NSOpenGLPFAOpenGLProfile,
             NSOpenGLProfileVersion4_1Core,
