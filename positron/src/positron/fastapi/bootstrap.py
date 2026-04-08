@@ -66,6 +66,14 @@ base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 build_gradle_dependencies = [
     "com.google.android.material:material:1.13.0",
 ]
+
+build_gradle_extra_content = \"\"\"
+android.defaultConfig.python {{
+    // Extract microdriver and app package so .py assets are servable
+    extractPackages("microdriver", "{self.context["module_name"]}")
+}}
+\"\"\"
+
 """
 
     def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:
