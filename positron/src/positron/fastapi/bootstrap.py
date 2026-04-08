@@ -35,10 +35,10 @@ class FastAPIPositronBootstrap(BasePositronBootstrap):
 
     def positron_requires(self):
         return [
-            # 0.125.0 is the last version of FastAPI that supports Pydantic < 2.0.
+            # 0.119.0 is the last version of FastAPI that supports Pydantic < 2.0.
             # This is a blocker on iOS/Android until wheels for pydantic-core
             # are available.
-            "fastAPI == 0.125.0",
+            "fastAPI == 0.119.0",
             "uvicorn == 0.40.0",
         ]
 
