@@ -94,49 +94,6 @@ class Buffer:
 
 
 @dataclass
-class Texture:
-    """A dataclass that encapsulates an OpenGL texture.
-
-    This can be used as a context manager to automatically bind and unbind
-    the buffer for use.
-    """
-
-    texture_type: int
-
-    def create(self, data: bytes):
-        """Generate a new buffer and set the data into it."""
-        self.id = GL.glCreateTexture()
-
-    def set_data(self, data: bytes):
-        """Set data into a buffer.
-
-        This automatically binds the texture.
-        """
-        with self:
-            GL.glTexture(
-                self.texture_type,
-                data,
-            )
-
-    def bind(self):
-        """Bind the texture so that it is the current texture."""
-        GL.glBindTexture(self.texture_type, self.id)
-
-    def unbind(self):
-        """Unbind the texture so that it is no longer the current buffer."""
-        GL.glBindTexture(self.texture_type, 0)
-
-    def __enter__(self):
-        """Enter the context manager, binding the buffer."""
-        self.bind()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Exit the context manager, unbinding the buffer."""
-        self.unbind()
-        return False
-
-
-@dataclass
 class VertexArrayObject:
     """A dataclass that encapsulates an OpenGL vertex array object.
 

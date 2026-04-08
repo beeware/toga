@@ -3,8 +3,11 @@ from collections.abc import Callable
 from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import IntEnum
+from functools import cached_property
 
 import toga
+
+from .matrix import Matrix
 
 if toga.backend in {"toga_cocoa", "toga_gtk", "toga_qt"}:
     if os.environ.get("TOGA_OPENGL") == "pyglet":
@@ -40,20 +43,6 @@ class BufferUsage(IntEnum):
 
     dynamic_draw = GL.GL_DYNAMIC_DRAW
     static_draw = GL.GL_STATIC_DRAW
-
-
-#: Map from OpenGL data types to corresponding setter functions
-#: This is far from complete.
-uniform_setters = {
-    (GL.GL_FLOAT, False): GL.glUniform1f,
-    (GL.GL_FLOAT_VEC2, False): GL.glUniform2f,
-    (GL.GL_FLOAT_VEC3, False): GL.glUniform3f,
-    (GL.GL_FLOAT_VEC4, False): GL.glUniform4f,
-    (GL.GL_FLOAT, True): GL.glUniform1fv,
-    (GL.GL_FLOAT_VEC2, True): GL.glUniform2fv,
-    (GL.GL_FLOAT_VEC3, True): GL.glUniform3fv,
-    (GL.GL_FLOAT_VEC4, True): GL.glUniform4fv,
-}
 
 
 class OpenGLError(RuntimeError):
@@ -208,6 +197,7 @@ class Program:
         finally:
             GL.glUseProgram(0)
 
+    @cached_property
     def active_uniforms(self) -> dict[str, tuple[int, int, int, Callable]]:
         """Get information about the program's active uniforms.
 
@@ -218,10 +208,9 @@ class Program:
         data = [GL.glGetActiveUniform(self.id, i) for i in range(n_uniforms)]
         uniforms = {
             name: (
-                i,
-                size,
+                GL.glGetUniformLocation(self.id, name),
+                int(size),
                 uniform_type,
-                uniform_setters[uniform_type, size > 1],
             )
             for i, (name, size, uniform_type) in enumerate(data)
         }
@@ -233,16 +222,41 @@ class Program:
 
     def set_uniforms(self, uniforms: dict[str, tuple]):
         """Set the values of active uniforms from a dictionary of values."""
-        for uniform, (loc, size, _, setter) in self.active_uniforms().items():
+        for uniform, (loc, size, type) in self.active_uniforms.items():
             if uniform in uniforms:
-                if size == 1:
-                    setter(loc, *uniforms[uniform])
-                else:
-                    setter(loc, size, uniforms[uniform])
+                self.set_uniform(loc, size, type, uniforms[uniform])
+
+    def set_uniform(self, loc, size, type, value):
+        match [type, size]:
+            case [GL.GL_FLOAT, 1]:
+                GL.glUniform1f(loc, value)
+            case [GL.GL_FLOAT, n]:
+                GL.glUniform1fv(loc, n, value)
+            case [GL.GL_FLOAT_VEC2, 1]:
+                GL.glUniform2f(loc, *value)
+            case [GL.GL_FLOAT_VEC2, n]:
+                GL.glUniform2fv(loc, n, value)
+            case [GL.GL_FLOAT_VEC3, 1]:
+                GL.glUniform3f(loc, *value)
+            case [GL.GL_FLOAT_VEC3, n]:
+                GL.glUniform3fv(loc, n, value)
+            case [GL.GL_FLOAT_VEC4, 1]:
+                GL.glUniform4f(loc, *value)
+            case [GL.GL_FLOAT_VEC4, n]:
+                GL.glUniform4f(loc, n, value)
+            case [GL.GL_FLOAT_MAT4, n]:
+                if isinstance(value, Matrix):
+                    value = value.data
+                GL.glUniformMatrix4fv(loc, n, False, value)
+            case _:
+                pass
 
     def bind_attribute_buffer(self, attribute: str, vbo: Buffer, *, size: int = 4):
         """Bind an active attribute to a vertex buffer object."""
         loc = self.attribute(attribute)
+        if loc < 0:
+            print(f"No active attribute {attribute}")
+            return
         with vbo:
             GL.glEnableVertexAttribArray(loc)
             GL.glVertexAttribPointer(loc, size, GL.GL_FLOAT, GL.GL_FALSE, 0, None)

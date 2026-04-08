@@ -63,6 +63,11 @@ def glGetAttribLocation(id, attrib):
     return GL.glGetAttribLocation(id, buffer)
 
 
+def glGetUniformLocation(id, uniform):
+    buffer = create_string_buffer(uniform.encode("utf-8"))
+    return GL.glGetUniformLocation(id, buffer)
+
+
 def glBufferData(buffer_type, data: bytes, usage):
     GL.glBufferData(buffer_type, GL.GLsizeiptr(len(data)), data, usage)
 

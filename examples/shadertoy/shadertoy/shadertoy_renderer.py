@@ -68,14 +68,14 @@ void main() {{
 
 #: Message to display in side-panel giving info about
 #: values of uniforms.
-UNIFORM_VALUES = """Frame: {iFrame[0]}
-Frame rate: {iFrameRate[0]:.3f} fps
+UNIFORM_VALUES = """Frame: {iFrame}
+Frame rate: {iFrameRate:.3f} fps
 
 Resolution: {iResolution}
 Mouse: ({iMouse[0]:.1f}, {iMouse[1]:.1f}) ({iMouse[2]:.1f}, {iMouse[3]:.1f})
 
-Time: {iTime[0]:.3f} s
-Time delta: {iTimeDelta[0]:.3f} s
+Time: {iTime:.3f} s
+Time delta: {iTimeDelta:.3f} s
 Date: {iDate[0]}-{iDate[1]}-{iDate[2]} {iDate[3]:.3f}
 """
 
@@ -232,10 +232,10 @@ class ShadertoyRenderer:
             uniforms = {
                 "iResolution": (*size, 1.0),
                 "iMouse": (*self.pointer, *self.drag_start),
-                "iTime": (self.timestamp,),
-                "iTimeDelta": (self.deltas[-1],),
-                "iFrame": (self.frame,),
-                "iFrameRate": (frame_rate,),
+                "iTime": self.timestamp,
+                "iTimeDelta": self.deltas[-1],
+                "iFrame": self.frame,
+                "iFrameRate": frame_rate,
                 "iDate": (
                     dt.year,
                     dt.month,

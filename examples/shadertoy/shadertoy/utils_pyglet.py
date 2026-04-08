@@ -1,6 +1,15 @@
 """Utility objects and methods for Pyglet"""
 
-from ctypes import POINTER, byref, c_char, c_char_p, c_int, cast, create_string_buffer
+from ctypes import (
+    POINTER,
+    byref,
+    c_char,
+    c_char_p,
+    c_float,
+    c_int,
+    cast,
+    create_string_buffer,
+)
 
 from pyglet.gl import gl as GL
 
@@ -54,6 +63,11 @@ def glGetAttribLocation(id, attrib):
     return GL.glGetAttribLocation(id, buffer)
 
 
+def glGetUniformLocation(id, uniform):
+    buffer = create_string_buffer(uniform.encode("utf-8"))
+    return GL.glGetUniformLocation(id, buffer)
+
+
 def glBufferData(buffer_type, data: bytes, usage):
     GL.glBufferData(buffer_type, GL.GLsizeiptr(len(data)), data, usage)
 
@@ -74,6 +88,12 @@ def glGenVertexArrays(n):
         return id.value
     else:
         raise NotImplementedError()
+
+
+def glUniformMatrix4fv(loc, size, transpose, value):
+    print(len(value))
+    buffer = (c_float * (16 * size))(*value)
+    GL.glUniformMatrix4fv(loc, size, transpose, buffer)
 
 
 def __getattr__(name):
