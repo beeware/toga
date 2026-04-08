@@ -192,7 +192,7 @@ class ShadertoyRenderer:
         """Render a frame using OpenGL."""
         self.message = "Rendering...\n\n"
         GL.glClearColor(0.0, 0.0, 1.0, 1.0)
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
         # Handle a pending source update.
         if self.source_updated:
