@@ -35,16 +35,16 @@ class Label(Widget):
     def rehint(self):
         # Width & height of a label is known and fixed.
 
-        # 2026-04-08 A right-aligned multiline string that contains "\n\n" confuses
-        # Cocoa's layout algorithm. Temporarily switch to left alignment to perform the
-        # size measurement, then switch back to the original value. See #4315.
+        # A right-aligned multiline string that contains "\n\n" confuses Cocoa's layout
+        # algorithm. Temporarily switch to left alignment to perform the size
+        # measurement, then switch back to the original value. See #4315.
         orig_alignment = self.native.alignment
         self.native.alignment = NSLeftTextAlignment
         content_size = self.native.intrinsicContentSize()
         # print("REHINT label", self, content_size.width, content_size.height)
         self.native.alignment = orig_alignment
 
-        # 2020-05-11 The +1 is a hack; the label "X Translate:" gets truncated
-        # without the extra pixel.
+        # The +1 is a hack; the label "X Translate:" gets truncated without it.
+        # See comments on #891.
         self.interface.intrinsic.width = at_least(content_size.width + 1)
         self.interface.intrinsic.height = content_size.height
