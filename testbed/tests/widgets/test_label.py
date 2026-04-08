@@ -38,8 +38,11 @@ async def test_multiline(widget, probe, alignment):
     widget.style.text_align = alignment
 
     def make_lines(n):
-        # Bug #4315: Ensure that at least one line is empty.
-        return "\n".join(("" if i == 3 else f"This is line {i}") for i in range(n))
+        # Bug #4315: Ensure that at least one line is empty. It can't be the *last*
+        # line, because that might be truncated in display calculations
+        return "\n".join(
+            ("" if i == 2 and n > 3 else f"This is line {i}") for i in range(n)
+        )
 
     widget.text = make_lines(1)
     await probe.redraw("Label should be resized vertically")
