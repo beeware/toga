@@ -1,4 +1,5 @@
 import os
+from collections.abc import Callable
 from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import IntEnum
@@ -59,6 +60,78 @@ class OpenGLError(RuntimeError):
     """OpenGL-specific runtime errors."""
 
     pass
+
+
+@dataclass
+class Buffer:
+    """A dataclass that encapsulates an OpenGL buffer.
+
+    This can be used as a context manager to automatically bind and unbind
+    the buffer for use.
+    """
+
+    buffer_type: int
+    usage: int
+
+    def create(self, data: bytes):
+        """Generate a new buffer and set the data into it."""
+        self.id = GL.glGenBuffers(1)
+        self.set_data(data)
+
+    def set_data(self, data: bytes):
+        """Set data into a buffer.
+
+        This automatically binds the buffer..
+        """
+        with self:
+            GL.glBufferData(self.buffer_type, data, self.usage)
+
+    def bind(self):
+        """Bind the buffer so that it is the current buffer."""
+        GL.glBindBuffer(self.buffer_type, self.id)
+
+    def unbind(self):
+        """Unbind the buffer so that it is no longer the current buffer."""
+        GL.glBindBuffer(self.buffer_type, 0)
+
+    def __enter__(self):
+        """Enter the context manager, binding the buffer."""
+        self.bind()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Exit the context manager, unbinding the buffer."""
+        self.unbind()
+        return False
+
+
+@dataclass
+class VertexArrayObject:
+    """A dataclass that encapsulates an OpenGL vertex array object.
+
+    This can be used as a context manager to automatically bind and unbind
+    the vertex array object for use.
+    """
+
+    def create(self):
+        """Generate a new vertex array object."""
+        self.id = GL.glGenVertexArrays(1)
+
+    def bind(self):
+        """Make the vertex array object the current vertex array object."""
+        GL.glBindVertexArray(self.id)
+
+    def unbind(self):
+        """Make the vertex array object no longer the current vertex array object."""
+        GL.glBindVertexArray(0)
+
+    def __enter__(self):
+        """Enter the context manager, binding the vertex array object."""
+        self.bind()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Exit the context manager, unbinding the vertex array object."""
+        self.unbind()
+        return False
 
 
 @dataclass
@@ -135,7 +208,7 @@ class Program:
         finally:
             GL.glUseProgram(0)
 
-    def active_uniforms(self):
+    def active_uniforms(self) -> dict[str, tuple[int, int, int, Callable]]:
         """Get information about the program's active uniforms.
 
         Returns a dictionary of uniform names mapping to the location, size,
@@ -154,11 +227,11 @@ class Program:
         }
         return uniforms
 
-    def attribute(self, item):
+    def attribute(self, item: str) -> int:
         """Return the location of an active attribute."""
         return GL.glGetAttribLocation(self.id, item)
 
-    def set_uniforms(self, uniforms):
+    def set_uniforms(self, uniforms: dict[str, tuple]):
         """Set the values of active uniforms from a dictionary of values."""
         for uniform, (loc, size, _, setter) in self.active_uniforms().items():
             if uniform in uniforms:
@@ -167,81 +240,9 @@ class Program:
                 else:
                     setter(loc, size, uniforms[uniform])
 
-    def bind_attribute_buffer(self, attribute, vbo, *, size=4):
+    def bind_attribute_buffer(self, attribute: str, vbo: Buffer, *, size: int = 4):
         """Bind an active attribute to a vertex buffer object."""
         loc = self.attribute(attribute)
         with vbo:
             GL.glEnableVertexAttribArray(loc)
             GL.glVertexAttribPointer(loc, size, GL.GL_FLOAT, GL.GL_FALSE, 0, None)
-
-
-@dataclass
-class Buffer:
-    """A dataclass that encapsulates an OpenGL buffer.
-
-    This can be used as a context manager to automatically bind and unbind
-    the buffer for use.
-    """
-
-    buffer_type: int
-    usage: int
-
-    def create(self, data):
-        """Generate a new buffer and set the data into it."""
-        self.id = GL.glGenBuffers(1)
-        self.set_data(data)
-
-    def set_data(self, data):
-        """Set data into a buffer.
-
-        This automatically binds the buffer..
-        """
-        with self:
-            GL.glBufferData(self.buffer_type, data, self.usage)
-
-    def bind(self):
-        """Bind the buffer so that it is the current buffer."""
-        GL.glBindBuffer(self.buffer_type, self.id)
-
-    def unbind(self):
-        """Unbind the buffer so that it is no longer the current buffer."""
-        GL.glBindBuffer(self.buffer_type, 0)
-
-    def __enter__(self):
-        """Enter the context manager, binding the buffer."""
-        self.bind()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Exit the context manager, unbinding the buffer."""
-        self.unbind()
-        return False
-
-
-@dataclass
-class VertexArrayObject:
-    """A dataclass that encapsulates an OpenGL vertex array object.
-
-    This can be used as a context manager to automatically bind and unbind
-    the vertex array object for use.
-    """
-
-    def create(self):
-        """Generate a new vertex array object."""
-        self.id = GL.glGenVertexArrays(1)
-
-    def bind(self):
-        """Make the vertex array object the current vertex array object."""
-        GL.glBindVertexArray(self.id)
-
-    def unbind(self):
-        """Make the vertex array object no longer the current vertex array object."""
-        GL.glBindVertexArray(0)
-
-    def __enter__(self):
-        """Enter the context manager, binding the vertex array object."""
-        self.bind()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Exit the context manager, unbinding the vertex array object."""
-        self.unbind()
-        return False

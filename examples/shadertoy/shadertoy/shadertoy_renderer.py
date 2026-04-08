@@ -126,13 +126,13 @@ class ShadertoyRenderer:
     deltas: list[float]
 
     #: The position of the pointer, or None if not available.
-    pointer: tuple[int, int] | None
+    pointer: tuple[int, int]
 
     #: Whether the mouse button (or user touch) is down or up.
     mouse_down: bool
 
     #: The starting location of most recent drag operation.
-    drag_start: tuple[int, int] | None
+    drag_start: tuple[int, int]
 
     #: The source for the mainImage function.
     _source: str

@@ -53,7 +53,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 class ShadertoyApp(toga.App):
     def startup(self):
-        if toga.backend == "toga_android":
+        if toga.backend in {"toga_android", "toga_iOS"}:
             self.main_window = toga.MainWindow()
         else:
             self.main_window = toga.MainWindow(
