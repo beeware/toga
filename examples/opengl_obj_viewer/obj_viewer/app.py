@@ -70,7 +70,7 @@ class OpenGLApp(toga.App):
 def main():
     return OpenGLApp(
         "Obj File Viewer Example",
-        "org.beeware.toga.examples.opengl",
+        "org.beeware.toga.examples.obj-viewer",
         document_types=[ObjFile],
     )
 

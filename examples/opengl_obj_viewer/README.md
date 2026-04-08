@@ -12,5 +12,5 @@ To run this example:
 
 ```text
 $ python -m pip install toga PyOpenGL
-$ python -m opengl
+$ python -m obj_viewer
 ```

@@ -20,56 +20,56 @@ requires = [
     "../../core",
 ]
 
-[tool.briefcase.app.opengl]
-sources = ["opengl"]
+[tool.briefcase.app.obj-viewer]
+sources = ["obj_viewer"]
 
-[tool.briefcase.app.opengl-qt]
-sources = ["opengl", "opengl_qt"]
+[tool.briefcase.app.obj-viewer-qt]
+sources = ["obj_viewer", "obj_viewer_qt"]
 
-[tool.briefcase.app.opengl.macOS]
+[tool.briefcase.app.obj-viewer.macOS]
 requires = [
     "../../cocoa",
     "std-nslog>=1.0.0",
     "PyOpenGL",
 ]
 
-[tool.briefcase.app.opengl.linux]
+[tool.briefcase.app.obj-viewer.linux]
 requires = [
     "../../gtk",
     "PyOpenGL",
 ]
 
-[tool.briefcase.app.opengl-qt.linux]
+[tool.briefcase.app.obj-viewer-qt.linux]
 requires = [
     "../../qt",
     "PyOpenGL",
 ]
 
-#[tool.briefcase.app.opengl.windows]
+#[tool.briefcase.app.obj-viewer.windows]
 #requires = [
 #    "../../winforms",
 #]
 
 # Mobile deployments
-[tool.briefcase.app.opengl.iOS]
-requires = [
-    "../../iOS",
-    "std-nslog>=1.0.0",
-]
+# [tool.briefcase.app.obj-viewer.iOS]
+# requires = [
+#     "../../iOS",
+#     "std-nslog>=1.0.0",
+# ]
 
-[tool.briefcase.app.opengl.android]
-requires = [
-    "../../android",
-]
-
-base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
-
-build_gradle_dependencies = [
-    "com.google.android.material:material:1.12.0",
-]
+# [tool.briefcase.app.obj-viewer.android]
+# requires = [
+#     "../../android",
+# ]
+#
+# base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+#
+# build_gradle_dependencies = [
+#     "com.google.android.material:material:1.12.0",
+# ]
 
 # Web deployment
-#[tool.briefcase.app.opengl.web]
+#[tool.briefcase.app.obj-viewer.web]
 #requires = [
 #    "../../web",
 #]
