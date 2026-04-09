@@ -16,30 +16,7 @@ from .base import Widget
 
 class Table(Widget):
     #################################################################################
-    # The following methods are overridden in DetailedList.
-    #################################################################################
-
-    @property
-    def _show_headings(self):
-        return self.interface._show_headings
-
-    @property
-    def _columns(self):
-        return self.interface._columns
-
-    @property
-    def _multiple_select(self):
-        return self.interface.multiple_select
-
-    @property
-    def _data(self):
-        return self.interface.data
-
-    def add_action_events(self):
-        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
-
-    #################################################################################
-    # The following method is overridden in DetailedList and Tree
+    # The following methods are overridden in Tree
     #################################################################################
 
     def create(self):
@@ -84,7 +61,7 @@ class Table(Widget):
         self.native.SearchForVirtualItem += WeakrefCallable(
             self.winforms_search_for_virtual_item
         )
-        self.add_action_events()
+        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
 
         # Name the WinForms event listeners for selection changes so that they can be
         # added and removed.
@@ -96,10 +73,6 @@ class Table(Widget):
         )
         self.native.ItemSelectionChanged += self.selection_listener_single
         self.native.VirtualItemsSelectionRangeChanged += self.selection_listener_multi
-
-    #################################################################################
-    # The following methods are overridden in Tree
-    #################################################################################
 
     def _subclass_proc(
         self,
@@ -201,8 +174,24 @@ class Table(Widget):
             return selected_indices[0]
 
     #################################################################################
-    # The following methods are shared (non-overridden) with DetailedList and Tree
+    # The following methods are shared (non-overridden) with Tree
     #################################################################################
+
+    @property
+    def _show_headings(self):
+        return self.interface._show_headings
+
+    @property
+    def _columns(self):
+        return self.interface._columns
+
+    @property
+    def _multiple_select(self):
+        return self.interface.multiple_select
+
+    @property
+    def _data(self):
+        return self.interface.data
 
     def __del__(self):
         # The object self.pfn_subclass is a python class and is part of the native
