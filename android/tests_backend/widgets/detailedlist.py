@@ -20,6 +20,8 @@ class DetailedListProbe(SimpleProbe):
     supports_actions = True
     supports_refresh = True
 
+    supports_deselect = False
+
     def __init__(self, widget):
         super().__init__(widget)
         self.refresh_layout = self.native

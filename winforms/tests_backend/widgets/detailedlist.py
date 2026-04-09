@@ -15,6 +15,8 @@ class DetailedListProbe(SimpleProbe):
     supports_actions = True
     supports_refresh = False
 
+    supports_deselect = True
+
     @property
     def row_count(self):
         LVM_GETITEMCOUNT = 0x1000 + 4
@@ -88,6 +90,14 @@ class DetailedListProbe(SimpleProbe):
     async def select_row(self, row, add=False):
         x, y = self.row_midpoint(row)
         self.perform_click(x, y, use_modifier=add)
+
+    async def deselect_all(self):
+        # Assume there is blank space at the bottom of the client area.
+        row_count = self.row_count
+        x, y = self.row_midpoint(row_count - 1)
+        y = y + self.impl._tile_height
+
+        self.perform_double_click(x, y)
 
     def center_widget_under_mouse(self):
         native = self.impl.native
@@ -174,6 +184,32 @@ class DetailedListProbe(SimpleProbe):
         # Perform the click
         SendMessageW(hwnd, down_message, wparam, lparam)
         SendMessageW(hwnd, up_message, wparam, lparam)
+
+        # Restore the window position
+        self.move_window(window_x, window_y)
+
+    def perform_double_click(self, x, y, is_right=False):
+        hwnd = self.impl._hwnd
+
+        # To perform a "click" using Window messages, the mouse must be over the window.
+        window_x, window_y = self.center_widget_under_mouse()
+
+        # Virtual key codes
+        MK_LBUTTON = 0x0001
+        MK_RBUTTON = 0x0002
+
+        # Set the code messages, lparam is the coordinates and wparam is determined by
+        # the virtual keys down.
+        lparam = x | (y << 16)
+        if is_right:
+            message = wc.WM_RBUTTONDBLCLK
+            wparam = MK_RBUTTON
+        else:
+            message = wc.WM_LBUTTONDBLCLK
+            wparam = MK_LBUTTON
+
+        # Perform the click
+        SendMessageW(hwnd, message, wparam, lparam)
 
         # Restore the window position
         self.move_window(window_x, window_y)

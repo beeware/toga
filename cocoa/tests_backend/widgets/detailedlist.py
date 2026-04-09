@@ -41,6 +41,8 @@ class DetailedListProbe(SimpleProbe):
     supports_actions = True
     supports_refresh = True
 
+    supports_deselect = True
+
     def __init__(self, widget):
         super().__init__(widget)
         self.native_detailedlist = widget._impl.native_detailedlist
@@ -117,6 +119,11 @@ class DetailedListProbe(SimpleProbe):
             delay=0.1,
             modifierFlags=NSEventModifierFlagCommand if add else 0,
         )
+
+    async def deselect_all(self):
+        # Assume there is blank space at the bottom of the client area.
+        row = self.row_count
+        await self.select_row(row)
 
     async def _refresh_action(self, offset):
         # Create a scroll event where event phase = Began, Momenum scroll phase = Begin,

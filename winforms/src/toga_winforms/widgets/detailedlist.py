@@ -45,7 +45,7 @@ class DetailedList(Widget):
     #     during selection LVN_ITEMCHANGED is handled. To repaint when the widget loses
     #     focus, WM_SETFOCUS and WM_KILLFOCUS are handled.
     #
-    # The actions are performed by use a context menu.
+    # The actions are performed by a context menu.
 
     @property
     def _data(self):
