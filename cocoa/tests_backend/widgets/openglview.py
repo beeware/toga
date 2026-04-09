@@ -24,7 +24,7 @@ class OpenGLViewProbe(SimpleProbe):
             self.middle_mouse_up,
             self.right_mouse_up,
         ]
-        for button in self.native.buttons:
+        for button in frozenset(self.native.buttons):
             method = methods[button]
             await method(x, y)
         await self.redraw("Buttons cleared")

@@ -28,6 +28,7 @@ async def widget(renderer):
 
 
 async def test_callbacks(probe, widget, renderer):
+    await probe.redraw("OpenGLView widget created", 0.1)
     renderer.on_init.assert_called_once_with(widget)
     await probe.redraw("OpenGLView widget initialized", 0.1)
 
