@@ -19,7 +19,14 @@ class OpenGLViewProbe(SimpleProbe):
             await method(x, y)
 
     async def reset_buttons(self, x=0, y=0):
-        self.native.buttons.clear()
+        methods = [
+            self.left_mouse_up,
+            self.middle_mouse_up,
+            self.right_mouse_up,
+        ]
+        for button in self.native.buttons:
+            method = methods[button]
+            await method(x, y)
         await self.redraw("Buttons cleared")
 
     async def left_mouse_down(self, x=0, y=0):

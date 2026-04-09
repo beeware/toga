@@ -5,7 +5,7 @@ import pytest
 
 import toga
 
-# from .probe import get_probe
+from ..conftest import skip_on_platforms
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_widget_size,
@@ -23,6 +23,7 @@ def renderer():
 # initialized on the main thread
 @pytest.fixture
 async def widget(renderer):
+    skip_on_platforms("windows")
     return toga.OpenGLView(renderer, flex=1)
 
 

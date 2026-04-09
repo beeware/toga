@@ -52,6 +52,9 @@ opengles.glUniform4fv.argtypes = [GLint, GLsizei, POINTER(GLfloat)]
 # Constants
 opengles.GL_FALSE = False
 
+opengles.GL_CULL_FACE = 0xB44
+opengles.GL_DEPTH_TEST = 0xB71
+
 opengles.GL_DEPTH_BUFFER_BIT = 0x200
 opengles.GL_COLOR_BUFFER_BIT = 0x4000
 opengles.GL_STENCIL_BUFFER_BIT = 0x400
@@ -73,6 +76,7 @@ opengles.GL_FLOAT = 0x1406
 opengles.GL_FLOAT_VEC2 = 0x8B50
 opengles.GL_FLOAT_VEC3 = 0x8B51
 opengles.GL_FLOAT_VEC4 = 0x8B52
+opengles.GL_FLOAT_MAT4 = 0x8B5C
 
 opengles.GL_COMPILE_STATUS = 0x8B81
 
