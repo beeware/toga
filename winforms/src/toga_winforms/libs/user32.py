@@ -25,15 +25,6 @@ from .win32 import LRESULT, UINT_PTR
 user32 = windll.user32
 
 
-# DPI Awareness context
-# https://learn.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
-DPI_AWARENESS_CONTEXT_UNAWARE = -1
-DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = -4
-
-# Monitor
-MONITOR_DEFAULTTONEAREST = 2
-
-
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-appendmenuw
 AppendMenuW = user32.AppendMenuW
 AppendMenuW.restype = BOOL

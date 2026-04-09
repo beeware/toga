@@ -19,6 +19,11 @@ COLOR_WINDOW = 5
 COLOR_BTNFACE = 15
 COLOR_BTNTEXT = 18
 
+# DPI Awareness context
+# https://learn.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
+DPI_AWARENESS_CONTEXT_UNAWARE = -1
+DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = -4
+
 # Draw Text
 DT_CALCRECT = 0x00000400
 DT_HCENTER = 0x00000001
@@ -95,6 +100,9 @@ LVTVIM_LABELMARGIN = 0x0004
 
 # Menu Flag
 MF_STRING = 0x00000000
+
+# Monitor
+MONITOR_DEFAULTTONEAREST = 2
 
 # Notification Message
 NM_CUSTOMDRAW = 0xFFFFFFF4

@@ -244,12 +244,12 @@ class DetailedList(Widget):
     ####################################################################################
 
     def winforms_back_color_changed(self, sender, e):
-        """Updates the back color of the Win32 List-View UI to match the WinForms Panel."""
+        """Matches the back color of the Win32 List-View UI to the WinForms Panel."""
         color = ColorTranslator.ToWin32(self.native.BackColor)
         u32.SendMessageW(self._hwnd, wc.LVM_SETBKCOLOR, 0, color)
 
     def winforms_font_changed(self, sender, e):
-        """Updates the Win32 List-View UI to match the fonts of the WinForms Panel."""
+        """Matches the font of the Win32 List-View UI to the WinForms Panel."""
         # Note that reconstructing the image list instead of simply changing the image
         # size seems to reduce selection flicker.
         self._set_image_list()

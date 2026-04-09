@@ -11,7 +11,8 @@ from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
 
 from toga.handlers import WeakrefCallable
 
-from .libs.user32 import DPI_AWARENESS_CONTEXT_UNAWARE, SetThreadDpiAwarenessContext
+from .libs.user32 import SetThreadDpiAwarenessContext
+from .libs.windowconstants import DPI_AWARENESS_CONTEXT_UNAWARE
 
 
 class BaseDialog:

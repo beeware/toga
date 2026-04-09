@@ -4,22 +4,23 @@ from ctypes.wintypes import HWND, POINT
 import System.Windows.Forms as WinForms
 
 from toga.handlers import WeakrefCallable
+
 from .libs import user32 as u32, windowconstants as wc
 
 
-class ContextMenu():
+class ContextMenu:
     """A Win32-based context menu.
 
-    This Win32-based menu is preferred over the WinForms ContextMenuStrip since the 
+    This Win32-based menu is preferred over the WinForms ContextMenuStrip since the
     style of the WinForms version has not been updated with recent version of Windows.
     This has been an unresolved issue since at least Dec 2019:
         - https://github.com/dotnet/winforms/issues/2476
-    
+
     Attributes:
-        widget: The Toga WinForms widget to be assigned to. 
+        widget: The Toga WinForms widget to be assigned to.
         actions: A function of the form actions(x: int, y: int) that returns a list of
             pairs (label: str, action: Callable[[], None]). Each label will be displayed
-            in the context menu and the action will be preformed on a click. 
+            in the context menu and the action will be performed on a click.
     """
 
     def __init__(self, widget, actions):
@@ -33,11 +34,11 @@ class ContextMenu():
     def winforms_handle_created(self, sender, e):
         """Create the menu when a the widget's handle is created."""
         self._native_hwnd = HWND(int(self.widget.native.Handle.ToString()))
-    
+
     def winforms_mouse_click(self, sender, e):
         if e.Button != WinForms.MouseButtons.Right or e.Clicks != 1:
             return
-        
+
         actions_list = self.actions(e.X, e.Y)
         pt = POINT(e.X, e.Y)
         u32.ClientToScreen(self._native_hwnd, pt)
@@ -49,7 +50,7 @@ class ContextMenu():
         hmenu = u32.CreatePopupMenu()
         for index, action_pair in enumerate(actions_list, start=1):
             u32.AppendMenuW(hmenu, wc.MF_STRING, index, action_pair[0])
-        
+
         uFlags = (
             wc.TPM_LEFTALIGN
             | wc.TPM_TOPALIGN
@@ -61,12 +62,7 @@ class ContextMenu():
 
         u32.SetForegroundWindow(self._native_hwnd)
         menu_selection = u32.TrackPopupMenuEx(
-            hmenu, 
-            uFlags, 
-            x, 
-            y, 
-            self._native_hwnd,
-            None
+            hmenu, uFlags, x, y, self._native_hwnd, None
         )
 
         u32.DestroyMenu(hmenu)
