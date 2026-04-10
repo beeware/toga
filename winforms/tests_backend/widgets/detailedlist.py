@@ -1,3 +1,4 @@
+import asyncio
 from ctypes import byref
 from ctypes.wintypes import POINT, RECT
 
@@ -89,7 +90,7 @@ class DetailedListProbe(SimpleProbe):
 
     async def select_row(self, row, add=False):
         x, y = self.row_midpoint(row)
-        self.perform_click(x, y, use_modifier=add)
+        await self.perform_click(x, y, use_modifier=add)
 
     async def deselect_all(self):
         # Assume there is blank space at the bottom of the client area.
@@ -97,7 +98,7 @@ class DetailedListProbe(SimpleProbe):
         x, y = self.row_midpoint(row_count - 1)
         y = y + self.impl._tile_height
 
-        self.perform_double_click(x, y)
+        await self.perform_double_click(x, y)
 
     async def _perform_action(self, row, index):
         x, y = self.row_midpoint(row)
@@ -115,7 +116,7 @@ class DetailedListProbe(SimpleProbe):
         )
 
         # Perform the right click that opens the context menu.
-        self.perform_click(x, y, is_right=True)
+        await self.perform_click(x, y, is_right=True)
 
         context_actions_list = self.impl._context_menu.actions(x, y)
         if index + 1 > len(context_actions_list):
@@ -131,7 +132,7 @@ class DetailedListProbe(SimpleProbe):
     async def perform_secondary_action(self, row, active=True):
         await self._perform_action(row, 1 if self.impl.primary_action_enabled else 0)
 
-    def perform_click(self, x, y, is_right=False, use_modifier=False):
+    async def perform_click(self, x, y, is_right=False, use_modifier=False):
         hwnd = self.impl._hwnd
 
         # To perform a "click" using Window messages, the mouse must be over the window.
@@ -147,20 +148,24 @@ class DetailedListProbe(SimpleProbe):
         # Set the code messages, lparam is the coordinates and wparam is determined by
         # the virtual keys down.
         lparam = x | (y << 16)
+        up_wparam = MK_CONTROL if use_modifier else 0
         if is_right:
             down_message = wc.WM_RBUTTONDOWN
+            down_wparam = MK_RBUTTON | MK_CONTROL if use_modifier else MK_RBUTTON
             up_message = wc.WM_RBUTTONUP
-            wparam = MK_RBUTTON | MK_CONTROL if use_modifier else MK_RBUTTON
+
         else:
             down_message = wc.WM_LBUTTONDOWN
+            down_wparam = MK_LBUTTON | MK_CONTROL if use_modifier else MK_LBUTTON
             up_message = wc.WM_LBUTTONUP
-            wparam = MK_LBUTTON | MK_CONTROL if use_modifier else MK_LBUTTON
 
-        # Perform the click
-        SendMessageW(hwnd, down_message, wparam, lparam)
-        SendMessageW(hwnd, up_message, wparam, lparam)
+        # Perform the click and wait for the messages from PostMessage to be received.
+        PostMessageW(hwnd, down_message, down_wparam, lparam)
+        await asyncio.sleep(0.1)
+        PostMessageW(hwnd, up_message, up_wparam, lparam)
+        await asyncio.sleep(0.1)
 
-    def perform_double_click(self, x, y, is_right=False):
+    async def perform_double_click(self, x, y, is_right=False):
         hwnd = self.impl._hwnd
 
         # Virtual key codes
@@ -177,12 +182,14 @@ class DetailedListProbe(SimpleProbe):
             message = wc.WM_LBUTTONDBLCLK
             wparam = MK_LBUTTON
 
-        # Perform the click
-        SendMessageW(hwnd, message, wparam, lparam)
+        # Perform the click and wait for the messages from PostMessage to be received.
+        PostMessageW(hwnd, message, wparam, lparam)
+        await asyncio.sleep(0.1)
 
     def select_with_keyboard(self, index):
         hwnd = self.impl._hwnd
-        # For some reason we have to use PostMessage and not SendMessage here.
+        # For some reason we have to use PostMessage and not SendMessage here. This
+        # is most likely because TrackPopupMenu is thread blocking.
         if index < 0:
             PostMessageW(hwnd, wc.WM_KEYDOWN, wc.VK_ESCAPE, 0)
             PostMessageW(hwnd, wc.WM_KEYUP, wc.VK_ESCAPE, 0)
