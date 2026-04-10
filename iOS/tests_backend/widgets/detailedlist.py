@@ -84,7 +84,7 @@ class DetailedListProbe(SimpleProbe):
     async def change_selection(self, row, add=False, deselect=False):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
         if deselect:
-            self.native.deselectRowAtIndexPath(path, animated=False, scrollPosition=0)
+            self.native.deselectRowAtIndexPath(path, animated=False)
         else:
             self.native.selectRowAtIndexPath(path, animated=False, scrollPosition=0)
 
