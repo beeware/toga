@@ -1,6 +1,6 @@
 import ctypes
 from ctypes import c_uint
-from ctypes.wintypes import HWND, LPARAM
+from ctypes.wintypes import HWND
 
 from System.Windows.Forms import TextBox
 
@@ -29,7 +29,7 @@ class TextInputProbe(SimpleProbe):
             HWND(self.native.Handle.ToInt32()),
             c_uint(0x1502),  # EM_GETCUEBANNER
             buffer_address,
-            LPARAM(ctypes.sizeof(buffer)),
+            ctypes.sizeof(buffer),
         )
         if not result:
             raise RuntimeError("EM_GETCUEBANNER failed")
