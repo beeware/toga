@@ -93,14 +93,14 @@ class DetailedListProbe(SimpleProbe):
         self.native.delegate.tableView_didSelectRowAtIndexPath_(self.native, path)
 
     async def select_row(self, row, add=False):
-        self.change_selection(row, add)
+        await self.change_selection(row, add)
 
     async def deselect_all(self):
         row = self.widget.selection
         if row is None:
             return
 
-        self.change_selection(row, deselect=True)
+        await self.change_selection(row, deselect=True)
 
     def refresh_available(self):
         return self.scroll_position <= 0
