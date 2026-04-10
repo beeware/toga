@@ -1,11 +1,11 @@
 from ctypes import byref
-from ctypes.wintypes import RECT
+from ctypes.wintypes import POINT, RECT
 
 import System.Windows.Forms as WinForms
-from System.Drawing import Bitmap, Point, Rectangle
+from System.Drawing import Bitmap, Point
 
 from toga_winforms.libs import windowconstants as wc
-from toga_winforms.libs.user32 import PostMessageW, SendMessageW
+from toga_winforms.libs.user32 import ClientToScreen, PostMessageW, SendMessageW
 
 from .base import SimpleProbe
 
@@ -99,33 +99,6 @@ class DetailedListProbe(SimpleProbe):
 
         self.perform_double_click(x, y)
 
-    def center_widget_under_mouse(self):
-        native = self.impl.native
-        native_window = self.impl.interface.window._impl.native
-
-        client_rect_relative = native.ClientRectangle
-        screen_relative = native.PointToScreen(client_rect_relative.Location)
-
-        client_rect_absolute = Rectangle(screen_relative, client_rect_relative.Size)
-        client_midpoint_absolute = Point(
-            divmod(client_rect_absolute.Left + client_rect_absolute.Right, 2)[0],
-            divmod(client_rect_absolute.Top + client_rect_absolute.Bottom, 2)[0],
-        )
-
-        mouse_absolute = native.MousePosition
-        window_location = native_window.Location
-
-        native_window.Location = Point(
-            window_location.X + mouse_absolute.X - client_midpoint_absolute.X,
-            window_location.Y + mouse_absolute.Y - client_midpoint_absolute.Y,
-        )
-
-        return (window_location.X, window_location.Y)
-
-    def move_window(self, x, y):
-        native_window = self.impl.interface.window._impl.native
-        native_window.Location = Point(x, y)
-
     async def _perform_action(self, row, index):
         x, y = self.row_midpoint(row)
 
@@ -162,7 +135,9 @@ class DetailedListProbe(SimpleProbe):
         hwnd = self.impl._hwnd
 
         # To perform a "click" using Window messages, the mouse must be over the window.
-        window_x, window_y = self.center_widget_under_mouse()
+        point = POINT(x, y)
+        ClientToScreen(hwnd, point)
+        WinForms.Cursor.Position = Point(point.x, point.y)
 
         # Virtual key codes
         MK_LBUTTON = 0x0001
@@ -185,14 +160,8 @@ class DetailedListProbe(SimpleProbe):
         SendMessageW(hwnd, down_message, wparam, lparam)
         SendMessageW(hwnd, up_message, wparam, lparam)
 
-        # Restore the window position
-        self.move_window(window_x, window_y)
-
     def perform_double_click(self, x, y, is_right=False):
         hwnd = self.impl._hwnd
-
-        # To perform a "click" using Window messages, the mouse must be over the window.
-        window_x, window_y = self.center_widget_under_mouse()
 
         # Virtual key codes
         MK_LBUTTON = 0x0001
@@ -210,9 +179,6 @@ class DetailedListProbe(SimpleProbe):
 
         # Perform the click
         SendMessageW(hwnd, message, wparam, lparam)
-
-        # Restore the window position
-        self.move_window(window_x, window_y)
 
     def select_with_keyboard(self, index):
         hwnd = self.impl._hwnd
