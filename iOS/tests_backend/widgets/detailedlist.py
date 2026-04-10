@@ -100,7 +100,8 @@ class DetailedListProbe(SimpleProbe):
         if row is None:
             return
 
-        await self.change_selection(row, deselect=True)
+        row_index = self.widget.data.index(row)
+        await self.change_selection(row_index, deselect=True)
 
     def refresh_available(self):
         return self.scroll_position <= 0
