@@ -538,6 +538,7 @@ class DetailedList(Widget):
                 )
             )
 
+        self._rbuttondown_lparam = None
         return self._button_event(lParam)
 
     ####################################################################################
@@ -552,9 +553,8 @@ class DetailedList(Widget):
         # iItem will be less than 0 if there is no item when the hit test is performed.
         index = hit_test_info.iItem
         if (
-            not self.primary_action_enabled
-            and not self.secondary_action_enabled
-            and index >= 0
+            not (self.primary_action_enabled or self.secondary_action_enabled)
+            or index < 0
         ):
             return []
 
