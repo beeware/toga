@@ -1,12 +1,18 @@
 import asyncio
 from ctypes import byref
-from ctypes.wintypes import POINT, RECT
+from ctypes.wintypes import HWND, POINT, RECT
 
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap, Point
 
 from toga_winforms.libs import windowconstants as wc
-from toga_winforms.libs.user32 import ClientToScreen, PostMessageW, SendMessageW
+from toga_winforms.libs.user32 import (
+    ClientToScreen,
+    PostMessageW,
+    SendMessageW,
+    SetFocus,
+    SetForegroundWindow,
+)
 
 from .base import SimpleProbe
 
@@ -134,6 +140,10 @@ class DetailedListProbe(SimpleProbe):
 
     async def perform_click(self, x, y, is_right=False, use_modifier=False):
         hwnd = self.impl._hwnd
+        window_hwnd = HWND(int(self.widget.window._impl.native.Handle.ToString()))
+
+        SetForegroundWindow(window_hwnd)
+        SetFocus(hwnd)
 
         # To perform a "click" using Window messages, the mouse must be over the window.
         point = POINT(x, y)
@@ -167,6 +177,15 @@ class DetailedListProbe(SimpleProbe):
 
     async def perform_double_click(self, x, y, is_right=False):
         hwnd = self.impl._hwnd
+        window_hwnd = HWND(int(self.widget.window._impl.native.Handle.ToString()))
+
+        SetForegroundWindow(window_hwnd)
+        SetFocus(hwnd)
+
+        # To perform a "click" using Window messages, the mouse must be over the window.
+        point = POINT(x, y)
+        ClientToScreen(hwnd, point)
+        WinForms.Cursor.Position = Point(point.x, point.y)
 
         # Virtual key codes
         MK_LBUTTON = 0x0001
