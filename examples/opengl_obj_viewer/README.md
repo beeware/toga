@@ -4,13 +4,13 @@ Test app for the [OpenGLView widget](https://toga.beeware.org/en/stable/referenc
 
 The following OpenGLView features are present in this example:
 
-- rendering a simple OpenGL view using PyOpenGL
+- rendering a simple OpenGL view
 
 ## Quickstart
 
 To run this example:
 
 ```text
-$ python -m pip install toga PyOpenGL
+$ python -m pip install toga pyopengl pyopengl-accelerate
 $ python -m obj_viewer
 ```

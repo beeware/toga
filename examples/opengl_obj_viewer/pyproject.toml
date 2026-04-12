@@ -23,6 +23,9 @@ requires = [
 [tool.briefcase.app.obj-viewer]
 sources = ["obj_viewer"]
 
+[tool.briefcase.app.obj-viewer-mobile]
+sources = ["obj_viewer", "obj_viewer_mobile"]
+
 [tool.briefcase.app.obj-viewer-qt]
 sources = ["obj_viewer", "obj_viewer_qt"]
 
@@ -51,22 +54,22 @@ requires = [
 #]
 
 # Mobile deployments
-# [tool.briefcase.app.obj-viewer.iOS]
-# requires = [
-#     "../../iOS",
-#     "std-nslog>=1.0.0",
-# ]
+[tool.briefcase.app.obj-viewer-mobile.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
 
-# [tool.briefcase.app.obj-viewer.android]
-# requires = [
-#     "../../android",
-# ]
-#
-# base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
-#
-# build_gradle_dependencies = [
-#     "com.google.android.material:material:1.12.0",
-# ]
+[tool.briefcase.app.obj-viewer-mobile.android]
+requires = [
+    "../../android",
+]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "com.google.android.material:material:1.12.0",
+]
 
 # Web deployment
 #[tool.briefcase.app.obj-viewer.web]

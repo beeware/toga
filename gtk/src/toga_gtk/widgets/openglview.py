@@ -56,10 +56,10 @@ class OpenGLView(Widget):
             self.buttons.discard(BUTTONS[event.button])
             self.position = (event.x, event.y)
 
-        def gtk_motion_notify(self, obj, event):
+        def gtk_motion_notify(self, obj, event):  # pragma: no cover
             # Don't have tests for mouse movement as most backends get
             # live position
-            self.position = (event.x, event.y)  # pragma: no-cover
+            self.position = (event.x, event.y)
 
     else:  # pragma: no-cover-if-gtk3
         pass

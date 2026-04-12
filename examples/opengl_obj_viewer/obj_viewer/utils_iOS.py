@@ -1,8 +1,8 @@
 """Utility objects and methods for iOS"""
 
-from ctypes import byref, c_char_p, c_int, c_uint, create_string_buffer
+from ctypes import byref, c_char_p, c_float, c_int, c_uint, create_string_buffer
 
-from toga_iOS.libs import opengles as GL
+from toga_iOS.libs.opengles import opengles as GL
 
 #: Shader version header: we want OpenGL ES GLSL 3
 VERSION_HEADER = """#version 300 es"""
@@ -19,7 +19,7 @@ def v_func(v_size=1, ctype=c_int):
     an offset into it) which is used to return values by setting them
     into the array.
 
-    This wrapper wraps these functions to create a java array of the
+    This wrapper wraps these functions to create a ctypes array of the
     correct type, call the function, and then unpack the values from
     the array.
     """
@@ -73,6 +73,11 @@ def glGetActiveUniform(id, loc):
 def glGetAttribLocation(id, item):
     buffer = create_string_buffer(item.encode("utf-8"))
     return GL.glGetAttribLocation(id, buffer)
+
+
+def glUniformMatrix4fv(loc, size, transpose, value):
+    buffer = (c_float * (16 * size))(*value)
+    GL.glUniformMatrix4fv(loc, size, transpose, buffer)
 
 
 def glBufferData(buffer_type, data: bytes, usage):

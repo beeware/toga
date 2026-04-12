@@ -1,7 +1,7 @@
 """Utility objects and methods for android.opengl"""
 
 from android.opengl import GLES32 as GL
-from java import jarray, jbyte, jint
+from java import jarray, jbyte, jfloat, jint
 from java.nio import ByteBuffer, ByteOrder
 
 #: Shader version header: we want OpenGL ES GLSL 3
@@ -41,6 +41,11 @@ glGetShaderiv = v_func()(GL.glGetShaderiv)
 glGetProgramiv = v_func()(GL.glGetProgramiv)
 glGenBuffers = v_func()(GL.glGenBuffers)
 glGenVertexArrays = v_func()(GL.glGenVertexArrays)
+
+
+def glUniformMatrix4fv(loc, size, transpose, value):
+    buffer = jarray(jfloat)(list(value))
+    GL.glUniformMatrix4fv(loc, size, transpose, buffer, 0)
 
 
 def glVertexAttribPointer(loc, size, type, normalize, stride, offset):

@@ -99,7 +99,7 @@ void main() {
         opacity
     );
 
-    if (shininess > 0) {
+    if (shininess > 0.0) {
         vec3 surface_to_view_direction = normalize(surface_to_view);
         vec3 half_vector = normalize(light_direction + surface_to_view_direction);
         float specular_light = clamp(dot(normal, half_vector), 0.0, 1.0);
@@ -218,6 +218,7 @@ class ObjFileRenderer:
             self.on_init(widget)
 
         self.message = "Rendering...\n\n"
+        GL.glViewport(0, 0, int(size[0]), int(size[1]))
         GL.glClearColor(0.0, 0.0, 1.0, 1.0)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
@@ -227,6 +228,7 @@ class ObjFileRenderer:
 
         t = time.time()
         aspect = size[0] / size[1]
+        print(size, aspect, self.radius, self.bbox)
 
         try:
             # Set the uniform values into a dictionary to be applied later
@@ -242,6 +244,7 @@ class ObjFileRenderer:
                 "light_direction": (3 / 5, 0, 3 / 5),
                 "ambient_light": (0.0, 0.0, 0.0),
             }
+            print(uniforms["projection"])
 
             # draw!
             with self.program.use():
@@ -266,8 +269,10 @@ class ObjFileRenderer:
                             "opacity": (1.0,),
                         }
                     self.program.set_uniforms(material)
+                    print("uniforms set")
                     with vao:
                         GL.glDrawArrays(GL.GL_TRIANGLES, 0, n_vertices)
+            print("drawing done")
 
             # Update frame and time delta information
             # self.frame += 1

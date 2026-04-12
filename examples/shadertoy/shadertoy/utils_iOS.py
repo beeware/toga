@@ -2,7 +2,7 @@
 
 from ctypes import byref, c_char_p, c_int, c_uint, create_string_buffer
 
-from toga_iOS.libs import opengles as GL
+from toga_iOS.libs.opengles import opengles as GL
 
 #: Shader version header: we want OpenGL ES GLSL 3
 VERSION_HEADER = """#version 300 es"""
