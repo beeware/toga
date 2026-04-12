@@ -154,7 +154,7 @@ def test_canvas_context_method(widget):
 def test_capitalized_canvas_methods_xy(
     widget, args, kwargs, xy_warning, has_move, method_name, new_name
 ):
-    """Capialized methods accepting (x, y) are deprecated, and append to root state."""
+    """Capitalized methods accepting (x, y) are deprecated, and append to root state."""
     # Create a sub-state to ensure the method appends to root, not the active state.
     with widget.state() as active_state:
         pass
@@ -173,6 +173,18 @@ def test_capitalized_canvas_methods_xy(
     assert widget.root_state.drawing_actions == [active_state, state]
     if has_move:
         assert state.drawing_actions == [MoveTo(10, 20)]
+
+
+def test_closed_path_with_xy_but_not_entered(widget):
+    """ClosedPath(x, y), if never entered, moves but doesn't begin a new path."""
+    with pytest.deprecated_call():
+        widget.ClosedPath(10, 20)
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == [
+        ("move to", {"x": 10, "y": 20}),
+        "close path",
+    ]
 
 
 def test_state_canvas_reference(widget):

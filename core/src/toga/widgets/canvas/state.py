@@ -547,7 +547,23 @@ class DrawingActionDispatch(ABC):
             warnings.simplefilter("ignore", DeprecationWarning)
             close_path = target.close_path()
         if x is not None and y is not None:
-            close_path.drawing_actions.append(MoveTo(x, y))
+            # This is a weird one. The straightforward approach would be to simply add a
+            # MoveTo to the close_path.drawing_actions. However, while ClosedPath was
+            # documented as a context manager, TogaChart (up to 0.2.1) uses it as a
+            # standalone command, without ever entering it. Used this way, it acts like
+            # a move followed by close; it never *begins* a path, so it can close the
+            # final leg on a path that's already been going.
+
+            # Therefore, unless and until the ClosePath is in fact entered, it needs to
+            # fulfill this edge case. We store x and y on it, and when it's drawn, if
+            # it hasn't been used as a context manager, it moves to these coordinates
+            # before calling context.close_path().
+            close_path.x = x
+            close_path.y = y
+
+            # The target.close_path() method already called a redraw, but we need to
+            # update it now that the ClosedPath knows about its coordinates.
+            self._redraw_with_warning_if_state()
 
         return close_path
 
@@ -761,9 +777,28 @@ class ClosePath(State):
     def __post_init__(self):
         super().__init__()
 
+    # Backwards compatibility for Toga <= 0.5.4
+    # See DrawingActionDispatch.ClosedPath for explanation
+    def __enter__(self):
+        super().__enter__()
+
+        if hasattr(self, "x") and hasattr(self, "y"):
+            self.drawing_actions.append(MoveTo(self.x, self.y))
+
+        return self
+
+    # End backwards compatibility
+
     def _draw(self, context: Any) -> None:
         if not (hasattr(self, "_is_open") or self.drawing_actions):
             # Wasn't used as a context manager, nor had drawing actions manually added
+
+            # Backwards compatibility for Toga <= 0.5.4
+            # See DrawingActionDispatch.ClosedPath for explanation
+            if hasattr(self, "x") and hasattr(self, "y"):
+                context.move_to(self.x, self.y)
+            # End backwards compatibility
+
             context.close_path()
             return
 
