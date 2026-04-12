@@ -1,4 +1,4 @@
-from pytest import approx, fixture
+import pytest
 
 import toga
 
@@ -20,7 +20,7 @@ from .properties import (  # noqa: F401
 )
 
 
-@fixture
+@pytest.fixture
 async def widget():
     return toga.Label("hello, this is a label")
 
@@ -28,11 +28,21 @@ async def widget():
 test_cleanup = build_cleanup_test(toga.Label, args=("hello, this is a label",))
 
 
-async def test_multiline(widget, probe):
+@pytest.mark.parametrize(
+    "alignment",
+    ["left", "right", "justify", "center"],
+)
+async def test_multiline(widget, probe, alignment):
     """If the label contains multiline text, it resizes vertically."""
+    # Bug #4315: check all alignments
+    widget.style.text_align = alignment
 
     def make_lines(n):
-        return "\n".join(f"This is line {i}" for i in range(n))
+        # Bug #4315: Ensure that at least one line is empty. It can't be the *last*
+        # line, because that might be truncated in display calculations
+        return "\n".join(
+            ("" if i == 2 and n > 3 else f"This is line {i}") for i in range(n)
+        )
 
     widget.text = make_lines(1)
     await probe.redraw("Label should be resized vertically")
@@ -50,14 +60,14 @@ async def test_multiline(widget, probe):
 
     widget.text = make_lines(2)
     await probe.redraw("Label text should be changed to 2 lines")
-    assert probe.height == approx(line_height * 2, rel=0.1)
+    assert probe.height == pytest.approx(line_height * 2, rel=0.1)
     line_spacing = probe.height - (line_height * 2)
 
     for n in range(3, 6):
         widget.text = make_lines(n)
         await probe.redraw(f"Label text should be changed to {n} lines")
         # Label height should reflect the number of lines
-        assert probe.height == approx(
+        assert probe.height == pytest.approx(
             (line_height * n) + (line_spacing * (n - 1)),
             rel=0.1,
         )

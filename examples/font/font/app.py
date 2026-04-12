@@ -158,6 +158,11 @@ class FontApp(toga.App):
             font_style=ITALIC,
             **unknown_style,
         )
+        lbl_times = toga.Label(
+            "System font (Times/Times Roman/Noto Serif)",
+            font_family=["Times", "Times-Roman", "Times New Roman", "Noto Serif"],
+            font_size=16,
+        )
 
         self.textpanel = toga.MultilineTextInput(
             readonly=False, flex=1, placeholder="Ready."
@@ -177,6 +182,7 @@ class FontApp(toga.App):
                 lbl_ub,
                 lbl_ui,
                 lbl_ubi,
+                lbl_times,
             ],
             direction=COLUMN,
         )

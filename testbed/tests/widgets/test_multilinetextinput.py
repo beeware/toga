@@ -92,6 +92,14 @@ async def test_scroll_position(widget, probe):
     scroll_offset = probe.document_height - probe.height
     assert probe.vertical_scroll_position == pytest.approx(scroll_offset, abs=30)
 
+    # Record the vertical_scroll_position for comparison.
+    initial_vertical_scroll_position = probe.vertical_scroll_position
+
+    # We're already at the bottom; call scroll_to_bottom again (See #3872)
+    widget.scroll_to_bottom()
+    await probe.wait_for_scroll_completion()
+    assert probe.vertical_scroll_position == initial_vertical_scroll_position
+
     widget.scroll_to_top()
     await probe.wait_for_scroll_completion()
     await probe.redraw("The document has been explicitly scrolled back to the top")
