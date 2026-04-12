@@ -69,6 +69,39 @@ jobs:
       build-subdirectory: ${{ matrix.subdir }}
       attest: ${{ inputs.attest-package }}
 
+  docs-lint:
+    name: Documentation linting
+    needs: [ pre-commit ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.X"
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            .pre-commit-config.yaml
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get install aspell aspell-en
+
+      - name: Update pip
+        run: python -m pip install -U pip
+
+      - name: Install Tox
+        run: python -m pip install --group 'tox-uv'
+
+      - name: Perform lint checks
+        run: python -m tox -e docs-lint
+
   core-and-travertino:
     name: Test ${{ matrix.package }} (${{ matrix.platform }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
@@ -108,7 +141,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Get Packages
-      uses: actions/download-artifact@v7.0.0
+      uses: actions/download-artifact@v8.0.1
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -125,7 +158,7 @@ jobs:
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v6.0.0
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: ${{ matrix.package }}-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "${{ matrix.package }}/.coverage.*"
@@ -161,7 +194,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v7.0.0
+      uses: actions/download-artifact@v8.0.1
       with:
         pattern: ${{ matrix.package }}-coverage-data-*
         path: ${{ matrix.package }}
@@ -171,7 +204,7 @@ jobs:
       run: tox -e coverage${{ matrix.tox-suffix }}-html-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v6.0.0
+      uses: actions/upload-artifact@v7.0.0
       if: failure()
       with:
         name: html-coverage-report
@@ -197,7 +230,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Get Package
-      uses: actions/download-artifact@v7.0.0
+      uses: actions/download-artifact@v8.0.1
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -236,6 +269,7 @@ jobs:
           briefcase-run-args: ""
           setup-python: true
           testbed-app: "testbed"
+          copy-command: "cp -r"
 
         - backend: "macOS-x86_64"
           platform: "macOS"
@@ -479,18 +513,19 @@ jobs:
           runs-on: "ubuntu-latest"
           briefcase-run-prefix: JAVA_HOME=${JAVA_HOME_17_X64}
           briefcase-run-args: >-
-            --device '{"avd":"beePhone","skin":"pixel_3a"}'
+            --device '{"avd":"beePhone","device_type":"pixel"}'
             --Xemulator=-no-window
             --Xemulator=-no-snapshot
             --Xemulator=-no-audio
             --Xemulator=-no-boot-anim
-            --shutdown-on-exit
           pre-command: |
             # allow access to KVM to run the emulator
             echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
               | sudo tee /etc/udev/rules.d/99-kvm4all.rules
             sudo udevadm control --reload-rules
             sudo udevadm trigger --name-match=kvm
+          app-user-data-path: /data/user/0/org.beeware.toga.testbed/files/data/
+          copy-command: ADB=$ANDROID_HOME/platform-tools/adb && $ADB root && $ADB pull
     steps:
     # GitHub runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
@@ -518,7 +553,7 @@ jobs:
         python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Get Packages
-      uses: actions/download-artifact@v7.0.0
+      uses: actions/download-artifact@v8.0.1
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -533,21 +568,21 @@ jobs:
           ${{ matrix.briefcase-run-args }} --app ${{ matrix.testbed-app }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v6.0.0
+      uses: actions/upload-artifact@v7.0.0
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
         path: testbed/logs/*
 
     - name: Copy App Generated User Data
-      if: failure() && matrix.backend != 'android'
+      if: failure()
       run: |
         mkdir -p testbed/app_data
-        cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
+        ${{ matrix.copy-command }} "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v6.0.0
-      if: failure() && matrix.backend != 'android'
+      uses: actions/upload-artifact@v7.0.0
+      if: failure()
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
         path: testbed/app_data/*
@@ -569,11 +604,15 @@ jobs:
       matrix:
         bootstrap:
         - "Positron (Django)"
+        - "Positron (FastAPI)"
         - "Positron (Static)"
         - "Positron (Site-specific)"
         include:
         - bootstrap: "Positron (Django)"
           new-options: '-Q "bootstrap=Toga Positron (Django server)"'
+
+        - bootstrap: "Positron (FastAPI)"
+          new-options: '-Q "bootstrap=Toga Positron (FastAPI server)"'
 
         - bootstrap: "Positron (Static)"
           new-options: '-Q "bootstrap=Toga Positron (Static server)"'
@@ -593,7 +632,7 @@ jobs:
         python-version: "3.12"
 
     - name: Get Packages
-      uses: actions/download-artifact@v7.0.0
+      uses: actions/download-artifact@v8.0.1
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true

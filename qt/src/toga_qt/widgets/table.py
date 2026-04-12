@@ -150,9 +150,11 @@ class Table(Widget):
     def create(self):
         # Create the List widget
         self.native = QTableView()
+        self._autofit_columns = True
+        self._resizing_columns = False
 
         self.native_model = TableSourceModel(
-            getattr(self.interface, "_data", ListSource(self.interface.accessors)),
+            getattr(self.interface, "_data", None),
             self.interface._columns[:],
             self.interface.missing_value,
             parent=self.native,
@@ -169,12 +171,15 @@ class Table(Widget):
             # Hide the header
             self.native.horizontalHeader().hide()
 
-        self.native.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.Stretch
-        )
+        header = self.native.horizontalHeader()
+        header.setMinimumSectionSize(16)
+        header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+        header.sectionResized.connect(self.qt_column_resized)
+        header.setCascadingSectionResizes(True)
 
         self.native.selectionModel().selectionChanged.connect(self.qt_selection_changed)
         self.native.activated.connect(self.qt_activated)
+        self._resize_columns()
 
     def qt_selection_changed(self, added, removed):
         self.interface.on_select()
@@ -184,22 +189,77 @@ class Table(Widget):
         if index.isValid():  # pragma: no branch
             self.interface.on_activate(row=self.interface.data[index.row()])
 
+    def qt_column_resized(self, index, old_size, new_size):
+        if not self._resizing_columns:
+            self._autofit_columns = False
+
     def change_source(self, source):
         self.native_model.set_source(source)
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
 
     # Listener Protocol implementation
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item)
+
+    def source_insert(self, *, index, item):
         self.native_model.insert_item(index)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
+        import warnings
+
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
         self.native_model.item_changed(item)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item)
+
+    def source_remove(self, *, index, item):
         self.native_model.remove_item(index)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
         self.native_model.reset_source()
 
     def get_selection(self):
@@ -213,19 +273,46 @@ class Table(Widget):
         index = self.native.model().index(row, 0, QModelIndex())
         self.native.scrollTo(index)
 
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        if self._autofit_columns:
+            self._resize_columns()
+
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
 
-    def insert_column(self, index, heading, accessor):
-        self.native_model._columns.insert(index, self.interface._columns[index])
+    def _resize_columns(self):
+        column_count = self.native_model.columnCount()
+        if column_count == 0:
+            return
+
+        width = self.native.viewport().width()
+
+        header = self.native.horizontalHeader()
+        section_width = max(header.minimumSectionSize(), width // column_count)
+        remainder = max(width - section_width * column_count, 0)
+
+        self._resizing_columns = True
+        try:
+            for index in range(column_count):
+                header.resizeSection(
+                    index,
+                    section_width + (1 if index < remainder else 0),
+                )
+        finally:
+            self._resizing_columns = False
+
+    def insert_column(self, index, column):
         self.native_model.beginInsertColumns(QModelIndex(), index, index)
+        self.native_model._columns.insert(index, column)
         self.native_model.endInsertColumns()
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
+        self._autofit_columns = True
+        self._resize_columns()
 
     def remove_column(self, index):
-        del self.native_model._columns[index]
         self.native_model.beginRemoveColumns(QModelIndex(), index, index)
+        del self.native_model._columns[index]
         self.native_model.endRemoveColumns()
-        self.native.horizontalHeader().resizeSections(QHeaderView.ResizeMode.Stretch)
+        self._autofit_columns = True
+        self._resize_columns()

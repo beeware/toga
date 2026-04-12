@@ -35,9 +35,14 @@ APP_METADATA = {
 
 async def test_unsupported_widget(app):
     """If a widget isn't implemented, the factory raises NotImplementedError."""
-    with pytest.raises(NotImplementedError) as exc:
+    with pytest.raises(
+        NotImplementedError,
+        match=(
+            r"The 'toga_dummy' backend for the toga_core interface doesn't "
+            r"implement NoSuchWidget"
+        ),
+    ):
         _ = app.factory.NoSuchWidget
-    assert "Toga's Dummy backend doesn't implement NoSuchWidget" in str(exc)
 
 
 @pytest.mark.parametrize(
@@ -481,6 +486,58 @@ async def test_change_invalid_creation_main_window():
         match=r"Invalid dummy main window value",
     ):
         BadMainWindowApp(formal_name="Test App", app_id="org.example.test")
+
+
+async def test_presentation_mode_multiple_windows_all_in_presentation():
+    """All windows should be in presentation mode, not just the last one
+    (issue #4233)."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    window1 = toga.Window()
+    window1.content = toga.Box()
+    window2 = toga.Window()
+    window2.content = toga.Box()
+
+    app.enter_presentation_mode([window1, window2])
+
+    assert window1.state == WindowState.PRESENTATION
+    assert window2.state == WindowState.PRESENTATION
+
+
+async def test_presentation_mode_sequential_replaces_previous():
+    """Entering presentation mode while already in it exits the previous one first."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    window1 = toga.Window()
+    window2 = toga.Window()
+
+    # Enter presentation with window1
+    app.enter_presentation_mode([window1])
+    assert window1.state == WindowState.PRESENTATION
+
+    # Enter presentation with window2 — window1 should exit
+    app.enter_presentation_mode([window2])
+    assert window1.state == WindowState.NORMAL
+    assert window2.state == WindowState.PRESENTATION
+
+
+async def test_exit_presentation_mode_recursion_guard():
+    """The recursion guard in exit_presentation_mode prevents infinite recursion."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    window1 = toga.Window()
+
+    app.enter_presentation_mode([window1])
+    assert window1.state == WindowState.PRESENTATION
+
+    # Simulate the recursion scenario: set the flag as if we're already exiting,
+    # then call exit_presentation_mode — it should be a no-op.
+    app._impl._exiting_presentation = True
+    app.exit_presentation_mode()
+    # Window should still be in presentation since the exit was short-circuited
+    assert window1.state == WindowState.PRESENTATION
+    app._impl._exiting_presentation = False
+
+    # Now a real exit should work
+    app.exit_presentation_mode()
+    assert window1.state == WindowState.NORMAL
 
 
 @pytest.mark.parametrize(

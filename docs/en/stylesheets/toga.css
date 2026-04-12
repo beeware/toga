@@ -24,11 +24,11 @@
     min-width: unset;
 }
 
-.api-reference + .md-typeset__scrollwrap :is(th, td:first-child) {
-    font-size: 0.7rem;
+:is(#availability-title, .api-reference) + .md-typeset__scrollwrap :is(th, td:first-child) {
+    font-size: 1rem;
 }
 
-/* Shrinl padding for the availability dots, to leave more room for description. */
+/* Shrink padding for the availability dots, to leave more room for description. */
 .api-reference + .md-typeset__scrollwrap :is(th, td):not(:first-child) {
     padding: .15rem;
 }
@@ -49,4 +49,30 @@
 
 #api-status-key + .md-typeset__scrollwrap th {
     display: none;
+}
+
+/* Success stories */
+.success-story-icon {
+    border-radius: 0.85rem;
+    width: 30px;
+    margin-right: 1rem;
+}
+
+.success-story-screenshot img {
+    width: 5rem;
+    float: left;
+    margin-right: 2rem;
+}
+
+.success-story {
+    margin-bottom: 1.5rem;
+}
+
+.success-story-content {
+    display: flow-root;
+}
+
+.success-story > h2 {
+    display: flex;
+    align-items: center;
 }

@@ -17,8 +17,6 @@ build:
     pre_install:
       - python -m pip install --upgrade pip
       - python -m pip install --group 'tox-uv'
-    pre_build:
-      - python -m tox -e docs-lint
     build:
       html:
         - python -m tox -e docs-$READTHEDOCS_LANGUAGE -- --output=$READTHEDOCS_OUTPUT/html/

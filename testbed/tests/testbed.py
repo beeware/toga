@@ -36,7 +36,9 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         # Textual backend does not yet support testing.
         # However, this will verify a Textual app can at least start.
-        if app.factory.__name__.startswith("toga_textual"):
+        import toga
+
+        if toga.backend == "toga_textual":
             time.sleep(1)  # wait for the Textual app to start
             app.returncode = 0 if app._impl.native.is_running else 1
             return

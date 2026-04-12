@@ -75,7 +75,7 @@ async def widget(
     )
 
 
-test_cleanup = build_cleanup_test(toga.DetailedList, xfail_platforms=("linux",))
+test_cleanup = build_cleanup_test(toga.DetailedList)
 
 
 async def test_scroll(widget, probe):
@@ -293,6 +293,8 @@ async def test_actions(
     on_secondary_action_handler.assert_called_once_with(widget, row=widget.data[4])
     on_secondary_action_handler.reset_mock()
 
+    await probe.redraw("Before perform")
+
     # Disable secondary action
     widget.on_secondary_action = None
     await probe.perform_secondary_action(5, active=False)
@@ -323,3 +325,29 @@ async def test_actions(
 def test_list_listener(widget):
     """Does the widget implement the ListListener API"""
     assert isinstance(widget._impl, ListListener)
+
+
+@pytest.mark.parametrize(
+    "method_name,args",
+    [
+        ("clear", {}),
+        ("change", {"item": "item"}),
+        ("insert", {"index": 0, "item": "item"}),
+        ("remove", {"index": 0, "item": "item"}),
+    ],
+)
+def test_deprecated_methods(widget, method_name, args):
+    """Does the widget warn about the old ListListener API"""
+    impl = widget._impl
+    mock_method = Mock()
+    setattr(impl, f"source_{method_name}", mock_method)
+    method = getattr(impl, method_name)
+    warning_pattern = (
+        f"The {method_name}\\(\\) method is deprecated. "
+        f"Use source_{method_name}\\(\\) instead."
+    )
+
+    with pytest.warns(DeprecationWarning, match=warning_pattern):
+        method(**args)
+
+    mock_method.assert_called_once_with(**args)

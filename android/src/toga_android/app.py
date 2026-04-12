@@ -213,6 +213,7 @@ class App:
         self.interface = interface
         self.interface._impl = self
         self._listener = None
+        self._exiting_presentation = False
 
         self.loop = events.AndroidEventLoop()
 

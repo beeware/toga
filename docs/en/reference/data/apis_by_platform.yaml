@@ -160,7 +160,6 @@ Widgets:
     description: A labeled on/off button.
     beta:
       - web
-    unsupported:
       - textual
 
   Table:
@@ -188,12 +187,10 @@ Widgets:
   Tree:
     description: A hierarchical tree of tabular data.
     unsupported:
-      - winforms
       - iOS
       - android
       - web
       - textual
-      - qt
 
   WebView:
     description: An embedded web browser.
@@ -287,6 +284,10 @@ Data representation:
 
   ValueSource:
     description: Abstractions of managed atomic values.
+    display: hide
+
+  Column:
+    description: Abstractions of tabular columns.
     display: hide
 
   Types:

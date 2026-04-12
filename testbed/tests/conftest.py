@@ -51,7 +51,7 @@ def xfail_on_platforms(*platforms, reason=None):
 # Use this for widgets or tests which are not supported on some backends,
 # and will not be supported in the foreseeable future.
 def xfail_on_backends(*backends, reason=None):
-    current_backend = toga.platform.get_platform_factory().__package__
+    current_backend = toga.backend
     if current_backend in backends:
         skip(reason or f"not applicable on {current_backend}")
 

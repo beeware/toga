@@ -2,6 +2,8 @@
 
 ## Reference
 
+<!-- REMOVE WHEN RESOLVED -->
+<!-- rumdl-disable MD013 -->
 ::: toga.LatLng
     options:
         separate_signature: false
@@ -16,6 +18,8 @@
     options:
         separate_signature: false
         show_labels: false
+<!-- REMOVE WHEN RESOLVED -->
+<!-- rumdl-enable MD013 -->
 
 ::: toga.types.PositionT
 

@@ -1,3 +1,4 @@
+accelerometer
 accessor
 accessors
 acknowledgement
@@ -237,6 +238,8 @@ widget's
 Winforms
 WinForms
 WinUI
+WxPython
+WxWidgets
 XApp
 Xcode
 XDG

@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.sources import ListListener, ListSource
+from toga.sources import AccessorColumn, ListListener, ListSource
 from toga.style.pack import Pack
 
 from ..conftest import skip_on_platforms
@@ -69,10 +69,15 @@ async def widget(source, on_select_handler, on_activate_handler):
 async def headerless_widget(source, on_select_handler):
     skip_on_platforms("iOS")
     return toga.Table(
+        columns=[
+            AccessorColumn(None, "a"),
+            AccessorColumn(None, "b"),
+            AccessorColumn(None, "c"),
+        ],
         data=source,
         missing_value="MISSING!",
-        accessors=["a", "b", "c"],
         on_select=on_select_handler,
+        show_headings=False,
         style=Pack(flex=1),
     )
 
@@ -119,9 +124,8 @@ async def multiselect_probe(main_window, multiselect_widget):
 
 test_cleanup = build_cleanup_test(
     toga.Table,
-    kwargs={"headings": ["A", "B", "C"]},
+    kwargs={"columns": ["A", "B", "C"]},
     skip_platforms=("iOS",),
-    xfail_platforms=("linux",),
 )
 
 
@@ -164,49 +168,74 @@ async def test_scroll(widget, probe):
     assert -100 < probe.scroll_position <= 0
 
 
+async def assert_selection(probe, message, data):
+    widget = probe.widget
+    await probe.redraw(message, wait_for=lambda: widget.selection == data)
+    assert widget.selection == data
+
+
 async def test_keyboard_navigation(widget, source, probe):
     """The list can be navigated using a keyboard."""
     widget.focus()
 
     await probe.select_first_row_keyboard()
-    await probe.redraw("First row selected")
-    assert widget.selection == widget.data[0]
+    await assert_selection(probe, "First row selected", widget.data[0])
 
     # Navigate down with letter, arrow, letter.
     await probe.type_character("a")
-    await probe.redraw("Letter pressed - second row selected")
-    assert widget.selection == widget.data[1]
+    await assert_selection(
+        probe,
+        "Letter pressed - second row selected",
+        widget.data[1],
+    )
     await probe.type_character("<down>")
-    await probe.redraw("Down arrow pressed - third row selected")
-    assert widget.selection == widget.data[2]
+    await assert_selection(
+        probe,
+        "Down arrow pressed - third row selected",
+        widget.data[2],
+    )
     await probe.type_character("a")
-    await probe.redraw("Letter pressed - forth row selected")
-    assert widget.selection == widget.data[3]
+    await assert_selection(
+        probe,
+        "Letter pressed - fourth row selected",
+        widget.data[3],
+    )
 
     # Select the last item with the end key if supported then wrap around.
     if probe.supports_keyboard_boundary_shortcuts:
         await probe.type_character("<end>")
-        await probe.redraw("Last row is selected")
-        assert widget.selection == widget.data[-1]
+        await assert_selection(probe, "Last row is selected", widget.data[-1])
         # Navigate by 1 item, wrapping around.
         await probe.type_character("a")
-        await probe.redraw("Letter pressed - first row is selected")
+        await assert_selection(
+            probe,
+            "Letter pressed - first row is selected",
+            widget.data[0],
+        )
     else:
         await probe.type_character("<up>")
         await probe.type_character("<up>")
         await probe.type_character("<up>")
-        await probe.redraw("Up arrow pressed thrice - first row is selected")
-    assert widget.selection == widget.data[0]
+        await assert_selection(
+            probe,
+            "Up arrow pressed thrice - first row is selected",
+            widget.data[0],
+        )
 
     # Type a letter that no items start with to verify the selection doesn't change.
     await probe.type_character("x")
-    await probe.redraw("Invalid letter pressed - first row is still selected")
-    assert widget.selection == widget.data[0]
+    await assert_selection(
+        probe,
+        "Invalid letter pressed - first row is still selected",
+        widget.data[0],
+    )
 
     # clear the table and verify with an empty selection.
     widget.data.clear()
     await probe.type_character("a")
-    await probe.redraw("Letter pressed - no row selected")
+    await probe.redraw(
+        "Letter pressed - no row selected", wait_for=lambda: not widget.selection
+    )
     assert not widget.selection
 
 
@@ -266,6 +295,12 @@ async def test_activate(
     on_activate_handler.assert_called_once_with(widget, row=source[1])
     on_activate_handler.reset_mock()
 
+    # Some platforms can emit invalid row numbers when header pressed.
+    # Make sure those don't trigger anything.
+    await probe.activate_header()
+    on_activate_handler.assert_not_called()
+    on_activate_handler.reset_mock()
+
 
 async def test_multiselect(
     multiselect_widget,
@@ -307,7 +342,10 @@ async def test_multiselect(
     if multiselect_probe.supports_keyboard_shortcuts:
         # Keyboard responds to selectAll
         await multiselect_probe.select_all()
-        await multiselect_probe.redraw("All rows selected by keyboard")
+        await multiselect_probe.redraw(
+            "All rows selected by keyboard",
+            wait_for=lambda: len(multiselect_widget.selection) == 100,
+        )
         assert len(multiselect_widget.selection) == 100
 
 
@@ -322,40 +360,45 @@ async def test_multiselect_keyboard_control(
     Keyboard navigation can produce different events to mouse navigation,
     so we need to test keyboard selection independent of mouse selection.
     """
-    await multiselect_probe.redraw("No row is selected in multiselect table")
 
     # Initial selection is empty
-    assert multiselect_widget.selection == []
+    await assert_selection(
+        multiselect_probe,
+        "No row is selected in multiselect table",
+        [],
+    )
     on_select_handler.assert_not_called()
 
     multiselect_widget.focus()
 
     # A single row can be added to the selection
     await multiselect_probe.select_first_row_keyboard()
-    await multiselect_probe.redraw("First row selected")
-    assert multiselect_widget.selection == [source[0]]
+    await assert_selection(multiselect_probe, "First row selected", [source[0]])
 
     await multiselect_probe.type_character("<down>", shift=True)
-    await multiselect_probe.redraw(
-        "Down arrow pressed - second row added to the selection"
+    await assert_selection(
+        multiselect_probe,
+        "Down arrow pressed - second row added to the selection",
+        [source[0], source[1]],
     )
-    assert multiselect_widget.selection == [source[0], source[1]]
     on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     await multiselect_probe.type_character("<down>", shift=True)
-    await multiselect_probe.redraw(
-        "Down arrow pressed - third row added to the selection"
+    await assert_selection(
+        multiselect_probe,
+        "Down arrow pressed - third row added to the selection",
+        [source[0], source[1], source[2]],
     )
-    assert multiselect_widget.selection == [source[0], source[1], source[2]]
     on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     await multiselect_probe.type_character("<up>", shift=True)
-    await multiselect_probe.redraw(
-        "Up arrow pressed - third row removed from the selection"
+    await assert_selection(
+        multiselect_probe,
+        "Up arrow pressed - third row removed from the selection",
+        [source[0], source[1]],
     )
-    assert multiselect_widget.selection == [source[0], source[1]]
     on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
@@ -461,7 +504,7 @@ async def _column_change_test(widget, probe):
     assert probe.column_count == 3
     probe.assert_cell_content(0, 2, "C0")
 
-    widget.append_column("E", accessor="e")
+    widget.append_column(AccessorColumn("E", "e"))
     await probe.redraw("E column appended")
 
     # 4 columns; the new content on row 0 is "E1"
@@ -469,7 +512,7 @@ async def _column_change_test(widget, probe):
     probe.assert_cell_content(0, 2, "C0")
     probe.assert_cell_content(0, 3, "E0")
 
-    widget.insert_column(3, "D", accessor="d")
+    widget.insert_column(3, AccessorColumn("D", "d"))
     await probe.redraw("E column appended")
 
     # 5 columns; the new content on row 0 is "D1", between C1 and E1
@@ -498,6 +541,18 @@ async def test_column_changes(widget, probe):
     assert probe.column_width(1) == pytest.approx(probe.width / 3, abs=25)
     assert probe.column_width(2) == pytest.approx(probe.width / 3, abs=25)
 
+    # Before any manual resize, layout changes should retain even proportions.
+    widget.style.flex = 0
+    widget.width = 400
+    await probe.redraw("Table width updated without manual column resize")
+    column_proportion_tolerance = getattr(probe, "column_proportion_tolerance", 25)
+    assert probe.column_width(0) == pytest.approx(
+        probe.column_width(1), abs=column_proportion_tolerance
+    )
+    assert probe.column_width(1) == pytest.approx(
+        probe.column_width(2), abs=column_proportion_tolerance
+    )
+
     await _column_change_test(widget, probe)
 
     assert probe.header_titles == ["A", "B", "D", "E"]
@@ -507,7 +562,7 @@ async def test_column_changes(widget, probe):
     total_width = sum(probe.column_width(i) for i in range(4))
     assert total_width == pytest.approx(probe.width, abs=100)
     for i in range(4):
-        assert probe.column_width(i) > 50
+        assert probe.column_width(i) > 40
 
 
 async def test_headerless_column_changes(headerless_widget, headerless_probe):
@@ -516,6 +571,49 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
     assert not headerless_probe.header_visible
 
     await _column_change_test(headerless_widget, headerless_probe)
+
+
+async def test_column_resize(widget, probe):
+    """Columns can be resized by the user."""
+    original_width = [probe.column_width(i) for i in range(probe.column_count)]
+    target_width = original_width[0] + 80
+
+    await probe.resize_column(0, target_width)
+    await probe.redraw("First column resized")
+
+    # Some platforms may overshoot the exact requested size, but a successful
+    # resize should still produce a substantial increase.
+    resized_width = probe.column_width(0)
+    assert resized_width >= target_width - 8
+
+    # Changing source should not reset manually resized columns.
+    widget.data = widget.data
+    await probe.redraw("Table source replaced")
+
+    # Column width hasn't changed.
+    source_changed_width = probe.column_width(0)
+    assert source_changed_width == pytest.approx(resized_width, abs=8)
+
+    # A subsequent layout update should also preserve manual widths.
+    widths_before_layout_change = [
+        probe.column_width(i) for i in range(probe.column_count)
+    ]
+    widget.style.flex = 0
+    widget.width = 400
+    await probe.redraw("Table width updated")
+    widths_after_layout_change = [
+        probe.column_width(i) for i in range(probe.column_count)
+    ]
+
+    # Assert the column widths all add up as expected
+    before_total = sum(widths_before_layout_change)
+    after_total = sum(widths_after_layout_change)
+    assert before_total > 0
+    assert after_total > 0
+
+    before_ratio = widths_before_layout_change[0] / before_total
+    after_ratio = widths_after_layout_change[0] / after_total
+    assert after_ratio == pytest.approx(before_ratio, abs=0.08)
 
 
 async def test_remove_all_columns(widget, probe):
@@ -628,3 +726,29 @@ async def test_cell_widget(widget, probe):
 def test_list_listener(widget):
     """Does the widget implement the ListListener API"""
     assert isinstance(widget._impl, ListListener)
+
+
+@pytest.mark.parametrize(
+    "method_name,args",
+    [
+        ("clear", {}),
+        ("change", {"item": "item"}),
+        ("insert", {"index": 0, "item": "item"}),
+        ("remove", {"index": 0, "item": "item"}),
+    ],
+)
+def test_deprecated_methods(widget, method_name, args):
+    """Does the widget warn about the old ListListener API"""
+    impl = widget._impl
+    mock_method = Mock()
+    setattr(impl, f"source_{method_name}", mock_method)
+    method = getattr(impl, method_name)
+    warning_pattern = (
+        f"The {method_name}\\(\\) method is deprecated. "
+        f"Use source_{method_name}\\(\\) instead."
+    )
+
+    with pytest.warns(DeprecationWarning, match=warning_pattern):
+        method(**args)
+
+    mock_method.assert_called_once_with(**args)

@@ -64,6 +64,7 @@ class App:
         # Track whether the app is exiting. This is used to stop the event loop,
         # and shortcut close handling on any open windows when the app exits.
         self._is_exiting = False
+        self._exiting_presentation = False
 
         # Winforms cursor visibility is a stack; If you call hide N times, you
         # need to call Show N times to make the cursor re-appear. Store a local

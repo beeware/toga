@@ -1,27 +1,30 @@
-[<img src="https://beeware.org/project/toga/toga.png" width="72" alt="logo" />](https://beeware.org/toga)
-
 # Toga
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga.svg)](https://pypi.python.org/pypi/toga)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga.svg)](https://github.com/beeware/toga/blob/main/LICENSE)
 [![Project version](https://img.shields.io/pypi/v/toga.svg)](https://pypi.python.org/pypi/toga)
 [![Project status](https://img.shields.io/pypi/status/toga.svg)](https://pypi.python.org/pypi/toga)
 [![Build Status](https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main)](https://github.com/beeware/toga/actions)
 [![Discord server](https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic)](https://beeware.org/bee/chat/)
+<!-- rumdl-enable MD013 -->
+
+[![Toga logo](https://beeware.org/project/toga/toga.png)](https://beeware.org/toga)
 
 A Python native, OS native GUI toolkit.
 
 ## Minimum requirements
 
-Each backend has specific requirements and pre-requisites. See the [platform documentation](https://toga.beeware.org/en/latest/reference/platforms/)
-for details.
+Each backend has specific requirements and pre-requisites. See the [platform documentation](https://toga.beeware.org/en/latest/reference/platforms/) for details.
 
 ## Quickstart
 
 To get a demonstration of the capabilities of Toga, run the following:
 
-    $ pip install toga-demo
-    $ toga-demo
+```console
+$ pip install toga-demo
+$ toga-demo
+```
 
 This will pop up a GUI window with some sample widgets.
 
@@ -33,7 +36,7 @@ Documentation for Toga can be found on [Read The Docs](https://toga.beeware.org)
 
 The BeeWare project would not be possible without the generous support of our financial members:
 
-[![Anaconda logo](https://beeware.org/community/members/anaconda/anaconda-large.png)](https://anaconda.com/)
+[![Anaconda logo](https://beeware.org/images/anaconda-dark.png)](https://anaconda.com/)
 
 Anaconda Inc. - Advancing AI through open source.
 

@@ -37,9 +37,17 @@ class BaseProbe:
         self.scale_factor = self.dpi / 160
 
     def __del__(self):
-        self.root_view.getViewTreeObserver().removeOnGlobalLayoutListener(
-            self.layout_listener
-        )
+        # Save `self` attributes in local variables, because they may be cleared after
+        # __del__ returns.
+        root_view = self.root_view
+        listener = self.layout_listener
+
+        # __del__ may be called on any thread, but Android APIs must be called on the
+        # main thread.
+        def cleanup_layout_listener():
+            root_view.getViewTreeObserver().removeOnGlobalLayoutListener(listener)
+
+        self.app.loop.call_soon_threadsafe(cleanup_layout_listener)
 
     def get_dialog_view(self):
         new_windows = [

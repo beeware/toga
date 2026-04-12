@@ -184,3 +184,6 @@ class TreeProbe(SimpleProbe):
             delay=0.1,
             clickCount=2,
         )
+
+    async def assert_item_mouse_hover(self, row_path):
+        skip("Test not implemented for this platform")

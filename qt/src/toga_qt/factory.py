@@ -1,3 +1,5 @@
+import warnings
+
 from toga import NotImplementedWarning
 
 try:
@@ -34,6 +36,7 @@ try:
     from .widgets.table import Table
     from .widgets.textinput import TextInput
     from .widgets.timeinput import TimeInput
+    from .widgets.tree import Tree
     from .widgets.webview import WebView
     from .window import MainWindow, Window
 except ModuleNotFoundError as exc:  # pragma: no cover
@@ -43,6 +46,13 @@ except ModuleNotFoundError as exc:  # pragma: no cover
         ) from exc
     else:
         raise
+
+warnings.warn(
+    "Factory modules are deprecated. Use 'toga.platform.get_factory' instead.",
+    DeprecationWarning,
+    stacklevel=1,
+)
+
 
 __all__ = [
     "not_implemented",
@@ -80,17 +90,18 @@ __all__ = [
     "Table",
     "TextInput",
     "TimeInput",
+    "Tree",
     "WebView",
     "ImageView",
     "dialogs",
 ]
 
 
-def not_implemented(feature):
+def not_implemented(feature):  # pragma: no cover
     NotImplementedWarning.warn("Qt", feature)
 
 
-def __getattr__(name):
+def __getattr__(name):  # pragma: no cover
     if get_testing():
         import pytest
 

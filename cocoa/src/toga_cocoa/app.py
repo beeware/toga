@@ -104,6 +104,7 @@ class App:
         self.interface._impl = self
 
         self._cursor_visible = True
+        self._exiting_presentation = False
 
         self.loop = RubiconEventLoop()
 

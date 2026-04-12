@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==80.10.2",
-    "setuptools_scm==9.2.2",
+    "setuptools==82.0.1",
+    "setuptools_scm==10.0.5",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -14,7 +14,7 @@ readme = "README.md"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
-    "LICENSE"
+    "LICENSE",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -50,6 +50,57 @@ classifiers = [
 [project.entry-points."toga.backends"]
 linux = "toga_qt"
 
+[project.entry-points."toga_core.backend.toga_qt"]
+App = "toga_qt.app:App"
+# DocumentApp = "toga_qt.app:DocumentApp"
+Command = "toga_qt.command:Command"
+Font = "toga_qt.fonts:Font"
+Icon = "toga_qt.icons:Icon"
+Image = "toga_qt.images:Image"
+Paths = "toga_qt.paths:Paths"
+dialogs = "toga_qt.dialogs"
+resources = "toga_qt.resources"
+
+# Hardware
+# Camera = "toga_qt.hardware.camera:Camera"
+# Location = "toga_qt.hardware.location:Location"
+
+# Status Icons
+MenuStatusIcon = "toga_qt.statusicons:MenuStatusIcon"
+SimpleStatusIcon = "toga_qt.statusicons:SimpleStatusIcon"
+StatusIconSet = "toga_qt.statusicons:StatusIconSet"
+
+# Widgets
+ActivityIndicator = "toga_qt.widgets.activityindicator:ActivityIndicator"
+Box = "toga_qt.widgets.box:Box"
+Button = "toga_qt.widgets.button:Button"
+Canvas = "toga_qt.widgets.canvas:Canvas"
+DateInput = "toga_qt.widgets.dateinput:DateInput"
+DetailedList = "toga_qt.widgets.detailedlist:DetailedList"
+Divider = "toga_qt.widgets.divider:Divider"
+ImageView = "toga_qt.widgets.imageview:ImageView"
+Label = "toga_qt.widgets.label:Label"
+MapView = "toga_qt.widgets.mapview:MapView"
+MultilineTextInput = "toga_qt.widgets.multilinetextinput:MultilineTextInput"
+NumberInput = "toga_qt.widgets.numberinput:NumberInput"
+OptionContainer = "toga_qt.widgets.optioncontainer:OptionContainer"
+PasswordInput = "toga_qt.widgets.passwordinput:PasswordInput"
+ProgressBar = "toga_qt.widgets.progressbar:ProgressBar"
+ScrollContainer = "toga_qt.widgets.scrollcontainer:ScrollContainer"
+Selection = "toga_qt.widgets.selection:Selection"
+Slider = "toga_qt.widgets.slider:Slider"
+SplitContainer = "toga_qt.widgets.splitcontainer:SplitContainer"
+Switch = "toga_qt.widgets.switch:Switch"
+Table = "toga_qt.widgets.table:Table"
+TextInput = "toga_qt.widgets.textinput:TextInput"
+TimeInput = "toga_qt.widgets.timeinput:TimeInput"
+Tree = "toga_qt.widgets.tree:Tree"
+WebView = "toga_qt.widgets.webview:WebView"
+
+# Windows
+MainWindow = "toga_qt.window:MainWindow"
+Window = "toga_qt.window:Window"
+
 [tool.setuptools_scm]
 root = ".."
 
@@ -61,10 +112,10 @@ dependencies = [
 
 [project.optional-dependencies]
 pyside6-essentials = [
-    "PySide6-Essentials == 6.10.1",
+    "PySide6-Essentials == 6.11.0",
 ]
 pyside6 = [
-    "PySide6 == 6.10.1",
+    "PySide6 == 6.11.0",
 ]
 
 [tool.coverage.run]

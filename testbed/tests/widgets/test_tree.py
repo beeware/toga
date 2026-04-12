@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.sources import ListListener, TreeListener, TreeSource
+from toga.sources import AccessorColumn, ListListener, TreeListener, TreeSource
 from toga.style.pack import Pack
 
 from ..conftest import skip_on_platforms
@@ -18,6 +18,12 @@ from .properties import (  # noqa: F401
     test_focus,
     test_font,
 )
+
+# flag for collapse/expand preservation when changing tree structure
+COLLAPSE_ON_INSERT_DELETE = "collapse_on_insert_delete"
+
+# flag for selection preservation when changing tree structure
+SELECTION_CLEARED_ON_INSERT_DELETE = "selection_cleared_on_insert_delete"
 
 
 @pytest.fixture
@@ -101,7 +107,7 @@ def source():
 
 @pytest.fixture
 async def widget(source, on_select_handler, on_activate_handler):
-    skip_on_platforms("iOS", "android", "windows")
+    skip_on_platforms("iOS", "android")
     return toga.Tree(
         ["A", "B", "C"],
         data=source,
@@ -113,14 +119,19 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 
 @pytest.fixture
-def headerless_widget(source, on_select_handler):
-    skip_on_platforms("iOS", "android", "windows")
+async def headerless_widget(source, on_select_handler):
+    skip_on_platforms("iOS", "android")
     return toga.Tree(
+        columns=[
+            AccessorColumn(None, "a"),
+            AccessorColumn(None, "b"),
+            AccessorColumn(None, "c"),
+        ],
         data=source,
         missing_value="MISSING!",
-        accessors=["a", "b", "c"],
         on_select=on_select_handler,
         style=Pack(flex=1),
+        show_headings=False,
     )
 
 
@@ -139,9 +150,9 @@ async def headerless_probe(main_window, headerless_widget):
 
 
 @pytest.fixture
-def multiselect_widget(source, on_select_handler):
+async def multiselect_widget(source, on_select_handler):
     # Although Android *has* a table implementation, it needs to be rebuilt.
-    skip_on_platforms("iOS", "android", "windows")
+    skip_on_platforms("iOS", "android")
     return toga.Tree(
         ["A", "B", "C"],
         data=source,
@@ -167,13 +178,8 @@ async def multiselect_probe(main_window, multiselect_widget):
 
 test_cleanup = build_cleanup_test(
     toga.Tree,
-    kwargs={"headings": ["A", "B", "C"]},
-    skip_platforms=(
-        "iOS",
-        "android",
-        "windows",
-    ),
-    xfail_platforms=("linux",),
+    kwargs={"columns": ["A", "B", "C"]},
+    skip_platforms=("iOS", "android"),
 )
 
 
@@ -217,6 +223,63 @@ async def test_select(widget, probe, source, on_select_handler):
         await probe.type_character("x")
         await probe.redraw("A non-shortcut key was pressed")
         assert widget.selection == source[1][2][0]
+
+    # Test selection remains after node with lower index is expanded
+    widget.collapse()
+    assert not probe.is_expanded(source[3])
+    await probe.select_row((1,))
+    await probe.redraw("A row that is below a row to be expanded is selected")
+    widget.expand(source[3])
+    assert widget.selection == source[1]
+    widget.collapse(source[3])
+    assert not probe.is_expanded(source[3])
+
+    # Test selection remains after the selected node is expanded
+    assert not probe.is_expanded(source[3])
+    await probe.select_row((3,))
+    await probe.redraw("A row that is to be expanded is selected")
+    widget.expand(source[3])
+    assert widget.selection == source[3]
+    widget.collapse(source[3])
+    assert not probe.is_expanded(source[3])
+
+    # Test selection remains after node with higher index is expanded
+    assert not probe.is_expanded(source[3])
+    await probe.select_row((4,))
+    await probe.redraw("A row that is to be expanded is selected")
+    widget.expand(source[3])
+    assert widget.selection == source[4]
+    widget.collapse(source[3])
+    assert not probe.is_expanded(source[3])
+
+    # Test selection remains after node with lower index is collapsed
+    widget.expand(source[3])
+    assert probe.is_expanded(source[3])
+    await probe.select_row((1,))
+    await probe.redraw("A node is expanded and a row with lower index is selected")
+    widget.collapse(source[3])
+    assert widget.selection == source[1]
+    assert not probe.is_expanded(source[3])
+
+    # Test selection remains after root node with higher index is collapsed
+    widget.expand(source[3])
+    assert probe.is_expanded(source[3])
+    await probe.select_row((4,))
+    await probe.redraw(
+        "A node is expanded and a root-row with higher index is selected"
+    )
+    widget.collapse(source[3])
+    assert widget.selection == source[4]
+    assert not probe.is_expanded(source[3])
+
+    # Exercise code for collapsing a node whose child is selected. Note that this
+    # behavior is inconsistent between platforms.
+    widget.expand(source[3])
+    assert probe.is_expanded(source[3])
+    await probe.select_row((3, 1))
+    await probe.redraw("A node is expanded and a child is selected")
+    widget.collapse(source[3])
+    assert not probe.is_expanded(source[3])
 
 
 async def test_expand_collapse(widget, probe, source):
@@ -451,6 +514,13 @@ async def test_expand_collapse(widget, probe, source):
     assert not probe.is_expanded(source[2])
     assert not probe.is_expanded(source[2][2])
 
+    # Exercise code for expanding/collapsing non-visible nodes. Note that this
+    # behavior is inconsistent between platforms.
+    widget.expand(source[0][2])
+    await probe.redraw("A non-visible node is expanded.")
+    widget.collapse(source[0][2])
+    await probe.redraw("A non-visible node is collapsed.")
+
 
 async def test_activate(
     widget,
@@ -682,6 +752,52 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 4), 0, "A4")
     probe.assert_cell_content((0, 5), 0, "AX")
 
+    # Delete a selected row
+    # - ensure row is visible
+    await probe.expand_tree()
+    await probe.redraw("Tree expanded")
+    # - select row
+    await probe.select_row((0, 2))
+    await probe.redraw("Row has been selected")
+    assert widget.selection == widget.data[0][2]
+    # - delete row
+    del widget.data[0][2]
+    await probe.redraw("Row has been removed")
+    assert probe.child_count((0,)) == 5
+    probe.assert_cell_content((0, 2), 0, "A3")
+    # - nothing should be selected
+    assert widget.selection is None
+    # - parent should still be expanded
+    if not getattr(probe, COLLAPSE_ON_INSERT_DELETE, False):
+        assert probe.is_expanded(widget.data[0])
+    else:
+        assert not probe.is_expanded(widget.data[0])
+
+    # Insert a row at selection
+    # - ensure row is visible
+    await probe.expand_tree()
+    await probe.redraw("Tree expanded")
+    # - select row
+    await probe.select_row((0, 2))
+    await probe.redraw("Row has been selected")
+    assert widget.selection == widget.data[0][2]
+    # - insert row, which is missing a B accessor
+    widget.data[0].insert(2, {"a": "AY", "c": "CY"})
+    await probe.redraw("Partial row has been appended")
+    assert probe.child_count((0,)) == 6
+    probe.assert_cell_content((0, 2), 0, "AY")
+    probe.assert_cell_content((0, 3), 0, "A3")
+    # - check selection is original object or has been cleared
+    if not getattr(probe, SELECTION_CLEARED_ON_INSERT_DELETE, False):
+        assert widget.selection == widget.data[0][3]
+    else:
+        assert widget.selection is None
+    # - parent should still be expanded
+    if not getattr(probe, COLLAPSE_ON_INSERT_DELETE, False):
+        assert probe.is_expanded(widget.data[0])
+    else:
+        assert not probe.is_expanded(widget.data[0])
+
     # Insert a new root
     widget.data.insert(0, {"a": "A!", "b": "B!", "c": "C!"})
     await probe.redraw("New root row has been appended")
@@ -724,7 +840,7 @@ async def _column_change_test(widget, probe):
     assert probe.column_count == 3
     probe.assert_cell_content((0,), 2, "C0")
 
-    widget.append_column("E", accessor="e")
+    widget.append_column(AccessorColumn("E", "e"))
     await probe.redraw("E column appended")
 
     # 4 columns; the new content on row 0 is "E0"
@@ -732,7 +848,7 @@ async def _column_change_test(widget, probe):
     probe.assert_cell_content((0,), 2, "C0")
     probe.assert_cell_content((0,), 3, "E0")
 
-    widget.insert_column(3, "D", accessor="d")
+    widget.insert_column(3, AccessorColumn("D", "d"))
     await probe.redraw("E column appended")
 
     # 5 columns; the new content on row 0 is "D0", between C0 and E0
@@ -857,14 +973,16 @@ async def test_cell_widget(widget, probe):
         warning_check = contextlib.nullcontext()
     else:
         warning_check = pytest.warns(
-            match=".* does not support the use of widgets in cells"
+            match=r".* does not support the use of widgets in cells"
         )
 
     with warning_check:
         widget.data = data
 
-    await probe.expand_tree()
-    await probe.redraw("Tree has data with widgets")
+        # Qt and Windows backends don't know there are widgets until the row is
+        # expanded.
+        await probe.expand_tree()
+        await probe.redraw("Tree has data with widgets")
 
     probe.assert_cell_content((0, 0), 0, "A0")
     probe.assert_cell_content((0, 0), 1, "B0")
@@ -887,3 +1005,106 @@ def test_tree_listener(widget):
     TreeListener APIs"""
     assert isinstance(widget._impl, ListListener)
     assert isinstance(widget._impl, TreeListener)
+
+
+@pytest.mark.parametrize(
+    "method_name,args,expected_args",
+    [
+        ("clear", {}, {}),
+        ("change", {"item": "item"}, {"item": "item"}),
+        (
+            "insert",
+            {"index": 0, "item": "item"},
+            {"index": 0, "item": "item", "parent": None},
+        ),
+        (
+            "insert",
+            {"index": 0, "item": "item", "parent": "parent"},
+            {"index": 0, "item": "item", "parent": "parent"},
+        ),
+        (
+            "remove",
+            {"index": 0, "item": "item"},
+            {"index": 0, "item": "item", "parent": None},
+        ),
+        (
+            "remove",
+            {"index": 0, "item": "item", "parent": "parent"},
+            {"index": 0, "item": "item", "parent": "parent"},
+        ),
+    ],
+)
+def test_deprecated_methods(widget, method_name, args, expected_args):
+    """Does the widget warn about the old ListListener API"""
+    impl = widget._impl
+    mock_method = Mock()
+    setattr(impl, f"source_{method_name}", mock_method)
+    method = getattr(impl, method_name)
+    warning_pattern = (
+        f"The {method_name}\\(\\) method is deprecated. "
+        f"Use source_{method_name}\\(\\) instead."
+    )
+
+    with pytest.warns(DeprecationWarning, match=warning_pattern):
+        method(**args)
+
+    mock_method.assert_called_once_with(**expected_args)
+
+
+async def test_mouse_events(widget, probe, on_activate_handler):
+    """Does the widget implement mouse events correctly?"""
+    # These tests are needed on the Windows platform and are implemented as
+    # pytest.skip() on the platforms macOS, GTK and QT.
+
+    # Use some small data
+    small_data = [
+        (
+            {"a": "A0", "b": "", "c": ""},
+            [({"a": f"A0{i}", "b": i, "c": "C"}, None) for i in range(2)],
+        ),
+        (
+            {"a": "A1", "b": "", "c": ""},
+            [({"a": f"A1{i}", "b": i, "c": "C"}, None) for i in range(2)],
+        ),
+    ]
+
+    widget.data = small_data
+    widget.collapse()
+    await probe.redraw("Tree is collapsed and awaiting hover of state-change arrow")
+    assert not probe.is_expanded(widget.data[0])
+    await probe.assert_item_mouse_hover((0,))
+
+    widget.expand(widget.data[0])
+    await probe.redraw("A node is expanded and awaiting hover of state-change arrow")
+    assert probe.is_expanded(widget.data[0])
+    await probe.assert_item_mouse_hover((0,))
+
+    # Simulate clicks on the state change arrow.
+    widget.collapse()
+    await probe.redraw("Tree is collapsed and awaiting toggle by mouse click")
+    await probe.single_click((0,), toggle=True, on_item=True)
+    assert widget.selection is None
+    await probe.single_click((0,), toggle=True, on_item=True)
+    assert widget.selection is None
+
+    # Simulate a normal item selection click.
+    await probe.redraw("Tree is collapsed and awaiting an item selection mouse click")
+    await probe.single_click((0,), toggle=False, on_item=True)
+    assert widget.selection == widget.data[0]
+
+    # Simulate a normal item selection click on a different item.
+    await probe.redraw("Tree is awaiting a different item selection mouse click")
+    await probe.single_click((1,), toggle=False, on_item=True)
+    assert widget.selection == widget.data[1]
+
+    # Simulate a normal selection click in the client area, but away from items.
+    await probe.redraw("Tree is collapsed and awaiting an item selection mouse click")
+    await probe.single_click((1,), toggle=False, on_item=False)
+    assert widget.selection is None
+
+    # Double clicking on a state-change arrow doesn't activate the row.")
+    await probe.double_click_state_change_arrow((0,))
+    on_activate_handler.assert_not_called()
+
+    # Test the mouse cursor leaving the client area
+    await probe.assert_mouse_leave()
