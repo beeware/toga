@@ -80,14 +80,14 @@ class DetailedList(Widget):
         self.refresh_enabled: bool = False
 
         # Create the context menu
-        self._context_menu = ContextMenu(self, self.actions)
+        self._context_menu = ContextMenu(self, self.menu_items)
 
         # According to the MicroSoft documentation, an application must call
         # InitCommonControlsEx must before creating a common control.
-        self._init_common_controls_ex = cc32_cls.INITCOMMONCONTROLSEX()
-        self._init_common_controls_ex.dwSize = sizeof(cc32_cls.INITCOMMONCONTROLSEX)
-        self._init_common_controls_ex.dwICC = wc.ICC_LISTVIEW_CLASSES
-        InitCommonControlsEx(byref(self._init_common_controls_ex))
+        init_common_controls_ex = cc32_cls.INITCOMMONCONTROLSEX()
+        init_common_controls_ex.dwSize = sizeof(cc32_cls.INITCOMMONCONTROLSEX)
+        init_common_controls_ex.dwICC = wc.ICC_LISTVIEW_CLASSES
+        InitCommonControlsEx(byref(init_common_controls_ex))
 
         # Create the Win32 List-View object.
         # learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw
@@ -545,37 +545,51 @@ class DetailedList(Widget):
     # Internal methods.
     ####################################################################################
 
-    def actions(self, x: int, y: int) -> list[tuple[str, Callable[[], None]]]:
+    def menu_items(self, x: int, y: int) -> list[None | tuple[str, Callable[[], None]]]:
+        menu_items_list = []
+
+        # Append refresh to the menu items list.
+        if self.refresh_enabled:
+
+            def refresh():
+                return self.interface.on_refresh()
+
+            menu_items_list.append(("Refresh list", refresh))
+
         hit_test_info = cc32_cls.LVHITTESTINFO()
         hit_test_info.pt = POINT(self._mouse_down_x, y)
         u32.SendMessageW(self._hwnd, wc.LVM_HITTEST, 0, byref(hit_test_info))
-
-        # iItem will be less than 0 if there is no item when the hit test is performed.
         index = hit_test_info.iItem
+
+        # index will be less than 0 if there is no item where the hit test is performed.
         if (
             not (self.primary_action_enabled or self.secondary_action_enabled)
             or index < 0
         ):
-            return []
+            return menu_items_list
 
+        # Append a space between refresh and the actions if refresh is enabled.
+        elif self.refresh_enabled:
+            menu_items_list.append(None)
+
+        # Since index is greater than or equal to zero, get the row.
         row = self.interface.data[index]
-        actions_list = []
 
         if self.primary_action_enabled:
 
             def primary():
                 return self.interface.on_primary_action(row=row)
 
-            actions_list.append((self.interface._primary_action, primary))
+            menu_items_list.append((self.interface._primary_action, primary))
 
         if self.secondary_action_enabled:
 
             def secondary():
                 return self.interface.on_secondary_action(row=row)
 
-            actions_list.append((self.interface._secondary_action, secondary))
+            menu_items_list.append((self.interface._secondary_action, secondary))
 
-        return actions_list
+        return menu_items_list
 
     def _invalidate_tile(self, index: int):
         rect = RECT()
@@ -707,10 +721,10 @@ class DetailedList(Widget):
         self.secondary_action_enabled = enabled
 
     def set_refresh_enabled(self, enabled):
-        pass
-        # self.refresh_enabled = enabled
+        self.refresh_enabled = enabled
 
-    after_on_refresh = None
+    def after_on_refresh(self, widget, result):
+        pass
 
     ####################################################################################
     # Methods called by the DetailedListSource

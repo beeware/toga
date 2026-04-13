@@ -1,4 +1,5 @@
 import asyncio
+from ctypes import c_wchar_p
 from ctypes.wintypes import HWND, POINT
 
 import System.Windows.Forms as WinForms
@@ -18,9 +19,9 @@ class ContextMenu:
 
     Attributes:
         widget: The Toga WinForms widget to be assigned to.
-        actions: A function of the form actions(x: int, y: int) that returns a list of
-            pairs (label: str, action: Callable[[], None]). Each label will be displayed
-            in the context menu and the action will be performed on a click.
+        actions: A function of the form actions(x: int, y: int) that returns a list that
+            contains None values and pairs (label: str, action: Callable[[], None]).
+            Each item is a row on the menu list, with None values defining a separators.
     """
 
     def __init__(self, widget, actions):
@@ -49,7 +50,10 @@ class ContextMenu:
     def _show(self, x: int, y: int, actions_list):
         hmenu = u32.CreatePopupMenu()
         for index, action_pair in enumerate(actions_list, start=1):
-            u32.AppendMenuW(hmenu, wc.MF_STRING, index, action_pair[0])
+            if action_pair is None:
+                u32.AppendMenuW(hmenu, wc.MF_SEPARATOR, index, c_wchar_p(""))
+            else:
+                u32.AppendMenuW(hmenu, wc.MF_STRING, index, c_wchar_p(action_pair[0]))
 
         uFlags = (
             wc.TPM_LEFTALIGN
