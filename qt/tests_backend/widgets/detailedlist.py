@@ -15,8 +15,6 @@ class DetailedListProbe(SimpleProbe):
     supports_actions = True
     supports_refresh = True
 
-    supports_deselect = True
-
     def _row_to_index(self, row):
         model = self.native.model()
         return model.index(row)

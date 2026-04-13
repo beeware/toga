@@ -21,8 +21,6 @@ class DetailedListProbe(SimpleProbe):
     supports_actions = True
     supports_refresh = True
 
-    supports_deselect = True
-
     def __init__(self, widget):
         super().__init__(widget)
         self.native_controller = widget._impl.native_controller

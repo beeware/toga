@@ -22,8 +22,6 @@ class DetailedListProbe(SimpleProbe):
     supports_actions = True
     supports_refresh = False
 
-    supports_deselect = True
-
     @property
     def row_count(self):
         LVM_GETITEMCOUNT = 0x1000 + 4

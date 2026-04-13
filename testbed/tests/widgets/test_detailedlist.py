@@ -164,9 +164,6 @@ async def test_deselect(widget, probe):
     ]
     await probe.redraw("Data source has been changed")
 
-    if not probe.supports_deselect:
-        pytest.skip("The probe for this backend doesn't support deselection.")
-
     # Select a single row
     await probe.select_row(2)
     await probe.redraw("Third row is selected")

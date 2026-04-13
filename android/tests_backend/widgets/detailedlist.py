@@ -20,8 +20,6 @@ class DetailedListProbe(SimpleProbe):
     supports_actions = True
     supports_refresh = True
 
-    supports_deselect = False
-
     def __init__(self, widget):
         super().__init__(widget)
         self.refresh_layout = self.native
@@ -81,6 +79,9 @@ class DetailedListProbe(SimpleProbe):
 
     async def select_row(self, row, add=False):
         self._row_layout(row).performClick()
+
+    async def deselect_all(self):
+        self.impl._clear_selection()
 
     def refresh_available(self):
         return self.scroll_position <= 0
