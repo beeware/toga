@@ -21,6 +21,7 @@ def is_submessage(message: int, submessage: int) -> bool:
 
 LRESULT = LPARAM  # LPARAM is essentially equivalent to LRESULT
 UINT_PTR = c_size_t
+ULONG_PTR = c_size_t
 DWORD_PTR = c_size_t
 PUINT = c_size_t
 INT_PTR = c_size_t

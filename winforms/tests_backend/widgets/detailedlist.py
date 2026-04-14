@@ -1,11 +1,11 @@
 import asyncio
-from ctypes import byref
+from ctypes import byref, sizeof, windll
 from ctypes.wintypes import HWND, POINT, RECT
 
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap, Point
 
-from toga_winforms.libs import windowconstants as wc
+from toga_winforms.libs import user32classes as u32_cls, windowconstants as wc
 from toga_winforms.libs.user32 import (
     ClientToScreen,
     PostMessageW,
@@ -16,11 +16,35 @@ from toga_winforms.libs.user32 import (
 
 from .base import SimpleProbe
 
+u32 = windll.user32
+k32 = windll.kernel32
+"""
+class MOUSEINPUT(c_Structure):
+    _fields_ = [
+        ("dx", LONG),
+        ("dy", LONG),
+        ("mouseData", DWORD),
+        ("dwFlags", DWORD),
+        ("time", DWORD),
+        ("dwExtraInfo", c_size_t),
+    ]
+
+class INPUT(c_Structure):
+    _fields_ = [
+        ("type", DWORD),
+        ("DUMMYUNIONNAME", MOUSEINPUT),
+    ]
+"""
+
 
 class DetailedListProbe(SimpleProbe):
     native_class = WinForms.Panel
     supports_actions = True
-    supports_refresh = False
+    supports_refresh = True
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._click_shift = 0
 
     @property
     def row_count(self):
@@ -53,16 +77,16 @@ class DetailedListProbe(SimpleProbe):
             # assert that at least 94% of the pixels match.
             assert count / (size.Width * size.Height) > 0.94
 
-    def row_rect(self, row) -> RECT:
+    def _row_rect(self, row) -> RECT:
         LVM_GETITEMRECT = 0x1000 + 14
         rect = RECT()
         SendMessageW(self.impl._hwnd, LVM_GETITEMRECT, row, byref(rect))
         rect.right = self.impl._tile_width()
         return rect
 
-    def row_midpoint(self, row) -> tuple[int, int]:
+    def _row_midpoint(self, row) -> tuple[int, int]:
         # Pick a point half way across horizontally, and half way down the row.
-        rect = self.row_rect(row)
+        rect = self._row_rect(row)
 
         return (
             divmod(rect.right + rect.left, 2)[0],
@@ -70,16 +94,26 @@ class DetailedListProbe(SimpleProbe):
         )
 
     @property
+    def client_midpoint(self) -> tuple[int, int]:
+        native = self.impl.native
+        client_rect = native.ClientRectangle
+
+        return (
+            divmod(client_rect.Left + client_rect.Right, 2)[0],
+            divmod(client_rect.Top + client_rect.Bottom, 2)[0],
+        )
+
+    @property
     def max_scroll_position(self):
-        top = self.row_rect(0).top
-        bottom = self.row_rect(self.row_count - 1).bottom
+        top = self._row_rect(0).top
+        bottom = self._row_rect(self.row_count - 1).bottom
         document_height = bottom - top
 
         return (document_height - self.native.ClientSize.Height) / self.scale_factor
 
     @property
     def scroll_position(self):
-        top = self.row_rect(0).top
+        top = self._row_rect(0).top
 
         return -round(top / self.scale_factor)
 
@@ -93,20 +127,21 @@ class DetailedListProbe(SimpleProbe):
         pass
 
     async def select_row(self, row, add=False):
-        x, y = self.row_midpoint(row)
-        await self.perform_click(x, y, use_modifier=add)
+        x, y = self._row_midpoint(row)
+        await self._perform_click(x, y, modifier=add)
 
     async def deselect_all(self):
         # Assume there is blank space at the bottom of the client area.
         row_count = self.row_count
-        x, y = self.row_midpoint(row_count - 1)
+        x, y = self._row_midpoint(row_count - 1)
         y = y + self.impl._tile_height
 
-        await self.perform_double_click(x, y)
+        await self._perform_click(x, y, double=True)
 
     async def _perform_action(self, row, index):
-        x, y = self.row_midpoint(row)
+        x, y = self._row_midpoint(row)
 
+        ######################################################################
         # This code is to exercise a code block within the context menu class.
         # TODO: Remove this when it is not needed.
         self.impl.native.OnMouseClick(
@@ -118,17 +153,15 @@ class DetailedListProbe(SimpleProbe):
                 delta=0,
             )
         )
+        ######################################################################
 
-        # Perform the right click that opens the context menu.
-        await self.perform_click(x, y, is_right=True)
+        context_menu_list = self.impl._context_menu.actions(x, y)
+        context_menu_index = index + 1 if self.impl.refresh_enabled else index
 
-        context_actions_list = self.impl._context_menu.actions(x, y)
-        if index + 1 > len(context_actions_list):
-            self.select_with_keyboard(-1)
-            await self.redraw("Action menu displayed and exited.", delay=0.1)
-        else:
-            self.select_with_keyboard(index)
-            await self.redraw("Action menu displayed and action selected.", delay=0.1)
+        if context_menu_index > len(context_menu_list) - 1:
+            context_menu_index = -1
+
+        await self._select_from_context_menu(x, y, context_menu_index)
 
     async def perform_primary_action(self, row, active=True):
         await self._perform_action(row, 0)
@@ -136,74 +169,96 @@ class DetailedListProbe(SimpleProbe):
     async def perform_secondary_action(self, row, active=True):
         await self._perform_action(row, 1 if self.impl.primary_action_enabled else 0)
 
-    async def perform_click(self, x, y, is_right=False, use_modifier=False):
-        hwnd = self.impl._hwnd
-        window_hwnd = HWND(int(self.widget.window._impl.native.Handle.ToString()))
+    def refresh_available(self):
+        # This test is mainly for scroll refresh at the top of the list.
+        # return self.impl.refresh_enabled
+        return self.scroll_position <= 0
 
+    async def non_refresh_action(self):
+        x, y = self.client_midpoint
+
+        await self._select_from_context_menu(x, y, -1)
+
+    async def refresh_action(self, active=True):
+        x, y = self.client_midpoint
+
+        # Get the item index for the context menu. -1 closes the context menu.
+        if (
+            self.impl.primary_action_enabled or self.impl.secondary_action_enabled
+        ) and len(self.impl._context_menu.actions(x, y)) < 3:
+            index = -1
+        else:
+            index = 0
+
+        await self._select_from_context_menu(x, y, index)
+
+    async def _select_from_context_menu(self, x, y, index):
+        # Perform the right click that opens the context menu.
+        await self._perform_click(x, y, right=True)
+
+        # Select menu item with keyboard.
+        self._select_with_keyboard(index)
+
+        if index < 0:
+            await self.redraw("Context menu displayed and exited.", delay=0.1)
+        else:
+            await self.redraw("Context menu displayed and item selected.", delay=0.1)
+
+    async def _perform_click(self, x, y, right=False, double=False, modifier=False):
+        window_hwnd = HWND(int(self.widget.window._impl.native.Handle.ToString()))
         SetForegroundWindow(window_hwnd)
+
+        hwnd = self.impl._hwnd
         SetFocus(hwnd)
 
-        # To perform a "click" using Window messages, the mouse must be over the window.
-        point = POINT(x, y)
+        # Move the cursor to the click location and shift the location to prevent
+        # unwanted double clicks
+        point = POINT(x + self._click_shift, y)
         ClientToScreen(hwnd, point)
         WinForms.Cursor.Position = Point(point.x, point.y)
+        print((point.x, point.y))
 
-        # Virtual key codes
-        MK_LBUTTON = 0x0001
-        MK_RBUTTON = 0x0002
-        MK_CONTROL = 0x0008
+        INPUT_ARRAY = u32_cls.INPUT * 1
+        mouse_inputs = INPUT_ARRAY()
+        mouse_inputs[0] = u32_cls.INPUT()
+        mouse_inputs[0].type = 0
+        mouse_inputs[0]._.mi = u32_cls.MOUSEINPUT(0, 0, 0, 0, 0)
 
-        # Set the code messages, lparam is the coordinates and wparam is determined by
-        # the virtual keys down.
-        lparam = x | (y << 16)
-        up_wparam = MK_CONTROL if use_modifier else 0
-        if is_right:
-            down_message = wc.WM_RBUTTONDOWN
-            down_wparam = MK_RBUTTON | MK_CONTROL if use_modifier else MK_RBUTTON
-            up_message = wc.WM_RBUTTONUP
+        if modifier:
+            modifier_inputs = INPUT_ARRAY()
+            modifier_inputs[0] = u32_cls.INPUT()
+            modifier_inputs[0].type = 1
+            modifier_inputs[0]._.ki = u32_cls.KEYBDINPUT(wc.VK_CONTROL, 0, 0, 0, 0)
 
+            u32.SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            await asyncio.sleep(0.05)
+
+        if right:
+            message_list = [wc.MOUSEEVENTF_RIGHTDOWN, wc.MOUSEEVENTF_RIGHTUP]
         else:
-            down_message = wc.WM_LBUTTONDOWN
-            down_wparam = MK_LBUTTON | MK_CONTROL if use_modifier else MK_LBUTTON
-            up_message = wc.WM_LBUTTONUP
+            message_list = [wc.MOUSEEVENTF_LEFTDOWN, wc.MOUSEEVENTF_LEFTUP]
 
-        # Perform the click and wait for the messages from PostMessage to be received.
-        PostMessageW(hwnd, down_message, down_wparam, lparam)
-        await asyncio.sleep(0.1)
-        PostMessageW(hwnd, up_message, up_wparam, lparam)
-        await asyncio.sleep(0.1)
+        async def click():
+            for message in message_list:
+                mouse_inputs[0]._.mi.dwFlags = message
+                u32.SendInput(1, mouse_inputs, sizeof(u32_cls.INPUT))
+                await asyncio.sleep(0.05)
 
-    async def perform_double_click(self, x, y, is_right=False):
-        hwnd = self.impl._hwnd
-        window_hwnd = HWND(int(self.widget.window._impl.native.Handle.ToString()))
+        await click()
 
-        SetForegroundWindow(window_hwnd)
-        SetFocus(hwnd)
+        if double:
+            await asyncio.sleep(0.2)
+            await click()
 
-        # To perform a "click" using Window messages, the mouse must be over the window.
-        point = POINT(x, y)
-        ClientToScreen(hwnd, point)
-        WinForms.Cursor.Position = Point(point.x, point.y)
+        if modifier:
+            modifier_inputs[0]._.ki.dwFlags = wc.KEYEVENTF_KEYUP
 
-        # Virtual key codes
-        MK_LBUTTON = 0x0001
-        MK_RBUTTON = 0x0002
+            u32.SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            await asyncio.sleep(0.05)
 
-        # Set the code messages, lparam is the coordinates and wparam is determined by
-        # the virtual keys down.
-        lparam = x | (y << 16)
-        if is_right:
-            message = wc.WM_RBUTTONDBLCLK
-            wparam = MK_RBUTTON
-        else:
-            message = wc.WM_LBUTTONDBLCLK
-            wparam = MK_LBUTTON
+        self._click_shift += int(self.scale_factor)
 
-        # Perform the click and wait for the messages from PostMessage to be received.
-        PostMessageW(hwnd, message, wparam, lparam)
-        await asyncio.sleep(0.1)
-
-    def select_with_keyboard(self, index):
+    def _select_with_keyboard(self, index):
         hwnd = self.impl._hwnd
         # For some reason we have to use PostMessage and not SendMessage here. This
         # is most likely because TrackPopupMenu is thread blocking.
