@@ -465,7 +465,8 @@ class CanvasApp(toga.App):
         # calculate offsets to centralize drawing in the bigger axis
         dx = self.x_middle - factor / 2
         dy = self.y_middle - factor / 2
-        with self.canvas.close_path(dx + factor / 3, dy + factor / 3):
+        with self.canvas.close_path():
+            self.canvas.move_to(dx + factor / 3, dy + factor / 3)
             self.canvas.line_to(dx + 2 * factor / 3, dy + 2 * factor / 3)
             self.canvas.line_to(dx + 2 * factor / 3, dy + factor / 3)
 
@@ -504,28 +505,32 @@ class CanvasApp(toga.App):
         rx = factor / 3
         ry = factor / 4
 
-        with self.canvas.close_path(self.x_middle + rx, self.y_middle):
+        with self.canvas.close_path():
+            self.canvas.move_to(self.x_middle + rx, self.y_middle)
             self.canvas.ellipse(self.x_middle, self.y_middle, rx, ry, 0, 0, math.pi)
 
     def draw_ice_cream(self, factor):
         dx = self.x_middle
         dy = self.y_middle - factor / 6
-        with self.canvas.close_path(dx - factor / 5, dy):
+        with self.canvas.close_path():
+            self.canvas.move_to(dx - factor / 5, dy)
             self.canvas.arc(dx, dy, factor / 5, math.pi, 2 * math.pi)
             self.canvas.line_to(dx, dy + 2 * factor / 5)
 
     def draw_smile(self, factor):
         dx = self.x_middle
         dy = self.y_middle - factor / 5
-        with self.canvas.close_path(dx - factor / 5, dy):
+        with self.canvas.close_path():
+            self.canvas.move_to(dx - factor / 5, dy)
             self.canvas.quadratic_curve_to(dx, dy + 3 * factor / 5, dx + factor / 5, dy)
             self.canvas.quadratic_curve_to(dx, dy + factor / 5, dx - factor / 5, dy)
 
     def draw_sea(self, factor):
-        with self.canvas.close_path(
-            self.x_middle - 1 * factor / 5,
-            self.y_middle - 1 * factor / 5,
-        ):
+        with self.canvas.close_path():
+            self.canvas.move_to(
+                self.x_middle - 1 * factor / 5,
+                self.y_middle - 1 * factor / 5,
+            )
             self.canvas.bezier_curve_to(
                 self.x_middle - 1 * factor / 10,
                 self.y_middle,
@@ -547,7 +552,8 @@ class CanvasApp(toga.App):
         sides = 5
         radius = factor / 5
         rotation_angle = 4 * math.pi / sides
-        with self.canvas.close_path(self.x_middle, self.y_middle - radius):
+        with self.canvas.close_path():
+            self.canvas.move_to(self.x_middle, self.y_middle - radius)
             for i in range(1, sides):
                 self.canvas.line_to(
                     self.x_middle + radius * math.sin(i * rotation_angle),

@@ -38,7 +38,8 @@ class StartApp(toga.App):
 
     def stroke_head(self):
         with self.canvas.stroke(line_width=4.0):
-            with self.canvas.close_path(112, 103):
+            with self.canvas.close_path():
+                self.canvas.move_to(112, 103)
                 self.canvas.line_to(112, 113)
                 self.canvas.ellipse(73, 114, 39, 47, 0, 0, math.pi)
                 self.canvas.line_to(35, 84)
@@ -113,9 +114,8 @@ class StartApp(toga.App):
     def on_resize(self, widget, width, height, **kwargs):
         # On resize, center the text horizontally on the canvas. on_resize will be
         # called when the canvas is initially created, when the drawing actions won't
-        # exist yet. Only attempt to reposition the text if there's a state object on
-        # the canvas.
-        if widget.root_state:
+        # exist yet. Only attempt to reposition the text if it's already been drawn.
+        if hasattr(self, "text"):
             left_pad = (width - self.text_width) // 2
             self.text.x = left_pad
             self.text_border.x = left_pad - 5

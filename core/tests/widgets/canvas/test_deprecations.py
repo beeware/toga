@@ -304,7 +304,7 @@ def test_deprecated_list_methods(widget):
     with pytest.deprecated_call():
         # Remove the second draw instruction
         state.remove(second)
-    # Drawing objects are as expected
+    # Drawing actions are as expected
     with pytest.deprecated_call():
         assert len(widget.root_state) == 3
     for i, cls in enumerate([LineTo, State, LineTo]):

@@ -761,7 +761,7 @@ class State(DrawingAction, DrawingActionDispatch):
             (
                 "State's list-like methods (append, insert, remove, and clear), as "
                 "well as implementing len() and indexing, are deprecated. Manipulate "
-                "state.drawing_objects directly, and then call redraw() on the canvas."
+                "state.drawing_actions directly, and then call redraw() on the canvas."
             ),
             DeprecationWarning,
             stacklevel=3,
