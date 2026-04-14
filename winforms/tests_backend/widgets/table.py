@@ -12,7 +12,7 @@ from .base import SimpleProbe
 
 class TableProbe(SimpleProbe):
     native_class = ListView
-    supports_icons = 1  # First column only
+    supports_icons = 2  # All columns
     supports_keyboard_shortcuts = False
     supports_keyboard_boundary_shortcuts = True
     supports_widgets = False
@@ -107,3 +107,8 @@ class TableProbe(SimpleProbe):
     async def select_first_row_keyboard(self):
         # Use the keyboard to ensure first row is selected.
         await self.type_character(" ")
+
+    async def activate_header(self):
+        # No action needed; header activation is unrelated to
+        # and does not contain a bug for regular selection
+        pass

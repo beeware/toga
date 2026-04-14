@@ -6,7 +6,6 @@ Want to see examples of Toga in use? Here are some.
 
 ## ![Travel Tips icon](../images/success_stories/travel_tips/travel_tips_logo.webp){ .success-story-icon } [Travel Tips](https://apps.apple.com/au/app/travel-tips/id1336372310)
 
-
 <div class="success-story-content" markdown="1">
 
 [![Travel Tips iPad screenshot](../images/success_stories/travel_tips/travel_tips_ipad_screenshot.webp)](../images/success_stories/travel_tips/travel_tips_ipad_screenshot.webp){ .success-story-screenshot }

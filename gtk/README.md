@@ -1,8 +1,10 @@
 # toga-gtk
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-gtk.svg)](https://pypi.python.org/pypi/toga-gtk)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-gtk.svg)](https://github.com/beeware/toga-gtk/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-gtk.svg)](https://pypi.python.org/pypi/toga-gtk)
+<!-- rumdl-enable MD013 -->
 
 A GTK backend for the [Toga widget toolkit](https://beeware.org/toga). It uses the GTK 3 API by default; GTK 4 support is experimental, and can be enabled by defining `TOGA_GTK=4` in your shell environment.
 

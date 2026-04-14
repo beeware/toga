@@ -1,8 +1,10 @@
 # Toga Demo
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-demo.svg)](https://pypi.python.org/pypi/toga-demo)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-demo.svg)](https://github.com/beeware/toga-demo/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-demo.svg)](https://pypi.python.org/pypi/toga-demo)
+<!-- rumdl-enable MD013 -->
 
 A demonstration of the capabilities of the [Toga widget toolkit](https://beeware.org/toga).
 
@@ -36,7 +38,7 @@ $ pip install -e ./winforms   # Windows
 
 Finally navigate to the demo directory and run the application:
 
-```
+```console
 $ cd demo
 $ python -m toga_demo
 ```

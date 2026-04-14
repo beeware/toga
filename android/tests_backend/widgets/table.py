@@ -101,3 +101,8 @@ class TableProbe(SimpleProbe):
 
     async def select_first_row_keyboard(self):
         pytest.xfail("test not implemented for this platform")
+
+    async def activate_header(self):
+        # No action needed; header activation is unrelated to
+        # and does not contain a bug for regular selection
+        pass

@@ -16,7 +16,7 @@ Although Qt *can* be installed on Windows and macOS, and the `toga-qt` backend *
 
 ///
 
-## Prerequisites  { #qt-prerequisites }
+## Prerequisites { #qt-prerequisites }
 
 Most Qt testing occurs with Qt 6.10 as this is the version that is installable through `pip`.
 

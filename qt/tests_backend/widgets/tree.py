@@ -127,4 +127,7 @@ class TreeProbe(SimpleProbe):
         self.native.activated.emit(index)
 
     async def select_first_row_keyboard(self):
-        pytest.skip("test not implemented for this platform")
+        pytest.skip("Test not implemented for this platform")
+
+    async def assert_item_mouse_hover(self, row_path):
+        pytest.skip("Test not implemented for this platform")
