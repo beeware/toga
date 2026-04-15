@@ -1,4 +1,4 @@
-# Release History
+# Release history
 
 <!-- rumdl-disable MD024 -->
 
