@@ -17,24 +17,6 @@ from toga_winforms.libs.user32 import (
 from .base import SimpleProbe
 
 u32 = windll.user32
-k32 = windll.kernel32
-"""
-class MOUSEINPUT(c_Structure):
-    _fields_ = [
-        ("dx", LONG),
-        ("dy", LONG),
-        ("mouseData", DWORD),
-        ("dwFlags", DWORD),
-        ("time", DWORD),
-        ("dwExtraInfo", c_size_t),
-    ]
-
-class INPUT(c_Structure):
-    _fields_ = [
-        ("type", DWORD),
-        ("DUMMYUNIONNAME", MOUSEINPUT),
-    ]
-"""
 
 
 class DetailedListProbe(SimpleProbe):
@@ -136,7 +118,8 @@ class DetailedListProbe(SimpleProbe):
         x, y = self._row_midpoint(row_count - 1)
         y = y + self.impl._tile_height
 
-        await self._perform_click(x, y, double=True)
+        delta = (int(self.scale_factor) * 5,) * 2
+        await self._perform_click(x, y, right=True, delta=delta)
 
     async def _perform_action(self, row, index):
         x, y = self._row_midpoint(row)
@@ -157,8 +140,7 @@ class DetailedListProbe(SimpleProbe):
 
         context_menu_list = self.impl._context_menu.actions(x, y)
         context_menu_index = index + 1 if self.impl.refresh_enabled else index
-
-        if context_menu_index > len(context_menu_list) - 1:
+        if context_menu_index >= len(context_menu_list) - 1:
             context_menu_index = -1
 
         await self._select_from_context_menu(x, y, context_menu_index)
@@ -197,14 +179,22 @@ class DetailedListProbe(SimpleProbe):
         await self._perform_click(x, y, right=True)
 
         # Select menu item with keyboard.
-        self._select_with_keyboard(index)
+        await self._select_with_keyboard(index)
 
         if index < 0:
             await self.redraw("Context menu displayed and exited.", delay=0.1)
         else:
             await self.redraw("Context menu displayed and item selected.", delay=0.1)
 
-    async def _perform_click(self, x, y, right=False, double=False, modifier=False):
+    async def _perform_click(
+        self,
+        x,
+        y,
+        right=False,
+        double=False,
+        modifier=False,
+        delta=(0, 0),
+    ):
         window_hwnd = HWND(int(self.widget.window._impl.native.Handle.ToString()))
         SetForegroundWindow(window_hwnd)
 
@@ -216,7 +206,6 @@ class DetailedListProbe(SimpleProbe):
         point = POINT(x + self._click_shift, y)
         ClientToScreen(hwnd, point)
         WinForms.Cursor.Position = Point(point.x, point.y)
-        print((point.x, point.y))
 
         INPUT_ARRAY = u32_cls.INPUT * 1
         mouse_inputs = INPUT_ARRAY()
@@ -230,7 +219,11 @@ class DetailedListProbe(SimpleProbe):
             modifier_inputs[0].type = 1
             modifier_inputs[0]._.ki = u32_cls.KEYBDINPUT(wc.VK_CONTROL, 0, 0, 0, 0)
 
-            u32.SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            return_value = u32.SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            if return_value != 1:
+                raise Exception(
+                    "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (down)."
+                )
             await asyncio.sleep(0.05)
 
         if right:
@@ -239,9 +232,19 @@ class DetailedListProbe(SimpleProbe):
             message_list = [wc.MOUSEEVENTF_LEFTDOWN, wc.MOUSEEVENTF_LEFTUP]
 
         async def click():
-            for message in message_list:
+            for i, message in enumerate(message_list):
                 mouse_inputs[0]._.mi.dwFlags = message
-                u32.SendInput(1, mouse_inputs, sizeof(u32_cls.INPUT))
+                return_value = u32.SendInput(1, mouse_inputs, sizeof(u32_cls.INPUT))
+                if return_value != 1:
+                    raise Exception(
+                        f"SendInput failed. Type: Mouse, right button: {right}."
+                    )
+
+                if i == 0:
+                    point.x = point.x + delta[0]
+                    point.y = point.y + delta[1]
+                    WinForms.Cursor.Position = Point(point.x, point.y)
+
                 await asyncio.sleep(0.05)
 
         await click()
@@ -253,23 +256,35 @@ class DetailedListProbe(SimpleProbe):
         if modifier:
             modifier_inputs[0]._.ki.dwFlags = wc.KEYEVENTF_KEYUP
 
-            u32.SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            return_value = u32.SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            if return_value != 1:
+                raise Exception(
+                    "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (up)."
+                )
             await asyncio.sleep(0.05)
 
         self._click_shift += int(self.scale_factor)
 
-    def _select_with_keyboard(self, index):
+        await asyncio.sleep(0.1)
+
+    async def _select_with_keyboard(self, index):
         hwnd = self.impl._hwnd
         # For some reason we have to use PostMessage and not SendMessage here. This
         # is most likely because TrackPopupMenu is thread blocking.
         if index < 0:
             PostMessageW(hwnd, wc.WM_KEYDOWN, wc.VK_ESCAPE, 0)
+            await asyncio.sleep(0.1)
             PostMessageW(hwnd, wc.WM_KEYUP, wc.VK_ESCAPE, 0)
+            await asyncio.sleep(0.1)
             return
 
         for _i in range(index + 1):
             PostMessageW(hwnd, wc.WM_KEYDOWN, wc.VK_DOWN, 0)
+            await asyncio.sleep(0.1)
             PostMessageW(hwnd, wc.WM_KEYUP, wc.VK_DOWN, 0)
+            await asyncio.sleep(0.1)
 
         PostMessageW(hwnd, wc.WM_KEYDOWN, wc.VK_RETURN, 0)
+        await asyncio.sleep(0.1)
         PostMessageW(hwnd, wc.WM_KEYUP, wc.VK_RETURN, 0)
+        await asyncio.sleep(0.1)
