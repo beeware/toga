@@ -75,6 +75,11 @@ def glGetAttribLocation(id, item):
     return GL.glGetAttribLocation(id, buffer)
 
 
+def glGetuniformLocation(id, item):
+    buffer = create_string_buffer(item.encode("utf-8"))
+    return GL.glGetUniformLocation(id, buffer)
+
+
 def glUniformMatrix4fv(loc, size, transpose, value):
     buffer = (c_float * (16 * size))(*value)
     GL.glUniformMatrix4fv(loc, size, transpose, buffer)

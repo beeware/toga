@@ -45,7 +45,7 @@ glGenVertexArrays = v_func()(GL.glGenVertexArrays)
 
 def glUniformMatrix4fv(loc, size, transpose, value):
     buffer = jarray(jfloat)(list(value))
-    GL.glUniformMatrix4fv(loc, size, transpose, buffer, 0)
+    GL.glUniformMatrix4fv(loc, size, bool(transpose), buffer, 0)
 
 
 def glVertexAttribPointer(loc, size, type, normalize, stride, offset):
