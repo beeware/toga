@@ -24,7 +24,8 @@ class NativeProxy:
     """
 
     def __init__(self, element):
-        # object.__setattr__ to avoid calling our own __setattr__ override when mutating these bookkeeping members
+        # when mutating these bookkeeping members,
+        # call object.__setattr__ to avoid calling our own __setattr__ override
         object.__setattr__(self, "_element", element)
         object.__setattr__(self, "_pending", {})
         object.__setattr__(self, "_upgraded", False)
