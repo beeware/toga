@@ -42,8 +42,21 @@ class DetailedList(Widget):
     #     issue is overcome by handling the WM button messages (up, down, double-click).
     #     The clickable area is also improved over the standard implementation.
     #   - Tile view only repaints the icon and label regions. To repaint the whole tile
-    #     during selection LVN_ITEMCHANGED is handled. To repaint when the widget loses
+    #     during selection, LVN_ITEMCHANGED is handled. To repaint when the widget loses
     #     focus, WM_SETFOCUS and WM_KILLFOCUS are handled.
+    #
+    # The handling of the mouse events to overcome the incorrect clickable area spawns a
+    # new issue where the LVN_RCLICK and WM_RBUTTONUP become unreliable, effecting the
+    # ability to use a context menu. The processing of mouse down events by the ListView
+    # UI is somewhat complicated. For example, the window messages WM_LBUTTONDOWN and
+    # WM_RBUTTONDOWN start new modal event loops to detect dragging (for details see
+    # learn.microsoft.com/en-us/windows/win32/controls/listview-message-processing).
+    #
+    # To overcome the unreliability, all mouse events are handled completely and not
+    # forwarded to the default WndProc. Note, that the selection process could be
+    # simplified here, but the built-in LVN_ITEMCHANGED messages would still need to be
+    # processed for keyboard input. A choice is made to replicate the built-in selection
+    # message procedure.
     #
     # The actions are performed by a context menu.
 
@@ -70,8 +83,8 @@ class DetailedList(Widget):
         self._first_item = 0
         self._cache = []
 
-        self._selected_index: int | None = None
-        self._focused_index: int | None = None
+        self._selected_index: int = -1
+        self._focused_index: int = -1
         self._rbuttondown_lparam: int | None = None
 
         # Disable all actions and refresh by default.
@@ -310,7 +323,7 @@ class DetailedList(Widget):
 
                 if code == wc.NM_CUSTOMDRAW:
                     nmlvcd = cast(lParam, POINTER(cc32_cls.NMLVCUSTOMDRAW)).contents
-                    return_flag = self._nm_customdraw(nmlvcd)
+                    return_flag = self._nm_custom_draw(nmlvcd)
                     if return_flag is not None:
                         return return_flag
                     else:  # pragma: no cover
@@ -320,7 +333,7 @@ class DetailedList(Widget):
 
                 elif code == wc.LVN_ODCACHEHINT:
                     nmlvch = cast(lParam, POINTER(cc32_cls.NMLVCACHEHINT)).contents
-                    self._lvn_odcachehint(nmlvch.iFrom, nmlvch.iTo)
+                    self._lvn_od_cache_hint(nmlvch.iFrom, nmlvch.iTo)
 
                 elif code == wc.LVN_ITEMCHANGED:
                     nmlv = cast(lParam, POINTER(cc32_cls.NMLISTVIEW)).contents
@@ -354,17 +367,20 @@ class DetailedList(Widget):
         if uMsg == wc.WM_NCDESTROY:
             RemoveWindowSubclass(hWnd, self.pfn_subclass_list, uIdSubclass)
 
-        elif uMsg in wc.BUTTONDOWN:
-            lParam = self._button_down_event(uMsg, lParam)
+        elif uMsg == wc.WM_LBUTTONDOWN:
+            return self._wm_l_button_down(lParam)
 
-        elif uMsg in wc.BUTTONUP:
-            lParam = self._button_up_event(uMsg, lParam)
+        elif uMsg == wc.WM_RBUTTONDOWN:
+            return self._wm_r_button_down(lParam)
 
-        elif uMsg in wc.BUTTONDBLCLK:
-            lParam = self._button_event(lParam)
+        elif uMsg == wc.WM_RBUTTONUP:
+            return self._wm_r_button_up(lParam)
+
+        elif uMsg in wc.WM_BUTTON:
+            return 0
 
         elif uMsg in (wc.WM_SETFOCUS, wc.WM_KILLFOCUS):
-            if self._selected_index is not None:
+            if self._selected_index >= 0:
                 self._invalidate_tile(self._selected_index)
 
         # Call the original window procedure
@@ -374,7 +390,7 @@ class DetailedList(Widget):
     # Methods that handle the subclass process messages.
     ####################################################################################
 
-    def _nm_customdraw(self, nmlvcd) -> int | None:
+    def _nm_custom_draw(self, nmlvcd) -> int | None:
         """Draws the tiles."""
         # learn.microsoft.com/en-us/windows/win32/controls/using-custom-draw
         draw_stage = nmlvcd.nmcd.dwDrawStage
@@ -441,7 +457,7 @@ class DetailedList(Widget):
             # custom draw is known to occasionally send incorrect messages.
             pass
 
-    def _lvn_odcachehint(self, index_from, index_to):
+    def _lvn_od_cache_hint(self, index_from, index_to):
         """Processes the Win32 List-View UI cache hint."""
         # Note that this is the same method as winforms_cache_virtual_items from the
         # WinForms Table widget.
@@ -504,30 +520,20 @@ class DetailedList(Widget):
             wc.SWP_NOMOVE | wc.SWP_NOZORDER | wc.SWP_SHOWWINDOW,
         )
 
-    def _button_event(self, lParam: int) -> int:
-        """Moves a button event over the icon of a tile."""
-        # https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttondown
-        # In the documentation the LOWORD/HIWORD method used here is not recommended,
-        # because it doesn't take into account the negative coordinates that arise in
-        # mulit-monitor setups. However, here the coordinates are relative to the client
-        # area, and hence will always be positive.
-        loword_value = self._font_height
-        hiword_value = hiword(lParam)
-        return loword_value | (hiword_value << 16)
-
-    def _button_down_event(self, uMsg: int, lParam: int) -> int:
-        if uMsg == wc.WM_RBUTTONDOWN:
-            self._rbuttondown_lparam = lParam
-
+    def _wm_l_button_down(self, lParam: int) -> int:
         u32.SetFocus(self._hwnd)
-        return self._button_event(lParam)
+        index = self._item_hit_test(hiword(lParam))
+        self._set_selection(index)
 
-    def _button_up_event(self, uMsg: int, lParam: int) -> int:
-        if (
-            uMsg == wc.WM_RBUTTONUP
-            and self._rbuttondown_lparam == lParam
-            and u32.GetFocus() == self._hwnd
-        ):
+        return 0
+
+    def _wm_r_button_down(self, lParam: int) -> int:
+        self._rbuttondown_lparam = lParam
+        return self._wm_l_button_down(lParam)
+
+    def _wm_r_button_up(self, lParam: int) -> int:
+        # This is a simple implementation of a mouse "click" event.
+        if self._rbuttondown_lparam == lParam and u32.GetFocus() == self._hwnd:
             self.native.OnMouseClick(
                 WinForms.MouseEventArgs(
                     WinForms.MouseButtons.Right,
@@ -539,11 +545,110 @@ class DetailedList(Widget):
             )
 
         self._rbuttondown_lparam = None
-        return self._button_event(lParam)
+        return 0
+
+    ####################################################################################
+    # Methods dealing with the selection process.
+    ####################################################################################
+
+    def _set_selection(self, index: int):
+        """Replicates the built-in ListView selection setting procedure."""
+        # Only update selection if index differs from the existing selection.
+        if index == self._selected_index:
+            return
+
+        # The selection setting procedure consists of a subsequence of the sequence:
+        #   message_1, message_2, message_3
+        # with:
+        #   message_1 - Focused item loses focus. Sent when there is an existing focused
+        #       item and the new selection is not None (i.e. index != -1).
+        #   message_2 - All items are deselected. Sent when there is an existing
+        #       selected item.
+        #   message_3 - Item with index=index gains focus and selection. Sent when the
+        #       new selection is not None (i.e. index != -1).
+        send_message_1 = self._focused_index >= 0 and index != -1
+        send_message_2 = self._selected_index >= 0
+        send_message_3 = index != -1
+
+        uMsg = wc.LVM_SETITEMSTATE
+        lvitem = u32_cls.LVITEMW()
+        lvitem.uiMask = wc.LVIF_STATE
+        lvitem.state = 0
+
+        if send_message_1:
+            lvitem.stateMask = wc.LVIS_FOCUSED
+            u32.SendMessageW(self._hwnd, uMsg, self._focused_index, byref(lvitem))
+
+        if send_message_2:
+            lvitem.stateMask = wc.LVIS_SELECTED
+            u32.SendMessageW(self._hwnd, uMsg, -1, byref(lvitem))
+
+        if send_message_3:
+            lvitem.stateMask = wc.LVIS_FOCUSED | wc.LVIS_SELECTED
+            lvitem.state = wc.LVIS_FOCUSED | wc.LVIS_SELECTED
+            u32.SendMessageW(self._hwnd, uMsg, index, byref(lvitem))
+
+    def _process_focus(self, index: int, is_gaining_focus: bool):
+        # The Win32 selection-change process consists of a sequence of messages as
+        # described in _set_selection.
+        #
+        # Only message_1 and message_3 are processed by _process_focus.
+
+        # If is_gaining_focus=True then this is message_3.
+        if is_gaining_focus:
+            self._focused_index = index
+
+        # If is_gaining_focus=False then this is message_1.
+        else:
+            self._invalidate_tile(index)
+            self._focused_index = -1
+
+    def _process_select(self, index: int, is_selected: bool):
+        # The Win32 selection-change process consists of a sequence of messages as
+        # described in _set_selection. There are 4 scenarios:
+        # a) An item is selected and another item becomes selected. All 3 messages are
+        #    sent.
+        # b) An item is selected and then no item is selected (for example when clicking
+        #    in the client area where there are no items). Only message_2 is sent.
+        # c) No item is selected or focused. Only message_3 is sent.
+        # d) No item is selected, but an item is focused. Messages 1 and 3 are sent.
+        #
+        # Notes:
+        # - Since LVS_SINGLESEL is used an item can be focused but not selected,
+        #   but under normal operations a selected item is always focused.
+        # - Only message_2 and message_3 are processed by _process_select.
+
+        # A message with a positive index corresponds to message_3, so select the item
+        # and ensure that the tile is fully redrawn.
+        if index >= 0:
+            self._selected_index = index
+            self._invalidate_tile(index)
+
+        # A message with a negative index means that all items are being deselected.
+        # If the existing focus is non-negative, then all items are being deselected
+        # i.e. situation b) above.
+        elif self._focused_index >= 0:
+            self._selected_index = -1
+            self._invalidate_tile(self._focused_index)
+
+        # This code block corresponds to message 2 in situation a) above. The new tile
+        # will be selected during message 3 so nothing needs to be done here.
+        else:
+            return
+
+        u32.UpdateWindow(self._hwnd)
+        self.interface.on_select()
 
     ####################################################################################
     # Internal methods.
     ####################################################################################
+
+    def _item_hit_test(self, y: int) -> int:
+        hit_test_info = cc32_cls.LVHITTESTINFO()
+        hit_test_info.pt = POINT(self._mouse_down_x, y)
+        u32.SendMessageW(self._hwnd, wc.LVM_HITTEST, 0, byref(hit_test_info))
+
+        return hit_test_info.iItem
 
     def menu_items(self, x: int, y: int) -> list[None | tuple[str, Callable[[], None]]]:
         menu_items_list = []
@@ -556,11 +661,7 @@ class DetailedList(Widget):
 
             menu_items_list.append(("Refresh list", refresh))
 
-        hit_test_info = cc32_cls.LVHITTESTINFO()
-        hit_test_info.pt = POINT(self._mouse_down_x, y)
-        u32.SendMessageW(self._hwnd, wc.LVM_HITTEST, 0, byref(hit_test_info))
-        index = hit_test_info.iItem
-
+        index = self._item_hit_test(y)
         # index will be less than 0 if there is no item where the hit test is performed.
         if (
             not (self.primary_action_enabled or self.secondary_action_enabled)
@@ -596,50 +697,6 @@ class DetailedList(Widget):
         u32.SendMessageW(self._hwnd, wc.LVM_GETITEMRECT, index, byref(rect))
         rect.right = self._tile_width()
         u32.InvalidateRect(self._hwnd, byref(rect), True)
-
-    def _process_focus(self, index: int, is_focused: bool):
-        if is_focused:
-            self._focused_index = index
-        else:
-            self._invalidate_tile(index)
-            self._focused_index = None
-
-    def _process_select(self, index: int, is_selected: bool):
-        # The Win32 selection-change process consists of a sequence of messages.
-        # (Note that since LVS_SINGLESEL is used an item can be focused but not
-        # selected, but under normal operations a selected item is always focused.)
-        #
-        # a) If an item is selected and another item becomes selected there are 3
-        #    messages:
-        #   1. Old item with index=iItem loses focus.
-        #   2. All items are deselected with iItem=-1.
-        #   3. New item with index=iItem gains focus and selection.
-        # b) If an item is selected and then no item is selected (for example when
-        #    clicking in the client area where there are no items) then only message 2
-        #    is sent.
-        # c) If no item is selected or focused then only message 3 is sent.
-        # d) If no item is selected by an item is focused then message 2 is not sent.
-
-        # A message with a positive index corresponds to a message of type 3 (above),
-        # so select the item and ensure that the tile is fully redrawn.
-        if index >= 0:
-            self._selected_index = index
-            self._invalidate_tile(index)
-
-        # A message with a negative index means that all items are being deselected.
-        # If the focus is not None, then all items are being deselected i.e. situation
-        # b) above.
-        elif self._focused_index is not None:
-            self._selected_index = None
-            self._invalidate_tile(self._focused_index)
-
-        # This code block corresponds to message 2 in situation a) above. The new tile
-        # will be selected during message 3 so nothing needs to be done here.
-        else:
-            return
-
-        u32.UpdateWindow(self._hwnd)
-        self.interface.on_select()
 
     def _set_image_list(self):
         # Dispose of the existing image list (if it exists).
@@ -709,6 +766,9 @@ class DetailedList(Widget):
         u32.SendMessageW(self._hwnd, wc.LVM_ENSUREVISIBLE, index, False)
 
     def get_selection(self):
+        if self._selected_index < 0:
+            return None
+
         return self._selected_index
 
     def change_source(self, source):
