@@ -20,7 +20,7 @@ from .drawingaction import (
     WriteText,
 )
 from .geometry import arc_to_bezier, sweepangle
-from .state import ClosePath, Fill, State, Stroke
+from .manager import ClosePath, Fill, State, Stroke
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)

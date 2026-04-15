@@ -84,7 +84,7 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - on_press
             - on_release
             - on_resize
-            - root_state
+            - root_manager
             # Drawing methods
             - begin_path
             - close_path

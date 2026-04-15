@@ -44,7 +44,7 @@ async def test_old_tutorial(canvas, probe):
 
         # Horns
 
-        with canvas.root_state.state() as r_horn:
+        with canvas.root_manager.state() as r_horn:
             with r_horn.Fill(color=rgb(212, 212, 212)) as r_horn_filler:
                 r_horn_filler.move_to(112, 99)
                 r_horn_filler.quadratic_curve_to(145, 65, 139, 36)
@@ -54,7 +54,7 @@ async def test_old_tutorial(canvas, probe):
                 r_horn_stroker.quadratic_curve_to(145, 65, 139, 36)
                 r_horn_stroker.quadratic_curve_to(130, 60, 109, 75)
 
-        with canvas.root_state.state() as l_horn:
+        with canvas.root_manager.state() as l_horn:
             with l_horn.Fill(color=rgb(212, 212, 212)) as l_horn_filler:
                 l_horn_filler.move_to(35, 99)
                 l_horn_filler.quadratic_curve_to(2, 65, 6, 36)

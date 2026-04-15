@@ -20,7 +20,7 @@ def test_sub_state(widget):
         widget.line_to(30, 40)
     # A fresh state has been created as a sub-state of the canvas.
     assert isinstance(sub_state, State)
-    assert sub_state is not widget.root_state
+    assert sub_state is not widget.root_manager
 
     assert_action_performed(widget, "redraw")
     assert repr(sub_state) == "State()"
@@ -220,11 +220,11 @@ def test_contains(widget):
     scale = Scale(1, 1)
 
     # Assign a couple of shorthands for testing
-    root = widget.root_state
+    root = widget.root_manager
     everything = [root, stroke, reset_transform, fill, line_to, close_path, scale]
 
     assert_contents(
-        widget.root_state,
+        widget.root_manager,
         contains=[stroke, reset_transform, fill, line_to, close_path],
         doesnt_contain=[root, scale],
     )

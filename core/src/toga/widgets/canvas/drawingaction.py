@@ -55,15 +55,16 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 
 
 class DrawingAction(ABC):
-    """A drawing operation in a [`State`][toga.widgets.canvas.State].
+    """A [`Canvas`][toga.Canvas] drawing operation.
 
     Every canvas drawing method creates a `DrawingAction`, adds it to the currently
-    active state, and returns it. Each argument passed to the method becomes a property
-    of the `DrawingAction`, which can be modified as shown in the [Usage][] section.
+    active context manager, and returns it. Each argument passed to the method becomes
+    a property of the `DrawingAction`, which can be modified as shown in the [Usage][]
+    section.
 
-    `DrawingActions` can also be created manually, then added to a state's
-    [list of drawing actions][toga.widgets.canvas.State.drawing_actions]. Their
-    constructors take the same arguments as the corresponding [`Canvas`]
+    `DrawingActions` can also be created manually, then added to a context manager's
+    [list of drawing actions][toga.widgets.canvas.DrawingActionManager.drawing_actions].
+    Their constructors take the same arguments as the corresponding [`Canvas`]
     [toga.Canvas] drawing method, and their classes have the same names, but
     capitalized:
 
@@ -111,7 +112,7 @@ class DrawingAction(ABC):
 
     @abstractmethod
     def _draw(self, context: Any) -> None:
-        """Called by parent state to execute this drawing action."""
+        """Called by parent context manager to execute this drawing action."""
 
     def __contains__(self, other: DrawingAction):
         return hasattr(self, "drawing_actions") and any(
