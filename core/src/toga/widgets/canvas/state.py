@@ -328,7 +328,7 @@ class DrawingActionDispatch(ABC):
 
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
-        :param color: The fill color.
+        :param fill_style: The fill color.
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
@@ -350,10 +350,10 @@ class DrawingActionDispatch(ABC):
         (`x`, `y`) coordinates (if both are specified). When the context is exited, the
         path is stroked.
 
+        :param stroke_style: The color for the stroke.
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
-        :param stroke_style: The color for the stroke.
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
