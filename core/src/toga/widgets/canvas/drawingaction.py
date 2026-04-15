@@ -63,7 +63,7 @@ class DrawingAction(ABC):
     section.
 
     `DrawingActions` can also be created manually, then added to a context manager's
-    [list of drawing actions][toga.widgets.canvas.DrawingActionManager.drawing_actions].
+    [list of drawing actions][toga.widgets.canvas.manager.DrawingActionManager.drawing_actions].
     Their constructors take the same arguments as the corresponding [`Canvas`]
     [toga.Canvas] drawing method, and their classes have the same names, but
     capitalized:
