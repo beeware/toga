@@ -4,7 +4,7 @@ import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from contextlib import AbstractContextManager
-from dataclasses import dataclass
+from dataclasses import KW_ONLY, dataclass
 from math import pi
 from typing import TYPE_CHECKING, Any
 
@@ -311,9 +311,10 @@ class DrawingActionDispatch(ABC):
 
     def fill(
         self,
-        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
-    ) -> Fill:
+        *,
+        fill_style: ColorT | None = None,
+    ) -> AbstractContextManager[Fill]:
         """Fill the current path.
 
         The fill can use either the
@@ -331,31 +332,36 @@ class DrawingActionDispatch(ABC):
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        fill = Fill(color, fill_rule)
+        fill = Fill(fill_rule, fill_style=fill_style)
         self._add_to_target(fill)
         self._redraw_with_warning_if_state()
         return fill
 
     def stroke(
         self,
-        color: ColorT | None = None,
+        *,
+        stroke_style: ColorT | None = None,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
-    ) -> Stroke:
+    ) -> AbstractContextManager[Stroke]:
         """Draw the current path as a stroke.
 
         If used as a context manager, this begins a new path, and moves to the specified
         (`x`, `y`) coordinates (if both are specified). When the context is exited, the
         path is stroked.
 
-        :param color: The color for the stroke.
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
+        :param stroke_style: The color for the stroke.
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        stroke = Stroke(color, line_width, line_dash)
+        stroke = Stroke(
+            stroke_style=stroke_style,
+            line_width=line_width,
+            line_dash=line_dash,
+        )
         self._add_to_target(stroke)
         self._redraw_with_warning_if_state()
         return stroke
@@ -509,13 +515,15 @@ class DrawingActionDispatch(ABC):
     # 2026-02: Backwards compatibility for <= 0.5.3
     ######################################################################
 
-    def _warn_context_manager(self, old_name, new_name, coordinates):
+    def _warn_context_manager(self, old_name, new_name, coordinates, extra=""):
         msg = f"The {old_name}() drawing method has been renamed to {new_name}()"
         if coordinates:
             msg += (
                 ", and no longer accepts x and y coordinates as parameters. Instead, "
                 f"call move_to(x, y) after entering the {new_name} context."
             )
+        if extra:
+            msg += f" {extra}"
         warnings.warn(msg, DeprecationWarning, stacklevel=3)
 
     # Each of these CamelCase methods, when called on a State, added to that State.
@@ -574,12 +582,18 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> AbstractContextManager[Fill]:
-        self._warn_context_manager("Fill", "fill", x is not None or y is not None)
+        self._warn_context_manager(
+            "Fill",
+            "fill",
+            x is not None or y is not None,
+            "The color parameter has been renamed to fill_style, and is a keyword-only "
+            "argument.",
+        )
 
         target = self if isinstance(self, State) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
-            fill = target.fill(fill_rule=fill_rule, color=color)
+            fill = target.fill(fill_rule=fill_rule, fill_style=color)
         if x is not None and y is not None:
             fill.drawing_actions.append(MoveTo(x, y))
         return fill
@@ -592,13 +606,19 @@ class DrawingActionDispatch(ABC):
         line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> AbstractContextManager[Stroke]:
-        self._warn_context_manager("Stroke", "stroke", x is not None or y is not None)
+        self._warn_context_manager(
+            "Stroke",
+            "stroke",
+            x is not None or y is not None,
+            "The color parameter has been renamed to stroke_style. It, as well as "
+            "line_width and line_dash, are all now keyword-only arguments.",
+        )
 
         target = self if isinstance(self, State) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
             stroke = target.stroke(
-                color=color, line_width=line_width, line_dash=line_dash
+                stroke_style=color, line_width=line_width, line_dash=line_dash
             )
         if x is not None and y is not None:
             stroke.drawing_actions.append(MoveTo(x, y))
@@ -814,16 +834,19 @@ class ClosePath(State):
 
 @dataclass(repr=False)
 class Fill(State):
-    color: ColorT | None = color_property()
+    # This will need to change to a pair of positional arguments in order to accommodate
+    # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
     fill_rule: FillRule = FillRule.NONZERO
+    _: KW_ONLY
+    fill_style: ColorT | None = color_property()
 
     def __post_init__(self):
         super().__init__()
 
     def _draw(self, context: Any) -> None:
         context.save()
-        if self.color is not None:
-            context.set_fill_style(self.color)
+        if self.fill_style is not None:
+            context.set_fill_style(self.fill_style)
 
         if hasattr(self, "_is_open") or self.drawing_actions:
             # Was used as a context manager (or had drawing actions manually added)
@@ -841,7 +864,9 @@ class Fill(State):
 
 @dataclass(repr=False)
 class Stroke(State):
-    color: ColorT | None = color_property()
+    # Path parameter (positional/keyword) will go here.
+    _: KW_ONLY
+    stroke_style: ColorT | None = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
 
@@ -850,8 +875,8 @@ class Stroke(State):
 
     def _draw(self, context: Any) -> None:
         context.save()
-        if self.color is not None:
-            context.set_stroke_style(self.color)
+        if self.stroke_style is not None:
+            context.set_stroke_style(self.stroke_style)
         if self.line_width is not None:
             context.set_line_width(self.line_width)
         if self.line_dash is not None:

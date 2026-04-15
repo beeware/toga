@@ -2,6 +2,7 @@ import pytest
 
 import toga
 import toga.widgets.canvas as canvas_module
+from toga.colors import REBECCAPURPLE
 from toga.constants import FillRule
 from toga.widgets.canvas import (
     Arc,
@@ -84,8 +85,13 @@ def test_renamed_root_state(widget):
         ("fill", (), Fill),
         ("Fill", (), Fill),  # Deprecated alias
         ("Fill", (0, 0), Fill),  # Deprecated alias with removed parameters
+        # Deprecated alias with all arguments
+        ("Fill", (0, 0, REBECCAPURPLE, FillRule.EVENODD), Fill),
         ("stroke", (), Stroke),
         ("Stroke", (), Stroke),  # Deprecated alias
+        ("Stroke", (0, 0), Stroke),  # Deprecated alias with removed parameters
+        # Deprecated alias with all arguments
+        ("Stroke", (0, 0, REBECCAPURPLE, 0, [0, 0, 0, 0]), Stroke),
         ("Stroke", (0, 0), Stroke),  # Deprecated alias with removed parameters
         ("write_text", ("",), WriteText),
         ("draw_image", None, DrawImage),
