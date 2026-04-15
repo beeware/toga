@@ -66,6 +66,9 @@ class NativeProxy:
         if self._upgraded:
             setattr(self._element, name, value)
         else:
+            # Pop-then-reinsert so replay order mirrors write order even
+            # when the same key is set more than once pre-upgrade.
+            self._pending.pop(name, None)
             self._pending[name] = value
 
 
