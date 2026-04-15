@@ -62,14 +62,22 @@ class TimeInput(Widget):
         self.native.value = native_time(value)
 
     def get_min_time(self):
-        min_value = self.native.min if self.native.min else datetime.time(0, 0, 0)
+        try:
+            min_value = self.native.min if self.native.min else datetime.time(0, 0, 0)
+        except AttributeError:
+            min_value = datetime.time(0, 0, 0)
         return py_time(min_value)
 
     def set_min_time(self, value):
         self.native.min = native_time(value)
 
     def get_max_time(self):
-        max_value = self.native.max if self.native.max else datetime.time(23, 59, 59)
+        try:
+            max_value = (
+                self.native.max if self.native.max else datetime.time(23, 59, 59)
+            )
+        except AttributeError:
+            max_value = datetime.time(23, 59, 59)
         return py_time(max_value)
 
     def set_max_time(self, value):
