@@ -48,16 +48,22 @@ class Selection(Widget):
         option = self._create_native_widget("wa-option")
         option.value = str(index)
         option.textContent = display_text
-        native_value = self._get_native_attr("value", "")
+        try:
+            native_value = self.native.value
+        except AttributeError:
+            native_value = ""
         if native_value == "":
-            self._set_native_attr("value", option.value)
+            self.native.value = option.value
         if index >= len(self.native.children):
-            self.native.appendChild(option)
+            self.native.appendChild(option.unwrap())
         else:
-            self.native.insertBefore(option, self.native.children[index])
+            self.native.insertBefore(option.unwrap(), self.native.children[index])
 
     def get_selected_index(self):
-        value = self._get_native_attr("value", "")
+        try:
+            value = self.native.value
+        except AttributeError:
+            value = ""
         if value:
             return int(value)
         return None

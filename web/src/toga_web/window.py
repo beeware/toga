@@ -97,7 +97,7 @@ class Window:
             self.native.removeChild(child)
 
         # Add all children to the content widget.
-        self.native.appendChild(widget.native)
+        self.native.appendChild(widget.native.unwrap())
 
     ######################################################################
     # Window size

@@ -1,7 +1,71 @@
-import warnings
 from abc import ABC, abstractmethod
 
-from toga_web.libs import create_element
+import js
+
+from toga_web.libs import create_element, create_proxy
+
+
+class NativeProxy:
+    """Wraps a WebAwesome custom element, buffering attribute sets that happen
+    before the element's tag has been defined and the instance upgraded.
+
+    Toga's widget lifecycle creates elements detached from the DOM and
+    immediately sets class-defined properties on them (e.g. `wa-switch.checked`).
+    Those properties only exist after the browser has (a) loaded the component
+    module and called `customElements.define` and (b) upgraded the specific
+    element instance. Until then, attribute sets would fail.
+
+    The proxy:
+      * buffers pre-upgrade sets in an insertion-ordered dict
+      * returns the buffered value (or passes through) on reads
+      * once `whenDefined` resolves for the element's tag, force-upgrades the
+        (possibly still-disconnected) element with `customElements.upgrade`
+        and replays the buffer onto the now-upgraded element
+    """
+
+    def __init__(self, element):
+        # object.__setattr__ to avoid calling our own __setattr__ override when mutating these bookkeeping members
+        object.__setattr__(self, "_element", element)
+        object.__setattr__(self, "_pending", {})
+        object.__setattr__(self, "_upgraded", False)
+
+        tag = element.tagName.lower()
+        if tag.startswith("wa-"):
+
+            def on_defined(promise):
+                js.customElements.upgrade(element)
+                object.__setattr__(self, "_upgraded", True)
+                for attr, value in self._pending.items():
+                    setattr(element, attr, value)
+                self._pending.clear()
+
+            js.customElements.whenDefined(tag).then(create_proxy(on_defined))
+        else:
+            object.__setattr__(self, "_upgraded", True)
+
+    def unwrap(self):
+        """Return the underlying JsProxy element.
+
+        Pyodide unwraps JsProxy arguments automatically when marshaling into
+        JS, but it does not unwrap arbitrary Python objects — so callers
+        that pass a NativeProxy as an *argument* to a JS method (e.g.
+        appendChild, insertBefore) must call unwrap() to hand JS the real Node.
+        """
+        return self._element
+
+    def __getattr__(self, name):
+        if not self._upgraded and name in self._pending:
+            return self._pending[name]
+
+        # If not upgraded and name hasn't been set, raise AttributeError;
+        # The widgets themselves should define their defaults for those cases
+        return getattr(self._element, name)
+
+    def __setattr__(self, name, value):
+        if self._upgraded:
+            setattr(self._element, name, value)
+        else:
+            self._pending[name] = value
 
 
 class Widget(ABC):
@@ -47,38 +111,10 @@ class Widget(ABC):
             **properties,
         )
 
-        return native
+        return NativeProxy(native)
 
     @abstractmethod
     def create(self): ...
-
-    def _get_native_attr(self, attr, default):
-        """Get a native element property, with a fallback if the element isn't
-        upgraded yet. WebAwesome registers custom elements asynchronously, so
-        properties may not exist when Python code runs during init."""
-        try:
-            return getattr(self.native, attr)
-        except AttributeError:
-            tag = getattr(self.native, "tagName", "unknown")
-            warnings.warn(
-                f"{tag} element not yet upgraded; defaulting {attr} to {default!r}",
-                RuntimeWarning,
-                stacklevel=2,
-            )
-            return default
-
-    def _set_native_attr(self, attr, value):
-        """Set a native element property, ignoring if the element isn't
-        upgraded yet."""
-        try:
-            setattr(self.native, attr, value)
-        except AttributeError:
-            tag = getattr(self.native, "tagName", "unknown")
-            warnings.warn(
-                f"{tag} element not yet upgraded; ignoring set {attr}={value!r}",
-                RuntimeWarning,
-                stacklevel=2,
-            )
 
     def set_app(self, app):  # noqa B027
         pass
