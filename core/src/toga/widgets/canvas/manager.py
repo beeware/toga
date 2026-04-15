@@ -498,7 +498,8 @@ class DrawingActionDispatch(ABC):
         """A context manager that saves the current state of the Canvas context, and
         restores it upon exiting.
 
-        :return: Yields the new [`State`][toga.widgets.canvas.State] object.
+        :return: Yields the new `State`
+          [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
         state = State()
         self._add_to_target(state)
