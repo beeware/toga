@@ -1,3 +1,58 @@
+import platform
+from pathlib import Path
+
+import clr_loader
+from pythonnet import set_runtime
+
+try:
+    ####################################################################################
+    # Toga Winforms requires the use of .NET; either .NET Framework 4.x, or .NET Core.
+    #
+    # .NET Framework 4.x is available by default on Windows 10 and 11. However, on
+    # Windows on ARM64, it is an x86-64 binary, so it can't be used by a native ARM64
+    # Python interpreter.
+    #
+    # However, it *can* be used if you have an x86-64 Python interpreter - which is what
+    # you get if you run `py install -3.13` or `py install -3.14`. This will apparently
+    # change with Python 3.15.
+    #
+    # Using .NET Core requires a separate install - but it will be present on a lot
+    # of systems.
+    #
+    # So - try to load .NET Core; if it succeeds, use it. If the load fails, fall back
+    # to .NET Framework. If we're on ARM64, check to see if the interpreter is running
+    # in emulation mode. If it is, we're OK; if we're not, stop the interpreter; the
+    # .NET gives instructions on how to install .NET
+    ####################################################################################
+
+    # runtime.json defines the .NET version. .NET 10 is the current LTS release.
+    set_runtime(
+        clr_loader.get_coreclr(
+            runtime_config=Path(__file__).parent / "resources/runtime.json"
+        )
+    )
+
+    # .NET Core load succeeded
+    _use_dotnet_core = True
+except (clr_loader.util.clr_error.ClrError, RuntimeError):
+    # .NET Core load failed.
+    if platform.machine() == "ARM64" and "ARM64" in platform.python_compiler():
+        # A native ARM64 machine running an ARM64 Python.
+        # .NET Framework 4.x isn't an option.
+        raise RuntimeError("""
+
+On Windows, Toga requires .NET Core 10. Please visit:
+
+    https://dotnet.microsoft.com/en-us/download/dotnet/10.0
+
+and install the .NET Desktop Runtime.""") from None
+    else:
+        # Either a native x86_64 machine, or an ARM64 machine with
+        # and x86_64 Python interpreter in emulation mode. We can
+        # use .NET Framework 4.x
+        _use_dotnet_core = False
+
+
 import clr
 import travertino
 
@@ -8,6 +63,12 @@ from .libs.user32 import (
 
 # Add a reference to the Winforms assembly
 clr.AddReference("System.Windows.Forms")
+
+# .NET Core requires some other explicit assemblies
+if _use_dotnet_core:
+    clr.AddReference("Microsoft.Win32.SystemEvents")
+    clr.AddReference("System.Windows.Extensions")
+
 
 # Add a reference to the WindowsBase assembly. This is needed to access
 # System.Windows.Threading.Dispatcher.
