@@ -56,13 +56,15 @@ class NativeProxy:
         return self._element
 
     def __getattr__(self, name):
+        # If we're still waiting to be upgraded and we've seen a set, return that value
         if not self._upgraded and name in self._pending:
             return self._pending[name]
 
         attr = getattr(self._element, name)
+        # if we're asking for a JsProxy callable, assume we're going to call it;
+        # return wrapper that checks all args and unwraps any NativeProxys
+        # to their underlying JsProxy elements
         if isinstance(attr, JsProxy) and callable(attr):
-            # Wrap JS methods so any NativeProxy arguments are automatically
-            # unwrapped to their underlying JsProxy elements before the call.
             def _auto_unwrap(*args):
                 unwrapped_args = [
                     a.unwrap() if isinstance(a, NativeProxy) else a for a in args
@@ -70,6 +72,8 @@ class NativeProxy:
                 return attr(*unwrapped_args)
 
             return _auto_unwrap
+
+        # otherwise just return what was asked for
         return attr
 
     def __setattr__(self, name, value):
