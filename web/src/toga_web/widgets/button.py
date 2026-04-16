@@ -6,6 +6,7 @@ from .base import Widget
 class Button(Widget):
     def create(self):
         self.native = self._create_native_widget("wa-button")
+        self.native.setAttribute("appearance", "outlined")
         self.native.addEventListener("click", create_proxy(self.dom_click))
 
     def dom_click(self, event):
