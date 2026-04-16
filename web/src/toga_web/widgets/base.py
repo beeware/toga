@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 import js
+from pyodide.ffi import JsProxy
 
 from toga_web.libs import create_element, create_proxy
 
@@ -58,9 +59,18 @@ class NativeProxy:
         if not self._upgraded and name in self._pending:
             return self._pending[name]
 
-        # If not upgraded and name hasn't been set, raise AttributeError;
-        # The widgets themselves should define their defaults for those cases
-        return getattr(self._element, name)
+        attr = getattr(self._element, name)
+        if isinstance(attr, JsProxy) and callable(attr):
+            # Wrap JS methods so any NativeProxy arguments are automatically
+            # unwrapped to their underlying JsProxy elements before the call.
+            def _auto_unwrap(*args):
+                unwrapped_args = [
+                    a.unwrap() if isinstance(a, NativeProxy) else a for a in args
+                ]
+                return attr(*unwrapped_args)
+
+            return _auto_unwrap
+        return attr
 
     def __setattr__(self, name, value):
         if self._upgraded:

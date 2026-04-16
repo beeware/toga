@@ -55,9 +55,9 @@ class Selection(Widget):
         if native_value == "":
             self.native.value = option.value
         if index >= len(self.native.children):
-            self.native.appendChild(option.unwrap())
+            self.native.appendChild(option)
         else:
-            self.native.insertBefore(option.unwrap(), self.native.children[index])
+            self.native.insertBefore(option, self.native.children[index])
 
     def get_selected_index(self):
         try:

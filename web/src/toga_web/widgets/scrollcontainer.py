@@ -20,7 +20,7 @@ class ScrollContainer(Widget):
             "div",
             classes=["toga-scroll-content"],
         )
-        self.native.appendChild(self._content_div.unwrap())
+        self.native.appendChild(self._content_div)
         self._update_overflow()
 
     def set_content(self, content_impl):
@@ -28,7 +28,7 @@ class ScrollContainer(Widget):
             self._content_div.removeChild(self._content_div.firstChild)
 
         if content_impl is not None:
-            self._content_div.appendChild(content_impl.native.unwrap())
+            self._content_div.appendChild(content_impl.native)
 
     def _update_overflow(self):
         self.native.style.overflowX = "auto" if self._horizontal_enabled else "hidden"
