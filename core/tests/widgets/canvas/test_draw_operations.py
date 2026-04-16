@@ -6,7 +6,7 @@ from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.images import Image
-from toga.widgets.canvas import Arc, Ellipse
+from toga.widgets.canvas import Arc, Ellipse, Fill, Stroke
 from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
@@ -114,6 +114,15 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
         assert getattr(draw_op, name) == value
 
 
+@pytest.mark.parametrize("use_method", [True, False])
+def test_fill_kw_only(widget, use_method):
+    """Providing fill_style positionally raises an error."""
+    fill = widget.fill if use_method else Fill
+
+    with pytest.raises(TypeError):
+        fill(FillRule.EVENODD, REBECCAPURPLE)
+
+
 @pytest.mark.parametrize(
     "kwargs, args_repr, draw_objs, attrs",
     [
@@ -206,6 +215,21 @@ def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
     # All the attributes can be retrieved.
     for name, value in attrs.items():
         assert getattr(draw_op, name) == value
+
+
+@pytest.mark.parametrize("use_method", [True, False])
+def test_stroke_kw_only(widget, use_method):
+    """Providing any positional arguments raises an error."""
+    stroke = widget.stroke if use_method else Stroke
+
+    with pytest.raises(TypeError):
+        stroke(REBECCAPURPLE)
+
+    with pytest.raises(TypeError):
+        stroke(REBECCAPURPLE, 4.5)
+
+    with pytest.raises(TypeError):
+        stroke(REBECCAPURPLE, 4.5, [1, 0])
 
 
 def test_move_to(widget):

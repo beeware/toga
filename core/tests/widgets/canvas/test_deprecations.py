@@ -2,7 +2,7 @@ import pytest
 
 import toga
 import toga.widgets.canvas as canvas_module
-from toga.colors import REBECCAPURPLE
+from toga.colors import GOLDENROD, REBECCAPURPLE, Color
 from toga.constants import FillRule
 from toga.widgets.canvas import (
     Arc,
@@ -448,3 +448,27 @@ def test_deprecated_list_methods(widget):
         ("line to", {"x": 99, "y": 99}),
         "restore",
     ]
+
+
+@pytest.mark.parametrize(
+    "ActionClass, attr_name",
+    [
+        (Fill, "fill_style"),
+        (Stroke, "stroke_style"),
+    ],
+)
+def test_deprecated_color_attribute(ActionClass, attr_name):
+    """Fill and Stroke alias color to fill_style/stroke_style."""
+    action = ActionClass()
+
+    # Set color, check new fill_style/stroke_style
+    with pytest.deprecated_call():
+        action.color = REBECCAPURPLE
+
+    assert getattr(action, attr_name) == Color.parse(REBECCAPURPLE)
+
+    # Set fill_style/stroke_style, check color
+    setattr(action, attr_name, GOLDENROD)
+
+    with pytest.deprecated_call():
+        assert action.color == Color.parse(GOLDENROD)

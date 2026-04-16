@@ -555,6 +555,7 @@ class DrawingActionDispatch(ABC):
             warnings.simplefilter("ignore", DeprecationWarning)
             close_path = target.close_path()
         if x is not None and y is not None:
+            # 4-2026: Backwards compatibility for Toga <= 0.5.4 / Toga Chart <= 0.2.1
             # This is a weird one. The straightforward approach would be to simply add a
             # MoveTo to the close_path.drawing_actions. However, while ClosedPath was
             # documented as a context manager, TogaChart (up to 0.2.1) uses it as a
@@ -813,7 +814,7 @@ class ClosePath(State):
         if not (hasattr(self, "_is_open") or self.drawing_actions):
             # Wasn't used as a context manager, nor had drawing actions manually added
 
-            # Backwards compatibility for Toga <= 0.5.4
+            # 4-2026: Backwards compatibility for Toga <= 0.5.4
             # See DrawingActionDispatch.ClosedPath for explanation
             if hasattr(self, "x") and hasattr(self, "y"):
                 context.move_to(self.x, self.y)
@@ -832,6 +833,30 @@ class ClosePath(State):
         context.restore()
 
 
+class color_alias:
+    def __init__(self, attr_name, class_name):
+        self.attr_name = attr_name
+        self.class_name = class_name
+
+    def __get__(self, action, action_class=None):
+        self._warn()
+        return getattr(action, self.attr_name)
+
+    def __set__(self, action, value):
+        self._warn()
+        setattr(action, self.attr_name, value)
+
+    def _warn(self):
+        warnings.warn(
+            (
+                f"The {self.class_name}.color attribute has been renamed to "
+                f"{self.class_name}.{self.attr_name}"
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+
 @dataclass(repr=False)
 class Fill(State):
     # This will need to change to a pair of positional arguments in order to accommodate
@@ -839,6 +864,10 @@ class Fill(State):
     fill_rule: FillRule = FillRule.NONZERO
     _: KW_ONLY
     fill_style: ColorT | None = color_property()
+
+    # 4-2026: Backwards compatibility for Toga <= 0.5.4
+    # Not type-hinted so that it won't be a field.
+    color = color_alias("fill_style", "Fill")
 
     def __post_init__(self):
         super().__init__()
@@ -850,13 +879,13 @@ class Fill(State):
 
         if hasattr(self, "_is_open") or self.drawing_actions:
             # Was used as a context manager (or had drawing actions manually added)
-            context.in_fill = True  # Backwards compatibility for Toga <= 0.5.3
+            context.in_fill = True  # 4-2026: Backwards compatibility for Toga <= 0.5.3
             context.begin_path()
 
             for action in self.drawing_actions:
                 action._draw(context)
 
-            context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
+            context.in_fill = False  # 4-2026: Backwards compatibility for Toga <= 0.5.3
 
         context.fill(self.fill_rule)
         context.restore()
@@ -869,6 +898,10 @@ class Stroke(State):
     stroke_style: ColorT | None = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
+
+    # 4-2026: Backwards compatibility for Toga <= 0.5.4
+    # Not type-hinted so that it won't be a field.
+    color = color_alias("stroke_style", "Stroke")
 
     def __post_init__(self):
         super().__init__()
