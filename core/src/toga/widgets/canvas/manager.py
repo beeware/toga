@@ -47,7 +47,7 @@ class DrawingActionDispatch(ABC):
     @property
     @abstractmethod
     def _action_target(self):
-        """The drawing context manager that should receive the drawing actions."""
+        """The Canvas context manager that should receive the drawing actions."""
 
     def _add_to_target(self, drawing_action: DrawingAction):
         if actions := self._action_target.drawing_actions:
@@ -617,7 +617,7 @@ class DrawingActionDispatch(ABC):
             # internally call redraw().
             warnings.warn(
                 (
-                    "Calling drawing methods on a drawing context manager is "
+                    "Calling drawing methods on a Canvas context manager is "
                     "deprecated. To add actions to the currently active context "
                     "manager, call drawing methods on the canvas."
                 ),
@@ -672,7 +672,7 @@ class DrawingActionManager(DrawingAction, DrawingActionDispatch, ABC):
     def __enter__(self):
         if not self._can_be_entered:
             raise RuntimeError(
-                "A drawing context manager can only be entered once, and only before "
+                "A Canvas context manager can only be entered once, and only before "
                 "any subsequent drawing actions are added."
             )
 
@@ -720,7 +720,7 @@ class DrawingActionManager(DrawingAction, DrawingActionDispatch, ABC):
     @property
     def canvas(self) -> Canvas:
         warnings.warn(
-            "Drawing context managers no longer hold a reference to their canvas.",
+            "Canvas context managers no longer hold a reference to their canvas.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -754,7 +754,7 @@ class DrawingActionManager(DrawingAction, DrawingActionDispatch, ABC):
     def _warn_list_methods(self) -> None:
         warnings.warn(
             (
-                "Drawing context managers' list-like methods (append, insert, remove, "
+                "Canvas context managers' list-like methods (append, insert, remove, "
                 "and clear), as well as implementing len() and indexing, are "
                 "deprecated. Manipulate its drawing_actions directly, and then call "
                 "redraw() on the canvas."

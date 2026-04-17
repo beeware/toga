@@ -127,7 +127,7 @@ class Canvas(Widget, DrawingActionDispatch):
 
     @property
     def root_manager(self) -> State:
-        """The root drawing context manager for the canvas."""
+        """The root context manager for the canvas."""
         return self._root_manager
 
     ######################################################################
