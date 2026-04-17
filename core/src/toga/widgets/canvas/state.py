@@ -721,7 +721,7 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
     @property
     def canvas(self) -> Canvas:
         warnings.warn(
-            "State no longer hold a reference to their canvas.",
+            "States no longer hold a reference to their canvas.",
             DeprecationWarning,
             stacklevel=2,
         )

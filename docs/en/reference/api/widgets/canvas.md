@@ -110,7 +110,7 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - as_image
             - focus
 
-::: toga.widgets.canvas.manager.BaseState
+::: toga.widgets.canvas.state.BaseState
 
 ::: toga.widgets.canvas.DrawingAction
 
