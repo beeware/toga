@@ -1,0 +1,68 @@
+# This project was generated with 0.3.26 using template: https://github.com/beeware/briefcase-template @ v0.3.26
+[tool.briefcase]
+project_name = "Table Column Demo"
+bundle = "org.beeware.toga.examples"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD-3-Clause"
+license-files = [
+    "LICENSE",
+]
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.table_columns]
+formal_name = "Table Column Demo"
+description = "A testing app"
+long_description = """More details about the app should go here.
+"""
+sources = [
+    "table_columns",
+]
+
+requires = [
+    "../../travertino",
+    "../../core",
+    "babel",
+]
+
+[tool.briefcase.app.table_columns.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.table_columns.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.table_columns.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.table_columns.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.table_columns.android]
+requires = [
+    "../../android",
+]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "com.google.android.material:material:1.12.0",
+]
+
+# Web deployment
+[tool.briefcase.app.table_columns.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

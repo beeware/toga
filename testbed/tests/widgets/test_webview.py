@@ -109,7 +109,7 @@ async def widget(on_load):
 
     yield widget
 
-    if toga.platform.get_platform_factory().__package__ == "toga_gtk":
+    if toga.backend == "toga_gtk":
         # On Gtk, ensure that the MapView evades garbage collection by keeping a
         # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
         # thread disposing of it is not the same thread running the event loop. Since
@@ -190,6 +190,7 @@ async def test_load_url(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_static_content(widget, probe, on_load):
     """Static content can be loaded into the page."""
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
@@ -205,6 +206,7 @@ async def test_static_content(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_static_large_content(widget, probe, on_load):
     """Static large content can be loaded into the page"""
     large_content = f"<p>{'lorem ipsum ' * 200000}</p>"

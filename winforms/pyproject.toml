@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==82.0.0",
-    "setuptools_scm==9.2.2",
+    "setuptools==82.0.1",
+    "setuptools_scm==10.0.5",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -15,7 +15,7 @@ requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE",
-    "src/toga_winforms/libs/WebView2/LICENSE.md",
+    "LICENSE.WebView2",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -59,6 +59,56 @@ Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
 
 [project.entry-points."toga.backends"]
 windows = "toga_winforms"
+
+[project.entry-points."toga_core.backend.toga_winforms"]
+App = "toga_winforms.app:App"
+Command = "toga_winforms.command:Command"
+Font = "toga_winforms.fonts:Font"
+Icon = "toga_winforms.icons:Icon"
+Image = "toga_winforms.images:Image"
+Paths = "toga_winforms.paths:Paths"
+dialogs = "toga_winforms.dialogs"
+resources = "toga_winforms.resources"
+
+# Hardware
+# Camera = "toga_winforms.hardware.camera:Camera"
+# Location = "toga_winforms.hardware.location:Location"
+
+# Status Icons
+MenuStatusIcon = "toga_winforms.statusicons:MenuStatusIcon"
+SimpleStatusIcon = "toga_winforms.statusicons:SimpleStatusIcon"
+StatusIconSet = "toga_winforms.statusicons:StatusIconSet"
+
+# Widgets
+ActivityIndicator = "toga_winforms.widgets.activityindicator:ActivityIndicator"
+Box = "toga_winforms.widgets.box:Box"
+Button = "toga_winforms.widgets.button:Button"
+Canvas = "toga_winforms.widgets.canvas:Canvas"
+DateInput = "toga_winforms.widgets.dateinput:DateInput"
+DetailedList = "toga_winforms.widgets.detailedlist:DetailedList"
+Divider = "toga_winforms.widgets.divider:Divider"
+ImageView = "toga_winforms.widgets.imageview:ImageView"
+Label = "toga_winforms.widgets.label:Label"
+MapView = "toga_winforms.widgets.mapview:MapView"
+MultilineTextInput = "toga_winforms.widgets.multilinetextinput:MultilineTextInput"
+NumberInput = "toga_winforms.widgets.numberinput:NumberInput"
+OptionContainer = "toga_winforms.widgets.optioncontainer:OptionContainer"
+PasswordInput = "toga_winforms.widgets.passwordinput:PasswordInput"
+ProgressBar = "toga_winforms.widgets.progressbar:ProgressBar"
+ScrollContainer = "toga_winforms.widgets.scrollcontainer:ScrollContainer"
+Selection = "toga_winforms.widgets.selection:Selection"
+Slider = "toga_winforms.widgets.slider:Slider"
+SplitContainer = "toga_winforms.widgets.splitcontainer:SplitContainer"
+Switch = "toga_winforms.widgets.switch:Switch"
+Table = "toga_winforms.widgets.table:Table"
+TextInput = "toga_winforms.widgets.textinput:TextInput"
+TimeInput = "toga_winforms.widgets.timeinput:TimeInput"
+Tree = "toga_winforms.widgets.tree:Tree"
+WebView = "toga_winforms.widgets.webview:WebView"
+
+# Windows
+MainWindow = "toga_winforms.window:MainWindow"
+Window = "toga_winforms.window:Window"
 
 [tool.distutils.bdist_wheel]
 # This backend needs to be tagged `py3-none-win_arm64`. All the code in this backend is

@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 from warnings import filterwarnings, warn
 
 from toga.colors import Color
-from toga.constants import Baseline, FillRule
+from toga.constants import Baseline
 from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
@@ -20,9 +20,8 @@ from toga.images import Image
 from .geometry import CornerRadiusT
 
 if TYPE_CHECKING:
-    from toga.colors import ColorT
+    from toga.constants import Baseline
 
-    from .path import Path2D
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
@@ -57,40 +56,39 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 
 
 class DrawingAction(ABC):
-    """A drawing operation in a [`State`][toga.widgets.canvas.State].
+    """A [`Canvas`][toga.Canvas] drawing operation.
 
-    Every state drawing method creates a `DrawingAction`, adds it to the state,
-    and returns it. Each argument passed to the method becomes a property of the
-    `DrawingAction`, which can be modified as shown in the [Usage][] section.
+    Every canvas drawing method creates a `DrawingAction`, adds it to the currently
+    active state, and returns it. Each argument passed to the method becomes a property
+    of the `DrawingAction`, which can be modified as shown in the [Usage][] section.
 
     `DrawingActions` can also be created manually, then added to a state using the
-    [`append()`][toga.widgets.canvas.State.append] or
-    [`insert()`][toga.widgets.canvas.State.append] methods. Their constructors take
-    the same arguments as the corresponding [`State`][toga.widgets.canvas.State]
-    or [`Path2D`][toga.widgets.canvas.Path2D] methods, and their classes have the
-    same names, but capitalized:
+    [list of drawing actions][toga.widgets.canvas.state.BaseState.drawing_actions].
+    Their constructors take the same arguments as the corresponding
+    [`Canvas`][toga.Canvas] or [`Path2D`][toga.widgets.canvas.Path2D] methods, and
+    their classes have the same names, but capitalized:
 
-    * [`toga.widgets.canvas.Arc`][toga.widgets.canvas.State.arc]
-    * [`toga.widgets.canvas.BezierCurveTo`][toga.widgets.canvas.State.bezier_curve_to]
-    * [`toga.widgets.canvas.ClosePath`][toga.widgets.canvas.State.close_path]
-    * [`toga.widgets.canvas.Ellipse`][toga.widgets.canvas.State.ellipse]
-    * [`toga.widgets.canvas.LineTo`][toga.widgets.canvas.State.line_to]
-    * [`toga.widgets.canvas.MoveTo`][toga.widgets.canvas.State.move_to]
-    * [`toga.widgets.canvas.QuadraticCurveTo`][toga.widgets.canvas.State.quadratic_curve_to]
-    * [`toga.widgets.canvas.Rect`][toga.widgets.canvas.State.rect]
-    * [`toga.widgets.canvas.RoundRect`][toga.widgets.canvas.State.round_rect]
+    * [`toga.widgets.canvas.Arc`][toga.Canvas.arc]
+    * [`toga.widgets.canvas.BezierCurveTo`][toga.Canvas.bezier_curve_to]
+    * [`toga.widgets.canvas.Ellipse`][toga.Canvas.ellipse]
+    * [`toga.widgets.canvas.LineTo`][toga.Canvas.line_to]
+    * [`toga.widgets.canvas.MoveTo`][toga.Canvas.move_to]
+    * [`toga.widgets.canvas.QuadraticCurveTo`][toga.Canvas.quadratic_curve_to]
+    * [`toga.widgets.canvas.Rect`][toga.Canvas.rect]
+    * [`toga.widgets.canvas.RoundRect`][toga.Canvas.round_rect]
 
     The following `DrawingActions` can only be used with `State` objects and not
     `Path2D`:
 
-    * [`toga.widgets.canvas.BeginPath`][toga.widgets.canvas.State.begin_path]
-    * [`toga.widgets.canvas.Fill`][toga.widgets.canvas.State.fill]
-    * [`toga.widgets.canvas.ResetTransform`][toga.widgets.canvas.State.reset_transform]
-    * [`toga.widgets.canvas.Rotate`][toga.widgets.canvas.State.rotate]
-    * [`toga.widgets.canvas.Scale`][toga.widgets.canvas.State.scale]
-    * [`toga.widgets.canvas.Stroke`][toga.widgets.canvas.State.stroke]
-    * [`toga.widgets.canvas.Translate`][toga.widgets.canvas.State.translate]
-    * [`toga.widgets.canvas.WriteText`][toga.widgets.canvas.State.write_text]
+    * [`toga.widgets.canvas.BeginPath`][toga.Canvas.begin_path]
+    * [`toga.widgets.canvas.ClosePath`][toga.Canvas.close_path]
+    * [`toga.widgets.canvas.Fill`][toga.Canvas.fill]
+    * [`toga.widgets.canvas.ResetTransform`][toga.Canvas.reset_transform]
+    * [`toga.widgets.canvas.Rotate`][toga.Canvas.rotate]
+    * [`toga.widgets.canvas.Scale`][toga.Canvas.scale]
+    * [`toga.widgets.canvas.Stroke`][toga.Canvas.stroke]
+    * [`toga.widgets.canvas.Translate`][toga.Canvas.translate]
+    * [`toga.widgets.canvas.WriteText`][toga.Canvas.write_text]
 
     In addition, the `AddPath` `DrawingAction` can be used with `Path2D` objects
     but not `State` objects:
@@ -126,6 +124,11 @@ class DrawingAction(ABC):
     def _draw(self, context: Any) -> None:
         """Called by parent state to execute this drawing action."""
 
+    def __contains__(self, other: DrawingAction):
+        return hasattr(self, "drawing_actions") and any(
+            action is other or other in action for action in self.drawing_actions
+        )
+
 
 class color_property:
     def __get__(self, action, action_class=None):
@@ -148,52 +151,6 @@ class color_property:
 class BeginPath(DrawingAction):
     def _draw(self, context: Any) -> None:
         context.begin_path()
-
-
-class ClosePath(DrawingAction):
-    def _draw(self, context: Any) -> None:
-        context.close_path()
-
-
-@dataclass(repr=False)
-class Fill(DrawingAction):
-    color: ColorT | None = color_property()
-    fill_rule: FillRule = FillRule.NONZERO
-    path: Path2D | None = None
-
-    def _draw(self, context: Any) -> None:
-        context.save()
-        if self.color is not None:
-            context.set_fill_style(self.color)
-        if self.path is None:
-            path_impl = None
-        else:
-            path_impl = self.path.impl  # pragma: no cover
-        context.fill(self.fill_rule, path_impl)
-        context.restore()
-
-
-@dataclass(repr=False)
-class Stroke(DrawingAction):
-    color: ColorT | None = color_property()
-    line_width: float | None = None
-    line_dash: list[float] | None = None
-    path: Path2D | None = None
-
-    def _draw(self, context: Any) -> None:
-        context.save()
-        if self.color is not None:
-            context.set_stroke_style(self.color)
-        if self.line_width is not None:
-            context.set_line_width(self.line_width)
-        if self.line_dash is not None:
-            context.set_line_dash(self.line_dash)
-        if self.path is None:
-            path_impl = None
-        else:
-            path_impl = self.path.impl  # pragma: no cover
-        context.stroke(path_impl)
-        context.restore()
 
 
 @dataclass(repr=False)

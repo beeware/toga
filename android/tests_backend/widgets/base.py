@@ -10,6 +10,7 @@ from android.graphics.drawable import (
 from android.os import Build, SystemClock
 from android.view import MotionEvent, View, ViewGroup
 
+import toga
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
@@ -24,7 +25,9 @@ class SimpleProbe(BaseProbe, FontMixin):
     invalid_size_while_hidden = False
 
     def __init__(self, widget):
-        super().__init__(widget.app)
+        # Don't use widget.app, because the widget may not be connected to an app yet.
+        super().__init__(toga.App.app)
+
         self.widget = widget
         self.impl = widget._impl
         self.native = widget._impl.native

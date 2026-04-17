@@ -23,11 +23,11 @@ def test_notify():
 
     # activate listener
     source.notify("message1")
-    listener1.message1.assert_called_once_with()
+    listener1.source_message1.assert_called_once_with()
 
     # activate listener with data
     source.notify("message2", arg1=11, arg2=22)
-    listener1.message2.assert_called_once_with(arg1=11, arg2=22)
+    listener1.source_message2.assert_called_once_with(arg1=11, arg2=22)
 
     # add more widgets to listeners
     listener2 = Mock()
@@ -36,13 +36,13 @@ def test_notify():
 
     # activate listener
     source.notify("message3")
-    listener1.message3.assert_called_once_with()
-    listener2.message3.assert_called_once_with()
+    listener1.source_message3.assert_called_once_with()
+    listener2.source_message3.assert_called_once_with()
 
     # activate listener with data
     source.notify("message4", arg1=11, arg2=22)
-    listener1.message4.assert_called_once_with(arg1=11, arg2=22)
-    listener2.message4.assert_called_once_with(arg1=11, arg2=22)
+    listener1.source_message4.assert_called_once_with(arg1=11, arg2=22)
+    listener2.source_message4.assert_called_once_with(arg1=11, arg2=22)
 
     # remove listener2
     source.remove_listener(listener2)
@@ -50,8 +50,8 @@ def test_notify():
 
     # Activate listeners; listener2 not notified.
     source.notify("message5")
-    listener1.message5.assert_called_once_with()
-    listener2.message5.assert_not_called()
+    listener1.source_message5.assert_called_once_with()
+    listener2.source_message5.assert_not_called()
 
 
 def test_missing_listener_method():
@@ -68,7 +68,33 @@ def test_missing_listener_method():
     # This shouldn't raise an error
     source.notify("message1")
 
-    full_listener.message1.assert_called_once_with()
+    full_listener.source_message1.assert_called_once_with()
+
+
+def test_deprecated_listener_method():
+    """Listener method names should start with 'source'."""
+
+    class Listener:
+        pass
+
+    listener = Listener()
+    listener.message1 = Mock()
+
+    source = Source()
+
+    source.add_listener(listener)
+    assert source.listeners == [listener]
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=(
+            r"Notification handler methods on Listeners now start with "
+            r"'source_'\. Change the method name to 'source_message1'\."
+        ),
+    ):
+        source.notify("message1")
+
+    listener.message1.assert_called_once_with()
 
 
 def test_deprecate_listener():

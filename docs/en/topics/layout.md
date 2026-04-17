@@ -12,7 +12,7 @@ When a window needs to perform a layout, the layout engine asks the style object
 
 Every window has a container representing the total viewable area of the window. However, some widgets (those with "Container" in their name) establish sub-containers. When a refresh is requested on a container, any sub-containers will also be refreshed.
 
-## Length units  { #css-units }
+## Length units { #css-units }
 
 Toga uses CSS units in its public API. Their physical size depends on the device type:
 

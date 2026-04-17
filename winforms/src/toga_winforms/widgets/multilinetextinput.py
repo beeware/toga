@@ -1,3 +1,6 @@
+from ctypes import windll
+from ctypes.wintypes import HWND
+
 import System.Windows.Forms as WinForms
 from System.Drawing import SystemColors
 from travertino.size import at_least
@@ -31,6 +34,9 @@ class MultilineTextInput(TextInput):
         # has changed since the last time the on_change event was triggered.
         self._text_history = ""
 
+        # Forward mouse wheel event to parent scrollable when the control is not focused
+        self.native.MouseWheel += WeakrefCallable(self.on_mouse_wheel)
+
     def winforms_got_focus(self, sender, event):
         # If the placeholder is visible when we gain focus, the widget is empty;
         # so make the native text empty and hide the placeholder.
@@ -43,6 +49,9 @@ class MultilineTextInput(TextInput):
         # placeholder again.
         if self.native.Text == "":
             self._set_placeholder_visible(True)
+
+    def get_placeholder(self):
+        return self._placeholder
 
     def set_placeholder(self, value):
         self._placeholder = value
@@ -106,9 +115,33 @@ class MultilineTextInput(TextInput):
         self.native.SelectionStart, self.native.SelectionLength = original_selection
 
     def scroll_to_bottom(self):
-        self.native.SelectionStart = len(self.native.Text)
-        self.native.ScrollToCaret()
+        # For consistent scroll to bottom behavior
+        # using ScrollToCaret() method results in alternating behaviors between
+        # scrolling to the bottom, and scrolling one line short of the bottom.
+        # This solution is based on https://stackoverflow.com/questions/8535102,
+        # by sending the explicit low-level message to scroll
+        WM_SCROLL = 277
+        SB_PAGEBOTTOM = 7
+        window_handle = HWND(self.native.Handle.ToInt32())
+        windll.user32.SendMessageW(
+            window_handle,
+            WM_SCROLL,
+            SB_PAGEBOTTOM,
+            0,
+        )
 
     def scroll_to_top(self):
         self.native.SelectionStart = 0
         self.native.ScrollToCaret()
+
+    def on_mouse_wheel(self, s, e):
+        # When the control has focus, allow normal MultilineTextInput scrolling
+        if self.native.Focused:
+            return
+        # Find the parent container and forward the event
+        parent = self.container.native
+        if (
+            isinstance(parent, WinForms.ScrollableControl) and parent.AutoScroll
+        ):  # pragma: nocover
+            parent.OnMouseWheel(e)
+            e.Handled = True

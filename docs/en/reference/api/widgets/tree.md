@@ -10,7 +10,7 @@ In this example, we will display a tree with 2 columns. The tree will have 2 roo
 import toga
 
 tree = toga.Tree(
-    headings=["Name", "Age"],
+    columns=["Name", "Age"],
     data={
         "Earth": {
            ("Arthur Dent", 42): None,
@@ -35,7 +35,7 @@ You can also specify data for a Tree using a list of 2-tuples, with dictionaries
 import toga
 
 tree = toga.Tree(
-    headings=["Name", "Age"],
+    columns=["Name", "Age"],
     data=[
         (
             {"name": "Earth"},
@@ -56,16 +56,17 @@ node = tree.data[1][0]
 print(f"{node.name}, who is age {node.age}, is {node.status}")
 ```
 
+The strings for the headings are translated into [`AccessorColumn`][toga.sources.AccessorColumn] objects which tell the `Tree` how to get the values to display in the column by looking up attributes on the nodes.
+
 -8<- "snippets/accessors.md"
 
-If you want to use different attributes, you can override them by providing an `accessors` argument. In this example, the tree will use "Name" as the visible header, but internally, the attribute "character" will be used:
+If you want to use attributes which don't match the headings, you can override them by providing your own `AccessorColumn` objects. In this example, the table will use "Name" as the visible header, but internally, the attribute "character" will be used:
 
 ```python
 import toga
 
 tree = toga.Tree(
-    headings=["Name", "Age"],
-    accessors={"Name", 'character'},
+    columns=[AccessorColumn("Name", 'character'), "Age"],
     data=[
         (
             {"character": "Earth"},
@@ -86,9 +87,60 @@ node = tree.data[1][0]
 print(f"{node.character}, who is age {node.age}, is {node.status}")
 ```
 
-The set of known accessors and their order for creating nodes from lists and tuples is determined at Tree creation time and does not change even if columns are added or removed. This may result in missing data when adding a column with a new accessor. To avoid this problem either supply all possible accessors at Tree construction time, supply the node data using dictionaries, or use a custom data source.
-
 -8<- "snippets/accessor-values.md"
+
+So, for example:
+
+```python
+import toga
+
+green_icon = toga.Icon("icons/green")
+
+tree = toga.Tree(
+    columns=["Name", "Age"],
+    data=[
+        (
+            {"name": (green_icon, "Earth")},
+            [({"name": "Arthur Dent", "age": 42, "status": "Anxious"}, None)]
+        ),
+        (
+            {"name": (None, "Betelgeuse Five")},
+            [
+                ({"name": "Ford Prefect", "age": 37, "status": "Hoopy"}, None),
+                ({"name": "Zaphod Beeblebrox", "age": 47, "status": "Oblivious"}, None),
+            ]
+        ),
+    ]
+)
+```
+
+will display a green icon next to "Earth", and nothing next to "Betelgeuse Five".
+
+The [`AccessorColumn`][toga.sources.AccessorColumn] class is the only column class provided in core Toga, but you can define your own [custom columns](../data-representation/column.md) that implement the [`ColumnT`][toga.sources.ColumnT] protocol and there is a [`Column`][toga.sources.Column] abstract base class that serves as a useful starting point. These columns can do things like giving you better control over getting icons and text, formatting in a particular way, combining multiple attributes to produce the value to display, or even accessing data via indexes rather than attribute lookup.
+
+Sometimes when supplying rows using lists or other sequences, the order of the columns may not match the order of the data in the rows. In this case, the easiest approach is to create a [TreeSource][`toga.sources.TreeSource`] that maps the rows to the column accessors:
+
+```python
+import toga
+
+tree = toga.Tree(
+    columns=["Age", "Name"],
+    data=TreeSource(
+        accessors=["name", "status", "age"]
+        data={
+            "Earth": {
+                ("Arthur Dent", "Anxious", 42): None,
+            },
+            "Betelgeuse Five": {
+                ("Ford Prefect", "Hoopy", 37): None,
+                ("Zaphod Beeblebrox", "Oblivious", 47): None,
+            },
+        }
+    )
+)
+```
+
+For more complex data you can define your own [custom data sources](/topics/data-sources.md).
 
 ## Notes
 

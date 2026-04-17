@@ -45,7 +45,20 @@ class Selection(Widget):
     #         selector=".toga, .toga button",
     #     )
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
+        import warnings
+
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
         index = self.interface._items.index(item)
         selection = self.native.get_active()
         # Insert a new entry at the same index,
@@ -59,7 +72,20 @@ class Selection(Widget):
         # Changing the item text can change the layout size
         self.interface.refresh()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item)
+
+    def source_insert(self, *, index, item):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             with self.suspend_notifications():
                 self.native.insert_text(index, self.interface._title_for_item(item))
@@ -70,7 +96,20 @@ class Selection(Widget):
         else:  # pragma: no-cover-if-gtk3
             pass
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item)
+
+    def source_remove(self, *, index, item):
         selection = self.native.get_active()
         with self.suspend_notifications():
             self.native.remove(index)
@@ -80,7 +119,20 @@ class Selection(Widget):
         if index == selection:
             self.native.set_active(0)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             with self.suspend_notifications():
                 self.native.remove_all()

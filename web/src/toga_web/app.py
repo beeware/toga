@@ -16,6 +16,8 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
+        self._exiting_presentation = False
+
         self.loop = asyncio.new_event_loop()
 
     def create(self):

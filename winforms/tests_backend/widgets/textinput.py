@@ -24,10 +24,11 @@ class TextInputProbe(SimpleProbe):
     @property
     def _placeholder(self):
         buffer = ctypes.create_unicode_buffer(1024)
+        buffer_address = ctypes.cast(buffer, ctypes.c_void_p).value
         result = ctypes.windll.user32.SendMessageW(
             HWND(self.native.Handle.ToInt32()),
             c_uint(0x1502),  # EM_GETCUEBANNER
-            buffer,
+            buffer_address,
             LPARAM(ctypes.sizeof(buffer)),
         )
         if not result:

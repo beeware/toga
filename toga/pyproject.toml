@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==82.0.0",
-    "setuptools_scm==9.2.2",
+    "setuptools==82.0.1",
+    "setuptools_scm==10.0.5",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -14,7 +14,7 @@ readme = "README.md"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
-    "LICENSE"
+    "LICENSE",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},

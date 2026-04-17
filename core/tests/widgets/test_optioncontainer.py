@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga_dummy import factory as dummy_factory
+from toga.platform import get_factory
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -496,7 +496,7 @@ def test_item_icon(optioncontainer, bare_item):
 def test_item_icon_disabled(monkeypatch, optioncontainer, bare_item):
     """The icon of an item won't be set if icons aren't in use."""
     # monkeypatch the OptionContainer class to disable the use of icons
-    monkeypatch.setattr(dummy_factory.OptionContainer, "uses_icons", False)
+    monkeypatch.setattr(get_factory().OptionContainer, "uses_icons", False)
 
     if bare_item:
         item = toga.OptionItem("title", toga.Box())

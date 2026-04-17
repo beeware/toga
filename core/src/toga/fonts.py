@@ -22,7 +22,7 @@ from travertino.constants import (
 from travertino.fonts import Font as BaseFont
 
 import toga
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 SYSTEM_DEFAULT_FONTS = {SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE}
 SYSTEM_DEFAULT_FONT_SIZE = -1
@@ -51,7 +51,7 @@ class Font(BaseFont):
         """Construct a reference to a font.
 
         This class should be used when an API requires an explicit font reference (e.g.
-        [`State.write_text`][toga.widgets.canvas.State.write_text]). In all other
+        [`Canvas.write_text`][toga.Canvas.write_text]). In all other
         cases, fonts in Toga are controlled
         using the style properties linked below.
 
@@ -69,7 +69,7 @@ class Font(BaseFont):
             either doesn't exist or a font can't be successfully loaded from it.
         """
         super().__init__(family, size, weight=weight, style=style, variant=variant)
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
 
         try:
             self._impl = _IMPL_CACHE[self]

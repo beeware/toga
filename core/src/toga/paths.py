@@ -3,12 +3,12 @@ import sys
 from pathlib import Path
 
 import toga
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 
 class Paths:
     def __init__(self):
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.Paths(self)
 
     # cached_property isn't read-only; this alternative is. With multiple instances,

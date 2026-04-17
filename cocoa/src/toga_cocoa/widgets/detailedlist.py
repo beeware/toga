@@ -2,6 +2,7 @@ from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
+    NSFocusRingType,
     NSIndexSet,
     NSMenu,
     NSTableColumn,
@@ -144,6 +145,7 @@ class DetailedList(Widget):
         self.native_detailedlist.columnAutoresizingStyle = (
             NSTableViewColumnAutoresizingStyle.Uniform
         )
+        self.native_detailedlist.focusRingType = NSFocusRingType.None_
         self.native_detailedlist.allowsMultipleSelection = False
 
         # Disable all actions by default.
@@ -176,20 +178,72 @@ class DetailedList(Widget):
     def change_source(self, source):
         self.native_detailedlist.reloadData()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item)
+
+    def source_insert(self, *, index, item):
         self.native_detailedlist.reloadData()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
+        import warnings
+
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
         self.native_detailedlist.reloadData()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item)
+
+    def source_remove(self, *, index, item):
         self.native_detailedlist.reloadData()
 
         # After deletion, the selection changes, but Cocoa doesn't send
         # a tableViewSelectionDidChange: message.
         self.interface.on_select()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
         self.native_detailedlist.reloadData()
 
     def set_refresh_enabled(self, enabled):

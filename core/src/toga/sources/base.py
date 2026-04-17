@@ -8,11 +8,11 @@ ItemT = TypeVar("ItemT", contravariant=True)
 
 @runtime_checkable
 class ValueListener(Protocol, Generic[ItemT]):
-    """The protocol that must be implemented by objects that will act as a listener on a
-    value data source.
+    """The protocol that must be implemented by objects that will act as a listener on
+    a value data source.
     """
 
-    def change(self, *, item: ItemT) -> None:
+    def source_change(self, *, item: ItemT) -> None:
         """A change has occurred in an item.
 
         :param item: The data object that has changed.
@@ -21,35 +21,41 @@ class ValueListener(Protocol, Generic[ItemT]):
 
 @runtime_checkable
 class ListListener(ValueListener[ItemT], Protocol, Generic[ItemT]):
-    """The protocol that must be implemented by objects that will act as a listener on a
-    list data source.
+    """The protocol that must be implemented by objects that will act as a listener on
+    a list data source.
     """
 
-    def insert(self, *, index: int, item: ItemT) -> None:
+    def source_insert(self, *, index: int, item: ItemT) -> None:
         """An item has been added to the data source.
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
         """
 
-    def remove(self, *, index: int, item: ItemT) -> None:
+    def source_remove(self, *, index: int, item: ItemT) -> None:
         """An item has been removed from the data source.
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
         """
 
-    def clear(self) -> None:
+    def source_clear(self) -> None:
         """All items have been removed from the data source."""
 
 
 @runtime_checkable
 class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
-    """The protocol that must be implemented by objects that will act as a listener on a
-    tree data source.
+    """The protocol that must be implemented by objects that will act as a listener on
+    a tree data source.
     """
 
-    def insert(self, *, index: int, item: object, parent: ItemT | None = None) -> None:
+    def source_insert(
+        self,
+        *,
+        index: int,
+        item: object,
+        parent: ItemT | None = None,
+    ) -> None:
         """An item has been added to the data source.
 
         :param index: The 0-index position in the data.
@@ -58,7 +64,13 @@ class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
             if it is a root item.
         """
 
-    def remove(self, *, index: int, item: object, parent: ItemT | None = None) -> None:
+    def source_remove(
+        self,
+        *,
+        index: int,
+        item: object,
+        parent: ItemT | None = None,
+    ) -> None:
         """An item has been removed from the data source.
 
         :param index: The 0-index position in the data.
@@ -86,8 +98,8 @@ class Source(Generic[ListenerT]):
     def add_listener(self, listener: ListenerT) -> None:
         """Add a new listener to this data source.
 
-        If the listener is already registered on this data source, the request to add is
-        ignored.
+        If the listener is already registered on this data source, the request to add
+        is ignored.
 
         :param listener: The listener to add
         """
@@ -108,10 +120,23 @@ class Source(Generic[ListenerT]):
         :param kwargs: The data associated with the notification.
         """
         for listener in self._listeners:
-            try:
-                method = getattr(listener, notification)
-            except AttributeError:
-                method = None
+            method = getattr(listener, f"source_{notification}", None)
+
+            # Alias for backwards compatibility:
+            # March 2026: In 0.5.3 and earlier, notification methods
+            # didn't start with 'source_'
+            if method is None:
+                method = getattr(listener, notification, None)
+                if method is not None:
+                    import warnings
+
+                    warnings.warn(
+                        f"Notification handler methods on Listeners now start with "
+                        f"'source_'. Change the method name to "
+                        f"'source_{notification}'.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
 
             if method:
                 method(**kwargs)
@@ -122,7 +147,7 @@ def __getattr__(name):
         import warnings
 
         # Alias for backwards compatibility:
-        # Jan 2025: In 0.5.3 and earlier, ListListener was named Listener
+        # Jan 2026: In 0.5.3 and earlier, ListListener was named Listener
         global Listener
         Listener = ListListener
         warnings.warn(

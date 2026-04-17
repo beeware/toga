@@ -62,6 +62,7 @@
             - [ListSource](reference/api/data-representation/listsource.md)
             - [TreeSource](reference/api/data-representation/treesource.md)
             - [ValueSource](reference/api/data-representation/valuesource.md)
+            - [Column](reference/api/data-representation/column.md)
             - [Types](reference/api/data-representation/types.md)
             - [Validators](reference/api/data-representation/validators.md)
         - Resources

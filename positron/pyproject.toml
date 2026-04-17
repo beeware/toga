@@ -1,8 +1,8 @@
 [build-system]
 requires = [
     # keep versions in sync with ../pyproject.toml
-    "setuptools==82.0.0",
-    "setuptools_scm==9.2.2",
+    "setuptools==82.0.1",
+    "setuptools_scm==10.0.5",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
 build-backend = "setuptools.build_meta"
@@ -13,15 +13,16 @@ description = "A Briefcase plugin for generating Positron apps."
 readme = "README.md"
 license = "BSD-3-Clause"
 license-files = [
-    "LICENSE"
+    "LICENSE",
 ]
 dynamic = ["version"]
 dependencies = ["briefcase >= 0.3.21"]
 
 [project.entry-points."briefcase.bootstraps"]
-"Toga Positron (Django server)" = "positron.django:DjangoPositronBootstrap"
-"Toga Positron (Static server)" = "positron.static:StaticPositronBootstrap"
-"Toga Positron (Site-specific browser)" = "positron.sitespecific:SiteSpecificPositronBootstrap"
+"Toga Positron (Django server)" = "positron.django.bootstrap:DjangoPositronBootstrap"
+"Toga Positron (FastAPI server)" = "positron.fastapi.bootstrap:FastAPIPositronBootstrap"
+"Toga Positron (Static server)" = "positron.static.bootstrap:StaticPositronBootstrap"
+"Toga Positron (Site-specific browser)" = "positron.sitespecific.bootstrap:SiteSpecificPositronBootstrap"
 
 [tool.setuptools_scm]
 root = "../"

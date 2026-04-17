@@ -83,7 +83,7 @@ class GoodMovieSource(Source):
 
     # A listener that passes on all notifications, but only if they apply
     # to the filtered data source
-    def insert(self, index, item):
+    def source_insert(self, *, index, item):
         # If the item exists in the filtered list, propagate the notification
         for i, filtered_item in enumerate(self._filtered()):
             if filtered_item == item:
@@ -91,7 +91,7 @@ class GoodMovieSource(Source):
                 # *filtered* list.
                 self.notify("insert", index=i, item=item)
 
-    def pre_remove(self, index, item):
+    def source_pre_remove(self, index, item):
         # If the item exists in the filtered list, track that it is being
         # removed; but don't propagate the removal notification until it has
         # been removed from the base data source
@@ -100,7 +100,7 @@ class GoodMovieSource(Source):
                 # Track that the object *was* in the data source
                 self._removals[item] = i
 
-    def remove(self, index, item):
+    def source_remove(self, *, index, item):
         # If the removed item previously existed in the filtered data source,
         # propagate the removal notification.
         try:
@@ -110,7 +110,7 @@ class GoodMovieSource(Source):
             # object wasn't previously in the data source
             pass
 
-    def clear(self):
+    def source_clear(self):
         self.notify("clear")
 
 
@@ -150,14 +150,14 @@ class TableSourceApp(toga.App):
         # of the second reads from the first.
         # The headings are also in a different order.
         self.table1 = toga.Table(
-            headings=["Year", "Title", "Rating", "Genre"],
+            columns=["Year", "Title", "Rating", "Genre"],
             data=MovieSource(),
             flex=1,
             on_select=self.on_select_handler,
         )
 
         self.table2 = toga.Table(
-            headings=["Rating", "Title", "Year", "Genre"],
+            columns=["Rating", "Title", "Year", "Genre"],
             data=GoodMovieSource(self.table1.data),
             flex=1,
         )

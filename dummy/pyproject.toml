@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==82.0.0",
-    "setuptools_scm==9.2.2",
+    "setuptools==82.0.1",
+    "setuptools_scm==10.0.5",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -14,7 +14,7 @@ readme = "README.md"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
-    "LICENSE"
+    "LICENSE",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -55,6 +55,64 @@ Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
 
 [project.entry-points."toga.backends"]
 dummy = "toga_dummy"
+
+[project.entry-points."toga_core.backend.toga_dummy"]
+App = "toga_dummy.app:App"
+DocumentApp = "toga_dummy.app:DocumentApp"
+Command = "toga_dummy.command:Command"
+Font = "toga_dummy.fonts:Font"
+Icon = "toga_dummy.icons:Icon"
+Image = "toga_dummy.images:Image"
+Paths = "toga_dummy.paths:Paths"
+dialogs = "toga_dummy.dialogs"
+resources = "toga_dummy.resources"
+
+# Hardware
+Camera = "toga_dummy.hardware.camera:Camera"
+Location = "toga_dummy.hardware.location:Location"
+
+# Status Icons
+MenuStatusIcon = "toga_dummy.statusicons:MenuStatusIcon"
+SimpleStatusIcon = "toga_dummy.statusicons:SimpleStatusIcon"
+StatusIconSet = "toga_dummy.statusicons:StatusIconSet"
+
+# Widgets
+ActivityIndicator = "toga_dummy.widgets.activityindicator:ActivityIndicator"
+Box = "toga_dummy.widgets.box:Box"
+Button = "toga_dummy.widgets.button:Button"
+Canvas = "toga_dummy.widgets.canvas:Canvas"
+DateInput = "toga_dummy.widgets.dateinput:DateInput"
+DetailedList = "toga_dummy.widgets.detailedlist:DetailedList"
+Divider = "toga_dummy.widgets.divider:Divider"
+ImageView = "toga_dummy.widgets.imageview:ImageView"
+Label = "toga_dummy.widgets.label:Label"
+MapView = "toga_dummy.widgets.mapview:MapView"
+MultilineTextInput = "toga_dummy.widgets.multilinetextinput:MultilineTextInput"
+NumberInput = "toga_dummy.widgets.numberinput:NumberInput"
+OptionContainer = "toga_dummy.widgets.optioncontainer:OptionContainer"
+PasswordInput = "toga_dummy.widgets.passwordinput:PasswordInput"
+ProgressBar = "toga_dummy.widgets.progressbar:ProgressBar"
+ScrollContainer = "toga_dummy.widgets.scrollcontainer:ScrollContainer"
+Selection = "toga_dummy.widgets.selection:Selection"
+Slider = "toga_dummy.widgets.slider:Slider"
+SplitContainer = "toga_dummy.widgets.splitcontainer:SplitContainer"
+Switch = "toga_dummy.widgets.switch:Switch"
+Table = "toga_dummy.widgets.table:Table"
+TextInput = "toga_dummy.widgets.textinput:TextInput"
+TimeInput = "toga_dummy.widgets.timeinput:TimeInput"
+Tree = "toga_dummy.widgets.tree:Tree"
+WebView = "toga_dummy.widgets.webview:WebView"
+
+# Windows
+MainWindow = "toga_dummy.window:MainWindow"
+Window = "toga_dummy.window:Window"
+
+# Widget is also required for testing purposes
+# Real backends shouldn't expose Widget.
+Widget = "toga_dummy.widgets.base:Widget"
+
+[project.entry-points."togax_dummy.backend.toga_dummy"]
+Dummy = "toga_dummy.label:Label"
 
 [project.entry-points."toga.image_formats"]
 dummy = "toga_dummy.plugins.image_formats.CustomImageConverter"

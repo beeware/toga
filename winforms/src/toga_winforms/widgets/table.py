@@ -1,14 +1,24 @@
+from ctypes import POINTER, cast
+from ctypes.wintypes import HWND, LPARAM, UINT, WPARAM
 from warnings import warn
 
 import System.Windows.Forms as WinForms
 
 from toga.handlers import WeakrefCallable
 
+from ..libs import windowconstants as wc
+from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass, SetWindowSubclass
+from ..libs.comctl32classes import LVITEMW, NMHDR, NMLVDISPINFOW, SUBCLASSPROC
+from ..libs.user32 import SendMessageW
+from ..libs.win32 import LRESULT
 from .base import Widget
 
 
 class Table(Widget):
+    #################################################################################
     # The following methods are overridden in DetailedList.
+    #################################################################################
+
     @property
     def _show_headings(self):
         return self.interface._show_headings
@@ -25,9 +35,24 @@ class Table(Widget):
     def _data(self):
         return self.interface.data
 
+    def add_action_events(self):
+        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
+
+    #################################################################################
+    # The following method is overridden in DetailedList and Tree
+    #################################################################################
+
     def create(self):
+        self.pfn_subclass = SUBCLASSPROC(self._subclass_proc)
         self.native = WinForms.ListView()
+        self._hwnd = int(self.native.Handle.ToString())
+        self._set_subclass()
+
+        self.native.HandleCreated += WeakrefCallable(self.winforms_handle_created)
+        self.native.HandleDestroyed += WeakrefCallable(self.winforms_handle_destroyed)
+
         self.native.View = WinForms.View.Details
+        self._enable_multi_icon_style()
         self._cache = []
         self._first_item = 0
         self._pending_resize = True
@@ -50,9 +75,6 @@ class Table(Widget):
         self.native.SmallImageList = WinForms.ImageList()
         self.native.HideSelection = False
 
-        self.native.ItemSelectionChanged += WeakrefCallable(
-            self.winforms_item_selection_changed
-        )
         self.native.RetrieveVirtualItem += WeakrefCallable(
             self.winforms_retrieve_virtual_item
         )
@@ -62,32 +84,184 @@ class Table(Widget):
         self.native.SearchForVirtualItem += WeakrefCallable(
             self.winforms_search_for_virtual_item
         )
-        self.native.VirtualItemsSelectionRangeChanged += WeakrefCallable(
-            self.winforms_virtual_items_selection_range_changed
-        )
         self.add_action_events()
 
-    def add_action_events(self):
-        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
+        # Name the WinForms event listeners for selection changes so that they can be
+        # added and removed.
+        self.selection_listener_single = WeakrefCallable(
+            self.winforms_item_selection_changed
+        )
+        self.selection_listener_multi = WeakrefCallable(
+            self.winforms_virtual_items_selection_range_changed
+        )
+        self.native.ItemSelectionChanged += self.selection_listener_single
+        self.native.VirtualItemsSelectionRangeChanged += self.selection_listener_multi
 
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        if self._pending_resize:
-            self._pending_resize = False
-            self._resize_columns()
+    #################################################################################
+    # The following methods are overridden in Tree
+    #################################################################################
+
+    def _subclass_proc(
+        self,
+        hWnd: int,
+        uMsg: int,
+        wParam: int,
+        lParam: int,
+        uIdSubclass: int,
+        dwRefData: int,
+    ) -> LRESULT:
+        # Remove the window subclass in the way recommended by Raymond Chen here:
+        # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
+        if uMsg == wc.WM_NCDESTROY:
+            RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
+
+        elif uMsg == wc.WM_REFLECT_NOTIFY:
+            phdr = cast(lParam, POINTER(NMHDR)).contents
+            code = phdr.code
+            if code == wc.LVN_GETDISPINFOW:
+                disp_info = cast(lParam, POINTER(NMLVDISPINFOW)).contents
+                self._lvn_getdispinfo(disp_info.item)
+
+        # Call the original window procedure
+        return DefSubclassProc(HWND(hWnd), UINT(uMsg), WPARAM(wParam), LPARAM(lParam))
+
+    def _new_item(self, index):
+        raw_item = self._data[index]
+        if any(column.widget(raw_item) is not None for column in self._columns):
+            warn(
+                "Winforms does not support the use of widgets in cells",
+                stacklevel=1,
+            )
+
+        return self._construct_new_item(raw_item)
+
+    def _process_selection_change(self):
+        self.interface.on_select()
+
+    def _process_activation(self, x, y, list_view_item):
+        self.interface.on_activate(row=self._data[list_view_item.Index])
+
+    def update_data(self):
+        self.native.VirtualListSize = len(self._data)
+        self._cache = []
+
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
+    def insert(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item)
+
+    def source_insert(self, *, index, item):
+        self.update_data()
+
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
+    def change(self, item):
+        import warnings
+
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
+        self.update_data()
+
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
+    def remove(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item)
+
+    def source_remove(self, *, index, item):
+        self.update_data()
+
+    def get_selection(self):
+        selected_indices = list(self.native.SelectedIndices)
+        if self._multiple_select:
+            return selected_indices
+        elif len(selected_indices) == 0:
+            return None
+        else:
+            return selected_indices[0]
+
+    #################################################################################
+    # The following methods are shared (non-overridden) with DetailedList and Tree
+    #################################################################################
+
+    def __del__(self):
+        # The object self.pfn_subclass is a python class and is part of the native
+        # Windows process. When a Table is removed by the python GC, self.pfn_subclass
+        # is also removed and the Windows process has a dangling pointer. Calling
+        # Dispose() here fixes the problem by removing the self.pfn_subclass from the
+        # Windows process.
+        self.native.Dispose()
+
+    def _set_subclass(self):
+        SetWindowSubclass(self._hwnd, self.pfn_subclass, 0, 0)
+
+    def _remove_subclass(self):
+        RemoveWindowSubclass(self._hwnd, self.pfn_subclass, 0)
+
+    def _enable_multi_icon_style(self):
+        # Use SendMessage over PostMessage since the ListView object is on the same
+        # thread as the messaging call.
+        old_style = SendMessageW(self._hwnd, wc.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0)
+        new_style = old_style | wc.LVS_EX_SUBITEMIMAGES
+
+        SendMessageW(self._hwnd, wc.LVM_SETEXTENDEDLISTVIEWSTYLE, 0, new_style)
+
+    def _lvn_getdispinfo(self, lvitem: LVITEMW):
+        row_index = lvitem.iItem
+        column_index = lvitem.iSubItem
+
+        _, icon_indices = self._toga_retrieve_virtual_item(row_index)
+
+        # Add the icon property if it doesn't exist.
+        if lvitem.uiMask == (wc.LVIF_TEXT | wc.LVIF_STATE):
+            lvitem.uiMask = wc.LVIF_TEXT | wc.LVIF_STATE | wc.LVIF_IMAGE
+
+        if lvitem.uiMask & wc.LVIF_IMAGE != 0 and icon_indices[column_index] > -1:
+            lvitem.iImage = icon_indices[column_index]
+
+    def _toga_retrieve_virtual_item(self, item_index):
+        if (
+            self._cache
+            and item_index >= self._first_item
+            and item_index < self._first_item + len(self._cache)
+        ):
+            return self._cache[item_index - self._first_item]
+        else:
+            return self._new_item(item_index)
+
+    def winforms_handle_created(self, sender, e):
+        self._hwnd = int(self.native.Handle.ToString())
+        self._set_subclass()
+
+    def winforms_handle_destroyed(self, sender, e):
+        # Remove the subclass when a handle is destroyed to prevent a memory leak.
+        self._remove_subclass()
 
     def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement
         # VirtualItemsSelectionRangeChanged event to create ListViewItem
         # when it's needed
-        if (
-            self._cache
-            and e.ItemIndex >= self._first_item
-            and e.ItemIndex < self._first_item + len(self._cache)
-        ):
-            e.Item = self._cache[e.ItemIndex - self._first_item]
-        else:
-            e.Item = self._new_item(e.ItemIndex)
+        e.Item = self._toga_retrieve_virtual_item(e.ItemIndex)[0]
 
     def winforms_cache_virtual_items(self, sender, e):
         if (
@@ -150,7 +324,7 @@ class Table(Widget):
             e.Index = i
 
     def winforms_item_selection_changed(self, sender, e):
-        self.interface.on_select()
+        self._process_selection_change()
 
     def winforms_virtual_items_selection_range_changed(self, sender, e):
         # Event handler for the ListView.VirtualItemsSelectionRangeChanged
@@ -163,17 +337,23 @@ class Table(Widget):
         # This is a workaround to avoid calling the on_select() method twice
         # when selecting a new item to replace an already selected item.
         if len(list(self.native.SelectedIndices)) > 1:
-            self.interface.on_select()
+            self._process_selection_change()
 
     def winforms_double_click(self, sender, e):
         hit_test = self.native.HitTest(e.X, e.Y)
         item = hit_test.Item
         if item is not None:
-            self.interface.on_activate(row=self._data[item.Index])
+            self._process_activation(e.X, e.Y, item)
         else:  # pragma: no cover
             # Double clicking outside of an item apparently doesn't raise the event, but
             # that isn't guaranteed by the documentation.
             pass
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        if self._pending_resize:
+            self._pending_resize = False
+            self._resize_columns()
 
     def _create_column(self, toga_column):
         col = WinForms.ColumnHeader()
@@ -191,31 +371,9 @@ class Table(Widget):
         for col in self.native.Columns:
             col.Width = width
 
-    def change_source(self, source):
-        self.update_data()
-
-    def _new_item(self, index):
-        item = self._data[index]
-
-        missing_value = self.interface.missing_value
-        lvi = WinForms.ListViewItem(
-            [column.text(item, missing_value) for column in self._columns],
-        )
-        if any(column.widget(item) is not None for column in self._columns):
-            warn(
-                "Winforms does not support the use of widgets in cells",
-                stacklevel=1,
-            )
-
-        # If the table has accessors, populate the icons for the table.
-        if self._columns:
-            # TODO: ListView only has built-in support for one icon per row. One
-            # possible workaround is in https://stackoverflow.com/a/46128593.
-            icon = self._columns[0].icon(item)
-            if icon is not None:
-                lvi.ImageIndex = self._image_index(icon._impl)
-
-        return lvi
+    def _icon_index(self, row, column) -> int:
+        icon = column.icon(row)
+        return -1 if icon is None else self._image_index(icon._impl)
 
     def _image_index(self, icon):
         images = self.native.SmallImageList.Images
@@ -226,30 +384,39 @@ class Table(Widget):
             images.Add(key, icon.bitmap)
         return index
 
-    def update_data(self):
-        self.native.VirtualListSize = len(self._data)
-        self._cache = []
-
-    def insert(self, index, item):
-        self.update_data()
-
-    def change(self, item):
-        self.update_data()
-
-    def remove(self, index, item):
-        self.update_data()
-
-    def clear(self):
-        self.update_data()
-
-    def get_selection(self):
-        selected_indices = list(self.native.SelectedIndices)
-        if self._multiple_select:
-            return selected_indices
-        elif len(selected_indices) == 0:
-            return None
+    def _construct_new_item(self, raw_item, use_missing_value: bool = True):
+        if use_missing_value:
+            missing_value = self.interface.missing_value
         else:
-            return selected_indices[0]
+            missing_value = ""
+
+        lvi = WinForms.ListViewItem(
+            [column.text(raw_item, missing_value) for column in self._columns],
+        )
+        icon_indices = tuple(
+            self._icon_index(raw_item, column) for column in self._columns
+        )
+
+        return (lvi, icon_indices)
+
+    def change_source(self, source):
+        self.update_data()
+
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
+    def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
+        self.update_data()
 
     def scroll_to_row(self, index):
         self.native.EnsureVisible(index)
@@ -259,8 +426,7 @@ class Table(Widget):
         self.update_data()
         self._resize_columns()
 
-    def insert_column(self, index, heading, accessor):
-        column = self.interface._columns[index]
+    def insert_column(self, index, column):
         self.native.Columns.Insert(index, self._create_column(column))
         self.update_data()
         self._resize_columns()
