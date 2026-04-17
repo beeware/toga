@@ -582,7 +582,7 @@ async def test_stroke_state(canvas, probe):
 
 
 async def test_stroke_and_fill_state(canvas, probe):
-    """A shape can be stroked and filled using state."""
+    """A shape can be stroked and filled using states."""
 
     # Draw a filled parallelogram
     with canvas.fill(color=REBECCAPURPLE):

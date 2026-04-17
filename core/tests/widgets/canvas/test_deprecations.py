@@ -106,8 +106,8 @@ def test_state_drawing_methods(app, widget, method_name, args, DrawingActionClas
         # Can't create image from path until app fixture is loaded.
         args = (toga.Image("resources/sample.png"),)
 
-    # Add to a context state that's neither active nor root, to make sure the actions
-    # are going to the right place.
+    # Add to a state that's neither active nor root, to make sure the actions are going
+    # to the right place.
     with pytest.deprecated_call():
         drawing_action = getattr(state, method_name)(*args)
 
@@ -119,8 +119,7 @@ def test_state_drawing_methods(app, widget, method_name, args, DrawingActionClas
 def test_canvas_context_method(widget):
     """canvas.Context is deprecated, and appends a state to the root state."""
 
-    # Create a sub-state to ensure the method appends to root, not the active
-    # state.
+    # Create a sub-state to ensure the method appends to root, not the active state.
     with widget.state() as active_state:
         pass
 
@@ -155,7 +154,7 @@ def test_canvas_context_method(widget):
 def test_capitalized_canvas_methods_xy(
     widget, args, kwargs, xy_warning, has_move, method_name, new_name
 ):
-    """Capitalized methods with (x, y) are deprecated, and append to root state."""
+    """Capitalized methods accepting (x, y) are deprecated, and append to root state."""
     # Create a sub-state to ensure the method appends to root, not the active state.
     with widget.state() as active_state:
         pass
@@ -189,7 +188,7 @@ def test_closed_path_with_xy_but_not_entered(widget):
 
 
 def test_state_canvas_reference(widget):
-    """Retrieving a widget's canvas is deprecated."""
+    """Retrieving a state's canvas is deprecated."""
     state = widget.root_state
 
     # Make another canvas, just to be sure we get the right one.

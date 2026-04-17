@@ -261,8 +261,8 @@ def test_contains(widget):
 
 
 NON_REENTRANT_MATCH = (
-    r"A state can only be entered once, and only before any subsequent drawing actions "
-    r"are added\."
+    r"A Canvas context manager can only be entered once, and only before any "
+    r"subsequent drawing actions are added\."
 )
 
 

@@ -662,8 +662,8 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
         """Return the currently active state, either this or a sub-state."""
         if self.drawing_actions:
             # If a sub-state is active, it must be the last action in the list;
-            # subsequent actions would be added to that sub-state (or a sub-state
-            # of it).
+            # subsequent actions would be added to that sub-state (or a sub-state of
+            # it).
             last = self.drawing_actions[-1]
             if getattr(last, "_is_open", False):
                 return last._active_state
@@ -673,8 +673,8 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
     def __enter__(self):
         if not self._can_be_entered:
             raise RuntimeError(
-                "A state can only be entered once, and only before any subsequent "
-                "drawing actions are added."
+                "A Canvas context manager can only be entered once, and only before "
+                "any subsequent drawing actions are added."
             )
 
         self._is_open = True
