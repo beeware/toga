@@ -47,12 +47,12 @@ class DrawingActionDispatch(ABC):
     @property
     @abstractmethod
     def _action_target(self):
-        """The State that should receive the drawing actions."""
+        """The state that should receive the drawing actions."""
 
     def _add_to_target(self, drawing_action: DrawingAction):
         if actions := self._action_target.drawing_actions:
             last = actions[-1]
-            if isinstance(last, State):
+            if isinstance(last, BaseState):
                 # If the most recent drawing action is (potentially) a context manager,
                 # disable it so it can't be entered later, out of order.
                 last._can_be_entered = False
@@ -74,7 +74,7 @@ class DrawingActionDispatch(ABC):
         self._redraw_with_warning_if_state()
         return begin_path
 
-    def close_path(self) -> ClosePath:
+    def close_path(self) -> AbstractContextManager[ClosePath]:
         """Close the current path.
 
         This closes the current path as a simple drawing operation. It should be paired
@@ -277,7 +277,7 @@ class DrawingActionDispatch(ABC):
         height: float,
         radii: float | CornerRadiusT | Iterable[float | CornerRadiusT],
     ) -> RoundRect:
-        """Draw a rounded rectangle in the canvas state.
+        """Draw a rounded rectangle.
 
         Corner radii can be provided as:
         - a single numerical radius for both x and y radius for all corners
@@ -313,7 +313,7 @@ class DrawingActionDispatch(ABC):
         self,
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
-    ) -> Fill:
+    ) -> AbstractContextManager[Fill]:
         """Fill the current path.
 
         The fill can use either the
@@ -341,7 +341,7 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
-    ) -> Stroke:
+    ) -> AbstractContextManager[Stroke]:
         """Draw the current path as a stroke.
 
         If used as a context manager, this begins a new path, and moves to the specified
@@ -410,7 +410,7 @@ class DrawingActionDispatch(ABC):
 
         The x, y coordinates specify the location of the bottom-left corner
         of the image. If supplied, the width and height specify the size
-        of the image when it is rendered in the state, the image will be
+        of the image when it is rendered; the image will be
         scaled to fit.
 
         Drawing of images is performed with the current transformation matrix
@@ -495,10 +495,11 @@ class DrawingActionDispatch(ABC):
     ###########################################################################
 
     def state(self) -> AbstractContextManager[State]:
-        """Construct and yield a new sub-[`State`][toga.widgets.canvas.State] within
-        the current state.
+        """A context manager that saves the current state of the Canvas context, and
+        restores it upon exiting.
 
-        :return: Yields the new [`State`][toga.widgets.canvas.State] object.
+        :return: Yields the new `State`
+          [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
         state = State()
         self._add_to_target(state)
@@ -518,15 +519,15 @@ class DrawingActionDispatch(ABC):
             )
         warnings.warn(msg, DeprecationWarning, stacklevel=3)
 
-    # Each of these CamelCase methods, when called on a State, added to that State.
+    # Each of these CamelCase methods, when called on a state, added to that state.
     # However, when called on a Canvas, they added to that Canvas's root_state. So we
     # call the drawing method on the target, suppressing warnings in case that target
-    # is a State.
+    # is a state.
 
     def Context(self) -> AbstractContextManager[State]:
         self._warn_context_manager("Context", "state", False)
 
-        target = self if isinstance(self, State) else self.root_state
+        target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
             return target.state()
@@ -542,7 +543,7 @@ class DrawingActionDispatch(ABC):
             x is not None or y is not None,
         )
 
-        target = self if isinstance(self, State) else self.root_state
+        target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
             close_path = target.close_path()
@@ -576,7 +577,7 @@ class DrawingActionDispatch(ABC):
     ) -> AbstractContextManager[Fill]:
         self._warn_context_manager("Fill", "fill", x is not None or y is not None)
 
-        target = self if isinstance(self, State) else self.root_state
+        target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
             fill = target.fill(fill_rule=fill_rule, color=color)
@@ -594,7 +595,7 @@ class DrawingActionDispatch(ABC):
     ) -> AbstractContextManager[Stroke]:
         self._warn_context_manager("Stroke", "stroke", x is not None or y is not None)
 
-        target = self if isinstance(self, State) else self.root_state
+        target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
             stroke = target.stroke(
@@ -610,13 +611,13 @@ class DrawingActionDispatch(ABC):
             self.redraw()
 
     def _redraw_with_warning_if_state(self):
-        if isinstance(self, State):
-            # If a drawing method is called on a State, we need to warn about that, but
+        if isinstance(self, BaseState):
+            # If a drawing method is called on a state, we need to warn about that, but
             # then silence the additional warning that we'll cause when we internally
             # call redraw().
             warnings.warn(
                 (
-                    "Calling drawing methods on a State is deprecated. To add actions "
+                    "Calling drawing methods on a state is deprecated. To add actions "
                     "to the currently active state, call drawing methods on the canvas."
                 ),
                 DeprecationWarning,
@@ -632,11 +633,9 @@ class DrawingActionDispatch(ABC):
     ######################################################################
 
 
-class State(DrawingAction, DrawingActionDispatch):
-    """A drawing state for a canvas.
-
-    You should not create a [`State`][toga.widgets.canvas.State] directly; instead,
-    you should use the canvas's [`state()`][toga.Canvas.state] method.
+class BaseState(DrawingAction, DrawingActionDispatch, ABC):
+    """A base class for all drawing actions that can function as state-saving context
+    managers.
     """
 
     drawing_actions: list[DrawingAction]
@@ -650,11 +649,8 @@ class State(DrawingAction, DrawingActionDispatch):
         self.drawing_actions = []
         self._can_be_entered = True
 
-    def _draw(self, context: Any) -> None:
-        context.save()
-        for action in self.drawing_actions:
-            action._draw(context)
-        context.restore()
+    @abstractmethod
+    def _draw(self, context: Any) -> None: ...
 
     @property
     def _action_target(self):
@@ -677,7 +673,7 @@ class State(DrawingAction, DrawingActionDispatch):
     def __enter__(self):
         if not self._can_be_entered:
             raise RuntimeError(
-                "A drawing context manager can only be entered once, and only before "
+                "A Canvas context manager can only be entered once, and only before "
                 "any subsequent drawing actions are added."
             )
 
@@ -725,7 +721,7 @@ class State(DrawingAction, DrawingActionDispatch):
     @property
     def canvas(self) -> Canvas:
         warnings.warn(
-            "State objects no longer hold a reference to their canvas.",
+            "States no longer hold a reference to their canvas.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -742,8 +738,8 @@ class State(DrawingAction, DrawingActionDispatch):
     def redraw(self) -> None:
         warnings.warn(
             (
-                "State.redraw() is deprecated. Call the canvas's redraw() method "
-                "instead."
+                f"{type(self).__name__}.redraw() is deprecated. Call the canvas's "
+                "redraw() method instead."
             ),
             DeprecationWarning,
             stacklevel=2,
@@ -759,9 +755,9 @@ class State(DrawingAction, DrawingActionDispatch):
     def _warn_list_methods(self) -> None:
         warnings.warn(
             (
-                "State's list-like methods (append, insert, remove, and clear), as "
+                "A state's list-like methods (append, insert, remove, and clear), as "
                 "well as implementing len() and indexing, are deprecated. Manipulate "
-                "state.drawing_actions directly, and then call redraw() on the canvas."
+                "its drawing_actions directly, and then call redraw() on the canvas."
             ),
             DeprecationWarning,
             stacklevel=3,
@@ -773,7 +769,19 @@ class State(DrawingAction, DrawingActionDispatch):
 
 
 @dataclass(repr=False)
-class ClosePath(State):
+class State(BaseState):
+    def __post_init__(self):
+        super().__init__()
+
+    def _draw(self, context: Any) -> None:
+        context.save()
+        for action in self.drawing_actions:
+            action._draw(context)
+        context.restore()
+
+
+@dataclass(repr=False)
+class ClosePath(BaseState):
     def __post_init__(self):
         super().__init__()
 
@@ -813,7 +821,7 @@ class ClosePath(State):
 
 
 @dataclass(repr=False)
-class Fill(State):
+class Fill(BaseState):
     color: ColorT | None = color_property()
     fill_rule: FillRule = FillRule.NONZERO
 
@@ -840,7 +848,7 @@ class Fill(State):
 
 
 @dataclass(repr=False)
-class Stroke(State):
+class Stroke(BaseState):
     color: ColorT | None = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
