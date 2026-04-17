@@ -130,7 +130,7 @@ def test_canvas_context_method(widget):
         pass
 
     with pytest.deprecated_call(
-        # match=f"The Context() drawing method has been renamed to state()"
+        match=r"The Context\(\) drawing method has been renamed to state\(\)"
     ):
         with widget.Context() as context:
             pass
@@ -173,12 +173,12 @@ def test_capitalized_canvas_methods_xy(
         )
 
     with pytest.deprecated_call():
-        with getattr(widget, method_name)(*args, **kwargs) as state:
+        with getattr(widget, method_name)(*args, **kwargs) as substate:
             pass
 
-    assert widget.root_state.drawing_actions == [active_state, state]
+    assert widget.root_state.drawing_actions == [active_state, substate]
     if has_move:
-        assert state.drawing_actions == [MoveTo(10, 20)]
+        assert substate.drawing_actions == [MoveTo(10, 20)]
 
 
 def test_closed_path_with_xy_but_not_entered(widget):
@@ -194,7 +194,7 @@ def test_closed_path_with_xy_but_not_entered(widget):
 
 
 def test_state_canvas_reference(widget):
-    """Retrieving a widget's state is deprecated."""
+    """Retrieving a state's canvas is deprecated."""
     state = widget.root_state
 
     # Make another canvas, just to be sure we get the right one.
@@ -205,7 +205,7 @@ def test_state_canvas_reference(widget):
 
 
 def test_state_redraw(widget):
-    """State.redraw() is deprecated, but still works."""
+    """BaseState.redraw() is deprecated, but still works."""
     state = widget.root_state
 
     # Attach it to a second canvas.

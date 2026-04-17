@@ -89,7 +89,7 @@ class Canvas(Widget, DrawingActionDispatch):
         :param on_alt_drag: Initial [`on_alt_drag`][toga.Canvas.on_alt_drag] handler.
         :param kwargs: Initial style properties.
         """
-        self._state = State()
+        self._root_state = State()
 
         super().__init__(id, style, **kwargs)
 
@@ -128,7 +128,7 @@ class Canvas(Widget, DrawingActionDispatch):
     @property
     def root_state(self) -> State:
         """The root state for the canvas."""
-        return self._state
+        return self._root_state
 
     ######################################################################
     # 2026-02: Backwards compatibility for <= 0.5.3
@@ -141,7 +141,7 @@ class Canvas(Widget, DrawingActionDispatch):
             DeprecationWarning,
             stacklevel=2,
         )
-        return self._state
+        return self._root_state
 
     ######################################################################
     # End backwards compatibility

@@ -54,15 +54,15 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 
 
 class DrawingAction(ABC):
-    """A drawing operation in a [`State`][toga.widgets.canvas.State].
+    """A [`Canvas`][toga.Canvas] drawing operation.
 
     Every canvas drawing method creates a `DrawingAction`, adds it to the currently
     active state, and returns it. Each argument passed to the method becomes a property
     of the `DrawingAction`, which can be modified as shown in the [Usage][] section.
 
     `DrawingActions` can also be created manually, then added to a state's
-    [list of drawing actions][toga.widgets.canvas.State.drawing_actions]. Their
-    constructors take the same arguments as the corresponding [`Canvas`]
+    [list of drawing actions][toga.widgets.canvas.state.BaseState.drawing_actions].
+    Their constructors take the same arguments as the corresponding [`Canvas`]
     [toga.Canvas] drawing method, and their classes have the same names, but
     capitalized:
 
