@@ -136,7 +136,15 @@ elif toga.backend in {"toga_android"}:
     SHADER_HEADER = "#version 300 es"
 
 elif toga.backend in {"toga_iOS"}:
-    from ctypes import byref, c_char_p, c_float, c_int, create_string_buffer
+    from ctypes import (
+        byref,
+        c_char_p,
+        c_float,
+        c_float_p,
+        c_int,
+        cast,
+        create_string_buffer,
+    )
 
     from toga_iOS.libs.opengles import opengles as GL
 
@@ -216,7 +224,7 @@ elif toga.backend in {"toga_iOS"}:
 
     def glUniformMatrix4fv(loc, size, transpose, value):
         buffer = (c_float * (16 * size))(*value)
-        GL.glUniformMatrix4fv(loc, size, transpose, buffer)
+        GL.glUniformMatrix4fv(loc, size, transpose, cast(buffer, c_float_p))
 
     def glBufferData(buffer_type, data: bytes, usage):
         GL.glBufferData(buffer_type, len(data), data, usage)
@@ -399,6 +407,7 @@ class CubeRenderer:
 
         # draw!
         glDrawArrays(GL_TRIANGLES, 0, self.n_vertices)
+        print("Drawing done!")
 
     def init_buffers(self):
         # Initialize buffers

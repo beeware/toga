@@ -1,7 +1,17 @@
 ##########################################################################
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
-from ctypes import POINTER, c_char_p, c_float, c_int, c_uint, c_ulong, cdll, util
+from ctypes import (
+    POINTER,
+    c_bool,
+    c_char_p,
+    c_float,
+    c_int,
+    c_uint,
+    c_ulong,
+    cdll,
+    util,
+)
 
 from rubicon.objc import ObjCClass
 
@@ -48,6 +58,8 @@ opengles.glUniform1fv.argtypes = [GLint, GLsizei, POINTER(GLfloat)]
 opengles.glUniform2fv.argtypes = [GLint, GLsizei, POINTER(GLfloat)]
 opengles.glUniform3fv.argtypes = [GLint, GLsizei, POINTER(GLfloat)]
 opengles.glUniform4fv.argtypes = [GLint, GLsizei, POINTER(GLfloat)]
+
+opengles.glUniformMatrix4fv.argtypes = [GLint, GLsizei, c_bool, POINTER(GLfloat)]
 
 # Constants
 opengles.GL_FALSE = False
