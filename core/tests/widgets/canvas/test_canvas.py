@@ -111,7 +111,9 @@ def test_fill(widget):
 def test_stroke(widget):
     """A canvas can produce a Stroke sub-state."""
     with widget.stroke(
-        stroke_style=REBECCAPURPLE, line_width=5, line_dash=[2, 7]
+        stroke_style=REBECCAPURPLE,
+        line_width=5,
+        line_dash=[2, 7],
     ) as stroke:
         # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(stroke, Stroke)
