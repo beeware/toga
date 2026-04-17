@@ -340,6 +340,9 @@ class DrawingActionDispatch(ABC):
         """
         fill = Fill(fill_rule, fill_style=fill_style, color=color)
         self._add_to_target(fill)
+        # Strictly speaking, this doesn't need a warning or redraw, since BaseState
+        # overwrites this method with its own shimmed version. But we might as well be
+        # as helpful as possible.
         self._redraw_with_warning_if_state()
         return fill
 
@@ -374,6 +377,9 @@ class DrawingActionDispatch(ABC):
             line_dash=line_dash,
         )
         self._add_to_target(stroke)
+        # Strictly speaking, this doesn't need a warning or redraw, since BaseState
+        # overwrites this method with its own shimmed version. But we might as well be
+        # as helpful as possible.
         self._redraw_with_warning_if_state()
         return stroke
 
@@ -527,13 +533,15 @@ class DrawingActionDispatch(ABC):
     # 2026-02: Backwards compatibility for <= 0.5.3
     ######################################################################
 
-    def _warn_context_manager(self, old_name, new_name, coordinates):
+    def _warn_context_manager(self, old_name, new_name, coordinates, extra=""):
         msg = f"The {old_name}() drawing method has been renamed to {new_name}()"
         if coordinates:
             msg += (
                 ", and no longer accepts x and y coordinates as parameters. Instead, "
                 f"call move_to(x, y) after entering the {new_name} context."
             )
+        if extra:
+            msg = msg.removesuffix(".") + f". {extra}"
         warnings.warn(msg, DeprecationWarning, stacklevel=3)
 
     # Each of these CamelCase methods, when called on a state, added to that state.
@@ -593,12 +601,22 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> AbstractContextManager[Fill]:
-        self._warn_context_manager("Fill", "fill", x is not None or y is not None)
+        self._warn_context_manager(
+            "Fill",
+            "fill",
+            x is not None or y is not None,
+            extra=(
+                "Additionally, the Canvas.fill() method's color parameter can only be "
+                "provided via keyword. fill_rule is the only argument it accepts "
+                "positionally."
+            ),
+        )
 
         target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
-            fill = target.fill(fill_rule=fill_rule, fill_style=color)
+            # BaseState.fill still uses old signature too.
+            fill = target.fill(color=color, fill_rule=fill_rule)
         if x is not None and y is not None:
             fill.drawing_actions.append(MoveTo(x, y))
         return fill
@@ -611,13 +629,24 @@ class DrawingActionDispatch(ABC):
         line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> AbstractContextManager[Stroke]:
-        self._warn_context_manager("Stroke", "stroke", x is not None or y is not None)
+        self._warn_context_manager(
+            "Stroke",
+            "stroke",
+            x is not None or y is not None,
+            extra=(
+                "Additionally, the Canvas.stroke() method's arguments can only be "
+                "provided as keywords. It does not accept any positional arguments."
+            ),
+        )
 
         target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
+            # BaseState.fill still uses old signature too.
             stroke = target.stroke(
-                stroke_style=color, line_width=line_width, line_dash=line_dash
+                color=color,
+                line_width=line_width,
+                line_dash=line_dash,
             )
         if x is not None and y is not None:
             stroke.drawing_actions.append(MoveTo(x, y))
@@ -703,6 +732,54 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
         self._is_open = False
         # Don't suppress any exceptions
         return False
+
+    ##########################################################################
+    # 2026-04: Backwards compatibility for <= 0.5.3
+    ##########################################################################
+
+    # These preserve the old signature, and warn about the new one.
+
+    def fill(
+        self,
+        color: ColorT | None = None,
+        fill_rule: FillRule = FillRule.NONZERO,
+    ) -> AbstractContextManager[Fill]:
+        fill = Fill(fill_rule=fill_rule, fill_style=color)
+        self._add_to_target(fill)
+        warnings.warn(
+            (
+                "Calling drawing methods on a state is deprecated. To add actions "
+                "to the currently active state, call drawing methods on the canvas. "
+                "Additionally, the Canvas.fill() method's color parameter can only be "
+                "provided via keyword. fill_rule is the only argument it accepts "
+                "positionally."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._redraw_without_warning()
+        return fill
+
+    def stroke(
+        self,
+        color: ColorT | None = None,
+        line_width: float | None = None,
+        line_dash: list[float] | None = None,
+    ) -> AbstractContextManager[Stroke]:
+        stroke = Stroke(stroke_style=color, line_width=line_width, line_dash=line_dash)
+        self._add_to_target(stroke)
+        warnings.warn(
+            (
+                "Calling drawing methods on a state is deprecated. To add actions "
+                "to the currently active state, call drawing methods on the canvas. "
+                "Additionally, the Canvas.stroke() method's arguments can only be "
+                "provided as keywords. It does not accept any positional arguments."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._redraw_without_warning()
+        return stroke
 
     ###########################################################################
     # 2026-02: Backwards compatibility for Toga <= 0.5.3
