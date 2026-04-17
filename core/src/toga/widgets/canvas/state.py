@@ -4,10 +4,11 @@ import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from contextlib import AbstractContextManager
-from dataclasses import KW_ONLY, dataclass
+from dataclasses import KW_ONLY, InitVar, dataclass
 from math import pi
 from typing import TYPE_CHECKING, Any
 
+from toga.colors import Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
 from toga.images import Image
@@ -29,7 +30,6 @@ from .drawingaction import (
     Scale,
     Translate,
     WriteText,
-    color_property,
 )
 from .geometry import CornerRadiusT
 
@@ -41,6 +41,8 @@ if TYPE_CHECKING:
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
+
+NOT_PROVIDED = object()
 
 
 class DrawingActionDispatch(ABC):
@@ -313,7 +315,8 @@ class DrawingActionDispatch(ABC):
         self,
         fill_rule: FillRule = FillRule.NONZERO,
         *,
-        fill_style: ColorT | None = None,
+        fill_style: ColorT | None | object = NOT_PROVIDED,
+        color: ColorT | None | object = NOT_PROVIDED,
     ) -> AbstractContextManager[Fill]:
         """Fill the current path.
 
@@ -328,11 +331,14 @@ class DrawingActionDispatch(ABC):
 
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
-        :param fill_style: The fill color.
+        :param fill_style: The fill style. At present, only accepts colors; gradients
+            and patterns are not supported.
+        :param color: Alias for fill_style.
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
+        :raises TypeError: If both `fill_style` and `color` are provided.
         """
-        fill = Fill(fill_rule, fill_style=fill_style)
+        fill = Fill(fill_rule, fill_style=fill_style, color=color)
         self._add_to_target(fill)
         self._redraw_with_warning_if_state()
         return fill
@@ -340,7 +346,8 @@ class DrawingActionDispatch(ABC):
     def stroke(
         self,
         *,
-        stroke_style: ColorT | None = None,
+        stroke_style: ColorT | None | object = NOT_PROVIDED,
+        color: ColorT | None | object = NOT_PROVIDED,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> AbstractContextManager[Stroke]:
@@ -350,15 +357,19 @@ class DrawingActionDispatch(ABC):
         (`x`, `y`) coordinates (if both are specified). When the context is exited, the
         path is stroked.
 
-        :param stroke_style: The color for the stroke.
+        :param stroke_style: The stroke style. At present, only accepts colors;
+            gradients and patterns are not supported.
+        :param color: Alias for fill_style.
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
+        :raises TypeError: If both `stroke_style` and `color` are provided.
         """
         stroke = Stroke(
             stroke_style=stroke_style,
+            color=color,
             line_width=line_width,
             line_dash=line_dash,
         )
@@ -515,15 +526,13 @@ class DrawingActionDispatch(ABC):
     # 2026-02: Backwards compatibility for <= 0.5.3
     ######################################################################
 
-    def _warn_context_manager(self, old_name, new_name, coordinates, extra=""):
+    def _warn_context_manager(self, old_name, new_name, coordinates):
         msg = f"The {old_name}() drawing method has been renamed to {new_name}()"
         if coordinates:
             msg += (
                 ", and no longer accepts x and y coordinates as parameters. Instead, "
                 f"call move_to(x, y) after entering the {new_name} context."
             )
-        if extra:
-            msg += f" {extra}"
         warnings.warn(msg, DeprecationWarning, stacklevel=3)
 
     # Each of these CamelCase methods, when called on a State, added to that State.
@@ -583,13 +592,7 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> AbstractContextManager[Fill]:
-        self._warn_context_manager(
-            "Fill",
-            "fill",
-            x is not None or y is not None,
-            "The color parameter has been renamed to fill_style, and is a keyword-only "
-            "argument." if color is not None else "",
-        )
+        self._warn_context_manager("Fill", "fill", x is not None or y is not None)
 
         target = self if isinstance(self, State) else self.root_state
         with warnings.catch_warnings():
@@ -607,13 +610,7 @@ class DrawingActionDispatch(ABC):
         line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> AbstractContextManager[Stroke]:
-        self._warn_context_manager(
-            "Stroke",
-            "stroke",
-            x is not None or y is not None,
-            "The color parameter has been renamed to stroke_style. It, as well as "
-            "line_width and line_dash, are all now keyword-only arguments.",
-        )
+        self._warn_context_manager("Stroke", "stroke", x is not None or y is not None)
 
         target = self if isinstance(self, State) else self.root_state
         with warnings.catch_warnings():
@@ -833,28 +830,19 @@ class ClosePath(State):
         context.restore()
 
 
-class color_alias:
-    def __init__(self, attr_name, class_name):
-        self.attr_name = attr_name
-        self.class_name = class_name
-
+class color_property:
     def __get__(self, action, action_class=None):
-        self._warn()
-        return getattr(action, self.attr_name)
+        if action is None:
+            # This is what's returned in the constructor, if nothing is provided.
+            return NOT_PROVIDED
+
+        return action._color
 
     def __set__(self, action, value):
-        self._warn()
-        setattr(action, self.attr_name, value)
+        if value is not None and value is not NOT_PROVIDED:
+            value = Color.parse(value)
 
-    def _warn(self):
-        warnings.warn(
-            (
-                f"The {self.class_name}.color attribute has been renamed to "
-                f"{self.class_name}.{self.attr_name}"
-            ),
-            DeprecationWarning,
-            stacklevel=2,
-        )
+        action._color = value
 
 
 @dataclass(repr=False)
@@ -863,14 +851,17 @@ class Fill(State):
     # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
     fill_rule: FillRule = FillRule.NONZERO
     _: KW_ONLY
-    fill_style: ColorT | None = color_property()
+    fill_style: ColorT | None | object = color_property()
+    color: InitVar[ColorT | None | object] = color_property()
 
-    # 4-2026: Backwards compatibility for Toga <= 0.5.4
-    # Not type-hinted so that it won't be a field.
-    color = color_alias("fill_style", "Fill")
-
-    def __post_init__(self):
+    def __post_init__(self, color):
         super().__init__()
+
+        if self.fill_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
+            raise TypeError("Both fill_style and color provided")
+
+        if self.fill_style is NOT_PROVIDED:
+            self.fill_style = None if color is NOT_PROVIDED else color
 
     def _draw(self, context: Any) -> None:
         context.save()
@@ -895,16 +886,19 @@ class Fill(State):
 class Stroke(State):
     # Path parameter (positional/keyword) will go here.
     _: KW_ONLY
-    stroke_style: ColorT | None = color_property()
+    stroke_style: ColorT | None | object = color_property()
+    color: InitVar[ColorT | None | object] = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
 
-    # 4-2026: Backwards compatibility for Toga <= 0.5.4
-    # Not type-hinted so that it won't be a field.
-    color = color_alias("stroke_style", "Stroke")
-
-    def __post_init__(self):
+    def __post_init__(self, color):
         super().__init__()
+
+        if self.stroke_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
+            raise TypeError("Both stroke_style and color provided")
+
+        if self.stroke_style is NOT_PROVIDED:
+            self.stroke_style = None if color is NOT_PROVIDED else color
 
     def _draw(self, context: Any) -> None:
         context.save()

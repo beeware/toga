@@ -35,6 +35,8 @@ def test_close_path(widget):
     assert widget._impl.draw_instructions[1:-1] == ["close path"]
 
 
+@pytest.mark.parametrize("alias_kwarg", [True, False])
+@pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
     "kwargs, args_repr, draw_objs, attrs",
     [
@@ -98,8 +100,11 @@ def test_close_path(widget):
         ),
     ],
 )
-def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
+def test_fill(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
     """A primitive fill operation can be added."""
+    if alias_kwarg and "fill_style" in kwargs:
+        kwargs["color"] = kwargs.pop("fill_style")
+
     draw_op = widget.fill(**kwargs)
 
     assert_action_performed(widget, "redraw")
@@ -110,6 +115,9 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
     assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
 
     # All the attributes can be retrieved.
+    if alias_attr and "fill_style" in attrs:
+        attrs["color"] = attrs.pop("fill_style")
+
     for name, value in attrs.items():
         assert getattr(draw_op, name) == value
 
@@ -123,6 +131,8 @@ def test_fill_kw_only(widget, use_method):
         fill(FillRule.EVENODD, REBECCAPURPLE)
 
 
+@pytest.mark.parametrize("alias_kwarg", [True, False])
+@pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
     "kwargs, args_repr, draw_objs, attrs",
     [
@@ -196,8 +206,11 @@ def test_fill_kw_only(widget, use_method):
         ),
     ],
 )
-def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
+def test_stroke(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
     """A primitive stroke operation can be added."""
+    if alias_kwarg and "stroke_style" in kwargs:
+        kwargs["color"] = kwargs.pop("stroke_style")
+
     draw_op = widget.stroke(**kwargs)
 
     assert_action_performed(widget, "redraw")
@@ -213,6 +226,9 @@ def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
     ]
 
     # All the attributes can be retrieved.
+    if alias_attr and "stroke_style" in attrs:
+        attrs["color"] = attrs.pop("stroke_style")
+
     for name, value in attrs.items():
         assert getattr(draw_op, name) == value
 
@@ -230,6 +246,27 @@ def test_stroke_kw_only(widget, use_method):
 
     with pytest.raises(TypeError):
         stroke(REBECCAPURPLE, 4.5, [1, 0])
+
+
+@pytest.mark.parametrize(
+    "action",
+    [
+        (Fill, "fill", "fill_style"),
+        (Stroke, "stroke", "stroke_style"),
+    ],
+)
+@pytest.mark.parametrize("use_method", [True, False])
+@pytest.mark.parametrize("value", [REBECCAPURPLE, None])
+def test_fill_stroke_duplicate_parameters(widget, action, use_method, value):
+    """Providing both color and fill_style/stroke_style raises an error."""
+    ActionClass, method_name, attr_name = action
+    if use_method:
+        act = getattr(widget, method_name)
+    else:
+        act = ActionClass
+
+    with pytest.raises(TypeError):
+        act(**{attr_name: value}, color=value)
 
 
 def test_move_to(widget):
