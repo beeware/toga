@@ -1,7 +1,7 @@
 import pytest
 
 import toga
-from toga.colors import rgb
+from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.widgets.canvas import ClosePath, Fill, State, Stroke
@@ -99,7 +99,7 @@ def test_closed_path(widget):
 
 def test_fill(widget):
     """A canvas can produce a Fill sub-state."""
-    with widget.fill(fill_rule=FillRule.EVENODD, fill_style="rebeccapurple") as fill:
+    with widget.fill(fill_rule=FillRule.EVENODD, fill_style=REBECCAPURPLE) as fill:
         # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(fill, Fill)
         assert fill is not widget.root_state
@@ -111,7 +111,7 @@ def test_fill(widget):
 def test_stroke(widget):
     """A canvas can produce a Stroke sub-state."""
     with widget.stroke(
-        stroke_style="rebeccapurple", line_width=5, line_dash=[2, 7]
+        stroke_style=REBECCAPURPLE, line_width=5, line_dash=[2, 7]
     ) as stroke:
         # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(stroke, Stroke)

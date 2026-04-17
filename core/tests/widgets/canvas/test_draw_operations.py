@@ -256,8 +256,16 @@ def test_stroke_kw_only(widget, use_method):
     ],
 )
 @pytest.mark.parametrize("use_method", [True, False])
-@pytest.mark.parametrize("value", [REBECCAPURPLE, None])
-def test_fill_stroke_duplicate_parameters(widget, action, use_method, value):
+@pytest.mark.parametrize(
+    "values",
+    [
+        (REBECCAPURPLE, REBECCAPURPLE),
+        (REBECCAPURPLE, None),
+        (None, REBECCAPURPLE),
+        (None, None),
+    ],
+)
+def test_fill_stroke_duplicate_parameters(widget, action, use_method, values):
     """Providing both color and fill_style/stroke_style raises an error."""
     ActionClass, method_name, attr_name = action
     if use_method:
@@ -266,7 +274,7 @@ def test_fill_stroke_duplicate_parameters(widget, action, use_method, value):
         act = ActionClass
 
     with pytest.raises(TypeError):
-        act(**{attr_name: value}, color=value)
+        act(**{attr_name: values[0]}, color=values[1])
 
 
 def test_move_to(widget):
