@@ -12,15 +12,15 @@ If this is your first time using BeeWare, we suggestion you start with the [BeeW
 
 Before you run through the tutorial, [install a Toga app][get-started] to see what Toga looks like.
 
-## Tutorial 0 - your first Toga app
+## Tutorial 0 - A basic app
 
 In [Tutorial 0](tutorial-0.md), you will discover how to create a basic app and have a simple [`Button`][toga.Button] widget to click.
 
-## Tutorial 1 - a slightly less toy example
+## Tutorial 1 - Capturing user input
 
 In [Tutorial 1](tutorial-1.md), you will discover how to capture basic user input using the [`TextInput`][toga.TextInput] widget and control layout.
 
-## Tutorial 2 - you put the box inside another box...
+## Tutorial 2 - Managing layout
 
 In [Tutorial 2](tutorial-2.md), you will discover how to use the [`SplitContainer`][toga.SplitContainer] widget to display some components, a toolbar and a table.
 
@@ -32,7 +32,7 @@ In [Tutorial 2](tutorial-2.md), you will discover how to use the [`SplitContaine
 
 <!-- TODO: Update alt text -->
 
-## Tutorial 3 - let's build a browser!
+## Tutorial 3 - Building a browser
 
 In [Tutorial 3](tutorial-3.md), you will discover how to use the [`WebView`][toga.WebView] widget to display a simple browser.
 
@@ -44,7 +44,7 @@ In [Tutorial 3](tutorial-3.md), you will discover how to use the [`WebView`][tog
 
 <!-- TODO: Update alt text -->
 
-## Tutorial 4 - let's draw on a canvas!
+## Tutorial 4 - Drawing on a canvas
 
 In [Tutorial 4](tutorial-4.md), you will discover how to use the [`Canvas`][toga.Canvas] widget to draw lines and shapes on a canvas.
 

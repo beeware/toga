@@ -161,7 +161,7 @@ When we run the app, it starts successfully. We can click the button, and we'll 
 
 We've successfully read from a file packaged within our app. What about writing a file? This gets more complicated. Let's explore how to use app paths to write files to the file system.
 
-## Writing Files
+## Writing files
 
 So far, we've used `paths.app`, which should be considered a *read-only* location. Toga won't stop you from writing to the app directory, and in testing, it will almost always work. However, once you ship your packaged app in production, writing to the app will almost certainly fail. The reason varies depending on your operating system.
 

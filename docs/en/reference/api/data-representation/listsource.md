@@ -42,7 +42,7 @@ The ListSource manages a list of [`Row`][toga.sources.Row] objects. Each Row has
 
 Although Toga provides ListSource, you are not required to create one directly. A ListSource will be transparently constructed if you provide an iterable object to a GUI widget that displays list-like data (i.e., [`toga.Table`][], [`toga.Selection`][], or [`toga.DetailedList`][]).
 
-## Custom List Sources
+## Custom list sources
 
 For more complex applications, you can replace ListSource with a [custom data source][custom-data-sources] class. Such a class must:
 
