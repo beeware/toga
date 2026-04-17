@@ -588,7 +588,7 @@ class DrawingActionDispatch(ABC):
             "fill",
             x is not None or y is not None,
             "The color parameter has been renamed to fill_style, and is a keyword-only "
-            "argument.",
+            "argument." if color is not None else "",
         )
 
         target = self if isinstance(self, State) else self.root_state
