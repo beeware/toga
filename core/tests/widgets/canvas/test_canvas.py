@@ -25,8 +25,8 @@ def test_widget_created():
     assert widget.on_alt_release._raw is None
     assert widget.on_alt_drag._raw is None
 
-    # Canvas has a root manager
-    assert isinstance(widget.root_manager, State)
+    # Canvas has a root state
+    assert isinstance(widget.root_state, State)
 
 
 def test_create_with_value(
@@ -53,8 +53,8 @@ def test_create_with_value(
     assert widget.on_alt_release._raw == on_alt_release_handler
     assert widget.on_alt_drag._raw == on_alt_drag_handler
 
-    # Canvas has a root manager
-    assert isinstance(widget.root_manager, State)
+    # Canvas has a root state
+    assert isinstance(widget.root_state, State)
 
 
 def test_disable_no_op(widget):
@@ -82,7 +82,7 @@ def test_redraw(widget):
 
     assert_action_performed(widget, "redraw")
 
-    # An empty canvas has 2 draw operations - pushing and popping the root manager.
+    # An empty canvas has 2 draw operations - pushing and popping the root state.
     assert widget._impl.draw_instructions == [
         "save",
         "restore",
@@ -90,30 +90,30 @@ def test_redraw(widget):
 
 
 def test_closed_path(widget):
-    """A canvas can produce a ClosedPath sub-manager."""
+    """A canvas can produce a ClosedPath sub-state."""
     with widget.close_path() as closed_path:
-        # A fresh manager has been created as a sub-manager of the canvas.
+        # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(closed_path, ClosePath)
-        assert closed_path is not widget.root_manager
+        assert closed_path is not widget.root_state
 
 
 def test_fill(widget):
-    """A canvas can produce a Fill sub-manager."""
+    """A canvas can produce a Fill sub-state."""
     with widget.fill(color="rebeccapurple", fill_rule=FillRule.EVENODD) as fill:
-        # A fresh manager has been created as a sub-manager of the canvas.
+        # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(fill, Fill)
-        assert fill is not widget.root_manager
+        assert fill is not widget.root_state
 
         assert fill.color == REBECCA_PURPLE_COLOR
         assert fill.fill_rule == FillRule.EVENODD
 
 
 def test_stroke(widget):
-    """A canvas can produce a Stroke sub-manager."""
+    """A canvas can produce a Stroke sub-state."""
     with widget.stroke(color="rebeccapurple", line_width=5, line_dash=[2, 7]) as stroke:
-        # A fresh manager has been created as a sub-manager of the canvas.
+        # A fresh state has been created as a sub-state of the canvas.
         assert isinstance(stroke, Stroke)
-        assert stroke is not widget.root_manager
+        assert stroke is not widget.root_state
 
         assert stroke.color == REBECCA_PURPLE_COLOR
         assert stroke.line_width == 5.0

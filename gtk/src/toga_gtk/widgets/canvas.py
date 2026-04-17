@@ -319,7 +319,7 @@ class Canvas(Widget):
             cairo_context.fill()
 
         context = Context(self, cairo_context)
-        self.interface.root_manager._draw(context)
+        self.interface.root_state._draw(context)
 
     if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
 

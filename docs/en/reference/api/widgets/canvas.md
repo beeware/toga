@@ -28,7 +28,7 @@ with canvas.stroke(color="orange", 20, 20):
 
 Internally, each drawing method creates a [`DrawingAction`][toga.widgets.canvas.DrawingAction] and stores it, building up a list of drawing instructions. Any argument provided to a drawing operation (including context managers) becomes a property of that `DrawingAction`. Those properties can be modified after creation, after which you should invoke [`Canvas.redraw`][toga.Canvas.redraw] to request a redraw of the canvas.
 
-The `DrawingAction`s that can double as context managers are all subclasses of the abstract [`DrawingActionManager`][toga.widgets.canvas.manager.DrawingActionManager]. Such a context manager stores a list of its associated drawing instructions (those called within its context) as an attribute named [`drawing_actions`][toga.widgets.canvas.manager.DrawingActionManager.drawing_actions]. This can be modified like any other list (`append`, `insert`, `remove`, `clear`, etc.). As with modifying attributes, [`Canvas.redraw`][toga.Canvas.redraw] will need to be called to show the changes.
+The `DrawingAction`s that can double as context managers are all subclasses of the abstract [`BaseState`][toga.widgets.canvas.manager.BaseState]. Such a context manager stores a list of its associated drawing instructions (those called within its context) as an attribute named [`drawing_actions`][toga.widgets.canvas.manager.BaseState.drawing_actions]. This can be modified like any other list (`append`, `insert`, `remove`, `clear`, etc.). As with modifying attributes, [`Canvas.redraw`][toga.Canvas.redraw] will need to be called to show the changes.
 
 For example, if you were drawing a bar chart where the height of the bars changed over time, you don't need to completely reset the canvas and redraw all the objects; you can use the same objects, only modifying the height of existing bars, or adding and removing bars as required.
 
@@ -84,7 +84,7 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - on_press
             - on_release
             - on_resize
-            - root_manager
+            - root_state
             # Drawing methods
             - begin_path
             - close_path
@@ -110,7 +110,7 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - as_image
             - focus
 
-::: toga.widgets.canvas.manager.DrawingActionManager
+::: toga.widgets.canvas.manager.BaseState
 
 ::: toga.widgets.canvas.DrawingAction
 

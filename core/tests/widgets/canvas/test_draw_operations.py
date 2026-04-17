@@ -20,7 +20,7 @@ def test_begin_path(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "BeginPath()"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == ["begin path"]
 
 
@@ -31,7 +31,7 @@ def test_close_path(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "ClosePath()"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == ["close path"]
 
 
@@ -105,7 +105,7 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Fill({args_repr})"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     # But the fill itself also saves and then restores.
     assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
 
@@ -179,7 +179,7 @@ def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Stroke({args_repr})"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     # But the stroke itself also saves and then restores.
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
@@ -200,7 +200,7 @@ def test_move_to(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "MoveTo(x=10, y=20)"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("move to", {"x": 10, "y": 20}),
     ]
@@ -217,7 +217,7 @@ def test_line_to(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "LineTo(x=10, y=20)"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("line to", {"x": 10, "y": 20}),
     ]
@@ -236,7 +236,7 @@ def test_bezier_curve_to(widget):
         repr(draw_op) == "BezierCurveTo(cp1x=10, cp1y=20, cp2x=30, cp2y=40, x=50, y=60)"
     )
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         (
             "bezier curve to",
@@ -260,7 +260,7 @@ def test_quadratic_curve_to(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "QuadraticCurveTo(cpx=10, cpy=20, x=30, y=40)"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         (
             "quadratic curve to",
@@ -405,7 +405,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Arc({args_repr})"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("arc", draw_kwargs),
     ]
@@ -569,7 +569,7 @@ def test_ellipse(widget, kwargs, args_repr, draw_kwargs):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Ellipse({args_repr})"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("ellipse", draw_kwargs),
     ]
@@ -586,7 +586,7 @@ def test_rect(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Rect(x=10, y=20, width=30, height=40)"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("rect", {"x": 10, "y": 20, "width": 30, "height": 40}),
     ]
@@ -605,7 +605,7 @@ def test_round_rect(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "RoundRect(x=10, y=20, width=30, height=40, radii=5)"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("round rect", {"x": 10, "y": 20, "width": 30, "height": 40, "radii": 5}),
     ]
@@ -731,7 +731,7 @@ def test_write_text(widget, kwargs, instructions, args_repr, draw_attrs):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"WriteText({args_repr})"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("write text", instructions),
     ]
@@ -752,7 +752,7 @@ def test_rotate(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Rotate(radians=1.234)"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("rotate", {"radians": pytest.approx(1.234)}),
     ]
@@ -768,7 +768,7 @@ def test_scale(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Scale(sx=1.234, sy=2.345)"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("scale", {"sx": pytest.approx(1.234), "sy": pytest.approx(2.345)}),
     ]
@@ -785,7 +785,7 @@ def test_translate(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Translate(tx=10, ty=20)"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
         ("translate", {"tx": 10, "ty": 20}),
     ]
@@ -802,7 +802,7 @@ def test_reset_transform(widget):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "ResetTransform()"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == ["reset transform"]
 
 
@@ -855,7 +855,7 @@ def test_draw_image(app, widget, kwargs, instructions, args_repr, draw_attrs):
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"DrawImage(image={image!r}, {args_repr})"
 
-    # The first and last instructions save/restore the root manager, and can be ignored.
+    # The first and last instructions save/restore the root state, and can be ignored.
     instructions["image"] = image
     assert widget._impl.draw_instructions[1:-1] == [
         ("draw_image", instructions),

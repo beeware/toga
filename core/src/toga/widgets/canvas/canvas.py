@@ -18,7 +18,7 @@ from toga.fonts import (
 from toga.handlers import wrapped_handler
 
 from ..base import StyleT, Widget
-from .manager import DrawingActionDispatch, State
+from .state import DrawingActionDispatch, State
 
 if TYPE_CHECKING:
     from toga.images import ImageT
@@ -89,7 +89,7 @@ class Canvas(Widget, DrawingActionDispatch):
         :param on_alt_drag: Initial [`on_alt_drag`][toga.Canvas.on_alt_drag] handler.
         :param kwargs: Initial style properties.
         """
-        self._root_manager = State()
+        self._root_state = State()
 
         super().__init__(id, style, **kwargs)
 
@@ -126,9 +126,9 @@ class Canvas(Widget, DrawingActionDispatch):
         pass
 
     @property
-    def root_manager(self) -> State:
-        """The root context manager for the canvas."""
-        return self._root_manager
+    def root_state(self) -> State:
+        """The root state for the canvas."""
+        return self._root_state
 
     ######################################################################
     # 2026-02: Backwards compatibility for <= 0.5.3
@@ -137,11 +137,11 @@ class Canvas(Widget, DrawingActionDispatch):
     @property
     def context(self) -> State:
         warnings.warn(
-            "Canvas.context has been renamed to Canvas.root_manager",
+            "Canvas.context has been renamed to Canvas.root_state",
             DeprecationWarning,
             stacklevel=2,
         )
-        return self._root_manager
+        return self._root_state
 
     ######################################################################
     # End backwards compatibility
@@ -149,8 +149,8 @@ class Canvas(Widget, DrawingActionDispatch):
 
     @property
     def _action_target(self):
-        """Return the currently active context manager."""
-        return self.root_manager._active_manager
+        """Return the currently active state."""
+        return self.root_state._active_state
 
     def redraw(self) -> None:
         """Redraw the Canvas.

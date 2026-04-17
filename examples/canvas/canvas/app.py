@@ -437,7 +437,7 @@ class CanvasApp(toga.App):
         self.render_drawing()
 
     def render_drawing(self):
-        self.canvas.root_manager.drawing_actions.clear()
+        self.canvas.root_state.drawing_actions.clear()
         self.canvas.translate(
             self.width / 2 + self.x_translation,
             self.height / 2 + self.y_translation,
