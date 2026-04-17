@@ -69,7 +69,7 @@ __all__ = [
     "Scale",
     "Translate",
     "WriteText",
-    # States
+    # Context-Manager Drawing Actions
     "State",
     "Fill",
     "Stroke",

@@ -534,8 +534,8 @@ async def test_stroke_and_fill(canvas, probe):
     assert_reference(probe, "stroke_and_fill")
 
 
-async def test_closed_path_state(canvas, probe):
-    """A closed path can be built with a state."""
+async def test_closed_path_manager(canvas, probe):
+    """A closed path can be built with a context manager."""
 
     # Build a parallelogram path
     with canvas.close_path():
@@ -547,12 +547,12 @@ async def test_closed_path_state(canvas, probe):
     # Draw it with a thick dashed line
     canvas.stroke(color=REBECCAPURPLE, line_width=5, line_dash=[20, 30])
 
-    await probe.redraw("Closed path should be drawn with state")
-    assert_reference(probe, "closed_path_state")
+    await probe.redraw("Closed path should be drawn with manager")
+    assert_reference(probe, "closed_path_manager")
 
 
-async def test_fill_state(canvas, probe):
-    """A fill path can be built with a state."""
+async def test_fill_manager(canvas, probe):
+    """A fill path can be built with a context manager."""
 
     # Build a filled parallelogram
     with canvas.fill(color=REBECCAPURPLE):
@@ -561,12 +561,12 @@ async def test_fill_state(canvas, probe):
         canvas.line_to(x=180, y=180)
         canvas.line_to(x=100, y=180)
 
-    await probe.redraw("Fill should be drawn with state")
-    assert_reference(probe, "fill_state")
+    await probe.redraw("Fill should be drawn with manager")
+    assert_reference(probe, "fill_manager")
 
 
-async def test_stroke_state(canvas, probe):
-    """A stroke can be drawn with a state."""
+async def test_stroke_manager(canvas, probe):
+    """A stroke can be drawn with a context manager."""
     # Draw a thin line
     with canvas.stroke(color=REBECCAPURPLE):
         canvas.move_to(x=40, y=20)
@@ -577,12 +577,12 @@ async def test_stroke_state(canvas, probe):
         canvas.move_to(x=80, y=20)
         canvas.line_to(x=120, y=180)
 
-    await probe.redraw("Stroke should be drawn with state")
-    assert_reference(probe, "stroke_state")
+    await probe.redraw("Stroke should be drawn with manager")
+    assert_reference(probe, "stroke_manager")
 
 
-async def test_stroke_and_fill_state(canvas, probe):
-    """A shape can be stroked and filled using states."""
+async def test_stroke_and_fill_manager(canvas, probe):
+    """A shape can be stroked and filled using context manager."""
 
     # Draw a filled parallelogram
     with canvas.fill(color=REBECCAPURPLE):
@@ -593,12 +593,12 @@ async def test_stroke_and_fill_state(canvas, probe):
             canvas.line_to(x=180, y=180)
             canvas.line_to(x=100, y=180)
 
-    await probe.redraw("Stroke and Fill should be drawn with state")
-    assert_reference(probe, "stroke_and_fill_state")
+    await probe.redraw("Stroke and Fill should be drawn with manager")
+    assert_reference(probe, "stroke_and_fill_manager")
 
 
-async def test_nested_stroke_and_fill_state(canvas, probe):
-    """Inner states don't override unsupplied attributes."""
+async def test_nested_stroke_and_fill_manager(canvas, probe):
+    """Inner managers don't override unsupplied attributes."""
     with canvas.fill(color=GOLDENROD):
         with canvas.fill():
             # Should still be goldenrod
@@ -610,8 +610,8 @@ async def test_nested_stroke_and_fill_state(canvas, probe):
             canvas.move_to(100, 10)
             canvas.line_to(100, 150)
 
-    await probe.redraw("Nested stroke and fill states should be drawn")
-    assert_reference(probe, "nested_stroke_and_fill_state")
+    await probe.redraw("Nested stroke and fill managers should be drawn")
+    assert_reference(probe, "nested_stroke_and_fill_manager")
 
 
 async def test_transforms(canvas, probe):
@@ -935,7 +935,7 @@ async def test_write_text_and_path(canvas, probe):
         # now stroke the path, but *not* the text
         canvas.stroke(CORNFLOWERBLUE)
 
-        # start a new path so Fill state doesn't fill current path with black
+        # start a new path so Fill manager doesn't fill current path with black
         canvas.begin_path()
 
     await probe.redraw("Text and path should be drawn independently")

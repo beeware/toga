@@ -14,18 +14,18 @@ from toga_dummy.utils import assert_action_performed
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
 
 
-def test_sub_state(widget):
-    """A state can produce a sub-state."""
-    with widget.state() as sub_state:
+def test_sub_manager(widget):
+    """A manager can produce a sub-manger."""
+    with widget.state() as sub_manager:
         widget.line_to(30, 40)
-    # A fresh state has been created as a sub-state of the canvas.
-    assert isinstance(sub_state, State)
-    assert sub_state is not widget.root_manager
+    # A fresh manager has been created as a sub-manager of the canvas.
+    assert isinstance(sub_manager, State)
+    assert sub_manager is not widget.root_manager
 
     assert_action_performed(widget, "redraw")
-    assert repr(sub_state) == "State()"
+    assert repr(sub_manager) == "State()"
 
-    # The first and last instructions can be ignored; they're the root canvas state
+    # The first and last instructions can be ignored; they're the root canvas manager
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
         ("line to", {"x": 30, "y": 40}),
@@ -34,11 +34,11 @@ def test_sub_state(widget):
 
 
 def test_closed_path(widget):
-    """A state can produce a ClosedPath sub-state."""
+    """A manager can produce a ClosedPath sub-manager."""
     with widget.close_path() as closed_path:
         widget.line_to(30, 40)
 
-    # A fresh state has been created as a sub-state of the canvas.
+    # A fresh manager has been created as a sub-manager of the canvas.
     assert isinstance(closed_path, ClosePath)
     assert repr(closed_path) == "ClosePath()"
 
@@ -46,7 +46,7 @@ def test_closed_path(widget):
 
     # No attributes to test.
 
-    # The first and last instructions can be ignored; they're the root canvas state
+    # The first and last instructions can be ignored; they're the root canvas manager
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
         "begin path",
@@ -92,11 +92,11 @@ def test_closed_path(widget):
     ],
 )
 def test_fill(widget, kwargs, args_repr, properties):
-    """A state can produce a Fill sub-state."""
+    """A manager can produce a Fill sub-manager."""
     with widget.fill(**kwargs) as fill:
         widget.line_to(30, 40)
 
-    # A fresh state has been created as a sub-state of the canvas.
+    # A fresh manager has been created as a sub-manager of the canvas.
     assert isinstance(fill, Fill)
     assert repr(fill) == f"Fill({args_repr})"
 
@@ -115,7 +115,7 @@ def test_fill(widget, kwargs, args_repr, properties):
         "restore",
     ]
 
-    # The first and last instructions can be ignored; they're the root canvas state
+    # The first and last instructions can be ignored; they're the root canvas manager
     assert widget._impl.draw_instructions[1:-1] == [
         command for command in commands if command is not None
     ]
@@ -165,11 +165,11 @@ def test_fill(widget, kwargs, args_repr, properties):
     ],
 )
 def test_stroke(widget, kwargs, args_repr, properties):
-    """A state can produce a Stroke sub-state."""
+    """A manager can produce a Stroke sub-manager."""
     with widget.stroke(**kwargs) as stroke:
         widget.line_to(30, 40)
 
-    # A fresh state has been created as a sub-state of the canvas.
+    # A fresh manager has been created as a sub-manager of the canvas.
     assert isinstance(stroke, Stroke)
     assert repr(stroke) == f"Stroke({args_repr})"
 
@@ -194,7 +194,7 @@ def test_stroke(widget, kwargs, args_repr, properties):
         "restore",
     ]
 
-    # The first and last instructions can be ignored; they're the root canvas state
+    # The first and last instructions can be ignored; they're the root canvas manager
     assert widget._impl.draw_instructions[1:-1] == [
         command for command in commands if command is not None
     ]
@@ -210,7 +210,7 @@ def assert_contents(container, contains: list, doesnt_contain: list):
 
 
 def test_contains(widget):
-    """Whether a drawing action is in a state can be tested."""
+    """Whether a drawing action is in a manager can be tested."""
     with widget.stroke() as stroke:
         reset_transform = widget.reset_transform()
         with widget.fill() as fill:

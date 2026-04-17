@@ -25,7 +25,7 @@ def test_widget_created():
     assert widget.on_alt_release._raw is None
     assert widget.on_alt_drag._raw is None
 
-    # Canvas has a root state
+    # Canvas has a root manager
     assert isinstance(widget.root_manager, State)
 
 
@@ -53,7 +53,7 @@ def test_create_with_value(
     assert widget.on_alt_release._raw == on_alt_release_handler
     assert widget.on_alt_drag._raw == on_alt_drag_handler
 
-    # Canvas has a root state
+    # Canvas has a root manager
     assert isinstance(widget.root_manager, State)
 
 
@@ -82,7 +82,7 @@ def test_redraw(widget):
 
     assert_action_performed(widget, "redraw")
 
-    # An empty canvas has 2 draw operations - pushing and popping the root state.
+    # An empty canvas has 2 draw operations - pushing and popping the root manager.
     assert widget._impl.draw_instructions == [
         "save",
         "restore",
@@ -90,17 +90,17 @@ def test_redraw(widget):
 
 
 def test_closed_path(widget):
-    """A canvas can produce a ClosedPath sub-state."""
+    """A canvas can produce a ClosedPath sub-manager."""
     with widget.close_path() as closed_path:
-        # A fresh state has been created as a sub-state of the canvas.
+        # A fresh manager has been created as a sub-manager of the canvas.
         assert isinstance(closed_path, ClosePath)
         assert closed_path is not widget.root_manager
 
 
 def test_fill(widget):
-    """A canvas can produce a Fill sub-state."""
+    """A canvas can produce a Fill sub-manager."""
     with widget.fill(color="rebeccapurple", fill_rule=FillRule.EVENODD) as fill:
-        # A fresh state has been created as a sub-state of the canvas.
+        # A fresh manager has been created as a sub-manager of the canvas.
         assert isinstance(fill, Fill)
         assert fill is not widget.root_manager
 
@@ -109,9 +109,9 @@ def test_fill(widget):
 
 
 def test_stroke(widget):
-    """A canvas can produce a Stroke sub-state."""
+    """A canvas can produce a Stroke sub-manager."""
     with widget.stroke(color="rebeccapurple", line_width=5, line_dash=[2, 7]) as stroke:
-        # A fresh state has been created as a sub-state of the canvas.
+        # A fresh manager has been created as a sub-manager of the canvas.
         assert isinstance(stroke, Stroke)
         assert stroke is not widget.root_manager
 
