@@ -508,6 +508,27 @@ async def test_stroke(canvas, probe):
     assert_reference(probe, "stroke")
 
 
+async def test_odd_dash_pattern(canvas, probe):
+    """An odd-length dash pattern should be internally doubled."""
+    with canvas.stroke(line_dash=[1], line_width=10):
+        # Should be 1-1, (- - - - )
+        canvas.move_to(10, 50)
+        canvas.line_to(190, 50)
+
+    with canvas.stroke(line_dash=[5], line_width=10):
+        # Should be 5-5 (-----     -----     )
+        canvas.move_to(10, 100)
+        canvas.line_to(190, 100)
+
+    with canvas.stroke(line_dash=[5, 2, 1], line_width=10):
+        # Should be 5-2-1-5-2-1 (-----  -     -- -----  -     -- )
+        canvas.move_to(10, 150)
+        canvas.line_to(190, 150)
+
+    await probe.redraw("Stroke should be drawn")
+    assert_reference(probe, "odd_dash_pattern")
+
+
 async def test_stroke_and_fill(canvas, probe):
     "A shape drawn with primitives can be stroked and filled."
     # Draw a closed path
