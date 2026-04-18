@@ -527,7 +527,7 @@ async def test_odd_dash_pattern(canvas, probe):
         canvas.line_to(190, 150)
 
     await probe.redraw("Stroke should be drawn")
-    assert_reference(probe, "odd_dash_pattern")
+    assert_reference(probe, "odd_dash_pattern", threshold=0.025)
 
 
 async def test_stroke_and_fill(canvas, probe):

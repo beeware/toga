@@ -133,9 +133,14 @@ class Context:
         self.state.brush.Color = native_color(color)
 
     def set_line_dash(self, line_dash):
-        if len(line_dash) % 2:
-            line_dash *= 2
-        self.state.pen.DashPattern = [ld / self.state.pen.Width for ld in line_dash]
+        if not line_dash:
+            dash_pattern = None
+        else:
+            if len(line_dash) % 2:
+                line_dash *= 2
+            dash_pattern = [ld / self.state.pen.Width for ld in line_dash]
+
+        self.state.pen.DashPattern = dash_pattern
 
     def set_line_width(self, line_width):
         self.state.pen.Width = line_width
