@@ -82,7 +82,14 @@ class Context:
         self.state.fill.setColor(jint(native_color(color)))
 
     def set_line_dash(self, line_dash):
-        self.state.stroke.setPathEffect(DashPathEffect(line_dash, 0))
+        if not line_dash:
+            effect = None
+        else:
+            if len(line_dash) % 2:
+                line_dash *= 2
+            effect = DashPathEffect(line_dash, 0)
+
+        self.state.stroke.setPathEffect(effect)
 
     def set_line_width(self, line_width):
         self.state.stroke.setStrokeWidth(line_width)

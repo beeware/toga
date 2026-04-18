@@ -510,25 +510,21 @@ async def test_stroke(canvas, probe):
 
 async def test_odd_dash_pattern(canvas, probe):
     """An odd-length dash pattern should be internally doubled."""
-    with canvas.stroke(line_dash=[1], line_width=10):
-        # Should be 1-1, (- - - - )
-        canvas.move_to(10, 40)
-        canvas.line_to(190, 40)
-
     with canvas.stroke(line_dash=[5], line_width=10):
         # Should be 5-5 (-----     -----     )
-        canvas.move_to(10, 80)
-        canvas.line_to(190, 80)
+        canvas.move_to(10, 50)
+        canvas.line_to(190, 50)
 
-    with canvas.stroke(line_dash=[5, 2, 1], line_width=10):
-        # Should be 5-2-1-5-2-1 (-----  -     -- -----  -     -- )
-        canvas.move_to(10, 120)
-        canvas.line_to(190, 120)
+    with canvas.stroke(line_dash=[10, 5, 3], line_width=10):
+        # Should be 10-5-3-10-5-3
+        # (----------     ---          -----   ----------     ---          -----   )
+        canvas.move_to(10, 100)
+        canvas.line_to(190, 100)
 
     with canvas.stroke(line_dash=[], line_width=10):
         # Should be a solid line
-        canvas.move_to(10, 160)
-        canvas.line_to(190, 160)
+        canvas.move_to(10, 150)
+        canvas.line_to(190, 150)
 
     await probe.redraw("Stroke should be drawn")
     assert_reference(probe, "odd_dash_pattern")
