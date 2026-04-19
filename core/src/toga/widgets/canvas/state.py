@@ -858,8 +858,10 @@ class Fill(BaseState):
             context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
             # Ignore path when used as context manager
             path = None
+        elif self.path is not None:
+            path = self.path.impl
         else:
-            path = self.path
+            path = None
 
         context.fill(fill_rule=self.fill_rule, path=path)
         context.restore()
@@ -895,8 +897,10 @@ class Stroke(BaseState):
             context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
             # Ignore path when used as context manager
             path = None
+        elif self.path is not None:
+            path = self.path.impl
         else:
-            path = self.path
+            path = None
 
         context.stroke(path=path)
         context.restore()
