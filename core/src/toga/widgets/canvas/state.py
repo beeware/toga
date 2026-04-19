@@ -330,14 +330,15 @@ class DrawingActionDispatch(ABC):
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
-        :param path: An optional Path2D object to fill.
+        :param path: An optional Path2D object to fill. Ignored when used as a
+            context manager.
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         if path is not None:
             # copy the current state of the path.
-            path = Path2D(path)  # pragma: no cover
-        fill = Fill(color, fill_rule)
+            path = Path2D(path)
+        fill = Fill(color, fill_rule, path)
         self._add_to_target(fill)
         self._redraw_with_warning_if_state()
         return fill
@@ -359,14 +360,15 @@ class DrawingActionDispatch(ABC):
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
-        :param path: An optional Path2D object to draw.
+        :param path: An optional Path2D object to draw. Ignored when used as a
+            context manager.
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
         if path is not None:
             # copy the current state of the path.
-            path = Path2D(path)  # pragma: no cover
-        stroke = Stroke(color, line_width, line_dash)
+            path = Path2D(path)
+        stroke = Stroke(color, line_width, line_dash, path)
         self._add_to_target(stroke)
         self._redraw_with_warning_if_state()
         return stroke
@@ -835,6 +837,7 @@ class ClosePath(BaseState):
 class Fill(BaseState):
     color: ColorT | None = color_property()
     fill_rule: FillRule = FillRule.NONZERO
+    path: Path2D | None = None
 
     def __post_init__(self):
         super().__init__()
@@ -853,8 +856,12 @@ class Fill(BaseState):
                 action._draw(context)
 
             context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
+            # Ignore path when used as context manager
+            path = None
+        else:
+            path = self.path
 
-        context.fill(self.fill_rule)
+        context.fill(fill_rule=self.fill_rule, path=path)
         context.restore()
 
 
@@ -863,6 +870,7 @@ class Stroke(BaseState):
     color: ColorT | None = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
+    path: Path2D | None = None
 
     def __post_init__(self):
         super().__init__()
@@ -885,6 +893,10 @@ class Stroke(BaseState):
                 action._draw(context)
 
             context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
+            # Ignore path when used as context manager
+            path = None
+        else:
+            path = self.path
 
-        context.stroke()
+        context.stroke(path=path)
         context.restore()

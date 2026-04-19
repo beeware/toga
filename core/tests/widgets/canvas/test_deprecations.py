@@ -291,7 +291,7 @@ def test_deprecated_list_methods(widget):
         "save",
         "begin path",
         ("line to", {"x": 25, "y": 25}),
-        ("fill", {"fill_rule": FillRule.NONZERO}),
+        ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
         "restore",
         # End fill
         ("line to", {"x": 30, "y": 40}),
@@ -329,7 +329,7 @@ def test_deprecated_list_methods(widget):
         "save",
         "begin path",
         ("line to", {"x": 25, "y": 25}),
-        ("fill", {"fill_rule": FillRule.NONZERO}),
+        ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
         "restore",
         # End fill
         ("line to", {"x": 30, "y": 40}),
@@ -361,7 +361,7 @@ def test_deprecated_list_methods(widget):
         "save",
         "begin path",
         ("line to", {"x": 25, "y": 25}),
-        ("fill", {"fill_rule": FillRule.NONZERO}),
+        ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
         "restore",
         # End fill
         ("line to", {"x": 30, "y": 40}),
@@ -414,7 +414,7 @@ def test_deprecated_list_methods(widget):
         "save",
         "begin path",
         ("line to", {"x": 25, "y": 25}),
-        ("fill", {"fill_rule": FillRule.NONZERO}),
+        ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
         "restore",
         # End fill
         ("line to", {"x": 40, "y": 50}),

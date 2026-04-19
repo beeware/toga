@@ -62,31 +62,31 @@ def test_closed_path(widget):
         # Defaults
         (
             {},
-            "color=None, fill_rule=FillRule.NONZERO",
+            "color=None, fill_rule=FillRule.NONZERO, path=None",
             {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Color
         (
             {"color": REBECCAPURPLE},
-            (f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO"),
+            (f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO, path=None"),
             {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
         ),
         # Explicitly don't set color
         (
             {"color": None},
-            "color=None, fill_rule=FillRule.NONZERO",
+            "color=None, fill_rule=FillRule.NONZERO, path=None",
             {"color": None, "fill_rule": FillRule.NONZERO},
         ),
         # Fill Rule
         (
             {"fill_rule": FillRule.EVENODD},
-            "color=None, fill_rule=FillRule.EVENODD",
+            "color=None, fill_rule=FillRule.EVENODD, path=None",
             {"color": None, "fill_rule": FillRule.EVENODD},
         ),
         # All args
         (
             {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
-            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD",
+            (f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD, path=None"),
             {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
         ),
     ],
@@ -127,25 +127,28 @@ def test_fill(widget, kwargs, args_repr, properties):
         # Defaults
         (
             {},
-            "color=None, line_width=None, line_dash=None",
+            "color=None, line_width=None, line_dash=None, path=None",
             {"color": None, "line_width": None, "line_dash": None},
         ),
         # Color
         (
             {"color": REBECCAPURPLE},
-            (f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None"),
+            (
+                f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None, "
+                "path=None"
+            ),
             {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
         ),
         # Explicitly don't set color
         (
             {"color": None},
-            "color=None, line_width=None, line_dash=None",
+            "color=None, line_width=None, line_dash=None, path=None",
             {"color": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "color=None, line_width=4.500, line_dash=None",
+            "color=None, line_width=4.500, line_dash=None, path=None",
             {"color": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
@@ -153,13 +156,16 @@ def test_fill(widget, kwargs, args_repr, properties):
             {
                 "line_dash": [2, 7],
             },
-            "color=None, line_width=None, line_dash=[2, 7]",
+            "color=None, line_width=None, line_dash=[2, 7], path=None",
             {"color": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
         (
             {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
-            (f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7]"),
+            (
+                f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7], "
+                "path=None"
+            ),
             {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
         ),
     ],

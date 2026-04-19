@@ -110,6 +110,9 @@ WebView = "toga_winforms.widgets.webview:WebView"
 MainWindow = "toga_winforms.window:MainWindow"
 Window = "toga_winforms.window:Window"
 
+# Canvas implementation
+Path2D = "toga_winforms.widgets.canvas:Path2D"
+
 [tool.distutils.bdist_wheel]
 # This backend needs to be tagged `py3-none-win_arm64`. All the code in this backend is
 # pure Python, *but* it contains pre-compiled binary libraries to support WebView2.

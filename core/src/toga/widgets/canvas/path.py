@@ -2,12 +2,11 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from math import pi
 
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 from .drawingaction import (
     Arc,
     BezierCurveTo,
-    ClosePath,
     DrawingAction,
     Ellipse,
     LineTo,
@@ -49,7 +48,7 @@ class Path2D:
             self.drawing_actions = path.drawing_actions.copy()
         self._action_target = self
         self._impl = None
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
 
     @property
     def impl(self):
@@ -81,6 +80,9 @@ class Path2D:
         :returns: The `ClosePath`
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
+        # delay import because of circular dependency
+        from .state import ClosePath
+
         close_path = ClosePath()
         self._action_target.drawing_actions.append(close_path)
         self._recompilation_needed()
