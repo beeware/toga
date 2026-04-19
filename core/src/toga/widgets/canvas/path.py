@@ -338,6 +338,9 @@ class Path2D:
     def _recompilation_needed(self):
         self._impl = None
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}()"
+
 
 @dataclass(repr=False)
 class AddPath(DrawingAction):

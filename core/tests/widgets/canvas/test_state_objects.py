@@ -5,6 +5,7 @@ from toga.constants import FillRule
 from toga.widgets.canvas import (
     ClosePath,
     Fill,
+    Path2D,
     Scale,
     State,
     Stroke,
@@ -89,6 +90,15 @@ def test_closed_path(widget):
             (f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD, path=None"),
             {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
         ),
+        # Path ignored in context manager
+        (
+            {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD, "path": Path2D()},
+            (
+                f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD, "
+                "path=Path2D()"
+            ),
+            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
+        ),
     ],
 )
 def test_fill(widget, kwargs, args_repr, properties):
@@ -165,6 +175,20 @@ def test_fill(widget, kwargs, args_repr, properties):
             (
                 f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7], "
                 "path=None"
+            ),
+            {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
+        ),
+        # Path ignored in context manager
+        (
+            {
+                "color": REBECCAPURPLE,
+                "line_width": 4.5,
+                "line_dash": [2, 7],
+                "path": Path2D(),
+            },
+            (
+                f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7], "
+                "path=Path2D()"
             ),
             {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
         ),
