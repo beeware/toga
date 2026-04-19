@@ -80,7 +80,7 @@ SimpleStatusIcon = "toga_web.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_web.statusicons:StatusIconSet"
 
 # Widgets
-# ActivityIndicator = "toga_web.widgets.activityindicator:ActivityIndicator"
+ActivityIndicator = "toga_web.widgets.activityindicator:ActivityIndicator"
 Box = "toga_web.widgets.box:Box"
 Button = "toga_web.widgets.button:Button"
 Canvas = "toga_web.widgets.canvas:Canvas"
@@ -102,7 +102,7 @@ Slider = "toga_web.widgets.slider:Slider"
 Switch = "toga_web.widgets.switch:Switch"
 # Table = "toga_web.widgets.table:Table"
 TextInput = "toga_web.widgets.textinput:TextInput"
-# TimeInput = "toga_web.widgets.timeinput:TimeInput"
+TimeInput = "toga_web.widgets.timeinput:TimeInput"
 # Tree = "toga_web.widgets.tree:Tree"
 # WebView = "toga_web.widgets.webview:WebView"
 
