@@ -1010,19 +1010,19 @@ async def test_path_object(canvas, probe):
     Path2D(path2)
 
     print("transform")
-    canvas.root_state.translate(100, 100)
-    canvas.root_state.scale(0.5, 0.5)
+    canvas.translate(100, 100)
+    canvas.scale(0.5, 0.5)
     for _ in range(12):
-        canvas.root_state.rotate(pi / 6)
-        canvas.root_state.scale(0.95, 0.95)
+        canvas.rotate(pi / 6)
+        canvas.scale(0.95, 0.95)
         print("draw", _)
-        canvas.root_state.fill(CORNFLOWERBLUE, path=path)
-        canvas.root_state.stroke(REBECCAPURPLE, path=path)
+        canvas.fill(CORNFLOWERBLUE, path=path)
+        canvas.stroke(REBECCAPURPLE, path=path)
 
     # stroke and fill an empty path
     print("stroke and fill empty")
-    canvas.root_state.fill(path=Path2D())
-    canvas.root_state.stroke(path=Path2D())
+    canvas.fill(path=Path2D())
+    canvas.stroke(path=Path2D())
     print("done")
 
     await probe.redraw("Image should be drawn")
