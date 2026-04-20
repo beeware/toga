@@ -13,7 +13,7 @@ canvas = toga.Canvas()
 canvas.begin_path()
 canvas.move_to(20, 20)
 canvas.line_to(160, 20)
-canvas.stroke(color="orange")
+canvas.stroke(stroke_style="orange")
 ```
 
 Toga adds an additional layer of convenience to the base HTML5 API by providing context managers for operations that have a natural open/close life cycle. For example, the previous example could be replaced with:
@@ -22,7 +22,8 @@ Toga adds an additional layer of convenience to the base HTML5 API by providing 
 import toga
 canvas = toga.Canvas()
 
-with canvas.stroke(color="orange", 20, 20):
+with canvas.stroke(stroke_style="orange"):
+    canvas.move_to(20, 20)
     canvas.line_to(160, 20)
 ```
 
@@ -38,7 +39,7 @@ In this example, we create 2 filled drawing actions, then manipulate those objec
 import toga
 
 canvas = toga.Canvas()
-with canvas.fill(color="red") as fill:
+with canvas.fill(fill_style="red") as fill:
     circle = canvas.arc(x=50, y=50, radius=15)
     rect = canvas.rect(x=50, y=50, width=15, height=15)
 
@@ -49,7 +50,7 @@ circle.y = 25
 circle.radius = 5
 
 # Change the fill color to blue
-fill.color = "blue"
+fill.fill_style = "blue"
 
 # Remove the rectangle from the canvas
 fill.drawing_actions.remove(rect)
