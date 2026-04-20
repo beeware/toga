@@ -10,7 +10,7 @@ The Toga backend for Windows is [`toga-winforms`](https://github.com/beeware/tog
 
 Toga requires the use of either .NET Framework 4.x, or .NET Core 10.
 
-If you're on an x86-64 machine, .NET Framework 4.x is installed by default on Windows 10 and 11. Toga will use .NET Core 10 if it is installed.
+If you're on an x86-64 machine, .NET Framework 4.x is installed by default on Windows 10 and 11. Toga will use .NET Core 10 if it is installed. If you explicitly *want* to use .NET Framework 4.x, set the `TOGA_WINFORMS_USE_NETFX` environment variable.
 
 If you're using an ARM64 machine, and you're using a native ARM64 Python interpreter, you *must* use .NET Core 10. The [.NET Desktop Runtime can be downloaded from the .NET website](https://dotnet.microsoft.com/en-us/download/dotnet/10.0). If you're using an x86-64 interpreter on an ARM64 machine, Toga can use the .NET Framework install that is provided by default.
 

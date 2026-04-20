@@ -1,3 +1,4 @@
+import os
 import platform
 from pathlib import Path
 
@@ -23,7 +24,12 @@ try:
     # to .NET Framework. If we're on ARM64, check to see if the interpreter is running
     # in emulation mode. If it is, we're OK; if we're not, stop the interpreter; the
     # .NET gives instructions on how to install .NET
+    #
+    # But: If TOGA_WINFORMS_USE_NETFX is defined in the environment, ignore .NET Core
+    # and prefer .NET Framework 4.x
     ####################################################################################
+    if os.environ.get("TOGA_WINFORMS_USE_NETFX", False):
+        raise RuntimeError("Explicitly requessting .NET Framework 4.x")
 
     # runtime.json defines the .NET version. .NET 10 is the current LTS release.
     set_runtime(
