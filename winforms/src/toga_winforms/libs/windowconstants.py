@@ -1,5 +1,8 @@
 # Window constants
 
+# Activation Context
+INVALID_HANDLE_VALUE = -1
+
 # Custom Draw Draw Stage
 CDDS_PREPAINT = 0x00000001
 CDDS_ITEMPREPAINT = 0x00010000 | 0x00000001

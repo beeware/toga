@@ -20,6 +20,7 @@ from ctypes.wintypes import (
 
 from System import Environment
 
+from .activationcontext import activation_context
 from .win32 import LRESULT, UINT_PTR
 
 user32 = windll.user32
@@ -44,9 +45,9 @@ CreatePopupMenu.argtypes = []
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw
-CreateWindowExW = user32.CreateWindowExW
-CreateWindowExW.restype = HWND
-CreateWindowExW.argtypes = [
+CreateWindowExW_raw = user32.CreateWindowExW
+CreateWindowExW_raw.restype = HWND
+CreateWindowExW_raw.argtypes = [
     DWORD,
     LPCWSTR,
     LPCWSTR,
@@ -60,6 +61,11 @@ CreateWindowExW.argtypes = [
     HINSTANCE,
     LPVOID,
 ]
+
+
+@activation_context
+def CreateWindowExW(*args):
+    return CreateWindowExW_raw(*args)
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-destroymenu

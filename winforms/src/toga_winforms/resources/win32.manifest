@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- Based on the manifest to enable visual styles from the Microsoft documentation. -->
+<!-- See: https://learn.microsoft.com/en-us/windows/win32/controls/cookbook-overview -->
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+<assemblyIdentity
+    version="1.0.0.0"
+    processorArchitecture="*"
+    name="App.Toga.Beeware"
+    type="win32"
+/>
+<description>Toga Application</description>
+<dependency>
+    <dependentAssembly>
+        <assemblyIdentity
+            type="win32"
+            name="Microsoft.Windows.Common-Controls"
+            version="6.0.0.0"
+            processorArchitecture="*"
+            publicKeyToken="6595b64144ccf1df"
+            language="*"
+        />
+    </dependentAssembly>
+</dependency>
+<application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+        <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware>
+    </windowsSettings>
+</application>
+</assembly>
