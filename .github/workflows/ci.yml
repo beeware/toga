@@ -251,7 +251,8 @@ jobs:
         backend:
         - "macOS-x86_64"
         - "macOS-arm64"
-        - "windows-x86_64"
+        - "windows-netfx-x86_64"
+        - "windows-netcore-x86_64"
         - "windows-arm64"
         - "linux-x11-gtk3"
         - "linux-wayland-gtk3"
@@ -490,12 +491,19 @@ jobs:
           briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
-        - backend: "windows-x86_64"
+        - backend: "windows-netfx-x86_64"
+          platform: "windows"
+          runs-on: "windows-latest"
+          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
+          pre-command: |
+            export TOGA_WINFORMS_USE_NETFX=1
+
+        - backend: "windows-netcore-x86_64"
           platform: "windows"
           runs-on: "windows-latest"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
-        - backend: "windows-arm64"
+        - backend: "windows-netcore-arm64"
           platform: "windows"
           runs-on: "windows-11-arm"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
