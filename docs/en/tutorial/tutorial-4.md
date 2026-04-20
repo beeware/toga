@@ -8,9 +8,9 @@ Utilizing the Canvas is as easy as determining the drawing operations you want t
 
     ```python
     def draw_eyes(self):
-	    with self.canvas.Fill(color=WHITE) as eye_whites:
-		    eye_whites.arc(58, 92, 15)
-			    eye_whites.arc(88, 92, 15, math.pi, 3 * math.pi)
+     with self.canvas.Fill(color=WHITE) as eye_whites:
+      eye_whites.arc(58, 92, 15)
+       eye_whites.arc(88, 92, 15, math.pi, 3 * math.pi)
     ```
 
     Notice that we also created and used a new fill state called `eye_whites`. The `with` keyword that is used for the fill operation causes everything draw using the state to be filled with a color. In this example we filled two circular eyes with the color white.
