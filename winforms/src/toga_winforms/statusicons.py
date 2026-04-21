@@ -5,13 +5,13 @@ from toga.command import Group, Separator
 from toga.handlers import WeakrefCallable
 from toga_winforms import _use_dotnet_core
 
-if _use_dotnet_core:
+if _use_dotnet_core:  # pragma: no-cover-if-netfx
     ToolStripMenuItem = WinForms.ToolStripMenuItem
     ContextMenuStrip = WinForms.ContextMenuStrip
     MENU_ATTR = "Items"
     SUBMENU_ATTR = "DropDownItems"
     CONTEXT_MENU_ATTR = "ContextMenuStrip"
-else:
+else:  # pragma: no-cover-if-netcore
     ToolStripMenuItem = WinForms.MenuItem
     ContextMenuStrip = WinForms.ContextMenu
     MENU_ATTR = "MenuItems"

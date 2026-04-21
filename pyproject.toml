@@ -42,6 +42,8 @@ no-cover-if-lt-py312 = "sys_version_info < (3, 12) and os_environ.get('COVERAGE_
 no-cover-if-gte-py312 = "sys_version_info > (3, 12) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-lt-py311 = "sys_version_info < (3, 11) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-gte-py311 = "sys_version_info > (3, 11) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
+no-cover-if-netfx = "os_environ.get('TOGA_WINFORMS_USE_NETFX') == '1'"
+no-cover-if-netcore = "os_environ.get('TOGA_WINFORMS_USE_NETFX') != '1'"
 
 [tool.ruff]
 exclude = [

@@ -28,20 +28,21 @@ try:
     # But: If TOGA_WINFORMS_USE_NETFX is defined in the environment, ignore .NET Core
     # and prefer .NET Framework 4.x
     ####################################################################################
-    if os.environ.get("TOGA_WINFORMS_USE_NETFX", False):
+    if os.environ.get("TOGA_WINFORMS_USE_NETFX", False):  # pragma: no-cover-if-netcore
         raise RuntimeError("Explicitly requesting .NET Framework 4.x")
-
-    # runtime.json defines the .NET version. .NET 10 is the current LTS release.
-    set_runtime(
-        clr_loader.get_coreclr(
-            runtime_config=Path(__file__).parent / "resources/runtime.json"
+    else:  # pragma: no-cover-if-netfx
+        # runtime.json defines the .NET version. .NET 10 is the current LTS release.
+        set_runtime(
+            clr_loader.get_coreclr(
+                runtime_config=Path(__file__).parent / "resources/runtime.json"
+            )
         )
-    )
 
-    # .NET Core load succeeded
-    _use_dotnet_core = True
-except (clr_loader.util.clr_error.ClrError, RuntimeError):
-    # .NET Core load failed.
+        # .NET Core load succeeded
+        _use_dotnet_core = True
+except (clr_loader.util.clr_error.ClrError, RuntimeError):  # pragma: no cover
+    # .NET Core load failed. This whole branch is no-cover because we can't
+    # easily set up the test cases for the failure modes.
     if platform.machine() == "ARM64" and "ARM64" in platform.python_compiler():
         # If you're on a native ARM64 machine running an ARM64 Python, .NET Framework
         # 4.x isn't an option. On Python 3.10 and 3.11, an x86-64 Python running on
