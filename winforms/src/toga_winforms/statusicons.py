@@ -10,11 +10,13 @@ if _use_dotnet_core:
     ContextMenuStrip = WinForms.ContextMenuStrip
     MENU_ATTR = "Items"
     SUBMENU_ATTR = "DropDownItems"
+    CONTEXT_MENU_ATTR = "ContextMenuStrip"
 else:
     ToolStripMenuItem = WinForms.MenuItem
     ContextMenuStrip = WinForms.ContextMenu
     MENU_ATTR = "MenuItems"
     SUBMENU_ATTR = "MenuItems"
+    CONTEXT_MENU_ATTR = "ContextMenu"
 
 
 class StatusIcon:
@@ -78,7 +80,7 @@ class StatusIconSet:
         # Clear existing menus
         for item in self.interface._menu_status_icons:
             submenu = ContextMenuStrip()
-            item._impl.native.ContextMenuStrip = submenu
+            setattr(item._impl.native, CONTEXT_MENU_ATTR, submenu)
 
         # Determine the primary status icon.
         primary_group = self.interface._primary_menu_status_icon
@@ -89,11 +91,14 @@ class StatusIconSet:
 
         # Add the menu status items to the cache
         group_cache = {
-            item: item._impl.native.ContextMenuStrip
+            item: getattr(item._impl.native, CONTEXT_MENU_ATTR)
             for item in self.interface._menu_status_icons
         }
         # Map the COMMANDS group to the primary status icon's menu.
-        group_cache[Group.COMMANDS] = primary_group._impl.native.ContextMenuStrip
+        group_cache[Group.COMMANDS] = getattr(
+            primary_group._impl.native,
+            CONTEXT_MENU_ATTR,
+        )
         self._menu_items = {}
 
         for cmd in self.interface.commands:
