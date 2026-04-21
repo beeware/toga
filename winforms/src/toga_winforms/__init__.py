@@ -13,23 +13,23 @@ try:
     # Windows on ARM64, it is an x86-64 binary, so it can't be used by a native ARM64
     # Python interpreter.
     #
-    # However, it *can* be used if you have an x86-64 Python interpreter - which is what
-    # you get if you run `py install -3.13` or `py install -3.14`. This will apparently
-    # change with Python 3.15.
+    # However, it *can* be used on ARM64 if you have an x86-64 Python interpreter -
+    # which is what you get if you run `py install -3.13` or `py install -3.14`. This
+    # will apparently change in Python 3.15.
     #
-    # Using .NET Core requires a separate install - but it will be present on a lot
-    # of systems.
+    # Using .NET Core requires a separate install - but it will be present on a lot of
+    # systems.
     #
     # So - try to load .NET Core; if it succeeds, use it. If the load fails, fall back
     # to .NET Framework. If we're on ARM64, check to see if the interpreter is running
     # in emulation mode. If it is, we're OK; if we're not, stop the interpreter; the
-    # .NET gives instructions on how to install .NET
+    # .NET gives instructions on how to install .NET.
     #
     # But: If TOGA_WINFORMS_USE_NETFX is defined in the environment, ignore .NET Core
     # and prefer .NET Framework 4.x
     ####################################################################################
     if os.environ.get("TOGA_WINFORMS_USE_NETFX", False):
-        raise RuntimeError("Explicitly requessting .NET Framework 4.x")
+        raise RuntimeError("Explicitly requesting .NET Framework 4.x")
 
     # runtime.json defines the .NET version. .NET 10 is the current LTS release.
     set_runtime(
@@ -43,8 +43,10 @@ try:
 except (clr_loader.util.clr_error.ClrError, RuntimeError):
     # .NET Core load failed.
     if platform.machine() == "ARM64" and "ARM64" in platform.python_compiler():
-        # A native ARM64 machine running an ARM64 Python.
-        # .NET Framework 4.x isn't an option.
+        # If you're on a native ARM64 machine running an ARM64 Python, .NET Framework
+        # 4.x isn't an option. On Python 3.10 and 3.11, an x86-64 Python running on
+        # ARM64 will return `platform.machine() == "AMD64"`, so it fails the first
+        # part of the test.
         raise RuntimeError("""
 
 On Windows, Toga requires .NET Core 10. Please visit:
@@ -53,9 +55,8 @@ On Windows, Toga requires .NET Core 10. Please visit:
 
 and install the .NET Desktop Runtime.""") from None
     else:
-        # Either a native x86_64 machine, or an ARM64 machine with
-        # and x86_64 Python interpreter in emulation mode. We can
-        # use .NET Framework 4.x
+        # Either a native x86_64 machine, or an ARM64 machine with and x86_64 Python
+        # interpreter in emulation mode. We can use .NET Framework 4.x
         _use_dotnet_core = False
 
 

@@ -245,7 +245,7 @@ def main(appname):
         if toga_winforms._use_dotnet_core:
             print("Running testbed using .NET Core")
         else:
-            print("Running testbed using .NET Foundation 4.x")
+            print("Running testbed using .NET Framework 4.x")
 
     return Testbed(
         app_name=appname,

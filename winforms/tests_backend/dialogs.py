@@ -10,7 +10,12 @@ class DialogsMixin:
     supports_multiple_select_folder = False
 
     def _setup_dialog_result(
-        self, dialog, char, alt=False, char2=None, pre_close_test_method=None
+        self,
+        dialog,
+        char,
+        alt=False,
+        char2=None,
+        pre_close_test_method=None,
     ):
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
@@ -30,20 +35,16 @@ class DialogsMixin:
                         pre_close_test_method(dialog)
                 finally:
                     try:
-                        # print(f"TYPE {char=} {alt=}")
-                        # await self.redraw("wait for type")
                         await self.type_character(char, alt=alt)
                         if char2:
-                            await self.redraw("wait for done", delay=0.1)
+                            # If a second character press is needed, wait a moment
+                            # for the effect of the first character to take effect.
+                            await self.redraw("wait for char", delay=0.1)
                             await self.type_character(char2)
-                        #     if i != len(char):
-                        #         await self.redraw("wait for done", delay=0.1)
-                        # print("TYPE DONE")
                     except Exception as e:
                         # An error occurred closing the dialog; that means the dialog
                         # isn't what as expected, so record that in the future.
                         future.set_exception(e)
-                print("close done")
 
             asyncio.create_task(_close_dialog(), name="close-dialog")
 
