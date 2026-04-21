@@ -101,7 +101,7 @@ jobs:
       - name: Configure platform tag
         if: ${{ matrix.subdir }}
         run: |
-          printf '[bdist_wheel]\nplat-name = "${{ matrix.plat-name }}"\n' >> winforms/pyproject.toml
+          printf '[tool.distutils.bdist_wheel]\nplat-name = "${{ matrix.plat-name }}"\n' >> winforms/pyproject.toml
 
       # To ensure the binary wheel only contains the binaries for that platform,
       # delete content that is for the other architecture.
@@ -557,7 +557,7 @@ jobs:
           platform: "windows"
           runs-on: "windows-11-arm"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
-          briefcase-test-args: "--slow"
+          briefcase-test-args: "tests/app/app.py tests/app/test_desktop.py"
 
         - backend: "iOS"
           platform: "iOS"
