@@ -42,7 +42,7 @@ try:
         _use_dotnet_core = True
 except (clr_loader.util.clr_error.ClrError, RuntimeError):  # pragma: no cover
     # .NET Core load failed. This whole branch is no-cover because we can't
-    # easily set up the test cases for the failure modes.
+    # easily describe no-cover conditions for the failure modes.
     if platform.machine() == "ARM64" and "ARM64" in platform.python_compiler():
         # If you're on a native ARM64 machine running an ARM64 Python, .NET Framework
         # 4.x isn't an option. On Python 3.10 and 3.11, an x86-64 Python running on
@@ -73,10 +73,11 @@ from .libs.user32 import (
 clr.AddReference("System.Windows.Forms")
 
 # .NET Core requires some other explicit assemblies
-if _use_dotnet_core:
+if _use_dotnet_core:  # pragma: no-cover-if-netfx
     clr.AddReference("Microsoft.Win32.SystemEvents")
     clr.AddReference("System.Windows.Extensions")
-
+else:  # pragma: no-cover-if-netcore
+    pass
 
 # Add a reference to the WindowsBase assembly. This is needed to access
 # System.Windows.Threading.Dispatcher.

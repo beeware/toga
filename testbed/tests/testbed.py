@@ -144,10 +144,12 @@ def main(main_package_name, backend_override=None):
     cov.set_option(
         "coverage_conditional_plugin:rules",
         {
+            # Linux X vs Wayland
             "no-cover-if-linux-wayland": "os_environ.get('WAYLAND_DISPLAY', '') != ''",
             "no-cover-if-linux-x": (
                 "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'"
             ),
+            # Linux GTK3/4 + Adwaita versions
             "no-cover-if-gtk4": "os_environ.get('TOGA_GTK', '') == '4'",
             "no-cover-if-gtk3": "os_environ.get('TOGA_GTK', '3') == '3'",
             "no-cover-unless-plain-gtk4": (
@@ -158,6 +160,11 @@ def main(main_package_name, backend_override=None):
             "no-cover-unless-libadwaita": (
                 "os_environ.get('TOGA_GTK', '') != '4' "
                 "or os_environ.get('TOGA_GTKLIB', '') != 'Adw'"
+            ),
+            # Windows .NET usage
+            "no-cover-if-netfx": "os_environ.get('TOGA_WINFORMS_USE_NETFX', '') == '1'",
+            "no-cover-if-netcore": (
+                "os_environ.get('TOGA_WINFORMS_USE_NETFX', '') != '1'"
             ),
         },
     )
