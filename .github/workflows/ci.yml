@@ -319,6 +319,7 @@ jobs:
         - pre-command: ""
           briefcase-run-prefix: ""
           briefcase-run-args: ""
+          briefcase-test-args: ""
           setup-python: true
           testbed-app: "testbed"
           copy-command: "cp -r"
@@ -556,6 +557,7 @@ jobs:
           platform: "windows"
           runs-on: "windows-11-arm"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
+          briefcase-test-args: "--slow"
 
         - backend: "iOS"
           platform: "iOS"
@@ -630,7 +632,7 @@ jobs:
       run: |
         ${{ matrix.briefcase-run-prefix }} \
           briefcase run ${{ matrix.platform }} --log --test \
-          ${{ matrix.briefcase-run-args }} --app ${{ matrix.testbed-app }} -- --ci
+          ${{ matrix.briefcase-run-args }} --app ${{ matrix.testbed-app }} -- --ci ${{ matrix.briefcase-test-args }}
 
     - name: Upload Logs
       uses: actions/upload-artifact@v7.0.1
