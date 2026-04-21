@@ -607,7 +607,7 @@ jobs:
     # open an SSH server (URL reported in the logs) so you can ssh into the CI
     # machine.
     - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+      uses: mxschmitt/action-tmate@v3.23
       if: failure()
 
   bootstraps:
