@@ -118,14 +118,6 @@ jobs:
           upload-name-suffix: ${{ format('-{0}', matrix.wheel) }}
           attest-build-provenance-github: ${{ inputs.attest-package }}
 
-      - name: Determine Artifact Basename
-        id: artifact
-        env:
-          BASENAME: ${{ steps.package.outputs.artifact-name }}
-        run: |
-          # trim the differentiator to generate the artifact's basename
-          echo "basename=${BASENAME%${{ format('-{0}', matrix.wheel) }}}" | tee -a ${GITHUB_OUTPUT}
-
 
   docs-lint:
     name: Documentation linting
@@ -201,7 +193,7 @@ jobs:
     - name: Get Packages
       uses: actions/download-artifact@v8.0.1
       with:
-        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        pattern: "Packages-*"
         merge-multiple: true
         path: dist
 
@@ -290,7 +282,7 @@ jobs:
     - name: Get Package
       uses: actions/download-artifact@v8.0.1
       with:
-        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        pattern: "Packages-travertino"
         merge-multiple: true
         path: dist
 
@@ -628,7 +620,7 @@ jobs:
     - name: Get Packages
       uses: actions/download-artifact@v8.0.1
       with:
-        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        pattern: "Packages-*"
         merge-multiple: true
         path: dist
 
@@ -707,7 +699,7 @@ jobs:
     - name: Get Packages
       uses: actions/download-artifact@v8.0.1
       with:
-        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        pattern: "Packages-positron"
         merge-multiple: true
         path: dist
 
