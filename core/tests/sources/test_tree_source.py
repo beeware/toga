@@ -87,7 +87,7 @@ def test_accessors_optional_for_mapping_data():
     )
 
     assert len(source) == 1
-    assert source.accessors == []
+    assert source.accessors is None
     assert source[0].value == "root"
     assert source[0][0].value == "child"
 
@@ -97,7 +97,7 @@ def test_accessors_omitted_for_mapping_data():
     source = TreeSource(data=[({"value": "root"}, None)])
 
     assert len(source) == 1
-    assert source.accessors == []
+    assert source.accessors is None
     assert source[0].value == "root"
 
 

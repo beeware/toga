@@ -38,7 +38,7 @@ def test_accessors_optional_for_mapping_data():
     source = ListSource(data=[{"value": 1}], accessors=[])
 
     assert len(source) == 1
-    assert source.accessors == []
+    assert source.accessors is None
     assert source[0].value == 1
 
 
@@ -47,7 +47,7 @@ def test_accessors_omitted_for_mapping_data():
     source = ListSource(data=[{"value": 1}])
 
     assert len(source) == 1
-    assert source.accessors == []
+    assert source.accessors is None
     assert source[0].value == 1
 
 

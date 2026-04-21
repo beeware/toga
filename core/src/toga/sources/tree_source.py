@@ -204,18 +204,20 @@ class Node(Row[T]):
 
 class TreeSource(Source):
     _roots: list[Node]
+    _accessors: list[str] | None
 
     def __init__(
         self, accessors: Iterable[str] | None = None, data: object | None = None
     ):
         super().__init__()
         if accessors is None:
-            self._accessors = []
+            self._accessors = None
         elif isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
             raise ValueError("accessors should be a list of attribute names")
         else:
-            # Copy the list of accessors
-            self._accessors = list(accessors)
+            # Copy the list of accessors, in case of [] its None.
+            accessors = list(accessors)
+            self._accessors = accessors if len(accessors) > 0 else None
 
         if data is not None:
             self._roots = self._create_nodes(parent=None, value=data)
@@ -223,8 +225,10 @@ class TreeSource(Source):
             self._roots = []
 
     @property
-    def accessors(self) -> list[str]:
+    def accessors(self) -> list[str] | None:
         """The attribute names for accessing the value in each column of a row."""
+        if self._accessors is None:
+            return None
         return self._accessors.copy()
 
     ######################################################################
@@ -255,18 +259,13 @@ class TreeSource(Source):
     ) -> Node:
         if isinstance(data, Mapping):
             node = Node(**data)
-        elif hasattr(data, "__iter__") and not isinstance(data, str):
-            if len(self._accessors) == 0:
-                raise ValueError(
-                    "TreeSource requires accessors for non-mapping node data"
-                )
-            node = Node(**dict(zip(self._accessors, data, strict=False)))
+        elif self._accessors is not None:
+            if hasattr(data, "__iter__") and not isinstance(data, str):
+                node = Node(**dict(zip(self._accessors, data, strict=False)))
+            else:
+                node = Node(**{self._accessors[0]: data})
         else:
-            if len(self._accessors) == 0:
-                raise ValueError(
-                    "TreeSource requires accessors for non-mapping node data"
-                )
-            node = Node(**{self._accessors[0]: data})
+            raise ValueError("TreeSource requires accessors for non-mapping node data")
 
         node._parent = parent
         node._source = self

@@ -18,7 +18,7 @@ A type describing any object adhering to the same interface as
 def _find_item(
     candidates: Sequence[T],
     data: object,
-    accessors: Sequence[str],
+    accessors: Sequence[str] | None,
     start: T | None,
     error: str,
 ) -> T:
@@ -29,7 +29,7 @@ def _find_item(
     else:
         start_index = 0
 
-    if len(accessors) == 0 and not isinstance(data, Mapping):
+    if accessors is None and not isinstance(data, Mapping):
         raise ValueError("Cannot search for non-mapping data without accessors")
 
     for item in candidates[start_index:]:
@@ -106,6 +106,7 @@ class Row(Generic[T]):
 
 class ListSource(Source):
     _data: list[Row]
+    _accessors: list[str] | None
 
     def __init__(
         self, accessors: Iterable[str] | None = None, data: Iterable | None = None
@@ -120,12 +121,13 @@ class ListSource(Source):
         """
         super().__init__()
         if accessors is None:
-            self._accessors = []
+            self._accessors = None
         elif isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
             raise ValueError("accessors should be a list of attribute names")
         else:
             # Copy the list of accessors
-            self._accessors = list(accessors)
+            accessors = list(accessors)
+            self._accessors = accessors if len(accessors) > 0 else None
 
         # Convert the data into row objects
         if data is not None:
@@ -134,8 +136,10 @@ class ListSource(Source):
             self._data = []
 
     @property
-    def accessors(self) -> list[str]:
+    def accessors(self) -> list[str] | None:
         """The attribute names for accessing the value in each column of a row."""
+        if self._accessors is None:
+            return None
         return self._accessors.copy()
 
     ######################################################################
@@ -164,18 +168,13 @@ class ListSource(Source):
     def _create_row(self, data: object) -> Row:
         if isinstance(data, Mapping):
             row = Row(**data)
-        elif hasattr(data, "__iter__") and not isinstance(data, str):
-            if len(self._accessors) == 0:
-                raise ValueError(
-                    "ListSource requires accessors for non-mapping row data"
-                )
-            row = Row(**dict(zip(self._accessors, data, strict=False)))
+        elif self._accessors is not None:
+            if hasattr(data, "__iter__") and not isinstance(data, str):
+                row = Row(**dict(zip(self._accessors, data, strict=False)))
+            else:
+                row = Row(**{self._accessors[0]: data})
         else:
-            if len(self._accessors) == 0:
-                raise ValueError(
-                    "ListSource requires accessors for non-mapping row data"
-                )
-            row = Row(**{self._accessors[0]: data})
+            raise ValueError("ListSource requires accessors for non-mapping row data")
         row._source = self
         return row
 
