@@ -181,13 +181,15 @@ class DetailedListProbe(SimpleProbe):
         # Perform the right click that opens the context menu.
         await self._perform_click(x, y, right=True)
 
+        await self.redraw("Context menu displayed.", delay=0.2)
+
         # Select menu item with keyboard.
         await self._select_with_keyboard(index)
 
         if index < 0:
-            await self.redraw("Context menu displayed and exited.", delay=0.1)
+            await self.redraw("Context menu exited with the 'Esc' key.", delay=0.1)
         else:
-            await self.redraw("Context menu displayed and item selected.", delay=0.1)
+            await self.redraw("Context menu item selected via the keyboard.", delay=0.1)
 
     async def _perform_click(
         self,

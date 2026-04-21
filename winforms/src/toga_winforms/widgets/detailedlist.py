@@ -96,7 +96,9 @@ class DetailedList(Widget):
         self._context_menu = ContextMenu(self, self.menu_items)
 
         # According to the MicroSoft documentation, an application must call
-        # InitCommonControlsEx must before creating a common control.
+        # InitCommonControlsEx before creating a common control. For details as to the
+        # purpose of this function call, see Raymond Chen's blog:
+        # https://devblogs.microsoft.com/oldnewthing/20050718-16/?p=34913
         init_common_controls_ex = cc32_cls.INITCOMMONCONTROLSEX()
         init_common_controls_ex.dwSize = sizeof(cc32_cls.INITCOMMONCONTROLSEX)
         init_common_controls_ex.dwICC = wc.ICC_LISTVIEW_CLASSES
