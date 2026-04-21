@@ -495,8 +495,7 @@ jobs:
           platform: "windows"
           runs-on: "windows-latest"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
-          pre-command: |
-            export TOGA_WINFORMS_USE_NETFX=1
+          briefcase-run-prefix: TOGA_WINFORMS_USE_NETFX=1
 
         - backend: "windows-netcore-x86_64"
           platform: "windows"

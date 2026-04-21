@@ -1,5 +1,4 @@
 import asyncio
-import sys
 from unittest.mock import Mock
 
 import toga
@@ -239,7 +238,7 @@ class Testbed(toga.App):
 
 
 def main(appname):
-    if sys.platform == "win32":
+    if toga.backend == "toga_winforms":
         import toga_winforms
 
         if toga_winforms._use_dotnet_core:
