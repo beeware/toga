@@ -74,7 +74,7 @@ The DetailedList as a whole will also respond to a refresh UI action if an `on_r
 * On **Android**, **iOS** and **macOS**, pulling down at the top of the list triggers a refresh.
 * On **Qt**, a button bar displays a refresh button.
 * On **GTK**, a floating refresh button is displayed when scrolled to the top.
-* On **Windows**, the implementation does not currently support refresh.
+* On **Windows**, a right click displays a context menu with a refresh option.
 
 ## Notes
 

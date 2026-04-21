@@ -63,6 +63,10 @@ CreateWindowExW_raw.argtypes = [
 ]
 
 
+# To create a window with up-to-date theme, Common Control v6 must be used. Hence,
+# CreateWindowExW is called within the appropriate activation context. For more details
+# see Raymond Chen's blog:
+# https://devblogs.microsoft.com/oldnewthing/20140508-00/?p=1043
 @activation_context
 def CreateWindowExW(*args):
     return CreateWindowExW_raw(*args)

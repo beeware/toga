@@ -174,6 +174,9 @@ class DetailedListProbe(SimpleProbe):
 
         await self._select_from_context_menu(x, y, index)
 
+        # Extra delay to ensure that the refresh occurs.
+        await asyncio.sleep(0.2)
+
     async def _select_from_context_menu(self, x, y, index):
         # Perform the right click that opens the context menu.
         await self._perform_click(x, y, right=True)

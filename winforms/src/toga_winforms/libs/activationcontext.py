@@ -27,7 +27,15 @@ def activation_context(input_function: Callable):
         cookie = ULONG_PTR()
         actctx = ACTCTXW()
         actctx.cbSize = sizeof(ACTCTXW)
+
+        # It is implicit in the ACTCTXW documentation that when using a manifest only
+        # lpSource and cbSize need to be set.
         actctx.lpSource = manifest_path
+
+        # According to the ACTCTXW documentation, the manifest will be assumed to be
+        # written in the current user's current UI language. So, specify that the
+        # manifest is written in US English.
+        actctx.wLangId = 1033
 
         # Create a handle and activation context from ../resources/win32.manifest.
         handle_actctx = CreateActCtxW(byref(actctx))
