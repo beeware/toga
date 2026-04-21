@@ -4,7 +4,7 @@
 
 Data sources are abstractions that allow you to define the data being managed by your application independent of the GUI representation of that data. For details on the use of data sources, see the [topic guide](/topics/data-sources.md).
 
-ListSource is an implementation of an ordered list of data. When a ListSource is created, it is given a list of `accessors` - these are the attributes that all items managed by the ListSource will have. The API provided by ListSource is [`list`][]-like; the operations you'd expect on a normal Python list, such as `insert`, `remove`, `index`, and indexing with `[]`, are also possible on a ListSource:
+ListSource is an implementation of an ordered list of data. When a ListSource is created, it is given a list of `accessors` - these are the attributes that all items managed by the ListSource will have. If no accessors are provided, or an empty sequence is given, the source stores `None`. The API provided by ListSource is [`list`][]-like; the operations you'd expect on a normal Python list, such as `insert`, `remove`, `index`, and indexing with `[]`, are also possible on a ListSource:
 
 ```python
 from toga.sources import ListSource
@@ -34,7 +34,7 @@ source.insert(0, {"name": "Bettong", "weight": 1.2})
 
 [](){ #listsource-item }
 
-The ListSource manages a list of [`Row`][toga.sources.Row] objects. Each Row has all the attributes described by the source's `accessors`. A Row object will be constructed for each item that is added to the ListSource, and each item can be:
+The ListSource manages a list of [`Row`][toga.sources.Row] objects. Each Row has all the attributes described by the source's `accessors`. If accessors are omitted, or an empty sequence is provided, `accessors` will be `None`. A Row object will be constructed for each item that is added to the ListSource, and each item can be:
 
 - A dictionary, with the accessors mapping to the keys in the dictionary.
 - Any other iterable object (except for a string), with the accessors being mapped onto the items in the iterable in order of definition.

@@ -4,7 +4,7 @@
 
 Data sources are abstractions that allow you to define the data being managed by your application independent of the GUI representation of that data. For details on the use of data sources, see the [topic guide](/topics/data-sources.md).
 
-TreeSource is an implementation of an ordered hierarchical tree of values. When a TreeSource is created, it is given a list of `accessors` - these are the attributes that all items managed by the TreeSource will have. The API provided by TreeSource is [`list`][]-like; the operations you'd expect on a normal Python list, such as `insert`, `remove`, `index`, and indexing with `[]`, are also possible on a TreeSource. These methods are available on the TreeSource itself to manipulate root nodes, and also on each node within the tree.
+TreeSource is an implementation of an ordered hierarchical tree of values. When a TreeSource is created, it is given a list of `accessors` - these are the attributes that all items managed by the TreeSource will have. If no accessors are provided, or an empty sequence is given, the source stores `None`. The API provided by TreeSource is [`list`][]-like; the operations you'd expect on a normal Python list, such as `insert`, `remove`, `index`, and indexing with `[]`, are also possible on a TreeSource. These methods are available on the TreeSource itself to manipulate root nodes, and also on each node within the tree.
 
 ```python
 from toga.sources import TreeSource
@@ -54,9 +54,9 @@ Each Node object in the TreeSource can have children; those children can in turn
 
 When creating a single Node for a TreeSource (e.g., when inserting a new item), the data for the Node can be specified as:
 
-- A dictionary, with the accessors mapping to the keys in the dictionary
-- Any iterable object (except for a string), with the accessors being mapped onto the items in the iterable in order of definition.
-- Any other object, which will be mapped onto the *first* accessor.
+- A dictionary, with the accessors mapping to the keys in the dictionary. If accessors are omitted, or an empty sequence is given, the keys are used directly and `accessors` will be `None`.
+- Any iterable object (except for a string), with the accessors being mapped onto the items in the iterable in order of definition. Accessors are required for this type of data.
+- Any other object, which will be mapped onto the *first* accessor. Accessors are required for this type of data.
 
 When constructing an entire TreeSource, the data can be specified as:
 
