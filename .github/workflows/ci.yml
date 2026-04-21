@@ -564,7 +564,9 @@ jobs:
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
         python -m pip install -U pip
-        python -m pip install git+https://github.com/beeware/briefcase.git
+        # For initial validation, use the windows-arm branch
+        # python -m pip install git+https://github.com/beeware/briefcase.git
+        python -m pip install "briefcase @ git+https://github.com/ankitects/briefcase.git@windows-arm"
 
     - name: Get Packages
       uses: actions/download-artifact@v8.0.1

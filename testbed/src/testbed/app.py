@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from unittest.mock import Mock
 
 import toga
@@ -238,6 +239,14 @@ class Testbed(toga.App):
 
 
 def main(appname):
+    if sys.platform == "win32":
+        import toga_winforms
+
+        if toga_winforms._use_dotnet_core:
+            print("Running testbed using .NET Core")
+        else:
+            print("Running testbed using .NET Foundation 4.x")
+
     return Testbed(
         app_name=appname,
         document_types=[ExampleDoc, ReadonlyDoc],
