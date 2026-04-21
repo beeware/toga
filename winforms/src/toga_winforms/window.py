@@ -332,11 +332,17 @@ class Window(Container, Scalable):
                 self.native.WindowState = WinForms.FormWindowState.Minimized
 
             case WindowState.NORMAL, WindowState.FULLSCREEN:
+                # Save the window size to make sure it is restored correctly
+                self._cached_window_size = self.interface.size
+
                 self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
             case WindowState.NORMAL, WindowState.PRESENTATION:
+                # Save the window size and screen to make sure it is restored correctly
                 self._before_presentation_mode_screen = self.interface.screen
+                self._cached_window_size = self.interface.size
+
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = False
                 if getattr(self, "toolbar_native", None):
@@ -362,11 +368,13 @@ class Window(Container, Scalable):
                     WinForms.FormBorderStyle,
                     "Sizable" if self.interface.resizable else "FixedSingle",
                 )
-                # Clear the cached window size.
-                self._cached_window_size = None
                 self.native.WindowState = WinForms.FormWindowState.Normal
-
                 self.set_window_state(state)
+
+                # If there was a cached window size, restore that size.
+                if self._cached_window_size:
+                    self.set_size(self._cached_window_size)
+                    self._cached_window_size = None
 
     ######################################################################
     # Window capabilities
