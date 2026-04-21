@@ -253,7 +253,7 @@ jobs:
         - "macOS-arm64"
         - "windows-netfx-x86_64"
         - "windows-netcore-x86_64"
-        - "windows-arm64"
+        - "windows-netcore-arm64"
         - "linux-x11-gtk3"
         - "linux-wayland-gtk3"
         - "linux-wayland-gtk4"
