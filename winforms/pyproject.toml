@@ -110,11 +110,6 @@ WebView = "toga_winforms.widgets.webview:WebView"
 MainWindow = "toga_winforms.window:MainWindow"
 Window = "toga_winforms.window:Window"
 
-[tool.distutils.bdist_wheel]
-# This backend needs to be tagged `py3-none-win_arm64`. All the code in this backend is
-# pure Python, *but* it contains pre-compiled binary libraries to support WebView2.
-plat-name = "win_amd64"
-
 [tool.setuptools_scm]
 root = ".."
 
