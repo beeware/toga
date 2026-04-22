@@ -804,7 +804,7 @@ def find_event(event_path, main_window_probe):
 
         event_key = SystemEvents_type.GetField(
             # .NET Core 10 uses a different naming convention for system events.
-            (f"s_on{event_name}Event" if _use_dotnet_core else f"On{event_name}Event"),
+            f"s_on{event_name}Event" if _use_dotnet_core else f"On{event_name}Event",
             binding_flags,
         ).GetValue(None)
 
