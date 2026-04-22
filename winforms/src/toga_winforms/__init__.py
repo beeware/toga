@@ -28,7 +28,7 @@ try:
     # But: If TOGA_WINFORMS_USE_NETFX is defined in the environment, ignore .NET Core
     # and prefer .NET Framework 4.x
     ####################################################################################
-    if os.environ.get("TOGA_WINFORMS_USE_NETFX", False):  # pragma: no-cover-if-netcore
+    if os.environ.get("TOGA_WINFORMS_USE_NETFX", ""):  # pragma: no-cover-if-netcore
         raise RuntimeError("Explicitly requesting .NET Framework 4.x")
     else:  # pragma: no-cover-if-netfx
         # runtime.json defines the .NET version. .NET 10 is the current LTS release.
