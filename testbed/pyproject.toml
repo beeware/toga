@@ -159,3 +159,22 @@ requires = [
     # Android identifies as Linux, and psutil isn't available for Android.
     "psutil==7.2.2 ; python_version < '3.13'",
 ]
+
+[tool.briefcase.app.testbed-textual]
+formal_name = "Toga Testbed (Textual)"
+console_app = true
+
+requires = [
+    "../travertino",
+    "../core",
+    "../textual",
+]
+
+sources = [
+    "src/testbed_textual",
+    "src/testbed",
+]
+
+test_sources = [
+    # "../textual/tests_backend",
+]

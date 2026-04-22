@@ -472,22 +472,22 @@ jobs:
           platform: "linux"
           runs-on: "ubuntu-latest"
           setup-python: false  # Use the system Python packages
-          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
-          app-user-data-path: "$HOME/.local/share/testbed"
+          testbed-app: "testbed-textual"
+          app-user-data-path: "$HOME/.local/share/testbed-textual"
           # install the meta-package build-essential since Briefcase explicitly checks for it
           pre-command: sudo apt update -y && sudo apt install -y build-essential
 
         - backend: "textual-macOS"
           platform: "macOS"
           runs-on: "macos-latest"
-          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
-          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
+          testbed-app: "testbed-textual"
+          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed-textual"
 
         - backend: "textual-windows"
           platform: "windows"
           runs-on: "windows-latest"
-          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
-          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
+          testbed-app: "testbed-textual"
+          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (Textual)\Data'
 
         - backend: "windows"
           platform: "windows"
