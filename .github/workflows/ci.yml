@@ -557,7 +557,6 @@ jobs:
           platform: "windows"
           runs-on: "windows-11-arm"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
-          briefcase-test-args: "tests/app/test_app.py tests/app/test_desktop.py"
 
         - backend: "iOS"
           platform: "iOS"
@@ -615,9 +614,7 @@ jobs:
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
         python -m pip install -U pip
-        # For initial validation, use the windows-arm branch
-        # python -m pip install git+https://github.com/beeware/briefcase.git
-        python -m pip install "briefcase @ git+https://github.com/ankitects/briefcase.git@windows-arm"
+        python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Get Packages
       uses: actions/download-artifact@v8.0.1
