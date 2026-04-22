@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 import tempfile
 import time
@@ -34,13 +35,25 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         print("ready.")
 
-        # Textual backend does not yet support testing.
-        # However, this will verify a Textual app can at least start.
+        # Some backends and platforms do not yet support interactive GUI testing.
+        # On those platforms, perform a basic app start test.
         import toga
 
-        if toga.backend == "toga_textual":
-            time.sleep(1)  # wait for the Textual app to start
-            app.returncode = 0 if app._impl.native.is_running else 1
+        if (
+            # Textual doesn't have a test probe
+            toga.backend == "toga_textual"
+            # On GitHub Actions, Windows/ARM64 runners don't have an interactive
+            # logon session, so you can't run most of the GUI tests.
+            or (
+                toga.backend == "toga_winforms"
+                and platform.machine() == "ARM64"
+                and running_in_ci
+            )
+        ):
+            time.sleep(1)  # wait for the app to start
+            print("Performing a basic app startup test...", end="")
+            app.returncode = 0 if app._impl.loop.is_running() else 1
+            print("done.")
             return
 
         # Control the run speed of the test app.
