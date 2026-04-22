@@ -652,10 +652,10 @@ jobs:
         name: testbed-failure-app-data-${{ matrix.backend }}
         path: testbed/app_data/*
 
-    - name: Install node 20
+    - name: Setup msys2
+      uses: msys2/setup-msys2@v2
+      id: setup-msys2
       if: failure()
-      run: |
-        choco install nodejs --version="20.20.2"
 
     # This step is only needed if you're trying to diagnose test failures that
     # only occur in CI, and can't be reproduced locally. When it runs, it will
