@@ -615,16 +615,14 @@ jobs:
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
         python -m pip install -U pip
-        # For initial validation, use the windows-arm branch
-        # python -m pip install git+https://github.com/beeware/briefcase.git
-        python -m pip install "briefcase @ git+https://github.com/ankitects/briefcase.git@windows-arm"
+        python -m pip install git+https://github.com/beeware/briefcase.git
 
-    - name: Get Packages
-      uses: actions/download-artifact@v8.0.1
-      with:
-        pattern: "Packages-*"
-        merge-multiple: true
-        path: dist
+    # - name: Get Packages
+    #   uses: actions/download-artifact@v8.0.1
+    #   with:
+    #     pattern: "Packages-*"
+    #     merge-multiple: true
+    #     path: dist
 
     - name: Test App
       working-directory: testbed
@@ -654,13 +652,18 @@ jobs:
         name: testbed-failure-app-data-${{ matrix.backend }}
         path: testbed/app_data/*
 
+    - name: Install node 20
+      if: failure()
+      run: |
+        choco install nodejs --version="20.20.2"
+
     # This step is only needed if you're trying to diagnose test failures that
     # only occur in CI, and can't be reproduced locally. When it runs, it will
     # open an SSH server (URL reported in the logs) so you can ssh into the CI
     # machine.
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
-    #   if: failure()
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      if: failure()
 
   # bootstraps:
   #   name: "Bootstrap"
