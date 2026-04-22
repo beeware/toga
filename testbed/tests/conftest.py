@@ -134,6 +134,8 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     await main_window_probe.wait_for_window(
         "Resetting main_window", state=WindowState.NORMAL
     )
+    while app.current_window != main_window:
+        await main_window_probe.redraw("Wait for currency...", delay=0.1)
 
     yield
 

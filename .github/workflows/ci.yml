@@ -652,20 +652,27 @@ jobs:
         name: testbed-failure-app-data-${{ matrix.backend }}
         path: testbed/app_data/*
 
-    - name: Setup msys2
-      uses: msys2/setup-msys2@v2
-      id: setup-msys2
-      if: failure()
-
     # This step is only needed if you're trying to diagnose test failures that
     # only occur in CI, and can't be reproduced locally. When it runs, it will
     # open an SSH server (URL reported in the logs) so you can ssh into the CI
     # machine.
+    - name: Setup msys2
+      if: failure()
+      uses: msys2/setup-msys2@v2
+      id: setup-msys2
     - name: Setup tmate session
+      if: failure()
       uses: mxschmitt/action-tmate@v3
       with:
         msys2-location: ${{ steps.setup-msys2.outputs.msys2-location }}
+        detached: true
+    - name: Wait indefinitely
       if: failure()
+      run: |
+        while true; do
+          echo "⏳ Still waiting... $(date)"
+          sleep 15
+        done
 
   # bootstraps:
   #   name: "Bootstrap"
