@@ -43,7 +43,8 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
             # Textual doesn't have a test probe
             toga.backend == "toga_textual"
             # On GitHub Actions, Windows/ARM64 runners don't have an interactive
-            # logon session, so you can't run most of the GUI tests.
+            # logon session, so you can't run most of the GUI tests. For details,
+            # see https://github.com/actions/partner-runner-images/issues/174
             or (
                 toga.backend == "toga_winforms"
                 and platform.machine() == "ARM64"

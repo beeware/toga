@@ -75,7 +75,6 @@ jobs:
             exclude-runtime: "win-arm64"
           - wheel: "winforms-arm64"
             subdir: "winforms"
-            arch: "arm64"
             plat-name: "win_arm64"
             exclude-runtime: "win-x64"
 

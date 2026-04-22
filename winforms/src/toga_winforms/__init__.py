@@ -77,6 +77,7 @@ if _use_dotnet_core:  # pragma: no-cover-if-netfx
     clr.AddReference("Microsoft.Win32.SystemEvents")
     clr.AddReference("System.Windows.Extensions")
 else:  # pragma: no-cover-if-netcore
+    # We can't do conditional branch coverage, so we need a no-op else
     pass
 
 # Add a reference to the WindowsBase assembly. This is needed to access
