@@ -1,6 +1,7 @@
 from rubicon.objc import SEL, at, objc_method, objc_property
 from travertino.size import at_least
 
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -9,6 +10,7 @@ from toga_cocoa.libs import (
     NSTableColumn,
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
+    NSTextAlignment,
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaIconView
@@ -64,6 +66,10 @@ class TogaTree(NSOutlineView):
             return widget._impl.native
         icon = column.toga_column.icon(node)
         text = column.toga_column.text(node, self.interface.missing_value)
+        text_align = column.toga_column.text_align(node)
+        color = column.toga_column.color(node)
+        background_color = column.toga_column.background_color(node)
+        font = column.toga_column.font(node, self.interface.style.font)
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
@@ -83,6 +89,26 @@ class TogaTree(NSOutlineView):
             tcv.setImage(icon._impl.native)
         else:
             tcv.setImage(None)
+
+        if text_align is not None:
+            tcv.textField.alignment = NSTextAlignment(text_align)
+        else:
+            tcv.textField.alignment = self.alignment
+
+        if color is not None:
+            tcv.textField.textColor = native_color(color)
+        else:
+            tcv.textField.textColor = None
+        if background_color is not None:
+            tcv.drawsBackground = True
+            tcv.backgroundColor = native_color(background_color)
+        else:
+            tcv.textField.drawsBackground = False
+
+        # font is only None if something is very wrong (eg. can't find system font)
+        # so can't test
+        if font is not None:  # pragma: no branch
+            tcv.textField.font = font._impl.native
 
         return tcv
 

@@ -10,6 +10,10 @@ from PySide6.QtCore import (
     Qt,
 )
 from PySide6.QtWidgets import QTreeView
+from toga_qt.colors import native_color
+from toga_qt.libs import qt_text_align
+
+from toga.constants import CENTER
 
 from .base import SimpleProbe
 
@@ -18,6 +22,7 @@ class TreeProbe(SimpleProbe):
     native_class = QTreeView
     supports_keyboard_shortcuts = False
     supports_widgets = False
+    supports_styles = True
     selection_cleared_on_insert_delete = True
     collapse_on_insert_delete = True
 
@@ -69,7 +74,18 @@ class TreeProbe(SimpleProbe):
     def column_width(self, col):
         return self.native.header().sectionSize(col)
 
-    def assert_cell_content(self, row_path, col, value=None, icon=None, widget=None):
+    def assert_cell_content(
+        self,
+        row_path,
+        col,
+        value=None,
+        icon=None,
+        widget=None,
+        text_align=None,
+        color=None,
+        background_color=None,
+        font=None,
+    ):
         if widget:
             pytest.skip("Qt doesn't support widgets in Trees")
         else:
@@ -90,6 +106,30 @@ class TreeProbe(SimpleProbe):
                             index,
                             Qt.ItemDataRole.DecorationRole,
                         ).cacheKey()
+                    )
+
+                if text_align:
+                    assert qt_text_align(text_align, CENTER) == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.TextAlignmentRole,
+                    )
+
+                if color:
+                    assert native_color(color) == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.ForegroundRole,
+                    )
+
+                if background_color:
+                    assert native_color(background_color) == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.BackgroundRole,
+                    )
+
+                if font:
+                    assert font._impl.native == self.native_model.data(
+                        index,
+                        Qt.ItemDataRole.FontRole,
                     )
 
     @property

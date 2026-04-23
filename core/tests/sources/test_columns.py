@@ -1,5 +1,19 @@
+from typing import Any
+
 import pytest
 
+from toga.colors import rgb
+from toga.constants import (
+    BOLD,
+    ITALIC,
+    NORMAL,
+    RIGHT,
+    SERIF,
+    SMALL_CAPS,
+    SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE,
+)
+from toga.fonts import Font
 from toga.icons import Icon
 from toga.sources import AccessorColumn, Column
 from toga.sources.list_source import Row
@@ -38,6 +52,35 @@ class SimpleColumn(Column):
         return row
 
 
+class StyleColumn(Column):
+    def value(self, row):
+        return row
+
+    def text_align(self, row: Any):
+        return RIGHT
+
+    def color(self, row: Any):
+        return rgb(255, 0, 0)
+
+    def background_color(self, row: Any):
+        return rgb(255, 0, 0)
+
+    def font_family(self, row: Any):
+        return [SERIF, "Times New Roman"]
+
+    def font_style(self, row: Any):
+        return ITALIC
+
+    def font_variant(self, row: Any):
+        return SMALL_CAPS
+
+    def font_weight(self, row: Any):
+        return BOLD
+
+    def font_size(self, row: Any):
+        return 24
+
+
 LABEL_WIDGET = Label("Test")
 
 
@@ -57,6 +100,15 @@ def test_column_abc(heading, heading_property):
     assert column.text(dummy_row) is None
     assert column.text(dummy_row, "default") == "default"
     assert column.icon(dummy_row) is None
+    assert column.text_align(dummy_row) is None
+    assert column.color(dummy_row) is None
+    assert column.background_color(dummy_row) is None
+    assert column.font_family(dummy_row) is None
+    assert column.font_style(dummy_row) is None
+    assert column.font_variant(dummy_row) is None
+    assert column.font_weight(dummy_row) is None
+    assert column.font_size(dummy_row) is None
+    assert column.font(dummy_row) == Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)
     assert column.widget(dummy_row) is None
 
 
@@ -69,6 +121,38 @@ def test_column_subclass():
     assert column.text(dummy_row) == "('row',)"
     assert column.text(dummy_row, "default") == "('row',)"
     assert column.icon(dummy_row) is None
+    assert column.text_align(dummy_row) is None
+    assert column.color(dummy_row) is None
+    assert column.background_color(dummy_row) is None
+    assert column.font_family(dummy_row) is None
+    assert column.font_style(dummy_row) is None
+    assert column.font_variant(dummy_row) is None
+    assert column.font_weight(dummy_row) is None
+    assert column.font_size(dummy_row) is None
+    assert column.font(dummy_row) == Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)
+    assert column.widget(dummy_row) is None
+
+
+def test_column_style():
+    dummy_row = ("row",)
+    column = StyleColumn("test")
+
+    assert column.heading == "test"
+    assert column.value(dummy_row) == ("row",)
+    assert column.text(dummy_row) == "('row',)"
+    assert column.text(dummy_row, "default") == "('row',)"
+    assert column.icon(dummy_row) is None
+    assert column.text_align(dummy_row) is RIGHT
+    assert column.color(dummy_row) == rgb(255, 0, 0)
+    assert column.background_color(dummy_row) == rgb(255, 0, 0)
+    assert column.font_family(dummy_row) == [SERIF, "Times New Roman"]
+    assert column.font_style(dummy_row) == ITALIC
+    assert column.font_variant(dummy_row) == SMALL_CAPS
+    assert column.font_weight(dummy_row) == BOLD
+    assert column.font_size(dummy_row) == 24
+    assert column.font(dummy_row, (NORMAL, NORMAL, NORMAL, 12, [SYSTEM])) == Font(
+        SERIF, 24, style=ITALIC, variant=SMALL_CAPS, weight=BOLD
+    )
     assert column.widget(dummy_row) is None
 
 
@@ -261,6 +345,9 @@ def test_accessor_column_values(row, value, text, icon, widget):
     column = AccessorColumn(None, "x")
 
     assert column.value(row) == value
+    assert column.text_align(row) is None
+    assert column.color(row) is None
+    assert column.background_color(row) is None
     assert column.widget(row) == widget
 
     if text is ValueError:
