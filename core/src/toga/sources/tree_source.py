@@ -199,6 +199,7 @@ class Node(Row[T]):
             accessors=self._source._accessors,
             start=start,
             error=f"No child matching {data!r} in {self}",
+            value_type="node",
         )
 
 
@@ -207,7 +208,9 @@ class TreeSource(Source):
     _accessors: list[str] | None
 
     def __init__(
-        self, accessors: Iterable[str] | None = None, data: object | None = None
+        self,
+        accessors: Iterable[str] | None = None,
+        data: object | None = None,
     ):
         super().__init__()
         if accessors is None:
@@ -215,9 +218,8 @@ class TreeSource(Source):
         elif isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
             raise ValueError("accessors should be a list of attribute names")
         else:
-            # Copy the list of accessors, in case of [] its None.
-            accessors = list(accessors)
-            self._accessors = accessors if len(accessors) > 0 else None
+            # Copy the list of accessors.
+            self._accessors = list(accessors)
 
         if data is not None:
             self._roots = self._create_nodes(parent=None, value=data)
@@ -404,4 +406,5 @@ class TreeSource(Source):
             accessors=self._accessors,
             start=start,
             error=f"No root node matching {data!r} in {self}",
+            value_type="node",
         )

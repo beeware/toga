@@ -75,7 +75,6 @@ def test_invalid_accessors(value):
 def test_accessors_optional_for_mapping_data():
     """A tree source can omit accessors if node data is mapping-based."""
     source = TreeSource(
-        accessors=[],
         data=[
             (
                 {"value": "root"},
@@ -90,6 +89,15 @@ def test_accessors_optional_for_mapping_data():
     assert source.accessors is None
     assert source[0].value == "root"
     assert source[0][0].value == "child"
+
+
+def test_empty_accessors_for_sequence_data():
+    """If there is an empty accessor list, rows have no attributes."""
+    source = TreeSource(accessors=[], data=[(("root", 1), None)])
+
+    assert len(source) == 1
+    assert source.accessors == []
+    assert not hasattr(source[0], "value")
 
 
 def test_accessors_omitted_for_mapping_data():
@@ -107,7 +115,7 @@ def test_non_mapping_data_requires_accessors():
         ValueError,
         match=r"TreeSource requires accessors for non-mapping node data",
     ):
-        TreeSource(accessors=[], data=[(("root", 1), None)])
+        TreeSource(data=[(("root", 1), None)])
 
 
 def test_non_mapping_insert_requires_accessors():
@@ -662,3 +670,22 @@ def test_find(source):
 
     # Find the child by a full match of values, starting at the first match
     assert source.find({"val1": "group1", "val2": 333}) == root2
+
+
+def test_non_mapping_find_requires_accessors():
+    """Finding non-mapping row data requires accessors."""
+    source = TreeSource(data=[({"value": "root"}, [({"value": "child"}, None)])])
+
+    # Find on a source
+    with pytest.raises(
+        ValueError,
+        match=r"find\(\) requires accessors for non-mapping node data",
+    ):
+        source.find(1)
+
+    # Find on a node
+    with pytest.raises(
+        ValueError,
+        match=r"find\(\) requires accessors for non-mapping node data",
+    ):
+        source[0].find(1)

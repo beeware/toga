@@ -35,11 +35,20 @@ def test_invalid_accessors(value):
 
 def test_accessors_optional_for_mapping_data():
     """A list source can omit accessors if rows are mapping-based."""
-    source = ListSource(data=[{"value": 1}], accessors=[])
+    source = ListSource(data=[{"value": 1}])
 
     assert len(source) == 1
     assert source.accessors is None
     assert source[0].value == 1
+
+
+def test_empty_accessors_for_sequence_data():
+    """If there is an empty accessor list, rows have no attributes."""
+    source = ListSource(data=[[1, "a"], [2, "b"]], accessors=[])
+
+    assert len(source) == 2
+    assert source.accessors == []
+    assert not hasattr(source[0], "value")
 
 
 def test_accessors_omitted_for_mapping_data():
@@ -57,7 +66,7 @@ def test_non_mapping_data_requires_accessors():
         ValueError,
         match=r"ListSource requires accessors for non-mapping row data",
     ):
-        ListSource(accessors=[], data=[1, 2, 3])
+        ListSource(data=[1, 2, 3])
 
 
 def test_non_mapping_setitem_requires_accessors():
@@ -77,7 +86,7 @@ def test_non_mapping_find_requires_accessors():
 
     with pytest.raises(
         ValueError,
-        match=r"Cannot search for non-mapping data without accessors",
+        match=r"find\(\) requires accessors for non-mapping row data",
     ):
         source.find(1)
 

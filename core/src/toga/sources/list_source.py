@@ -21,6 +21,7 @@ def _find_item(
     accessors: Sequence[str] | None,
     start: T | None,
     error: str,
+    value_type: str,
 ) -> T:
     """Find-by-value implementation helper; find an item matching `data` in
     `candidates`, starting with item `start`."""
@@ -30,7 +31,7 @@ def _find_item(
         start_index = 0
 
     if accessors is None and not isinstance(data, Mapping):
-        raise ValueError("Cannot search for non-mapping data without accessors")
+        raise ValueError(f"find() requires accessors for non-mapping {value_type} data")
 
     for item in candidates[start_index:]:
         try:
@@ -109,13 +110,14 @@ class ListSource(Source):
     _accessors: list[str] | None
 
     def __init__(
-        self, accessors: Iterable[str] | None = None, data: Iterable | None = None
+        self,
+        accessors: Iterable[str] | None = None,
+        data: Iterable | None = None,
     ):
         """A data source to store an ordered list of multiple data values.
 
-        :param accessors: A list of attribute names for accessing the value
-            in each column of the row. If omitted, only mapping row data can be
-            converted.
+        :param accessors: A list of attribute names for accessing the value in each
+            column of the row. If omitted, only row data must be specified as a mapping.
         :param data: The initial list of items in the source. Items are converted as
             shown [above][listsource-item].
         """
@@ -126,8 +128,7 @@ class ListSource(Source):
             raise ValueError("accessors should be a list of attribute names")
         else:
             # Copy the list of accessors
-            accessors = list(accessors)
-            self._accessors = accessors if len(accessors) > 0 else None
+            self._accessors = list(accessors)
 
         # Convert the data into row objects
         if data is not None:
@@ -270,6 +271,7 @@ class ListSource(Source):
                 accessors=self._accessors,
                 start=start,
                 error=f"No row matching {data!r} in data",
+                value_type="row",
             )
         except ValueError:
             if default is UNDEFINED:
