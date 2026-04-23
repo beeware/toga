@@ -49,24 +49,6 @@ class LVITEMW(c_Structure):
     ]
 
 
-# learn.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-lvcolumnw
-class LVCOLUMNW(c_Structure):
-    _fields_ = [
-        ("mask", UINT),
-        ("fmt", INT),
-        ("cx", INT),
-        ("pszText", LPWSTR),
-        ("cchTextMax", INT),
-        ("iSubItem", INT),
-        ("cchTextMax", INT),
-        ("iImage", INT),
-        ("iOrder", INT),
-        ("cxMin", INT),
-        ("cxDefault", INT),
-        ("cxIdeal", INT),
-    ]
-
-
 # learn.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-lvhittestinfo
 class LVHITTESTINFO(c_Structure):
     _fields_ = [

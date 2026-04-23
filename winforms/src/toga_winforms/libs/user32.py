@@ -21,7 +21,7 @@ from ctypes.wintypes import (
 from System import Environment
 
 from .activationcontext import activation_context
-from .win32 import LRESULT, UINT_PTR
+from .win32 import LPARAM_OBJECT, LRESULT, UINT_PTR
 
 user32 = windll.user32
 
@@ -121,9 +121,10 @@ MonitorFromRect.argtypes = [LPRECT, DWORD]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-postmessagew
+# See the comment above SendMessageW for an explanation of LPARAM_OBJECT.
 PostMessageW = user32.PostMessageW
 PostMessageW.restype = LRESULT
-PostMessageW.argtypes = [HWND, UINT, WPARAM, c_void_p]
+PostMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM_OBJECT]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-screentoclient
@@ -133,9 +134,16 @@ ScreenToClient.argtypes = [HWND, LPPOINT]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendmessagew
+# According to the documentation, the final argument type should be LPARAM. However,
+# LPARAM is often used as a pointer (memory address). To use this argument type in
+# Python would require the procedure: 1. Create point object, 2. Obtain memory address
+# of the object, 3. Pass memory address as an integer to the function.
+#
+# In ctypes, the more simple and efficient method for using a pointer as a function
+# argument is byref. LPARAM_OBJECT is used in place of LPARAM to allow the use of byref.
 SendMessageW = user32.SendMessageW
 SendMessageW.restype = LRESULT
-SendMessageW.argtypes = [HWND, UINT, WPARAM, c_void_p]
+SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM_OBJECT]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setprocessdpiawarenesscontext

@@ -1,4 +1,4 @@
-from ctypes import c_size_t
+from ctypes import c_size_t, c_void_p
 from ctypes.wintypes import HWND, LPARAM
 
 
@@ -26,3 +26,4 @@ DWORD_PTR = c_size_t
 PUINT = c_size_t
 INT_PTR = c_size_t
 HIMAGELIST = HWND
+LPARAM_OBJECT = c_void_p
