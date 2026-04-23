@@ -31,7 +31,7 @@ class INITCOMMONCONTROLSEX(c_Structure):
 # https://learn.microsoft.com/en-us/windows/win32/api/commctrl/ns-commctrl-lvitemw
 class LVITEMW(c_Structure):
     _fields_ = [
-        ("uiMask", UINT),
+        ("mask", UINT),
         ("iItem", INT),
         ("iSubItem", INT),
         ("state", UINT),

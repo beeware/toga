@@ -1,6 +1,6 @@
 import asyncio
 from ctypes import byref, sizeof, windll
-from ctypes.wintypes import HWND, POINT, RECT
+from ctypes.wintypes import HWND, POINT, RECT, UINT
 
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap, Point
@@ -16,7 +16,11 @@ from toga_winforms.libs.user32 import (
 
 from .base import SimpleProbe
 
-u32 = windll.user32
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
+# Note that the argtypes attribute has not been set since one of the arguments is
+# a variable length array.
+SendInput = windll.user32.SendInput
+SendInput.restype = UINT
 
 
 class DetailedListProbe(SimpleProbe):
@@ -124,9 +128,15 @@ class DetailedListProbe(SimpleProbe):
     async def _perform_action(self, row, index):
         x, y = self._row_midpoint(row)
 
-        ######################################################################
-        # This code is to exercise a code block within the context menu class.
-        # TODO: Remove this when it is not needed.
+        ################################################################################
+        # This code is to exercise the non-right click branch of the MouseClick handler
+        # for the context menu class.
+        #
+        # TODO: Move/remove this code if general context menus are implement in Toga or
+        # if a WinForms widget is implemented which uses a context menu and which can
+        # naturally receive WinForms MouseClick events. The WinForms Panel used for the
+        # DetailedList widget is at the back so doesn't receive clicks unless they are
+        # forwarded.
         self.impl.native.OnMouseClick(
             WinForms.MouseEventArgs(
                 WinForms.MouseButtons.Left,
@@ -136,7 +146,7 @@ class DetailedListProbe(SimpleProbe):
                 delta=0,
             )
         )
-        ######################################################################
+        ################################################################################
 
         context_menu_list = self.impl._context_menu.actions(x, y)
         context_menu_index = index + 1 if self.impl.refresh_enabled else index
@@ -224,7 +234,7 @@ class DetailedListProbe(SimpleProbe):
             modifier_inputs[0].type = 1
             modifier_inputs[0]._.ki = u32_cls.KEYBDINPUT(wc.VK_CONTROL, 0, 0, 0, 0)
 
-            return_value = u32.SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            return_value = SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
             if return_value != 1:
                 raise Exception(
                     "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (down)."
@@ -239,7 +249,7 @@ class DetailedListProbe(SimpleProbe):
         async def click():
             for i, message in enumerate(message_list):
                 mouse_inputs[0]._.mi.dwFlags = message
-                return_value = u32.SendInput(1, mouse_inputs, sizeof(u32_cls.INPUT))
+                return_value = SendInput(1, mouse_inputs, sizeof(u32_cls.INPUT))
                 if return_value != 1:
                     raise Exception(
                         f"SendInput failed. Type: Mouse, right button: {right}."
@@ -261,7 +271,7 @@ class DetailedListProbe(SimpleProbe):
         if modifier:
             modifier_inputs[0]._.ki.dwFlags = wc.KEYEVENTF_KEYUP
 
-            return_value = u32.SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            return_value = SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
             if return_value != 1:
                 raise Exception(
                     "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (up)."

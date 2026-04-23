@@ -93,7 +93,7 @@ class DetailedList(Widget):
         self.refresh_enabled: bool = False
 
         # Create the context menu
-        self._context_menu = ContextMenu(self, self.menu_items)
+        self._context_menu = ContextMenu(self, self._menu_items)
 
         # According to the MicroSoft documentation, an application must call
         # InitCommonControlsEx before creating a common control. For details as to the
@@ -574,7 +574,7 @@ class DetailedList(Widget):
 
         uMsg = wc.LVM_SETITEMSTATE
         lvitem = u32_cls.LVITEMW()
-        lvitem.uiMask = wc.LVIF_STATE
+        lvitem.mask = wc.LVIF_STATE
         lvitem.state = 0
 
         if send_message_1:
@@ -652,7 +652,11 @@ class DetailedList(Widget):
 
         return hit_test_info.iItem
 
-    def menu_items(self, x: int, y: int) -> list[None | tuple[str, Callable[[], None]]]:
+    def _menu_items(
+        self,
+        x: int,
+        y: int,
+    ) -> list[None | tuple[str, Callable[[], None]]]:
         menu_items_list = []
 
         # Append refresh to the menu items list.

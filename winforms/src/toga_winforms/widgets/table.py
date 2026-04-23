@@ -222,10 +222,10 @@ class Table(Widget):
         _, icon_indices = self._toga_retrieve_virtual_item(row_index)
 
         # Add the icon property if it doesn't exist.
-        if lvitem.uiMask == (wc.LVIF_TEXT | wc.LVIF_STATE):
-            lvitem.uiMask = wc.LVIF_TEXT | wc.LVIF_STATE | wc.LVIF_IMAGE
+        if lvitem.mask == (wc.LVIF_TEXT | wc.LVIF_STATE):
+            lvitem.mask = wc.LVIF_TEXT | wc.LVIF_STATE | wc.LVIF_IMAGE
 
-        if lvitem.uiMask & wc.LVIF_IMAGE != 0 and icon_indices[column_index] > -1:
+        if lvitem.mask & wc.LVIF_IMAGE != 0 and icon_indices[column_index] > -1:
             lvitem.iImage = icon_indices[column_index]
 
     def _toga_retrieve_virtual_item(self, item_index):

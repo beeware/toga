@@ -823,7 +823,7 @@ class Tree(Table):
         # Win32 messages.
         #
         # nmlv.uChanged contains flags for the attributes have been changed. These flag
-        # values come from the uiMask attribute of the LVITEMW structure, and a change
+        # values come from the mask attribute of the LVITEMW structure, and a change
         # of focused index is recorded in LVIF_STATE.
         if nmlv.uChanged & wc.LVIF_STATE != 0:
             # uNewState and uOldState have values determined by List-View Item States
