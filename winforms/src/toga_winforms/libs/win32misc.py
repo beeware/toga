@@ -58,7 +58,9 @@ class ActivationContext:
                 code=get_last_error(),
             )
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
+        # This can't get coverage in CI because the only instance
+        # is a module-level variable.
         ReleaseActCtx(self._handle_actctx)
 
 
