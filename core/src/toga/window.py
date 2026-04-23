@@ -260,6 +260,10 @@ class Window:
             size=Size(*size),
         )
 
+        self._pending_layout = None
+        self._dirty_root_widgets = set()
+        self._currently_laying_out = False
+
         # Add the window to the app
         App.app.windows.add(self)
 
@@ -438,6 +442,21 @@ class Window:
 
         # Update the geometry of the widget
         widget.refresh()
+
+    def _refresh_layouts(self):
+        self._currently_laying_out = True
+
+        toga.Widget._level += 1
+        print("\nLoop(")
+
+        while self._dirty_root_widgets:
+            self._dirty_root_widgets.pop()._refresh_layout()
+
+        print(")\n")
+        toga.Widget._level -= 1
+
+        self._currently_laying_out = False
+        self._pending_layout = None
 
     @property
     def widgets(self) -> FilteredWidgetRegistry:
