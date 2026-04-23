@@ -1,8 +1,7 @@
 from ctypes import POINTER, windll
 from ctypes.wintypes import DWORD, HANDLE
 
-from .kernel32classes import ACTCTXW
-from .win32 import ULONG_PTR
+from .win32structures import ACTCTXW, ULONG_PTR
 
 kernel32 = windll.kernel32
 

@@ -1,10 +1,9 @@
 from ctypes import WinError, byref, c_wchar_p, get_last_error, sizeof
 from pathlib import Path
 
-from . import windowconstants as wc
+from . import win32constants as wc
 from .kernel32 import ActivateActCtx, CreateActCtxW, DeactivateActCtx, ReleaseActCtx
-from .kernel32classes import ACTCTXW
-from .win32 import ULONG_PTR
+from .win32structures import ACTCTXW, ULONG_PTR
 
 
 class ActivationContext:
@@ -65,3 +64,20 @@ class ActivationContext:
 
 # Create and instance of the ActivationContext context manager.
 activation_context = ActivationContext()
+
+
+# https://learn.microsoft.com/en-us/windows/win32/winmsg/loword
+def loword(lparam: int) -> int:
+    """Keeps the lower 16 bits of a value with at least 16 bits."""
+    return lparam & 0b1111111111111111
+
+
+# https://learn.microsoft.com/en-us/windows/win32/winmsg/hiword
+def hiword(lparam: int) -> int:
+    """Keeps the upper 16 bits of value with at least 32 bits."""
+    return (lparam >> 16) & 0b1111111111111111
+
+
+def is_submessage(message: int, submessage: int) -> bool:
+    """Tests if a message is a bit-wise sub-message of a given message."""
+    return (message & submessage) != 0

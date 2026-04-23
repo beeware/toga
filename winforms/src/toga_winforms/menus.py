@@ -6,7 +6,7 @@ import System.Windows.Forms as WinForms
 
 from toga.handlers import WeakrefCallable
 
-from .libs import user32 as u32, windowconstants as wc
+from .libs import user32 as u32, win32constants as wc
 
 
 class ContextMenu:

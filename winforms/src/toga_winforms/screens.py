@@ -14,7 +14,7 @@ from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 
 from .libs import shcore, user32
-from .libs.windowconstants import MONITOR_DEFAULTTONEAREST
+from .libs.win32constants import MONITOR_DEFAULTTONEAREST
 from .widgets.base import Scalable
 
 

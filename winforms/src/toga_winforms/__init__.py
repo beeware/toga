@@ -2,7 +2,7 @@ import clr
 import travertino
 
 from .libs.user32 import SetProcessDpiAwarenessContext
-from .libs.windowconstants import DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+from .libs.win32constants import DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 
 # Add a reference to the Winforms assembly
 clr.AddReference("System.Windows.Forms")

@@ -20,8 +20,8 @@ from ctypes.wintypes import (
 
 from System import Environment
 
-from .activationcontext import activation_context
-from .win32 import LPARAM_OBJECT, LRESULT, UINT_PTR
+from .win32misc import activation_context
+from .win32structures import LPARAM_OBJECT, LRESULT, UINT_PTR
 
 user32 = windll.user32
 

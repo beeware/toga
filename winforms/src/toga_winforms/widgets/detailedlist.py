@@ -8,13 +8,7 @@ from System.Drawing import ColorTranslator, Size, SystemColors
 from toga.handlers import WeakrefCallable
 
 from ..colors import toga_color
-from ..libs import (
-    comctl32classes as cc32_cls,
-    gdi32,
-    user32 as u32,
-    user32classes as u32_cls,
-    windowconstants as wc,
-)
+from ..libs import gdi32, user32 as u32, win32constants as wc, win32structures as ws
 from ..libs.comctl32 import (
     DefSubclassProc,
     ImageList_Draw,
@@ -22,7 +16,7 @@ from ..libs.comctl32 import (
     RemoveWindowSubclass,
     SetWindowSubclass,
 )
-from ..libs.win32 import hiword, is_submessage, loword
+from ..libs.win32misc import hiword, is_submessage, loword
 from ..menus import ContextMenu
 from .base import Widget
 
@@ -72,7 +66,7 @@ class DetailedList(Widget):
         self.native = WinForms.Panel()
 
         # Create and set the Panel subclass procedure.
-        self.pfn_subclass_panel = u32_cls.SUBCLASSPROC(self._subclass_proc_panel)
+        self.pfn_subclass_panel = ws.SUBCLASSPROC(self._subclass_proc_panel)
         self.winforms_handle_created(None, None)
 
         # Update the subclass procedure when the self.native handle is create/destroyed
@@ -99,8 +93,8 @@ class DetailedList(Widget):
         # InitCommonControlsEx before creating a common control. For details as to the
         # purpose of this function call, see Raymond Chen's blog:
         # https://devblogs.microsoft.com/oldnewthing/20050718-16/?p=34913
-        init_common_controls_ex = cc32_cls.INITCOMMONCONTROLSEX()
-        init_common_controls_ex.dwSize = sizeof(cc32_cls.INITCOMMONCONTROLSEX)
+        init_common_controls_ex = ws.INITCOMMONCONTROLSEX()
+        init_common_controls_ex.dwSize = sizeof(ws.INITCOMMONCONTROLSEX)
         init_common_controls_ex.dwICC = wc.ICC_LISTVIEW_CLASSES
         InitCommonControlsEx(byref(init_common_controls_ex))
 
@@ -133,7 +127,7 @@ class DetailedList(Widget):
         self._set_image_list()
 
         # Create and set the ListView UI (self._hwnd) subclass procedure.
-        self.pfn_subclass_list = u32_cls.SUBCLASSPROC(self._subclass_proc_list)
+        self.pfn_subclass_list = ws.SUBCLASSPROC(self._subclass_proc_list)
         SetWindowSubclass(self._hwnd, self.pfn_subclass_list, 0, 0)
 
         # Update the image list if the font changes, and back color of the List-View UI
@@ -201,8 +195,8 @@ class DetailedList(Widget):
             data_length = len(self._data)
         return height + 2 < data_length * self._tile_height
 
-    def _tile_view_info(self, width: int, height: int) -> cc32_cls.LVTILEVIEWINFO:
-        lvtileviewinfo = cc32_cls.LVTILEVIEWINFO()
+    def _tile_view_info(self, width: int, height: int) -> ws.LVTILEVIEWINFO:
+        lvtileviewinfo = ws.LVTILEVIEWINFO()
         lvtileviewinfo.cbSize = sizeof(lvtileviewinfo)
         lvtileviewinfo.dwMask = wc.LVTVIM_TILESIZE | wc.LVTVIM_LABELMARGIN
         lvtileviewinfo.dwFlags = wc.LVTVIF_FIXEDSIZE
@@ -220,7 +214,7 @@ class DetailedList(Widget):
         return lvtileviewinfo
 
     @property
-    def _tile_view_info_initial(self) -> cc32_cls.LVTILEVIEWINFO:
+    def _tile_view_info_initial(self) -> ws.LVTILEVIEWINFO:
         return self._tile_view_info(self._width, self._height)
 
     @property
@@ -317,14 +311,14 @@ class DetailedList(Widget):
             RemoveWindowSubclass(hWnd, self.pfn_subclass_panel, uIdSubclass)
 
         elif uMsg == wc.WM_NOTIFY:
-            phdr = cast(lParam, POINTER(u32_cls.NMHDR)).contents
+            phdr = cast(lParam, POINTER(ws.NMHDR)).contents
 
             # Messages from the List-View UI to itself (usually WM_REFLECT_NOTIFY).
             if phdr.hwndFrom == self._hwnd:
                 code = phdr.code
 
                 if code == wc.NM_CUSTOMDRAW:
-                    nmlvcd = cast(lParam, POINTER(cc32_cls.NMLVCUSTOMDRAW)).contents
+                    nmlvcd = cast(lParam, POINTER(ws.NMLVCUSTOMDRAW)).contents
                     return_flag = self._nm_custom_draw(nmlvcd)
                     if return_flag is not None:
                         return return_flag
@@ -334,11 +328,11 @@ class DetailedList(Widget):
                         pass
 
                 elif code == wc.LVN_ODCACHEHINT:
-                    nmlvch = cast(lParam, POINTER(cc32_cls.NMLVCACHEHINT)).contents
+                    nmlvch = cast(lParam, POINTER(ws.NMLVCACHEHINT)).contents
                     self._lvn_od_cache_hint(nmlvch.iFrom, nmlvch.iTo)
 
                 elif code == wc.LVN_ITEMCHANGED:
-                    nmlv = cast(lParam, POINTER(cc32_cls.NMLISTVIEW)).contents
+                    nmlv = cast(lParam, POINTER(ws.NMLISTVIEW)).contents
                     self._lvn_item_changed(nmlv)
 
             else:  # pragma: no cover
@@ -573,7 +567,7 @@ class DetailedList(Widget):
         send_message_3 = index != -1
 
         uMsg = wc.LVM_SETITEMSTATE
-        lvitem = u32_cls.LVITEMW()
+        lvitem = ws.LVITEMW()
         lvitem.mask = wc.LVIF_STATE
         lvitem.state = 0
 
@@ -646,7 +640,7 @@ class DetailedList(Widget):
     ####################################################################################
 
     def _item_hit_test(self, y: int) -> int:
-        hit_test_info = cc32_cls.LVHITTESTINFO()
+        hit_test_info = ws.LVHITTESTINFO()
         hit_test_info.pt = POINT(self._mouse_down_x, y)
         u32.SendMessageW(self._hwnd, wc.LVM_HITTEST, 0, byref(hit_test_info))
 

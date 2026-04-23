@@ -5,7 +5,7 @@ from ctypes.wintypes import HWND, POINT, RECT, UINT
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap, Point
 
-from toga_winforms.libs import user32classes as u32_cls, windowconstants as wc
+from toga_winforms.libs import win32constants as wc, win32structures as ws
 from toga_winforms.libs.user32 import (
     ClientToScreen,
     PostMessageW,
@@ -217,19 +217,19 @@ class DetailedListProbe(SimpleProbe):
         ClientToScreen(hwnd, point)
         WinForms.Cursor.Position = Point(point.x, point.y)
 
-        INPUT_ARRAY = u32_cls.INPUT * 1
+        INPUT_ARRAY = ws.INPUT * 1
         mouse_inputs = INPUT_ARRAY()
-        mouse_inputs[0] = u32_cls.INPUT()
+        mouse_inputs[0] = ws.INPUT()
         mouse_inputs[0].type = 0
-        mouse_inputs[0]._.mi = u32_cls.MOUSEINPUT(0, 0, 0, 0, 0)
+        mouse_inputs[0]._.mi = ws.MOUSEINPUT(0, 0, 0, 0, 0)
 
         if modifier:
             modifier_inputs = INPUT_ARRAY()
-            modifier_inputs[0] = u32_cls.INPUT()
+            modifier_inputs[0] = ws.INPUT()
             modifier_inputs[0].type = 1
-            modifier_inputs[0]._.ki = u32_cls.KEYBDINPUT(wc.VK_CONTROL, 0, 0, 0, 0)
+            modifier_inputs[0]._.ki = ws.KEYBDINPUT(wc.VK_CONTROL, 0, 0, 0, 0)
 
-            return_value = SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            return_value = SendInput(1, modifier_inputs, sizeof(ws.INPUT))
             if return_value != 1:
                 raise Exception(
                     "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (down)."
@@ -244,7 +244,7 @@ class DetailedListProbe(SimpleProbe):
         async def click():
             for i, message in enumerate(message_list):
                 mouse_inputs[0]._.mi.dwFlags = message
-                return_value = SendInput(1, mouse_inputs, sizeof(u32_cls.INPUT))
+                return_value = SendInput(1, mouse_inputs, sizeof(ws.INPUT))
                 if return_value != 1:
                     raise Exception(
                         f"SendInput failed. Type: Mouse, right button: {right}."
@@ -266,7 +266,7 @@ class DetailedListProbe(SimpleProbe):
         if modifier:
             modifier_inputs[0]._.ki.dwFlags = wc.KEYEVENTF_KEYUP
 
-            return_value = SendInput(1, modifier_inputs, sizeof(u32_cls.INPUT))
+            return_value = SendInput(1, modifier_inputs, sizeof(ws.INPUT))
             if return_value != 1:
                 raise Exception(
                     "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (up)."

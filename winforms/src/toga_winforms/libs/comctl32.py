@@ -1,9 +1,15 @@
 from ctypes import POINTER, windll
 from ctypes.wintypes import BOOL, HDC, HWND, INT, LPARAM, UINT, WPARAM
 
-from .activationcontext import activation_context
-from .comctl32classes import INITCOMMONCONTROLSEX, SUBCLASSPROC
-from .win32 import DWORD_PTR, HIMAGELIST, LRESULT, UINT_PTR
+from .win32misc import activation_context
+from .win32structures import (
+    DWORD_PTR,
+    HIMAGELIST,
+    INITCOMMONCONTROLSEX,
+    LRESULT,
+    SUBCLASSPROC,
+    UINT_PTR,
+)
 
 with activation_context:
     comctl32 = windll.comctl32

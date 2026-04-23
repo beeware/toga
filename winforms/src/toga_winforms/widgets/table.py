@@ -6,11 +6,9 @@ import System.Windows.Forms as WinForms
 
 from toga.handlers import WeakrefCallable
 
-from ..libs import windowconstants as wc
+from ..libs import win32constants as wc, win32structures as ws
 from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass, SetWindowSubclass
-from ..libs.comctl32classes import LVITEMW, NMHDR, NMLVDISPINFOW, SUBCLASSPROC
 from ..libs.user32 import SendMessageW
-from ..libs.win32 import LRESULT
 from .base import Widget
 
 
@@ -20,7 +18,7 @@ class Table(Widget):
     #################################################################################
 
     def create(self):
-        self.pfn_subclass = SUBCLASSPROC(self._subclass_proc)
+        self.pfn_subclass = ws.SUBCLASSPROC(self._subclass_proc)
         self.native = WinForms.ListView()
         self._hwnd = int(self.native.Handle.ToString())
         self._set_subclass()
@@ -82,17 +80,17 @@ class Table(Widget):
         lParam: int,
         uIdSubclass: int,
         dwRefData: int,
-    ) -> LRESULT:
+    ) -> ws.LRESULT:
         # Remove the window subclass in the way recommended by Raymond Chen here:
         # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
         if uMsg == wc.WM_NCDESTROY:
             RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
 
         elif uMsg == wc.WM_REFLECT_NOTIFY:
-            phdr = cast(lParam, POINTER(NMHDR)).contents
+            phdr = cast(lParam, POINTER(ws.NMHDR)).contents
             code = phdr.code
             if code == wc.LVN_GETDISPINFOW:
-                disp_info = cast(lParam, POINTER(NMLVDISPINFOW)).contents
+                disp_info = cast(lParam, POINTER(ws.NMLVDISPINFOW)).contents
                 self._lvn_getdispinfo(disp_info.item)
 
         # Call the original window procedure
@@ -215,7 +213,7 @@ class Table(Widget):
 
         SendMessageW(self._hwnd, wc.LVM_SETEXTENDEDLISTVIEWSTYLE, 0, new_style)
 
-    def _lvn_getdispinfo(self, lvitem: LVITEMW):
+    def _lvn_getdispinfo(self, lvitem: ws.LVITEMW):
         row_index = lvitem.iItem
         column_index = lvitem.iSubItem
 
