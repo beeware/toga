@@ -4,7 +4,7 @@
 
 - [Tutorials](tutorial/index.md)
     - tutorial/*
-- [How-to Guides](how-to/index.md)
+- [How-to guides](how-to/index.md)
     - [Contributing to Toga](how-to/contribute/index.md)
         - [First-time contributors](how-to/contribute/first-time-contributors.md)
         - What can I do?
@@ -34,7 +34,7 @@
         - Style guides
             - [Code style guide](how-to/contribute/style/code-style-guide.md)
             - [Documentation style guide](how-to/contribute/style/docs-style-guide.md)
-    - Internal How-to guides
+    - Internal how-to guides
         - [How to cut a Toga release](how-to/internal/release.md)
 - [Topic guides](topics/index.md)
     - topics/*
@@ -83,6 +83,6 @@
 - [About Toga](about/index.md)
     - [Why Toga?](about/philosophy.md)
     - [FAQ](about/faq.md)
-    - [Success Stories](about/success.md)
-    - [Release History](about/releases.md)
-    - [Toga's Road Map](about/roadmap.md)
+    - [Success stories](about/success.md)
+    - [Release history](about/releases.md)
+    - [Toga's road map](about/roadmap.md)

@@ -16,7 +16,7 @@ The `toga-android` backend uses the [Android Java API](https://developer.android
 
 ## Platform-specific APIs
 
-### Activities and Intents
+### Activities and intents
 
 On Android, some interactions are managed using Activities, which are started using Intents.
 

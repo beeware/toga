@@ -238,6 +238,14 @@ class Testbed(toga.App):
 
 
 def main(appname):
+    if toga.backend == "toga_winforms":
+        import toga_winforms
+
+        if toga_winforms._use_dotnet_core:
+            print("Running testbed using .NET Core")
+        else:
+            print("Running testbed using .NET Framework 4.x")
+
     return Testbed(
         app_name=appname,
         document_types=[ExampleDoc, ReadonlyDoc],

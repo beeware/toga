@@ -2,13 +2,13 @@
 
 While Toga provides a rich set of features, it can't provide every widget that is available on every platform. Additionally, because widgets are implemented as time permits by contributors, some backends may lack a widget that another backend provides. This means that application authors may find themselves in a situation where they need to write a custom widget. This topic guide explains how Toga finds widget implementations, and how people can expand the available widgets for their application.
 
-## Writing a Widget
+## Writing a widget
 
 As noted in the [Internal architecture](architecture.md) topic guide, a widget is made up of three layers: interface, implementation, and native. Every interface widget has a `_create` method that is responsible for creating the implementation of the widget, and passing the interface object to the new implementation object's `__init__` method. The implementation in turn has its own `create` method that should create any native widgets or other state that is needed when the widget is added to the layout, and also should implement at least the `rehint` method to help the layout system determine the size of the widget.
 
 In the simplest possible case if you are creating a widget for your own application where you only care about one backend, you can write the implementation class and and an interface where the `_create` method directly imports the implementation class and instantiates it.
 
-### Example: A Qt Dial
+### Example: A Qt dial
 
 As an example, the Qt library has a `QDial` class that acts a lot like a [`Slider`][toga.Slider] but displays a round dial instead of a linear slider. We can write a subclass of [`Slider`][toga.Slider] that will use a `QDial` as follows.
 
@@ -48,7 +48,7 @@ class Dial(Slider):
 
 More complex widgets will obviously have a lot more to them, but this will often be sufficient for a one-off custom widget for an application.
 
-## Widgets with Multiple Backends
+## Widgets with multiple backends
 
 The previous section is fine as long as you only care about one backend implementation, but as soon as you have multiple backends that you care about you are faced with the problem of how does the interface know which implementation to use?
 
@@ -72,7 +72,7 @@ class Slider(Widget):
         return self.factory.Slider(interface=self)
 ```
 
-### Implementing Missing Widgets
+### Implementing missing widgets
 
 Not every widget is available in every backend. If a backend doesn't provide a widget, it will raise `NotImplementedError`. However, you can fill gaps in Toga's widget availability by providing a Python project that contains an implementation and an entry point for that widget.
 
@@ -131,7 +131,7 @@ Ideally, if you have a working implementation of a missing widget, you'd make a 
 
 Briefcase projects don't use Python's entry point system, so you can't just add the entry points to a Briefcase project's `pyroject.toml`. Instead any widgets you need have to be implemented as a separate Python project with it's own `pyproject.toml` that contains the entry points, and which is a dependency of your application. The `customwidget` example in the Toga examples shows how you might do this.
 
-### Implementing a New Backend
+### Implementing a new backend
 
 You can use these ideas to implement a new backend for Toga. To do this, you would need to write as many of the backend class implementations as is possible in a project, and then in the `pyproject.toml` list entry points in the `toga.backend` group for each platform that supports the backend, and then have entry points for each backend implementation.
 
@@ -151,7 +151,7 @@ Command = "togax_wx.command:Command"
 
 and so on, and then update your development environment using `pip` if needed every time you add a new widget to the `pyproject.toml`.
 
-### Implementing New Interfaces
+### Implementing new interfaces
 
 All of the examples with multiple backends rely on widgets which already exist as part of the `toga_core` interface. What if we want to implement our own interface widgets?
 
@@ -213,7 +213,7 @@ Checkbox = "extra_switches.wx.checkbox:Checkbox"
 
 and so on, and then update your development environment using `pip` if needed.
 
-## Other Backend-Dependent Objects
+## Other backend-dependent objects
 
 There are other objects beyond widgets which are dependent on different backend implementations, particularly hardware features, but also things like notification displays, clipboards, and other OS services.
 

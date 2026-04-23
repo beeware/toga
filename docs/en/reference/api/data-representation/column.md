@@ -8,7 +8,7 @@ The protocol, [`ColumnT`][toga.sources.ColumnT], describes what custom Column im
 
 Column objects are usually immutable, and can be shared between widgets freely if desired.
 
-### Accessor Columns
+### Accessor columns
 
 `AccessorColumn` objects are designed to work with the [`ListSource`][toga.sources.ListSource] and [`TreeSource`][toga.sources.TreeSource] objects: each `AccessorColumn` holds the heading text and an attribute name, or "accessor", that is used to get values from each row of the source to use in the column.
 
@@ -28,7 +28,7 @@ table = Table(
 
 -8<- "snippets/accessor-values.md"
 
-### Custom Columns
+### Custom columns
 
 You can define your own subclasses that can override the way that text and icons are computed to provide custom formatting of text. Any object which implements the [`ColumnT`][toga.sources.ColumnT] protocol can be used. This protocol requires:
 

@@ -9,7 +9,9 @@ from System.Drawing import Bitmap, Point
 from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 
 import toga
+from toga_winforms import _use_dotnet_core
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
+from toga_winforms.statusicons import CONTEXT_MENU_ATTR, MENU_ATTR
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -228,14 +230,16 @@ class AppProbe(BaseProbe, DialogsMixin):
         return status_icon._impl.native is not None
 
     def status_menu_items(self, status_icon):
-        if status_icon._impl.native.ContextMenu:
+        context_menu_strip = getattr(status_icon._impl.native, CONTEXT_MENU_ATTR)
+        if context_menu_strip:
             return [
                 {
-                    "-": "---",
+                    # .NET Core returns "" for separator text
+                    "" if _use_dotnet_core else "-": "---",
                     "About Toga Testbed": "**ABOUT**",
                     "Exit": "**EXIT**",
                 }.get(str(item.Text), str(item.Text))
-                for item in status_icon._impl.native.ContextMenu.MenuItems
+                for item in getattr(context_menu_strip, MENU_ATTR)
             ]
         else:
             # It's a button status item
@@ -250,6 +254,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         )
 
     def activate_status_menu_item(self, item_id, title):
-        menu = self.app.status_icons[item_id]._impl.native.ContextMenu
-        item = {item.Text: item for item in menu.MenuItems}[title]
+        menu = getattr(self.app.status_icons[item_id]._impl.native, CONTEXT_MENU_ATTR)
+        item = {item.Text: item for item in getattr(menu, MENU_ATTR)}[title]
         item.OnClick(EventArgs.Empty)

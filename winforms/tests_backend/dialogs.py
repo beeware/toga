@@ -3,11 +3,20 @@ from unittest.mock import Mock
 
 from System import Array as WinArray, String as WinString
 
+from toga_winforms import _use_dotnet_core
+
 
 class DialogsMixin:
     supports_multiple_select_folder = False
 
-    def _setup_dialog_result(self, dialog, char, alt=False, pre_close_test_method=None):
+    def _setup_dialog_result(
+        self,
+        dialog,
+        char,
+        alt=False,
+        char2=None,
+        pre_close_test_method=None,
+    ):
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
         orig_show = dialog._impl.show
@@ -27,6 +36,11 @@ class DialogsMixin:
                 finally:
                     try:
                         await self.type_character(char, alt=alt)
+                        if char2:
+                            # If a second character press is needed, wait a moment
+                            # for the effect of the first character to take effect.
+                            await self.redraw("wait for char", delay=0.1)
+                            await self.type_character(char2)
                     except Exception as e:
                         # An error occurred closing the dialog; that means the dialog
                         # isn't what as expected, so record that in the future.
@@ -91,7 +105,11 @@ class DialogsMixin:
             dialog._impl.native.SelectedPath = str(
                 result[-1] if multiple_select else result
             )
-            self._setup_dialog_result(dialog, "\n")
+            # Under .NET Core, selecting pressing Enter once
+            # displays the contents of the selected folder.
+            # A second enter is needed to select that folder.
+            char2 = "\n" if _use_dotnet_core else None
+            self._setup_dialog_result(dialog, "\n", char2=char2)
 
     def is_modal_dialog(self, dialog):
         return True
