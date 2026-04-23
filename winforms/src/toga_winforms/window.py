@@ -49,10 +49,11 @@ class Window(Container, Scalable):
         # triggering of visibility events.
         self._previous_state = WindowState.NORMAL
         # On minimization, winforms returns window size as 0 x 0, but this behavior is
-        # inconsistent with other platforms as minimization does not constitute a
-        # window resize operation. Therefore, it should return the same size as before
-        # minimization. So, cache the previous window size before performing
-        # minimization.
+        # inconsistent with other platforms as minimization does not constitute a window
+        # resize operation. Therefore, it should return the same size as before
+        # minimization. Under .NET Core, there's also issues with correctly restoring
+        # the window size when coming back from FULLSCREEN or PRESENTATION mode. This
+        # variable stores the window size so it can be returned/restored as required.
         self._cached_window_size = None
 
         self.set_title(title)
@@ -332,11 +333,20 @@ class Window(Container, Scalable):
                 self.native.WindowState = WinForms.FormWindowState.Minimized
 
             case WindowState.NORMAL, WindowState.FULLSCREEN:
+                # .NET Core doesn't always restore the window size coming back from
+                # FULLSCREEN mode. Save the window size to make sure it is restored.
+                self._cached_window_size = self.interface.size
+
                 self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
             case WindowState.NORMAL, WindowState.PRESENTATION:
+                # .NET Core doesn't always restore the window size coming back from
+                # PRESENTATION mode. Save the window size and screen to make sure it is
+                # restored.
                 self._before_presentation_mode_screen = self.interface.screen
+                self._cached_window_size = self.interface.size
+
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = False
                 if getattr(self, "toolbar_native", None):
@@ -362,11 +372,14 @@ class Window(Container, Scalable):
                     WinForms.FormBorderStyle,
                     "Sizable" if self.interface.resizable else "FixedSingle",
                 )
-                # Clear the cached window size.
-                self._cached_window_size = None
                 self.native.WindowState = WinForms.FormWindowState.Normal
-
                 self.set_window_state(state)
+
+                # If there was a cached window size, restore that size.
+                # Required for .NET Core restoration of FULLSCREEN/PRESENTATION.
+                if self._cached_window_size:
+                    self.set_size(self._cached_window_size)
+                    self._cached_window_size = None
 
     ######################################################################
     # Window capabilities
