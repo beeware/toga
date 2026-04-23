@@ -34,9 +34,7 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def row_count(self):
-        LVM_GETITEMCOUNT = 0x1000 + 4
-
-        return SendMessageW(self.impl._hwnd, LVM_GETITEMCOUNT, 0, 0)
+        return SendMessageW(self.impl._hwnd, wc.LVM_GETITEMCOUNT, 0, 0)
 
     def assert_cell_content(self, row, title, subtitle, icon=None):
         title_value, subtitle_value, icon_index = self.impl._retrieve_virtual_item(row)
@@ -64,9 +62,8 @@ class DetailedListProbe(SimpleProbe):
             assert count / (size.Width * size.Height) > 0.94
 
     def _row_rect(self, row) -> RECT:
-        LVM_GETITEMRECT = 0x1000 + 14
         rect = RECT()
-        SendMessageW(self.impl._hwnd, LVM_GETITEMRECT, row, byref(rect))
+        SendMessageW(self.impl._hwnd, wc.LVM_GETITEMRECT, row, byref(rect))
         rect.right = self.impl._tile_width()
         return rect
 
@@ -104,9 +101,7 @@ class DetailedListProbe(SimpleProbe):
         return -round(top / self.scale_factor)
 
     def scroll_to_top(self):
-        LVM_ENSUREVISIBLE = 0x1000 + 19
-
-        SendMessageW(self.impl._hwnd, LVM_ENSUREVISIBLE, 0, 0)
+        SendMessageW(self.impl._hwnd, wc.LVM_ENSUREVISIBLE, 0, 0)
 
     async def wait_for_scroll_completion(self):
         # No animation associated with scroll, so this is a no-op
