@@ -67,9 +67,9 @@ CreateWindowExW_raw.argtypes = [
 # CreateWindowExW is called within the appropriate activation context. For more details
 # see Raymond Chen's blog:
 # https://devblogs.microsoft.com/oldnewthing/20140508-00/?p=1043
-@activation_context
 def CreateWindowExW(*args):
-    return CreateWindowExW_raw(*args)
+    with activation_context:
+        return CreateWindowExW_raw(*args)
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-destroymenu

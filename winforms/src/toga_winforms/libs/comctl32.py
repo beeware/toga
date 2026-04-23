@@ -1,11 +1,13 @@
-from ctypes import POINTER
+from ctypes import POINTER, windll
 from ctypes.wintypes import BOOL, HDC, HWND, INT, LPARAM, UINT, WPARAM
 
-from .activationcontext import WinDLL_activation_context
+from .activationcontext import activation_context
 from .comctl32classes import INITCOMMONCONTROLSEX, SUBCLASSPROC
 from .win32 import DWORD_PTR, HIMAGELIST, LRESULT, UINT_PTR
 
-comctl32 = WinDLL_activation_context("comctl32")
+with activation_context:
+    comctl32 = windll.comctl32
+
 
 # https://learn.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-initcommoncontrolsex
 InitCommonControlsEx = comctl32.InitCommonControlsEx
