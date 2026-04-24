@@ -31,6 +31,8 @@
         - What happens next?
             - [Pull request review process](how-to/contribute/next/pr-review.md)
             - [Release process](how-to/contribute/next/release.md)
+        - Policies
+            - [AI Policy](how-to/contribute/policies/ai-policy.md)
         - Style guides
             - [Code style guide](how-to/contribute/style/code-style-guide.md)
             - [Documentation style guide](how-to/contribute/style/docs-style-guide.md)
