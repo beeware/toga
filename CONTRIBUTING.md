@@ -30,7 +30,7 @@ We require that all new code is exercised by automated tests. Our contribution g
 
 ### Documentation
 
-We require that all new features have full user documentation. We have a [documentation style guide](https://beeware.org/contributing/guide/style/docs-style-guide/) that all documentation should follow. Our contribution guide has details on [how to build and preview project documentation](https://beeware.org/contributing/guide/how/build-docs/).
+We require that all new features have full user documentation. We have a [documentation style guide](https://toga.beeware.org/en/latest/how-to/contribute/style/docs-style-guide/) that all documentation should follow. Our contribution guide has details on [how to build and preview project documentation](https://toga.beeware.org/en/latest/how-to/contribute/how/build-docs/).
 
 ### Pull Requests
 
