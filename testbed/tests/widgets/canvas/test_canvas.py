@@ -1018,8 +1018,8 @@ async def test_path_object(canvas, probe):
         canvas.rotate(pi / 6)
         canvas.scale(0.95, 0.95)
         print("draw", _)
-        canvas.fill(CORNFLOWERBLUE, path=path)
-        canvas.stroke(REBECCAPURPLE, path=path)
+        canvas.fill(path=path, fill_style=CORNFLOWERBLUE)
+        canvas.stroke(path, color=REBECCAPURPLE)
 
     # stroke and fill an empty path
     print("stroke and fill empty")
