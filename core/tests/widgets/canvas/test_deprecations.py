@@ -2,6 +2,7 @@ import pytest
 
 import toga
 import toga.widgets.canvas as canvas_module
+from toga.colors import REBECCAPURPLE, Color
 from toga.constants import FillRule
 from toga.widgets.canvas import (
     Arc,
@@ -30,6 +31,8 @@ from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
 )
+
+REBECCAPURPLE_COLOR = Color.parse(REBECCAPURPLE)
 
 
 @pytest.mark.parametrize(
@@ -84,8 +87,13 @@ def test_renamed_root_state(widget):
         ("fill", (), Fill),
         ("Fill", (), Fill),  # Deprecated alias
         ("Fill", (0, 0), Fill),  # Deprecated alias with removed parameters
+        # Deprecated alias with all arguments
+        ("Fill", (0, 0, REBECCAPURPLE, FillRule.EVENODD), Fill),
         ("stroke", (), Stroke),
         ("Stroke", (), Stroke),  # Deprecated alias
+        ("Stroke", (0, 0), Stroke),  # Deprecated alias with removed parameters
+        # Deprecated alias with all arguments
+        ("Stroke", (0, 0, REBECCAPURPLE, 0, [0, 0, 0, 0]), Stroke),
         ("Stroke", (0, 0), Stroke),  # Deprecated alias with removed parameters
         ("write_text", ("",), WriteText),
         ("draw_image", None, DrawImage),
@@ -173,6 +181,251 @@ def test_capitalized_canvas_methods_xy(
     assert widget.root_state.drawing_actions == [active_state, substate]
     if has_move:
         assert substate.drawing_actions == [MoveTo(10, 20)]
+
+
+@pytest.mark.parametrize(
+    "args, kwargs, attrs",
+    [
+        ((), {}, {"fill_rule": FillRule.NONZERO, "fill_style": None}),
+        (
+            (None, FillRule.NONZERO),
+            {},
+            {"fill_rule": FillRule.NONZERO, "fill_style": None},
+        ),
+        (
+            (REBECCAPURPLE, FillRule.EVENODD),
+            {},
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE_COLOR},
+        ),
+        (
+            (REBECCAPURPLE,),
+            {"fill_rule": FillRule.EVENODD},
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE_COLOR},
+        ),
+        (
+            (),
+            {"color": None, "fill_rule": FillRule.NONZERO},
+            {"fill_rule": FillRule.NONZERO, "fill_style": None},
+        ),
+        (
+            (),
+            {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE_COLOR},
+        ),
+    ],
+)
+def test_fill_signature_change(widget, args, kwargs, attrs):
+    """State.fill translates to new signature, and warns appropriately."""
+    match = (
+        r"Calling drawing methods on a state is deprecated\. To add actions "
+        r"to the currently active state, call drawing methods on the canvas\. "
+        r"Additionally, the Canvas\.fill\(\) method's color parameter can only be "
+        r"provided via keyword\. fill_rule is the only argument it accepts "
+        r"positionally\."
+    )
+
+    state = State()
+    with pytest.deprecated_call(match=match):
+        fill = state.fill(*args, **kwargs)
+
+    # Check both fill_style *and* color
+    attrs["color"] = attrs["fill_style"]
+
+    for name, value in attrs.items():
+        assert getattr(fill, name) == value
+
+
+@pytest.mark.parametrize(
+    "args, kwargs, attrs",
+    [
+        ((), {}, {"fill_rule": FillRule.NONZERO, "fill_style": None}),
+        ((10, 15), {}, {"fill_rule": FillRule.NONZERO, "fill_style": None}),
+        (
+            (10, 15, None, FillRule.NONZERO),
+            {},
+            {"fill_rule": FillRule.NONZERO, "fill_style": None},
+        ),
+        (
+            (10, 15, REBECCAPURPLE, FillRule.EVENODD),
+            {},
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE_COLOR},
+        ),
+        (
+            (
+                10,
+                15,
+                REBECCAPURPLE,
+            ),
+            {"fill_rule": FillRule.EVENODD},
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE_COLOR},
+        ),
+        (
+            (),
+            {"color": None, "fill_rule": FillRule.NONZERO},
+            {"fill_rule": FillRule.NONZERO, "fill_style": None},
+        ),
+        (
+            (),
+            {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE_COLOR},
+        ),
+    ],
+)
+def test_Fill_signature_change(args, kwargs, attrs):
+    """State.Fill (capitalized) translates to new signature, and warns appropriately."""
+    match = (
+        r"The Fill\(\) drawing method has been renamed to fill\(\)"
+        # We don't need to retest whether or not the coordinate warning is generated
+        r"(, and no longer accepts x and y coordinates as parameters\. Instead, "
+        r"call move_to\(x, y\) after entering the fill context)?\. "
+        r"Additionally, the Canvas\.fill\(\) method's color parameter can only be "
+        r"provided via keyword\. fill_rule is the only argument it accepts "
+        r"positionally\."
+    )
+
+    state = State()
+    with pytest.deprecated_call(match=match):
+        fill = state.Fill(*args, **kwargs)
+
+    # Check both fill_style *and* color
+    attrs["color"] = attrs["fill_style"]
+
+    for name, value in attrs.items():
+        assert getattr(fill, name) == value
+
+
+@pytest.mark.parametrize(
+    "args, kwargs, attrs",
+    [
+        ((), {}, {"stroke_style": None, "line_width": None, "line_dash": None}),
+        (
+            (None, None),
+            {},
+            {"stroke_style": None, "line_width": None, "line_dash": None},
+        ),
+        (
+            (REBECCAPURPLE, 10, [1, 0]),
+            {},
+            {
+                "stroke_style": REBECCAPURPLE_COLOR,
+                "line_width": 10,
+                "line_dash": [1, 0],
+            },
+        ),
+        (
+            (REBECCAPURPLE,),
+            {"line_width": 10, "line_dash": [1, 0]},
+            {
+                "stroke_style": REBECCAPURPLE_COLOR,
+                "line_width": 10,
+                "line_dash": [1, 0],
+            },
+        ),
+        (
+            (),
+            {"color": None, "line_width": None, "line_dash": None},
+            {"stroke_style": None, "line_width": None, "line_dash": None},
+        ),
+        (
+            (),
+            {"color": REBECCAPURPLE, "line_width": 10, "line_dash": [1, 0]},
+            {
+                "stroke_style": REBECCAPURPLE_COLOR,
+                "line_width": 10,
+                "line_dash": [1, 0],
+            },
+        ),
+    ],
+)
+def test_stroke_signature_change(args, kwargs, attrs):
+    """State.stroke translates to new signature, and warns appropriately."""
+    match = (
+        r"Calling drawing methods on a state is deprecated\. To add actions "
+        r"to the currently active state, call drawing methods on the canvas\. "
+        r"Additionally, the Canvas\.stroke\(\) method's arguments can only be provided "
+        r"as keywords\. It does not accept any positional arguments\."
+    )
+
+    state = State()
+    with pytest.deprecated_call(match=match):
+        stroke = state.stroke(*args, **kwargs)
+
+    # Check both stroke_style *and* color
+    attrs["color"] = attrs["stroke_style"]
+
+    for name, value in attrs.items():
+        assert getattr(stroke, name) == value
+
+
+@pytest.mark.parametrize(
+    "args, kwargs, attrs",
+    [
+        ((), {}, {"stroke_style": None, "line_width": None, "line_dash": None}),
+        (
+            (10, 20, None, None),
+            {},
+            {"stroke_style": None, "line_width": None, "line_dash": None},
+        ),
+        (
+            (10, 20, REBECCAPURPLE, 10, [1, 0]),
+            {},
+            {
+                "stroke_style": REBECCAPURPLE_COLOR,
+                "line_width": 10,
+                "line_dash": [1, 0],
+            },
+        ),
+        (
+            (
+                10,
+                20,
+                REBECCAPURPLE,
+            ),
+            {"line_width": 10, "line_dash": [1, 0]},
+            {
+                "stroke_style": REBECCAPURPLE_COLOR,
+                "line_width": 10,
+                "line_dash": [1, 0],
+            },
+        ),
+        (
+            (),
+            {"color": None, "line_width": None, "line_dash": None},
+            {"stroke_style": None, "line_width": None, "line_dash": None},
+        ),
+        (
+            (),
+            {"color": REBECCAPURPLE, "line_width": 10, "line_dash": [1, 0]},
+            {
+                "stroke_style": REBECCAPURPLE_COLOR,
+                "line_width": 10,
+                "line_dash": [1, 0],
+            },
+        ),
+    ],
+)
+def test_Stroke_signature_change(args, kwargs, attrs):
+    """State.Stroke (capitalized) translates to new signature, and warns
+    appropriately.
+    """
+    match = (
+        r"The Stroke\(\) drawing method has been renamed to stroke\(\)"
+        # We don't need to retest whether or not the coordinate warning is generated
+        r"(, and no longer accepts x and y coordinates as parameters\. Instead, "
+        r"call move_to\(x, y\) after entering the stroke context)?\. "
+        r"Additionally, the Canvas\.stroke\(\) method's arguments can only be provided "
+        r"as keywords\. It does not accept any positional arguments\."
+    )
+
+    state = State()
+    with pytest.deprecated_call(match=match):
+        stroke = state.Stroke(*args, **kwargs)
+
+    # Check both fill_style *and* color
+    attrs["color"] = attrs["stroke_style"]
+
+    for name, value in attrs.items():
+        assert getattr(stroke, name) == value
 
 
 def test_closed_path_with_xy_but_not_entered(widget):

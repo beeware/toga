@@ -8,7 +8,6 @@ from math import pi
 from typing import TYPE_CHECKING, Any
 from warnings import filterwarnings, warn
 
-from toga.colors import Color
 from toga.constants import Baseline
 from toga.fonts import (
     SYSTEM,
@@ -128,24 +127,6 @@ class DrawingAction(ABC):
         return hasattr(self, "drawing_actions") and any(
             action is other or other in action for action in self.drawing_actions
         )
-
-
-class color_property:
-    def __get__(self, action, action_class=None):
-        if action is None:
-            return self
-
-        return action._color
-
-    def __set__(self, action, value):
-        if value is self or value is None:
-            # value is self when no argument is supplied in the dataclass constructor;
-            # this is how we define a default value for the hidden attribute.
-            value = None
-        else:
-            value = Color.parse(value)
-
-        action._color = value
 
 
 class BeginPath(DrawingAction):

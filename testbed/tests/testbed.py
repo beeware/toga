@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 import tempfile
 import time
@@ -34,13 +35,26 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         print("ready.")
 
-        # Textual backend does not yet support testing.
-        # However, this will verify a Textual app can at least start.
+        # Some backends and platforms do not support interactive GUI testing.
+        # On those platforms, perform a basic app start test.
         import toga
 
-        if toga.backend == "toga_textual":
-            time.sleep(1)  # wait for the Textual app to start
-            app.returncode = 0 if app._impl.native.is_running else 1
+        if (
+            # Textual doesn't have a test probe
+            toga.backend == "toga_textual"
+            # On GitHub Actions, Windows/ARM64 runners don't have an interactive
+            # logon session, so you can't run most of the GUI tests. For details,
+            # see https://github.com/actions/partner-runner-images/issues/174
+            or (
+                toga.backend == "toga_winforms"
+                and platform.machine() == "ARM64"
+                and running_in_ci
+            )
+        ):
+            time.sleep(1)  # wait for the app to start
+            print("Performing a basic app startup test...", end="")
+            app.returncode = 0 if app._impl.loop.is_running() else 1
+            print("done.")
             return
 
         # Control the run speed of the test app.
@@ -144,10 +158,12 @@ def main(main_package_name, backend_override=None):
     cov.set_option(
         "coverage_conditional_plugin:rules",
         {
+            # Linux X vs Wayland
             "no-cover-if-linux-wayland": "os_environ.get('WAYLAND_DISPLAY', '') != ''",
             "no-cover-if-linux-x": (
                 "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'"
             ),
+            # Linux GTK3/4 + Adwaita versions
             "no-cover-if-gtk4": "os_environ.get('TOGA_GTK', '') == '4'",
             "no-cover-if-gtk3": "os_environ.get('TOGA_GTK', '3') == '3'",
             "no-cover-unless-plain-gtk4": (
@@ -158,6 +174,11 @@ def main(main_package_name, backend_override=None):
             "no-cover-unless-libadwaita": (
                 "os_environ.get('TOGA_GTK', '') != '4' "
                 "or os_environ.get('TOGA_GTKLIB', '') != 'Adw'"
+            ),
+            # Windows .NET usage
+            "no-cover-if-netfx": "os_environ.get('TOGA_WINFORMS_USE_NETFX', '') == '1'",
+            "no-cover-if-netcore": (
+                "os_environ.get('TOGA_WINFORMS_USE_NETFX', '') != '1'"
             ),
         },
     )

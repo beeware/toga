@@ -13,6 +13,7 @@ from toga.widgets.canvas import (
 from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
+EMPTY_PATH = Path2D()
 
 
 def test_sub_state(widget):
@@ -63,41 +64,50 @@ def test_closed_path(widget):
         # Defaults
         (
             {},
-            "color=None, fill_rule=FillRule.NONZERO, path=None",
-            {"color": None, "fill_rule": FillRule.NONZERO},
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
+            {
+                "fill_rule": FillRule.NONZERO,
+                "path": None,
+                "fill_style": None,
+            },
         ),
-        # Color
+        # Fill style
         (
-            {"color": REBECCAPURPLE},
-            (f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO, path=None"),
-            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
+            {"fill_style": REBECCAPURPLE},
+            (
+                "fill_rule=FillRule.NONZERO, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
+            ),
+            {
+                "fill_rule": FillRule.NONZERO,
+                "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
+            },
         ),
-        # Explicitly don't set color
+        # Explicitly don't set fill style
         (
-            {"color": None},
-            "color=None, fill_rule=FillRule.NONZERO, path=None",
-            {"color": None, "fill_rule": FillRule.NONZERO},
+            {"fill_style": None},
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
+            {"fill_rule": FillRule.NONZERO, "path": None, "fill_style": None},
         ),
         # Fill Rule
         (
             {"fill_rule": FillRule.EVENODD},
-            "color=None, fill_rule=FillRule.EVENODD, path=None",
-            {"color": None, "fill_rule": FillRule.EVENODD},
+            "fill_rule=FillRule.EVENODD, path=None, fill_style=None",
+            {"fill_style": None, "path": None, "fill_rule": FillRule.EVENODD},
         ),
         # All args
         (
-            {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
-            (f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD, path=None"),
-            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
-        ),
-        # Path ignored in context manager
-        (
-            {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD, "path": Path2D()},
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE},
             (
-                f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD, "
-                "path=Path2D()"
+                "fill_rule=FillRule.EVENODD, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
             ),
-            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
+            {
+                "fill_rule": FillRule.EVENODD,
+                "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
+            },
         ),
     ],
 )
@@ -116,9 +126,11 @@ def test_fill(widget, kwargs, args_repr, properties):
 
     commands = [
         "save",
-        ("set fill style", color)
-        if (color := properties["color"]) is not None
-        else None,
+        (
+            ("set fill style", fill_style)
+            if (fill_style := properties["fill_style"]) is not None
+            else None
+        ),
         "begin path",
         ("line to", {"x": 30, "y": 40}),
         ("fill", {"fill_rule": properties["fill_rule"], "path": None}),
@@ -137,60 +149,56 @@ def test_fill(widget, kwargs, args_repr, properties):
         # Defaults
         (
             {},
-            "color=None, line_width=None, line_dash=None, path=None",
-            {"color": None, "line_width": None, "line_dash": None},
+            "path=None, stroke_style=None, line_width=None, line_dash=None",
+            {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color
         (
-            {"color": REBECCAPURPLE},
+            {"stroke_style": REBECCAPURPLE},
             (
-                f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None, "
-                "path=None"
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=None, line_dash=None"
             ),
-            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
+            {
+                "stroke_style": REBECCA_PURPLE_COLOR,
+                "line_width": None,
+                "line_dash": None,
+            },
         ),
-        # Explicitly don't set color
+        # Explicitly don't set stroke_style
         (
-            {"color": None},
-            "color=None, line_width=None, line_dash=None, path=None",
-            {"color": None, "line_width": None, "line_dash": None},
+            {"stroke_style": None},
+            (
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=None, line_dash=None"
+            ),
+            {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "color=None, line_width=4.500, line_dash=None, path=None",
-            {"color": None, "line_width": 4.5, "line_dash": None},
+            "path=None, stroke_style=None, line_width=4.500, line_dash=None",
+            {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
-            {
-                "line_dash": [2, 7],
-            },
-            "color=None, line_width=None, line_dash=[2, 7], path=None",
-            {"color": None, "line_width": None, "line_dash": [2, 7]},
+            {"line_dash": [2, 7]},
+            "path=None, stroke_style=None, line_width=None, line_dash=[2, 7]",
+            {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
         (
-            {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
+            {"stroke_style": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
             (
-                f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7], "
-                "path=None"
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=4.500, line_dash=[2, 7]"
             ),
-            {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
-        ),
-        # Path ignored in context manager
-        (
             {
-                "color": REBECCAPURPLE,
+                "path": None,
+                "stroke_style": REBECCA_PURPLE_COLOR,
                 "line_width": 4.5,
                 "line_dash": [2, 7],
-                "path": Path2D(),
             },
-            (
-                f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7], "
-                "path=Path2D()"
-            ),
-            {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
         ),
     ],
 )
@@ -209,15 +217,21 @@ def test_stroke(widget, kwargs, args_repr, properties):
 
     commands = [
         "save",
-        ("set stroke style", color)
-        if (color := properties["color"]) is not None
-        else None,
-        ("set line width", line_width)
-        if (line_width := properties["line_width"]) is not None
-        else None,
-        ("set line dash", line_dash)
-        if (line_dash := properties["line_dash"]) is not None
-        else None,
+        (
+            ("set stroke style", stroke_style)
+            if (stroke_style := properties["stroke_style"]) is not None
+            else None
+        ),
+        (
+            ("set line width", line_width)
+            if (line_width := properties["line_width"]) is not None
+            else None
+        ),
+        (
+            ("set line dash", line_dash)
+            if (line_dash := properties["line_dash"]) is not None
+            else None
+        ),
         "begin path",
         ("line to", {"x": 30, "y": 40}),
         ("stroke", {"path": None}),

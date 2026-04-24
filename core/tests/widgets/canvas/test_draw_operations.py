@@ -6,7 +6,7 @@ from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.images import Image
-from toga.widgets.canvas import Arc, Ellipse
+from toga.widgets.canvas import Arc, Ellipse, Fill, Stroke
 from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
@@ -35,83 +35,101 @@ def test_close_path(widget):
     assert widget._impl.draw_instructions[1:-1] == ["close path"]
 
 
+@pytest.mark.parametrize("alias_kwarg", [True, False])
+@pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
     "kwargs, args_repr, draw_objs, attrs",
     [
         # Defaults
         (
             {},
-            "color=None, fill_rule=FillRule.NONZERO, path=None",
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
             [("fill", {"fill_rule": FillRule.NONZERO, "path": None})],
-            {"color": None, "fill_rule": FillRule.NONZERO, "path": None},
+            {
+                "fill_rule": FillRule.NONZERO,
+                "path": None,
+                "fill_style": None,
+            },
         ),
-        # Color as string name
+        # Fill style as string name
         (
-            {"color": REBECCAPURPLE},
-            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO, path=None",
+            {"fill_style": REBECCAPURPLE},
+            (
+                "fill_rule=FillRule.NONZERO, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
+            ),
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
                 ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
             ],
             {
-                "color": REBECCA_PURPLE_COLOR,
                 "fill_rule": FillRule.NONZERO,
                 "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
             },
         ),
         # Color as RGB object
         (
-            {"color": REBECCA_PURPLE_COLOR},
-            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO, path=None",
+            {"fill_style": REBECCA_PURPLE_COLOR},
+            (
+                "fill_rule=FillRule.NONZERO, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
+            ),
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
                 ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
             ],
             {
-                "color": REBECCA_PURPLE_COLOR,
                 "fill_rule": FillRule.NONZERO,
                 "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
             },
         ),
         # Color explicitly not set
         (
-            {"color": None},
-            "color=None, fill_rule=FillRule.NONZERO, path=None",
+            {"fill_style": None},
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
             [("fill", {"fill_rule": FillRule.NONZERO, "path": None})],
-            {"color": None, "fill_rule": FillRule.NONZERO, "path": None},
+            {"fill_rule": FillRule.NONZERO, "path": None, "fill_style": None},
         ),
         # Explicit Non-Zero winding
         (
             {"fill_rule": FillRule.NONZERO},
-            "color=None, fill_rule=FillRule.NONZERO, path=None",
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
             [("fill", {"fill_rule": FillRule.NONZERO, "path": None})],
-            {"color": None, "fill_rule": FillRule.NONZERO, "path": None},
+            {"fill_rule": FillRule.NONZERO, "path": None, "fill_style": None},
         ),
         # Even-Odd winding
         (
             {"fill_rule": FillRule.EVENODD},
-            "color=None, fill_rule=FillRule.EVENODD, path=None",
+            "fill_rule=FillRule.EVENODD, path=None, fill_style=None",
             [("fill", {"fill_rule": FillRule.EVENODD, "path": None})],
-            {"color": None, "fill_rule": FillRule.EVENODD, "path": None},
+            {"fill_rule": FillRule.EVENODD, "path": None, "fill_style": None},
         ),
         # All args
         (
-            {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
-            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD, path=None",
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE},
+            (
+                "fill_rule=FillRule.EVENODD, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
+            ),
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
                 ("fill", {"fill_rule": FillRule.EVENODD, "path": None}),
             ],
             {
-                "color": REBECCA_PURPLE_COLOR,
                 "fill_rule": FillRule.EVENODD,
                 "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
             },
         ),
     ],
 )
-def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
+def test_fill(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
     """A primitive fill operation can be added."""
+    if alias_kwarg and "fill_style" in kwargs:
+        kwargs["color"] = kwargs.pop("fill_style")
+
     draw_op = widget.fill(**kwargs)
 
     assert_action_performed(widget, "redraw")
@@ -122,77 +140,89 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
     assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
 
     # All the attributes can be retrieved.
+    if alias_attr and "fill_style" in attrs:
+        attrs["color"] = attrs.pop("fill_style")
+
     for name, value in attrs.items():
         assert getattr(draw_op, name) == value
 
 
+@pytest.mark.parametrize("use_method", [True, False])
+def test_fill_kw_only(widget, use_method):
+    """Providing fill_style positionally raises an error."""
+    fill = widget.fill if use_method else Fill
+
+    with pytest.raises(TypeError):
+        fill(FillRule.EVENODD, None, REBECCAPURPLE)
+
+
+@pytest.mark.parametrize("alias_kwarg", [True, False])
+@pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
     "kwargs, args_repr, draw_objs, attrs",
     [
         # Defaults
         (
             {},
-            "color=None, line_width=None, line_dash=None, path=None",
+            "path=None, stroke_style=None, line_width=None, line_dash=None",
             [],
-            {"color": None, "line_width": None, "line_dash": None, "path": None},
+            {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color as string name
         (
-            {"color": REBECCAPURPLE},
+            {"stroke_style": REBECCAPURPLE},
             (
-                f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None, "
-                "path=None"
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=None, line_dash=None"
             ),
             [("set stroke style", REBECCA_PURPLE_COLOR)],
             {
-                "color": REBECCA_PURPLE_COLOR,
+                "stroke_style": REBECCA_PURPLE_COLOR,
                 "line_width": None,
                 "line_dash": None,
-                "path": None,
             },
         ),
         # Color as RGB object
         (
-            {"color": REBECCA_PURPLE_COLOR},
+            {"stroke_style": REBECCA_PURPLE_COLOR},
             (
-                f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None, "
-                "path=None"
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=None, line_dash=None"
             ),
             [("set stroke style", REBECCA_PURPLE_COLOR)],
             {
-                "color": REBECCA_PURPLE_COLOR,
+                "stroke_style": REBECCA_PURPLE_COLOR,
                 "line_width": None,
                 "line_dash": None,
-                "path": None,
             },
         ),
         # Color explicitly not set
         (
-            {"color": None},
-            "color=None, line_width=None, line_dash=None, path=None",
+            {"stroke_style": None},
+            "path=None, stroke_style=None, line_width=None, line_dash=None",
             [],
-            {"color": None, "line_width": None, "line_dash": None, "path": None},
+            {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "color=None, line_width=4.500, line_dash=None, path=None",
+            "path=None, stroke_style=None, line_width=4.500, line_dash=None",
             [("set line width", 4.5)],
-            {"color": None, "line_width": 4.5, "line_dash": None, "path": None},
+            {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "color=None, line_width=None, line_dash=[2, 7], path=None",
+            "path=None, stroke_style=None, line_width=None, line_dash=[2, 7]",
             [("set line dash", [2, 7])],
-            {"color": None, "line_width": None, "line_dash": [2, 7], "path": None},
+            {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
         (
-            {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
+            {"stroke_style": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
             (
-                f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7], "
-                "path=None"
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=4.500, line_dash=[2, 7]"
             ),
             [
                 ("set stroke style", REBECCA_PURPLE_COLOR),
@@ -200,16 +230,18 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
                 ("set line dash", [2, 7]),
             ],
             {
-                "color": REBECCA_PURPLE_COLOR,
+                "stroke_style": REBECCA_PURPLE_COLOR,
                 "line_width": 4.5,
                 "line_dash": [2, 7],
-                "path": None,
             },
         ),
     ],
 )
-def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
+def test_stroke(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
     """A primitive stroke operation can be added."""
+    if alias_kwarg and "stroke_style" in kwargs:
+        kwargs["color"] = kwargs.pop("stroke_style")
+
     draw_op = widget.stroke(**kwargs)
 
     assert_action_performed(widget, "redraw")
@@ -225,8 +257,55 @@ def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
     ]
 
     # All the attributes can be retrieved.
+    if alias_attr and "stroke_style" in attrs:
+        attrs["color"] = attrs.pop("stroke_style")
+
     for name, value in attrs.items():
         assert getattr(draw_op, name) == value
+
+
+@pytest.mark.parametrize("use_method", [True, False])
+def test_stroke_kw_only(widget, use_method):
+    """Providing any positional arguments other than Path raises an error."""
+    stroke = widget.stroke if use_method else Stroke
+
+    with pytest.raises(TypeError):
+        stroke(None, REBECCAPURPLE)
+
+    with pytest.raises(TypeError):
+        stroke(None, REBECCAPURPLE, 4.5)
+
+    with pytest.raises(TypeError):
+        stroke(None, REBECCAPURPLE, 4.5, [1, 0])
+
+
+@pytest.mark.parametrize(
+    "action",
+    [
+        (Fill, "fill", "fill_style"),
+        (Stroke, "stroke", "stroke_style"),
+    ],
+)
+@pytest.mark.parametrize("use_method", [True, False])
+@pytest.mark.parametrize(
+    "values",
+    [
+        (REBECCAPURPLE, REBECCAPURPLE),
+        (REBECCAPURPLE, None),
+        (None, REBECCAPURPLE),
+        (None, None),
+    ],
+)
+def test_fill_stroke_duplicate_parameters(widget, action, use_method, values):
+    """Providing both color and fill_style/stroke_style raises an error."""
+    ActionClass, method_name, attr_name = action
+    if use_method:
+        act = getattr(widget, method_name)
+    else:
+        act = ActionClass
+
+    with pytest.raises(TypeError):
+        act(**{attr_name: values[0]}, color=values[1])
 
 
 def test_move_to(widget):
