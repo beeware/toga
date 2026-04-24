@@ -168,10 +168,7 @@ def test_fill(widget, kwargs, args_repr, properties):
         # Explicitly don't set stroke_style
         (
             {"stroke_style": None},
-            (
-                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
-                "line_width=None, line_dash=None"
-            ),
+            ("path=None, stroke_style=None, line_width=None, line_dash=None"),
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
