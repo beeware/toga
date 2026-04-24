@@ -124,7 +124,7 @@ class DetailedList(Widget):
 
         # Set the image list.
         self._image_list: WinForms.ImageList
-        self._set_image_list()
+        self.winforms_font_changed(None, None)
 
         # Create and set the ListView UI (self._hwnd) subclass procedure.
         self.pfn_subclass_list = ws.SUBCLASSPROC(self._subclass_proc_list)
