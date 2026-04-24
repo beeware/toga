@@ -96,6 +96,7 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - arc
             - ellipse
             - rect
+            - round_rect
             - fill
             - stroke
             - write_text

@@ -52,7 +52,9 @@ class Path2D:
         if path.native.PointCount == 0:
             # Nothing to do
             return
-        if transform is None:
+        if transform is None:  # pragma: no cover
+            # This shouldn't happen if using path via Canvas,
+            # but do something sensible if being used at impl level
             self.native.AddPath(path.native, False)
             self._subpath_end = path._subpath_end
         else:
@@ -60,11 +62,17 @@ class Path2D:
             matrix = Matrix(*transform)
             native_path.Transform(matrix)
             self.native.AddPath(native_path, False)
-            if self._subpath_start is None and path._subpath_start is not None:
+            if (
+                self._subpath_start is None and path._subpath_start is not None
+            ):  # pragma: no cover
+                # This shouldn't happen if using path via Canvas,
+                # but do something sensible if being used at impl level
                 points = Array[PointF]([path._subpath_start])
                 matrix.TransformPoints(points)
                 self._subpath_start = points[0]
-            if path._subpath_end is not None:
+            if path._subpath_end is not None:  # pragma: no branch
+                # This should always happen if using path via Canvas,
+                # but might not if being used at impl level
                 points = Array[PointF]([path._subpath_end])
                 matrix.TransformPoints(points)
                 self._subpath_end = points[0]

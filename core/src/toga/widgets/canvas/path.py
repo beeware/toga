@@ -21,8 +21,8 @@ from .geometry import CornerRadiusT
 class Path2D:
     """An object that declares reusable shapes to draw on a Canvas
 
-    `Path2D` shares many of the methods of the [`State`][toga.widgets.canvas.State]
-    object that are used for constructing paths. Unlike paths built using `State`
+    `Path2D` shares many of the methods of the [`Canvas`][toga.widgets.canvas.Canvas]
+    object that are used for constructing paths. Unlike paths built using `Canvas`
     methods, a shape built using `Path2D` is saved and can be used repeatedly to
     draw the shape without having to repeat the construction.
 
