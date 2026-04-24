@@ -143,6 +143,16 @@ def test_fill(widget, kwargs, args_repr, properties):
     ]
 
 
+def test_fill_context_path_error(widget):
+    """Fill should error if used as context when path is not None."""
+    with pytest.raises(
+        RuntimeError,
+        match=r"The path must not be set when Fill is used as a context manager\.",
+    ):
+        with widget.fill(path=Path2D()):
+            pass
+
+
 @pytest.mark.parametrize(
     "kwargs, args_repr, properties",
     [
@@ -239,6 +249,16 @@ def test_stroke(widget, kwargs, args_repr, properties):
     assert widget._impl.draw_instructions[1:-1] == [
         command for command in commands if command is not None
     ]
+
+
+def test_stroke_context_path_error(widget):
+    """Stroke should error if used as context when path is not None."""
+    with pytest.raises(
+        RuntimeError,
+        match=r"The path must not be set when Stroke is used as a context manager\.",
+    ):
+        with widget.stroke(Path2D()):
+            pass
 
 
 def assert_contents(container, contains: list, doesnt_contain: list):

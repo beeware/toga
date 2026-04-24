@@ -987,6 +987,13 @@ class Fill(BaseState):
         context.fill(fill_rule=self.fill_rule, path=path)
         context.restore()
 
+    def __enter__(self):
+        if self.path is not None:
+            raise RuntimeError(
+                "The path must not be set when Fill is used as a context manager."
+            )
+        return super().__enter__()
+
 
 @dataclass(repr=False)
 class Stroke(BaseState):
@@ -1034,3 +1041,10 @@ class Stroke(BaseState):
 
         context.stroke(path=path)
         context.restore()
+
+    def __enter__(self):
+        if self.path is not None:
+            raise RuntimeError(
+                "The path must not be set when Stroke is used as a context manager."
+            )
+        return super().__enter__()
