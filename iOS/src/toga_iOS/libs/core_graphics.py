@@ -81,7 +81,7 @@ core_graphics.CGPathAddArc.argtypes = [
     CGFloat,
     CGFloat,
     CGFloat,
-    c_int,
+    c_bool,
 ]
 core_graphics.CGPathAddCurveToPoint.restype = c_void_p
 core_graphics.CGPathAddCurveToPoint.argtypes = [
