@@ -29,9 +29,9 @@ class Path2D:
     To draw a `Path2D`, call `fill` or `stroke` with the path object as its `path`
     argument.
 
-    Like a `State`, a `Path2D` is built from a sequence of `DrawingAction` objects
+    Like a `Canvas`, a `Path2D` is built from a sequence of `DrawingAction` objects
     which can be modified.  The `Path2D` class builds a backend-specific "compiled"
-    representation to be used whenever it is drawn onto the Canvas. Most of the time
+    representation to be used whenever it is drawn onto the `Canvas`. Most of the time
     it is compiled transparently, but if the `DrawingAction` objects are modified
     then the user has to call [`compile`][toga.widgets.canvas.Path2D.compile]
     before redrawing to ensure that the changes are incorporated into the path.

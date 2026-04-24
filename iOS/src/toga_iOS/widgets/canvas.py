@@ -87,7 +87,7 @@ class Path2D:
         core_graphics.CGPathAddQuadCurveToPoint(self.native, IDENTITY, cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, counterclockwise):
-        # Cocoa Path is using a flipped coordinate system, so clockwise
+        # iOS Path is using a flipped coordinate system, so clockwise
         # is actually counterclockwise
         clockwise = counterclockwise
         core_graphics.CGPathAddArc(
