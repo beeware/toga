@@ -30,6 +30,19 @@ class TogaScrollView(UIScrollView):
         if self.interface._content:  # pragma: no branch
             self.interface._content.refresh()
 
+    @objc_method
+    def adjustedContentInsetDidChange(self):
+        # We add things to the bottom and right insets, as the native widget already
+        # insets the top and left.
+        self.impl.document_container.bottom_inset = (
+            self.adjustedContentInset.bottom + self.adjustedContentInset.top
+        )
+        self.impl.document_container.right_inset = (
+            self.adjustedContentInset.right + self.adjustedContentInset.left
+        )
+        if self.impl.document_container.content:
+            self.impl.document_container.content.refresh()
+
 
 class ScrollContainer(Widget):
     def create(self):
@@ -64,8 +77,8 @@ class ScrollContainer(Widget):
         )
 
     def content_refreshed(self, container):
-        width = self.native.frame.size.width
-        height = self.native.frame.size.height
+        width = self.document_container.width
+        height = self.document_container.height
 
         if self.interface.horizontal:
             width = max(self.interface.content.layout.width, width)
