@@ -105,9 +105,7 @@ class Path2D:
         endangle,
         counterclockwise,
     ):
-        if (
-            counterclockwise and platform.machine() == "x86_64"
-        ):  # pragma: no-cover-if-arm
+        if platform.machine() == "x86_64":  # pragma: no-cover-if-arm
             # Persistent segfaults in CGPathAddArc with counterclockwise True on intel
             # skip for now
             return
