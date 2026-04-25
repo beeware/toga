@@ -136,27 +136,27 @@ class ScrollContainer(Widget):
         if not value:
             self.interface.on_scroll()
 
+    def get_vertical_position(self):
+        if not self.get_vertical():
+            return 0
+        return int(self.native.contentOffset.y + self.native.adjustedContentInset.top)
+
     def get_horizontal_position(self):
         if not self.get_horizontal():
             return 0
-        return int(self.native.contentOffset.x)
+        return int(self.native.contentOffset.x + self.native.adjustedContentInset.left)
 
     def get_max_vertical_position(self):
         return max(
             0,
-            int(self.native.contentSize.height - self.native.frame.size.height),
+            int(self.native.contentSize.height - self.document_container.height),
         )
 
     def get_max_horizontal_position(self):
         return max(
             0,
-            int(self.native.contentSize.width - self.native.frame.size.width),
+            int(self.native.contentSize.width - self.document_container.width),
         )
-
-    def get_vertical_position(self):
-        if not self.get_vertical():
-            return 0
-        return int(self.native.contentOffset.y)
 
     def set_position(self, horizontal_position, vertical_position):
         if (
@@ -168,5 +168,9 @@ class ScrollContainer(Widget):
             self.interface.on_scroll()
         else:
             self.native.setContentOffset(
-                NSMakePoint(horizontal_position, vertical_position), animated=True
+                NSMakePoint(
+                    horizontal_position - self.native.adjustedContentInset.left,
+                    vertical_position - self.native.adjustedContentInset.top,
+                ),
+                animated=True,
             )
