@@ -47,6 +47,9 @@ class Path2D:
             self.move_to(x, y)
 
     def add_path(self, path, transform=None):
+        if path.is_empty():
+            # No-op, adding empty path segfaults on intel
+            return
         if transform is None:
             transform = IDENTITY
         else:
