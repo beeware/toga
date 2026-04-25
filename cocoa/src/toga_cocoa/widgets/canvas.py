@@ -108,7 +108,14 @@ class Path2D:
         transform = core_graphics.CGAffineTransformRotate(transform, rotation)
         transform = core_graphics.CGAffineTransformScale(transform, radiusx, radiusy)
         core_graphics.CGPathAddArc(
-            self.native, transform, 0, 0, 1.0, startangle, endangle, counterclockwise
+            self.native,
+            transform,
+            0,
+            0,
+            1.0,
+            startangle,
+            endangle,
+            int(counterclockwise),
         )
 
     def rect(self, x, y, width, height):
