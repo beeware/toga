@@ -975,7 +975,7 @@ async def test_draw_image_in_rect(canvas, probe):
 
 @pytest.mark.xfail(
     condition=platform.system() == "Darwin" and platform.machine() == "x86_64",
-    reason="Calls to CGPathAddArc with counterclockwise True fail on Mac Intel",
+    reason="Calls to CGPathAddArc with counterclockwise True segfaults on Mac Intel",
 )
 async def test_path_object(canvas, probe):
     path = Path2D()

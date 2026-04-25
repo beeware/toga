@@ -1,3 +1,4 @@
+import platform
 from collections.abc import Sequence
 from copy import copy
 from dataclasses import dataclass
@@ -107,16 +108,21 @@ class Path2D:
         transform = core_graphics.CGAffineTransformMake(1, 0, 0, 1, x, y)
         transform = core_graphics.CGAffineTransformRotate(transform, rotation)
         transform = core_graphics.CGAffineTransformScale(transform, radiusx, radiusy)
-        core_graphics.CGPathAddArc(
-            self.native,
-            transform,
-            0,
-            0,
-            1.0,
-            startangle,
-            endangle,
-            int(counterclockwise),
-        )
+        if counterclockwise and platform.machine == "x86_64":  # pragma: no-cover-if-arm
+            # Persistent segfaults in CGPathAddArc with counterclockwise True on intel
+            # skip for now
+            return
+        else:  # pragma: no-cover-if-x86
+            core_graphics.CGPathAddArc(
+                self.native,
+                transform,
+                0,
+                0,
+                1.0,
+                startangle,
+                endangle,
+                int(counterclockwise),
+            )
 
     def rect(self, x, y, width, height):
         rectangle = CGRectMake(x, y, width, height)
