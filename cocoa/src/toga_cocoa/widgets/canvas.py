@@ -47,14 +47,13 @@ class Path2D:
             self.move_to(x, y)
 
     def add_path(self, path, transform=None):
-        if path.is_empty():
-            # No-op, adding empty path segfaults on intel
-            return
         if transform is None:
             transform = IDENTITY
         else:
             transform = core_graphics.CGAffineTransformMake(*transform)
-        core_graphics.CGPathAddPath(self.native, transform, path.native)
+        # adding empty path segfaults on intel
+        if not path.is_empty():
+            core_graphics.CGPathAddPath(self.native, transform, path.native)
 
     def close_path(self):
         core_graphics.CGPathCloseSubpath(self.native)
@@ -108,7 +107,9 @@ class Path2D:
         endangle,
         counterclockwise,
     ):
-        if platform.machine() == "x86_64":  # pragma: no-cover-if-arm
+        if (
+            counterclockwise and platform.machine() == "x86_64"
+        ):  # pragma: no-cover-if-arm
             # Persistent segfaults in CGPathAddArc with counterclockwise True on intel
             # skip for now
             return
