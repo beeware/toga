@@ -973,7 +973,7 @@ async def test_draw_image_in_rect(canvas, probe):
     assert_reference(probe, "draw_image_in_rect", threshold=0.05)
 
 
-@pytest.mark.skipif(
+@pytest.mark.xfail(
     condition=platform.system() == "Darwin" and platform.machine() == "x86_64",
     reason="Calls to CGPathAddArc with counterclockwise True fail on Mac Intel",
 )
