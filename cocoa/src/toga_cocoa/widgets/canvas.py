@@ -105,14 +105,18 @@ class Path2D:
         endangle,
         counterclockwise,
     ):
-        transform = core_graphics.CGAffineTransformMake(1, 0, 0, 1, x, y)
-        transform = core_graphics.CGAffineTransformRotate(transform, rotation)
-        transform = core_graphics.CGAffineTransformScale(transform, radiusx, radiusy)
-        if counterclockwise and platform.machine == "x86_64":  # pragma: no-cover-if-arm
+        if (
+            counterclockwise and platform.machine() == "x86_64"
+        ):  # pragma: no-cover-if-arm
             # Persistent segfaults in CGPathAddArc with counterclockwise True on intel
             # skip for now
             return
         else:  # pragma: no-cover-if-x86
+            transform = core_graphics.CGAffineTransformMake(1, 0, 0, 1, x, y)
+            transform = core_graphics.CGAffineTransformRotate(transform, rotation)
+            transform = core_graphics.CGAffineTransformScale(
+                transform, radiusx, radiusy
+            )
             core_graphics.CGPathAddArc(
                 self.native,
                 transform,
