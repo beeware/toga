@@ -27,7 +27,7 @@ html, body {
  **********************************************************************/
 
 header.toga {
-    background-color: var(--wa-color-brand-30);
+    background-color: var(--wa-color-brand-40);
     color: var(--wa-color-brand-on-loud);
     display: flex;
     flex-direction: row;
@@ -67,7 +67,7 @@ header.toga nav.menubar .menu {
 }
 
 header.toga nav.menubar .menu:hover {
-    background-color: var(--wa-color-brand-30);
+    background-color: var(--wa-color-brand-40);
     color: var(--wa-color-brand-on-loud);
 }
 

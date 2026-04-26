@@ -1,4 +1,5 @@
 <!-- WebAwesome -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.3.1/dist-cdn/styles/themes/shoelace.css" />
+<script>document.documentElement.classList.add('wa-palette-shoelace', 'wa-theme-shoelace');</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.3.1/dist-cdn/styles/webawesome.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.3.1/dist-cdn/styles/themes/shoelace.css" />
 <script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.3.1/dist-cdn/webawesome.loader.js"></script>
