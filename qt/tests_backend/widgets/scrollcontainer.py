@@ -7,7 +7,8 @@ from .base import SimpleProbe
 class ScrollContainerProbe(SimpleProbe):
     native_class = QScrollArea
     scrollbar_inset = 16  # this is approximate, get exact value in init
-    frame_inset = 2
+    horizontal_frame_inset = 2
+    vertical_frame_inset = 2
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

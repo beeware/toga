@@ -10,7 +10,20 @@ from .base import SimpleProbe
 class ScrollContainerProbe(SimpleProbe):
     native_class = UIScrollView
     scrollbar_inset = 0
-    frame_inset = 0
+
+    @property
+    def horizontal_frame_inset(self):
+        return (
+            self.native.adjustedContentInset.left
+            + self.native.adjustedContentInset.right
+        )
+
+    @property
+    def vertical_frame_inset(self):
+        return (
+            self.native.adjustedContentInset.top
+            + self.native.adjustedContentInset.bottom
+        )
 
     @property
     def has_content(self):
