@@ -111,7 +111,7 @@ jobs:
 
       - name: Build Package & Upload Artifact
         id: package
-        uses: hynek/build-and-inspect-python-package@v2.15.0
+        uses: hynek/build-and-inspect-python-package@v2.17.0
         with:
           path: ${{ matrix.subdir || matrix.wheel }}
           upload-name-suffix: ${{ format('-{0}', matrix.wheel) }}
