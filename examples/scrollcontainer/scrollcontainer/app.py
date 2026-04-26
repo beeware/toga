@@ -56,7 +56,7 @@ class ScrollContainerApp(toga.App):
             background_color="pink",
         )
         self.button = toga.Button("Toggle Controls", on_press=self.on_control_press)
-        self.button = toga.Button("Update Scroll Params", on_press=self.on_scroll)
+        self.button2 = toga.Button("Update Scroll Params", on_press=self.on_scroll)
         self.update_content()
 
         self.scroller.content = self.inner_box
@@ -126,6 +126,7 @@ class ScrollContainerApp(toga.App):
     def update_content(self):
         self.inner_box.clear()
         self.inner_box.add(self.button)
+        self.inner_box.add(self.button2)
 
         width = 10 if self.wide_switch.value else 2
         height = 30 if self.tall_switch.value else 2
