@@ -65,6 +65,7 @@ class NativeProxy:
         # return wrapper that checks all args and unwraps any NativeProxys
         # to their underlying JsProxy elements
         if isinstance(attr, JsProxy) and callable(attr):
+
             def _auto_unwrap(*args):
                 unwrapped_args = [
                     a.unwrap() if isinstance(a, NativeProxy) else a for a in args
