@@ -62,32 +62,35 @@ def test_closed_path(widget):
         # Defaults
         (
             {},
-            "color=None, fill_rule=FillRule.NONZERO",
-            {"color": None, "fill_rule": FillRule.NONZERO},
+            "fill_rule=FillRule.NONZERO, fill_style=None",
+            {
+                "fill_rule": FillRule.NONZERO,
+                "fill_style": None,
+            },
         ),
-        # Color
+        # Fill style
         (
-            {"color": REBECCAPURPLE},
-            (f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO"),
-            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
+            {"fill_style": REBECCAPURPLE},
+            (f"fill_rule=FillRule.NONZERO, fill_style={REBECCA_PURPLE_COLOR!r}"),
+            {"fill_rule": FillRule.NONZERO, "fill_style": REBECCA_PURPLE_COLOR},
         ),
-        # Explicitly don't set color
+        # Explicitly don't set fill style
         (
-            {"color": None},
-            "color=None, fill_rule=FillRule.NONZERO",
-            {"color": None, "fill_rule": FillRule.NONZERO},
+            {"fill_style": None},
+            "fill_rule=FillRule.NONZERO, fill_style=None",
+            {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
         # Fill Rule
         (
             {"fill_rule": FillRule.EVENODD},
-            "color=None, fill_rule=FillRule.EVENODD",
-            {"color": None, "fill_rule": FillRule.EVENODD},
+            "fill_rule=FillRule.EVENODD, fill_style=None",
+            {"fill_style": None, "fill_rule": FillRule.EVENODD},
         ),
         # All args
         (
-            {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
-            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD",
-            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE},
+            f"fill_rule=FillRule.EVENODD, fill_style={REBECCA_PURPLE_COLOR!r}",
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCA_PURPLE_COLOR},
         ),
     ],
 )
@@ -106,9 +109,11 @@ def test_fill(widget, kwargs, args_repr, properties):
 
     commands = [
         "save",
-        ("set fill style", color)
-        if (color := properties["color"]) is not None
-        else None,
+        (
+            ("set fill style", fill_style)
+            if (fill_style := properties["fill_style"]) is not None
+            else None
+        ),
         "begin path",
         ("line to", {"x": 30, "y": 40}),
         ("fill", {"fill_rule": properties["fill_rule"]}),
@@ -127,40 +132,49 @@ def test_fill(widget, kwargs, args_repr, properties):
         # Defaults
         (
             {},
-            "color=None, line_width=None, line_dash=None",
-            {"color": None, "line_width": None, "line_dash": None},
+            "stroke_style=None, line_width=None, line_dash=None",
+            {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color
         (
-            {"color": REBECCAPURPLE},
-            (f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None"),
-            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
+            {"stroke_style": REBECCAPURPLE},
+            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            {
+                "stroke_style": REBECCA_PURPLE_COLOR,
+                "line_width": None,
+                "line_dash": None,
+            },
         ),
-        # Explicitly don't set color
+        # Explicitly don't set stroke_style
         (
-            {"color": None},
-            "color=None, line_width=None, line_dash=None",
-            {"color": None, "line_width": None, "line_dash": None},
+            {"stroke_style": None},
+            "stroke_style=None, line_width=None, line_dash=None",
+            {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "color=None, line_width=4.500, line_dash=None",
-            {"color": None, "line_width": 4.5, "line_dash": None},
+            "stroke_style=None, line_width=4.500, line_dash=None",
+            {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
-            {
-                "line_dash": [2, 7],
-            },
-            "color=None, line_width=None, line_dash=[2, 7]",
-            {"color": None, "line_width": None, "line_dash": [2, 7]},
+            {"line_dash": [2, 7]},
+            "stroke_style=None, line_width=None, line_dash=[2, 7]",
+            {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
         (
-            {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
-            (f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7]"),
-            {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
+            {"stroke_style": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
+            (
+                f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=4.500, "
+                "line_dash=[2, 7]"
+            ),
+            {
+                "stroke_style": REBECCA_PURPLE_COLOR,
+                "line_width": 4.5,
+                "line_dash": [2, 7],
+            },
         ),
     ],
 )
@@ -179,15 +193,21 @@ def test_stroke(widget, kwargs, args_repr, properties):
 
     commands = [
         "save",
-        ("set stroke style", color)
-        if (color := properties["color"]) is not None
-        else None,
-        ("set line width", line_width)
-        if (line_width := properties["line_width"]) is not None
-        else None,
-        ("set line dash", line_dash)
-        if (line_dash := properties["line_dash"]) is not None
-        else None,
+        (
+            ("set stroke style", stroke_style)
+            if (stroke_style := properties["stroke_style"]) is not None
+            else None
+        ),
+        (
+            ("set line width", line_width)
+            if (line_width := properties["line_width"]) is not None
+            else None
+        ),
+        (
+            ("set line dash", line_dash)
+            if (line_dash := properties["line_dash"]) is not None
+            else None
+        ),
         "begin path",
         ("line to", {"x": 30, "y": 40}),
         "stroke",
@@ -261,7 +281,7 @@ def test_contains(widget):
 
 
 NON_REENTRANT_MATCH = (
-    r"A drawing context manager can only be entered once, and only before any "
+    r"A Canvas context manager can only be entered once, and only before any "
     r"subsequent drawing actions are added\."
 )
 

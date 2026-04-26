@@ -8,7 +8,6 @@ from math import pi
 from typing import TYPE_CHECKING, Any
 from warnings import filterwarnings, warn
 
-from toga.colors import Color
 from toga.constants import Baseline
 from toga.fonts import (
     SYSTEM,
@@ -55,15 +54,15 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 
 
 class DrawingAction(ABC):
-    """A drawing operation in a [`State`][toga.widgets.canvas.State].
+    """A [`Canvas`][toga.Canvas] drawing operation.
 
     Every canvas drawing method creates a `DrawingAction`, adds it to the currently
     active state, and returns it. Each argument passed to the method becomes a property
     of the `DrawingAction`, which can be modified as shown in the [Usage][] section.
 
     `DrawingActions` can also be created manually, then added to a state's
-    [list of drawing actions][toga.widgets.canvas.State.drawing_actions]. Their
-    constructors take the same arguments as the corresponding [`Canvas`]
+    [list of drawing actions][toga.widgets.canvas.state.BaseState.drawing_actions].
+    Their constructors take the same arguments as the corresponding [`Canvas`]
     [toga.Canvas] drawing method, and their classes have the same names, but
     capitalized:
 
@@ -117,24 +116,6 @@ class DrawingAction(ABC):
         return hasattr(self, "drawing_actions") and any(
             action is other or other in action for action in self.drawing_actions
         )
-
-
-class color_property:
-    def __get__(self, action, action_class=None):
-        if action is None:
-            return self
-
-        return action._color
-
-    def __set__(self, action, value):
-        if value is self or value is None:
-            # value is self when no argument is supplied in the dataclass constructor;
-            # this is how we define a default value for the hidden attribute.
-            value = None
-        else:
-            value = Color.parse(value)
-
-        action._color = value
 
 
 class BeginPath(DrawingAction):

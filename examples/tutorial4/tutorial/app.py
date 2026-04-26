@@ -28,7 +28,7 @@ class StartApp(toga.App):
         self.main_window.show()
 
     def fill_head(self):
-        with self.canvas.fill(color=rgb(149, 119, 73)):
+        with self.canvas.fill(fill_style=rgb(149, 119, 73)):
             self.canvas.move_to(112, 103)
             self.canvas.line_to(112, 113)
             self.canvas.ellipse(73, 114, 39, 47, 0, 0, math.pi)
@@ -47,7 +47,7 @@ class StartApp(toga.App):
                 self.canvas.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
 
     def draw_eyes(self):
-        with self.canvas.fill(color=WHITE):
+        with self.canvas.fill(fill_style=WHITE):
             self.canvas.arc(58, 92, 15)
             self.canvas.arc(88, 92, 15, math.pi, 3 * math.pi)
 
@@ -63,19 +63,19 @@ class StartApp(toga.App):
 
     def draw_horns(self):
         with self.canvas.stroke(line_width=4.0):
-            with self.canvas.fill(color=rgb(212, 212, 212)):
+            with self.canvas.fill(fill_style=rgb(212, 212, 212)):
                 self.canvas.move_to(112, 99)
                 self.canvas.quadratic_curve_to(145, 65, 139, 36)
                 self.canvas.quadratic_curve_to(130, 60, 109, 75)
 
         with self.canvas.stroke(line_width=4.0):
-            with self.canvas.fill(color=rgb(212, 212, 212)):
+            with self.canvas.fill(fill_style=rgb(212, 212, 212)):
                 self.canvas.move_to(35, 99)
                 self.canvas.quadratic_curve_to(2, 65, 6, 36)
                 self.canvas.quadratic_curve_to(17, 60, 37, 75)
 
     def draw_nostrils(self):
-        with self.canvas.fill(color=rgb(212, 212, 212)):
+        with self.canvas.fill(fill_style=rgb(212, 212, 212)):
             self.canvas.move_to(45, 145)
             self.canvas.bezier_curve_to(51, 123, 96, 123, 102, 145)
             self.canvas.ellipse(73, 114, 39, 47, 0, math.pi / 4, 3 * math.pi / 4)
@@ -93,14 +93,14 @@ class StartApp(toga.App):
         x = (150 - self.text_width) // 2
         y = 175
 
-        with self.canvas.stroke(color="REBECCAPURPLE", line_width=4.0):
+        with self.canvas.stroke(stroke_style="REBECCAPURPLE", line_width=4.0):
             self.text_border = self.canvas.rect(
                 x - 5,
                 y - 5,
                 self.text_width + 10,
                 text_height + 10,
             )
-        with self.canvas.fill(color=rgb(149, 119, 73)):
+        with self.canvas.fill(fill_style=rgb(149, 119, 73)):
             self.text = self.canvas.write_text("Tiberius", x, y, font, Baseline.TOP)
 
     def draw_tiberius(self):

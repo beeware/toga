@@ -4,10 +4,11 @@ import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from contextlib import AbstractContextManager
-from dataclasses import dataclass
+from dataclasses import KW_ONLY, InitVar, dataclass
 from math import pi
 from typing import TYPE_CHECKING, Any
 
+from toga.colors import Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
 from toga.images import Image
@@ -29,7 +30,6 @@ from .drawingaction import (
     Scale,
     Translate,
     WriteText,
-    color_property,
 )
 from .geometry import CornerRadiusT
 
@@ -42,17 +42,19 @@ if TYPE_CHECKING:
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
+NOT_PROVIDED = object()
+
 
 class DrawingActionDispatch(ABC):
     @property
     @abstractmethod
     def _action_target(self):
-        """The State that should receive the drawing actions."""
+        """The state that should receive the drawing actions."""
 
     def _add_to_target(self, drawing_action: DrawingAction):
         if actions := self._action_target.drawing_actions:
             last = actions[-1]
-            if isinstance(last, State):
+            if isinstance(last, BaseState):
                 # If the most recent drawing action is (potentially) a context manager,
                 # disable it so it can't be entered later, out of order.
                 last._can_be_entered = False
@@ -74,7 +76,7 @@ class DrawingActionDispatch(ABC):
         self._redraw_with_warning_if_state()
         return begin_path
 
-    def close_path(self) -> ClosePath:
+    def close_path(self) -> AbstractContextManager[ClosePath]:
         """Close the current path.
 
         This closes the current path as a simple drawing operation. It should be paired
@@ -277,7 +279,7 @@ class DrawingActionDispatch(ABC):
         height: float,
         radii: float | CornerRadiusT | Iterable[float | CornerRadiusT],
     ) -> RoundRect:
-        """Draw a rounded rectangle in the canvas state.
+        """Draw a rounded rectangle.
 
         Corner radii can be provided as:
         - a single numerical radius for both x and y radius for all corners
@@ -311,9 +313,11 @@ class DrawingActionDispatch(ABC):
 
     def fill(
         self,
-        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
-    ) -> Fill:
+        *,
+        fill_style: ColorT | None | object = NOT_PROVIDED,
+        color: ColorT | None | object = NOT_PROVIDED,
+    ) -> AbstractContextManager[Fill]:
         """Fill the current path.
 
         The fill can use either the
@@ -327,36 +331,55 @@ class DrawingActionDispatch(ABC):
 
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
-        :param color: The fill color.
+        :param fill_style: The fill style. At present, only accepts colors; gradients
+            and patterns are not supported.
+        :param color: Alias for fill_style.
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
+        :raises TypeError: If both `fill_style` and `color` are provided.
         """
-        fill = Fill(color, fill_rule)
+        fill = Fill(fill_rule, fill_style=fill_style, color=color)
         self._add_to_target(fill)
+        # Strictly speaking, this doesn't need a warning or redraw, since BaseState
+        # overwrites this method with its own shimmed version. But we might as well be
+        # as helpful as possible.
         self._redraw_with_warning_if_state()
         return fill
 
     def stroke(
         self,
-        color: ColorT | None = None,
+        *,
+        stroke_style: ColorT | None | object = NOT_PROVIDED,
+        color: ColorT | None | object = NOT_PROVIDED,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
-    ) -> Stroke:
+    ) -> AbstractContextManager[Stroke]:
         """Draw the current path as a stroke.
 
         If used as a context manager, this begins a new path, and moves to the specified
         (`x`, `y`) coordinates (if both are specified). When the context is exited, the
         path is stroked.
 
-        :param color: The color for the stroke.
+        :param stroke_style: The stroke style. At present, only accepts colors;
+            gradients and patterns are not supported.
+        :param color: Alias for fill_style.
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
+        :raises TypeError: If both `stroke_style` and `color` are provided.
         """
-        stroke = Stroke(color, line_width, line_dash)
+        stroke = Stroke(
+            stroke_style=stroke_style,
+            color=color,
+            line_width=line_width,
+            line_dash=line_dash,
+        )
         self._add_to_target(stroke)
+        # Strictly speaking, this doesn't need a warning or redraw, since BaseState
+        # overwrites this method with its own shimmed version. But we might as well be
+        # as helpful as possible.
         self._redraw_with_warning_if_state()
         return stroke
 
@@ -410,7 +433,7 @@ class DrawingActionDispatch(ABC):
 
         The x, y coordinates specify the location of the bottom-left corner
         of the image. If supplied, the width and height specify the size
-        of the image when it is rendered in the state, the image will be
+        of the image when it is rendered; the image will be
         scaled to fit.
 
         Drawing of images is performed with the current transformation matrix
@@ -495,10 +518,11 @@ class DrawingActionDispatch(ABC):
     ###########################################################################
 
     def state(self) -> AbstractContextManager[State]:
-        """Construct and yield a new sub-[`State`][toga.widgets.canvas.State] within
-        the current state.
+        """A context manager that saves the current state of the Canvas context, and
+        restores it upon exiting.
 
-        :return: Yields the new [`State`][toga.widgets.canvas.State] object.
+        :return: Yields the new `State`
+          [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
         state = State()
         self._add_to_target(state)
@@ -509,24 +533,26 @@ class DrawingActionDispatch(ABC):
     # 2026-02: Backwards compatibility for <= 0.5.3
     ######################################################################
 
-    def _warn_context_manager(self, old_name, new_name, coordinates):
+    def _warn_context_manager(self, old_name, new_name, coordinates, extra=""):
         msg = f"The {old_name}() drawing method has been renamed to {new_name}()"
         if coordinates:
             msg += (
                 ", and no longer accepts x and y coordinates as parameters. Instead, "
                 f"call move_to(x, y) after entering the {new_name} context."
             )
+        if extra:
+            msg = msg.removesuffix(".") + f". {extra}"
         warnings.warn(msg, DeprecationWarning, stacklevel=3)
 
-    # Each of these CamelCase methods, when called on a State, added to that State.
+    # Each of these CamelCase methods, when called on a state, added to that state.
     # However, when called on a Canvas, they added to that Canvas's root_state. So we
     # call the drawing method on the target, suppressing warnings in case that target
-    # is a State.
+    # is a state.
 
     def Context(self) -> AbstractContextManager[State]:
         self._warn_context_manager("Context", "state", False)
 
-        target = self if isinstance(self, State) else self.root_state
+        target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
             return target.state()
@@ -542,11 +568,12 @@ class DrawingActionDispatch(ABC):
             x is not None or y is not None,
         )
 
-        target = self if isinstance(self, State) else self.root_state
+        target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
             close_path = target.close_path()
         if x is not None and y is not None:
+            # 4-2026: Backwards compatibility for Toga <= 0.5.4 / Toga Chart <= 0.2.1
             # This is a weird one. The straightforward approach would be to simply add a
             # MoveTo to the close_path.drawing_actions. However, while ClosedPath was
             # documented as a context manager, TogaChart (up to 0.2.1) uses it as a
@@ -574,12 +601,22 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> AbstractContextManager[Fill]:
-        self._warn_context_manager("Fill", "fill", x is not None or y is not None)
+        self._warn_context_manager(
+            "Fill",
+            "fill",
+            x is not None or y is not None,
+            extra=(
+                "Additionally, the Canvas.fill() method's color parameter can only be "
+                "provided via keyword. fill_rule is the only argument it accepts "
+                "positionally."
+            ),
+        )
 
-        target = self if isinstance(self, State) else self.root_state
+        target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
-            fill = target.fill(fill_rule=fill_rule, color=color)
+            # BaseState.fill still uses old signature too.
+            fill = target.fill(color=color, fill_rule=fill_rule)
         if x is not None and y is not None:
             fill.drawing_actions.append(MoveTo(x, y))
         return fill
@@ -592,13 +629,24 @@ class DrawingActionDispatch(ABC):
         line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> AbstractContextManager[Stroke]:
-        self._warn_context_manager("Stroke", "stroke", x is not None or y is not None)
+        self._warn_context_manager(
+            "Stroke",
+            "stroke",
+            x is not None or y is not None,
+            extra=(
+                "Additionally, the Canvas.stroke() method's arguments can only be "
+                "provided as keywords. It does not accept any positional arguments."
+            ),
+        )
 
-        target = self if isinstance(self, State) else self.root_state
+        target = self if isinstance(self, BaseState) else self.root_state
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
+            # BaseState.fill still uses old signature too.
             stroke = target.stroke(
-                color=color, line_width=line_width, line_dash=line_dash
+                color=color,
+                line_width=line_width,
+                line_dash=line_dash,
             )
         if x is not None and y is not None:
             stroke.drawing_actions.append(MoveTo(x, y))
@@ -610,13 +658,13 @@ class DrawingActionDispatch(ABC):
             self.redraw()
 
     def _redraw_with_warning_if_state(self):
-        if isinstance(self, State):
-            # If a drawing method is called on a State, we need to warn about that, but
+        if isinstance(self, BaseState):
+            # If a drawing method is called on a state, we need to warn about that, but
             # then silence the additional warning that we'll cause when we internally
             # call redraw().
             warnings.warn(
                 (
-                    "Calling drawing methods on a State is deprecated. To add actions "
+                    "Calling drawing methods on a state is deprecated. To add actions "
                     "to the currently active state, call drawing methods on the canvas."
                 ),
                 DeprecationWarning,
@@ -632,11 +680,9 @@ class DrawingActionDispatch(ABC):
     ######################################################################
 
 
-class State(DrawingAction, DrawingActionDispatch):
-    """A drawing state for a canvas.
-
-    You should not create a [`State`][toga.widgets.canvas.State] directly; instead,
-    you should use the canvas's [`state()`][toga.Canvas.state] method.
+class BaseState(DrawingAction, DrawingActionDispatch, ABC):
+    """A base class for all drawing actions that can function as state-saving context
+    managers.
     """
 
     drawing_actions: list[DrawingAction]
@@ -650,11 +696,8 @@ class State(DrawingAction, DrawingActionDispatch):
         self.drawing_actions = []
         self._can_be_entered = True
 
-    def _draw(self, context: Any) -> None:
-        context.save()
-        for action in self.drawing_actions:
-            action._draw(context)
-        context.restore()
+    @abstractmethod
+    def _draw(self, context: Any) -> None: ...
 
     @property
     def _action_target(self):
@@ -677,7 +720,7 @@ class State(DrawingAction, DrawingActionDispatch):
     def __enter__(self):
         if not self._can_be_entered:
             raise RuntimeError(
-                "A drawing context manager can only be entered once, and only before "
+                "A Canvas context manager can only be entered once, and only before "
                 "any subsequent drawing actions are added."
             )
 
@@ -689,6 +732,54 @@ class State(DrawingAction, DrawingActionDispatch):
         self._is_open = False
         # Don't suppress any exceptions
         return False
+
+    ##########################################################################
+    # 2026-04: Backwards compatibility for <= 0.5.3
+    ##########################################################################
+
+    # These preserve the old signature, and warn about the new one.
+
+    def fill(
+        self,
+        color: ColorT | None = None,
+        fill_rule: FillRule = FillRule.NONZERO,
+    ) -> AbstractContextManager[Fill]:
+        fill = Fill(fill_rule=fill_rule, fill_style=color)
+        self._add_to_target(fill)
+        warnings.warn(
+            (
+                "Calling drawing methods on a state is deprecated. To add actions "
+                "to the currently active state, call drawing methods on the canvas. "
+                "Additionally, the Canvas.fill() method's color parameter can only be "
+                "provided via keyword. fill_rule is the only argument it accepts "
+                "positionally."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._redraw_without_warning()
+        return fill
+
+    def stroke(
+        self,
+        color: ColorT | None = None,
+        line_width: float | None = None,
+        line_dash: list[float] | None = None,
+    ) -> AbstractContextManager[Stroke]:
+        stroke = Stroke(stroke_style=color, line_width=line_width, line_dash=line_dash)
+        self._add_to_target(stroke)
+        warnings.warn(
+            (
+                "Calling drawing methods on a state is deprecated. To add actions "
+                "to the currently active state, call drawing methods on the canvas. "
+                "Additionally, the Canvas.stroke() method's arguments can only be "
+                "provided as keywords. It does not accept any positional arguments."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._redraw_without_warning()
+        return stroke
 
     ###########################################################################
     # 2026-02: Backwards compatibility for Toga <= 0.5.3
@@ -725,7 +816,7 @@ class State(DrawingAction, DrawingActionDispatch):
     @property
     def canvas(self) -> Canvas:
         warnings.warn(
-            "State objects no longer hold a reference to their canvas.",
+            "States no longer hold a reference to their canvas.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -742,8 +833,8 @@ class State(DrawingAction, DrawingActionDispatch):
     def redraw(self) -> None:
         warnings.warn(
             (
-                "State.redraw() is deprecated. Call the canvas's redraw() method "
-                "instead."
+                f"{type(self).__name__}.redraw() is deprecated. Call the canvas's "
+                "redraw() method instead."
             ),
             DeprecationWarning,
             stacklevel=2,
@@ -759,9 +850,9 @@ class State(DrawingAction, DrawingActionDispatch):
     def _warn_list_methods(self) -> None:
         warnings.warn(
             (
-                "State's list-like methods (append, insert, remove, and clear), as "
+                "A state's list-like methods (append, insert, remove, and clear), as "
                 "well as implementing len() and indexing, are deprecated. Manipulate "
-                "state.drawing_actions directly, and then call redraw() on the canvas."
+                "its drawing_actions directly, and then call redraw() on the canvas."
             ),
             DeprecationWarning,
             stacklevel=3,
@@ -773,7 +864,19 @@ class State(DrawingAction, DrawingActionDispatch):
 
 
 @dataclass(repr=False)
-class ClosePath(State):
+class State(BaseState):
+    def __post_init__(self):
+        super().__init__()
+
+    def _draw(self, context: Any) -> None:
+        context.save()
+        for action in self.drawing_actions:
+            action._draw(context)
+        context.restore()
+
+
+@dataclass(repr=False)
+class ClosePath(BaseState):
     def __post_init__(self):
         super().__init__()
 
@@ -793,7 +896,7 @@ class ClosePath(State):
         if not (hasattr(self, "_is_open") or self.drawing_actions):
             # Wasn't used as a context manager, nor had drawing actions manually added
 
-            # Backwards compatibility for Toga <= 0.5.4
+            # 4-2026: Backwards compatibility for Toga <= 0.5.4
             # See DrawingActionDispatch.ClosedPath for explanation
             if hasattr(self, "x") and hasattr(self, "y"):
                 context.move_to(self.x, self.y)
@@ -812,46 +915,80 @@ class ClosePath(State):
         context.restore()
 
 
-@dataclass(repr=False)
-class Fill(State):
-    color: ColorT | None = color_property()
-    fill_rule: FillRule = FillRule.NONZERO
+class color_property:
+    def __get__(self, action, action_class=None):
+        if action is None:
+            # This is what's returned in the constructor, if nothing is provided.
+            return NOT_PROVIDED
 
-    def __post_init__(self):
+        return action._color
+
+    def __set__(self, action, value):
+        if value is not None and value is not NOT_PROVIDED:
+            value = Color.parse(value)
+
+        action._color = value
+
+
+@dataclass(repr=False)
+class Fill(BaseState):
+    # This will need to change to a pair of positional arguments in order to accommodate
+    # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
+    fill_rule: FillRule = FillRule.NONZERO
+    _: KW_ONLY
+    fill_style: ColorT | None | object = color_property()
+    color: InitVar[ColorT | None | object] = color_property()
+
+    def __post_init__(self, color):
         super().__init__()
+
+        if self.fill_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
+            raise TypeError("Both fill_style and color provided")
+
+        if self.fill_style is NOT_PROVIDED:
+            self.fill_style = None if color is NOT_PROVIDED else color
 
     def _draw(self, context: Any) -> None:
         context.save()
-        if self.color is not None:
-            context.set_fill_style(self.color)
+        if self.fill_style is not None:
+            context.set_fill_style(self.fill_style)
 
         if hasattr(self, "_is_open") or self.drawing_actions:
             # Was used as a context manager (or had drawing actions manually added)
-            context.in_fill = True  # Backwards compatibility for Toga <= 0.5.3
+            context.in_fill = True  # 4-2026: Backwards compatibility for Toga <= 0.5.3
             context.begin_path()
 
             for action in self.drawing_actions:
                 action._draw(context)
 
-            context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
+            context.in_fill = False  # 4-2026: Backwards compatibility for Toga <= 0.5.3
 
         context.fill(self.fill_rule)
         context.restore()
 
 
 @dataclass(repr=False)
-class Stroke(State):
-    color: ColorT | None = color_property()
+class Stroke(BaseState):
+    # Path parameter (positional/keyword) will go here.
+    _: KW_ONLY
+    stroke_style: ColorT | None | object = color_property()
+    color: InitVar[ColorT | None | object] = color_property()
     line_width: float | None = None
     line_dash: list[float] | None = None
 
-    def __post_init__(self):
+    def __post_init__(self, color):
         super().__init__()
+
+        if self.stroke_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
+            raise TypeError("Both stroke_style and color provided")
+
+        if self.stroke_style is NOT_PROVIDED:
+            self.stroke_style = None if color is NOT_PROVIDED else color
 
     def _draw(self, context: Any) -> None:
         context.save()
-        if self.color is not None:
-            context.set_stroke_style(self.color)
+        if self.stroke_style is not None:
+            context.set_stroke_style(self.stroke_style)
         if self.line_width is not None:
             context.set_line_width(self.line_width)
         if self.line_dash is not None:

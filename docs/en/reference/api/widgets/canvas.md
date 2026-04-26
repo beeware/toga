@@ -13,7 +13,7 @@ canvas = toga.Canvas()
 canvas.begin_path()
 canvas.move_to(20, 20)
 canvas.line_to(160, 20)
-canvas.stroke(color="orange")
+canvas.stroke(stroke_style="orange")
 ```
 
 Toga adds an additional layer of convenience to the base HTML5 API by providing context managers for operations that have a natural open/close life cycle. For example, the previous example could be replaced with:
@@ -22,13 +22,14 @@ Toga adds an additional layer of convenience to the base HTML5 API by providing 
 import toga
 canvas = toga.Canvas()
 
-with canvas.stroke(color="orange", 20, 20):
+with canvas.stroke(stroke_style="orange"):
+    canvas.move_to(20, 20)
     canvas.line_to(160, 20)
 ```
 
 Internally, each drawing method creates a [`DrawingAction`][toga.widgets.canvas.DrawingAction] and stores it, building up a list of drawing instructions. Any argument provided to a drawing operation (including context managers) becomes a property of that `DrawingAction`. Those properties can be modified after creation, after which you should invoke [`Canvas.redraw`][toga.Canvas.redraw] to request a redraw of the canvas.
 
-The `DrawingAction`s that can double as context managers are all subclasses of [`State`][toga.widgets.canvas.State]. A state stores a list of its associated drawing instructions (those called within its context) as an attribute named [`drawing_actions`][toga.widgets.canvas.State.drawing_actions]. This can be modified like any other list (`append`, `insert`, `remove`, `clear`, etc.). As with modifying attributes, [`Canvas.redraw`][toga.Canvas.redraw] will need to be called to show the changes.
+The `DrawingAction`s that can double as context managers are all subclasses of the abstract [`BaseState`][toga.widgets.canvas.state.BaseState]. A state stores a list of its associated drawing instructions (those called within its context) as an attribute named [`drawing_actions`][toga.widgets.canvas.state.BaseState.drawing_actions]. This can be modified like any other list (`append`, `insert`, `remove`, `clear`, etc.). As with modifying attributes, [`Canvas.redraw`][toga.Canvas.redraw] will need to be called to show the changes.
 
 For example, if you were drawing a bar chart where the height of the bars changed over time, you don't need to completely reset the canvas and redraw all the objects; you can use the same objects, only modifying the height of existing bars, or adding and removing bars as required.
 
@@ -38,7 +39,7 @@ In this example, we create 2 filled drawing actions, then manipulate those objec
 import toga
 
 canvas = toga.Canvas()
-with canvas.fill(color="red") as fill:
+with canvas.fill(fill_style="red") as fill:
     circle = canvas.arc(x=50, y=50, radius=15)
     rect = canvas.rect(x=50, y=50, width=15, height=15)
 
@@ -49,7 +50,7 @@ circle.y = 25
 circle.radius = 5
 
 # Change the fill color to blue
-fill.color = "blue"
+fill.fill_style = "blue"
 
 # Remove the rectangle from the canvas
 fill.drawing_actions.remove(rect)
@@ -110,11 +111,7 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - as_image
             - focus
 
-::: toga.widgets.canvas.State
-    options:
-        inherited_members: True
-<!-- REMOVE WHEN RESOLVED -->
-<!-- rumdl-enable MD013 MD022 MD023 -->
+::: toga.widgets.canvas.state.BaseState
 
 ::: toga.widgets.canvas.DrawingAction
 

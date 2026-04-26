@@ -604,13 +604,13 @@ class CanvasApp(toga.App):
     def get_state(self):
         if self.state_selection.value == STROKE:
             return self.canvas.stroke(
-                color=str(self.color_selection.value),
+                stroke_style=str(self.color_selection.value),
                 line_width=self.stroke_width_slider.value,
                 line_dash=self.dash_patterns[self.dash_pattern_selection.value],
             )
         return self.canvas.fill(
-            color=self.color_selection.value,
             fill_rule=FillRule[self.fill_rule_selection.value],
+            fill_style=self.color_selection.value,
         )
 
 
