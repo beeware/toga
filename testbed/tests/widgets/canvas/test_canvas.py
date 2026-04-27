@@ -143,7 +143,7 @@ async def test_alt_drag(
 
 async def test_image_data(canvas, probe):
     """The canvas can be saved as an image."""
-    with canvas.stroke(color=RED):
+    with canvas.stroke(stroke_style=RED):
         canvas.move_to(x=0, y=0)
         canvas.line_to(x=200, y=200)
         canvas.move_to(x=200, y=0)
@@ -215,11 +215,11 @@ async def test_transparency(canvas, probe):
     # Draw a rectangle. move_to is implied
     canvas.begin_path()
     canvas.rect(x=20, y=20, width=120, height=120)
-    canvas.fill(color=REBECCAPURPLE)
+    canvas.fill(fill_style=REBECCAPURPLE)
 
     canvas.begin_path()
     canvas.rect(x=60, y=60, width=120, height=120)
-    canvas.fill(color=rgb(0x33, 0x66, 0x99, 0.5))
+    canvas.fill(fill_style=rgb(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
     assert_reference(probe, "transparency")
@@ -248,21 +248,21 @@ async def test_paths(canvas, probe):
     # An empty path should not appear.
     canvas.begin_path()
     canvas.close_path()
-    canvas.stroke(RED)
+    canvas.stroke(stroke_style=RED)
 
     # A path containing only move_to commands should not appear.
     canvas.begin_path()
     canvas.move_to(140, 140)
     canvas.move_to(160, 160)
-    canvas.stroke(RED)
+    canvas.stroke(stroke_style=RED)
 
     # A path is not cleared after being stroked or filled.
     canvas.move_to(20, 10)
     canvas.line_to(60, 10)
-    canvas.stroke(color=CORNFLOWERBLUE, line_width=10)
+    canvas.stroke(stroke_style=CORNFLOWERBLUE, line_width=10)
     canvas.move_to(60, 10)
     canvas.line_to(100, 10)
-    canvas.fill(color=REBECCAPURPLE)
+    canvas.fill(fill_style=REBECCAPURPLE)
     canvas.line_to(140, 10)
     canvas.stroke()
 
@@ -349,12 +349,12 @@ async def test_ellipse(canvas, probe):
     # Nucleus (filled circle)
     canvas.move_to(90, 100)
     canvas.ellipse(100, 100, 20, 20)
-    canvas.fill(color=RED)
+    canvas.fill(fill_style=RED)
 
     # Purple orbit
     canvas.begin_path()
     canvas.ellipse(100, 100, 90, 20, rotation=pi * 3 / 4)
-    canvas.stroke(color=REBECCAPURPLE)
+    canvas.stroke(stroke_style=REBECCAPURPLE)
 
     # Blue orbit (more than half a turn)
     canvas.begin_path()
@@ -368,7 +368,7 @@ async def test_ellipse(canvas, probe):
         endangle=pi / 4,
         counterclockwise=True,
     )
-    canvas.stroke(color=CORNFLOWERBLUE)
+    canvas.stroke(stroke_style=CORNFLOWERBLUE)
 
     # Yellow orbit (more than half a turn)
     canvas.begin_path()
@@ -380,7 +380,7 @@ async def test_ellipse(canvas, probe):
         startangle=pi / 4,
         endangle=pi * 7 / 4,
     )
-    canvas.stroke(color=GOLDENROD)
+    canvas.stroke(stroke_style=GOLDENROD)
 
     await probe.redraw("Atom should be drawn")
     assert_reference(probe, "ellipse", threshold=0.02)
@@ -409,14 +409,14 @@ async def test_ellipse_path(canvas, probe):
     canvas.ellipse(**ellipse_args, startangle=radians(280), endangle=radians(340))
     # Arc -> line
     canvas.line_to(180, 50)
-    canvas.stroke(RED)
+    canvas.stroke(stroke_style=RED)
 
     canvas.begin_path()
     canvas.move_to(180, 180)
     canvas.line_to(180, 160)
     # Line -> arc
     canvas.ellipse(**ellipse_args, startangle=radians(10), endangle=radians(60))
-    canvas.stroke(CORNFLOWERBLUE)
+    canvas.stroke(stroke_style=CORNFLOWERBLUE)
 
     await probe.redraw("Broken ellipse with connected lines should be drawn")
     assert_reference(probe, "ellipse_path", threshold=0.02)
@@ -428,7 +428,7 @@ async def test_rect(canvas, probe):
     # Draw a rectangle. move_to is implied
     canvas.begin_path()
     canvas.rect(x=20, y=60, width=160, height=100)
-    canvas.fill(color=REBECCAPURPLE)
+    canvas.fill(fill_style=REBECCAPURPLE)
 
     await probe.redraw("Filled rectangle should be drawn")
     assert_reference(probe, "rect")
@@ -445,16 +445,16 @@ async def test_round_rect(canvas, probe):
     # Draw a rounded rectangle. move_to is implied
     canvas.begin_path()
     canvas.round_rect(x=20, y=10, width=160, height=80, radii=[5, 30, Corner(50, 30)])
-    canvas.fill(color=GOLDENROD)
-    canvas.stroke(color=REBECCAPURPLE)
+    canvas.fill(fill_style=GOLDENROD)
+    canvas.stroke(stroke_style=REBECCAPURPLE)
 
     # Draw a rounded rectangle with negative width, height
     canvas.begin_path()
     canvas.round_rect(
         x=190, y=180, width=-160, height=-80, radii=[0, 30, Corner(50, 60)]
     )
-    canvas.fill(color=CORNFLOWERBLUE)
-    canvas.stroke(color=BLACK)
+    canvas.fill(fill_style=CORNFLOWERBLUE)
+    canvas.stroke(stroke_style=BLACK)
 
     await probe.redraw("Filled and stroked rounded rectangles should be drawn")
     assert_reference(probe, "round_rect", threshold=0.016)
@@ -469,7 +469,7 @@ async def test_fill(canvas, probe):
     canvas.line_to(x=110, y=50)
     canvas.line_to(x=10, y=50)
     canvas.line_to(x=90, y=110)
-    canvas.fill(color=REBECCAPURPLE)
+    canvas.fill(fill_style=REBECCAPURPLE)
 
     # Same path (slightly offset), but with EVENODD winding.
     canvas.begin_path()
@@ -478,7 +478,7 @@ async def test_fill(canvas, probe):
     canvas.line_to(x=190, y=130)
     canvas.line_to(x=90, y=130)
     canvas.line_to(x=170, y=190)
-    canvas.fill(color=CORNFLOWERBLUE, fill_rule=FillRule.EVENODD)
+    canvas.fill(fill_style=CORNFLOWERBLUE, fill_rule=FillRule.EVENODD)
 
     await probe.redraw("Stars should be drawn")
     assert_reference(probe, "fill")
@@ -493,7 +493,7 @@ async def test_stroke(canvas, probe):
     canvas.line_to(x=180, y=180)
     canvas.line_to(x=100, y=180)
     canvas.close_path()
-    canvas.stroke(color=REBECCAPURPLE)
+    canvas.stroke(stroke_style=REBECCAPURPLE)
 
     # Draw an open path inside it
     canvas.begin_path()
@@ -502,7 +502,7 @@ async def test_stroke(canvas, probe):
     canvas.line_to(x=90, y=40)
     canvas.line_to(x=150, y=160)
     canvas.line_to(x=110, y=160)
-    canvas.stroke(color=CORNFLOWERBLUE)
+    canvas.stroke(stroke_style=CORNFLOWERBLUE)
 
     await probe.redraw("Stroke should be drawn")
     assert_reference(probe, "stroke")
@@ -539,8 +539,8 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.line_to(x=180, y=180)
     canvas.line_to(x=100, y=180)
     canvas.close_path()
-    canvas.stroke(color=REBECCAPURPLE)
-    canvas.fill(color=CORNFLOWERBLUE)
+    canvas.stroke(stroke_style=REBECCAPURPLE)
+    canvas.fill(fill_style=CORNFLOWERBLUE)
 
     # Draw an open path inside it
     canvas.begin_path()
@@ -549,8 +549,8 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.line_to(x=90, y=40)
     canvas.line_to(x=150, y=160)
     canvas.line_to(x=110, y=160)
-    canvas.fill(color=GOLDENROD, fill_rule=FillRule.EVENODD)
-    canvas.stroke(color=REBECCAPURPLE)
+    canvas.fill(fill_style=GOLDENROD, fill_rule=FillRule.EVENODD)
+    canvas.stroke(stroke_style=REBECCAPURPLE)
 
     await probe.redraw("Stroke should be drawn")
     assert_reference(probe, "stroke_and_fill")
@@ -567,7 +567,7 @@ async def test_closed_path_state(canvas, probe):
         canvas.line_to(x=100, y=180)
 
     # Draw it with a thick dashed line
-    canvas.stroke(color=REBECCAPURPLE, line_width=5, line_dash=[20, 30])
+    canvas.stroke(stroke_style=REBECCAPURPLE, line_width=5, line_dash=[20, 30])
 
     await probe.redraw("Closed path should be drawn with state")
     assert_reference(probe, "closed_path_state")
@@ -577,7 +577,7 @@ async def test_fill_state(canvas, probe):
     """A fill path can be built with a state."""
 
     # Build a filled parallelogram
-    with canvas.fill(color=REBECCAPURPLE):
+    with canvas.fill(fill_style=REBECCAPURPLE):
         canvas.move_to(x=20, y=20)
         canvas.line_to(x=100, y=20)
         canvas.line_to(x=180, y=180)
@@ -590,12 +590,12 @@ async def test_fill_state(canvas, probe):
 async def test_stroke_state(canvas, probe):
     """A stroke can be drawn with a state."""
     # Draw a thin line
-    with canvas.stroke(color=REBECCAPURPLE):
+    with canvas.stroke(stroke_style=REBECCAPURPLE):
         canvas.move_to(x=40, y=20)
         canvas.line_to(x=80, y=180)
 
     # Draw a thick dashed line
-    with canvas.stroke(line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE):
+    with canvas.stroke(stroke_style=CORNFLOWERBLUE, line_width=20, line_dash=[20, 10]):
         canvas.move_to(x=80, y=20)
         canvas.line_to(x=120, y=180)
 
@@ -607,9 +607,11 @@ async def test_stroke_and_fill_state(canvas, probe):
     """A shape can be stroked and filled using states."""
 
     # Draw a filled parallelogram
-    with canvas.fill(color=REBECCAPURPLE):
+    with canvas.fill(fill_style=REBECCAPURPLE):
         canvas.move_to(x=20, y=20)
-        with canvas.stroke(line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE):
+        with canvas.stroke(
+            stroke_style=CORNFLOWERBLUE, line_width=20, line_dash=[20, 10]
+        ):
             # canvas.move_to(x=20, y=20)
             canvas.line_to(x=100, y=20)
             canvas.line_to(x=180, y=180)
@@ -621,12 +623,12 @@ async def test_stroke_and_fill_state(canvas, probe):
 
 async def test_nested_stroke_and_fill_state(canvas, probe):
     """Inner states don't override unsupplied attributes."""
-    with canvas.fill(color=GOLDENROD):
+    with canvas.fill(fill_style=GOLDENROD):
         with canvas.fill():
             # Should still be goldenrod
             canvas.rect(10, 10, 50, 50)
 
-    with canvas.stroke(color=REBECCAPURPLE, line_width=15, line_dash=[15, 14]):
+    with canvas.stroke(stroke_style=REBECCAPURPLE, line_width=15, line_dash=[15, 14]):
         with canvas.stroke():
             # Should still be wide, dashed, and purple
             canvas.move_to(100, 10)
@@ -642,19 +644,19 @@ async def test_transforms(canvas, probe):
     # Draw a rectangle after a horizontal translation
     canvas.translate(160, 20)
     canvas.rect(0, 0, 20, 60)
-    canvas.fill(color=CORNFLOWERBLUE)
+    canvas.fill(fill_style=CORNFLOWERBLUE)
 
     canvas.reset_transform()
     canvas.begin_path()
     canvas.rotate(pi / 4)
     canvas.rect(200, 0, 20, 60)
-    canvas.fill(color=REBECCAPURPLE)
+    canvas.fill(fill_style=REBECCAPURPLE)
 
     canvas.reset_transform()
     canvas.begin_path()
     canvas.scale(2, 5)
     canvas.rect(10, 10, 10, 10)
-    canvas.fill(color=GOLDENROD)
+    canvas.fill(fill_style=GOLDENROD)
 
     canvas.reset_transform()
     canvas.begin_path()
@@ -681,7 +683,7 @@ async def test_transforms_mid_path(canvas, probe):
             canvas.rotate(math.pi / 6)
 
     canvas.fill()
-    canvas.stroke(GOLDENROD)
+    canvas.stroke(stroke_style=GOLDENROD)
 
     # draw a series of line segments
     canvas.begin_path()
@@ -695,7 +697,7 @@ async def test_transforms_mid_path(canvas, probe):
     canvas.move_to(110, 100)
     canvas.scale(5, 1)
     canvas.ellipse(20, 100, 2, 20, 0, 0, 2 * pi)
-    canvas.stroke(CORNFLOWERBLUE)
+    canvas.stroke(stroke_style=CORNFLOWERBLUE)
 
     await probe.redraw("Transforms can be applied")
     assert_reference(probe, "transforms_mid_path", threshold=0.015)
@@ -721,7 +723,7 @@ async def test_singular_transforms(canvas, probe):
         canvas.rotate(pi / 4)
         canvas.line_to(180, 20)
 
-        canvas.stroke(GOLDENROD, line_width=8)
+        canvas.stroke(stroke_style=GOLDENROD, line_width=8)
 
     # Same shape, but not flipped, using reset_transform()
     canvas.begin_path()
@@ -739,7 +741,7 @@ async def test_singular_transforms(canvas, probe):
     canvas.rotate(pi / 4)
     canvas.line_to(180, 20)
 
-    canvas.stroke(CORNFLOWERBLUE, line_width=8)
+    canvas.stroke(stroke_style=CORNFLOWERBLUE, line_width=8)
 
     canvas.reset_transform()
     canvas.begin_path()
@@ -772,14 +774,14 @@ async def test_write_text(canvas, probe):
     hello_font = Font("Droid Serif", 12)
     hello_size = canvas.measure_text(hello_text, hello_font)
 
-    with canvas.stroke(color=CORNFLOWERBLUE):
+    with canvas.stroke(stroke_style=CORNFLOWERBLUE):
         canvas.rect(
             100 - (hello_size[0] // 2),
             10,
             hello_size[0],
             hello_size[1],
         )
-    with canvas.fill(color=REBECCAPURPLE):
+    with canvas.fill(fill_style=REBECCAPURPLE):
         canvas.write_text(
             hello_text,
             100 - (hello_size[0] // 2),
@@ -792,7 +794,7 @@ async def test_write_text(canvas, probe):
     world_font = Font("Endor", 22)
     world_size = canvas.measure_text(world_text, font=world_font)
 
-    with canvas.stroke(color=CORNFLOWERBLUE):
+    with canvas.stroke(stroke_style=CORNFLOWERBLUE):
         canvas.rect(
             100 - (world_size[0] // 2),
             100 - world_size[1],
@@ -812,15 +814,15 @@ async def test_write_text(canvas, probe):
     toga_font = Font("Droid Serif", 45, weight=BOLD)
     toga_size = canvas.measure_text(toga_text, font=toga_font)
 
-    with canvas.stroke(color=CORNFLOWERBLUE):
+    with canvas.stroke(stroke_style=CORNFLOWERBLUE):
         canvas.rect(
             100 - (toga_size[0] // 2),
             150 - (toga_size[1] // 2),
             toga_size[0],
             toga_size[1],
         )
-    with canvas.stroke(color=REBECCAPURPLE):
-        with canvas.fill(color=CORNFLOWERBLUE):
+    with canvas.stroke(stroke_style=REBECCAPURPLE):
+        with canvas.fill(fill_style=CORNFLOWERBLUE):
             canvas.write_text(
                 toga_text,
                 100 - (toga_size[0] // 2),
@@ -848,7 +850,7 @@ async def test_multiline_text(canvas, probe):
 
     # Vertical guidelines
     X = [10, 75, 140]
-    with canvas.stroke(color=RED):
+    with canvas.stroke(stroke_style=RED):
         for x in X:
             canvas.move_to(x, 0)
             canvas.line_to(x, canvas.style.height)
@@ -858,7 +860,7 @@ async def test_multiline_text(canvas, probe):
 
     # ALPHABETIC baseline
     y = 30
-    with canvas.stroke(color=RED):
+    with canvas.stroke(stroke_style=RED):
         canvas.move_to(0, y)
         canvas.line_to(canvas.style.width, y)
 
@@ -884,7 +886,7 @@ async def test_multiline_text(canvas, probe):
 
     # Other baselines, with default font but specified size
     y = 130
-    with canvas.stroke(color=RED):
+    with canvas.stroke(stroke_style=RED):
         canvas.move_to(0, y)
         canvas.line_to(canvas.style.width, y)
     font = Font(SYSTEM, 12)
@@ -900,7 +902,7 @@ async def test_multiline_text(canvas, probe):
         elif baseline == Baseline.BOTTOM:
             top = y - height
 
-        with canvas.stroke(color=CORNFLOWERBLUE):
+        with canvas.stroke(stroke_style=CORNFLOWERBLUE):
             canvas.rect(left, top, width, height)
 
         with canvas.fill():
@@ -955,7 +957,7 @@ async def test_write_text_and_path(canvas, probe):
         )
 
         # now stroke the path, but *not* the text
-        canvas.stroke(CORNFLOWERBLUE)
+        canvas.stroke(stroke_style=CORNFLOWERBLUE)
 
         # start a new path so Fill state doesn't fill current path with black
         canvas.begin_path()
@@ -985,7 +987,7 @@ async def test_draw_image_in_rect(canvas, probe):
     canvas.translate(-82, -46)
     canvas.draw_image(image, 10, 10, 72, 144)
     canvas.rect(10, 10, 72, 144)
-    canvas.stroke(REBECCAPURPLE)
+    canvas.stroke(stroke_style=REBECCAPURPLE)
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "draw_image_in_rect", threshold=0.05)
@@ -1010,7 +1012,7 @@ async def test_miter_join(canvas, probe):
             canvas.line_to(-half_width, height)
 
             canvas.stroke(line_width=line_width)
-            canvas.stroke(line_width=2, color=REBECCAPURPLE)
+            canvas.stroke(stroke_style=REBECCAPURPLE, line_width=2)
 
     # Left two should be mitered, right two should be beveled.
     # (Windows and Qt don't bevel, they just start truncating the miter.)

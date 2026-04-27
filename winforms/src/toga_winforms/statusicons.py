@@ -3,6 +3,20 @@ import System.Windows.Forms as WinForms
 import toga
 from toga.command import Group, Separator
 from toga.handlers import WeakrefCallable
+from toga_winforms import _use_dotnet_core
+
+if _use_dotnet_core:  # pragma: no-cover-if-netfx
+    ToolStripMenuItem = WinForms.ToolStripMenuItem
+    ContextMenuStrip = WinForms.ContextMenuStrip
+    MENU_ATTR = "Items"
+    SUBMENU_ATTR = "DropDownItems"
+    CONTEXT_MENU_ATTR = "ContextMenuStrip"
+else:  # pragma: no-cover-if-netcore
+    ToolStripMenuItem = WinForms.MenuItem
+    ContextMenuStrip = WinForms.ContextMenu
+    MENU_ATTR = "MenuItems"
+    SUBMENU_ATTR = "MenuItems"
+    CONTEXT_MENU_ATTR = "ContextMenu"
 
 
 class StatusIcon:
@@ -55,10 +69,9 @@ class StatusIconSet:
             else:
                 parent_menu = self._submenu(group.parent, group_cache)
 
-                submenu = WinForms.MenuItem(group.text)
+                submenu = ToolStripMenuItem(group.text)
 
-                parent_menu.MenuItems.Add(submenu)
-
+                getattr(parent_menu, MENU_ATTR).Add(submenu)
             group_cache[group] = submenu
         return submenu
 
@@ -66,8 +79,8 @@ class StatusIconSet:
         # Menu status icons are the only icons that have extra construction needs.
         # Clear existing menus
         for item in self.interface._menu_status_icons:
-            submenu = WinForms.ContextMenu()
-            item._impl.native.ContextMenu = submenu
+            submenu = ContextMenuStrip()
+            setattr(item._impl.native, CONTEXT_MENU_ATTR, submenu)
 
         # Determine the primary status icon.
         primary_group = self.interface._primary_menu_status_icon
@@ -78,11 +91,14 @@ class StatusIconSet:
 
         # Add the menu status items to the cache
         group_cache = {
-            item: item._impl.native.ContextMenu
+            item: getattr(item._impl.native, CONTEXT_MENU_ATTR)
             for item in self.interface._menu_status_icons
         }
         # Map the COMMANDS group to the primary status icon's menu.
-        group_cache[Group.COMMANDS] = primary_group._impl.native.ContextMenu
+        group_cache[Group.COMMANDS] = getattr(
+            primary_group._impl.native,
+            CONTEXT_MENU_ATTR,
+        )
         self._menu_items = {}
 
         for cmd in self.interface.commands:
@@ -97,6 +113,7 @@ class StatusIconSet:
                 if isinstance(cmd, Separator):
                     menu_item = "-"
                 else:
-                    menu_item = cmd._impl.create_menu_item(WinForms.MenuItem)
+                    menu_item = cmd._impl.create_menu_item(ToolStripMenuItem)
 
-                submenu.MenuItems.Add(menu_item)
+                attr = MENU_ATTR if cmd.group.parent is None else SUBMENU_ATTR
+                getattr(submenu, attr).Add(menu_item)
