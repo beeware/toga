@@ -13,6 +13,7 @@ from System.Drawing import (
     StringFormat,
 )
 from System.Drawing.Drawing2D import (
+    DashStyle,
     FillMode,
     GraphicsPath,
     Matrix,
@@ -133,14 +134,12 @@ class Context:
         self.state.brush.Color = native_color(color)
 
     def set_line_dash(self, line_dash):
-        if not line_dash:
-            dash_pattern = None
-        else:
+        if line_dash:
             if len(line_dash) % 2:
-                line_dash *= 2
-            dash_pattern = [ld / self.state.pen.Width for ld in line_dash]
-
-        self.state.pen.DashPattern = dash_pattern
+                line_dash = line_dash * 2  # Avoid *= in case it's mutable
+            self.state.pen.DashPattern = [ld / self.state.pen.Width for ld in line_dash]
+        else:
+            self.state.pen.DashStyle = DashStyle.Solid
 
     def set_line_width(self, line_width):
         self.state.pen.Width = line_width

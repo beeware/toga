@@ -86,7 +86,7 @@ class Context:
             effect = None
         else:
             if len(line_dash) % 2:
-                line_dash *= 2
+                line_dash = line_dash * 2  # Avoid *= in case it's mutable
             effect = DashPathEffect(line_dash, 0)
 
         self.state.stroke.setPathEffect(effect)
