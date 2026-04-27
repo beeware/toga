@@ -8,11 +8,11 @@ class ActivityIndicator(Widget):
 
     # Actions
     def start(self):
-        self.native.style.visibility = "visible"
+        self.native.classList.remove("stopped")
         self._is_running = True
 
     def stop(self):
-        self.native.style.visibility = "hidden"
+        self.native.classList.add("stopped")
         self._is_running = False
 
     def is_running(self):

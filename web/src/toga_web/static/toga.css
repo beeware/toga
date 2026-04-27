@@ -107,6 +107,11 @@ main.toga.window > .container {
     white-space: nowrap;
 }
 
+/***** ActivityIndicator *********************************************/
+wa-spinner.stopped {
+    visibility: hidden;
+}
+
 /***** Slider *********************************************************/
 /* wa-slider defaults to display:inline (custom element default), which
    ignores width and doesn't stretch in flex containers. sl-range set
