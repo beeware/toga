@@ -82,12 +82,12 @@ class Context:
         self.state.fill.setColor(jint(native_color(color)))
 
     def set_line_dash(self, line_dash):
-        if not line_dash:
-            effect = None
-        else:
+        if line_dash:
             if len(line_dash) % 2:
                 line_dash = line_dash * 2  # Avoid *= in case it's mutable
             effect = DashPathEffect(line_dash, 0)
+        else:
+            effect = None
 
         self.state.stroke.setPathEffect(effect)
 
