@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from ctypes import POINTER, byref, cast, sizeof
-from ctypes.wintypes import HDC, HWND, LPARAM, POINT, RECT, SIZE, UINT, WPARAM
+from ctypes.wintypes import HDC, HFONT, HWND, LPARAM, POINT, RECT, SIZE, UINT, WPARAM
 
 import System.Windows.Forms as WinForms
 from System.Drawing import ColorTranslator, Size, SystemColors
@@ -16,6 +16,7 @@ from ..libs.comctl32 import (
     RemoveWindowSubclass,
     SetWindowSubclass,
 )
+from ..libs.fonts import FontDeviceContext
 from ..libs.win32misc import hiword, is_submessage, loword
 from ..menus import ContextMenu
 from .base import Widget
@@ -40,7 +41,7 @@ class DetailedList(Widget):
     #     focus, WM_SETFOCUS and WM_KILLFOCUS are handled.
     #
     # The handling of the mouse events to overcome the incorrect clickable area spawns a
-    # new issue where the LVN_RCLICK and WM_RBUTTONUP become unreliable, effecting the
+    # new issue where the LVN_RCLICK and WM_RBUTTONUP become unreliable, affecting the
     # ability to use a context menu. The processing of mouse down events by the ListView
     # UI is somewhat complicated. For example, the window messages WM_LBUTTONDOWN and
     # WM_RBUTTONDOWN start new modal event loops to detect dragging (for details see
@@ -116,14 +117,11 @@ class DetailedList(Widget):
             None,
         )
 
-        # Change the view style to tile and configure the properties.
+        # Change the view style to tile.
         # learn.microsoft.com/en-us/windows/win32/controls/use-tile-views
-        lvtileviewinfo = self._tile_view_info_initial
         u32.SendMessageW(self._hwnd, wc.LVM_SETVIEW, wc.LV_VIEW_TILE, 0)
-        u32.SendMessageW(self._hwnd, wc.LVM_SETTILEVIEWINFO, 0, byref(lvtileviewinfo))
 
-        # Set the image list.
-        self._image_list: WinForms.ImageList
+        # Configure the tile properties and the image list via winforms_font_changed.
         self.winforms_font_changed(None, None)
 
         # Create and set the ListView UI (self._hwnd) subclass procedure.
@@ -214,10 +212,6 @@ class DetailedList(Widget):
         return lvtileviewinfo
 
     @property
-    def _tile_view_info_initial(self) -> ws.LVTILEVIEWINFO:
-        return self._tile_view_info(self._width, self._height)
-
-    @property
     def _mouse_down_x(self) -> int:
         return self._tile_padding + self._font_height
 
@@ -259,6 +253,10 @@ class DetailedList(Widget):
 
     def winforms_font_changed(self, sender, e):
         """Matches the font of the Win32 List-View UI to the WinForms Panel."""
+        # Update the tile size.
+        tile_view_info = self._tile_view_info(self._width, self._height)
+        u32.SendMessageW(self._hwnd, wc.LVM_SETTILEVIEWINFO, 0, byref(tile_view_info))
+
         # Note that reconstructing the image list instead of simply changing the image
         # size seems to reduce selection flicker.
         self._set_image_list()
@@ -409,6 +407,7 @@ class DetailedList(Widget):
                 return
 
             hdc = HDC(nmlvcd.nmcd.hdc)
+            hfont = HFONT(int(self.native.Font.ToHfont().ToString()))
             rect = RECT.from_buffer_copy(nmlvcd.nmcd.rc)
             item = self._retrieve_virtual_item(index)
 
@@ -428,11 +427,12 @@ class DetailedList(Widget):
                 rect = self._drawing_select_rect(x=0, y=y)
                 u32.FillRect(hdc, byref(rect), select_back + 1)
 
-            rect = self._drawing_title_rect(x=0, y=y)
-            u32.DrawTextW(hdc, item[0], -1, byref(rect), text_format)
+            with FontDeviceContext(hdc, hfont):
+                rect = self._drawing_title_rect(x=0, y=y)
+                u32.DrawTextW(hdc, item[0], -1, byref(rect), text_format)
 
-            rect = self._drawing_subtitle_rect(x=0, y=y)
-            u32.DrawTextW(hdc, item[1], -1, byref(rect), text_format)
+                rect = self._drawing_subtitle_rect(x=0, y=y)
+                u32.DrawTextW(hdc, item[1], -1, byref(rect), text_format)
 
             icon_xy = self._drawing_icon_xy(x=0, y=y)
             ImageList_Draw(
