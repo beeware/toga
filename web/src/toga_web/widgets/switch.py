@@ -28,3 +28,12 @@ class Switch(Widget):
         self.native.checked = value
         if value != old_value:
             self.interface.on_change()
+
+    def _reapply_style(self):
+        # wa-switch sets color via --wa-form-control-value-color inside its shadow DOM,
+        # so the host's inherited `color` property doesn't reach the label text.
+        # Forward it explicitly as a CSS variable so the shadow DOM picks it up.
+        css = self.interface.style.__css__()
+        if color := self.interface.style.color:
+            css += f" --wa-form-control-value-color: {color};"
+        self.native.style = css
