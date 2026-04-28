@@ -965,7 +965,7 @@ async def test_cell_widget(widget, probe):
                     },
                     None,
                 )
-                for i in range(10)
+                for i in range(50)
             ],
         ),
     ]
