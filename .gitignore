@@ -40,3 +40,15 @@ mprofile_*.dat
 
 # Briefcase
 .briefcase
+
+# AI tooling (SpecKit v0.8.0)
+.opencode/
+.specify/scripts
+.specify/templates
+.specify/extensions.yml
+.specify/extensions
+.specify/init-options.json
+.specify/integration.json
+.specify/integrations
+.specify/workflows
+.specify/workflow.yml
