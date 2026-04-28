@@ -10,7 +10,7 @@ The Web backend is currently proof-of-concept only. Most widgets have not been i
 
 ## Prerequisites
 
-`toga-web` will run in any modern browser. It requires [PyScript](https://pyscript.net) 2023.05.01 or newer, and [Shoelace v2.3](https://shoelace.style).
+`toga-web` will run in any modern browser. It requires [PyScript](https://pyscript.net) 2023.05.01 or newer, and [WebAwesome v3.3](https://www.webawesome.com).
 
 ## Installation
 
@@ -20,6 +20,6 @@ The recommended approach for deploying `toga-web` is to use [Briefcase](https://
 
 ## Implementation details
 
-The `toga-web` backend is implemented using [Shoelace web components](https://shoelace.style).
+The `toga-web` backend is implemented using [WebAwesome web components](https://www.webawesome.com).
 
 The DOM is accessed using [PyScript](https://pyscript.net).
