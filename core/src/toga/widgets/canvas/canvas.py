@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -10,6 +11,7 @@ from typing import (
 from weakref import WeakSet
 
 import toga
+from toga.colors import BLACK, Color
 from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
@@ -18,13 +20,24 @@ from toga.fonts import (
 from toga.handlers import wrapped_handler
 
 from ..base import StyleT, Widget
-from .state import DrawingActionDispatch, State
+from .drawingaction import (
+    Restore,
+    Save,
+    SetFillStyle,
+    SetLineDash,
+    SetLineWidth,
+    SetStrokeStyle,
+)
+from .state import BaseState, DrawingActionDispatch, State
 
 if TYPE_CHECKING:
-    from toga.images import ImageT
+    from toga.images import ColorT, ImageT
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
+
+
+BLACK_COLOR = Color.parse(BLACK)
 
 
 class OnTouchHandler(Protocol):
@@ -48,6 +61,60 @@ class OnResizeHandler(Protocol):
         :param height: The new height.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
+
+
+class drawing_context_property:
+    def __init__(self, ActionClass, default):
+        self.ActionClass = ActionClass
+        self.default = default
+
+    def __set_name__(self, canvas_class, name):
+        self.name = name
+
+    def __get__(self, canvas, canvas_class=None):
+        # Run down the nested hierarchy, building a chain of active states.
+        state = canvas.root_state
+        states = [state]
+
+        while (
+            state.drawing_actions
+            # If it'st the active state then no substate of it can be currently open.
+            and state is not canvas._action_target
+            and isinstance(state.drawing_actions[-1], BaseState)
+        ):
+            state = state.drawing_actions[-1]
+            states.append(state)
+
+        # Then, run backwards through all active states' drawing actions until we hit a
+        # setting. Restores build up, and are undone by saves.
+        restores = 0
+        for action in chain.from_iterable(
+            reversed(state.drawing_actions) for state in reversed(states)
+        ):
+            if isinstance(action, Restore):
+                restores += 1
+            elif isinstance(action, Save):
+                restores -= 1
+            elif restores <= 0 and isinstance(action, self.ActionClass):
+                return getattr(action, self.name)
+
+        # It's never been set.
+        return self.default
+
+    def __set__(self, canvas, value):
+        if value is None:
+            self._raise()
+        canvas._add_to_target(self.ActionClass(value))
+
+    def __delete__(self, canvas, canvas_class=None):
+        self._raise()
+
+    def _raise(self):
+        raise NotImplementedError(
+            "Drawing context attributes can't be deleted or set to None. To reset to "
+            "a default or previous value, do so explicitly or reset to a previous "
+            "context state."
+        )
 
 
 class Canvas(Widget, DrawingActionDispatch):
@@ -129,6 +196,43 @@ class Canvas(Widget, DrawingActionDispatch):
     def root_state(self) -> State:
         """The root state for the canvas."""
         return self._root_state
+
+    ###########################################################################
+    # State management & attributes
+    ###########################################################################
+
+    def save(self) -> Save:
+        """Save the current state of the drawing context.
+
+        :returns: The `Save`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        save = Save()
+        self._add_to_target(save)
+        # No need to redraw, since this has no visual effect.
+        return save
+
+    def restore(self) -> Save:
+        """Restore to the previous state of the drawing context.
+
+        :returns: The `Restore`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        restore = Restore()
+        self._add_to_target(restore)
+        # No need to redraw, since this has no visual effect.
+        return restore
+
+    fill_style: ColorT = drawing_context_property(SetFillStyle, BLACK_COLOR)
+    """The current fill color."""
+    stroke_style: ColorT = drawing_context_property(SetStrokeStyle, BLACK_COLOR)
+    """The current stroke color."""
+    line_width: float = drawing_context_property(SetLineWidth, 2.0)
+    """The current width of the stroke."""
+    line_dash: list[float] = drawing_context_property(SetLineDash, [])
+    """The current dash pattern to follow when drawing the line, expressed as
+    alternating lengths of dashes and spaces. The default is a solid line.
+    """
 
     ######################################################################
     # 2026-02: Backwards compatibility for <= 0.5.3

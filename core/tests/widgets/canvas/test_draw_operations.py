@@ -7,10 +7,38 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.images import Image
 from toga.widgets.canvas import Arc, Ellipse, Fill, Stroke
-from toga_dummy.utils import assert_action_performed
+from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
 ABSOLUTE_FILE_PATH = Path(__file__).parent.parent.parent / "resources/toga.png"
+
+
+def test_save(widget):
+    """A save operation can be added."""
+    draw_op = widget.save()
+
+    # Doesn't automatically redraw, since it can't have any visual effect.
+    assert_action_not_performed(widget, "redraw")
+    widget.redraw()
+    assert_action_performed(widget, "redraw")
+    assert repr(draw_op) == "Save()"
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == ["save"]
+
+
+def test_restore(widget):
+    """A restore operation can be added."""
+    draw_op = widget.restore()
+
+    # Doesn't automatically redraw, since it can't have any visual effect.
+    assert_action_not_performed(widget, "redraw")
+    widget.redraw()
+    assert_action_performed(widget, "redraw")
+    assert repr(draw_op) == "Restore()"
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == ["restore"]
 
 
 def test_begin_path(widget):

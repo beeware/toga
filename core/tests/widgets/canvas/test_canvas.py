@@ -1,13 +1,17 @@
+from contextlib import contextmanager
+
 import pytest
 
 import toga
-from toga.colors import REBECCAPURPLE, rgb
+from toga.colors import BLACK, CORNFLOWERBLUE, REBECCAPURPLE, Color
 from toga.constants import FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.widgets.canvas import ClosePath, Fill, State, Stroke
 from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
-REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
+BLACK_COLOR = Color.parse(BLACK)
+CORNFLOWERBLUE_COLOR = Color.parse(CORNFLOWERBLUE)
+REBECCAPURPLE_COLOR = Color.parse(REBECCAPURPLE)
 
 
 def test_widget_created():
@@ -104,7 +108,7 @@ def test_fill(widget):
         assert isinstance(fill, Fill)
         assert fill is not widget.root_state
 
-        assert fill.fill_style == REBECCA_PURPLE_COLOR
+        assert fill.fill_style == REBECCAPURPLE_COLOR
         assert fill.fill_rule == FillRule.EVENODD
 
 
@@ -119,7 +123,7 @@ def test_stroke(widget):
         assert isinstance(stroke, Stroke)
         assert stroke is not widget.root_state
 
-        assert stroke.stroke_style == REBECCA_PURPLE_COLOR
+        assert stroke.stroke_style == REBECCAPURPLE_COLOR
         assert stroke.line_width == 5.0
         assert stroke.line_dash == [2, 7]
 
@@ -177,3 +181,75 @@ def test_as_image(widget):
     image = widget.as_image()
     assert image is not None
     assert_action_performed(widget, "get image data")
+
+
+def state_context_manager(canvas):
+    # Is already a context manager:
+    return canvas.state()
+
+
+@contextmanager
+def save_and_restore(canvas):
+    canvas.save()
+    try:
+        yield
+    finally:
+        canvas.restore()
+
+
+@pytest.mark.parametrize(
+    "name, default, assign_1, check_1, assign_2, check_2",
+    [
+        (
+            "fill_style",
+            BLACK_COLOR,
+            REBECCAPURPLE,
+            REBECCAPURPLE_COLOR,
+            CORNFLOWERBLUE,
+            CORNFLOWERBLUE_COLOR,
+        ),
+        (
+            "stroke_style",
+            BLACK_COLOR,
+            REBECCAPURPLE,
+            REBECCAPURPLE_COLOR,
+            CORNFLOWERBLUE,
+            CORNFLOWERBLUE_COLOR,
+        ),
+        ("line_width", 2.0, 5, 5.0, 10.0, 10.0),
+        ("line_dash", [], [1, 2], [1.0, 2.0], [2.0, 3.0], [2.0, 3.0]),
+    ],
+)
+@pytest.mark.parametrize("restore_method", [state_context_manager, save_and_restore])
+def test_attributes_save_restore(
+    widget, name, default, assign_1, check_1, assign_2, check_2, restore_method
+):
+    """Context attributes can be set, accessed, and restored, but not deleted."""
+    assert getattr(widget, name) == default
+
+    with restore_method(widget):
+        assert getattr(widget, name) == default
+
+        setattr(widget, name, assign_1)
+        assert getattr(widget, name) == check_1
+
+        with restore_method(widget):
+            assert getattr(widget, name) == check_1
+            setattr(widget, name, assign_2)
+            assert getattr(widget, name) == check_2
+
+        assert getattr(widget, name) == check_1
+
+    assert getattr(widget, name) == default
+
+    match = (
+        r"Drawing context attributes can't be deleted or set to None\. To reset to a "
+        r"default or previous value, do so explicitly or reset to a previous context "
+        r"state\."
+    )
+
+    with pytest.raises(NotImplementedError, match=match):
+        delattr(widget, name)
+
+    with pytest.raises(NotImplementedError, match=match):
+        setattr(widget, name, None)

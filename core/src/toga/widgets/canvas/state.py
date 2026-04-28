@@ -8,12 +8,12 @@ from dataclasses import KW_ONLY, InitVar, dataclass
 from math import pi
 from typing import TYPE_CHECKING, Any
 
-from toga.colors import Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
 from toga.images import Image
 
 from .drawingaction import (
+    NOT_PROVIDED,
     Arc,
     BeginPath,
     BezierCurveTo,
@@ -30,6 +30,7 @@ from .drawingaction import (
     Scale,
     Translate,
     WriteText,
+    color_property,
 )
 from .geometry import CornerRadiusT
 
@@ -41,8 +42,6 @@ if TYPE_CHECKING:
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
-
-NOT_PROVIDED = object()
 
 
 class DrawingActionDispatch(ABC):
@@ -913,21 +912,6 @@ class ClosePath(BaseState):
 
         context.close_path()
         context.restore()
-
-
-class color_property:
-    def __get__(self, action, action_class=None):
-        if action is None:
-            # This is what's returned in the constructor, if nothing is provided.
-            return NOT_PROVIDED
-
-        return action._color
-
-    def __set__(self, action, value):
-        if value is not None and value is not NOT_PROVIDED:
-            value = Color.parse(value)
-
-        action._color = value
 
 
 @dataclass(repr=False)
