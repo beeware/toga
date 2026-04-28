@@ -9,7 +9,7 @@ from toga_winforms.colors import native_color
 from toga_winforms.libs.fonts import HorizontalTextAlignment
 
 from ..libs.user32 import SendMessageW
-from ..libs.windowconstants import EM_SETCUEBANNER
+from ..libs.win32constants import EM_SETCUEBANNER
 from .base import Widget
 
 
