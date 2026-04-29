@@ -4,8 +4,7 @@
 
 This class exists only for actual widgets to inherit from; it should not be instantiated directly.
 
-Because `Widget` inherits from `PackMixin`, all [Pack style properties](../style/pack.md)
-can be set directly on any widget instance. For example:
+Because `Widget` inherits from `PackMixin`, all [Pack style properties](../style/pack.md) can be set directly on any widget instance. For example:
 
 ```python
 # Instead of this:

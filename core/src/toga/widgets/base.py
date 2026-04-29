@@ -79,7 +79,7 @@ class Widget(Node, PackMixin, ABC):
         will be applied to the widget.
         :param kwargs: Initial style properties.
         """
-        
+
         if style is None:
             style = Pack(**kwargs)
         elif kwargs:
