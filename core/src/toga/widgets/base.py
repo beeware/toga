@@ -69,11 +69,17 @@ class Widget(Node, PackMixin, ABC):
 
         This is an abstract base class; it cannot be instantiated.
 
+        Because ``Widget`` inherits from ``PackMixin``, all
+        [Pack style properties](/reference/api/style/pack.md) (e.g. ``flex``,
+        ``direction``, ``color``) can be accessed and set directly on any widget
+        instance — e.g. ``widget.flex = 1`` instead of ``widget.style.flex = 1``.
+
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
-            will be applied to the widget.
+        will be applied to the widget.
         :param kwargs: Initial style properties.
         """
+        
         if style is None:
             style = Pack(**kwargs)
         elif kwargs:
