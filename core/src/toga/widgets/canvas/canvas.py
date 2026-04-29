@@ -78,7 +78,7 @@ class drawing_context_property:
 
         while (
             state.drawing_actions
-            # If it'st the active state then no substate of it can be currently open.
+            # If it's the active state then no substate of it can be currently open.
             and state is not canvas._action_target
             and isinstance(state.drawing_actions[-1], BaseState)
         ):
