@@ -5,14 +5,13 @@ from toga.widgets.openglview import TOUCH
 from toga_iOS.libs import (
     CGRect,
     CGSize,
-    EAGLContext,
     GLKView,
     GLKViewDrawableColorFormatRGBA8888,
     GLKViewDrawableDepthFormat24,
     GLKViewDrawableMultisample4X,
     GLKViewDrawableStencilFormat8,
-    kEAGLRenderingAPIOpenGLES3,
 )
+from toga_iOS.libs.opengles import EAGLContext, kEAGLRenderingAPIOpenGLES3
 
 from .base import Widget
 
