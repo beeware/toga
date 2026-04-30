@@ -43,6 +43,60 @@ def test_window_created(app):
     assert window.on_close._raw is None
 
 
+def test_window_handler_attrs_initialized_before_impl(app, monkeypatch):
+    """Event handler private attrs exist before the implementation is created.
+
+    Regression test for #4347 / #4357: Cocoa fires `windowDidResize_` and
+    .NET Framework 4.x WinForms fires `Activated` *during* the platform
+    constructor call. Both then dispatch into ``Window.on_resize`` /
+    ``Window.on_gain_focus`` getters that read ``self._on_resize`` /
+    ``self._on_gain_focus`` directly. If those attributes haven't been set
+    yet, the callback raises ``AttributeError``. The fix is to install
+    no-op defaults before constructing ``self._impl`` — this test pins
+    that ordering by patching the dummy Window impl to invoke every
+    interface event handler from inside its constructor and asserting
+    none of them raise.
+    """
+    import toga_dummy.window as dummy_window
+
+    real_init = dummy_window.Window.__init__
+
+    def fire_callbacks_during_init(self, interface, title, position, size):
+        # Mimic Cocoa / .NET Framework: dispatch every relevant handler
+        # before the platform constructor returns. With the fix in place,
+        # each call invokes a wrapped no-op; without it, AttributeError
+        # bubbles out and __init__ aborts.
+        interface.on_resize()
+        interface.on_close()
+        interface.on_gain_focus()
+        interface.on_lose_focus()
+        interface.on_show()
+        interface.on_hide()
+        real_init(self, interface, title, position, size)
+
+    monkeypatch.setattr(dummy_window.Window, "__init__", fire_callbacks_during_init)
+
+    # Should not raise. Without the pre-impl handler init this fails with
+    # AttributeError: 'Window' object has no attribute '_on_resize' (etc).
+    window = toga.Window()
+
+    for name in (
+        "on_close",
+        "on_gain_focus",
+        "on_lose_focus",
+        "on_show",
+        "on_hide",
+        "on_resize",
+    ):
+        handler = getattr(window, name)
+        assert callable(handler), f"window.{name} must be callable after __init__"
+        # Each default is a wrapped no-op handler with `_raw is None`.
+        assert handler._raw is None, (
+            f"window.{name} default must wrap a None handler "
+            f"(got _raw={handler._raw!r})"
+        )
+
+
 def test_window_created_explicit(app):
     """Explicit arguments at construction are stored."""
     on_close_handler = Mock()
