@@ -34,17 +34,20 @@ sources = ["screenshot", "screenshot_qt"]
 requires = [
     "../../cocoa",
     "std-nslog>=1.0.0",
+    "pyopengl",
 ]
 
 [tool.briefcase.app.screenshot.linux]
 requires = [
     "../../gtk",
+    "pyopengl",
 ]
 
 [tool.briefcase.app.screenshot-qt.linux]
 requires = [
     "../../qt",
     "PySide6",
+    "pyopengl",
 ]
 
 [tool.briefcase.app.screenshot.windows]
