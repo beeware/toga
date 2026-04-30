@@ -9,7 +9,7 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.9
+    rev: v0.15.12
     hooks:
       - id: ruff-check
         args: [ --fix ]
@@ -22,7 +22,7 @@ repos:
       additional_dependencies: ['.[toml]']
       args: ["--skip=CODE_OF_CONDUCT.md"]
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.1.67
+    rev: v0.1.83
     hooks:
       - id: rumdl
       - id: rumdl-fmt

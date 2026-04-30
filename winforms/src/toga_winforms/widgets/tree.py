@@ -7,11 +7,9 @@ from warnings import warn
 from toga.handlers import WeakrefCallable
 from toga.sources.tree_source import Node, TreeSourceT
 
-from ..libs import windowconstants as wc
+from ..libs import win32constants as wc, win32structures as ws
 from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass
-from ..libs.comctl32classes import NMHDR, NMLISTVIEW, NMLVCUSTOMDRAW, NMLVDISPINFOW
 from ..libs.user32 import DrawTextW
-from ..libs.win32 import LRESULT
 from .table import Table
 
 
@@ -492,7 +490,7 @@ class Tree(Table):
         lParam: int,
         uIdSubclass: int,
         dwRefData: int,
-    ) -> LRESULT:
+    ) -> ws.LRESULT:
         """Override from Table: Same method, but also responds to NM_CUSTOMDRAW."""
         if uMsg == wc.WM_NCDESTROY:
             # Remove the window subclass in the way recommended by Raymond Chen here:
@@ -500,21 +498,21 @@ class Tree(Table):
             RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
 
         elif uMsg == wc.WM_REFLECT_NOTIFY:
-            phdr = cast(lParam, POINTER(NMHDR)).contents
+            phdr = cast(lParam, POINTER(ws.NMHDR)).contents
             code = phdr.code
             if code == wc.LVN_GETDISPINFOW:
-                disp_info = cast(lParam, POINTER(NMLVDISPINFOW)).contents
+                disp_info = cast(lParam, POINTER(ws.NMLVDISPINFOW)).contents
                 self._lvn_getdispinfo(disp_info.item)
 
             elif code == wc.NM_CUSTOMDRAW:
                 # learn.microsoft.com/en-us/windows/win32/controls/nm-customdraw
-                nmlvcd = cast(lParam, POINTER(NMLVCUSTOMDRAW)).contents
+                nmlvcd = cast(lParam, POINTER(ws.NMLVCUSTOMDRAW)).contents
                 return_flag = self._nm_customdraw(nmlvcd)
                 if return_flag is not None:
                     return return_flag
 
             elif code == wc.LVN_ITEMCHANGED:
-                nmlv = cast(lParam, POINTER(NMLISTVIEW)).contents
+                nmlv = cast(lParam, POINTER(ws.NMLISTVIEW)).contents
                 self._lvn_item_changed(nmlv)
 
         # Call the original window procedure
@@ -823,7 +821,7 @@ class Tree(Table):
         # Win32 messages.
         #
         # nmlv.uChanged contains flags for the attributes have been changed. These flag
-        # values come from the uiMask attribute of the LVITEMW structure, and a change
+        # values come from the mask attribute of the LVITEMW structure, and a change
         # of focused index is recorded in LVIF_STATE.
         if nmlv.uChanged & wc.LVIF_STATE != 0:
             # uNewState and uOldState have values determined by List-View Item States

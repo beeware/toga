@@ -1,16 +1,10 @@
 import pytest
 
 import toga
-from toga.colors import rgb
+from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
-from toga.widgets.canvas import (
-    ClosedPathContext,
-    DrawingAction,
-    FillContext,
-    State,
-    StrokeContext,
-)
+from toga.widgets.canvas import ClosePath, Fill, State, Stroke
 from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
@@ -97,41 +91,35 @@ def test_redraw(widget):
 
 def test_closed_path(widget):
     """A canvas can produce a ClosedPath sub-state."""
-    with widget.ClosedPath(x=10, y=20) as closed_path:
+    with widget.close_path() as closed_path:
         # A fresh state has been created as a sub-state of the canvas.
-        assert isinstance(closed_path, ClosedPathContext)
+        assert isinstance(closed_path, ClosePath)
         assert closed_path is not widget.root_state
-        assert closed_path.x == 10
-        assert closed_path.y == 20
 
 
 def test_fill(widget):
     """A canvas can produce a Fill sub-state."""
-    with widget.Fill(
-        x=10, y=20, color="rebeccapurple", fill_rule=FillRule.EVENODD
-    ) as fill:
+    with widget.fill(fill_rule=FillRule.EVENODD, fill_style=REBECCAPURPLE) as fill:
         # A fresh state has been created as a sub-state of the canvas.
-        assert isinstance(fill, FillContext)
+        assert isinstance(fill, Fill)
         assert fill is not widget.root_state
 
-        assert fill.x == 10
-        assert fill.y == 20
-        assert fill.color == REBECCA_PURPLE_COLOR
+        assert fill.fill_style == REBECCA_PURPLE_COLOR
         assert fill.fill_rule == FillRule.EVENODD
 
 
 def test_stroke(widget):
     """A canvas can produce a Stroke sub-state."""
-    with widget.Stroke(
-        x=10, y=20, color="rebeccapurple", line_width=5, line_dash=[2, 7]
+    with widget.stroke(
+        stroke_style=REBECCAPURPLE,
+        line_width=5,
+        line_dash=[2, 7],
     ) as stroke:
         # A fresh state has been created as a sub-state of the canvas.
-        assert isinstance(stroke, StrokeContext)
+        assert isinstance(stroke, Stroke)
         assert stroke is not widget.root_state
 
-        assert stroke.x == 10
-        assert stroke.y == 20
-        assert stroke.color == REBECCA_PURPLE_COLOR
+        assert stroke.stroke_style == REBECCA_PURPLE_COLOR
         assert stroke.line_width == 5.0
         assert stroke.line_dash == [2, 7]
 
@@ -189,47 +177,3 @@ def test_as_image(widget):
     image = widget.as_image()
     assert image is not None
     assert_action_performed(widget, "get image data")
-
-
-def test_deprecated_class_names():
-    """Deprecated names work, but issue a warning."""
-    with pytest.warns(DeprecationWarning):
-        from toga.widgets.canvas import DrawingObject
-
-    assert DrawingObject is DrawingAction
-
-    with pytest.warns(DeprecationWarning):
-        from toga.widgets.canvas import Context
-
-    assert Context is State
-
-    # A completely bogus name still fails.
-    with pytest.raises(ImportError):
-        from toga.widgets.canvas import Nonexistent  # noqa: F401
-
-
-def test_deprecated_attribute_names(widget):
-    with pytest.warns(DeprecationWarning):
-        context_property = widget.context
-
-    assert context_property is widget.root_state
-
-    # Create one sub-state first, to make sure we generate the new one in the right
-    # place — on the root state.
-    with widget.root_state.state() as state_1:
-        with pytest.warns(DeprecationWarning):
-            with widget.Context() as state_2:
-                pass
-
-    assert widget.root_state.drawing_actions == [state_1, state_2]
-
-    widget.root_state.clear()
-
-    # Create one sub-state first, to make sure we generate the new one in the right
-    # place — on the root state.
-    with widget.root_state.state() as state_3:
-        with pytest.warns(DeprecationWarning):
-            with widget.root_state.Context() as state_4:
-                pass
-
-    assert widget.root_state.drawing_actions == [state_3, state_4]

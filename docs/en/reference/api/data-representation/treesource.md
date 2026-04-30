@@ -4,7 +4,7 @@
 
 Data sources are abstractions that allow you to define the data being managed by your application independent of the GUI representation of that data. For details on the use of data sources, see the [topic guide](/topics/data-sources.md).
 
-TreeSource is an implementation of an ordered hierarchical tree of values. When a TreeSource is created, it is given a list of `accessors` - these are the attributes that all items managed by the TreeSource will have. The API provided by TreeSource is [`list`][]-like; the operations you'd expect on a normal Python list, such as `insert`, `remove`, `index`, and indexing with `[]`, are also possible on a TreeSource. These methods are available on the TreeSource itself to manipulate root nodes, and also on each node within the tree.
+TreeSource is an implementation of an ordered hierarchical tree of values. When a TreeSource is created, it can be given a list of `accessors` - these are the attributes that all items managed by the TreeSource will have. The API provided by TreeSource is [`list`][]-like; the operations you'd expect on a normal Python list, such as `insert`, `remove`, `index`, and indexing with `[]`, are also possible on a TreeSource. These methods are available on the TreeSource itself to manipulate root nodes, and also on each node within the tree.
 
 ```python
 from toga.sources import TreeSource
@@ -54,15 +54,19 @@ Each Node object in the TreeSource can have children; those children can in turn
 
 When creating a single Node for a TreeSource (e.g., when inserting a new item), the data for the Node can be specified as:
 
-- A dictionary, with the accessors mapping to the keys in the dictionary
-- Any iterable object (except for a string), with the accessors being mapped onto the items in the iterable in order of definition.
+- A dictionary; or
+- Any iterable object (except for a string), with the accessors being mapped onto the items in the iterable in order of definition; or
 - Any other object, which will be mapped onto the *first* accessor.
+
+If the TreeSource was constructed *without* specifying accessors, node data *must* be in dictionary form.
 
 When constructing an entire TreeSource, the data can be specified as:
 
 - A dictionary. The keys of the dictionary will be converted into Nodes, and used as parents; the values of the dictionary will become the children of their corresponding parent.
 - Any other iterable object (except a string). Each value in the iterable will be treated as a 2-item tuple, with the first item being data for the parent Node, and the second item being the child data.
 - Any other object will be converted into a single node with no children.
+
+If the TreeSource was constructed *without* specifying accessors, value data for each node *must* be in dictionary form.
 
 When specifying children, a value of [`None`][] for the children will result in the creation of a leaf node. Any other value will be processed recursively - so, a child specifier can itself be a dictionary, an iterable of 2-tuples, or data for a single child, and so on.
 

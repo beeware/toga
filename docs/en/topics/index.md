@@ -1,4 +1,4 @@
-# Topic Guides
+# Topic guides
 
 Topic guides are deeper explorations of concepts and issues related to usage of Toga. They aim to provide thorough explanations and background information, rather than a step-by-step guide of accomplishing specific tasks.
 

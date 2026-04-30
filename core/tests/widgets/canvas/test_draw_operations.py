@@ -6,7 +6,7 @@ from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.images import Image
-from toga.widgets.canvas import Arc, Ellipse
+from toga.widgets.canvas import Arc, Ellipse, Fill, Stroke
 from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
@@ -15,7 +15,7 @@ ABSOLUTE_FILE_PATH = Path(__file__).parent.parent.parent / "resources/toga.png"
 
 def test_begin_path(widget):
     """A begin path operation can be added."""
-    draw_op = widget.root_state.begin_path()
+    draw_op = widget.begin_path()
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "BeginPath()"
@@ -26,7 +26,7 @@ def test_begin_path(widget):
 
 def test_close_path(widget):
     """A close path operation can be added."""
-    draw_op = widget.root_state.close_path()
+    draw_op = widget.close_path()
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "ClosePath()"
@@ -35,72 +35,77 @@ def test_close_path(widget):
     assert widget._impl.draw_instructions[1:-1] == ["close path"]
 
 
+@pytest.mark.parametrize("alias_kwarg", [True, False])
+@pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
     "kwargs, args_repr, draw_objs, attrs",
     [
         # Defaults
         (
             {},
-            "color=None, fill_rule=FillRule.NONZERO",
+            "fill_rule=FillRule.NONZERO, fill_style=None",
             [("fill", {"fill_rule": FillRule.NONZERO})],
-            {"color": None, "fill_rule": FillRule.NONZERO},
+            {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
-        # Color as string name
+        # Fill style as string name
         (
-            {"color": REBECCAPURPLE},
-            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO",
+            {"fill_style": REBECCAPURPLE},
+            f"fill_rule=FillRule.NONZERO, fill_style={REBECCA_PURPLE_COLOR!r}",
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
                 ("fill", {"fill_rule": FillRule.NONZERO}),
             ],
-            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
+            {"fill_rule": FillRule.NONZERO, "fill_style": REBECCA_PURPLE_COLOR},
         ),
         # Color as RGB object
         (
-            {"color": REBECCA_PURPLE_COLOR},
-            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.NONZERO",
+            {"fill_style": REBECCA_PURPLE_COLOR},
+            f"fill_rule=FillRule.NONZERO, fill_style={REBECCA_PURPLE_COLOR!r}",
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
                 ("fill", {"fill_rule": FillRule.NONZERO}),
             ],
-            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.NONZERO},
+            {"fill_rule": FillRule.NONZERO, "fill_style": REBECCA_PURPLE_COLOR},
         ),
         # Color explicitly not set
         (
-            {"color": None},
-            "color=None, fill_rule=FillRule.NONZERO",
+            {"fill_style": None},
+            "fill_rule=FillRule.NONZERO, fill_style=None",
             [("fill", {"fill_rule": FillRule.NONZERO})],
-            {"color": None, "fill_rule": FillRule.NONZERO},
+            {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
         # Explicit Non-Zero winding
         (
             {"fill_rule": FillRule.NONZERO},
-            "color=None, fill_rule=FillRule.NONZERO",
+            "fill_rule=FillRule.NONZERO, fill_style=None",
             [("fill", {"fill_rule": FillRule.NONZERO})],
-            {"color": None, "fill_rule": FillRule.NONZERO},
+            {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
         # Even-Odd winding
         (
             {"fill_rule": FillRule.EVENODD},
-            "color=None, fill_rule=FillRule.EVENODD",
+            "fill_rule=FillRule.EVENODD, fill_style=None",
             [("fill", {"fill_rule": FillRule.EVENODD})],
-            {"color": None, "fill_rule": FillRule.EVENODD},
+            {"fill_rule": FillRule.EVENODD, "fill_style": None},
         ),
         # All args
         (
-            {"color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
-            f"color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD",
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE},
+            f"fill_rule=FillRule.EVENODD, fill_style={REBECCA_PURPLE_COLOR!r}",
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
                 ("fill", {"fill_rule": FillRule.EVENODD}),
             ],
-            {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD},
+            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCA_PURPLE_COLOR},
         ),
     ],
 )
-def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
+def test_fill(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
     """A primitive fill operation can be added."""
-    draw_op = widget.root_state.fill(**kwargs)
+    if alias_kwarg and "fill_style" in kwargs:
+        kwargs["color"] = kwargs.pop("fill_style")
+
+    draw_op = widget.fill(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Fill({args_repr})"
@@ -110,71 +115,103 @@ def test_fill(widget, kwargs, args_repr, draw_objs, attrs):
     assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
 
     # All the attributes can be retrieved.
+    if alias_attr and "fill_style" in attrs:
+        attrs["color"] = attrs.pop("fill_style")
+
     for name, value in attrs.items():
         assert getattr(draw_op, name) == value
 
 
+@pytest.mark.parametrize("use_method", [True, False])
+def test_fill_kw_only(widget, use_method):
+    """Providing fill_style positionally raises an error."""
+    fill = widget.fill if use_method else Fill
+
+    with pytest.raises(TypeError):
+        fill(FillRule.EVENODD, REBECCAPURPLE)
+
+
+@pytest.mark.parametrize("alias_kwarg", [True, False])
+@pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
     "kwargs, args_repr, draw_objs, attrs",
     [
         # Defaults
         (
             {},
-            "color=None, line_width=None, line_dash=None",
+            "stroke_style=None, line_width=None, line_dash=None",
             [],
-            {"color": None, "line_width": None, "line_dash": None},
+            {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color as string name
         (
-            {"color": REBECCAPURPLE},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            {"stroke_style": REBECCAPURPLE},
+            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
             [("set stroke style", REBECCA_PURPLE_COLOR)],
-            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
+            {
+                "stroke_style": REBECCA_PURPLE_COLOR,
+                "line_width": None,
+                "line_dash": None,
+            },
         ),
         # Color as RGB object
         (
-            {"color": REBECCA_PURPLE_COLOR},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            {"stroke_style": REBECCA_PURPLE_COLOR},
+            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
             [("set stroke style", REBECCA_PURPLE_COLOR)],
-            {"color": REBECCA_PURPLE_COLOR, "line_width": None, "line_dash": None},
+            {
+                "stroke_style": REBECCA_PURPLE_COLOR,
+                "line_width": None,
+                "line_dash": None,
+            },
         ),
         # Color explicitly not set
         (
-            {"color": None},
-            "color=None, line_width=None, line_dash=None",
+            {"stroke_style": None},
+            "stroke_style=None, line_width=None, line_dash=None",
             [],
-            {"color": None, "line_width": None, "line_dash": None},
+            {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "color=None, line_width=4.500, line_dash=None",
+            "stroke_style=None, line_width=4.500, line_dash=None",
             [("set line width", 4.5)],
-            {"color": None, "line_width": 4.5, "line_dash": None},
+            {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "color=None, line_width=None, line_dash=[2, 7]",
+            "stroke_style=None, line_width=None, line_dash=[2, 7]",
             [("set line dash", [2, 7])],
-            {"color": None, "line_width": None, "line_dash": [2, 7]},
+            {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
         (
-            {"color": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
-            f"color={REBECCA_PURPLE_COLOR!r}, line_width=4.500, line_dash=[2, 7]",
+            {"stroke_style": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
+            (
+                f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=4.500, "
+                "line_dash=[2, 7]"
+            ),
             [
                 ("set stroke style", REBECCA_PURPLE_COLOR),
                 ("set line width", 4.5),
                 ("set line dash", [2, 7]),
             ],
-            {"color": REBECCA_PURPLE_COLOR, "line_width": 4.5, "line_dash": [2, 7]},
+            {
+                "stroke_style": REBECCA_PURPLE_COLOR,
+                "line_width": 4.5,
+                "line_dash": [2, 7],
+            },
         ),
     ],
 )
-def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
+def test_stroke(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
     """A primitive stroke operation can be added."""
-    draw_op = widget.root_state.stroke(**kwargs)
+    if alias_kwarg and "stroke_style" in kwargs:
+        kwargs["color"] = kwargs.pop("stroke_style")
+
+    draw_op = widget.stroke(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Stroke({args_repr})"
@@ -189,13 +226,60 @@ def test_stroke(widget, kwargs, args_repr, draw_objs, attrs):
     ]
 
     # All the attributes can be retrieved.
+    if alias_attr and "stroke_style" in attrs:
+        attrs["color"] = attrs.pop("stroke_style")
+
     for name, value in attrs.items():
         assert getattr(draw_op, name) == value
 
 
+@pytest.mark.parametrize("use_method", [True, False])
+def test_stroke_kw_only(widget, use_method):
+    """Providing any positional arguments raises an error."""
+    stroke = widget.stroke if use_method else Stroke
+
+    with pytest.raises(TypeError):
+        stroke(REBECCAPURPLE)
+
+    with pytest.raises(TypeError):
+        stroke(REBECCAPURPLE, 4.5)
+
+    with pytest.raises(TypeError):
+        stroke(REBECCAPURPLE, 4.5, [1, 0])
+
+
+@pytest.mark.parametrize(
+    "action",
+    [
+        (Fill, "fill", "fill_style"),
+        (Stroke, "stroke", "stroke_style"),
+    ],
+)
+@pytest.mark.parametrize("use_method", [True, False])
+@pytest.mark.parametrize(
+    "values",
+    [
+        (REBECCAPURPLE, REBECCAPURPLE),
+        (REBECCAPURPLE, None),
+        (None, REBECCAPURPLE),
+        (None, None),
+    ],
+)
+def test_fill_stroke_duplicate_parameters(widget, action, use_method, values):
+    """Providing both color and fill_style/stroke_style raises an error."""
+    ActionClass, method_name, attr_name = action
+    if use_method:
+        act = getattr(widget, method_name)
+    else:
+        act = ActionClass
+
+    with pytest.raises(TypeError):
+        act(**{attr_name: values[0]}, color=values[1])
+
+
 def test_move_to(widget):
     """A move to operation can be added."""
-    draw_op = widget.root_state.move_to(10, 20)
+    draw_op = widget.move_to(10, 20)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "MoveTo(x=10, y=20)"
@@ -212,7 +296,7 @@ def test_move_to(widget):
 
 def test_line_to(widget):
     """A line to operation can be added."""
-    draw_op = widget.root_state.line_to(10, 20)
+    draw_op = widget.line_to(10, 20)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "LineTo(x=10, y=20)"
@@ -229,7 +313,7 @@ def test_line_to(widget):
 
 def test_bezier_curve_to(widget):
     """A Bézier curve to operation can be added."""
-    draw_op = widget.root_state.bezier_curve_to(10, 20, 30, 40, 50, 60)
+    draw_op = widget.bezier_curve_to(10, 20, 30, 40, 50, 60)
 
     assert_action_performed(widget, "redraw")
     assert (
@@ -255,7 +339,7 @@ def test_bezier_curve_to(widget):
 
 def test_quadratic_curve_to(widget):
     """A Quadratic curve to operation can be added."""
-    draw_op = widget.root_state.quadratic_curve_to(10, 20, 30, 40)
+    draw_op = widget.quadratic_curve_to(10, 20, 30, 40)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "QuadraticCurveTo(cpx=10, cpy=20, x=30, y=40)"
@@ -400,7 +484,7 @@ def test_quadratic_curve_to(widget):
 )
 def test_arc(widget, kwargs, args_repr, draw_kwargs):
     """An arc operation can be added."""
-    draw_op = widget.root_state.arc(**kwargs)
+    draw_op = widget.arc(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Arc({args_repr})"
@@ -564,7 +648,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
 )
 def test_ellipse(widget, kwargs, args_repr, draw_kwargs):
     """An ellipse operation can be added."""
-    draw_op = widget.root_state.ellipse(**kwargs)
+    draw_op = widget.ellipse(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"Ellipse({args_repr})"
@@ -581,7 +665,7 @@ def test_ellipse(widget, kwargs, args_repr, draw_kwargs):
 
 def test_rect(widget):
     """A rect operation can be added."""
-    draw_op = widget.root_state.rect(10, 20, 30, 40)
+    draw_op = widget.rect(10, 20, 30, 40)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Rect(x=10, y=20, width=30, height=40)"
@@ -600,7 +684,7 @@ def test_rect(widget):
 
 def test_round_rect(widget):
     """A rect operation can be added."""
-    draw_op = widget.root_state.round_rect(10, 20, 30, 40, 5)
+    draw_op = widget.round_rect(10, 20, 30, 40, 5)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "RoundRect(x=10, y=20, width=30, height=40, radii=5)"
@@ -726,7 +810,7 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
 )
 def test_write_text(widget, kwargs, instructions, args_repr, draw_attrs):
     """A write text operation can be added."""
-    draw_op = widget.root_state.write_text(**kwargs)
+    draw_op = widget.write_text(**kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"WriteText({args_repr})"
@@ -747,7 +831,7 @@ def test_write_text(widget, kwargs, instructions, args_repr, draw_attrs):
 
 def test_rotate(widget):
     """A rotate operation can be added."""
-    draw_op = widget.root_state.rotate(1.234)
+    draw_op = widget.rotate(1.234)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Rotate(radians=1.234)"
@@ -763,7 +847,7 @@ def test_rotate(widget):
 
 def test_scale(widget):
     """A scale operation can be added."""
-    draw_op = widget.root_state.scale(1.234, 2.345)
+    draw_op = widget.scale(1.234, 2.345)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Scale(sx=1.234, sy=2.345)"
@@ -780,7 +864,7 @@ def test_scale(widget):
 
 def test_translate(widget):
     """A translate operation can be added."""
-    draw_op = widget.root_state.translate(10, 20)
+    draw_op = widget.translate(10, 20)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Translate(tx=10, ty=20)"
@@ -797,7 +881,7 @@ def test_translate(widget):
 
 def test_reset_transform(widget):
     """A reset transform operation can be added."""
-    draw_op = widget.root_state.reset_transform()
+    draw_op = widget.reset_transform()
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "ResetTransform()"
@@ -850,7 +934,7 @@ def test_reset_transform(widget):
 def test_draw_image(app, widget, kwargs, instructions, args_repr, draw_attrs):
     """An image can be drawn."""
     image = Image(ABSOLUTE_FILE_PATH)
-    draw_op = widget.root_state.draw_image(image=image, **kwargs)
+    draw_op = widget.draw_image(image=image, **kwargs)
 
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == f"DrawImage(image={image!r}, {args_repr})"
@@ -877,13 +961,13 @@ def test_anticlockwise_deprecated(widget, value):
     )
 
     with pytest.warns(DeprecationWarning, match=match):
-        widget.root_state.arc(x=0, y=0, radius=10, anticlockwise=value)
+        widget.arc(x=0, y=0, radius=10, anticlockwise=value)
 
     with pytest.warns(DeprecationWarning, match=match):
         Arc(x=0, y=0, radius=10, anticlockwise=value)
 
     with pytest.warns(DeprecationWarning, match=match):
-        widget.root_state.ellipse(x=0, y=0, radiusx=10, radiusy=10, anticlockwise=value)
+        widget.ellipse(x=0, y=0, radiusx=10, radiusy=10, anticlockwise=value)
 
     with pytest.warns(DeprecationWarning, match=match):
         Ellipse(x=0, y=0, radiusx=10, radiusy=10, anticlockwise=value)
@@ -901,15 +985,13 @@ def test_anticlockwise_invalid(widget, anti, counter):
     match = r"Received both 'anticlockwise' and 'counterclockwise' arguments"
 
     with pytest.raises(TypeError, match=match):
-        widget.root_state.arc(
-            x=0, y=0, radius=10, anticlockwise=anti, counterclockwise=counter
-        )
+        widget.arc(x=0, y=0, radius=10, anticlockwise=anti, counterclockwise=counter)
 
     with pytest.raises(TypeError, match=match):
         Arc(x=0, y=0, radius=10, anticlockwise=anti, counterclockwise=counter)
 
     with pytest.raises(TypeError, match=match):
-        widget.root_state.ellipse(
+        widget.ellipse(
             x=0,
             y=0,
             radiusx=10,

@@ -85,8 +85,6 @@ Widgets:
 
   DetailedList:
     description: An ordered list with an icon, heading, and text for each item.
-    beta:
-      - winforms
     unsupported:
       - web
       - textual

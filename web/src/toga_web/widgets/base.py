@@ -1,6 +1,90 @@
 from abc import ABC, abstractmethod
 
-from toga_web.libs import create_element
+import js
+from pyodide.ffi import JsProxy
+
+from toga_web.libs import create_element, create_proxy
+
+
+class NativeProxy:
+    """Wraps a WebAwesome custom element, buffering attribute sets that happen
+    before the element's tag has been defined and the instance upgraded.
+
+    Toga's widget lifecycle creates elements detached from the DOM and
+    immediately sets class-defined properties on them (e.g. `wa-switch.checked`).
+    Those properties only exist after the browser has (a) loaded the component
+    module and called `customElements.define` and (b) upgraded the specific
+    element instance. Until then, attribute sets would fail.
+
+    The proxy:
+      * buffers pre-upgrade sets in an insertion-ordered dict
+      * returns the buffered value (or passes through) on reads
+      * once `whenDefined` resolves for the element's tag, force-upgrades the
+        (possibly still-disconnected) element with `customElements.upgrade`
+        and replays the buffer onto the now-upgraded element
+    """
+
+    def __init__(self, element):
+        # when mutating these bookkeeping members,
+        # call object.__setattr__ to avoid calling our own __setattr__ override
+        object.__setattr__(self, "_element", element)
+        object.__setattr__(self, "_pending", {})
+        object.__setattr__(self, "_upgraded", False)
+
+        tag = element.tagName.lower()
+        if tag.startswith("wa-"):
+
+            def on_defined(promise):
+                js.customElements.upgrade(element)
+                object.__setattr__(self, "_upgraded", True)
+                for attr, value in self._pending.items():
+                    setattr(element, attr, value)
+                self._pending.clear()
+
+            js.customElements.whenDefined(tag).then(create_proxy(on_defined))
+        else:
+            object.__setattr__(self, "_upgraded", True)
+
+    def unwrap(self):
+        """Return the underlying JsProxy element.
+
+        Pyodide unwraps JsProxy arguments automatically when marshaling into
+        JS, but it does not unwrap arbitrary Python objects — so callers
+        that pass a NativeProxy as an *argument* to a JS method (e.g.
+        appendChild, insertBefore) must call unwrap() to hand JS the real Node.
+        """
+        return self._element
+
+    def __getattr__(self, name):
+        # If we're still waiting to be upgraded and we've seen a set, return that value
+        if not self._upgraded and name in self._pending:
+            return self._pending[name]
+
+        attr = getattr(self._element, name)
+        # if we're asking for a JsProxy callable, assume we're going to call it;
+        # return wrapper that checks all args and unwraps any NativeProxys
+        # to their underlying JsProxy elements
+        if isinstance(attr, JsProxy) and callable(attr):
+
+            def _auto_unwrap(*args):
+                unwrapped_args = [
+                    a.unwrap() if isinstance(a, NativeProxy) else a for a in args
+                ]
+                return attr(*unwrapped_args)
+
+            return _auto_unwrap
+
+        # otherwise just return what was asked for
+        return attr
+
+    def __setattr__(self, name, value):
+        if self._upgraded:
+            setattr(self._element, name, value)
+        else:
+            # Pop-then-reinsert so replay order mirrors write order even
+            # when the same key is set more than once pre-upgrade.
+            self._pending.pop(name, None)
+            self._pending[name] = value
 
 
 class Widget(ABC):
@@ -46,7 +130,7 @@ class Widget(ABC):
             **properties,
         )
 
-        return native
+        return NativeProxy(native)
 
     @abstractmethod
     def create(self): ...

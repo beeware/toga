@@ -1,21 +1,19 @@
-# Let's draw on a canvas!
+# Drawing on a canvas
 
 One of the main capabilities needed to create many types of GUI applications is the ability to draw and manipulate lines, shapes, text, and other graphics. To do this in Toga, we use the Canvas Widget.
 
-Utilizing the Canvas is as easy as determining the drawing operations you want to perform and then creating a new Canvas. All drawing objects that are created with one of the drawing operations are returned so that they can be modified or removed.
+Utilizing the Canvas is as easy as determining the drawing operations you want to perform and then creating a new Canvas. All drawing actions that are created with one of the drawing operations are returned so that they can be modified or removed.
 
-<!-- rumdl-disable MD013 -->
 1. We first define the drawing operations we want to perform in a new function:
 
     ```python
     def draw_eyes(self):
-	    with self.canvas.Fill(color=WHITE) as eye_whites:
-		    eye_whites.arc(58, 92, 15)
-			    eye_whites.arc(88, 92, 15, math.pi, 3 * math.pi)
+        with self.canvas.Fill(color=WHITE) as eye_whites:
+            eye_whites.arc(58, 92, 15)
+            eye_whites.arc(88, 92, 15, math.pi, 3 * math.pi)
     ```
 
     Notice that we also created and used a new fill state called `eye_whites`. The `with` keyword that is used for the fill operation causes everything draw using the state to be filled with a color. In this example we filled two circular eyes with the color white.
-<!-- rumdl-enable MD013 -->
 
 2. Next we create a new Canvas:
 
