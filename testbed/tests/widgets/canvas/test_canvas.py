@@ -1,5 +1,6 @@
 import math
 import os
+import platform
 from itertools import chain
 from math import pi, radians, tan
 from unittest.mock import call
@@ -22,6 +23,7 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
 from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM
+from toga.widgets.canvas import Path2D
 
 from ..conftest import build_cleanup_test
 from ..properties import (  # noqa: F401
@@ -991,6 +993,69 @@ async def test_draw_image_in_rect(canvas, probe):
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "draw_image_in_rect", threshold=0.05)
+
+
+@pytest.mark.xfail(
+    condition=platform.system() == "Darwin" and platform.machine() == "x86_64",
+    reason="Calls to CGPathAddArc with counterclockwise True segfaults on Mac Intel",
+)
+async def test_path_object(canvas, probe):
+    path = Path2D()
+
+    # exercise all of the Path methods
+    # line_to without point
+    path.line_to(10, 15)
+    # line_to with point
+    path.line_to(20, 30)
+    # bezier
+    path.bezier_curve_to(20, 10, 40, 15, 50, 10)
+    # close
+    path.close_path()
+
+    # rect
+    path.rect(5, 5, 50, 30)
+
+    path2 = Path2D()
+    # move_to
+    path2.move_to(100, 80)
+    # quadratic
+    path2.quadratic_curve_to(100, 100, 120, 130)
+    path2.quadratic_curve_to(150, 120, 150, 100)
+    # arc
+    path2.arc(130, 100, 20, endangle=pi / 3)
+
+    # add_path
+    path.add_path(path2, (0.5, 0.0, 0.0, 0.75, 30, 10))
+    path.move_to(150, 100)
+    # ellipse
+    path.ellipse(150, 100, 20, 30, pi / 4, 0, pi, True)
+    # rounded rectangle
+    path.round_rect(180, 140, 10, 10, 3)
+
+    # add an empty path with and without transformation
+    path.add_path(Path2D())
+    path.add_path(Path2D(), (1, 0, 0, 1, 10, 10))
+
+    # clone a path
+    Path2D(path2)
+
+    # transform
+    canvas.translate(100, 100)
+    canvas.scale(0.5, 0.5)
+    for _ in range(12):
+        canvas.rotate(pi / 6)
+        canvas.scale(0.95, 0.95)
+        print("draw", _)
+        canvas.fill(path=path, fill_style=CORNFLOWERBLUE)
+        canvas.stroke(path, color=REBECCAPURPLE)
+
+    # stroke and fill an empty path
+    canvas.fill(path=Path2D())
+    canvas.stroke(path=Path2D())
+    # done
+
+    await probe.redraw("Image should be drawn")
+    assert_reference(probe, "path_object", threshold=0.05)
 
 
 async def test_miter_join(canvas, probe):

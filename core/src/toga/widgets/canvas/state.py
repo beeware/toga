@@ -32,6 +32,7 @@ from .drawingaction import (
     WriteText,
 )
 from .geometry import CornerRadiusT
+from .path import Path2D
 
 if TYPE_CHECKING:
     from toga.colors import ColorT
@@ -314,6 +315,7 @@ class DrawingActionDispatch(ABC):
     def fill(
         self,
         fill_rule: FillRule = FillRule.NONZERO,
+        path: Path2D | None = None,
         *,
         fill_style: ColorT | None | object = NOT_PROVIDED,
         color: ColorT | None | object = NOT_PROVIDED,
@@ -331,6 +333,8 @@ class DrawingActionDispatch(ABC):
 
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
+        :param path: An optional Path2D object to fill. Ignored when used as a
+            context manager.
         :param fill_style: The fill style. At present, only accepts colors; gradients
             and patterns are not supported.
         :param color: Alias for fill_style.
@@ -338,7 +342,10 @@ class DrawingActionDispatch(ABC):
             for the operation.
         :raises TypeError: If both `fill_style` and `color` are provided.
         """
-        fill = Fill(fill_rule, fill_style=fill_style, color=color)
+        if path is not None:
+            # copy the current state of the path.
+            path = Path2D(path)
+        fill = Fill(fill_rule, path, fill_style=fill_style, color=color)
         self._add_to_target(fill)
         # Strictly speaking, this doesn't need a warning or redraw, since BaseState
         # overwrites this method with its own shimmed version. But we might as well be
@@ -348,6 +355,7 @@ class DrawingActionDispatch(ABC):
 
     def stroke(
         self,
+        path: Path2D | None = None,
         *,
         stroke_style: ColorT | None | object = NOT_PROVIDED,
         color: ColorT | None | object = NOT_PROVIDED,
@@ -360,6 +368,8 @@ class DrawingActionDispatch(ABC):
         (`x`, `y`) coordinates (if both are specified). When the context is exited, the
         path is stroked.
 
+        :param path: An optional Path2D object to draw. Ignored when used as a
+            context manager.
         :param stroke_style: The stroke style. At present, only accepts colors;
             gradients and patterns are not supported.
         :param color: Alias for fill_style.
@@ -370,11 +380,15 @@ class DrawingActionDispatch(ABC):
             for the operation.
         :raises TypeError: If both `stroke_style` and `color` are provided.
         """
+        if path is not None:
+            # copy the current state of the path.
+            path = Path2D(path)
         stroke = Stroke(
             stroke_style=stroke_style,
             color=color,
             line_width=line_width,
             line_dash=line_dash,
+            path=path,
         )
         self._add_to_target(stroke)
         # Strictly speaking, this doesn't need a warning or redraw, since BaseState
@@ -935,6 +949,7 @@ class Fill(BaseState):
     # This will need to change to a pair of positional arguments in order to accommodate
     # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
     fill_rule: FillRule = FillRule.NONZERO
+    path: Path2D | None = None
     _: KW_ONLY
     fill_style: ColorT | None | object = color_property()
     color: InitVar[ColorT | None | object] = color_property()
@@ -961,15 +976,29 @@ class Fill(BaseState):
             for action in self.drawing_actions:
                 action._draw(context)
 
-            context.in_fill = False  # 4-2026: Backwards compatibility for Toga <= 0.5.3
+            context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
+            # Ignore path when used as context manager
+            path = None
+        elif self.path is not None:
+            path = self.path.impl
+        else:
+            path = None
 
-        context.fill(self.fill_rule)
+        context.fill(fill_rule=self.fill_rule, path=path)
         context.restore()
+
+    def __enter__(self):
+        if self.path is not None:
+            raise RuntimeError(
+                "The path must not be set when Fill is used as a context manager."
+            )
+        return super().__enter__()
 
 
 @dataclass(repr=False)
 class Stroke(BaseState):
     # Path parameter (positional/keyword) will go here.
+    path: Path2D | None = None
     _: KW_ONLY
     stroke_style: ColorT | None | object = color_property()
     color: InitVar[ColorT | None | object] = color_property()
@@ -1003,6 +1032,19 @@ class Stroke(BaseState):
                 action._draw(context)
 
             context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
+            # Ignore path when used as context manager
+            path = None
+        elif self.path is not None:
+            path = self.path.impl
+        else:
+            path = None
 
-        context.stroke()
+        context.stroke(path=path)
         context.restore()
+
+    def __enter__(self):
+        if self.path is not None:
+            raise RuntimeError(
+                "The path must not be set when Stroke is used as a context manager."
+            )
+        return super().__enter__()

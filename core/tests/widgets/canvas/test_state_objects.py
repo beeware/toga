@@ -5,6 +5,7 @@ from toga.constants import FillRule
 from toga.widgets.canvas import (
     ClosePath,
     Fill,
+    Path2D,
     Scale,
     State,
     Stroke,
@@ -12,6 +13,7 @@ from toga.widgets.canvas import (
 from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
+EMPTY_PATH = Path2D()
 
 
 def test_sub_state(widget):
@@ -62,35 +64,50 @@ def test_closed_path(widget):
         # Defaults
         (
             {},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
             {
                 "fill_rule": FillRule.NONZERO,
+                "path": None,
                 "fill_style": None,
             },
         ),
         # Fill style
         (
             {"fill_style": REBECCAPURPLE},
-            (f"fill_rule=FillRule.NONZERO, fill_style={REBECCA_PURPLE_COLOR!r}"),
-            {"fill_rule": FillRule.NONZERO, "fill_style": REBECCA_PURPLE_COLOR},
+            (
+                "fill_rule=FillRule.NONZERO, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
+            ),
+            {
+                "fill_rule": FillRule.NONZERO,
+                "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
+            },
         ),
         # Explicitly don't set fill style
         (
             {"fill_style": None},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
-            {"fill_rule": FillRule.NONZERO, "fill_style": None},
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
+            {"fill_rule": FillRule.NONZERO, "path": None, "fill_style": None},
         ),
         # Fill Rule
         (
             {"fill_rule": FillRule.EVENODD},
-            "fill_rule=FillRule.EVENODD, fill_style=None",
-            {"fill_style": None, "fill_rule": FillRule.EVENODD},
+            "fill_rule=FillRule.EVENODD, path=None, fill_style=None",
+            {"fill_style": None, "path": None, "fill_rule": FillRule.EVENODD},
         ),
         # All args
         (
             {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE},
-            f"fill_rule=FillRule.EVENODD, fill_style={REBECCA_PURPLE_COLOR!r}",
-            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCA_PURPLE_COLOR},
+            (
+                "fill_rule=FillRule.EVENODD, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
+            ),
+            {
+                "fill_rule": FillRule.EVENODD,
+                "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
+            },
         ),
     ],
 )
@@ -116,7 +133,7 @@ def test_fill(widget, kwargs, args_repr, properties):
         ),
         "begin path",
         ("line to", {"x": 30, "y": 40}),
-        ("fill", {"fill_rule": properties["fill_rule"]}),
+        ("fill", {"fill_rule": properties["fill_rule"], "path": None}),
         "restore",
     ]
 
@@ -126,19 +143,32 @@ def test_fill(widget, kwargs, args_repr, properties):
     ]
 
 
+def test_fill_context_path_error(widget):
+    """Fill should error if used as context when path is not None."""
+    with pytest.raises(
+        RuntimeError,
+        match=r"The path must not be set when Fill is used as a context manager\.",
+    ):
+        with widget.fill(path=Path2D()):
+            pass
+
+
 @pytest.mark.parametrize(
     "kwargs, args_repr, properties",
     [
         # Defaults
         (
             {},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "path=None, stroke_style=None, line_width=None, line_dash=None",
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color
         (
             {"stroke_style": REBECCAPURPLE},
-            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            (
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=None, line_dash=None"
+            ),
             {
                 "stroke_style": REBECCA_PURPLE_COLOR,
                 "line_width": None,
@@ -148,29 +178,30 @@ def test_fill(widget, kwargs, args_repr, properties):
         # Explicitly don't set stroke_style
         (
             {"stroke_style": None},
-            "stroke_style=None, line_width=None, line_dash=None",
+            ("path=None, stroke_style=None, line_width=None, line_dash=None"),
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "stroke_style=None, line_width=4.500, line_dash=None",
+            "path=None, stroke_style=None, line_width=4.500, line_dash=None",
             {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "stroke_style=None, line_width=None, line_dash=[2, 7]",
+            "path=None, stroke_style=None, line_width=None, line_dash=[2, 7]",
             {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
         (
             {"stroke_style": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
             (
-                f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=4.500, "
-                "line_dash=[2, 7]"
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=4.500, line_dash=[2, 7]"
             ),
             {
+                "path": None,
                 "stroke_style": REBECCA_PURPLE_COLOR,
                 "line_width": 4.5,
                 "line_dash": [2, 7],
@@ -210,7 +241,7 @@ def test_stroke(widget, kwargs, args_repr, properties):
         ),
         "begin path",
         ("line to", {"x": 30, "y": 40}),
-        "stroke",
+        ("stroke", {"path": None}),
         "restore",
     ]
 
@@ -218,6 +249,16 @@ def test_stroke(widget, kwargs, args_repr, properties):
     assert widget._impl.draw_instructions[1:-1] == [
         command for command in commands if command is not None
     ]
+
+
+def test_stroke_context_path_error(widget):
+    """Stroke should error if used as context when path is not None."""
+    with pytest.raises(
+        RuntimeError,
+        match=r"The path must not be set when Stroke is used as a context manager\.",
+    ):
+        with widget.stroke(Path2D()):
+            pass
 
 
 def assert_contents(container, contains: list, doesnt_contain: list):

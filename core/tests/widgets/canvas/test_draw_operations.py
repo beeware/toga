@@ -43,60 +43,85 @@ def test_close_path(widget):
         # Defaults
         (
             {},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
-            [("fill", {"fill_rule": FillRule.NONZERO})],
-            {"fill_rule": FillRule.NONZERO, "fill_style": None},
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
+            [("fill", {"fill_rule": FillRule.NONZERO, "path": None})],
+            {
+                "fill_rule": FillRule.NONZERO,
+                "path": None,
+                "fill_style": None,
+            },
         ),
         # Fill style as string name
         (
             {"fill_style": REBECCAPURPLE},
-            f"fill_rule=FillRule.NONZERO, fill_style={REBECCA_PURPLE_COLOR!r}",
+            (
+                "fill_rule=FillRule.NONZERO, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
+            ),
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
-                ("fill", {"fill_rule": FillRule.NONZERO}),
+                ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
             ],
-            {"fill_rule": FillRule.NONZERO, "fill_style": REBECCA_PURPLE_COLOR},
+            {
+                "fill_rule": FillRule.NONZERO,
+                "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
+            },
         ),
         # Color as RGB object
         (
             {"fill_style": REBECCA_PURPLE_COLOR},
-            f"fill_rule=FillRule.NONZERO, fill_style={REBECCA_PURPLE_COLOR!r}",
+            (
+                "fill_rule=FillRule.NONZERO, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
+            ),
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
-                ("fill", {"fill_rule": FillRule.NONZERO}),
+                ("fill", {"fill_rule": FillRule.NONZERO, "path": None}),
             ],
-            {"fill_rule": FillRule.NONZERO, "fill_style": REBECCA_PURPLE_COLOR},
+            {
+                "fill_rule": FillRule.NONZERO,
+                "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
+            },
         ),
         # Color explicitly not set
         (
             {"fill_style": None},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
-            [("fill", {"fill_rule": FillRule.NONZERO})],
-            {"fill_rule": FillRule.NONZERO, "fill_style": None},
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
+            [("fill", {"fill_rule": FillRule.NONZERO, "path": None})],
+            {"fill_rule": FillRule.NONZERO, "path": None, "fill_style": None},
         ),
         # Explicit Non-Zero winding
         (
             {"fill_rule": FillRule.NONZERO},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
-            [("fill", {"fill_rule": FillRule.NONZERO})],
-            {"fill_rule": FillRule.NONZERO, "fill_style": None},
+            "fill_rule=FillRule.NONZERO, path=None, fill_style=None",
+            [("fill", {"fill_rule": FillRule.NONZERO, "path": None})],
+            {"fill_rule": FillRule.NONZERO, "path": None, "fill_style": None},
         ),
         # Even-Odd winding
         (
             {"fill_rule": FillRule.EVENODD},
-            "fill_rule=FillRule.EVENODD, fill_style=None",
-            [("fill", {"fill_rule": FillRule.EVENODD})],
-            {"fill_rule": FillRule.EVENODD, "fill_style": None},
+            "fill_rule=FillRule.EVENODD, path=None, fill_style=None",
+            [("fill", {"fill_rule": FillRule.EVENODD, "path": None})],
+            {"fill_rule": FillRule.EVENODD, "path": None, "fill_style": None},
         ),
         # All args
         (
             {"fill_rule": FillRule.EVENODD, "fill_style": REBECCAPURPLE},
-            f"fill_rule=FillRule.EVENODD, fill_style={REBECCA_PURPLE_COLOR!r}",
+            (
+                "fill_rule=FillRule.EVENODD, path=None, "
+                f"fill_style={REBECCA_PURPLE_COLOR!r}"
+            ),
             [
                 ("set fill style", REBECCA_PURPLE_COLOR),
-                ("fill", {"fill_rule": FillRule.EVENODD}),
+                ("fill", {"fill_rule": FillRule.EVENODD, "path": None}),
             ],
-            {"fill_rule": FillRule.EVENODD, "fill_style": REBECCA_PURPLE_COLOR},
+            {
+                "fill_rule": FillRule.EVENODD,
+                "path": None,
+                "fill_style": REBECCA_PURPLE_COLOR,
+            },
         ),
     ],
 )
@@ -128,7 +153,7 @@ def test_fill_kw_only(widget, use_method):
     fill = widget.fill if use_method else Fill
 
     with pytest.raises(TypeError):
-        fill(FillRule.EVENODD, REBECCAPURPLE)
+        fill(FillRule.EVENODD, None, REBECCAPURPLE)
 
 
 @pytest.mark.parametrize("alias_kwarg", [True, False])
@@ -139,14 +164,17 @@ def test_fill_kw_only(widget, use_method):
         # Defaults
         (
             {},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "path=None, stroke_style=None, line_width=None, line_dash=None",
             [],
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color as string name
         (
             {"stroke_style": REBECCAPURPLE},
-            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            (
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=None, line_dash=None"
+            ),
             [("set stroke style", REBECCA_PURPLE_COLOR)],
             {
                 "stroke_style": REBECCA_PURPLE_COLOR,
@@ -157,7 +185,10 @@ def test_fill_kw_only(widget, use_method):
         # Color as RGB object
         (
             {"stroke_style": REBECCA_PURPLE_COLOR},
-            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            (
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=None, line_dash=None"
+            ),
             [("set stroke style", REBECCA_PURPLE_COLOR)],
             {
                 "stroke_style": REBECCA_PURPLE_COLOR,
@@ -168,21 +199,21 @@ def test_fill_kw_only(widget, use_method):
         # Color explicitly not set
         (
             {"stroke_style": None},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "path=None, stroke_style=None, line_width=None, line_dash=None",
             [],
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "stroke_style=None, line_width=4.500, line_dash=None",
+            "path=None, stroke_style=None, line_width=4.500, line_dash=None",
             [("set line width", 4.5)],
             {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "stroke_style=None, line_width=None, line_dash=[2, 7]",
+            "path=None, stroke_style=None, line_width=None, line_dash=[2, 7]",
             [("set line dash", [2, 7])],
             {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
@@ -190,8 +221,8 @@ def test_fill_kw_only(widget, use_method):
         (
             {"stroke_style": REBECCAPURPLE, "line_width": 4.5, "line_dash": [2, 7]},
             (
-                f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=4.500, "
-                "line_dash=[2, 7]"
+                f"path=None, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+                "line_width=4.500, line_dash=[2, 7]"
             ),
             [
                 ("set stroke style", REBECCA_PURPLE_COLOR),
@@ -221,7 +252,7 @@ def test_stroke(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, a
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
         *draw_objs,
-        "stroke",
+        ("stroke", {"path": None}),
         "restore",
     ]
 
@@ -235,17 +266,17 @@ def test_stroke(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, a
 
 @pytest.mark.parametrize("use_method", [True, False])
 def test_stroke_kw_only(widget, use_method):
-    """Providing any positional arguments raises an error."""
+    """Providing any positional arguments other than Path raises an error."""
     stroke = widget.stroke if use_method else Stroke
 
     with pytest.raises(TypeError):
-        stroke(REBECCAPURPLE)
+        stroke(None, REBECCAPURPLE)
 
     with pytest.raises(TypeError):
-        stroke(REBECCAPURPLE, 4.5)
+        stroke(None, REBECCAPURPLE, 4.5)
 
     with pytest.raises(TypeError):
-        stroke(REBECCAPURPLE, 4.5, [1, 0])
+        stroke(None, REBECCAPURPLE, 4.5, [1, 0])
 
 
 @pytest.mark.parametrize(
