@@ -25,6 +25,15 @@ class OpenGLViewProbe(SimpleProbe):
                 await self.button_up(button, x, y)
             await self.redraw("Buttons cleared")
 
+        async def position_change(self, x=0, y=0):
+            self._emit_event(
+                Gdk.EventType.MOTION_NOTIFY,
+                x,
+                y,
+                button=1,
+                state=Gdk.ModifierType.MOD2_MASK,
+            )
+
         def _emit_event(self, event_type, x, y, button=1, state=0, emit_name=None):
             event = Gdk.Event.new(event_type)
             event.button = button

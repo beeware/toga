@@ -19,6 +19,9 @@ class OpenGLViewProbe(SimpleProbe):
         await self.touch_up(x, y)
         await self.redraw("Touch cleared")
 
+    async def position_change(self, x=0, y=0):
+        self.motion_event(MotionEvent.ACTION_MOVE, x, y)
+
     def motion_event(self, action, x, y):
         time = SystemClock.uptimeMillis()
         super().motion_event(

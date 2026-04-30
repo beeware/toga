@@ -69,11 +69,12 @@ class OpenGLView(Widget):
         self.pointer = None
         self.buttons = frozenset()
         self.native = GLSurfaceView(self._native_activity)
-        self.renderer = TogaGLRenderer(self)
-        self.listener = TouchListener(self)
-
         self.native.setEGLContextClientVersion(3)
+
+        self.renderer = TogaGLRenderer(self)
         self.native.setRenderer(self.renderer)
+
+        self.listener = TouchListener(self)
         self.native.setOnTouchListener(self.listener)
 
     def redraw(self):

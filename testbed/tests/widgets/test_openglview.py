@@ -32,13 +32,18 @@ async def test_callbacks(probe, widget, renderer):
     renderer.on_init.assert_called_once_with(widget)
     await probe.redraw("OpenGLView widget initialized", 0.1)
 
-    # different backends render different numbers of times with
-    # different arguments
+    # different backends render different numbers of times
     renderer.on_render.assert_called()
     assert renderer.on_render.call_args[0] == (widget,)
     assert "size" in renderer.on_render.call_args[1]
     assert isinstance(renderer.on_render.call_args[1]["size"], tuple)
     assert len(renderer.on_render.call_args[1]["size"]) == 2
+    assert "pointer" in renderer.on_render.call_args[1]
+    if renderer.on_render.call_args[1]["pointer"] is not None:
+        assert isinstance(renderer.on_render.call_args[1]["pointer"], tuple)
+        assert len(renderer.on_render.call_args[1]["pointer"]) == 2
+    assert "buttons" in renderer.on_render.call_args[1]
+    assert renderer.on_render.call_args[1]["buttons"] == frozenset()
 
     renderer.reset_mock()
 
@@ -49,6 +54,12 @@ async def test_callbacks(probe, widget, renderer):
     assert "size" in renderer.on_render.call_args[1]
     assert isinstance(renderer.on_render.call_args[1]["size"], tuple)
     assert len(renderer.on_render.call_args[1]["size"]) == 2
+    assert "pointer" in renderer.on_render.call_args[1]
+    if renderer.on_render.call_args[1]["pointer"] is not None:
+        assert isinstance(renderer.on_render.call_args[1]["pointer"], tuple)
+        assert len(renderer.on_render.call_args[1]["pointer"]) == 2
+    assert "buttons" in renderer.on_render.call_args[1]
+    assert renderer.on_render.call_args[1]["buttons"] == frozenset()
 
 
 async def test_buttons(probe, widget, renderer):
@@ -81,3 +92,26 @@ async def test_buttons(probe, widget, renderer):
         assert "buttons" in renderer.on_render.call_args[1]
         assert isinstance(renderer.on_render.call_args[1]["buttons"], frozenset)
         assert renderer.on_render.call_args[1]["buttons"] == buttons
+
+        assert "pointer" in renderer.on_render.call_args[1]
+        assert renderer.on_render.call_args[1]["pointer"] == (0, 0)
+
+
+async def test_pointer(probe, widget, renderer):
+    if not probe.buttons:
+        pytest.skip("Backend does not support buttons.")
+
+    await probe.redraw("OpenGLView widget initialized", 0.1)
+
+    # generate a pointer move event
+    await probe.position_change(10, 10)
+    await probe.redraw("Pointer changed", 0.01)
+
+    # redraw the view
+    widget.redraw()
+    await probe.redraw("OpenGLView widget redraw requested", 0.1)
+
+    # pointer should reflect the new position
+    assert renderer.on_render.call_args[0] == (widget,)
+    assert "pointer" in renderer.on_render.call_args[1]
+    assert renderer.on_render.call_args[1]["pointer"] == (0, 0)

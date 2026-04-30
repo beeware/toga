@@ -28,6 +28,14 @@ class OpenGLViewProbe(SimpleProbe):
             await method(x, y)
         await self.redraw("Buttons cleared")
 
+    async def position_change(self, x=0, y=0):
+        self._emit_event(
+            QEvent.Type.MouseMove,
+            x,
+            y,
+            button=Qt.MouseButton.LeftButton,
+        )
+
     async def left_mouse_down(self, x=0, y=0):
         self._emit_event(
             QEvent.Type.MouseButtonPress, x, y, button=Qt.MouseButton.LeftButton

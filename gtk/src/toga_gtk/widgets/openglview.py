@@ -42,7 +42,7 @@ class OpenGLView(Widget):
             self.interface,
             size=self._size(),
             buttons=frozenset(self.buttons),
-            position=self.position,
+            pointer=self.position,
         )
         return True
 

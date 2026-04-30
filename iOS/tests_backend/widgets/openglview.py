@@ -23,19 +23,19 @@ class OpenGLViewProbe(SimpleProbe):
             await self.touch_up(x, y)
         await self.redraw("Touch cleared")
 
+    async def position_change(self, x=0, y=0):
+        touch = MockTouch.alloc().init()
+        touches = NSSet.setWithObject(touch)
+
+        touch.position = NSPoint(x, y)
+        self.native.touchesMoved(touches, withEvent=None)
+
     async def touch_down(self, x, y):
         touch = MockTouch.alloc().init()
         touches = NSSet.setWithObject(touch)
 
         touch.position = NSPoint(x, y)
         self.native.touchesBegan(touches, withEvent=None)
-
-    async def touch_move(self, x, y):
-        touch = MockTouch.alloc().init()
-        touches = NSSet.setWithObject(touch)
-
-        touch.position = NSPoint(x, y)
-        self.native.touchesMoved(touches, withEvent=None)
 
     async def touch_up(self, x, y):
         touch = MockTouch.alloc().init()

@@ -29,6 +29,12 @@ class OpenGLViewProbe(SimpleProbe):
             await method(x, y)
         await self.redraw("Buttons cleared")
 
+    async def position_change(self, x=0, y=0):
+        await self.mouse_event(
+            NSEventType.LeftMouseDragged,
+            self.native.convertPoint(NSPoint((x, y)), toView=None),
+        )
+
     async def left_mouse_down(self, x=0, y=0):
         event = self._button_event(NSEventType.LeftMouseDown)
         self.native.mouseDown_(event)
