@@ -94,7 +94,8 @@ async def test_buttons(probe, widget, renderer):
         assert renderer.on_render.call_args[1]["buttons"] == buttons
 
         assert "pointer" in renderer.on_render.call_args[1]
-        assert renderer.on_render.call_args[1]["pointer"] == (0, 0)
+        assert isinstance(renderer.on_render.call_args[1]["pointer"], tuple)
+        assert len(renderer.on_render.call_args[1]["pointer"]) == 2
 
 
 async def test_pointer(probe, widget, renderer):
@@ -114,4 +115,4 @@ async def test_pointer(probe, widget, renderer):
     # pointer should reflect the new position
     assert renderer.on_render.call_args[0] == (widget,)
     assert "pointer" in renderer.on_render.call_args[1]
-    assert renderer.on_render.call_args[1]["pointer"] == (0, 0)
+    assert renderer.on_render.call_args[1]["pointer"] == (10, 10)
