@@ -64,23 +64,21 @@ Items in a DetailedList will respond to a primary and secondary action if the `o
 * On **Android**, a long press displays a menu with the primary and secondary actions.
 * On **iOS**, swiping left triggers the primary action, and swiping right triggers the secondary action.
 * On **GTK**, a right click displays buttons for the primary and secondary actions.
-* On **macOS**, a right click displays a context menu with the primary and secondary actions.
+* On **macOS** and **Windows**, a right click displays a context menu with the primary and secondary actions.
 * On **Qt**, the primary and secondary actions are displayed as standalone buttons.
-* On **Windows**, the implementation does not currently support primary or secondary actions.
 
 By default, the primary and secondary action will be labeled as "Delete" and "Action", respectively. These names can be overridden by providing a `primary_action` and `secondary_action` argument when constructing the DetailedList. Although the primary action is labeled "Delete" by default, the DetailedList will not perform any data deletion as part of the UI interaction. It is the responsibility of the application to implement any data deletion behavior as part of the `on_primary_action` handler.
 
 The DetailedList as a whole will also respond to a refresh UI action if an `on_refresh` handler is set:
 
-* On **macOS**, **iOS** and **Android**, pulling down at the top of the list triggers a refresh.
+* On **Android**, **iOS** and **macOS**, pulling down at the top of the list triggers a refresh.
 * On **Qt**, a button bar displays a refresh button.
 * On **GTK**, a floating refresh button is displayed when scrolled to the top.
-* On **Windows**, the implementation does not currently support refresh.
+* On **Windows**, a right click displays a context menu with a refresh option.
 
 ## Notes
 
 * The iOS Human Interface Guidelines differentiate between "Normal" and "Destructive" actions on a row. Toga will interpret any action with a name of "Delete" or "Remove" as destructive, and will render the action appropriately.
-* The WinForms implementation currently uses a column layout similar to [`Table`][toga.Table], and does not support the primary, secondary or refresh actions.
 * Using DetailedList on Android requires the AndroidX SwipeRefreshLayout widget in your project's Gradle dependencies. Ensure your app declares a dependency on `androidx.swiperefreshlayout:swiperefreshlayout:1.1.0` or later.
 
 ## Reference

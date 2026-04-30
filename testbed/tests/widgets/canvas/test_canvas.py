@@ -510,6 +510,28 @@ async def test_stroke(canvas, probe):
     assert_reference(probe, "stroke")
 
 
+async def test_odd_and_zero_dash_pattern(canvas, probe):
+    """Odd-length dash patterns should be doubled, and empty should reset to solid."""
+    with canvas.stroke(line_dash=[5], line_width=10):
+        # Should be 5-5 (-----     -----     )
+        canvas.move_to(10, 50)
+        canvas.line_to(190, 50)
+
+    with canvas.stroke(line_dash=[10, 5, 3], line_width=10):
+        # Should be 10-5-3-10-5-3
+        # (----------     ---          -----   ----------     ---          -----   )
+        canvas.move_to(10, 100)
+        canvas.line_to(190, 100)
+
+    with canvas.stroke(line_dash=[], line_width=10):
+        # Should be a solid line
+        canvas.move_to(10, 150)
+        canvas.line_to(190, 150)
+
+    await probe.redraw("Stroke should be drawn")
+    assert_reference(probe, "odd_dash_pattern", threshold=0.025)
+
+
 async def test_stroke_and_fill(canvas, probe):
     "A shape drawn with primitives can be stroked and filled."
     # Draw a closed path

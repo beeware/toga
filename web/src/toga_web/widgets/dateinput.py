@@ -1,5 +1,6 @@
 import datetime
 
+from toga.widgets.dateinput import MAX_DATE, MIN_DATE
 from toga_web.libs import create_proxy
 
 from .base import Widget
@@ -15,12 +16,12 @@ def native_date(py_date_obj):
 
 class DateInput(Widget):
     def create(self):
-        self.native = self._create_native_widget("sl-input")
+        self.native = self._create_native_widget("wa-input")
         self.native.type = "date"
         self.native.value = native_date(datetime.date.today())
-        self.native.addEventListener("sl-change", create_proxy(self.dom_sl_change))
+        self.native.addEventListener("change", create_proxy(self.dom_change))
 
-    def dom_sl_change(self, event):
+    def dom_change(self, event):
         try:
             input_date = py_date(self.native.value)
         except Exception:
@@ -53,14 +54,22 @@ class DateInput(Widget):
         self.native.min = native_date(value)
 
     def get_min_date(self):
-        if self.native.min is None:
-            return datetime.date(1800, 1, 1)
-        return datetime.date.fromisoformat(str(self.native.min))
+        try:
+            native_min = self.native.min
+        except AttributeError:
+            return MIN_DATE
+        if native_min is None:
+            return MIN_DATE
+        return datetime.date.fromisoformat(str(native_min))
 
     def set_max_date(self, value):
         self.native.max = native_date(value)
 
     def get_max_date(self):
-        if self.native.max is None:
-            return datetime.date(8999, 12, 31)
-        return datetime.date.fromisoformat(str(self.native.max))
+        try:
+            native_max = self.native.max
+        except AttributeError:
+            return MAX_DATE
+        if native_max is None:
+            return MAX_DATE
+        return datetime.date.fromisoformat(str(native_max))

@@ -148,6 +148,32 @@ async def test_select(widget, probe, source, on_select_handler):
     on_select_handler.reset_mock()
 
 
+async def test_deselect(widget, probe):
+    """Test for deselection"""
+    red = toga.Icon("resources/icons/red")
+    green = toga.Icon("resources/icons/green")
+
+    # Change the data source for something smaller
+    widget.data = [
+        {
+            "a": MyData(i),
+            "b": i,
+            "c": {0: green, 1: red}[i % 2],
+        }
+        for i in range(5)
+    ]
+    await probe.redraw("Data source has been changed")
+
+    # Select a single row
+    await probe.select_row(2)
+    await probe.redraw("Third row is selected")
+    assert widget.selection == widget.data[2]
+    # Deselect all
+    await probe.deselect_all()
+    await probe.redraw("Row is deselected")
+    assert widget.selection is None
+
+
 class MyData:
     def __init__(self, text):
         self.text = text
