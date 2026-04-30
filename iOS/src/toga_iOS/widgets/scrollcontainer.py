@@ -30,6 +30,19 @@ class TogaScrollView(UIScrollView):
         if self.interface._content:  # pragma: no branch
             self.interface._content.refresh()
 
+    @objc_method
+    def adjustedContentInsetDidChange(self):
+        # We add things to the bottom and right insets, as the native widget already
+        # insets the top and left.
+        self.impl.document_container.bottom_inset = (
+            self.adjustedContentInset.bottom + self.adjustedContentInset.top
+        )
+        self.impl.document_container.right_inset = (
+            self.adjustedContentInset.right + self.adjustedContentInset.left
+        )
+        if self.impl.document_container.content:
+            self.impl.document_container.content.refresh()
+
 
 class ScrollContainer(Widget):
     def create(self):
@@ -64,8 +77,8 @@ class ScrollContainer(Widget):
         )
 
     def content_refreshed(self, container):
-        width = self.native.frame.size.width
-        height = self.native.frame.size.height
+        width = self.document_container.width
+        height = self.document_container.height
 
         if self.interface.horizontal:
             width = max(self.interface.content.layout.width, width)
@@ -90,6 +103,7 @@ class ScrollContainer(Widget):
 
     def set_vertical(self, value):
         self._allow_vertical = value
+        self.native.alwaysBounceVertical = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:
@@ -102,8 +116,17 @@ class ScrollContainer(Widget):
     def get_horizontal(self):
         return self._allow_horizontal
 
+    @property
+    def scroll_vertical(self):
+        return self._allow_vertical
+
+    # @property
+    # def scroll_horizontal(self):
+    #     return self._allow_horizontal
+
     def set_horizontal(self, value):
         self._allow_horizontal = value
+        self.native.alwaysBounceHorizontal = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:
@@ -113,27 +136,27 @@ class ScrollContainer(Widget):
         if not value:
             self.interface.on_scroll()
 
+    def get_vertical_position(self):
+        if not self.get_vertical():
+            return 0
+        return int(self.native.contentOffset.y + self.native.adjustedContentInset.top)
+
     def get_horizontal_position(self):
         if not self.get_horizontal():
             return 0
-        return int(self.native.contentOffset.x)
+        return int(self.native.contentOffset.x + self.native.adjustedContentInset.left)
 
     def get_max_vertical_position(self):
         return max(
             0,
-            int(self.native.contentSize.height - self.native.frame.size.height),
+            int(self.native.contentSize.height - self.document_container.height),
         )
 
     def get_max_horizontal_position(self):
         return max(
             0,
-            int(self.native.contentSize.width - self.native.frame.size.width),
+            int(self.native.contentSize.width - self.document_container.width),
         )
-
-    def get_vertical_position(self):
-        if not self.get_vertical():
-            return 0
-        return int(self.native.contentOffset.y)
 
     def set_position(self, horizontal_position, vertical_position):
         if (
@@ -145,5 +168,9 @@ class ScrollContainer(Widget):
             self.interface.on_scroll()
         else:
             self.native.setContentOffset(
-                NSMakePoint(horizontal_position, vertical_position), animated=True
+                NSMakePoint(
+                    horizontal_position - self.native.adjustedContentInset.left,
+                    vertical_position - self.native.adjustedContentInset.top,
+                ),
+                animated=True,
             )

@@ -37,7 +37,7 @@ class TogaScrollView(NSScrollView):
     # This cannot be covered in CI because the function used to emit
     # a scrolling event is unreliable.
     @objc_method
-    def wantsForwardedScrollEventsForAxis_(self, axis: int) -> None:  # pragma: no cover
+    def wantsForwardedScrollEventsForAxis_(self, axis: int) -> bool:  # pragma: no cover
         return True
 
 

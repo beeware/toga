@@ -13,7 +13,7 @@ from .properties import (  # noqa: F401
     test_background_color_reset,
     test_background_color_transparent,
     test_enable_noop,
-    test_flex_widget_size,
+    test_flex_widget_size as flex_widget_size_test,
     test_focus_noop,
 )
 
@@ -80,10 +80,18 @@ test_cleanup = build_cleanup_test(
 )
 
 
+async def test_flex_widget_size(widget, probe):
+    widget.margin = 1
+    await probe.redraw("Setting up for Liquid Glass")
+    await flex_widget_size_test(widget, probe)
+    widget.margin = 0
+    await probe.redraw("Tearing Down for Liquid Glass")
+
+
 async def test_clear_content(widget, probe, small_content):
     "Widget content can be cleared and reset"
     assert probe.document_width == approx(
-        probe.width - probe.scrollbar_inset - probe.frame_inset, abs=1
+        probe.width - probe.scrollbar_inset - probe.horizontal_frame_inset, abs=1
     )
     assert probe.document_height == approx(6000, abs=1)
 
@@ -104,8 +112,8 @@ async def test_clear_content(widget, probe, small_content):
     widget.content = small_content
     await probe.redraw("Widget content has been restored")
     assert probe.has_content
-    assert probe.document_width == probe.width - probe.frame_inset
-    assert probe.document_height == probe.height - probe.frame_inset
+    assert probe.document_width == probe.width - probe.horizontal_frame_inset
+    assert probe.document_height == probe.height - probe.vertical_frame_inset
 
 
 async def test_margin(widget, probe, content):
@@ -267,14 +275,14 @@ async def test_enable_vertical_scrolling(widget, probe, content, on_scroll):
 async def test_vertical_scroll(widget, probe, on_scroll):
     "The widget can be scrolled vertically."
     assert probe.document_width == approx(
-        probe.width - probe.scrollbar_inset - probe.frame_inset, abs=1
+        probe.width - probe.scrollbar_inset - probe.horizontal_frame_inset, abs=1
     )
-    assert probe.document_height > probe.height - probe.frame_inset
+    assert probe.document_height > probe.height - probe.vertical_frame_inset
     assert probe.document_height == approx(6000, abs=1)
 
     assert widget.max_horizontal_position == 0
     assert widget.max_vertical_position == approx(
-        probe.document_height - probe.height + probe.frame_inset, abs=1
+        probe.document_height - probe.height + probe.vertical_frame_inset, abs=1
     )
     assert isinstance(widget.max_vertical_position, int)
 
@@ -318,8 +326,8 @@ async def test_vertical_scroll_small_content(widget, probe, small_content):
     widget.content = small_content
     await probe.redraw("Content has been switched for a small document")
 
-    assert probe.document_width == probe.width - probe.frame_inset
-    assert probe.document_height == probe.height - probe.frame_inset
+    assert probe.document_width == probe.width - probe.horizontal_frame_inset
+    assert probe.document_height == probe.height - probe.vertical_frame_inset
 
     assert widget.max_horizontal_position == 0
     assert widget.max_vertical_position == 0
@@ -342,11 +350,11 @@ async def test_horizontal_scroll(widget, probe, content, on_scroll):
     assert probe.document_width > probe.width
     assert probe.document_width == approx(20000, abs=1)
     assert probe.document_height == approx(
-        probe.height - probe.scrollbar_inset - probe.frame_inset, abs=1
+        probe.height - probe.scrollbar_inset - probe.vertical_frame_inset, abs=1
     )
 
     assert widget.max_horizontal_position == approx(
-        probe.document_width - probe.width + probe.frame_inset, abs=1
+        probe.document_width - probe.width + probe.horizontal_frame_inset, abs=1
     )
     assert isinstance(widget.max_horizontal_position, int)
     assert widget.max_vertical_position == 0
@@ -392,8 +400,8 @@ async def test_horizontal_scroll_small_content(widget, probe, small_content):
     widget.content = small_content
     await probe.redraw("Content has been switched for a small wide document")
 
-    assert probe.document_width == probe.width - probe.frame_inset
-    assert probe.document_height == probe.height - probe.frame_inset
+    assert probe.document_width == probe.width - probe.horizontal_frame_inset
+    assert probe.document_height == probe.height - probe.vertical_frame_inset
 
     assert widget.max_horizontal_position == 0
     assert widget.max_vertical_position == 0
@@ -447,7 +455,11 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     await probe.redraw("Scroll to bottom left")
     assert widget.horizontal_position == 0
     assert widget.vertical_position == approx(
-        probe.document_height - probe.height + probe.scrollbar_inset, abs=1
+        probe.document_height
+        - probe.height
+        + probe.scrollbar_inset
+        + probe.vertical_frame_inset,
+        abs=1,
     )
     on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
@@ -456,10 +468,18 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll to bottom right")
     assert widget.horizontal_position == approx(
-        probe.document_width - probe.width + probe.scrollbar_inset, abs=1
+        probe.document_width
+        - probe.width
+        + probe.scrollbar_inset
+        + probe.horizontal_frame_inset,
+        abs=1,
     )
     assert widget.vertical_position == approx(
-        probe.document_height - probe.height + probe.scrollbar_inset, abs=1
+        probe.document_height
+        - probe.height
+        + probe.scrollbar_inset
+        + probe.vertical_frame_inset,
+        abs=1,
     )
     on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
