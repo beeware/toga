@@ -260,12 +260,12 @@ class Window:
         # `self._on_resize` / `self._on_gain_focus` / etc.
         # See beeware/toga#4347 (resize during init on macOS) and #4357
         # (gain_focus on .NET Framework 4.x).
-        self._on_close = wrapped_handler(self, None)
-        self._on_gain_focus = wrapped_handler(self, None)
-        self._on_lose_focus = wrapped_handler(self, None)
-        self._on_show = wrapped_handler(self, None)
-        self._on_hide = wrapped_handler(self, None)
-        self._on_resize = wrapped_handler(self, None)
+        self.on_close = None
+        self.on_gain_focus = None
+        self.on_lose_focus = None
+        self.on_show = None
+        self.on_hide = None
+        self.on_resize = None
 
         self.factory = get_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
