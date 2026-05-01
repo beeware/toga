@@ -96,6 +96,7 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - arc
             - ellipse
             - rect
+            - round_rect
             - fill
             - stroke
             - write_text
@@ -112,6 +113,8 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - focus
 
 ::: toga.widgets.canvas.state.BaseState
+
+::: toga.widgets.canvas.Path2D
 
 ::: toga.widgets.canvas.DrawingAction
 
