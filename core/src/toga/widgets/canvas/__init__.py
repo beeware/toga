@@ -13,14 +13,20 @@ from .drawingaction import (
     QuadraticCurveTo,
     Rect,
     ResetTransform,
+    Restore,
     Rotate,
     RoundRect,
+    Save,
     Scale,
+    SetFillStyle,
+    SetLineDash,
+    SetLineWidth,
+    SetStrokeStyle,
     Translate,
     WriteText,
 )
 from .geometry import arc_to_bezier, sweepangle
-from .state import ClosePath, Fill, State, Stroke
+from .state import BaseState, ClosePath, Fill, State, Stroke
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -53,6 +59,10 @@ __all__ = [
     "OnResizeHandler",
     "OnTouchHandler",
     # Drawing Actions
+    "SetFillStyle",
+    "SetLineDash",
+    "SetLineWidth",
+    "SetStrokeStyle",
     "DrawingAction",
     "Arc",
     "BeginPath",
@@ -69,7 +79,10 @@ __all__ = [
     "Scale",
     "Translate",
     "WriteText",
+    "Save",
+    "Restore",
     # States
+    "BaseState",
     "State",
     "Fill",
     "Stroke",

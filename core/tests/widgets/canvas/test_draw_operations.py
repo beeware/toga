@@ -20,6 +20,7 @@ def test_save(widget):
 
     # Doesn't automatically redraw, since it can't have any visual effect.
     assert_action_not_performed(widget, "redraw")
+    # Redraw has to be called in order for the dummy back end to get the instruction.
     widget.redraw()
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Save()"
@@ -34,6 +35,7 @@ def test_restore(widget):
 
     # Doesn't automatically redraw, since it can't have any visual effect.
     assert_action_not_performed(widget, "redraw")
+    # Redraw has to be called in order for the dummy back end to get the instruction.
     widget.redraw()
     assert_action_performed(widget, "redraw")
     assert repr(draw_op) == "Restore()"

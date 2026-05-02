@@ -639,6 +639,11 @@ async def test_nested_stroke_and_fill_state(canvas, probe):
     assert_reference(probe, "nested_stroke_and_fill_state")
 
 
+# Utility methods to abstract how context is saved and restored. Context attributes
+# (including transform) should behave the same whether one uses the state() context
+# manager or the save() and restore() methods.
+
+
 @contextmanager
 def reset_transform(canvas):
     try:

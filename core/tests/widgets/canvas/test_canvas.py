@@ -185,6 +185,11 @@ def test_as_image(widget):
     assert_action_performed(widget, "get image data")
 
 
+# Utility methods to abstract how context is saved and restored. Context attributes
+# should behave the same whether one uses the state() context manager or the save() and
+# restore() methods.
+
+
 def state_context_manager(canvas):
     # Is already a context manager:
     return canvas.state()
