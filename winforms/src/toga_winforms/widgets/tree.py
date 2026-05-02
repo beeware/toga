@@ -4,6 +4,8 @@ from ctypes.wintypes import HDC, HWND, LPARAM, RECT, UINT, WPARAM
 from functools import partial
 from warnings import warn
 
+import System.Windows.Forms as WinForms
+
 from toga.handlers import WeakrefCallable
 from toga.sources.tree_source import Node, TreeSourceT
 
@@ -481,6 +483,7 @@ class Tree(Table):
         self.native.MouseDown += WeakrefCallable(self.winforms_mouse_down)
         self.native.MouseClick += WeakrefCallable(self.winforms_mouse_click)
         self.native.MouseUp += WeakrefCallable(self.winforms_mouse_up)
+        self.native.KeyDown += WeakrefCallable(self.winforms_key_down)
 
     def _subclass_proc(
         self,
@@ -767,6 +770,21 @@ class Tree(Table):
             self._process_selection_change()
 
         self._mouse_down_hit = -1
+
+    def winforms_key_down(self, sender, e):
+        """Opens/closes nodes by using right/left key down events."""
+        if e.KeyCode == WinForms.Keys.Right:
+            toggle_open = True
+        elif e.KeyCode == WinForms.Keys.Left:
+            toggle_open = False
+        else:
+            return
+
+        index = self.focused_index
+        if self.display_list[index].is_open != toggle_open:
+            notify_select = self._state_tree.display_list_toggle_index(index)
+            self._update_list(notify_select)
+            self.native.Invalidate(self.native.Items[index].Bounds, False)
 
     def _check_measurments(self, hdc, rect):
         """Checks/updates arrow width and that there are enough indents."""
