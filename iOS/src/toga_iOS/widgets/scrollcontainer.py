@@ -40,7 +40,9 @@ class TogaScrollView(UIScrollView):
         self.impl.document_container.right_inset = (
             self.adjustedContentInset.right + self.adjustedContentInset.left
         )
-        if self.impl.document_container.content:
+        # no-branched because this is a relatively rare edge case, and that
+        # insets doesn't matter at all if there is no displayed content.
+        if self.impl.document_container.content:  # pragma: no branch
             self.impl.document_container.content.refresh()
 
 
