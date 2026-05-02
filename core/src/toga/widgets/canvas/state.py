@@ -740,7 +740,7 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
 
     def fill(
         self,
-        color: ColorT | None = None,
+        color: ColorT | None | object = NOT_PROVIDED,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> AbstractContextManager[Fill]:
         fill = Fill(fill_rule=fill_rule, fill_style=color)
@@ -761,7 +761,7 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
 
     def stroke(
         self,
-        color: ColorT | None = None,
+        color: ColorT | None | NOT_PROVIDED = NOT_PROVIDED,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> AbstractContextManager[Stroke]:
@@ -914,6 +914,22 @@ class ClosePath(BaseState):
         context.restore()
 
 
+def _assign_style(action, name, color):
+    """Determine fill_style/stroke_style based on "actual" arg and color."""
+
+    # Normalize to NOT_PROVIDED if it's the property itself.
+    color = NOT_PROVIDED if color is type(action).color else color
+    style = getattr(action, f"{name}_style")
+
+    if style is not NOT_PROVIDED and color is not NOT_PROVIDED:
+        raise TypeError(f"Both {name}_style and color provided")
+
+    if style is NOT_PROVIDED:
+        return None if color is NOT_PROVIDED else color
+
+    return style
+
+
 @dataclass(repr=False)
 class Fill(BaseState):
     # This will need to change to a pair of positional arguments in order to accommodate
@@ -925,12 +941,7 @@ class Fill(BaseState):
 
     def __post_init__(self, color):
         super().__init__()
-
-        if self.fill_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
-            raise TypeError("Both fill_style and color provided")
-
-        if self.fill_style is NOT_PROVIDED:
-            self.fill_style = None if color is NOT_PROVIDED else color
+        self.fill_style = _assign_style(self, "fill", color)
 
     def _draw(self, context: Any) -> None:
         context.save()
@@ -962,12 +973,7 @@ class Stroke(BaseState):
 
     def __post_init__(self, color):
         super().__init__()
-
-        if self.stroke_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
-            raise TypeError("Both stroke_style and color provided")
-
-        if self.stroke_style is NOT_PROVIDED:
-            self.stroke_style = None if color is NOT_PROVIDED else color
+        self.stroke_style = _assign_style(self, "stroke", color)
 
     def _draw(self, context: Any) -> None:
         context.save()

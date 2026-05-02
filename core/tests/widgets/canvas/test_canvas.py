@@ -3,10 +3,12 @@ from contextlib import contextmanager
 import pytest
 
 import toga
+from toga import Canvas
 from toga.colors import BLACK, CORNFLOWERBLUE, REBECCAPURPLE, Color
 from toga.constants import FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.widgets.canvas import ClosePath, Fill, State, Stroke
+from toga.widgets.canvas.canvas import drawing_context_property
 from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
 BLACK_COLOR = Color.parse(BLACK)
@@ -248,8 +250,17 @@ def test_attributes_save_restore(
         r"state\."
     )
 
-    with pytest.raises(NotImplementedError, match=match):
+    with pytest.raises(ValueError, match=match):
         delattr(widget, name)
 
-    with pytest.raises(NotImplementedError, match=match):
+    with pytest.raises(ValueError, match=match):
         setattr(widget, name, None)
+
+
+@pytest.mark.parametrize(
+    "attr_name",
+    ["fill_style", "stroke_style", "line_width", "line_dash"],
+)
+def test_attribute_class_level_access(widget, attr_name):
+    """Class-level access of a context attribute returns the property itself."""
+    assert isinstance(getattr(Canvas, attr_name), drawing_context_property)

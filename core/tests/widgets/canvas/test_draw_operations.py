@@ -7,6 +7,7 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.images import Image
 from toga.widgets.canvas import Arc, Ellipse, Fill, Stroke
+from toga.widgets.canvas.drawingaction import color_property
 from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
@@ -301,8 +302,19 @@ def test_fill_stroke_duplicate_parameters(widget, action, use_method, values):
     else:
         act = ActionClass
 
-    with pytest.raises(TypeError):
-        act(**{attr_name: values[0]}, color=values[1])
+    attr_value, color_value = values
+    with pytest.raises(TypeError, match=rf"Both {attr_name} and color provided"):
+        act(**{attr_name: attr_value}, color=color_value)
+
+
+@pytest.mark.parametrize(
+    "ActionClass, attr_name",
+    [(Fill, "fill_style"), (Stroke, "stroke_style")],
+)
+def test_color_property_class_level_access(ActionClass, attr_name):
+    """Color property returns itself on class-level access."""
+    assert isinstance(getattr(ActionClass, attr_name), color_property)
+    assert isinstance(ActionClass.color, color_property)
 
 
 def test_move_to(widget):

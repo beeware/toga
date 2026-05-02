@@ -72,6 +72,9 @@ class drawing_context_property:
         self.name = name
 
     def __get__(self, canvas, canvas_class=None):
+        if canvas is None:
+            return self
+
         # Run down the nested hierarchy, building a chain of active states.
         state = canvas.root_state
         states = [state]
@@ -110,7 +113,7 @@ class drawing_context_property:
         self._raise()
 
     def _raise(self):
-        raise NotImplementedError(
+        raise ValueError(
             "Drawing context attributes can't be deleted or set to None. To reset to "
             "a default or previous value, do so explicitly or reset to a previous "
             "context state."
