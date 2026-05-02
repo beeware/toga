@@ -397,8 +397,9 @@ class DrawingActionDispatch(ABC):
     ) -> WriteText:
         """Write text at a given position.
 
-        Drawing text is effectively a series of path operations, so the text will have
-        the current color and fill properties.
+        Unlike HTML canvas's `fill_text` and `stroke_text`, Toga currently has one
+        method; whether it strokes and/or fills is determined by whether a stroke
+        and/or fill context manager is currently open.
 
         :param text: The text to draw. Newlines will cause line breaks, but long lines
             will not be wrapped.
@@ -864,6 +865,10 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
 
 @dataclass(repr=False)
 class State(BaseState):
+    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    [stateh()][toga.Canvas.state] method. Functions as a context manager.
+    """
+
     def __post_init__(self):
         super().__init__()
 
@@ -876,6 +881,10 @@ class State(BaseState):
 
 @dataclass(repr=False)
 class ClosePath(BaseState):
+    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    [close_path()][toga.Canvas.close_path] method. Can function as a context manager.
+    """
+
     def __post_init__(self):
         super().__init__()
 
@@ -932,6 +941,10 @@ def _assign_style(action, name, color):
 
 @dataclass(repr=False)
 class Fill(BaseState):
+    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    [fill()][toga.Canvas.fill] method. Can function as a context manager.
+    """
+
     # This will need to change to a pair of positional arguments in order to accommodate
     # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
     fill_rule: FillRule = FillRule.NONZERO
@@ -964,6 +977,10 @@ class Fill(BaseState):
 
 @dataclass(repr=False)
 class Stroke(BaseState):
+    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    [stroke()][toga.Canvas.stroke] method. Can function as a context manager.
+    """
+
     # Path parameter (positional/keyword) will go here.
     _: KW_ONLY
     stroke_style: ColorT | None | object = color_property()
