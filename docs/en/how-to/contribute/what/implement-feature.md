@@ -10,7 +10,7 @@ Don't worry if you don't have an idea for a new feature, there are [plenty of fe
 
 ### Implement a platform native widget
 
-If the core library already specifies an interface for a widget, but the widget isn't implemented on your platform of choice, implement that interface. The [API reference table](/reference/api/index.md) table can show you the widgets that are missing on various platforms. You can also look for log messages in a running app (or the direct `factory.not_implemented()` function calls that produce those log messages). At present, Qt, the Web and Textual backends have the most missing widgets. If you have web skills, or would like to learn more about [PyScript](https://pyscript.net) and [Shoelace](https://shoelace.style), the web backend could be a good place to contribute; if you'd like to learn more about terminal applications or the [Textual](https://textual.textualize.io) API, contributing to the Textual backend could be a good place for you to contribute. If you’re interested in desktop GUI development or want to deepen your understanding of the Qt framework, contributing to the [Qt](https://www.qt.io/product/framework) backend is a great option.
+If the core library already specifies an interface for a widget, but the widget isn't implemented on your platform of choice, implement that interface. The [API reference table](/reference/api/index.md) table can show you the widgets that are missing on various platforms. You can also look for log messages in a running app (or the direct `factory.not_implemented()` function calls that produce those log messages). At present, Qt, the Web and Textual backends have the most missing widgets. If you have web skills, or would like to learn more about [PyScript](https://pyscript.net) and [WebAwesome](https://www.webawesome.com), the web backend could be a good place to contribute; if you'd like to learn more about terminal applications or the [Textual](https://textual.textualize.io) API, contributing to the Textual backend could be a good place for you to contribute. If you’re interested in desktop GUI development or want to deepen your understanding of the Qt framework, contributing to the [Qt](https://www.qt.io/product/framework) backend is a great option.
 
 Alternatively, if there's a widget that doesn't exist, propose an interface design, and implement it for at least one platform. You may find [this presentation by BeeWare emeritus team member Dan Yeaw](https://www.youtube.com/watch?v=sWt_sEZUiY8) helpful. This talk gives an architectural overview of Toga, as well as providing a guide to the process of adding new widgets.
 
@@ -30,15 +30,14 @@ Toga currently has support for 8 backends - but there's room for more!
 
 The first steps of any new platform backend are always the same:
 
-1. Implement enough of the Toga Application and Window classes to allow  you to create an empty application window, integrated with the  Python `asyncio` event loop.
-2. Work out how to use native platform APIs to position a widget at a  specific position on the window. Most widget frameworks will have  some sort of native layout scheme; we need to replace that scheme  with Toga's layout algorithm. If you can work out how to place a  button with a fixed size at a specific position on the screen,  that's usually sufficient.
-3. Get Tutorial 0 working. This is the simple case of a single box that  contains a single button. To get this tutorial working, you'll need  to implement the factory class for your new backend so that Toga can  instantiate widgets on your new backend, and connect the Toga style  applicator methods on the base widget that sets the position of  widgets on the screen.
+1. Implement enough of the Toga Application and Window classes to allow you to create an empty application window, integrated with the Python `asyncio` event loop.
+2. Work out how to use native platform APIs to position a widget at a specific position on the window. Most widget frameworks will have some sort of native layout scheme; we need to replace that scheme with Toga's layout algorithm. If you can work out how to place a button with a fixed size at a specific position on the screen, that's usually sufficient.
+3. Get Tutorial 0 working. This is the simple case of a single box that contains a single button. To get this tutorial working, you'll need to implement the factory class for your new backend so that Toga can instantiate widgets on your new backend, and connect the Toga style applicator methods on the base widget that sets the position of widgets on the screen.
 
 Once you have those core features in place, you can start implementing widgets and other Toga features (like fonts, images, and so on).
 
 ### Improve the testing API for application writers
 
 The dummy backend exists to validate that Toga's internal API works as expected. However, we would like it to be a useful resource for *application* authors as well. Testing GUI applications is a difficult task; a Dummy backend would potentially allow an end user to write an application, and validate behavior by testing the properties of the Dummy. Think of it as a GUI mock - but one that is baked into Toga as a framework. See if you can write a GUI app of your own, and write a test suite that uses the Dummy backend to validate the behavior of that app.
-
 
 {% endblock %}

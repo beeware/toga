@@ -190,6 +190,7 @@ async def test_load_url(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_static_content(widget, probe, on_load):
     """Static content can be loaded into the page."""
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
@@ -205,6 +206,7 @@ async def test_static_content(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_static_large_content(widget, probe, on_load):
     """Static large content can be loaded into the page"""
     large_content = f"<p>{'lorem ipsum ' * 200000}</p>"

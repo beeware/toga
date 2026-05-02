@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import warnings
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Iterator
-from contextlib import contextmanager
+from collections.abc import Iterable
+from contextlib import AbstractContextManager
+from dataclasses import KW_ONLY, InitVar, dataclass
 from math import pi
 from typing import TYPE_CHECKING, Any
 
-import toga
 from toga.colors import Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
@@ -17,11 +17,9 @@ from .drawingaction import (
     Arc,
     BeginPath,
     BezierCurveTo,
-    ClosePath,
     DrawImage,
     DrawingAction,
     Ellipse,
-    Fill,
     LineTo,
     MoveTo,
     QuadraticCurveTo,
@@ -30,7 +28,6 @@ from .drawingaction import (
     Rotate,
     RoundRect,
     Scale,
-    Stroke,
     Translate,
     WriteText,
 )
@@ -40,48 +37,63 @@ if TYPE_CHECKING:
     from toga.colors import ColorT
 
     from .canvas import Canvas
+    from .drawingaction import DrawingAction
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
+
+NOT_PROVIDED = object()
 
 
 class DrawingActionDispatch(ABC):
     @property
     @abstractmethod
     def _action_target(self):
-        """The State that should receive the drawing actions."""
+        """The state that should receive the drawing actions."""
+
+    def _add_to_target(self, drawing_action: DrawingAction):
+        if actions := self._action_target.drawing_actions:
+            last = actions[-1]
+            if isinstance(last, BaseState):
+                # If the most recent drawing action is (potentially) a context manager,
+                # disable it so it can't be entered later, out of order.
+                last._can_be_entered = False
+
+        actions.append(drawing_action)
 
     ###########################################################################
     # Path manipulation
     ###########################################################################
 
     def begin_path(self) -> BeginPath:
-        """Start a new path in the canvas state.
+        """Start a new path.
 
         :returns: The `BeginPath`
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         begin_path = BeginPath()
-        self._action_target.append(begin_path)
+        self._add_to_target(begin_path)
+        self._redraw_with_warning_if_state()
         return begin_path
 
-    def close_path(self) -> ClosePath:
-        """Close the current path in the canvas state.
+    def close_path(self) -> AbstractContextManager[ClosePath]:
+        """Close the current path.
 
         This closes the current path as a simple drawing operation. It should be paired
-        with a [`begin_path()`][toga.widgets.canvas.State.begin_path] operation; or,
-        to complete a complete closed path, use the
-        [`ClosedPath()`][toga.widgets.canvas.State.ClosedPath] context manager.
+        with a [`begin_path()`][toga.Canvas.begin_path] operation, or else used as a
+        context manager. If used as a context manager, it begins a path when entering,
+        and closes it upon exiting.
 
         :returns: The `ClosePath`
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         close_path = ClosePath()
-        self._action_target.append(close_path)
+        self._add_to_target(close_path)
+        self._redraw_with_warning_if_state()
         return close_path
 
     def move_to(self, x: float, y: float) -> MoveTo:
-        """Moves the current point of the canvas state without drawing.
+        """Moves the current point without drawing.
 
         :param x: The x coordinate of the new current point.
         :param y: The y coordinate of the new current point.
@@ -89,11 +101,12 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         move_to = MoveTo(x, y)
-        self._action_target.append(move_to)
+        self._add_to_target(move_to)
+        self._redraw_with_warning_if_state()
         return move_to
 
     def line_to(self, x: float, y: float) -> LineTo:
-        """Draw a line segment ending at a point in the canvas state.
+        """Draw a line segment ending at a point.
 
         :param x: The x coordinate for the end point of the line segment.
         :param y: The y coordinate for the end point of the line segment.
@@ -101,7 +114,8 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         line_to = LineTo(x, y)
-        self._action_target.append(line_to)
+        self._add_to_target(line_to)
+        self._redraw_with_warning_if_state()
         return line_to
 
     def bezier_curve_to(
@@ -113,7 +127,7 @@ class DrawingActionDispatch(ABC):
         x: float,
         y: float,
     ) -> BezierCurveTo:
-        """Draw a Bézier curve in the canvas state.
+        """Draw a Bézier curve.
 
         A Bézier curve requires three points. The first two are control points; the
         third is the end point for the curve. The starting point is the last point in
@@ -130,7 +144,8 @@ class DrawingActionDispatch(ABC):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self._action_target.append(bezier_curve_to)
+        self._add_to_target(bezier_curve_to)
+        self._redraw_with_warning_if_state()
         return bezier_curve_to
 
     def quadratic_curve_to(
@@ -140,7 +155,7 @@ class DrawingActionDispatch(ABC):
         x: float,
         y: float,
     ) -> QuadraticCurveTo:
-        """Draw a quadratic curve in the canvas state.
+        """Draw a quadratic curve.
 
         A quadratic curve requires two points. The first point is a control point; the
         second is the end point. The starting point of the curve is the last point in
@@ -157,7 +172,8 @@ class DrawingActionDispatch(ABC):
             [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self._action_target.append(quadratic_curve_to)
+        self._add_to_target(quadratic_curve_to)
+        self._redraw_with_warning_if_state()
         return quadratic_curve_to
 
     def arc(
@@ -170,7 +186,7 @@ class DrawingActionDispatch(ABC):
         counterclockwise: bool | None = None,
         anticlockwise: bool | None = None,  # DEPRECATED
     ) -> Arc:
-        """Draw a circular arc in the canvas state.
+        """Draw a circular arc.
 
         A full circle will be drawn by default; an arc can be drawn by specifying a
         start and end angle.
@@ -188,7 +204,8 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
-        self._action_target.append(arc)
+        self._add_to_target(arc)
+        self._redraw_with_warning_if_state()
         return arc
 
     def ellipse(
@@ -203,7 +220,7 @@ class DrawingActionDispatch(ABC):
         counterclockwise: bool | None = None,
         anticlockwise: bool | None = None,  # DEPRECATED
     ) -> Ellipse:
-        """Draw an elliptical arc in the canvas state.
+        """Draw an elliptical arc.
 
         A full ellipse will be drawn by default; an arc can be drawn by specifying a
         start and end angle.
@@ -235,11 +252,12 @@ class DrawingActionDispatch(ABC):
             counterclockwise,
             anticlockwise,
         )
-        self._action_target.append(ellipse)
+        self._add_to_target(ellipse)
+        self._redraw_with_warning_if_state()
         return ellipse
 
     def rect(self, x: float, y: float, width: float, height: float) -> Rect:
-        """Draw a rectangle in the canvas state.
+        """Draw a rectangle.
 
         :param x: The horizontal coordinate of the left of the rectangle.
         :param y: The vertical coordinate of the top of the rectangle.
@@ -249,7 +267,8 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         rect = Rect(x, y, width, height)
-        self._action_target.append(rect)
+        self._add_to_target(rect)
+        self._redraw_with_warning_if_state()
         return rect
 
     def round_rect(
@@ -260,7 +279,7 @@ class DrawingActionDispatch(ABC):
         height: float,
         radii: float | CornerRadiusT | Iterable[float | CornerRadiusT],
     ) -> RoundRect:
-        """Draw a rounded rectangle in the canvas state.
+        """Draw a rounded rectangle.
 
         Corner radii can be provided as:
         - a single numerical radius for both x and y radius for all corners
@@ -288,14 +307,17 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         round_rect = RoundRect(x, y, width, height, radii)
-        self._action_target.append(round_rect)
+        self._add_to_target(round_rect)
+        self._redraw_with_warning_if_state()
         return round_rect
 
     def fill(
         self,
-        color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
-    ) -> Fill:
+        *,
+        fill_style: ColorT | None | object = NOT_PROVIDED,
+        color: ColorT | None | object = NOT_PROVIDED,
+    ) -> AbstractContextManager[Fill]:
         """Fill the current path.
 
         The fill can use either the
@@ -303,33 +325,62 @@ class DrawingActionDispatch(ABC):
         [Even-Odd](https://en.wikipedia.org/wiki/Even-odd_rule) winding
         rule for filling paths.
 
+        If used as a context manager, this begins a new path, and moves to the specified
+        (`x`, `y`) coordinates (if both are specified). When the context is exited, the
+        path is filled.
+
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
-        :param color: The fill color.
+        :param fill_style: The fill style. At present, only accepts colors; gradients
+            and patterns are not supported.
+        :param color: Alias for fill_style.
         :returns: The `Fill` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
+        :raises TypeError: If both `fill_style` and `color` are provided.
         """
-        fill = Fill(color, fill_rule)
-        self._action_target.append(fill)
+        fill = Fill(fill_rule, fill_style=fill_style, color=color)
+        self._add_to_target(fill)
+        # Strictly speaking, this doesn't need a warning or redraw, since BaseState
+        # overwrites this method with its own shimmed version. But we might as well be
+        # as helpful as possible.
+        self._redraw_with_warning_if_state()
         return fill
 
     def stroke(
         self,
-        color: ColorT | None = None,
+        *,
+        stroke_style: ColorT | None | object = NOT_PROVIDED,
+        color: ColorT | None | object = NOT_PROVIDED,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
-    ) -> Stroke:
+    ) -> AbstractContextManager[Stroke]:
         """Draw the current path as a stroke.
 
-        :param color: The color for the stroke.
+        If used as a context manager, this begins a new path, and moves to the specified
+        (`x`, `y`) coordinates (if both are specified). When the context is exited, the
+        path is stroked.
+
+        :param stroke_style: The stroke style. At present, only accepts colors;
+            gradients and patterns are not supported.
+        :param color: Alias for fill_style.
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
         :returns: The `Stroke` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
+        :raises TypeError: If both `stroke_style` and `color` are provided.
         """
-        stroke = Stroke(color, line_width, line_dash)
-        self._action_target.append(stroke)
+        stroke = Stroke(
+            stroke_style=stroke_style,
+            color=color,
+            line_width=line_width,
+            line_dash=line_dash,
+        )
+        self._add_to_target(stroke)
+        # Strictly speaking, this doesn't need a warning or redraw, since BaseState
+        # overwrites this method with its own shimmed version. But we might as well be
+        # as helpful as possible.
+        self._redraw_with_warning_if_state()
         return stroke
 
     ###########################################################################
@@ -345,10 +396,10 @@ class DrawingActionDispatch(ABC):
         baseline: Baseline = Baseline.ALPHABETIC,
         line_height: float | None = None,
     ) -> WriteText:
-        """Write text at a given position in the canvas state.
+        """Write text at a given position.
 
         Drawing text is effectively a series of path operations, so the text will have
-        the color and fill properties of the canvas state.
+        the current color and fill properties.
 
         :param text: The text to draw. Newlines will cause line breaks, but long lines
             will not be wrapped.
@@ -362,7 +413,8 @@ class DrawingActionDispatch(ABC):
             for the operation.
         """
         write_text = WriteText(text, x, y, font, baseline, line_height)
-        self._action_target.append(write_text)
+        self._add_to_target(write_text)
+        self._redraw_with_warning_if_state()
         return write_text
 
     ###########################################################################
@@ -377,11 +429,11 @@ class DrawingActionDispatch(ABC):
         width: float | None = None,
         height: float | None = None,
     ):
-        """Draw a Toga Image in the canvas state.
+        """Draw a Toga Image.
 
         The x, y coordinates specify the location of the bottom-left corner
         of the image. If supplied, the width and height specify the size
-        of the image when it is rendered in the state, the image will be
+        of the image when it is rendered; the image will be
         scaled to fit.
 
         Drawing of images is performed with the current transformation matrix
@@ -403,25 +455,27 @@ class DrawingActionDispatch(ABC):
             no scaling will be done.
         """
         draw_image = DrawImage(image, x, y, width, height)
-        self._action_target.append(draw_image)
+        self._add_to_target(draw_image)
+        self._redraw_with_warning_if_state()
         return draw_image
 
     ###########################################################################
     # Transformations
     ###########################################################################
     def rotate(self, radians: float) -> Rotate:
-        """Add a rotation to the canvas state.
+        """Add a rotation.
 
         :param radians: The angle to rotate clockwise in radians.
         :returns: The `Rotate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
         """
         rotate = Rotate(radians)
-        self._action_target.append(rotate)
+        self._add_to_target(rotate)
+        self._redraw_with_warning_if_state()
         return rotate
 
     def scale(self, sx: float, sy: float) -> Scale:
-        """Add a scaling transformation to the canvas state.
+        """Add a scaling transformation.
 
         :param sx: Scale factor for the X dimension. A negative value flips the
             image horizontally.
@@ -431,11 +485,12 @@ class DrawingActionDispatch(ABC):
             for the transformation.
         """
         scale = Scale(sx, sy)
-        self._action_target.append(scale)
+        self._add_to_target(scale)
+        self._redraw_with_warning_if_state()
         return scale
 
     def translate(self, tx: float, ty: float) -> Translate:
-        """Add a translation to the canvas state.
+        """Add a translation.
 
         :param tx: Translation for the X dimension.
         :param ty: Translation for the Y dimension.
@@ -443,107 +498,129 @@ class DrawingActionDispatch(ABC):
             for the transformation.
         """
         translate = Translate(tx, ty)
-        self._action_target.append(translate)
+        self._add_to_target(translate)
+        self._redraw_with_warning_if_state()
         return translate
 
     def reset_transform(self) -> ResetTransform:
-        """Reset all transformations in the canvas state.
+        """Reset all transformations.
 
         :returns: A `ResetTransform`
             [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
         reset_transform = ResetTransform()
-        self._action_target.append(reset_transform)
+        self._add_to_target(reset_transform)
+        self._redraw_with_warning_if_state()
         return reset_transform
 
     ###########################################################################
     # Sub-states of this state
     ###########################################################################
 
-    @contextmanager
-    def state(self) -> Iterator[State]:
-        """Construct and yield a new sub-[`State`][toga.widgets.canvas.State] within
-        this state.
+    def state(self) -> AbstractContextManager[State]:
+        """A context manager that saves the current state of the Canvas context, and
+        restores it upon exiting.
 
-        :return: Yields the new [`State`][toga.widgets.canvas.State] object.
+        :return: Yields the new `State`
+          [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
-        state = State(canvas=self._canvas)
-        self._action_target.append(state)
-        yield state
-        self.redraw()
+        state = State()
+        self._add_to_target(state)
+        self._redraw_with_warning_if_state()
+        return state
 
-    def Context(self) -> Iterator[State]:
-        warnings.warn(
-            "State.Context() has been renamed to State.state()",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.state()
+    ######################################################################
+    # 2026-02: Backwards compatibility for <= 0.5.3
+    ######################################################################
 
-    @contextmanager
+    def _warn_context_manager(self, old_name, new_name, coordinates, extra=""):
+        msg = f"The {old_name}() drawing method has been renamed to {new_name}()"
+        if coordinates:
+            msg += (
+                ", and no longer accepts x and y coordinates as parameters. Instead, "
+                f"call move_to(x, y) after entering the {new_name} context."
+            )
+        if extra:
+            msg = msg.removesuffix(".") + f". {extra}"
+        warnings.warn(msg, DeprecationWarning, stacklevel=3)
+
+    # Each of these CamelCase methods, when called on a state, added to that state.
+    # However, when called on a Canvas, they added to that Canvas's root_state. So we
+    # call the drawing method on the target, suppressing warnings in case that target
+    # is a state.
+
+    def Context(self) -> AbstractContextManager[State]:
+        self._warn_context_manager("Context", "state", False)
+
+        target = self if isinstance(self, BaseState) else self.root_state
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            return target.state()
+
     def ClosedPath(
         self,
         x: float | None = None,
         y: float | None = None,
-    ) -> Iterator[ClosedPathContext]:
-        """Construct and yield a new `ClosedPath`
-        sub-state that will draw a closed path, starting from an origin.
+    ) -> AbstractContextManager[ClosePath]:
+        self._warn_context_manager(
+            "ClosedPath",
+            "close_path",
+            x is not None or y is not None,
+        )
 
-        This is a context manager; it creates a new path and moves to the start
-        coordinate; when the state exits, the path is closed. For fine-grained control
-        of a path, you can use [`begin_path`][toga.widgets.canvas.State.begin_path]
-        and [`close_path`][toga.widgets.canvas.State.close_path].
+        target = self if isinstance(self, BaseState) else self.root_state
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            close_path = target.close_path()
+        if x is not None and y is not None:
+            # 4-2026: Backwards compatibility for Toga <= 0.5.4 / Toga Chart <= 0.2.1
+            # This is a weird one. The straightforward approach would be to simply add a
+            # MoveTo to the close_path.drawing_actions. However, while ClosedPath was
+            # documented as a context manager, TogaChart (up to 0.2.1) uses it as a
+            # standalone command, without ever entering it. Used this way, it acts like
+            # a move followed by close; it never *begins* a path, so it can close the
+            # final leg on a path that's already been going.
 
-        :param x: The x coordinate of the path's starting point.
-        :param y: The y coordinate of the path's starting point.
-        :return: Yields the [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext]
-            state object.
-        """
-        closed_path = ClosedPathContext(canvas=self.canvas, x=x, y=y)
-        self._action_target.append(closed_path)
-        yield closed_path
+            # Therefore, unless and until the ClosePath is in fact entered, it needs to
+            # fulfill this edge case. We store x and y on it, and when it's drawn, if
+            # it hasn't been used as a context manager, it moves to these coordinates
+            # before calling context.close_path().
+            close_path.x = x
+            close_path.y = y
 
-    @contextmanager
+            # The target.close_path() method already called a redraw, but we need to
+            # update it now that the ClosedPath knows about its coordinates.
+            self._redraw_with_warning_if_state()
+
+        return close_path
+
     def Fill(
         self,
         x: float | None = None,
         y: float | None = None,
         color: ColorT | None = None,
         fill_rule: FillRule = FillRule.NONZERO,
-    ) -> Iterator[FillContext]:
-        """Construct and yield a new `Fill` sub-state
-        within this state.
-
-        This is a context manager; it creates a new path, and moves to the start
-        coordinate; when the state exits, the path is closed with a fill. For
-        fine-grained control of a path, you can use
-        [`begin_path`][toga.widgets.canvas.State.begin_path],
-        [`move_to`][toga.widgets.canvas.State.move_to],
-        [`close_path`][toga.widgets.canvas.State.close_path] and
-        [`fill`][toga.widgets.canvas.State.fill].
-
-        If both an x and y coordinate is provided, the drawing state will begin with
-        a `move_to` operation in that state.
-
-        :param x: The x coordinate of the path's starting point.
-        :param y: The y coordinate of the path's starting point.
-        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
-            even-odd winding rule.
-        :param color: The fill color.
-        :return: Yields the new [`FilContext`][toga.widgets.canvas.FillContext] state
-            object.
-        """
-        fill = FillContext(
-            canvas=self.canvas,
-            x=x,
-            y=y,
-            color=color,
-            fill_rule=fill_rule,
+    ) -> AbstractContextManager[Fill]:
+        self._warn_context_manager(
+            "Fill",
+            "fill",
+            x is not None or y is not None,
+            extra=(
+                "Additionally, the Canvas.fill() method's color parameter can only be "
+                "provided via keyword. fill_rule is the only argument it accepts "
+                "positionally."
+            ),
         )
-        self._action_target.append(fill)
-        yield fill
 
-    @contextmanager
+        target = self if isinstance(self, BaseState) else self.root_state
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            # BaseState.fill still uses old signature too.
+            fill = target.fill(color=color, fill_rule=fill_rule)
+        if x is not None and y is not None:
+            fill.drawing_actions.append(MoveTo(x, y))
+        return fill
+
     def Stroke(
         self,
         x: float | None = None,
@@ -551,308 +628,381 @@ class DrawingActionDispatch(ABC):
         color: ColorT | None = None,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
-    ) -> Iterator[StrokeContext]:
-        """Construct and yield a new `Stroke` sub-state
-        within this state.
-
-        This is a context manager; it creates a new path, and moves to the start
-        coordinate; when the state exits, the path is closed with a stroke. For
-        fine-grained control of a path, you can use
-        [`begin_path`][toga.widgets.canvas.State.begin_path],
-        [`move_to`][toga.widgets.canvas.State.move_to],
-        [`close_path`][toga.widgets.canvas.State.close_path] and
-        [`stroke`][toga.widgets.canvas.State.stroke].
-
-        If both an x and y coordinate is provided, the drawing state will begin with
-        a `move_to` operation in that state.
-
-        :param x: The x coordinate of the path's starting point.
-        :param y: The y coordinate of the path's starting point.
-        :param color: The color for the stroke.
-        :param line_width: The width of the stroke.
-        :param line_dash: The dash pattern to follow when drawing the line. Default is a
-            solid line.
-        :return: Yields the new [`StrokeContext`][toga.widgets.canvas.StrokeContext]
-            state object.
-        """
-        stroke = StrokeContext(
-            canvas=self.canvas,
-            x=x,
-            y=y,
-            color=color,
-            line_width=line_width,
-            line_dash=line_dash,
+    ) -> AbstractContextManager[Stroke]:
+        self._warn_context_manager(
+            "Stroke",
+            "stroke",
+            x is not None or y is not None,
+            extra=(
+                "Additionally, the Canvas.stroke() method's arguments can only be "
+                "provided as keywords. It does not accept any positional arguments."
+            ),
         )
-        self._action_target.append(stroke)
-        yield stroke
+
+        target = self if isinstance(self, BaseState) else self.root_state
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            # BaseState.fill still uses old signature too.
+            stroke = target.stroke(
+                color=color,
+                line_width=line_width,
+                line_dash=line_dash,
+            )
+        if x is not None and y is not None:
+            stroke.drawing_actions.append(MoveTo(x, y))
+        return stroke
+
+    def _redraw_without_warning(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            self.redraw()
+
+    def _redraw_with_warning_if_state(self):
+        if isinstance(self, BaseState):
+            # If a drawing method is called on a state, we need to warn about that, but
+            # then silence the additional warning that we'll cause when we internally
+            # call redraw().
+            warnings.warn(
+                (
+                    "Calling drawing methods on a state is deprecated. To add actions "
+                    "to the currently active state, call drawing methods on the canvas."
+                ),
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            self._redraw_without_warning()
+        else:
+            # On a canvas, proceed as usual.
+            self.redraw()
+
+    ######################################################################
+    # End Backwards compatibility
+    ######################################################################
 
 
-class State(DrawingAction, DrawingActionDispatch):
-    """A drawing state for a canvas.
-
-    You should not create a [`State`][toga.widgets.canvas.State] directly; instead,
-    you should use the [`state()`][toga.widgets.canvas.State.state] method on an
-    existing state, or use [`Canvas.root_state`][toga.Canvas.root_state] to access the
-    root state of the canvas.
+class BaseState(DrawingAction, DrawingActionDispatch, ABC):
+    """A base class for all drawing actions that can function as state-saving context
+    managers.
     """
 
-    def __init__(self, canvas: toga.Canvas, **kwargs: Any):
-        # kwargs used to support multiple inheritance
-        super().__init__(**kwargs)
-        self._canvas = canvas
-        self.drawing_actions: list[DrawingAction] = []
+    drawing_actions: list[DrawingAction]
+    """The list of all drawing actions contained by this state.
 
-    def _draw(self, context: Any) -> None:
-        context.save()
-        for obj in self.drawing_actions:
-            obj._draw(context)
-        context.restore()
+    If you add or remove drawing actions to this list, you'll need to call
+    [`Canvas.redraw()`][toga.Canvas.redraw] for the changes to be rendered.
+    """
+
+    def __init__(self):
+        self.drawing_actions = []
+        self._can_be_entered = True
+
+    @abstractmethod
+    def _draw(self, context: Any) -> None: ...
 
     @property
     def _action_target(self):
         # State itself holds its drawing actions.
         return self
 
-    ###########################################################################
-    # Methods to keep track of the canvas, automatically redraw it
-    ###########################################################################
-
     @property
-    def canvas(self) -> Canvas:
-        """The canvas that is associated with this drawing state."""
-        return self._canvas
+    def _active_state(self):
+        """Return the currently active state, either this or a sub-state."""
+        if self.drawing_actions:
+            # If a sub-state is active, it must be the last action in the list;
+            # subsequent actions would be added to that sub-state (or a sub-state of
+            # it).
+            last = self.drawing_actions[-1]
+            if getattr(last, "_is_open", False):
+                return last._active_state
 
-    def redraw(self) -> None:
-        """Calls [`Canvas.redraw`][toga.Canvas.redraw] on the parent Canvas."""
-        self.canvas.redraw()
+        return self
+
+    def __enter__(self):
+        if not self._can_be_entered:
+            raise RuntimeError(
+                "A Canvas context manager can only be entered once, and only before "
+                "any subsequent drawing actions are added."
+            )
+
+        self._is_open = True
+        self._can_be_entered = False
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._is_open = False
+        # Don't suppress any exceptions
+        return False
+
+    ##########################################################################
+    # 2026-04: Backwards compatibility for <= 0.5.3
+    ##########################################################################
+
+    # These preserve the old signature, and warn about the new one.
+
+    def fill(
+        self,
+        color: ColorT | None = None,
+        fill_rule: FillRule = FillRule.NONZERO,
+    ) -> AbstractContextManager[Fill]:
+        fill = Fill(fill_rule=fill_rule, fill_style=color)
+        self._add_to_target(fill)
+        warnings.warn(
+            (
+                "Calling drawing methods on a state is deprecated. To add actions "
+                "to the currently active state, call drawing methods on the canvas. "
+                "Additionally, the Canvas.fill() method's color parameter can only be "
+                "provided via keyword. fill_rule is the only argument it accepts "
+                "positionally."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._redraw_without_warning()
+        return fill
+
+    def stroke(
+        self,
+        color: ColorT | None = None,
+        line_width: float | None = None,
+        line_dash: list[float] | None = None,
+    ) -> AbstractContextManager[Stroke]:
+        stroke = Stroke(stroke_style=color, line_width=line_width, line_dash=line_dash)
+        self._add_to_target(stroke)
+        warnings.warn(
+            (
+                "Calling drawing methods on a state is deprecated. To add actions "
+                "to the currently active state, call drawing methods on the canvas. "
+                "Additionally, the Canvas.stroke() method's arguments can only be "
+                "provided as keywords. It does not accept any positional arguments."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._redraw_without_warning()
+        return stroke
 
     ###########################################################################
-    # Operations on drawing objects
+    # 2026-02: Backwards compatibility for Toga <= 0.5.3
     ###########################################################################
 
     def __len__(self) -> int:
-        """Returns the number of drawing objects that are in this state."""
+        self._warn_list_methods()
         return len(self.drawing_actions)
 
     def __getitem__(self, index: int) -> DrawingAction:
-        """Returns the drawing object at the given index."""
+        self._warn_list_methods()
         return self.drawing_actions[index]
 
     def append(self, obj: DrawingAction) -> None:
-        """Append a drawing object to the state.
-
-        :param obj: The drawing object to add to the state.
-        """
+        self._warn_list_methods()
         self.drawing_actions.append(obj)
-        self.redraw()
+        self._redraw_without_warning()
 
     def insert(self, index: int, obj: DrawingAction) -> None:
-        """Insert a drawing object into the state at a specific index.
-
-        :param index: The index at which the drawing object should be inserted.
-        :param obj: The drawing object to add to the state.
-        """
+        self._warn_list_methods()
         self.drawing_actions.insert(index, obj)
-        self.redraw()
+        self._redraw_without_warning()
 
     def remove(self, obj: DrawingAction) -> None:
-        """Remove a drawing object from the state.
-
-        :param obj: The drawing object to remove.
-        """
+        self._warn_list_methods()
         self.drawing_actions.remove(obj)
-        self.redraw()
+        self._redraw_without_warning()
 
     def clear(self) -> None:
-        """Remove all drawing objects from the state."""
+        self._warn_list_methods()
         self.drawing_actions.clear()
-        self.redraw()
+        self._redraw_without_warning()
+
+    @property
+    def canvas(self) -> Canvas:
+        warnings.warn(
+            "States no longer hold a reference to their canvas.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        from .canvas import Canvas
+
+        # Get the first that matches.
+        for canvas in Canvas._instances:
+            if self is canvas.root_state or self in canvas.root_state:
+                return canvas
+
+        return None
+
+    def redraw(self) -> None:
+        warnings.warn(
+            (
+                f"{type(self).__name__}.redraw() is deprecated. Call the canvas's "
+                "redraw() method instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        from .canvas import Canvas
+
+        # Redraw any canvases that contain self; could be multiple.
+        for canvas in Canvas._instances:
+            if self is canvas.root_state or self in canvas.root_state:
+                canvas.redraw()
+
+    def _warn_list_methods(self) -> None:
+        warnings.warn(
+            (
+                "A state's list-like methods (append, insert, remove, and clear), as "
+                "well as implementing len() and indexing, are deprecated. Manipulate "
+                "its drawing_actions directly, and then call redraw() on the canvas."
+            ),
+            DeprecationWarning,
+            stacklevel=3,
+        )
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
 
-class ClosedPathContext(State):
-    """A drawing state that will build a closed path, starting from an
-    origin.
-
-    This is a context manager; it creates a new path and moves to the start coordinate;
-    when the state exits, the path is closed. For fine-grained control of a path, you
-    can use [`begin_path`][toga.widgets.canvas.State.begin_path],
-    [`move_to`][toga.widgets.canvas.State.move_to] and,
-    [`close_path`][toga.widgets.canvas.State.close_path].
-
-    If both an x and y coordinate is provided, the drawing state will begin with
-    a `move_to` operation in that state.
-
-    You should not create a [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext]
-    state directly; instead, you should use the
-    [`ClosedPath()`][toga.widgets.canvas.State.ClosedPath] method on an existing
-    state.
-    """
-
-    def __init__(
-        self,
-        canvas: toga.Canvas,
-        x: float | None = None,
-        y: float | None = None,
-    ):
-        super().__init__(canvas=canvas)
-        self.x = x
-        self.y = y
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
+@dataclass(repr=False)
+class State(BaseState):
+    def __post_init__(self):
+        super().__init__()
 
     def _draw(self, context: Any) -> None:
         context.save()
-        context.begin_path()
-        if self.x is not None and self.y is not None:
-            context.move_to(x=self.x, y=self.y)
+        for action in self.drawing_actions:
+            action._draw(context)
+        context.restore()
 
-        for obj in self.drawing_actions:
-            obj._draw(context)
+
+@dataclass(repr=False)
+class ClosePath(BaseState):
+    def __post_init__(self):
+        super().__init__()
+
+    # Backwards compatibility for Toga <= 0.5.4
+    # See DrawingActionDispatch.ClosedPath for explanation
+    def __enter__(self):
+        super().__enter__()
+
+        if hasattr(self, "x") and hasattr(self, "y"):
+            self.drawing_actions.append(MoveTo(self.x, self.y))
+
+        return self
+
+    # End backwards compatibility
+
+    def _draw(self, context: Any) -> None:
+        if not (hasattr(self, "_is_open") or self.drawing_actions):
+            # Wasn't used as a context manager, nor had drawing actions manually added
+
+            # 4-2026: Backwards compatibility for Toga <= 0.5.4
+            # See DrawingActionDispatch.ClosedPath for explanation
+            if hasattr(self, "x") and hasattr(self, "y"):
+                context.move_to(self.x, self.y)
+            # End backwards compatibility
+
+            context.close_path()
+            return
+
+        context.save()
+        context.begin_path()
+
+        for action in self.drawing_actions:
+            action._draw(context)
 
         context.close_path()
         context.restore()
 
 
-class FillContext(ClosedPathContext):
-    """A drawing state that will apply a fill to any paths all objects in the
-    state.
+class color_property:
+    def __get__(self, action, action_class=None):
+        if action is None:
+            # This is what's returned in the constructor, if nothing is provided.
+            return NOT_PROVIDED
 
-    The fill can use either the [Non-Zero](https://en.wikipedia.org/wiki/Nonzero-rule)
-    or [Even-Odd](https://en.wikipedia.org/wiki/Even-odd_rule) winding rule for
-    filling paths.
+        return action._color
 
-    This is a context manager; it creates a new path, and moves to the start coordinate;
-    when the state exits, the path is closed with a fill. For fine-grained control of
-    a path, you can use [`begin_path`][toga.widgets.canvas.State.begin_path],
-    [`move_to`][toga.widgets.canvas.State.move_to],
-    [`close_path`][toga.widgets.canvas.State.close_path] and
-    [`fill`][toga.widgets.canvas.State.fill].
+    def __set__(self, action, value):
+        if value is not None and value is not NOT_PROVIDED:
+            value = Color.parse(value)
 
-    If both an x and y coordinate is provided, the drawing state will begin with
-    a `move_to` operation in that state.
+        action._color = value
 
-    You should not create a [`FillContext`][toga.widgets.canvas.FillContext] state
-    directly; instead, you should use the [`Fill()`][toga.widgets.canvas.State.Fill]
-    method on an existing state.
-    """
 
-    def __init__(
-        self,
-        canvas: toga.Canvas,
-        x: float | None = None,
-        y: float | None = None,
-        color: ColorT | None = None,
-        fill_rule: FillRule = FillRule.NONZERO,
-    ):
-        super().__init__(canvas=canvas, x=x, y=y)
-        self.color = color
-        self.fill_rule = fill_rule
+@dataclass(repr=False)
+class Fill(BaseState):
+    # This will need to change to a pair of positional arguments in order to accommodate
+    # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
+    fill_rule: FillRule = FillRule.NONZERO
+    _: KW_ONLY
+    fill_style: ColorT | None | object = color_property()
+    color: InitVar[ColorT | None | object] = color_property()
 
-    def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
-            f"color={self.color!r}, fill_rule={self.fill_rule})"
-        )
+    def __post_init__(self, color):
+        super().__init__()
+
+        if self.fill_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
+            raise TypeError("Both fill_style and color provided")
+
+        if self.fill_style is NOT_PROVIDED:
+            self.fill_style = None if color is NOT_PROVIDED else color
 
     def _draw(self, context: Any) -> None:
         context.save()
-        context.in_fill = True  # Backwards compatibility for Toga <= 0.5.3
-        if self.color:
-            context.set_fill_style(self.color)
-        context.begin_path()
-        if self.x is not None and self.y is not None:
-            context.move_to(x=self.x, y=self.y)
+        if self.fill_style is not None:
+            context.set_fill_style(self.fill_style)
 
-        for obj in self.drawing_actions:
-            obj._draw(context)
+        if hasattr(self, "_is_open") or self.drawing_actions:
+            # Was used as a context manager (or had drawing actions manually added)
+            context.in_fill = True  # 4-2026: Backwards compatibility for Toga <= 0.5.3
+            context.begin_path()
+
+            for action in self.drawing_actions:
+                action._draw(context)
+
+            context.in_fill = False  # 4-2026: Backwards compatibility for Toga <= 0.5.3
 
         context.fill(self.fill_rule)
-        context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
         context.restore()
 
-    @property
-    def color(self) -> Color | None:
-        """The fill color."""
-        return self._color
 
-    @color.setter
-    def color(self, value: ColorT | None) -> None:
-        if value is None:
-            self._color = None
-        else:
-            self._color = Color.parse(value)
+@dataclass(repr=False)
+class Stroke(BaseState):
+    # Path parameter (positional/keyword) will go here.
+    _: KW_ONLY
+    stroke_style: ColorT | None | object = color_property()
+    color: InitVar[ColorT | None | object] = color_property()
+    line_width: float | None = None
+    line_dash: list[float] | None = None
 
+    def __post_init__(self, color):
+        super().__init__()
 
-class StrokeContext(ClosedPathContext):
-    """Construct a drawing state that will draw a stroke on all paths defined
-    within the state.
+        if self.stroke_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
+            raise TypeError("Both stroke_style and color provided")
 
-    This is a context manager; it creates a new path, and moves to the start coordinate;
-    when the state exits, the path is drawn with the stroke. For fine-grained control
-    of a path, you can use [`begin_path`][toga.widgets.canvas.State.begin_path],
-    [`move_to`][toga.widgets.canvas.State.move_to],
-    [`close_path`][toga.widgets.canvas.State.close_path] and
-    [`stroke`][toga.widgets.canvas.State.stroke].
-
-    If both an x and y coordinate is provided, the drawing state will begin with
-    a `move_to` operation in that state.
-
-    You should not create a [`StrokeContext`][toga.widgets.canvas.StrokeContext] state
-    directly; instead, you should use the
-    [`Stroke()`][toga.widgets.canvas.State.Stroke] method on an existing state.
-    """
-
-    def __init__(
-        self,
-        canvas: toga.Canvas,
-        x: float | None = None,
-        y: float | None = None,
-        color: ColorT | None = None,
-        line_width: float | None = None,
-        line_dash: list[float] | None = None,
-    ):
-        super().__init__(canvas=canvas, x=x, y=y)
-        self.color = color
-        self.line_width = line_width
-        self.line_dash = line_dash
-
-    def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}(x={self.x}, y={self.y}, color={self.color!r}, "
-            f"line_width={self.line_width}, line_dash={self.line_dash!r})"
-        )
+        if self.stroke_style is NOT_PROVIDED:
+            self.stroke_style = None if color is NOT_PROVIDED else color
 
     def _draw(self, context: Any) -> None:
         context.save()
-        context.in_stroke = True  # Backwards compatibility for Toga <= 0.5.3
-        if self.color is not None:
-            context.set_stroke_style(self.color)
+        if self.stroke_style is not None:
+            context.set_stroke_style(self.stroke_style)
         if self.line_width is not None:
             context.set_line_width(self.line_width)
         if self.line_dash is not None:
             context.set_line_dash(self.line_dash)
-        context.begin_path()
 
-        if self.x is not None and self.y is not None:
-            context.move_to(x=self.x, y=self.y)
+        if hasattr(self, "_is_open") or self.drawing_actions:
+            # Was used as a context manager (or had drawing actions manually added)
+            context.in_stroke = True  # Backwards compatibility for Toga <= 0.5.3
+            context.begin_path()
 
-        for obj in self.drawing_actions:
-            obj._draw(context)
+            for action in self.drawing_actions:
+                action._draw(context)
+
+            context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
 
         context.stroke()
-
-        context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
         context.restore()
-
-    @property
-    def color(self) -> Color | None:
-        """The color of the stroke."""
-        return self._color
-
-    @color.setter
-    def color(self, value: object) -> None:
-        if value is None:
-            self._color = None
-        else:
-            self._color = Color.parse(value)

@@ -1,11 +1,10 @@
-# Success Stories
+# Success stories
 
 Want to see examples of Toga in use? Here are some.
 
 <div class="success-story" markdown="1">
 
 ## ![Travel Tips icon](../images/success_stories/travel_tips/travel_tips_logo.webp){ .success-story-icon } [Travel Tips](https://apps.apple.com/au/app/travel-tips/id1336372310)
-
 
 <div class="success-story-content" markdown="1">
 

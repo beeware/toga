@@ -1,8 +1,8 @@
-# Debugging Your App
+# Debugging your app
 
 Debugging is the process of finding, understanding, and fixing bugs in your code.
 
-## Debugging Widget Layout  { #debug-layout }
+## Debugging widget layout { #debug-layout }
 
 The debug layout colors tool is designed to give all containers distinct colors, which enables you to better see what might be happening with the layout, and more easily debug problems with it.
 
@@ -18,7 +18,7 @@ To use the debug layout with the `toga-demo`, set the environment variable, and 
 
 You should see the following.
 
-![image](../images/toga-demo-debug-layout-enabled.png)  <!-- TODO: Update alt text -->
+![image](../images/toga-demo-debug-layout-enabled.png) <!-- TODO: Update alt text -->
 
 If a box or other widget expands to fill its entire parent, you won't see the parent widget behind it. The `toga-demo` has two widgets hiding others, and so it only shows two colors.
 
@@ -52,4 +52,4 @@ if __name__ == "__main__":
 
 Save the example as a Python file on your computer. When you run the file, you should see the following.
 
-![image](../images/concentric-boxes-debug-layout-enabled.png)  <!-- TODO: Update alt text -->
+![image](../images/concentric-boxes-debug-layout-enabled.png) <!-- TODO: Update alt text -->

@@ -190,7 +190,13 @@ class TogaDetailedCell(NSTextFieldCell):
             NSGraphicsContext.currentContext.restoreGraphicsState()
 
         # Find the right color for the text
-        if self.isHighlighted():
+        if (
+            self.controlView
+            and self.controlView.window
+            and self.controlView.window.firstResponder == self.controlView
+            and self.controlView.window.isKeyWindow()
+            and self.isHighlighted()
+        ):
             primaryColor = NSColor.alternateSelectedControlTextColor
         else:
             primaryColor = NSColor.textColor

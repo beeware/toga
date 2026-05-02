@@ -13,8 +13,8 @@ html, body {
 }
 
 #app-placeholder {
-    font-family: var(--sl-font-sans);
-    font-size: var(--sl-font-size-medium);
+    font-family: var(--wa-font-family-body);
+    font-size: var(--wa-font-size-m);
 }
 
 /* If a custom element hasn't been defined yet, hide it from rendering */
@@ -27,8 +27,8 @@ html, body {
  **********************************************************************/
 
 header.toga {
-    background-color: var(--sl-color-primary-800);
-    color: var(--sl-color-neutral-50);
+    background-color: var(--wa-color-brand-40);
+    color: var(--wa-color-brand-on-loud);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -50,8 +50,8 @@ header.toga nav {
 
 header.toga nav.menubar {
     flex-grow: 1;
-    font-family: var(--sl-font-sans);
-    font-size: var(--sl-font-size-large);
+    font-family: var(--wa-font-family-body);
+    font-size: var(--wa-font-size-l);
 }
 
 header.toga nav.menubar:last-of-type {
@@ -62,18 +62,18 @@ header.toga nav.menubar:last-of-type {
 /***** Menubar ********************************************************/
 
 header.toga nav.menubar .menu {
-    color: var(--sl-color-neutral-200);
+    color: var(--wa-color-brand-on-loud);
     padding: 0.5em;
 }
 
 header.toga nav.menubar .menu:hover {
-    background-color: var(--sl-color-primary-700);
-    color: var(--sl-color-primary-300);
+    background-color: var(--wa-color-brand-40);
+    color: var(--wa-color-brand-on-loud);
 }
 
 header.toga nav.menubar .app {
-    color: var(--sl-color-neutral-50);
-    font-weight: var(--sl-font-weight-bold);
+    color: var(--wa-color-brand-on-loud);
+    font-weight: var(--wa-font-weight-bold);
 }
 
 /**********************************************************************
@@ -105,4 +105,18 @@ main.toga.window > .container {
 /***** Label **********************************************************/
 .toga .label {
     white-space: nowrap;
+}
+
+/***** ActivityIndicator *********************************************/
+wa-spinner.stopped {
+    visibility: hidden;
+}
+
+/***** Slider *********************************************************/
+/* wa-slider defaults to display:inline (custom element default), which
+   ignores width and doesn't stretch in flex containers. sl-range set
+   display:block internally; wa-slider does not. */
+.toga wa-slider {
+    display: block;
+    width: 100%;
 }

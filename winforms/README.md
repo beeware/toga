@@ -1,8 +1,10 @@
 # toga-winforms
 
+<!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-winforms.svg)](https://pypi.python.org/pypi/toga-winforms)
 [![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-winforms.svg)](https://github.com/beeware/toga-winforms/blob/main/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-winforms.svg)](https://pypi.python.org/pypi/toga-winforms)
+<!-- rumdl-enable MD013 -->
 
 A Microsoft .NET backend for the [Toga widget toolkit](https://beeware.org/toga) utilizing the WinForms API.
 

@@ -230,6 +230,7 @@ viewport
 watchOS
 Wayland
 WebKit
+WebAwesome
 WebView
 WebViews
 WGS
@@ -239,6 +240,7 @@ Winforms
 WinForms
 WinUI
 WxPython
+WxWidgets
 XApp
 Xcode
 XDG

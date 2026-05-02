@@ -63,4 +63,3 @@ build_gradle_dependencies = [
 requires = [
     "../../web",
 ]
-style_framework = "Shoelace v2.3"

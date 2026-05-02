@@ -10,11 +10,11 @@
 
 {% if definitions[category]['showcontent'] %}
 {% for text, values in sections[section][category].items() %}
-* {{ text }} ({{ values|join(', ') }})
+- {{ text }} ({{ values|join(', ') }})
 {% endfor %}
 
 {% else %}
-* {{ sections[section][category]['']|join(', ') }}
+- {{ sections[section][category]['']|join(', ') }}
 
 {% endif %}
 {% if sections[section][category]|length == 0 %}

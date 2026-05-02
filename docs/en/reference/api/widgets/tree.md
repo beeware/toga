@@ -90,6 +90,7 @@ print(f"{node.character}, who is age {node.age}, is {node.status}")
 -8<- "snippets/accessor-values.md"
 
 So, for example:
+
 ```python
 import toga
 
@@ -112,6 +113,7 @@ tree = toga.Tree(
     ]
 )
 ```
+
 will display a green icon next to "Earth", and nothing next to "Betelgeuse Five".
 
 The [`AccessorColumn`][toga.sources.AccessorColumn] class is the only column class provided in core Toga, but you can define your own [custom columns](../data-representation/column.md) that implement the [`ColumnT`][toga.sources.ColumnT] protocol and there is a [`Column`][toga.sources.Column] abstract base class that serves as a useful starting point. These columns can do things like giving you better control over getting icons and text, formatting in a particular way, combining multiple attributes to produce the value to display, or even accessing data via indexes rather than attribute lookup.

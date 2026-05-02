@@ -152,6 +152,10 @@ class TableProbe(SimpleProbe):
             clickCount=2,
         )
 
+    async def activate_header(self):
+        await self.activate_row(-1)
+        await self.redraw("Activating header")
+
     async def select_first_row_keyboard(self):
         # Use the keyboard to ensure first row is selected.
         await self.type_character("<down>")

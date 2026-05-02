@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools==82.0.1",
-    "setuptools_scm==9.2.2",
+    "setuptools_scm==10.0.5",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -15,7 +15,7 @@ requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE",
-    "src/toga_winforms/libs/WebView2/LICENSE.md",
+    "LICENSE.WebView2",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -103,17 +103,12 @@ Switch = "toga_winforms.widgets.switch:Switch"
 Table = "toga_winforms.widgets.table:Table"
 TextInput = "toga_winforms.widgets.textinput:TextInput"
 TimeInput = "toga_winforms.widgets.timeinput:TimeInput"
-# Tree = "toga_winforms.widgets.tree:Tree"
+Tree = "toga_winforms.widgets.tree:Tree"
 WebView = "toga_winforms.widgets.webview:WebView"
 
 # Windows
 MainWindow = "toga_winforms.window:MainWindow"
 Window = "toga_winforms.window:Window"
-
-[tool.distutils.bdist_wheel]
-# This backend needs to be tagged `py3-none-win_arm64`. All the code in this backend is
-# pure Python, *but* it contains pre-compiled binary libraries to support WebView2.
-plat-name = "win_amd64"
 
 [tool.setuptools_scm]
 root = ".."
