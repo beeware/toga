@@ -59,11 +59,13 @@ __all__ = [
     "OnResizeHandler",
     "OnTouchHandler",
     # Drawing Actions
+    "DrawingAction",
     "SetFillStyle",
     "SetLineDash",
     "SetLineWidth",
     "SetStrokeStyle",
-    "DrawingAction",
+    "Save",
+    "Restore",
     "Arc",
     "BeginPath",
     "BezierCurveTo",
@@ -79,8 +81,6 @@ __all__ = [
     "Scale",
     "Translate",
     "WriteText",
-    "Save",
-    "Restore",
     # States
     "BaseState",
     "State",
