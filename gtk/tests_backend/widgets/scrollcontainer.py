@@ -37,3 +37,6 @@ class ScrollContainerProbe(SimpleProbe):
     async def wait_for_scroll_completion(self):
         # Scroll isn't animated, so this is a no-op.
         pass
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("GTK strictly separates titlebar and content")

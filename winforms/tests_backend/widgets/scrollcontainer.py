@@ -1,3 +1,4 @@
+import pytest
 from System.Drawing import Point
 from System.Windows.Forms import Panel, ScrollEventArgs, ScrollEventType
 
@@ -39,3 +40,6 @@ class ScrollContainerProbe(SimpleProbe):
 
     async def wait_for_scroll_completion(self):
         pass
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("WinForms strictly separates titlebar and content")

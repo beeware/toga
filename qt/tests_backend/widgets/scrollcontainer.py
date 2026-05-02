@@ -1,3 +1,4 @@
+import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QScrollArea, QStyle
 
@@ -41,3 +42,6 @@ class ScrollContainerProbe(SimpleProbe):
     async def wait_for_scroll_completion(self):
         # Scroll isn't animated, so this is a no-op.
         pass
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("Qt strictly separates titlebar and content")

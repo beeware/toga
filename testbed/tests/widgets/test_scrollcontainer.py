@@ -84,7 +84,7 @@ async def test_flex_widget_size(widget, probe):
     widget.margin = 1
     await probe.redraw("Setting up for Liquid Glass")
     await flex_widget_size_test(widget, probe)
-    widget.margin = 0
+    del widget.margin
     await probe.redraw("Tearing Down for Liquid Glass")
 
 
@@ -136,6 +136,25 @@ async def test_margin(widget, probe, content):
     assert probe.height == original_height
     assert probe.document_width == original_document_width
     assert probe.document_height == original_document_height
+
+
+async def test_system_effects_simple(main_window, widget, probe):
+    """The scroll container is adapted properly to extend into unsafe
+    areas when system effects apply in windows with a simple title bar."""
+    probe.assert_system_effects_top(True, False)
+
+    # Orphan the widget
+    widget.parent.remove(widget)
+    main_window.content = widget
+    await probe.redraw("Scroll container is directly assigned to window content")
+    probe.assert_system_effects_top(True, True)
+
+    widget.margin = 1
+    await probe.redraw("Margin applied for ScrollContainer")
+    probe.assert_system_effects_top(False, True)
+
+    del widget.margin
+    await probe.redraw("Resetting margin")
 
 
 async def test_enable_horizontal_scrolling(widget, probe, content, on_scroll):
