@@ -11,7 +11,7 @@ import toga
 from toga.style import Pack
 
 from .conftest import build_cleanup_test, safe_create
-from .properties import test_focus  # noqa: F401
+from .properties import build_test_system_effects_simple, test_focus  # noqa: F401
 from .test_scrollcontainer import test_flex_widget_size  # noqa: F401
 
 # These timeouts are loose because CI can be very slow, especially on mobile.
@@ -117,25 +117,7 @@ async def widget(on_load):
 
 
 test_cleanup = build_cleanup_test(toga.WebView, xfail_backends=("toga_gtk",))
-
-
-async def test_system_effects_simple(main_window, widget, probe):
-    """The web view is adapted properly to extend into unsafe
-    areas when system effects apply in windows with a simple title bar."""
-    probe.assert_system_effects_top(True, False)
-
-    # Orphan the widget
-    widget.parent.remove(widget)
-    main_window.content = widget
-    await probe.redraw("Web view is directly assigned to window content")
-    probe.assert_system_effects_top(True, True)
-
-    widget.margin = 1
-    await probe.redraw("Made scrollable, and margin applied for web view")
-    probe.assert_system_effects_top(False, True)
-
-    del widget.margin
-    await probe.redraw("Resetting margin")
+test_system_effects_simple = build_test_system_effects_simple()
 
 
 @pytest.mark.flaky(retries=5, delay=1)

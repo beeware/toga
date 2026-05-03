@@ -8,6 +8,7 @@ from toga.style.pack import Pack
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
+    build_test_system_effects_simple,
     test_enable_noop,
     test_focus_noop,
 )
@@ -76,25 +77,7 @@ async def widget(
 
 
 test_cleanup = build_cleanup_test(toga.DetailedList)
-
-
-async def test_system_effects_simple(main_window, widget, probe):
-    """The web view is adapted properly to extend into unsafe
-    areas when system effects apply in windows with a simple title bar."""
-    probe.assert_system_effects_top(True, False)
-
-    # Orphan the widget
-    widget.parent.remove(widget)
-    main_window.content = widget
-    await probe.redraw("Web view is directly assigned to window content")
-    probe.assert_system_effects_top(True, True)
-
-    widget.margin = 1
-    await probe.redraw("Made scrollable, and margin applied for web view")
-    probe.assert_system_effects_top(False, True)
-
-    del widget.margin
-    await probe.redraw("Resetting margin")
+test_system_effects_simple = build_test_system_effects_simple()
 
 
 async def test_scroll(widget, probe):

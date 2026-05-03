@@ -9,6 +9,7 @@ from toga.style.pack import COLUMN, ROW, Pack
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
+    build_test_system_effects_simple,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -138,28 +139,7 @@ async def test_margin(widget, probe, content):
     assert probe.document_height == original_document_height
 
 
-async def test_system_effects_simple(main_window, widget, probe):
-    """The scroll container is adapted properly to extend into unsafe
-    areas when system effects apply in windows with a simple title bar."""
-    probe.assert_system_effects_top(True, False)
-
-    # Orphan the widget
-    widget.parent.remove(widget)
-    main_window.content = widget
-    await probe.redraw("Scroll container is directly assigned to window content")
-    probe.assert_system_effects_top(True, True)
-
-    widget.vertical = False
-    await probe.redraw("Scroll container made non vertically scrollable")
-    probe.assert_system_effects_top(False, True)
-
-    widget.vertical = True
-    widget.margin = 1
-    await probe.redraw("Made scrollable, and margin applied for ScrollContainer")
-    probe.assert_system_effects_top(False, True)
-
-    del widget.margin
-    await probe.redraw("Resetting margin")
+test_system_effects_simple = build_test_system_effects_simple(True)
 
 
 async def test_enable_horizontal_scrolling(widget, probe, content, on_scroll):
