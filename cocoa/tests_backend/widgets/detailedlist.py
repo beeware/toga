@@ -1,7 +1,6 @@
 import asyncio
 from ctypes import c_int64, c_uint32, c_uint64
 
-import pytest
 from rubicon.objc import CGPoint, NSPoint
 
 from toga_cocoa.libs import (
@@ -210,6 +209,3 @@ class DetailedListProbe(SimpleProbe):
 
     async def perform_secondary_action(self, row, active=True):
         await self._perform_action(row, 1 if self.impl.primary_action_enabled else 0)
-
-    def assert_system_effects_top(self, expected, root):
-        pytest.skip("Cocoa baceknd currently does not adapt to Liquid Glass")

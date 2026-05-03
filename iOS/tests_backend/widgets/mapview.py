@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from toga_iOS.libs import MKMapView, supports_liquid_glass
+from toga_iOS.libs import MKMapView
 
 from .base import SimpleProbe
 
@@ -99,7 +99,3 @@ class MapViewProbe(SimpleProbe):
             tick_count += 1
 
         await self.redraw(message)
-
-    def assert_system_effects_top(self, expected, root):
-        expected = expected and (root or supports_liquid_glass)
-        assert (self.native.frame.origin.y == 0) == expected

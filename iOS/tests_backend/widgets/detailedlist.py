@@ -8,7 +8,6 @@ from toga_iOS.libs import (
     UIContextualActionStyle,
     UITableView,
     UITableViewController,
-    supports_liquid_glass,
 )
 
 from .base import SimpleProbe, UIControlEventValueChanged
@@ -190,7 +189,3 @@ class DetailedListProbe(SimpleProbe):
             )
         else:
             assert len(config.actions) == 0
-
-    def assert_system_effects_top(self, expected, root):
-        expected = expected and (root or supports_liquid_glass)
-        assert (self.native.frame.origin.y == 0) == expected

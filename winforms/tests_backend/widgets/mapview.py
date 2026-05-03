@@ -62,6 +62,3 @@ class MapViewProbe(SimpleProbe):
             tick_count += 1
 
         await self.redraw(message)
-
-    def assert_system_effects_top(self, expected, root):
-        pytest.xfail("WinForms strictly separates titlebar and content")

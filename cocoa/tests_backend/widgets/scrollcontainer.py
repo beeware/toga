@@ -1,5 +1,3 @@
-import pytest
-
 from toga_cocoa.libs import (
     NSMakePoint,
     NSNotificationCenter,
@@ -50,6 +48,3 @@ class ScrollContainerProbe(SimpleProbe):
     async def wait_for_scroll_completion(self):
         # No animation associated with scroll, so this is a no-op
         pass
-
-    def assert_system_effects_top(self, expected, root):
-        pytest.skip("Liquid Glass adaptation not implemented on macOS yet")

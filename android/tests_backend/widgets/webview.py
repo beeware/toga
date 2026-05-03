@@ -1,7 +1,6 @@
 import os
 from http.cookiejar import CookieJar
 
-import pytest
 from android.webkit import WebView
 from pytest import skip
 
@@ -22,6 +21,3 @@ class WebViewProbe(SimpleProbe):
         for f in os.listdir(widget._impl._large_content_dir):
             url = widget._impl._large_content_base_url + f
         return url
-
-    def assert_system_effects_top(self, expected, root):
-        pytest.skip("Android does not currently apply effects over navigation bar")

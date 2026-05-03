@@ -1,6 +1,5 @@
 import asyncio
 
-import pytest
 from android.os import SystemClock
 from android.view import KeyEvent
 from android.widget import (
@@ -150,6 +149,3 @@ class DetailedListProbe(SimpleProbe):
             )
             await self.redraw("Closed menu")
             assert self.get_dialog_view() is None
-
-    def assert_system_effects_top(self, expected, root):
-        pytest.skip("Android does not currently apply effects over navigation bar")

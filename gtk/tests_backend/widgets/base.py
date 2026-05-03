@@ -240,3 +240,6 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     async def redo(self):
         pytest.skip("Redo not supported on this platform")
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("GTK strictly separates titlebar and content")

@@ -1,4 +1,3 @@
-import pytest
 from PySide6.QtQuickWidgets import QQuickWidget
 from pytest import approx
 
@@ -51,6 +50,3 @@ class MapViewProbe(SimpleProbe):
 
     async def wait_for_map(self, message, max_delay=0.5):
         await self.redraw(message)
-
-    def assert_system_effects_top(self, expected, root):
-        pytest.xfail("Qt does not currently apply effects over top bar")

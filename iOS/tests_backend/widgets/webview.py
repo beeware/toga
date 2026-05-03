@@ -1,4 +1,4 @@
-from toga_iOS.libs import WKWebView, supports_liquid_glass
+from toga_iOS.libs import WKWebView
 
 from .base import SimpleProbe
 
@@ -22,7 +22,3 @@ class WebViewProbe(SimpleProbe):
 
     def extract_cookie(self, cookie_jar, name):
         return next((c for c in cookie_jar if c.name == name), None)
-
-    def assert_system_effects_top(self, expected, root):
-        expected = expected and (root or supports_liquid_glass)
-        assert (self.native.frame.origin.y == 0) == expected

@@ -19,6 +19,3 @@ class WebViewProbe(SimpleProbe):
     def extract_cookie(self, cookie_jar, name):
         assert isinstance(cookie_jar, CookieJar)
         pytest.skip("Cookie retrieval not implemented on GTK")
-
-    def assert_system_effects_top(self, expected, root):
-        pytest.xfail("GTK baceknd uses distinct title bar")
