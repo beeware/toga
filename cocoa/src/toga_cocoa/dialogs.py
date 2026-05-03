@@ -86,8 +86,7 @@ class NSAlertDialog(BaseDialog):
             # Poll the modal session, waiting for the dialog to complete
             while (
                 result := self._poll_modal_session(nsapp, session)
-                == NSModalResponseContinue
-            ):
+            ) == NSModalResponseContinue:
                 # 2026-05-02 macOS 26 appears to have unreliability with non-zero
                 # async sleeps interacting with [NSApplication runModalSession].
                 # The below code uses a 0 asyncio.sleep timeout, and uses a padding
