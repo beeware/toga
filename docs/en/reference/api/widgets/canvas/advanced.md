@@ -59,7 +59,7 @@ root_state ─┬─ Rect
 
 Note that the the `Fill` isn't inside the `State`, because its method was called after the context manager exited.
 
-## Accessing specific DrawingActions
+## Accessing specific drawing actions
 
 Say you wanted to access the [`Fill`][toga.widgets.canvas.Fill] object in the above example. A state's drawing actions are a list, so you could manually index like so:
 
@@ -83,9 +83,9 @@ with canvas.fill() as fill:
         move_to = canvas.move_to(0, 0)
 ```
 
-## Modifying attributes of DrawingActions
+## Modifying attributes of drawing actions
 
-As you've probably guessed from their printed representations above, `DraingAction`s have attributes corresponding to the equivalent method's parameters. If you modify these attributes, it will retroactive alter what is drawn on the canvas.
+As you've probably guessed from their printed representations above, `DrawingAction`s have attributes corresponding to the equivalent method's parameters. If you modify these attributes, it will retroactive alter what is drawn on the canvas.
 
 For example, consider the following code and its output:
 
@@ -114,9 +114,9 @@ canvas.redraw()
 
 The line has gotten wider, and the second point has moved down to a y coordinate of 150, which alters the orientation of both line segments.
 
-## Creating and adding new DrawingActions
+## Creating and adding new drawing actions
 
-`DrawingActions` can also be created directly, and states' lists of them can be manually altered. As with altering attributes, and direct modification of the lists of drawing actions should be followed by a call to the canvas's `redraw` method.
+`DrawingAction`s can also be created directly, and states' lists of them can be manually altered. As with altering attributes, and direct modification of the lists of drawing actions should be followed by a call to the canvas's `redraw` method.
 
 An extra point could be added to the above path like so:
 
