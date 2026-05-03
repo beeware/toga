@@ -4,9 +4,9 @@ For many if not most applications, the straightforward Canvas interface describe
 
 ## Internal data structure
 
-Internally, each drawing operation is represented by an object of class [`DrawingAction`][toga.widgets.canvas.DrawingAction]. Each drawing method has a corresponding `DrawingAction` subclass of the same name, except in CamelCase. That is, the `line_to()` method creates a `LineTo` object, and `LineTo` is a subclass of `DrawingAction`.
+Internally, each drawing operation is represented by an object of class [`DrawingAction`][toga.widgets.canvas.DrawingAction]. Each drawing method has a corresponding `DrawingAction` subclass of the same name, except in CamelCase. For example, the [`line_to()`][toga.Canvas.line_to] method creates a [`LineTo`][toga.widgets.canvas.LineTo] object, and `LineTo` is a subclass of `DrawingAction`.
 
-The current state of the drawing context is represented by a state object. All states are subclasses of the abstract [`BaseState`][toga.widgets.canvas.BaseState]; the simplest is [`State`][toga.widgets.canvas.State]. Initially, a canvas has only one state; this initial state is always accessible via the canvas's `root_state` attribute.
+The current state of the drawing context is represented by a state object. All states are subclasses of the abstract [`BaseState`][toga.widgets.canvas.BaseState]; the simplest is [`State`][toga.widgets.canvas.State]. Initially, a canvas has only one state; this initial state is always accessible via the canvas's [`root_state`][toga.Canvas.root_state] attribute.
 
 Each state stores a [list of its associated drawing actions][toga.widgets.canvas.BaseState.drawing_actions].
 
@@ -47,7 +47,7 @@ print(canvas.root_state.drawing_actions)
 #  Fill(fill_rule=FillRule.NONZERO, fill_style=None)]
 ```
 
-The actions corresponding to setting line width and line dash are contained inside the `State()`, like so:
+The actions corresponding to setting line width and line dash are contained inside the [`State()`][toga.widgets.canvas.State], like so:
 
 ```text
 root_state ─┬─ Rect
@@ -57,11 +57,11 @@ root_state ─┬─ Rect
 
 ```
 
-Note that the the Fill isn't inside the State, because its method was called after the context manager exited.
+Note that the the `Fill` isn't inside the `State`, because its method was called after the context manager exited.
 
 ## Accessing specific DrawingActions
 
-Say you wanted to access the `Fill` object in the above example. A state's drawing actions are a list, so you could manually index like so:
+Say you wanted to access the [`Fill`][toga.widgets.canvas.Fill] object in the above example. A state's drawing actions are a list, so you could manually index like so:
 
 ```python
 fill = canvas.root_state.drawing_actions[3]
@@ -75,7 +75,7 @@ fill = canvas.fill()
 
 And now `fill` is a direct reference to the `Fill` object.
 
-The same is true even when a method is being used as a context manager, so you can assign to it with the `with ... as ...` syntax. For instance, the following code would bind `fill`, `stroke`, and `move_to` to the `Fill`, `Stroke`, and `MoveTo` drawing actions created by the methods called:
+The same is true even when a method is being used as a [context manager](https://docs.python.org/3/reference/datamodel.html#context-managers), so you can assign to it with the `with ... as ...` syntax. For instance, the following code would bind `fill`, `stroke`, and `move_to` to the `Fill`, `Stroke`, and `MoveTo` drawing actions created by the methods called:
 
 ```python
 with canvas.fill() as fill:
@@ -116,7 +116,7 @@ The line has gotten wider, and the second point has moved down to a y coordinate
 
 ## Creating and adding new DrawingActions
 
-DrawingActions can also be created directly, and states' lists of them can be manually altered. As with altering attributes, and direct modification of the lists of drawing actions should be followed by a call to the canvas's `redraw` method.
+`DrawingActions` can also be created directly, and states' lists of them can be manually altered. As with altering attributes, and direct modification of the lists of drawing actions should be followed by a call to the canvas's `redraw` method.
 
 An extra point could be added to the above path like so:
 
@@ -130,6 +130,8 @@ canvas.redraw()
 ```
 
 ![After adding a new DrawingAction](./images/after_adding.png)
+
+This example uses `insert`, but `drawing_actions` is a list, with all of a list's normal methods, including `append`, `remove`, and `extend`. Remember to call `redraw` after any such alterations.
 
 ## Reference
 

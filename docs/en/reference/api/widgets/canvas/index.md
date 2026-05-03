@@ -22,7 +22,13 @@ canvas.line_to(160, 20)
 canvas.stroke()
 ```
 
-Toga adds an additional layer of convenience to the base HTML5 API by providing context managers for operations that have a natural open/close life cycle. `fill` and `stroke` can also accept optional arguments to specify their parameters directly. For example, the previous example could be replaced with:
+Result:
+
+![Usage example](./images/usage.png)
+
+## Additional features
+
+Toga adds some additional Pythonic conveniences to the base HTML5 API. First, a number of drawing methods that have a natural open/close life cycle ([`close_path()`][toga.Canvas.close_path], [`stroke()`][toga.Canvas.stroke], and [`fill()`][toga.Canvas.fill]) can additionally function as [context managers](https://docs.python.org/3/reference/datamodel.html#context-managers). Second, `fill` and `stroke` accept optional arguments to specify their parameters directly. Using both of these features, the previous example could be rewritten to:
 
 ```python
 import toga
@@ -34,7 +40,30 @@ with canvas.stroke(stroke_style="orange"):
     canvas.line_to(160, 20)
 ```
 
-For detailed tutorials on the use of Canvas drawing instructions, see the MDN documentation for the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other than the change in naming conventions for methods - the HTML5 API uses `lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are very similar.
+Toga also provides one additional method, [`state()`][toga.Canvas.state], which is useful *only* as a context manager; it saves context upon entering, and restores it upon existing. That is, the two following snippets are functionally identical:
+
+```python
+canvas.fill_style = "blue"
+
+canvas.save()
+canvas.fill_style = "red"
+canvas.restore()
+
+# Fill style is now restored to blue.
+```
+
+```python
+canvas.fill_style = "blue"
+
+with canvas.state():
+    canvas.fill_style = "red"
+
+# Fill style is now restored to blue.
+```
+
+## Further reading
+
+This page documents all of Canva's drawing methods; for more detailed and illustrative tutorials, see the MDN documentation for the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other than the change in naming conventions for methods - the HTML5 API uses `lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are very similar.
 
 ## Notes
 
@@ -82,6 +111,7 @@ It's also possible to reach beyond the HTML Canvas-based API documented here, an
             - arc
             - ellipse
             - rect
+            - round_rect
             - fill
             - stroke
             - write_text

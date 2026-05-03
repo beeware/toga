@@ -1,12 +1,16 @@
 # Canvas migration guide
 
-The Canvas widget's interface has changed quite a bit in Toga 0.5.4. We aim to maintain compatibility with user code that's been written for earlier versions. However, you'll likely see a lot of deprecation warnings, and since support for deprecated usage will eventually be removed, it's a good idea to update your code. This page explains how the interface has changed, and how to adapt existing code to it.
+The Canvas widget's interface has changed quite a bit in Toga 0.5.4. We aim to maintain compatibility with user code that's been written for earlier versions; however, you'll likely see a lot of deprecation warnings. Support for deprecated usage will eventually be removed, so it's a good idea to update your code. This page explains how the interface has changed, and how to adapt existing code to it.
+
+/// admonition | Something not working?
+If, in addition to warnings, the update functionally breaks your code, please consider [filing an issue on GitHub](https://github.com/beeware/toga/issues) so we can investigate and fix the incompatibility.
+///
 
 ## Updated names
 
 The names of several classes and methods have changed.
 
-- Previously, in addition to the "one-shot" [`fill`][toga.Canvas.fill], [`stroke`][toga.Canvas.stroke], and [`close_path`][toga.Canvas.close_path] methods, there were analogous methods (`Fill`, `Stroke`, and `ClosedPath`) that functioned as context managers. These capitalized names (and the "close"/"closed" difference) are deprecated; the lower-case methods can now function as either standalone commands or as context managers.
+- Previously, in addition to the "one-shot" [`fill`][toga.Canvas.fill], [`stroke`][toga.Canvas.stroke], and [`close_path`][toga.Canvas.close_path] methods, there were analogous methods (`Fill`, `Stroke`, and `ClosedPath`) that functioned as [context managers](https://docs.python.org/3/reference/datamodel.html#context-managers). These capitalized names (and the "close"/"closed" difference) are deprecated; the lower-case methods now double as both standalone commands *and* context managers.
 - Previously, the current state of the drawing context was represented by a class named `Context`; all context managers inherited from it. The same idea is now represented by the [`State`][toga.widgets.canvas.State] class, and other context managers inherit from its abstract [`BaseState`][toga.widgets.canvas.BaseState] parent class.
 - Accordingly, the canvas's top-level state object has been moved from `Canvas.context` to [`Canvas.root_state`][toga.Canvas.root_state], and the `Context()` method that saved and restores state has been renamed to [`state()`][toga.Canvas.state].
 - `DrawingObject` has been renamed to [`DrawingAction`][toga.widgets.canvas.DrawingAction].
@@ -46,13 +50,13 @@ with canvas.context.state():
 
 ```
 
-Context managers (like [`state`][toga.Canvas.state] in the above example) still [return the state object in case you need it][accessing-specific-drawingactions], but for most usage you don't have to pay attention to that. The canvas will automatically handling what to do when in or out of a context manager.
+Context managers (like [`state`][toga.Canvas.state] in the above example) still [return the state object in case you need it][accessing-specific-drawingactions], but for most usage you don't have to pay attention to that. The canvas will automatically handle what to do when in or out of a context manager.
 
 ## Changes to method signatures
 
 ### Coordinates in context managers
 
-The deprecated `Fill`, `Stroke`, and `ClosedPath` context managers took `x` and `y` parameters; supplying them moved to those coordinates when the context manager was entered. The [`fill`][toga.Canvas.fill], [`stroke`][toga.Canvas.stroke], and [`close_path`][toga.Canvas.close_path] context managers don't accept coordinates; call `move_to()` inside the context manager instead.
+The deprecated `Fill`, `Stroke`, and `ClosedPath` context managers took `x` and `y` parameters; supplying them moved to those coordinates once the context manager was entered. The [`fill`][toga.Canvas.fill], [`stroke`][toga.Canvas.stroke], and [`close_path`][toga.Canvas.close_path] context managers don't accept coordinates; call `move_to()` inside the context manager instead.
 
 In other words, existing code like this:
 
@@ -71,7 +75,7 @@ with canvas.stroke():
 
 ### Keyword-only extra parameters
 
-Toga's [`fill`][toga.Canvas.fill] and [`stroke`][toga.Canvas.stroke] accept optional arguments that aren't part of the HTML spec, such as specifying [`line_width`][toga.Canvas.line_width] within the call to `stroke`. These parameters are now keyword-only; only parameters included in the equivalent HTML Canvas method can be provided positionally.
+Toga's [`fill`][toga.Canvas.fill] and [`stroke`][toga.Canvas.stroke] accept optional arguments that aren't part of the HTML spec, such as specifying [`line_width`][toga.Canvas.line_width] within the call to `stroke`. These parameters are now keyword-only; `fill` can now accept only `fill_rule` positionally, while `stroke` doesn't accept any positional arguments at all.
 
 ### `fill_style` and `stroke_style`
 
@@ -79,7 +83,7 @@ One optional parameter shared between [`fill`][toga.Canvas.fill] and [`stroke`][
 
 ## No list-like methods or automatic redrawing
 
-`Context` objects (now [`State`][toga.widgets.canvas.State] or other subclasses of [`BaseState`][toga.widgets.canvas.BaseState]) previously had list-like methods for [manipulating their stored lists of drawing actions][creating-and-adding-new-drawingactions]. These methods handled redrawing the canvas when changes were made. These methods are now deprecated; the standard approach is now to directly manipulate the state's [`drawing_actions`][toga.widgets.canvas.BaseState.drawing_actions] list directly. You'll need to manually call the canva's [`redraw()`][toga.Canvas.redraw] method afterward; this is now consistent with the behavior when moodifying attributes of a [`DrawingAction`][toga.widgets.canvas.DrawingAction].
+`Context` objects (now [`State`][toga.widgets.canvas.State] or other subclasses of [`BaseState`][toga.widgets.canvas.BaseState]) previously had list-like methods for [manipulating their stored lists of drawing actions][creating-and-adding-new-drawingactions]. These methods handled redrawing the canvas when changes were made. These methods are now deprecated; the standard approach is now to manipulate the state's [`drawing_actions`][toga.widgets.canvas.BaseState.drawing_actions] list directly. You'll need to manually call the canva's [`redraw()`][toga.Canvas.redraw] method afterward; this is now consistent with the behavior when [modifying attributes][modifying-attributes-of-drawingactions] of a [`DrawingAction`][toga.widgets.canvas.DrawingAction].
 
 Existing code might look something like this:
 
@@ -97,7 +101,7 @@ with canvas.context.Fill() as fill:
 fill.remove(rect)
 ```
 
-
+Instead, `remove` should be called directly on the [`Fill`][toga.widgets.canvas.Fill] object's [`drawing_actions`][toga.widgets.canvas.BaseState.drawing_actions] list, followed by an explicit redraw:
 
 ```python
 import toga
