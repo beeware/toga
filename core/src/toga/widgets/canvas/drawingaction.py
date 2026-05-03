@@ -61,10 +61,10 @@ class DrawingAction(ABC):
     Every canvas drawing method creates a `DrawingAction`, adds it to the currently
     active state, and returns it. Each argument passed to the method becomes a property
     of the `DrawingAction`, which can be modified as shown in
-    [Modifying attributes of DrawingActions][].
+    [Modifying attributes of Drawing actions][].
 
     `DrawingActions` can also be
-    [created manually][creating-and-adding-new-drawingactions]. Their constructors take
+    [created manually][creating-and-adding-new-drawing-actions]. Their constructors take
     the same arguments as the corresponding [`Canvas`][toga.Canvas] drawing method, and
     their classes have the same names, but capitalized.
     """
