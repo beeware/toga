@@ -128,6 +128,14 @@ class TogaTableViewController(UITableViewController):
 class DetailedList(Widget):
     DESTRUCTIVE_NAMES = {"Delete", "Remove"}
 
+    @property
+    def scroll_vertical(self):
+        return True
+
+    # @property
+    # def scroll_horizontal(self):
+    #     return False
+
     def create(self):
         self.native_controller = TogaTableViewController.alloc().init()
         self.native_controller.interface = self.interface

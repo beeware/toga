@@ -68,3 +68,5 @@ class ScrollContainerProbe(SimpleProbe):
     def assert_system_effects_top(self, expected, root):
         expected = expected and (root or supports_liquid_glass)
         assert (self.native.frame.origin.y == 0) == expected
+        if expected:
+            assert self.native.adjustedContentInset.top == self.impl.container.top_inset

@@ -158,3 +158,6 @@ class DetailedListProbe(SimpleProbe):
 
         # Item's content stack has been fully restored
         assert item.stack.get_visible_child_name() == "content"
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("GTK baceknd uses distinct title bar")

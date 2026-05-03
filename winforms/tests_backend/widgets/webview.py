@@ -1,6 +1,7 @@
 import os
 import urllib
 
+import pytest
 from Microsoft.Web.WebView2.WinForms import WebView2
 
 from .base import SimpleProbe
@@ -25,3 +26,6 @@ class WebViewProbe(SimpleProbe):
         for f in os.listdir(widget._impl._large_content_dir):
             p = widget._impl._large_content_dir / f
         return urllib.parse.unquote(p.as_uri())
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("WinForms strictly separates titlebar and content")

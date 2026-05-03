@@ -2,6 +2,7 @@ import asyncio
 from ctypes import byref, sizeof, windll
 from ctypes.wintypes import HWND, POINT, RECT, UINT
 
+import pytest
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap, Point
 
@@ -298,3 +299,6 @@ class DetailedListProbe(SimpleProbe):
         await asyncio.sleep(0.1)
         PostMessageW(hwnd, wc.WM_KEYUP, wc.VK_RETURN, 0)
         await asyncio.sleep(0.1)
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("WinForms strictly separates titlebar and content")

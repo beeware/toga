@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 from PySide6.QtCore import QEvent, QModelIndex, QPoint, Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QListView
@@ -219,3 +220,6 @@ class DetailedListProbe(SimpleProbe):
         await self._perform_menu_action(
             row, 1 if self.impl.primary_action_enabled else 0, noop=True
         )
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("Qt does not currently apply effects over top bar")

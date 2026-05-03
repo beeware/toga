@@ -54,6 +54,14 @@ class TogaMapView(MKMapView):
 
 
 class MapView(Widget):
+    @property
+    def scroll_vertical(self):
+        return True
+
+    # @property
+    # def scroll_horizontal(self):
+    #     return True
+
     def create(self):
         self.native = TogaMapView.alloc().init()
         self.native.interface = self.interface

@@ -98,3 +98,6 @@ class MapViewProbe(SimpleProbe):
             tick_count += 1
 
         await self.redraw(message)
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.skip("Cocoa baceknd currently does not adapt to Liquid Glass")

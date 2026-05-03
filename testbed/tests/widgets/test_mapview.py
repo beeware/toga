@@ -9,9 +9,7 @@ import toga
 from toga.style import Pack
 
 from .conftest import build_cleanup_test, safe_create
-from .properties import (  # noqa: F401
-    test_flex_widget_size,
-)
+from .test_scrollcontainer import test_flex_widget_size  # noqa: F401
 
 # MapVierw can't be given focus on mobile
 if toga.platform.current_platform in {"android", "iOS"}:

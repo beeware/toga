@@ -149,8 +149,13 @@ async def test_system_effects_simple(main_window, widget, probe):
     await probe.redraw("Scroll container is directly assigned to window content")
     probe.assert_system_effects_top(True, True)
 
+    widget.vertical = False
+    await probe.redraw("Scroll container made non vertically scrollable")
+    probe.assert_system_effects_top(False, True)
+
+    widget.vertical = True
     widget.margin = 1
-    await probe.redraw("Margin applied for ScrollContainer")
+    await probe.redraw("Made scrollable, and margin applied for ScrollContainer")
     probe.assert_system_effects_top(False, True)
 
     del widget.margin
