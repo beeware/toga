@@ -63,7 +63,7 @@ with canvas.state():
 
 ## Further reading
 
-This page documents all of Canva's drawing methods; for more detailed and illustrative tutorials, see the MDN documentation for the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other than the change in naming conventions for methods - the HTML5 API uses `lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are very similar.
+This page documents all of Canvas's drawing methods; for more detailed and illustrative tutorials, see the MDN documentation for the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other than the change in naming conventions for methods - the HTML5 API uses `lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are very similar.
 
 ## Notes
 
