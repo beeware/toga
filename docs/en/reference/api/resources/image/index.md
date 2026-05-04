@@ -26,7 +26,7 @@ my_image = toga.Image("brutus.png")
 my_image = toga.Image(Path.home() / "path/to/brutus.png")
 
 # Create an image from raw data
-with (Path.home() / "path/to/brutus.png").open("rb") as f:
+with (Path.home() / "path/to/brutus.png").open("rb", encoding="utf-8") as f:
     my_image = toga.Image(data=f.read())
 
 # Create an image from a PIL image (if PIL is installed)
