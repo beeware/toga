@@ -54,6 +54,9 @@ class DetailedListProbe(SimpleProbe):
     async def select_row(self, row, add=False):
         self.native_detailedlist.select_row(self.impl.store[row])
 
+    async def deselect_all(self):
+        self.native_detailedlist.unselect_all()
+
     def refresh_available(self):
         return self.impl.native_revealer.get_child_revealed()
 

@@ -4,14 +4,14 @@ from ctypes.wintypes import HDC, HWND, LPARAM, RECT, UINT, WPARAM
 from functools import partial
 from warnings import warn
 
+import System.Windows.Forms as WinForms
+
 from toga.handlers import WeakrefCallable
 from toga.sources.tree_source import Node, TreeSourceT
 
-from ..libs import windowconstants as wc
+from ..libs import win32constants as wc, win32structures as ws
 from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass
-from ..libs.comctl32classes import NMHDR, NMLISTVIEW, NMLVCUSTOMDRAW, NMLVDISPINFOW
 from ..libs.user32 import DrawTextW
-from ..libs.win32 import LRESULT
 from .table import Table
 
 
@@ -483,6 +483,7 @@ class Tree(Table):
         self.native.MouseDown += WeakrefCallable(self.winforms_mouse_down)
         self.native.MouseClick += WeakrefCallable(self.winforms_mouse_click)
         self.native.MouseUp += WeakrefCallable(self.winforms_mouse_up)
+        self.native.KeyDown += WeakrefCallable(self.winforms_key_down)
 
     def _subclass_proc(
         self,
@@ -492,7 +493,7 @@ class Tree(Table):
         lParam: int,
         uIdSubclass: int,
         dwRefData: int,
-    ) -> LRESULT:
+    ) -> ws.LRESULT:
         """Override from Table: Same method, but also responds to NM_CUSTOMDRAW."""
         if uMsg == wc.WM_NCDESTROY:
             # Remove the window subclass in the way recommended by Raymond Chen here:
@@ -500,21 +501,21 @@ class Tree(Table):
             RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
 
         elif uMsg == wc.WM_REFLECT_NOTIFY:
-            phdr = cast(lParam, POINTER(NMHDR)).contents
+            phdr = cast(lParam, POINTER(ws.NMHDR)).contents
             code = phdr.code
             if code == wc.LVN_GETDISPINFOW:
-                disp_info = cast(lParam, POINTER(NMLVDISPINFOW)).contents
+                disp_info = cast(lParam, POINTER(ws.NMLVDISPINFOW)).contents
                 self._lvn_getdispinfo(disp_info.item)
 
             elif code == wc.NM_CUSTOMDRAW:
                 # learn.microsoft.com/en-us/windows/win32/controls/nm-customdraw
-                nmlvcd = cast(lParam, POINTER(NMLVCUSTOMDRAW)).contents
+                nmlvcd = cast(lParam, POINTER(ws.NMLVCUSTOMDRAW)).contents
                 return_flag = self._nm_customdraw(nmlvcd)
                 if return_flag is not None:
                     return return_flag
 
             elif code == wc.LVN_ITEMCHANGED:
-                nmlv = cast(lParam, POINTER(NMLISTVIEW)).contents
+                nmlv = cast(lParam, POINTER(ws.NMLISTVIEW)).contents
                 self._lvn_item_changed(nmlv)
 
         # Call the original window procedure
@@ -770,6 +771,21 @@ class Tree(Table):
 
         self._mouse_down_hit = -1
 
+    def winforms_key_down(self, sender, e):
+        """Opens/closes nodes by using right/left key down events."""
+        if e.KeyCode == WinForms.Keys.Right:
+            toggle_open = True
+        elif e.KeyCode == WinForms.Keys.Left:
+            toggle_open = False
+        else:
+            return
+
+        index = self.focused_index
+        if self.display_list[index].is_open != toggle_open:
+            notify_select = self._state_tree.display_list_toggle_index(index)
+            self._update_list(notify_select)
+            self.native.Invalidate(self.native.Items[index].Bounds, False)
+
     def _check_measurments(self, hdc, rect):
         """Checks/updates arrow width and that there are enough indents."""
         text_format = wc.DT_CALCRECT | wc.DT_NOCLIP
@@ -823,7 +839,7 @@ class Tree(Table):
         # Win32 messages.
         #
         # nmlv.uChanged contains flags for the attributes have been changed. These flag
-        # values come from the uiMask attribute of the LVITEMW structure, and a change
+        # values come from the mask attribute of the LVITEMW structure, and a change
         # of focused index is recorded in LVIF_STATE.
         if nmlv.uChanged & wc.LVIF_STATE != 0:
             # uNewState and uOldState have values determined by List-View Item States

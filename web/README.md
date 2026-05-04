@@ -6,7 +6,7 @@
 [![Project status](https://img.shields.io/pypi/status/toga-web.svg)](https://pypi.python.org/pypi/toga-web)
 <!-- rumdl-enable MD013 -->
 
-A backend for the [Toga widget toolkit](https://beeware.org/toga) on web platforms. It uses [Shoelace](https://shoelace.style) to provide web components.
+A backend for the [Toga widget toolkit](https://beeware.org/toga) on web platforms. It uses [WebAwesome](https://www.webawesome.com) to provide web components.
 
 This package isn't much use by itself; it needs to be combined with [the core Toga library](https://pypi.python.org/pypi/toga-core).
 

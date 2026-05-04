@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import Generic, Protocol, TypeVar, runtime_checkable
 
 ListenerT = TypeVar("ListenerT")
@@ -128,8 +129,6 @@ class Source(Generic[ListenerT]):
             if method is None:
                 method = getattr(listener, notification, None)
                 if method is not None:
-                    import warnings
-
                     warnings.warn(
                         f"Notification handler methods on Listeners now start with "
                         f"'source_'. Change the method name to "

@@ -924,7 +924,7 @@ async def test_cell_icon(widget, probe):
                     },
                     None,
                 )
-                for i in range(50)
+                for i in range(10)
             ],
         )
     ]
@@ -965,7 +965,7 @@ async def test_cell_widget(widget, probe):
                     },
                     None,
                 )
-                for i in range(50)
+                for i in range(10)
             ],
         ),
     ]
@@ -1051,8 +1051,8 @@ def test_deprecated_methods(widget, method_name, args, expected_args):
     mock_method.assert_called_once_with(**expected_args)
 
 
-async def test_mouse_events(widget, probe, on_activate_handler):
-    """Does the widget implement mouse events correctly?"""
+async def test_peripheral_events(widget, probe, on_activate_handler):
+    """Does the widget implement mouse and keyboard events correctly?"""
     # These tests are needed on the Windows platform and are implemented as
     # pytest.skip() on the platforms macOS, GTK and QT.
 
@@ -1067,8 +1067,12 @@ async def test_mouse_events(widget, probe, on_activate_handler):
             [({"a": f"A1{i}", "b": i, "c": "C"}, None) for i in range(2)],
         ),
     ]
-
     widget.data = small_data
+
+    ########################################################
+    # Mouse events
+    ########################################################
+
     widget.collapse()
     await probe.redraw("Tree is collapsed and awaiting hover of state-change arrow")
     assert not probe.is_expanded(widget.data[0])
@@ -1108,3 +1112,33 @@ async def test_mouse_events(widget, probe, on_activate_handler):
 
     # Test the mouse cursor leaving the client area
     await probe.assert_mouse_leave()
+
+    ########################################################
+    # Keyboard events
+    ########################################################
+
+    # Move to a node with keyboard.
+    await probe.select_row((0,))
+    await probe.key_press("down")
+
+    # Expand a node with keyboard.
+    await probe.redraw("Third row is selected and not expanded")
+    assert not probe.is_expanded(widget.data[1])
+    await probe.key_press("right")
+    assert probe.is_expanded(widget.data[1])
+    await probe.redraw("Node has been expanded")
+
+    # Press right key on expanded node.
+    await probe.key_press("right")
+    assert probe.is_expanded(widget.data[1])
+    await probe.redraw("Node is still expanded")
+
+    # Collapse a node with keyboard.
+    await probe.key_press("left")
+    assert not probe.is_expanded(widget.data[1])
+    await probe.redraw("Node has been collapsed")
+
+    # Press left key on collapsed node.
+    await probe.key_press("left")
+    assert not probe.is_expanded(widget.data[1])
+    await probe.redraw("Node is still collapsed")

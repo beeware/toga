@@ -14,6 +14,7 @@ from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 
 from .libs import shcore, user32
+from .libs.win32constants import MONITOR_DEFAULTTONEAREST
 from .widgets.base import Scalable
 
 
@@ -38,7 +39,7 @@ class Screen(Scalable):
             self.native.Bounds.Right,
             self.native.Bounds.Bottom,
         )
-        hMonitor = user32.MonitorFromRect(screen_rect, user32.MONITOR_DEFAULTTONEAREST)
+        hMonitor = user32.MonitorFromRect(screen_rect, MONITOR_DEFAULTTONEAREST)
         pScale = wintypes.UINT()
         shcore.GetScaleFactorForMonitor(hMonitor, pScale)
         return pScale.value / 100

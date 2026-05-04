@@ -6,44 +6,19 @@ import System.Windows.Forms as WinForms
 
 from toga.handlers import WeakrefCallable
 
-from ..libs import windowconstants as wc
+from ..libs import win32constants as wc, win32structures as ws
 from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass, SetWindowSubclass
-from ..libs.comctl32classes import LVITEMW, NMHDR, NMLVDISPINFOW, SUBCLASSPROC
 from ..libs.user32 import SendMessageW
-from ..libs.win32 import LRESULT
 from .base import Widget
 
 
 class Table(Widget):
     #################################################################################
-    # The following methods are overridden in DetailedList.
-    #################################################################################
-
-    @property
-    def _show_headings(self):
-        return self.interface._show_headings
-
-    @property
-    def _columns(self):
-        return self.interface._columns
-
-    @property
-    def _multiple_select(self):
-        return self.interface.multiple_select
-
-    @property
-    def _data(self):
-        return self.interface.data
-
-    def add_action_events(self):
-        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
-
-    #################################################################################
-    # The following method is overridden in DetailedList and Tree
+    # The following methods are overridden in Tree
     #################################################################################
 
     def create(self):
-        self.pfn_subclass = SUBCLASSPROC(self._subclass_proc)
+        self.pfn_subclass = ws.SUBCLASSPROC(self._subclass_proc)
         self.native = WinForms.ListView()
         self._hwnd = int(self.native.Handle.ToString())
         self._set_subclass()
@@ -84,7 +59,7 @@ class Table(Widget):
         self.native.SearchForVirtualItem += WeakrefCallable(
             self.winforms_search_for_virtual_item
         )
-        self.add_action_events()
+        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
 
         # Name the WinForms event listeners for selection changes so that they can be
         # added and removed.
@@ -97,10 +72,6 @@ class Table(Widget):
         self.native.ItemSelectionChanged += self.selection_listener_single
         self.native.VirtualItemsSelectionRangeChanged += self.selection_listener_multi
 
-    #################################################################################
-    # The following methods are overridden in Tree
-    #################################################################################
-
     def _subclass_proc(
         self,
         hWnd: int,
@@ -109,17 +80,17 @@ class Table(Widget):
         lParam: int,
         uIdSubclass: int,
         dwRefData: int,
-    ) -> LRESULT:
+    ) -> ws.LRESULT:
         # Remove the window subclass in the way recommended by Raymond Chen here:
         # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
         if uMsg == wc.WM_NCDESTROY:
             RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
 
         elif uMsg == wc.WM_REFLECT_NOTIFY:
-            phdr = cast(lParam, POINTER(NMHDR)).contents
+            phdr = cast(lParam, POINTER(ws.NMHDR)).contents
             code = phdr.code
             if code == wc.LVN_GETDISPINFOW:
-                disp_info = cast(lParam, POINTER(NMLVDISPINFOW)).contents
+                disp_info = cast(lParam, POINTER(ws.NMLVDISPINFOW)).contents
                 self._lvn_getdispinfo(disp_info.item)
 
         # Call the original window procedure
@@ -201,8 +172,24 @@ class Table(Widget):
             return selected_indices[0]
 
     #################################################################################
-    # The following methods are shared (non-overridden) with DetailedList and Tree
+    # The following methods are shared (non-overridden) with Tree
     #################################################################################
+
+    @property
+    def _show_headings(self):
+        return self.interface._show_headings
+
+    @property
+    def _columns(self):
+        return self.interface._columns
+
+    @property
+    def _multiple_select(self):
+        return self.interface.multiple_select
+
+    @property
+    def _data(self):
+        return self.interface.data
 
     def __del__(self):
         # The object self.pfn_subclass is a python class and is part of the native
@@ -226,17 +213,17 @@ class Table(Widget):
 
         SendMessageW(self._hwnd, wc.LVM_SETEXTENDEDLISTVIEWSTYLE, 0, new_style)
 
-    def _lvn_getdispinfo(self, lvitem: LVITEMW):
+    def _lvn_getdispinfo(self, lvitem: ws.LVITEMW):
         row_index = lvitem.iItem
         column_index = lvitem.iSubItem
 
         _, icon_indices = self._toga_retrieve_virtual_item(row_index)
 
         # Add the icon property if it doesn't exist.
-        if lvitem.uiMask == (wc.LVIF_TEXT | wc.LVIF_STATE):
-            lvitem.uiMask = wc.LVIF_TEXT | wc.LVIF_STATE | wc.LVIF_IMAGE
+        if lvitem.mask == (wc.LVIF_TEXT | wc.LVIF_STATE):
+            lvitem.mask = wc.LVIF_TEXT | wc.LVIF_STATE | wc.LVIF_IMAGE
 
-        if lvitem.uiMask & wc.LVIF_IMAGE != 0 and icon_indices[column_index] > -1:
+        if lvitem.mask & wc.LVIF_IMAGE != 0 and icon_indices[column_index] > -1:
             lvitem.iImage = icon_indices[column_index]
 
     def _toga_retrieve_virtual_item(self, item_index):

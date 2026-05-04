@@ -103,27 +103,16 @@ NOT_PROVIDED = object()
 
 
 class color_property:
-    def __set_name__(self, action_class, name):
-        self.name = name
-
     def __get__(self, action, action_class=None):
-        print(f"Get called for {getattr(self, 'name', '<no name yet>')}")
         if action is None:
-            print("\tAction is None; returning self")
             return self
 
-        print(f"\tReturning _color: {action._color}")
         return action._color
 
     def __set__(self, action, value):
-        print(f"Set called for {self.name} with value: {value}")
         if value not in {None, NOT_PROVIDED, self}:
-            print("\tParsing...")
             value = Color.parse(value)
-        else:
-            print("\tNo parsing needed")
 
-        print(f"Assigning value: {value}")
         action._color = value
 
 

@@ -61,6 +61,9 @@ class DetailedListProbe(SimpleProbe):
         index = self._row_to_index(row)
         self.native.selectionModel().select(index, self.native.selectionCommand(index))
 
+    async def deselect_all(self):
+        self.native.clearSelection()
+
     def refresh_available(self):
         # need scroll position 0 to be comptaible with tests for pull-down scroll
         return (
