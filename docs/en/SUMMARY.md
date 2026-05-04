@@ -38,6 +38,8 @@
             - [Documentation style guide](how-to/contribute/style/docs-style-guide.md)
     - Internal how-to guides
         - [How to cut a Toga release](how-to/internal/release.md)
+    - Upgrading from previous versions
+        - [Changes to Canvas in v0.5.4](how-to/upgrading/canvas-v0.5.4.md)
 - [Topic guides](topics/index.md)
     - topics/*
 - [Reference](reference/index.md)
@@ -67,6 +69,7 @@
             - [Column](reference/api/data-representation/column.md)
             - [Types](reference/api/data-representation/types.md)
             - [Validators](reference/api/data-representation/validators.md)
+            - [DrawingAction](reference/api/data-representation/drawingaction.md)
         - Resources
             - reference/api/resources/*
         - Hardware

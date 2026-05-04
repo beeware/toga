@@ -1,10 +1,10 @@
-# Advanced Canvas usage
+{{ component_header("DrawingAction") }}
 
-For many if not most applications, the straightforward Canvas interface described on the [main page](./index.md) is sufficient. However, it is also possible to directly manipulate a Canvas's internal representation of its stored instructions, thereby modifying the results in a nonlinear fashion.
+For many if not most applications, the interface documented for [Canvas](/reference/api/widgets/canvas.md) is sufficient. However, it is also possible to directly manipulate a Canvas's stored instructions, thereby modifying the results in a nonlinear fashion.
 
-## Internal data structure
+## Usage
 
-Internally, each drawing operation is represented by an object of class [`DrawingAction`][toga.widgets.canvas.DrawingAction]. Each drawing method has a corresponding `DrawingAction` subclass of the same name, except in CamelCase. For example, the [`line_to()`][toga.Canvas.line_to] method creates a [`LineTo`][toga.widgets.canvas.LineTo] object, and `LineTo` is a subclass of `DrawingAction`.
+Each drawing operation that has been performed on a Canvas is represented by an object of class [`DrawingAction`][toga.widgets.canvas.DrawingAction]. Each drawing method has a corresponding `DrawingAction` subclass of the same name, except in CamelCase. For example, the [`line_to()`][toga.Canvas.line_to] method creates a [`LineTo`][toga.widgets.canvas.LineTo] object, and `LineTo` is a subclass of `DrawingAction`.
 
 The current state of the drawing context is represented by a state object. All states are subclasses of the abstract [`BaseState`][toga.widgets.canvas.BaseState]; the simplest is [`State`][toga.widgets.canvas.State]. Initially, a canvas has only one state; this initial state is always accessible via the canvas's [`root_state`][toga.Canvas.root_state] attribute.
 
@@ -29,7 +29,7 @@ print(canvas.root_state.drawing_actions)
 
 ```
 
-When you save and then restore the state of the drawing context using a context manager (e.g., [`state()`][toga.Canvas.state], [`stroke()`][toga.Canvas.stroke], or [`fill()`][toga.Canvas.fill]), a new state object is created and inserted into the currently active state's `drawing_actions`.
+When you save and then restore the state of the drawing context using a context manager (e.g., [`state()`][toga.Canvas.state], [`stroke()`][toga.Canvas.stroke], or [`fill()`][toga.Canvas.fill]), a new state object is created and inserted into the currently active state's `drawing_actions`. This is possible because `BaseState` is itself a subclass of `DrawingAction`.
 
 ```python
 # (Continued from above)
@@ -99,7 +99,7 @@ with canvas.stroke() as stroke:
     canvas.line_to(50, 150)
 ```
 
-![Initial output](./images/before_editing.png)
+![Initial output](./drawingaction-images/before_editing.png)
 
 Since we've saved references, we can go on to alter the parameters of the stroke and the first line segment. After altering attributes like this, the canvas's `redraw()` method needs to be called to ensure the results are rendered on screen.
 
@@ -110,7 +110,7 @@ first_line.y = 150
 canvas.redraw()
 ```
 
-![After editing](./images/after_editing.png)
+![After editing](./drawingaction-images/after_editing.png)
 
 The line has gotten wider, and the second point has moved down to a y coordinate of 150, which alters the orientation of both line segments.
 
@@ -129,7 +129,7 @@ stroke.drawing_actions.insert(1, new_point)
 canvas.redraw()
 ```
 
-![After adding a new DrawingAction](./images/after_adding.png)
+![After adding a new DrawingAction](./drawingaction-images/after_adding.png)
 
 This example uses `insert`, but `drawing_actions` is a list, with all of a list's normal methods, including `append`, `remove`, and `extend`. Remember to call `redraw` after any such alterations.
 

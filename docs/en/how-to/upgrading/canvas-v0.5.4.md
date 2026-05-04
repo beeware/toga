@@ -1,6 +1,6 @@
-# Canvas migration guide
+# Changes to Canvas in v0.5.4
 
-The Canvas widget's interface has changed quite a bit in Toga 0.5.4. We aim to maintain compatibility with user code that's been written for earlier versions; however, you'll likely see a lot of deprecation warnings. Support for deprecated usage will eventually be removed, so it's a good idea to update your code. This page explains how the interface has changed, and how to adapt existing code to it.
+The [Canvas](/reference/api/widgets/canvas.md) widget's interface has changed quite a bit in Toga v0.5.4. We aim to maintain compatibility with user code that's been written for earlier versions; however, you'll likely see a lot of deprecation warnings. Support for deprecated usage will eventually be removed, so it's a good idea to update your code. This page explains how the interface has changed, and how to adapt existing code to it.
 
 /// admonition | Something not working?
 If, in addition to warnings, the update functionally breaks your code, please consider [filing an issue on GitHub](https://github.com/beeware/toga/issues) so we can investigate and fix the incompatibility.

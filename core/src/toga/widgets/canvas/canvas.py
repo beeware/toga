@@ -197,7 +197,9 @@ class Canvas(Widget, DrawingActionDispatch):
 
     @property
     def root_state(self) -> State:
-        """The root state for the canvas. See [Advanced Canvas usage][]."""
+        """The root state for the canvas. See
+        [DrawingAction](/reference/api/data-representation/drawingaction.md).
+        """
         return self._root_state
 
     ###########################################################################
@@ -264,7 +266,8 @@ class Canvas(Widget, DrawingActionDispatch):
 
     def redraw(self) -> None:
         """Redraw the Canvas. This shouldn't normally need to be manually called; for
-        more info, see [Advanced Canvas usage][].
+        more info, see
+        [DrawingAction](/reference/api/data-representation/drawingaction.md).
         """
         self._impl.redraw()
 
