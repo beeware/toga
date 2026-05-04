@@ -8,6 +8,7 @@ from math import pi
 from typing import TYPE_CHECKING, Any
 from warnings import filterwarnings, warn
 
+from toga.colors import Color
 from toga.constants import Baseline
 from toga.fonts import (
     SYSTEM,
@@ -19,6 +20,7 @@ from toga.images import Image
 from .geometry import CornerRadiusT
 
 if TYPE_CHECKING:
+    from toga.colors import ColorT
     from toga.constants import Baseline
 
 # Make sure deprecation warnings are shown by default
@@ -116,6 +118,80 @@ class DrawingAction(ABC):
         return hasattr(self, "drawing_actions") and any(
             action is other or other in action for action in self.drawing_actions
         )
+
+
+NOT_PROVIDED = object()
+
+
+class color_property:
+    def __get__(self, action, action_class=None):
+        if action is None:
+            return self
+
+        return action._color
+
+    def __set__(self, action, value):
+        if value not in {None, NOT_PROVIDED, self}:
+            value = Color.parse(value)
+
+        action._color = value
+
+
+###########################################################################
+# State management
+###########################################################################
+
+
+class Save(DrawingAction):
+    def _draw(self, context: Any) -> None:
+        context.save()
+
+
+class Restore(DrawingAction):
+    def _draw(self, context: Any) -> None:
+        context.restore()
+
+
+###########################################################################
+# Attribute setting
+###########################################################################
+
+
+@dataclass(repr=False)
+class SetFillStyle(DrawingAction):
+    fill_style: ColorT = color_property()
+
+    def _draw(self, context: Any) -> None:
+        context.set_fill_style(self.fill_style)
+
+
+@dataclass(repr=False)
+class SetStrokeStyle(DrawingAction):
+    stroke_style: ColorT = color_property()
+
+    def _draw(self, context: Any) -> None:
+        context.set_stroke_style(self.stroke_style)
+
+
+@dataclass(repr=False)
+class SetLineDash(DrawingAction):
+    line_dash: list[float]
+
+    def _draw(self, context: Any) -> None:
+        context.set_line_dash(self.line_dash)
+
+
+@dataclass(repr=False)
+class SetLineWidth(DrawingAction):
+    line_width: float
+
+    def _draw(self, context: Any) -> None:
+        context.set_line_width(self.line_width)
+
+
+###########################################################################
+# Path manipulation
+###########################################################################
 
 
 class BeginPath(DrawingAction):
@@ -263,6 +339,11 @@ class RoundRect(DrawingAction):
         context.round_rect(self.x, self.y, self.width, self.height, self.radii)
 
 
+###########################################################################
+# Text drawing
+###########################################################################
+
+
 @dataclass(repr=False)
 class WriteText(DrawingAction):
     text: str
@@ -287,6 +368,11 @@ class WriteText(DrawingAction):
         )
 
 
+###########################################################################
+# Bitmap drawing
+###########################################################################
+
+
 @dataclass(repr=False)
 class DrawImage(DrawingAction):
     image: Image
@@ -303,6 +389,11 @@ class DrawImage(DrawingAction):
             self.width if self.width is not None else self.image.width,
             self.height if self.height is not None else self.image.height,
         )
+
+
+###########################################################################
+# Transformations
+###########################################################################
 
 
 @dataclass(repr=False)

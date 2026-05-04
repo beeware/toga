@@ -8,12 +8,12 @@ from dataclasses import KW_ONLY, InitVar, dataclass
 from math import pi
 from typing import TYPE_CHECKING, Any
 
-from toga.colors import Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
 from toga.images import Image
 
 from .drawingaction import (
+    NOT_PROVIDED,
     Arc,
     BeginPath,
     BezierCurveTo,
@@ -30,6 +30,7 @@ from .drawingaction import (
     Scale,
     Translate,
     WriteText,
+    color_property,
 )
 from .geometry import CornerRadiusT
 
@@ -41,8 +42,6 @@ if TYPE_CHECKING:
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
-
-NOT_PROVIDED = object()
 
 
 class DrawingActionDispatch(ABC):
@@ -741,7 +740,7 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
 
     def fill(
         self,
-        color: ColorT | None = None,
+        color: ColorT | None | object = NOT_PROVIDED,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> AbstractContextManager[Fill]:
         fill = Fill(fill_rule=fill_rule, fill_style=color)
@@ -762,7 +761,7 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
 
     def stroke(
         self,
-        color: ColorT | None = None,
+        color: ColorT | None | NOT_PROVIDED = NOT_PROVIDED,
         line_width: float | None = None,
         line_dash: list[float] | None = None,
     ) -> AbstractContextManager[Stroke]:
@@ -915,19 +914,20 @@ class ClosePath(BaseState):
         context.restore()
 
 
-class color_property:
-    def __get__(self, action, action_class=None):
-        if action is None:
-            # This is what's returned in the constructor, if nothing is provided.
-            return NOT_PROVIDED
+def _assign_style(action, name, color):
+    """Determine fill_style/stroke_style based on "actual" arg and color."""
 
-        return action._color
+    # Normalize to NOT_PROVIDED if it's the property itself.
+    color = NOT_PROVIDED if color is type(action).color else color
+    style = getattr(action, f"{name}_style")
 
-    def __set__(self, action, value):
-        if value is not None and value is not NOT_PROVIDED:
-            value = Color.parse(value)
+    if style is not NOT_PROVIDED and color is not NOT_PROVIDED:
+        raise TypeError(f"Both {name}_style and color provided")
 
-        action._color = value
+    if style is NOT_PROVIDED:
+        return None if color is NOT_PROVIDED else color
+
+    return style
 
 
 @dataclass(repr=False)
@@ -941,12 +941,7 @@ class Fill(BaseState):
 
     def __post_init__(self, color):
         super().__init__()
-
-        if self.fill_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
-            raise TypeError("Both fill_style and color provided")
-
-        if self.fill_style is NOT_PROVIDED:
-            self.fill_style = None if color is NOT_PROVIDED else color
+        self.fill_style = _assign_style(self, "fill", color)
 
     def _draw(self, context: Any) -> None:
         context.save()
@@ -978,12 +973,7 @@ class Stroke(BaseState):
 
     def __post_init__(self, color):
         super().__init__()
-
-        if self.stroke_style is not NOT_PROVIDED and color is not NOT_PROVIDED:
-            raise TypeError("Both stroke_style and color provided")
-
-        if self.stroke_style is NOT_PROVIDED:
-            self.stroke_style = None if color is NOT_PROVIDED else color
+        self.stroke_style = _assign_style(self, "stroke", color)
 
     def _draw(self, context: Any) -> None:
         context.save()
