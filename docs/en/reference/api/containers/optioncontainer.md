@@ -90,11 +90,14 @@ When retrieving or deleting items, or when specifying the currently selected ite
 
 - The use of icons on tabs varies between platforms. If the platform requires icons, and no icon is provided, a default icon will be used. If the platform does not support icons, any icon provided will be ignored, and requests to retrieve the icon will return `None`.
 - The behavior of disabled tabs varies between platforms. Some platforms will display the tab, but put it in an unselectable state; some will hide the tab. A hidden tab can still be referenced by index - the tab index refers to the logical order, not the visible order.
-- iOS can only display 5 tabs. If there are more than 5 visible tabs in an OptionContainer, the last item will be converted into a "More" option that will allow the user to select the additional items. While the "More" menu is displayed, the current tab will return as `None`.
-- Android can only display 5 tabs. The API will allow you to add more than 5 tabs, and will allow you to programmatically control tabs past the 5-item limit, but any tabs past the limit will not be displayed or be selectable by user interaction. If the OptionContainer has more than 5 tabs, and one of the visible tabs is removed, one of the previously unselectable tabs will become visible and selectable.
-- iOS allows the user to rearrange icons on an OptionContainer. When referring to tabs by index, user re-ordering is ignored; the logical order as configured in Toga itself is used to identify tabs.
-- Icons for iOS OptionContainer tabs should be 25x25px alpha masks.
-- Icons for Android OptionContainer tabs should be 24x24px alpha masks.
+- On iOS and Android, OptionContainer should only be used as the root content of a Window. Toga's API will allow the creation of an OptionContainer anywhere in a layout; but the behavior of the OptionContainer in those layouts is undefined. This includes adding an OptionContainer as a child of a Box, and nesting an OptionContainer inside another OptionContainer.
+- On iOS:
+    - OptionContainer can only display 5 tabs. If there are more than 5 visible tabs in an OptionContainer, the last item will be converted into a "More" option that will allow the user to select the additional items. While the "More" menu is displayed, the current tab will return as `None`.
+    - The user to rearrange icons on an OptionContainer. When referring to tabs by index, user re-ordering is ignored; the logical order as configured in Toga itself is used to identify tabs.
+    - Icons for OptionContainer tabs should be 25x25px alpha masks.
+- On Android:
+    - OptionContainer can only display 5 tabs. The API will allow you to add more than 5 tabs, and will allow you to programmatically control tabs past the 5-item limit, but any tabs past the limit will not be displayed or be selectable by user interaction. If the OptionContainer has more than 5 tabs, and one of the visible tabs is removed, one of the previously unselectable tabs will become visible and selectable.
+    - Icons for Android OptionContainer tabs should be 24x24px alpha masks.
 
 ## Reference
 
