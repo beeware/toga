@@ -61,7 +61,7 @@ Note that the the `Fill` isn't inside the `State`, because its method was called
 
 ## Accessing specific drawing actions
 
-A state's drawing actions are a list, and can be accessed using list syntax. For example, if you wanted to access the [`Fill`][toga.widgets.canvas.Fill] object in the previous example, you could say:
+A state's drawing actions are a list, and can be accessed using list syntax. For example, if you wanted to access the [`Fill`][toga.widgets.canvas.Fill] object in the previous example, you could use:
 
 ```python
 fill = canvas.root_state.drawing_actions[3]
@@ -139,7 +139,7 @@ stroke.drawing_actions.insert(1, new_point)
 canvas.redraw()
 ```
 
-![After adding a new DrawingAction](./drawingaction-images/after_adding.png)
+![After adding a new drawing action](./drawingaction-images/after_adding.png)
 
 /// caption
 

@@ -63,7 +63,7 @@ class DrawingAction(ABC):
     of the `DrawingAction`, which can be modified as shown in
     [Modifying attributes of Drawing actions][].
 
-    `DrawingActions` can also be
+    A `DrawingAction` can also be
     [created manually][creating-and-adding-new-drawing-actions]. Their constructors take
     the same arguments as the corresponding [`Canvas`][toga.Canvas] drawing method, and
     their classes have the same names, but capitalized.
@@ -122,7 +122,7 @@ class color_property:
 
 
 class Save(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [save()][toga.Canvas.save] method.
     """
 
@@ -131,7 +131,7 @@ class Save(DrawingAction):
 
 
 class Restore(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [restore()][toga.Canvas.restore] method.
     """
 
@@ -146,8 +146,8 @@ class Restore(DrawingAction):
 
 @dataclass(repr=False)
 class SetFillStyle(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing assigning to
-    the [fill_style][toga.Canvas.fill_style] context attribute.
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing assigning
+    to the [fill_style][toga.Canvas.fill_style] context attribute.
     """
 
     fill_style: ColorT = color_property()
@@ -158,8 +158,8 @@ class SetFillStyle(DrawingAction):
 
 @dataclass(repr=False)
 class SetStrokeStyle(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing assigning to
-    the [stroke_style][toga.Canvas.stroke_style] context attribute.
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing assigning
+    to the [stroke_style][toga.Canvas.stroke_style] context attribute.
     """
 
     stroke_style: ColorT = color_property()
@@ -170,8 +170,8 @@ class SetStrokeStyle(DrawingAction):
 
 @dataclass(repr=False)
 class SetLineDash(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing assigning to
-    the [line_dash][toga.Canvas.line_dash] context attribute.
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing assigning
+    to the [line_dash][toga.Canvas.line_dash] context attribute.
     """
 
     line_dash: list[float]
@@ -182,8 +182,8 @@ class SetLineDash(DrawingAction):
 
 @dataclass(repr=False)
 class SetLineWidth(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing assigning to
-    the [line_width][toga.Canvas.line_width] context attribute.
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing assigning
+    to the [line_width][toga.Canvas.line_width] context attribute.
     """
 
     line_width: float
@@ -198,7 +198,7 @@ class SetLineWidth(DrawingAction):
 
 
 class BeginPath(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [begin_path()][toga.Canvas.begin_path] method.
     """
 
@@ -208,7 +208,7 @@ class BeginPath(DrawingAction):
 
 @dataclass(repr=False)
 class MoveTo(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [move_to()][toga.Canvas.move_to] method.
     """
 
@@ -221,7 +221,7 @@ class MoveTo(DrawingAction):
 
 @dataclass(repr=False)
 class LineTo(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [line_to()][toga.Canvas.line_to] method.
     """
 
@@ -234,7 +234,7 @@ class LineTo(DrawingAction):
 
 @dataclass(repr=False)
 class BezierCurveTo(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [bezier_curve_to()][toga.Canvas.bezier_curve_to] method.
     """
 
@@ -253,7 +253,7 @@ class BezierCurveTo(DrawingAction):
 
 @dataclass(repr=False)
 class QuadraticCurveTo(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [quadratic_curve_to()][toga.Canvas.quadratic_curve_to] method.
     """
 
@@ -268,7 +268,7 @@ class QuadraticCurveTo(DrawingAction):
 
 @dataclass(repr=False)
 class Arc(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [arc()][toga.Canvas.arc] method.
     """
 
@@ -306,7 +306,7 @@ class Arc(DrawingAction):
 
 @dataclass(repr=False)
 class Ellipse(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [ellipse()][toga.Canvas.ellipse] method.
     """
 
@@ -349,7 +349,7 @@ class Ellipse(DrawingAction):
 
 @dataclass(repr=False)
 class Rect(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [rect()][toga.Canvas.rect] method.
     """
 
@@ -364,7 +364,7 @@ class Rect(DrawingAction):
 
 @dataclass(repr=False)
 class RoundRect(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [round_rect()][toga.Canvas.round_rect] method.
     """
 
@@ -385,7 +385,7 @@ class RoundRect(DrawingAction):
 
 @dataclass(repr=False)
 class WriteText(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [write_text()][toga.Canvas.write_text] method.
     """
 
@@ -418,7 +418,7 @@ class WriteText(DrawingAction):
 
 @dataclass(repr=False)
 class DrawImage(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [draw_image()][toga.Canvas.draw_image] method.
     """
 
@@ -445,7 +445,7 @@ class DrawImage(DrawingAction):
 
 @dataclass(repr=False)
 class Rotate(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [rotate()][toga.Canvas.rotate] method.
     """
 
@@ -457,7 +457,7 @@ class Rotate(DrawingAction):
 
 @dataclass(repr=False)
 class Scale(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [scale()][toga.Canvas.scale] method.
     """
 
@@ -470,7 +470,7 @@ class Scale(DrawingAction):
 
 @dataclass(repr=False)
 class Translate(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [translate()][toga.Canvas.translate] method.
     """
 
@@ -482,7 +482,7 @@ class Translate(DrawingAction):
 
 
 class ResetTransform(DrawingAction):
-    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [reset_transform()][toga.Canvas.reset_transform] method.
     """
 

@@ -58,7 +58,6 @@ dotfiles
 dp
 draggable
 DrawingAction
-DrawingActions
 elementaryOS
 elementaryOS's
 Embedder
@@ -174,8 +173,6 @@ selectable
 Setuptools
 Sonoma
 SplitContainer
-SplitContainer's
-SplitContainers
 Stimpy
 stylesheet
 subclasses
