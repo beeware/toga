@@ -73,7 +73,7 @@ This page documents all of Canvas's drawing methods; for more detailed and illus
 
 ## Advanced usage
 
-It's also possible to reach beyond the HTML Canvas-based API documented here, and interact directly with the underlying structure that Canvas uses to store the series of drawing operations it's performed. This allows you to modify the rendered result nonlinearly, going "back in time" to change previous instructions. For more information, see the documentation for [DrawingAction](/reference/api/data-representation/drawingaction.md).
+It's also possible to reach beyond the HTML Canvas-based API documented here, and interact directly with the underlying structure that Canvas uses to store the series of drawing operations it's performed. This allows you to modify the rendered result non-linearly, going "back in time" to change previous instructions. For more information, see the documentation for [DrawingAction](/reference/api/data-representation/drawingaction.md).
 
 ## Reference
 

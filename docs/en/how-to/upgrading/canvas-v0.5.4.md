@@ -50,7 +50,7 @@ with canvas.context.state():
 
 ```
 
-Context managers (like [`state`][toga.Canvas.state] in the above example) still [return the state object in case you need it][accessing-specific-drawing-actions], but for most usage you don't have to pay attention to that. The canvas will automatically handle what to do when in or out of a context manager.
+Context managers (like [`state`][toga.Canvas.state] in the above example) still [return the state object in case you need it][accessing-specific-drawing-actions], but for most usage you don't have to pay attention to that. The canvas will automatically apply the drawing action to the appropriate state, handling what to do when in or out of a context manager.
 
 ## Changes to method signatures
 

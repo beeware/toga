@@ -60,16 +60,16 @@
         - Data representation
             - [Color](reference/api/data-representation/color.md)
             - [Constants](reference/api/data-representation/constants.md)
+            - [Column](reference/api/data-representation/column.md)
             - [Document](reference/api/data-representation/document.md)
+            - [DrawingAction](reference/api/data-representation/drawingaction.md)
             - [Paths](reference/api/data-representation/paths.md)
             - [Source](reference/api/data-representation/source.md)
             - [ListSource](reference/api/data-representation/listsource.md)
             - [TreeSource](reference/api/data-representation/treesource.md)
             - [ValueSource](reference/api/data-representation/valuesource.md)
-            - [Column](reference/api/data-representation/column.md)
             - [Types](reference/api/data-representation/types.md)
             - [Validators](reference/api/data-representation/validators.md)
-            - [DrawingAction](reference/api/data-representation/drawingaction.md)
         - Resources
             - reference/api/resources/*
         - Hardware
