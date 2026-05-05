@@ -197,7 +197,9 @@ class Canvas(Widget, DrawingActionDispatch):
 
     @property
     def root_state(self) -> State:
-        """The root state for the canvas."""
+        """The root state for the canvas. See
+        [`DrawingAction`](/reference/api/data-representation/drawingaction.md).
+        """
         return self._root_state
 
     ###########################################################################
@@ -235,6 +237,9 @@ class Canvas(Widget, DrawingActionDispatch):
     line_dash: list[float] = drawing_context_property(SetLineDash, [])
     """The current dash pattern to follow when drawing the line, expressed as
     alternating lengths of dashes and spaces. The default is a solid line.
+
+    In the HTML Canvas API, this has to be set via setLineDash(). Here it's directly
+    assignable.
     """
 
     ######################################################################
@@ -260,11 +265,9 @@ class Canvas(Widget, DrawingActionDispatch):
         return self.root_state._active_state
 
     def redraw(self) -> None:
-        """Redraw the Canvas.
-
-        The Canvas will be automatically redrawn after calling its drawing methods.
-        However, when you directly add, remove, or modify a drawing action, you must
-        call `redraw` manually.
+        """Redraw the Canvas. This shouldn't normally need to be manually called; for
+        more info, see
+        [`DrawingAction`](/reference/api/data-representation/drawingaction.md).
         """
         self._impl.redraw()
 

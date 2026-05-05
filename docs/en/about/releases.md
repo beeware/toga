@@ -45,7 +45,7 @@
 - The interaction between visibility and starting an `ActivityIndicator` on iOS has been resolved. ([#3729](https://github.com/beeware/toga/issues/3729))
 - On macOS, the Close and Minimize menu options use the system-provided handlers, ensuring better adherence to system style guides. ([#3775](https://github.com/beeware/toga/issues/3775))
 - The show/hide cursor test was made more reliable on Winforms. ([#3783](https://github.com/beeware/toga/issues/3783))
-- `OptionContainer` and `ScrollContainer` widgets will now resize continuously during the drag of a parent SplitContainer on macOS. ([#3787](https://github.com/beeware/toga/issues/3787))
+- `OptionContainer` and `ScrollContainer` widgets will now resize continuously during the drag of a parent `SplitContainer` on macOS. ([#3787](https://github.com/beeware/toga/issues/3787))
 - The `toga-demo` app now correctly identifies its icon when run as a Python module. ([#3926](https://github.com/beeware/toga/issues/3926))
 
 ### Backward incompatible changes
@@ -121,7 +121,7 @@
 - The content of a WebView can now be assigned using the *content* property, without providing a root URL for the content. ([#2854](https://github.com/beeware/toga/issues/2854))
 - Application of style properties has been streamlined to reduce redundant font creation and widget-refreshing. ([#3273](https://github.com/beeware/toga/issues/3273))
 - The Canvas example app's UI controls have been reorganized and more clearly labeled. ([#3321](https://github.com/beeware/toga/issues/3321))
-- The Web backend now supports the DateInput, ScrollContainer and TimeInput widgets. ([#3334](https://github.com/beeware/toga/issues/3334))
+- The Web backend now supports the `DateInput`, `ScrollContainer` and `TimeInput` widgets. ([#3334](https://github.com/beeware/toga/issues/3334))
 
 ### Bugfixes
 
@@ -171,8 +171,8 @@
 
 ### Bugfixes
 
-- On WinForms, Box, Canvas, Label and ImageView widgets now have transparent backgrounds by default. ([#767](https://github.com/beeware/toga/issues/767))
-- On iOS, Box, Canvas, ImageView, Label, ProgressBar, ScrollContainer and Slider widgets now have transparent backgrounds by default. ([#767](https://github.com/beeware/toga/issues/767))
+- On WinForms, `Box`, `Canvas`, `Label` and `ImageView` widgets now have transparent backgrounds by default. ([#767](https://github.com/beeware/toga/issues/767))
+- On iOS, `Box`, `Canvas`, `ImageView`, `Label`, `ProgressBar`, `ScrollContainer` and `Slider` widgets now have transparent backgrounds by default. ([#767](https://github.com/beeware/toga/issues/767))
 - DPI scaling on Windows has been improved, fixing a number of resolution and scaling issues. ([#2155](https://github.com/beeware/toga/issues/2155))
 - On WinForms, the background color of a widget now correctly honors the alpha channel of the selected color. ([#2425](https://github.com/beeware/toga/issues/2425))
 - If a WebView widget completes navigation to a new URL while it is being destroyed, an error is no longer raised on macOS or iOS. ([#2512](https://github.com/beeware/toga/issues/2512))
@@ -291,7 +291,7 @@ This release contains no new features. The primary purpose of this release is to
 ### Bugfixes
 
 - The order of creation of system-level commands is now consistent between platforms. Menu creation is guaranteed to be deferred until the user's startup method has been invoked. ([#2619](https://github.com/beeware/toga/issues/2619))
-- The type of SplitContainer's content was modified to be a list, rather than a tuple. ([#2638](https://github.com/beeware/toga/issues/2638))
+- The type of the content in a `SplitContainer` was modified to be a list, rather than a tuple. ([#2638](https://github.com/beeware/toga/issues/2638))
 - Programmatically invoking `close()` on the main window will now trigger `on_exit` handling. Previously `on_exit` handling would only be triggered if the close was initiated by a user action. ([#2643](https://github.com/beeware/toga/issues/2643))
 - GTK apps no longer have extra padding between the menu bar and the window content when the app does not have a toolbar. ([#2646](https://github.com/beeware/toga/issues/2646))
 - On Winforms, the window of an application that is set as the main window is no longer shown as a result of assigning the window as `App.main_window`. ([#2653](https://github.com/beeware/toga/issues/2653))
@@ -574,8 +574,8 @@ This release contains no new features. The primary purpose of this release is to
 - The location returned by `toga.App.paths.app` is now the folder that contains the Python source file that defines the app class used by the app. If you are using a `toga.App` instance directly, this may alter the path that is returned. ([#1964](https://github.com/beeware/toga/issues/1964))
 - On Winforms, if an application doesn't define an author, an author of `Unknown` is now used in application data paths, rather than `Toga`. ([#1964](https://github.com/beeware/toga/issues/1964))
 - Winforms now returns `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>/Data` as the user data file location, rather than `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>`. ([#1964](https://github.com/beeware/toga/issues/1964))
-- Support for SplitContainers with more than 2 panels of content has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
-- Support for 3-tuple form of specifying SplitContainer items, used to prevent panels from resizing, has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
+- Support for `SplitContainer` instances with more than 2 panels of content has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
+- Support for 3-tuple form of specifying `SplitContainer` items, used to prevent panels from resizing, has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
 - The ability to increment and decrement the current OptionContainer tab was removed. Instead of *container.current_tab += 1*, use *container.current_tab = container.current_tab.index + 1* ([#1996](https://github.com/beeware/toga/issues/1996))
 - `OptionContainer.add()`, `OptionContainer.remove()` and `OptionContainer.insert()` have been removed, due to being ambiguous with base widget methods of the same name. Use the `OptionContainer.content.append()`, `OptionContainer.content.remove()` and `OptionContainer.content.insert()` APIs instead. ([#1996](https://github.com/beeware/toga/issues/1996))
 - The `on_select` handler for OptionContainer no longer receives the `option` argument providing the selected tab. Use `current_tab` to obtain the currently selected tab. ([#1996](https://github.com/beeware/toga/issues/1996))

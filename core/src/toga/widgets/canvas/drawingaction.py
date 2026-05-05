@@ -60,35 +60,14 @@ class DrawingAction(ABC):
 
     Every canvas drawing method creates a `DrawingAction`, adds it to the currently
     active state, and returns it. Each argument passed to the method becomes a property
-    of the `DrawingAction`, which can be modified as shown in the [Usage][] section.
+    of the `DrawingAction`, which can be modified as shown in
+    [Modifying attributes of Drawing actions][].
 
-    `DrawingActions` can also be created manually, then added to a state's
-    [list of drawing actions][toga.widgets.canvas.state.BaseState.drawing_actions].
-    Their constructors take the same arguments as the corresponding [`Canvas`]
-    [toga.Canvas] drawing method, and their classes have the same names, but
-    capitalized:
-
-    * [`toga.widgets.canvas.Arc`][toga.Canvas.arc]
-    * [`toga.widgets.canvas.BeginPath`][toga.Canvas.begin_path]
-    * [`toga.widgets.canvas.BezierCurveTo`][toga.Canvas.bezier_curve_to]
-    * [`toga.widgets.canvas.ClosePath`][toga.Canvas.close_path]
-    * [`toga.widgets.canvas.Ellipse`][toga.Canvas.ellipse]
-    * [`toga.widgets.canvas.Fill`][toga.Canvas.fill]
-    * [`toga.widgets.canvas.LineTo`][toga.Canvas.line_to]
-    * [`toga.widgets.canvas.MoveTo`][toga.Canvas.move_to]
-    * [`toga.widgets.canvas.QuadraticCurveTo`][toga.Canvas.quadratic_curve_to]
-    * [`toga.widgets.canvas.Rect`][toga.Canvas.rect]
-    * [`toga.widgets.canvas.ResetTransform`][toga.Canvas.reset_transform]
-    * [`toga.widgets.canvas.Rotate`][toga.Canvas.rotate]
-    * [`toga.widgets.canvas.Scale`][toga.Canvas.scale]
-    * [`toga.widgets.canvas.Stroke`][toga.Canvas.stroke]
-    * [`toga.widgets.canvas.Translate`][toga.Canvas.translate]
-    * [`toga.widgets.canvas.WriteText`][toga.Canvas.write_text]
-    """  # noqa: E501
-
-    # Disable the line-too-long check as there is no way to properly render the list
-    # above with any given list item on multiple lines; an undesired space is added if
-    # the link content is split on two lines.
+    A `DrawingAction` can also be
+    [created manually][creating-and-adding-new-drawing-actions]. Their constructors take
+    the same arguments as the corresponding [`Canvas`][toga.Canvas] drawing method, and
+    their classes have the same names, but capitalized.
+    """
 
     def __repr__(self) -> str:
         if is_dataclass(self):
@@ -143,11 +122,19 @@ class color_property:
 
 
 class Save(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [save()][toga.Canvas.save] method.
+    """
+
     def _draw(self, context: Any) -> None:
         context.save()
 
 
 class Restore(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [restore()][toga.Canvas.restore] method.
+    """
+
     def _draw(self, context: Any) -> None:
         context.restore()
 
@@ -159,6 +146,10 @@ class Restore(DrawingAction):
 
 @dataclass(repr=False)
 class SetFillStyle(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing assigning
+    to the [fill_style][toga.Canvas.fill_style] context attribute.
+    """
+
     fill_style: ColorT = color_property()
 
     def _draw(self, context: Any) -> None:
@@ -167,6 +158,10 @@ class SetFillStyle(DrawingAction):
 
 @dataclass(repr=False)
 class SetStrokeStyle(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing assigning
+    to the [stroke_style][toga.Canvas.stroke_style] context attribute.
+    """
+
     stroke_style: ColorT = color_property()
 
     def _draw(self, context: Any) -> None:
@@ -175,6 +170,10 @@ class SetStrokeStyle(DrawingAction):
 
 @dataclass(repr=False)
 class SetLineDash(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing assigning
+    to the [line_dash][toga.Canvas.line_dash] context attribute.
+    """
+
     line_dash: list[float]
 
     def _draw(self, context: Any) -> None:
@@ -183,6 +182,10 @@ class SetLineDash(DrawingAction):
 
 @dataclass(repr=False)
 class SetLineWidth(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing assigning
+    to the [line_width][toga.Canvas.line_width] context attribute.
+    """
+
     line_width: float
 
     def _draw(self, context: Any) -> None:
@@ -195,12 +198,20 @@ class SetLineWidth(DrawingAction):
 
 
 class BeginPath(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [begin_path()][toga.Canvas.begin_path] method.
+    """
+
     def _draw(self, context: Any) -> None:
         context.begin_path()
 
 
 @dataclass(repr=False)
 class MoveTo(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [move_to()][toga.Canvas.move_to] method.
+    """
+
     x: float
     y: float
 
@@ -210,6 +221,10 @@ class MoveTo(DrawingAction):
 
 @dataclass(repr=False)
 class LineTo(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [line_to()][toga.Canvas.line_to] method.
+    """
+
     x: float
     y: float
 
@@ -219,6 +234,10 @@ class LineTo(DrawingAction):
 
 @dataclass(repr=False)
 class BezierCurveTo(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [bezier_curve_to()][toga.Canvas.bezier_curve_to] method.
+    """
+
     cp1x: float
     cp1y: float
     cp2x: float
@@ -234,6 +253,10 @@ class BezierCurveTo(DrawingAction):
 
 @dataclass(repr=False)
 class QuadraticCurveTo(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [quadratic_curve_to()][toga.Canvas.quadratic_curve_to] method.
+    """
+
     cpx: float
     cpy: float
     x: float
@@ -245,6 +268,10 @@ class QuadraticCurveTo(DrawingAction):
 
 @dataclass(repr=False)
 class Arc(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [arc()][toga.Canvas.arc] method.
+    """
+
     x: float
     y: float
     radius: float
@@ -279,6 +306,10 @@ class Arc(DrawingAction):
 
 @dataclass(repr=False)
 class Ellipse(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [ellipse()][toga.Canvas.ellipse] method.
+    """
+
     x: float
     y: float
     radiusx: float
@@ -318,6 +349,10 @@ class Ellipse(DrawingAction):
 
 @dataclass(repr=False)
 class Rect(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [rect()][toga.Canvas.rect] method.
+    """
+
     x: float
     y: float
     width: float
@@ -329,6 +364,10 @@ class Rect(DrawingAction):
 
 @dataclass(repr=False)
 class RoundRect(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [round_rect()][toga.Canvas.round_rect] method.
+    """
+
     x: float
     y: float
     width: float
@@ -346,6 +385,10 @@ class RoundRect(DrawingAction):
 
 @dataclass(repr=False)
 class WriteText(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [write_text()][toga.Canvas.write_text] method.
+    """
+
     text: str
     x: float = 0.0
     y: float = 0.0
@@ -375,6 +418,10 @@ class WriteText(DrawingAction):
 
 @dataclass(repr=False)
 class DrawImage(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [draw_image()][toga.Canvas.draw_image] method.
+    """
+
     image: Image
     x: float = 0.0
     y: float = 0.0
@@ -398,6 +445,10 @@ class DrawImage(DrawingAction):
 
 @dataclass(repr=False)
 class Rotate(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [rotate()][toga.Canvas.rotate] method.
+    """
+
     radians: float
 
     def _draw(self, context: Any) -> None:
@@ -406,6 +457,10 @@ class Rotate(DrawingAction):
 
 @dataclass(repr=False)
 class Scale(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [scale()][toga.Canvas.scale] method.
+    """
+
     sx: float
     sy: float
 
@@ -415,6 +470,10 @@ class Scale(DrawingAction):
 
 @dataclass(repr=False)
 class Translate(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [translate()][toga.Canvas.translate] method.
+    """
+
     tx: float
     ty: float
 
@@ -423,5 +482,9 @@ class Translate(DrawingAction):
 
 
 class ResetTransform(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [reset_transform()][toga.Canvas.reset_transform] method.
+    """
+
     def _draw(self, context: Any) -> None:
         context.reset_transform()
