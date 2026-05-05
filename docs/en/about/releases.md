@@ -45,7 +45,7 @@
 - The interaction between visibility and starting an `ActivityIndicator` on iOS has been resolved. ([#3729](https://github.com/beeware/toga/issues/3729))
 - On macOS, the Close and Minimize menu options use the system-provided handlers, ensuring better adherence to system style guides. ([#3775](https://github.com/beeware/toga/issues/3775))
 - The show/hide cursor test was made more reliable on Winforms. ([#3783](https://github.com/beeware/toga/issues/3783))
-- `OptionContainer` and `SplitContainer` widgets will now resize continuously during the drag of a parent SplitContainer on macOS. ([#3787](https://github.com/beeware/toga/issues/3787))
+- `OptionContainer` and `ScrollContainer` widgets will now resize continuously during the drag of a parent `SplitContainer` on macOS. ([#3787](https://github.com/beeware/toga/issues/3787))
 - The `toga-demo` app now correctly identifies its icon when run as a Python module. ([#3926](https://github.com/beeware/toga/issues/3926))
 
 ### Backward incompatible changes
@@ -574,8 +574,8 @@ This release contains no new features. The primary purpose of this release is to
 - The location returned by `toga.App.paths.app` is now the folder that contains the Python source file that defines the app class used by the app. If you are using a `toga.App` instance directly, this may alter the path that is returned. ([#1964](https://github.com/beeware/toga/issues/1964))
 - On Winforms, if an application doesn't define an author, an author of `Unknown` is now used in application data paths, rather than `Toga`. ([#1964](https://github.com/beeware/toga/issues/1964))
 - Winforms now returns `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>/Data` as the user data file location, rather than `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>`. ([#1964](https://github.com/beeware/toga/issues/1964))
-- Support for SplitContainer instances with more than 2 panels of content has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
-- Support for 3-tuple form of specifying SplitContainer items, used to prevent panels from resizing, has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
+- Support for `SplitContainer` instances with more than 2 panels of content has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
+- Support for 3-tuple form of specifying `SplitContainer` items, used to prevent panels from resizing, has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
 - The ability to increment and decrement the current OptionContainer tab was removed. Instead of *container.current_tab += 1*, use *container.current_tab = container.current_tab.index + 1* ([#1996](https://github.com/beeware/toga/issues/1996))
 - `OptionContainer.add()`, `OptionContainer.remove()` and `OptionContainer.insert()` have been removed, due to being ambiguous with base widget methods of the same name. Use the `OptionContainer.content.append()`, `OptionContainer.content.remove()` and `OptionContainer.content.insert()` APIs instead. ([#1996](https://github.com/beeware/toga/issues/1996))
 - The `on_select` handler for OptionContainer no longer receives the `option` argument providing the selected tab. Use `current_tab` to obtain the currently selected tab. ([#1996](https://github.com/beeware/toga/issues/1996))
