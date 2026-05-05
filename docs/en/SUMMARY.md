@@ -38,6 +38,8 @@
             - [Documentation style guide](how-to/contribute/style/docs-style-guide.md)
     - Internal how-to guides
         - [How to cut a Toga release](how-to/internal/release.md)
+    - Upgrading from previous versions
+        - [Changes to Canvas in v0.5.4](how-to/upgrading/canvas-v0.5.4.md)
 - [Topic guides](topics/index.md)
     - topics/*
 - [Reference](reference/index.md)
@@ -58,13 +60,14 @@
         - Data representation
             - [Color](reference/api/data-representation/color.md)
             - [Constants](reference/api/data-representation/constants.md)
+            - [Column](reference/api/data-representation/column.md)
             - [Document](reference/api/data-representation/document.md)
+            - [DrawingAction](reference/api/data-representation/drawingaction.md)
             - [Paths](reference/api/data-representation/paths.md)
             - [Source](reference/api/data-representation/source.md)
             - [ListSource](reference/api/data-representation/listsource.md)
             - [TreeSource](reference/api/data-representation/treesource.md)
             - [ValueSource](reference/api/data-representation/valuesource.md)
-            - [Column](reference/api/data-representation/column.md)
             - [Types](reference/api/data-representation/types.md)
             - [Validators](reference/api/data-representation/validators.md)
         - Resources

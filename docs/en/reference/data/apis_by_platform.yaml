@@ -296,6 +296,10 @@ Data representation:
     description: Mechanisms for validating that input meets a given set of criteria.
     display: hide
 
+  DrawingAction:
+    description: Representation of a drawing action performed on a [Canvas](/reference/api/widgets/canvas.md).
+    display: hide
+
 
 Resources:
   Font:
