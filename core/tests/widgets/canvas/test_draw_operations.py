@@ -7,10 +7,41 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.images import Image
 from toga.widgets.canvas import Arc, Ellipse, Fill, Stroke
-from toga_dummy.utils import assert_action_performed
+from toga.widgets.canvas.drawingaction import color_property
+from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
 ABSOLUTE_FILE_PATH = Path(__file__).parent.parent.parent / "resources/toga.png"
+
+
+def test_save(widget):
+    """A save operation can be added."""
+    draw_op = widget.save()
+
+    # Doesn't automatically redraw, since it can't have any visual effect.
+    assert_action_not_performed(widget, "redraw")
+    # Redraw has to be called in order for the dummy back end to get the instruction.
+    widget.redraw()
+    assert_action_performed(widget, "redraw")
+    assert repr(draw_op) == "Save()"
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == ["save"]
+
+
+def test_restore(widget):
+    """A restore operation can be added."""
+    draw_op = widget.restore()
+
+    # Doesn't automatically redraw, since it can't have any visual effect.
+    assert_action_not_performed(widget, "redraw")
+    # Redraw has to be called in order for the dummy back end to get the instruction.
+    widget.redraw()
+    assert_action_performed(widget, "redraw")
+    assert repr(draw_op) == "Restore()"
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == ["restore"]
 
 
 def test_begin_path(widget):
@@ -273,8 +304,19 @@ def test_fill_stroke_duplicate_parameters(widget, action, use_method, values):
     else:
         act = ActionClass
 
-    with pytest.raises(TypeError):
-        act(**{attr_name: values[0]}, color=values[1])
+    attr_value, color_value = values
+    with pytest.raises(TypeError, match=rf"Both {attr_name} and color provided"):
+        act(**{attr_name: attr_value}, color=color_value)
+
+
+@pytest.mark.parametrize(
+    "ActionClass, attr_name",
+    [(Fill, "fill_style"), (Stroke, "stroke_style")],
+)
+def test_color_property_class_level_access(ActionClass, attr_name):
+    """Color property returns itself on class-level access."""
+    assert isinstance(getattr(ActionClass, attr_name), color_property)
+    assert isinstance(ActionClass.color, color_property)
 
 
 def test_move_to(widget):
