@@ -9,7 +9,7 @@ For this guide, we're going to use Briefcase to package our application. However
 If you've worked with accessing files in Python, you're probably used to being able to read from a file in the same directory as your Python script using something like the following:
 
 ```python
-with open("file.txt") as f:
+with open("file.txt", encoding="utf-8") as f:
     f.read()
 ```
 

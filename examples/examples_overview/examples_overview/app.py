@@ -37,7 +37,7 @@ class ExamplesOverviewApp(toga.App):
         readme_path = widget.selection.path / "README.md"
 
         try:
-            with open(readme_path) as f:
+            with readme_path.open(encoding="utf-8") as f:
                 readme_text = f.read()
         except OSError:
             readme_text = "README could not be loaded"
