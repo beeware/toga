@@ -6,8 +6,9 @@ from android.view import Gravity, View
 from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
 from java import dynamic_proxy
 
+from ..colors import native_color
 from .base import Widget
-from .label import set_textview_font
+from .label import set_alignment, set_textview_font
 
 
 class TogaOnClickListener(dynamic_proxy(View.OnClickListener)):
@@ -149,9 +150,24 @@ class Table(Widget):
                 )
             text_view = TextView(self._native_activity)
             text_view.setText(toga_column.text(data_row, missing_value))
+            text_align = toga_column.text_align(data_row)
+            color = toga_column.color(data_row)
+            background_color = toga_column.background_color(data_row)
+            font = toga_column.font(data_row, self.interface.style.font)
+
+            if color is not None:
+                text_view.setTextColor(native_color(color))
+            if background_color is not None:
+                text_view.setBackgroundColor(native_color(background_color))
+            # font is only None if something is very wrong (eg. can't find system font)
+            # so can't test
+            if font is not None:
+                font_impl = font._impl
+            else:  # pragma: no cover
+                font_impl = self._font_impl
             set_textview_font(
                 text_view,
-                self._font_impl,
+                font_impl,
                 text_view.getTypeface(),
                 text_view.getTextSize(),
             )
@@ -159,8 +175,10 @@ class Table(Widget):
                 TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
             )
             text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
-            text_view_params.gravity = Gravity.START
+            text_view_params.gravity = Gravity.FILL_HORIZONTAL
             text_view.setLayoutParams(text_view_params)
+            if text_align is not None:
+                set_alignment(text_view, text_align, Gravity.CENTER_VERTICAL)
             table_row.addView(text_view)
         return table_row
 

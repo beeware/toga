@@ -11,6 +11,10 @@ from PySide6.QtCore import (
 from PySide6.QtWidgets import QHeaderView, QTreeView
 from travertino.size import at_least
 
+from toga.constants import CENTER
+from toga_qt.colors import native_color
+from toga_qt.libs import qt_text_align
+
 from .base import Widget
 
 logger = logging.getLogger(__name__)
@@ -20,11 +24,12 @@ INVALID_INDEX = QModelIndex()
 
 
 class TreeSourceModel(QAbstractItemModel):
-    def __init__(self, source, columns, missing_value, **kwargs):
+    def __init__(self, source, columns, missing_value, font_data, **kwargs):
         super().__init__(**kwargs)
         self._source = source
         self._columns = columns
         self._missing_value = missing_value
+        self._font_data = font_data
 
     def set_source(self, source):
         self.beginResetModel()
@@ -196,6 +201,25 @@ class TreeSourceModel(QAbstractItemModel):
                         return icon._impl.native
                 elif role == Qt.ItemDataRole.DisplayRole:
                     return column.text(node, self._missing_value)
+                elif role == Qt.ItemDataRole.TextAlignmentRole:
+                    text_align = column.text_align(node)
+                    if text_align is not None:
+                        print("here", text_align, qt_text_align(text_align, CENTER))
+                        return qt_text_align(text_align, CENTER)
+                elif role == Qt.ItemDataRole.ForegroundRole:
+                    color = column.color(node)
+                    if color is not None:
+                        return native_color(color)
+                elif role == Qt.ItemDataRole.BackgroundRole:
+                    color = column.background_color(node)
+                    if color is not None:
+                        return native_color(color)
+                elif role == Qt.ItemDataRole.FontRole:
+                    font = column.font(node, self._font_data)
+                    # font is only None if something is very wrong (eg. can't find
+                    # system font) so can't test
+                    if font is not None:  # pragma: no branch
+                        return font._impl.native
             except Exception:  # pragma: no cover
                 logger.exception(
                     f"Could not get data for node {node}, column {column_index}"
@@ -232,6 +256,7 @@ class Tree(Widget):
             getattr(self.interface, "_data", None),
             self.interface._columns[:],
             self.interface.missing_value,
+            self.interface.style.font,
             parent=self.native,
         )
         self.native.setModel(self.native_model)
@@ -258,6 +283,12 @@ class Tree(Widget):
         # Invalid index shouldn't occur in normal operation.
         if index.isValid():  # pragma: no branch
             self.interface.on_activate(node=self.native_model._get_node(index))
+
+    def set_font(self, font):
+        super().set_font(font)
+        # Update the fonts of all visible cells
+        self.native_model._font_data = self.interface.style.font
+        self.native_model.reset_source()
 
     def change_source(self, source):
         self.native_model.set_source(source)

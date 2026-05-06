@@ -10,7 +10,8 @@ from operator import itemgetter
 from babel.dates import format_date, format_time
 
 import toga
-from toga.constants import COLUMN
+from toga.colors import rgb
+from toga.constants import BOLD, COLUMN, ITALIC, RIGHT, SERIF
 from toga.sources import AccessorColumn, Column
 
 
@@ -22,6 +23,16 @@ class TitleIconColumn(Column):
 
     def icon(self, row):
         return getattr(row, "icon", None)
+
+    def font_style(self, row):
+        if not hasattr(row, "icon"):
+            return ITALIC
+        return super().font_style(row)
+
+    def font_weight(self, row):
+        if hasattr(row, "icon"):
+            return BOLD
+        return super().font_style(row)
 
 
 class RatingColumn(AccessorColumn):
@@ -49,6 +60,21 @@ class RatingColumn(AccessorColumn):
         else:
             return self.red
 
+    def text_align(self, row):
+        value = self.value(row)
+        if isinstance(value, (int, float)):
+            return RIGHT
+        return super().text_align(row)
+
+    def color(self, row):
+        value = self.value(row)
+        if value is None:
+            return None
+        elif value >= 7.0:
+            return rgb(0, 128, 0)
+        else:
+            return rgb(255, 0, 0)
+
 
 class ListStrColumn(AccessorColumn):
     """A column that displays a comma-separated list of strings."""
@@ -68,6 +94,14 @@ class DateColumn(AccessorColumn):
             return str(value)
         else:
             return default
+
+    def background_color(self, row):
+        value = self.value(row)
+        if isinstance(value, datetime.date):
+            return None
+        else:
+            # error
+            return rgb(255, 255, 128)
 
 
 class TimeColumn(AccessorColumn):
@@ -140,7 +174,7 @@ class TableColumnApp(toga.App):
         # generate some synthetic screening information
         today = datetime.date.today()
         times = [
-            datetime.datetime(today.year, today.month, today.day + 1, hour)
+            datetime.datetime(today.year, today.month, today.day, hour)
             for hour in [12, 16, 18, 20]
         ]
         screens = [i + 1 for i in range(len(self.bee_movies))]
@@ -187,6 +221,8 @@ class TableColumnApp(toga.App):
             ],
             data=self.bee_movies,
             flex=1,
+            font_family=[SERIF],
+            font_size=12,
         )
 
         self.table2 = toga.Table(

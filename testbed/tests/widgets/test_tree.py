@@ -4,6 +4,8 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.colors import rgb
+from toga.constants import BOLD, ITALIC, RIGHT, SERIF, SMALL_CAPS, SYSTEM
 from toga.sources import AccessorColumn, ListListener, TreeListener, TreeSource
 from toga.style.pack import Pack
 
@@ -1005,6 +1007,142 @@ def test_tree_listener(widget):
     TreeListener APIs"""
     assert isinstance(widget._impl, ListListener)
     assert isinstance(widget._impl, TreeListener)
+
+
+class StyledTestColumn(AccessorColumn):
+    def text_align(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return RIGHT
+        else:
+            return None
+
+    def color(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            if value < 0:
+                return rgb(255, 0, 0)
+            else:
+                return rgb(0, 128, 0)
+        else:
+            return None
+
+    def background_color(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return None
+        else:
+            return rgb(255, 0, 0)
+
+    def font_family(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return None
+        else:
+            return [SERIF]
+
+    def font_style(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return ITALIC
+        else:
+            return None
+
+    def font_variant(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)):
+            return None
+        else:
+            return SMALL_CAPS
+
+    def font_weight(self, row):
+        value = self.value(row)
+        if isinstance(value, (float, int)) and value >= 0:
+            return BOLD
+        return None
+
+    def font_size(self, row):
+        return 18
+
+
+@pytest.fixture
+async def styled_widget(source, on_select_handler, on_activate_handler):
+    skip_on_platforms("iOS", "android", "windows")
+    return toga.Tree(
+        [
+            StyledTestColumn("A"),
+            StyledTestColumn("B"),
+            StyledTestColumn("C"),
+        ],
+        data=source,
+        missing_value="MISSING!",
+        on_select=on_select_handler,
+        on_activate=on_activate_handler,
+        style=Pack(flex=1),
+    )
+
+
+@pytest.fixture
+async def style_probe(main_window, styled_widget):
+    old_content = main_window.content
+
+    box = toga.Box(children=[styled_widget])
+    main_window.content = box
+    probe = get_probe(styled_widget)
+    await probe.redraw("Constructing color Table probe")
+    probe.assert_container(box)
+    yield probe
+
+    main_window.content = old_content
+
+
+async def test_cell_color(styled_widget, style_probe):
+    "A cell can have colors"
+    if not getattr(style_probe, "supports_styles", False):
+        pytest.skip("Backend does not support colors in cells.")
+
+    styled_widget.data = [
+        (
+            {
+                # A number from -1 to 1
+                "a": (i - 25) / 25,
+                # Normal text,
+                "b": f"B{i}",
+            },
+            [],
+        )
+        for i in range(50)
+    ]
+    await style_probe.redraw("Tree has data with colors")
+
+    negative_number_font = toga.Font(SYSTEM, 18, style=ITALIC)
+    positive_number_font = toga.Font(SYSTEM, 18, style=ITALIC, weight=BOLD)
+    text_font = toga.Font(SERIF, 18, variant=SMALL_CAPS)
+
+    style_probe.assert_cell_content(
+        (0,),
+        0,
+        "-1.0",
+        text_align=RIGHT,
+        color=rgb(255, 0, 0),
+        font=negative_number_font,
+    )
+    style_probe.assert_cell_content(
+        (0,),
+        1,
+        "B0",
+        color=None,
+        background_color=rgb(255, 0, 0),
+        font=text_font,
+    )
+    style_probe.assert_cell_content(
+        (25,),
+        0,
+        "0.0",
+        text_align=RIGHT,
+        color=rgb(0, 128, 0),
+        font=positive_number_font,
+    )
 
 
 @pytest.mark.parametrize(
