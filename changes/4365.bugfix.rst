@@ -1,0 +1,1 @@
+Toga's lazy-loading mechanism now uses an explicit file encoding.

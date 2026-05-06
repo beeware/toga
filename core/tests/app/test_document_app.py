@@ -31,7 +31,7 @@ class ExampleDocument(toga.Document):
         else:
             # We don't actually care about the file or it's contents, but it
             # needs to exist; so we open it to verify that behavior.
-            with self.path.open():
+            with self.path.open(encoding="utf-8"):
                 self._mock_read(self.path)
 
     def write(self):
@@ -58,7 +58,7 @@ def example_file(tmp_path):
     """Create an actual file with the .foobar extension"""
     path = tmp_path / "path/to/filename.foobar"
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w") as f:
+    with path.open("w", encoding="utf-8") as f:
         f.write("Dummy content")
 
     return path
@@ -69,7 +69,7 @@ def other_file(tmp_path):
     """Create an actual file with the .other extension"""
     path = tmp_path / "path/to/other.other"
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w") as f:
+    with path.open("w", encoding="utf-8") as f:
         f.write("Dummy content")
 
     return path
