@@ -1,7 +1,6 @@
 from http.cookiejar import CookieJar
 
 import pytest
-from pytest import skip
 
 from toga_gtk.libs import GTK_VERSION, WebKit2
 
@@ -19,4 +18,4 @@ class WebViewProbe(SimpleProbe):
 
     def extract_cookie(self, cookie_jar, name):
         assert isinstance(cookie_jar, CookieJar)
-        skip("Cookie retrieval not implemented on GTK")
+        pytest.skip("Cookie retrieval not implemented on GTK")

@@ -568,3 +568,32 @@ async def test_flex_horizontal_widget_size(widget, probe):
     await probe.redraw("Widget should be changed to 300px width x 200px height")
     probe.assert_width(290, 330)
     probe.assert_height(190, 230)
+
+
+def build_test_system_effects_simple(scroll_control=False):
+    async def test_system_effects_simple(main_window, widget, probe):
+        """The widget is adapted properly to extend into unsafe
+        areas when system effects apply in windows with a simple title bar."""
+        probe.assert_system_effects_top(True, False)
+
+        # Orphan the widget
+        widget.parent.remove(widget)
+        main_window.content = widget
+        await probe.redraw("Widget is directly assigned to window content")
+        probe.assert_system_effects_top(True, True)
+
+        if scroll_control:
+            widget.vertical = False
+            await probe.redraw("Scroll container made non vertically scrollable")
+            probe.assert_system_effects_top(False, True)
+
+            widget.vertical = True
+
+        widget.margin = 1
+        await probe.redraw("Margin applied for widget")
+        probe.assert_system_effects_top(False, True)
+
+        del widget.margin
+        await probe.redraw("Resetting margin")
+
+    return test_system_effects_simple

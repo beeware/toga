@@ -1,3 +1,4 @@
+import pytest
 from rubicon.objc import NSPoint
 
 from toga.colors import TRANSPARENT
@@ -223,3 +224,6 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     async def redo(self):
         await self.type_character("z", alt=True, shift=True)
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.skip("Cocoa baceknd currently does not adapt to Liquid Glass")

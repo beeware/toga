@@ -267,6 +267,8 @@ class MainWindow(Window):
             on_refresh=self.content_refreshed,
             on_native_layout=self.content_native_layout,
         )
+        # Widgets can extend into the top space with safe blurring.
+        self.container.top_unset = True
 
     def content_native_layout(self, container):
         # Instead of manually computing the geometry at the top,

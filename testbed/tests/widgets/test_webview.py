@@ -11,10 +11,8 @@ import toga
 from toga.style import Pack
 
 from .conftest import build_cleanup_test, safe_create
-from .properties import (  # noqa: F401
-    test_flex_widget_size,
-    test_focus,
-)
+from .properties import build_test_system_effects_simple, test_focus  # noqa: F401
+from .test_scrollcontainer import test_flex_widget_size  # noqa: F401
 
 # These timeouts are loose because CI can be very slow, especially on mobile.
 LOAD_TIMEOUT = 30
@@ -119,6 +117,7 @@ async def widget(on_load):
 
 
 test_cleanup = build_cleanup_test(toga.WebView, xfail_backends=("toga_gtk",))
+test_system_effects_simple = build_test_system_effects_simple()
 
 
 @pytest.mark.flaky(retries=5, delay=1)

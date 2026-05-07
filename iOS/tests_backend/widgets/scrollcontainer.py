@@ -2,7 +2,7 @@ import asyncio
 
 from rubicon.objc import NSMakePoint
 
-from toga_iOS.libs import UIScrollView
+from toga_iOS.libs import UIScrollView, supports_liquid_glass
 
 from .base import SimpleProbe
 
@@ -10,7 +10,20 @@ from .base import SimpleProbe
 class ScrollContainerProbe(SimpleProbe):
     native_class = UIScrollView
     scrollbar_inset = 0
-    frame_inset = 0
+
+    @property
+    def horizontal_frame_inset(self):
+        return (
+            self.native.adjustedContentInset.left
+            + self.native.adjustedContentInset.right
+        )
+
+    @property
+    def vertical_frame_inset(self):
+        return (
+            self.native.adjustedContentInset.top
+            + self.native.adjustedContentInset.bottom
+        )
 
     @property
     def has_content(self):
@@ -51,3 +64,8 @@ class ScrollContainerProbe(SimpleProbe):
             position = current
             await asyncio.sleep(0.05)
             current = self.widget.position
+
+    def assert_system_effects_top(self, expected, root):
+        super().assert_system_effects_top(expected, root)
+        if expected and (root or supports_liquid_glass):
+            assert self.native.adjustedContentInset.top == self.impl.container.top_inset

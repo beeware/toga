@@ -1,5 +1,4 @@
 import asyncio
-import os
 
 from rubicon.objc.api import Block, ObjCClass
 
@@ -51,23 +50,19 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def max_scroll_position(self):
-        max_value = int(self.native.contentSize.height - self.native.frame.size.height)
-        # The max value is a dependent on the device; devices that don't have a physical
-        # button report as being a little larger. A physical device will give you the
-        # model identifier as part of UIDevice.currentDevice.model; however, simulators
-        # return "iPhone" as the model, so we need to check the environment as well to
-        # reliably get the device identifier. "iPhone14,6" is an iPhone SE 3rd edition.
-        # As of Feb 2023, it's the only device currently sold that has a physical
-        # button.
-        model = os.getenv("SIMULATOR_MODEL_IDENTIFIER", UIDevice.currentDevice.model)
-        if model != "iPhone14,6":
-            max_value += 34
-
-        return max(0, max_value)
+        return max(
+            0,
+            int(
+                self.native.contentSize.height
+                - self.native.frame.size.height
+                + self.native.adjustedContentInset.bottom
+                + self.native.adjustedContentInset.top
+            ),
+        )
 
     @property
     def scroll_position(self):
-        return int(self.native.contentOffset.y)
+        return int(self.native.contentOffset.y + self.native.adjustedContentInset.top)
 
     async def wait_for_scroll_completion(self):
         position = self.scroll_position

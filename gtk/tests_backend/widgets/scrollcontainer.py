@@ -8,7 +8,8 @@ from .base import SimpleProbe
 class ScrollContainerProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
     scrollbar_inset = 0
-    frame_inset = 0
+    horizontal_frame_inset = 0
+    vertical_frame_inset = 0
 
     if GTK_VERSION >= (4, 0, 0):
         pytest.skip("GTK4 doesn't support progress bars yet")
