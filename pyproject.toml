@@ -174,6 +174,6 @@ docs = [
     "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
     # "beeware-docs-tools @ file://../beeware-docs-tools",
     "tabulate==0.10.0",
-    "mkdocs-redirects==1.2.2",
+    "mkdocs-redirects==1.2.3",
     "mkdocs-exclude==1.0.2",
 ]
