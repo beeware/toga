@@ -66,7 +66,7 @@
 - WinForms buttons with icons will now reliably scale to 32x32px icon size, regardless of the size of the original icon image. ([#4051](https://github.com/beeware/toga/issues/4051))
 - `Screen.as_image` now properly accounts for HiDPI scaling on Winforms. ([#4051](https://github.com/beeware/toga/issues/4051))
 - Large static content can now be loaded into `WebView` widgets on Windows, Android and Qt. ([#4062](https://github.com/beeware/toga/issues/4062))
-- The initial layout of a `MainWindow` before resize will now be based on the correct size of the container. ([#4069](https://github.com/beeware/toga/issues/4069))
+- The initial layout of a `MainWindow` before resize will now be based on the correct size of the container on Qt. ([#4069](https://github.com/beeware/toga/issues/4069))
 - Window state transitions to `MAXIMIZED` from `PRESENTATION` or `FULLSCREEN` will now work reliably with the Qt backend. ([#4069](https://github.com/beeware/toga/issues/4069))
 - The list of accessors for creating rows in `Table` and `Tree` widgets is now set at widget creation time, preventing inconsistent data conversion if columns are changed. ([#4071](https://github.com/beeware/toga/issues/4071))
 - Qt windows will now properly close when a close is requested on the application. ([#4078](https://github.com/beeware/toga/issues/4078))
