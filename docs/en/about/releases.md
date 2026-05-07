@@ -89,10 +89,10 @@
 ### Backward Incompatible Changes
 
 - The `get_platform_factory()` function and backend `factory` modules are deprecated. Widget authors should use `toga.get_factory()` instead, and writers of new backends should use entry points to declare the implemented objects. The new factory objects are not modules but instead are lazy namespace objects. ([#2687](https://github.com/beeware/toga/issues/2687))
-- The parsing function `travertino.colors.color()` (also accessible as `toga.colors.color()`) is deprecated. The Travertino method has been renamed `travertino.colors.Color.parse()`. There should be no need to use this method in Toga, as all APIs that accept colors will automatically parse of raw color representations from strings. ([#3946](https://github.com/beeware/toga/issues/3946))
+- The parsing function `travertino.colors.color()` (also accessible as `toga.colors.color()`) is deprecated. The Travertino method has been renamed `travertino.colors.Color.parse()`. There should be no need to use this method in Toga, as all APIs that accept colors will automatically parse raw color representations from strings. ([#3946](https://github.com/beeware/toga/issues/3946))
 - `Source` objects now look for methods with names of the form `source_{notification}`, rather than just `{notification}` when the `notify` method is called. If you have a custom listener class with methods like `change`, `insert`, `remove` or `clear`, you should re-name them to have a `source_` prefix: `source_change`, `source_insert` and so on. ([#4046](https://github.com/beeware/toga/issues/4046))
 - When nesting stroke contexts or fill contexts for `Canvas` drawing operations, leaving an argument (e.g. `color`) blank on an inner context now respects any value set on the outer context, instead of resetting it to the default. ([#4057](https://github.com/beeware/toga/issues/4057))
-- The `Canvas` widget has undergone some significant internal changes.
+- The `Canvas` widget has undergone some significant changes.
     - Drawing methods can now be called directly on a `Canvas`. Calling them on states is now deprecated.
     - The "camel case" context manager drawing methods (`ClosedPath`, `Fill`, and `Stroke`) are deprecated. They are now unified with their standalone counterparts (`close_path`, `fill`, and `stroke`, respectively). For example, the `fill` method (lowercase) can be used as a normal method or as `with canvas.fill():`.
     - List-like methods on states are deprecated. Manipulate their `drawing_actions` lists directly, and manually call `redraw()` on the `Canvas`.
@@ -103,7 +103,7 @@
     - The `context` property of `Canvas` has been renamed to `root_state`.
     - `toga.widgets.canvas.DrawingObject` has been renamed from `DrawingObject` to `DrawingAction`. This is an internal class, and is unlikely to be used directly.
 
-    The previous names and APIs should still work, but will raise a `DeprecationWarning` if used. See the [upgrading guide][canvas-0-5-4-upgrade] for more details on how to update `Canvas` usage. ([#4082](https://github.com/beeware/toga/issues/4082), [#4159](https://github.com/beeware/toga/issues/4159))
+    The previous names and APIs should still work, but will raise a `DeprecationWarning` if used. See the [upgrading guide](/how-to/upgrading/canvas-v0.5.4.md) for more details on how to update `Canvas` usage. ([#4082](https://github.com/beeware/toga/issues/4082), [#4159](https://github.com/beeware/toga/issues/4159))
     <!-- rumdl-disable-next-line MD076 -->
 
 - Instances of the `WriteText` and `DrawImage` objects representing `Canvas` actions now report `None` when queried for their attributes that haven't been set, instead of supplying the default. ([#4089](https://github.com/beeware/toga/issues/4089))
