@@ -43,7 +43,7 @@
 - Apps no longer crash if an icon file exists but is cannot be loaded. Toga now logs a warning and falls back to a default icon. ([#3565](https://github.com/beeware/toga/issues/3565))
 - When creating an `Image` from a file path, it's now guaranteed that the file won't remain open after construction. ([#3730](https://github.com/beeware/toga/issues/3730))
 - On Android, `DetailedList` now uses theme-resolved text colors (Primary/Secondary) instead of hard-coded black, fixing unreadable text in dark mode. ([#3751](https://github.com/beeware/toga/issues/3751))
-- Calling `scroll_to_bottom()` on a `MultilineTextInput` that is already at the bottom of the scroll area no longer causes a "bounce" in the scroll position. ([#3872](https://github.com/beeware/toga/issues/3872))
+- Calling `scroll_to_bottom()` on a `MultilineTextInput` that is already at the bottom of the scroll area no longer causes a "bounce" in the scroll position on Windows. ([#3872](https://github.com/beeware/toga/issues/3872))
 - Double-clicking on the header or an empty row a macOS `Table` no longer triggers the activation of the last item, raising an error if there is no data. ([#3905](https://github.com/beeware/toga/issues/3905))
 - The text color of `TextInput` on macOS in dark mode has been fixed. ([#3919](https://github.com/beeware/toga/issues/3919))
 - When adding or removing tabs from an `OptionContainer`, or when setting the content of a `SplitContainer`, the `window` and `app` properties of the content, and the App and Window's widget registry, are now correctly updated. ([#3929](https://github.com/beeware/toga/issues/3929))
