@@ -122,18 +122,25 @@ class MapView(Widget):
                 value = webview.evaluate_javascript_finish(result)
                 if value.is_number():
                     value = value.to_double()
+                elif value.is_object():
+                    # JSON is as good a representation as any for an object.
+                    # The only usage we see in this widget is "None".
+                    value = value.to_json(0)
                 else:
+                    # Convert all other values to a string
                     value = value.to_string()
                     if value.startswith("LatLng("):
                         value = LatLng(*tuple(float(v) for v in value[7:-1].split(",")))
 
                 future.set_result(value)
             except Exception as e:
-                if e.code == WebKit2.JavascriptError.INVALID_RESULT:
-                    # The object returned can't be parsed; it's probably a
-                    # Javascript Object.
+                if e.code == WebKit2.JavascriptError.INVALID_RESULT:  # pragma: no cover
+                    # The object returned can't be parsed. We can't do anything
+                    # with that object, so return None. This used to happen on
+                    # older versions of WebKit, but doesn't any more in CI, so
+                    # the branch is marked no-cover.
                     future.set_result(None)
-                else:  # pragma: no cover
+                else:
                     exc = RuntimeError(str(e))
                     future.set_exception(exc)
 
