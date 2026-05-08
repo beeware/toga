@@ -1,4 +1,4 @@
-# Changes to Canvas in v0.5.4 { #canvas-0-5-4-upgrade }
+# Changes to Canvas in v0.5.4
 
 The [Canvas](/reference/api/widgets/canvas.md) widget's interface has changed quite a bit in Toga v0.5.4. We aim to maintain compatibility with user code that's been written for earlier versions; however, you'll likely see a lot of deprecation warnings. Support for deprecated usage will eventually be removed, so it's a good idea to update your code. This page explains how the interface has changed, and how to adapt existing code to it.
 

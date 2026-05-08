@@ -43,7 +43,7 @@
 - Apps no longer crash if an icon file exists but is cannot be loaded. Toga now logs a warning and falls back to a default icon. ([#3565](https://github.com/beeware/toga/issues/3565))
 - When creating an `Image` from a file path, it's now guaranteed that the file won't remain open after construction. ([#3730](https://github.com/beeware/toga/issues/3730))
 - On Android, `DetailedList` now uses theme-resolved text colors (Primary/Secondary) instead of hard-coded black, fixing unreadable text in dark mode. ([#3751](https://github.com/beeware/toga/issues/3751))
-- Calling `scroll_to_bottom()` on a `MultilineTextInput` that is already at the bottom of the scroll area no longer causes a "bounce" in the scroll position. ([#3872](https://github.com/beeware/toga/issues/3872))
+- Calling `scroll_to_bottom()` on a `MultilineTextInput` that is already at the bottom of the scroll area no longer causes a "bounce" in the scroll position on Windows. ([#3872](https://github.com/beeware/toga/issues/3872))
 - Double-clicking on the header or an empty row a macOS `Table` no longer triggers the activation of the last item, raising an error if there is no data. ([#3905](https://github.com/beeware/toga/issues/3905))
 - The text color of `TextInput` on macOS in dark mode has been fixed. ([#3919](https://github.com/beeware/toga/issues/3919))
 - When adding or removing tabs from an `OptionContainer`, or when setting the content of a `SplitContainer`, the `window` and `app` properties of the content, and the App and Window's widget registry, are now correctly updated. ([#3929](https://github.com/beeware/toga/issues/3929))
@@ -66,7 +66,7 @@
 - WinForms buttons with icons will now reliably scale to 32x32px icon size, regardless of the size of the original icon image. ([#4051](https://github.com/beeware/toga/issues/4051))
 - `Screen.as_image` now properly accounts for HiDPI scaling on Winforms. ([#4051](https://github.com/beeware/toga/issues/4051))
 - Large static content can now be loaded into `WebView` widgets on Windows, Android and Qt. ([#4062](https://github.com/beeware/toga/issues/4062))
-- The initial layout of a `MainWindow` before resize will now be based on the correct size of the container. ([#4069](https://github.com/beeware/toga/issues/4069))
+- The initial layout of a `MainWindow` before resize will now be based on the correct size of the container on Qt. ([#4069](https://github.com/beeware/toga/issues/4069))
 - Window state transitions to `MAXIMIZED` from `PRESENTATION` or `FULLSCREEN` will now work reliably with the Qt backend. ([#4069](https://github.com/beeware/toga/issues/4069))
 - The list of accessors for creating rows in `Table` and `Tree` widgets is now set at widget creation time, preventing inconsistent data conversion if columns are changed. ([#4071](https://github.com/beeware/toga/issues/4071))
 - Qt windows will now properly close when a close is requested on the application. ([#4078](https://github.com/beeware/toga/issues/4078))
@@ -89,10 +89,10 @@
 ### Backward Incompatible Changes
 
 - The `get_platform_factory()` function and backend `factory` modules are deprecated. Widget authors should use `toga.get_factory()` instead, and writers of new backends should use entry points to declare the implemented objects. The new factory objects are not modules but instead are lazy namespace objects. ([#2687](https://github.com/beeware/toga/issues/2687))
-- The parsing function `travertino.colors.color()` (also accessible as `toga.colors.color()`) is deprecated. The Travertino method has been renamed `travertino.colors.Color.parse()`. There should be no need to use this method in Toga, as all APIs that accept colors will automatically parse of raw color representations from strings. ([#3946](https://github.com/beeware/toga/issues/3946))
+- The parsing function `travertino.colors.color()` (also accessible as `toga.colors.color()`) is deprecated. The Travertino method has been renamed `travertino.colors.Color.parse()`. There should be no need to use this method in Toga, as all APIs that accept colors will automatically parse raw color representations from strings. ([#3946](https://github.com/beeware/toga/issues/3946))
 - `Source` objects now look for methods with names of the form `source_{notification}`, rather than just `{notification}` when the `notify` method is called. If you have a custom listener class with methods like `change`, `insert`, `remove` or `clear`, you should re-name them to have a `source_` prefix: `source_change`, `source_insert` and so on. ([#4046](https://github.com/beeware/toga/issues/4046))
 - When nesting stroke contexts or fill contexts for `Canvas` drawing operations, leaving an argument (e.g. `color`) blank on an inner context now respects any value set on the outer context, instead of resetting it to the default. ([#4057](https://github.com/beeware/toga/issues/4057))
-- The `Canvas` widget has undergone some significant internal changes.
+- The `Canvas` widget has undergone some significant changes.
     - Drawing methods can now be called directly on a `Canvas`. Calling them on states is now deprecated.
     - The "camel case" context manager drawing methods (`ClosedPath`, `Fill`, and `Stroke`) are deprecated. They are now unified with their standalone counterparts (`close_path`, `fill`, and `stroke`, respectively). For example, the `fill` method (lowercase) can be used as a normal method or as `with canvas.fill():`.
     - List-like methods on states are deprecated. Manipulate their `drawing_actions` lists directly, and manually call `redraw()` on the `Canvas`.
@@ -103,7 +103,7 @@
     - The `context` property of `Canvas` has been renamed to `root_state`.
     - `toga.widgets.canvas.DrawingObject` has been renamed from `DrawingObject` to `DrawingAction`. This is an internal class, and is unlikely to be used directly.
 
-    The previous names and APIs should still work, but will raise a `DeprecationWarning` if used. See the [upgrading guide][canvas-0-5-4-upgrade] for more details on how to update `Canvas` usage. ([#4082](https://github.com/beeware/toga/issues/4082), [#4159](https://github.com/beeware/toga/issues/4159))
+    The previous names and APIs should still work, but will raise a `DeprecationWarning` if used. See the [upgrading guide](/how-to/upgrading/canvas-v0.5.4.md) for more details on how to update `Canvas` usage. ([#4082](https://github.com/beeware/toga/issues/4082), [#4159](https://github.com/beeware/toga/issues/4159))
     <!-- rumdl-disable-next-line MD076 -->
 
 - Instances of the `WriteText` and `DrawImage` objects representing `Canvas` actions now report `None` when queried for their attributes that haven't been set, instead of supplying the default. ([#4089](https://github.com/beeware/toga/issues/4089))
