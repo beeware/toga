@@ -32,9 +32,9 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
         self.window.resize_content(native_parent.getWidth(), native_parent.getHeight())
 
 
-class Window(Container):
+class Window:
     def __init__(self, interface, title, position, size):
-        super().__init__()
+        self.container = Container()
         self.interface = interface
         self.interface._impl = self
         self._initial_title = title
@@ -77,7 +77,9 @@ class Window(Container):
 
         self.app = app
         native_parent = self.app.native.findViewById(R.id.content)
-        self.init_container(native_parent)
+        self.container.init_container(
+            native_parent, pre_refresh=self.container_pre_refresh
+        )
         native_parent.getViewTreeObserver().addOnGlobalLayoutListener(
             LayoutListener(self)
         )
@@ -93,11 +95,11 @@ class Window(Container):
     # Window content and resources
     ######################################################################
 
-    def refreshed(self):
-        if self.native_width and self.native_height:
+    def container_pre_refresh(self, container):
+        if container.native_width and container.native_height:
             layout = self.interface.content.layout
-            available_width = self.scale_out(self.native_width, ROUND_UP)
-            available_height = self.scale_out(self.native_height, ROUND_UP)
+            available_width = container.scale_out(container.native_width, ROUND_UP)
+            available_height = container.scale_out(container.native_height, ROUND_UP)
             if (layout.width > available_width) or (layout.height > available_height):
                 # Show the sizes in terms of CSS pixels.
                 print(
@@ -105,14 +107,12 @@ class Window(Container):
                     f"exceeds available space {(available_width, available_height)}"
                 )
 
-        super().refreshed()
-
     ######################################################################
     # Window size
     ######################################################################
 
     def get_size(self) -> Size:
-        return Size(self.width, self.height)
+        return Size(self.container.width, self.container.height)
 
     def set_size(self, size):
         # Does nothing on mobile
