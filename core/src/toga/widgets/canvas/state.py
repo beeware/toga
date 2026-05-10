@@ -332,8 +332,8 @@ class DrawingActionDispatch(ABC):
 
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
-        :param path: An optional Path2D object to fill. Ignored when used as a
-            context manager.
+        :param path: An optional Path2D object to fill. Raises RuntimeError when used
+            in a context manager.
         :param fill_style: The fill style. At present, only accepts colors; gradients
             and patterns are not supported.
         :param color: Alias for fill_style.
@@ -367,8 +367,8 @@ class DrawingActionDispatch(ABC):
         (`x`, `y`) coordinates (if both are specified). When the context is exited, the
         path is stroked.
 
-        :param path: An optional Path2D object to draw. Ignored when used as a
-            context manager.
+        :param path: An optional Path2D object to draw. Raises a RuntimeError when used
+            in a context manager.
         :param stroke_style: The stroke style. At present, only accepts colors;
             gradients and patterns are not supported.
         :param color: Alias for fill_style.
@@ -985,8 +985,11 @@ class Fill(BaseState):
                 action._draw(context)
 
             context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
-            # Ignore path when used as context manager
-            path = None
+
+            if self.path is not None:
+                raise RuntimeError(
+                    "path must be None when using fill as a context manager."
+                )
         elif self.path is not None:
             path = self.path.impl
         else:
@@ -1039,8 +1042,11 @@ class Stroke(BaseState):
                 action._draw(context)
 
             context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
-            # Ignore path when used as context manager
-            path = None
+
+            if self.path is not None:
+                raise RuntimeError(
+                    "path must be None when using stroke as a context manager."
+                )
         elif self.path is not None:
             path = self.path.impl
         else:
