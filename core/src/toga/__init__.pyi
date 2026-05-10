@@ -35,6 +35,7 @@ from toga.widgets.base import Widget as Widget
 from toga.widgets.box import Box as Box
 from toga.widgets.button import Button as Button
 from toga.widgets.canvas import Canvas as Canvas
+from toga.widgets.canvas import Path2D as Path2D
 from toga.widgets.box import Column as Column
 from toga.widgets.dateinput import DateInput as DateInput
 from toga.widgets.detailedlist import DetailedList as DetailedList

@@ -1076,7 +1076,6 @@ async def test_path_object(canvas, probe):
     for _ in range(12):
         canvas.rotate(pi / 6)
         canvas.scale(0.95, 0.95)
-        print("draw", _)
         canvas.fill(path=path, fill_style=CORNFLOWERBLUE)
         canvas.stroke(path, color=REBECCAPURPLE)
 

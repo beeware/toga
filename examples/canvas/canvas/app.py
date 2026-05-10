@@ -26,6 +26,7 @@ FILL = "Fill"
 INSTRUCTIONS = "instructions"
 TRIANGLE = "triangle"
 TRIANGLES = "triangles"
+TRIANGLES_PATH = "triangles (with path)"
 RECTANGLE = "rectangle"
 ELLIPSE = "ellipse"
 HALF_ELLIPSE = "half ellipse"
@@ -69,6 +70,7 @@ class CanvasApp(toga.App):
             INSTRUCTIONS: self.draw_instructions,
             TRIANGLE: self.draw_triangle,
             TRIANGLES: self.draw_triangles,
+            TRIANGLES_PATH: self.draw_triangles_path,
             RECTANGLE: self.draw_rectangle,
             ELLIPSE: self.draw_ellipse,
             HALF_ELLIPSE: self.draw_half_ellipse,
@@ -487,6 +489,27 @@ class CanvasApp(toga.App):
                 self.canvas.line_to(triangle_size, triangle_size)
                 self.canvas.line_to(0, 0)
 
+    def draw_triangles_path(self, factor):
+        # calculate offsets to centralize drawing in the bigger axis
+        triangle_size = factor / 5
+        gap = factor / 12
+
+        triangle = toga.Path2D()
+        triangle.move_to(0, 0)
+        triangle.line_to(2 * triangle_size, 0)
+        triangle.line_to(triangle_size, triangle_size)
+        triangle.line_to(0, 0)
+
+        for x, y in [
+            (-2 * triangle_size - gap, -2 * triangle_size),
+            (gap, -2 * triangle_size),
+            (-triangle_size, -triangle_size + gap),
+        ]:
+            with self.canvas.state():
+                self.canvas.translate(self.x_middle + x, self.y_middle + y)
+                # either stroke or fill triangle
+                self.get_state(triangle)
+
     def draw_rectangle(self, factor):
         self.canvas.rect(
             self.x_middle - factor / 3,
@@ -601,14 +624,16 @@ class CanvasApp(toga.App):
     def get_style(self):
         return ITALIC if self.italic_switch.value else NORMAL
 
-    def get_state(self):
+    def get_state(self, path=None):
         if self.state_selection.value == STROKE:
             return self.canvas.stroke(
+                path=path,
                 stroke_style=str(self.color_selection.value),
                 line_width=self.stroke_width_slider.value,
                 line_dash=self.dash_patterns[self.dash_pattern_selection.value],
             )
         return self.canvas.fill(
+            path=path,
             fill_rule=FillRule[self.fill_rule_selection.value],
             fill_style=self.color_selection.value,
         )
