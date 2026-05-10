@@ -28,8 +28,10 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
         If any view's size or position has changed, the new values will be visible here.
         """
         self.window.interface.on_resize()
-        native_parent = self.window.native_content.getParent()
-        self.window.resize_content(native_parent.getWidth(), native_parent.getHeight())
+        native_parent = self.window.container.native_content.getParent()
+        self.window.container.resize_content(
+            native_parent.getWidth(), native_parent.getHeight()
+        )
 
 
 class Window:
@@ -211,17 +213,20 @@ class Window:
 
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(
-            self.native_content.getWidth(),
-            self.native_content.getHeight(),
+            self.container.native_content.getWidth(),
+            self.container.native_content.getHeight(),
             Bitmap.Config.ARGB_8888,
         )
         canvas = A_Canvas(bitmap)
         # TODO: Need to draw window background as well as the content.
-        self.native_content.draw(canvas)
+        self.container.native_content.draw(canvas)
 
         stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         return bytes(stream.toByteArray())
+
+    def set_content(self, content):
+        self.container.set_content(content)
 
 
 class MainWindow(Window):
