@@ -22,7 +22,7 @@ repos:
       additional_dependencies: ['.[toml]']
       args: ["--skip=CODE_OF_CONDUCT.md"]
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.1.87
+    rev: v0.1.91
     hooks:
       - id: rumdl
       - id: rumdl-fmt
