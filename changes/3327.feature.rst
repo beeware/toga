@@ -1,1 +1,0 @@
-Toga Positron now has a bootstrap for FastAPI-based websites.

@@ -147,11 +147,11 @@ type = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 pre-commit = [
-    "pre-commit == 4.3.0",
+    "pre-commit == 4.6.0",
 ]
 
 setuptools-scm = [
-    "setuptools_scm == 9.2.2",
+    "setuptools_scm == 10.0.5",
 ]
 
 towncrier = [
@@ -159,7 +159,7 @@ towncrier = [
 ]
 
 tox-uv = [
-    "tox-uv == 1.28.0",
+    "tox-uv == 1.35.2",
 ]
 
 dev = [
@@ -173,7 +173,7 @@ dev = [
 docs = [
     "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
     # "beeware-docs-tools @ file://../beeware-docs-tools",
-    "tabulate==0.9.0",
-    "mkdocs-redirects==1.2.2",
+    "tabulate==0.10.0",
+    "mkdocs-redirects==1.2.3",
     "mkdocs-exclude==1.0.2",
 ]

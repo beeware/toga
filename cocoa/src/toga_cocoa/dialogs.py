@@ -1,4 +1,5 @@
 import asyncio
+import time
 from pathlib import Path
 
 import toga
@@ -83,10 +84,17 @@ class NSAlertDialog(BaseDialog):
             session = nsapp.beginModalSessionForWindow(self.native.window)
 
             # Poll the modal session, waiting for the dialog to complete
-            while (  # noqa: ASYNC110
+            while (
                 result := self._poll_modal_session(nsapp, session)
             ) == NSModalResponseContinue:
-                await asyncio.sleep(0.1)
+                # 2026-05-02 macOS 26 appears to have unreliability with non-zero
+                # async sleeps interacting with [NSApplication runModalSession].
+                # The below code uses a 0 asyncio.sleep timeout, and uses a padding
+                # of 0.005ms to avoid busy-polling.
+                start = time.perf_counter()
+                await asyncio.sleep(0)
+                end = time.perf_counter()
+                time.sleep(max(0, 0.005 - (end - start)))  # noqa: ASYNC251
 
             # End the modal session, handle the result, and hide the dialog
             nsapp.endModalSession(session)
