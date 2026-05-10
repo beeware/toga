@@ -990,6 +990,7 @@ class Fill(BaseState):
                 raise RuntimeError(
                     "path must be None when using fill as a context manager."
                 )
+            path = None
         elif self.path is not None:
             path = self.path.impl
         else:
@@ -1047,6 +1048,7 @@ class Stroke(BaseState):
                 raise RuntimeError(
                     "path must be None when using stroke as a context manager."
                 )
+            path = None
         elif self.path is not None:
             path = self.path.impl
         else:
