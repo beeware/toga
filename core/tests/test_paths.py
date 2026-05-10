@@ -28,6 +28,7 @@ def run_app(args, cwd):
         cwd=cwd,
         env=env,
         text=True,
+        encoding="utf-8",
     )
     # When called as a subprocess, coverage drops its coverage report in CWD.
     # Move it to the project root for combination with the main test report.

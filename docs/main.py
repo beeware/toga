@@ -23,7 +23,8 @@ PLATFORMS_MAPPING = {
     "textual": "Terminal",
 }
 
-with Path("docs/en/reference/data/apis_by_platform.yaml").open() as file:
+APIS_BY_PLATFORM_PATH = Path("docs/en/reference/data/apis_by_platform.yaml")
+with APIS_BY_PLATFORM_PATH.open(encoding="utf-8") as file:
     api_data = yaml.safe_load(file)
 
 APIS_BY_NAME = {}

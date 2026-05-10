@@ -1,5 +1,6 @@
 import math
 import os
+from contextlib import contextmanager
 from itertools import chain
 from math import pi, radians, tan
 from unittest.mock import call
@@ -638,27 +639,62 @@ async def test_nested_stroke_and_fill_state(canvas, probe):
     assert_reference(probe, "nested_stroke_and_fill_state")
 
 
-async def test_transforms(canvas, probe):
+# Utility methods to abstract how context is saved and restored. Context attributes
+# (including transform) should behave the same whether one uses the state() context
+# manager or the save() and restore() methods.
+
+
+@contextmanager
+def reset_transform(canvas):
+    try:
+        yield
+    finally:
+        canvas.reset_transform()
+
+
+def state_context_manager(canvas):
+    # Is already a context manager:
+    return canvas.state()
+
+
+@contextmanager
+def save_and_restore(canvas):
+    canvas.save()
+    try:
+        yield
+    finally:
+        canvas.restore()
+
+
+@pytest.mark.parametrize(
+    "restore_method",
+    [
+        reset_transform,
+        state_context_manager,
+        save_and_restore,
+    ],
+)
+async def test_transforms(canvas, probe, restore_method):
     """Transforms can be applied."""
 
     # Draw a rectangle after a horizontal translation
-    canvas.translate(160, 20)
-    canvas.rect(0, 0, 20, 60)
-    canvas.fill(fill_style=CORNFLOWERBLUE)
+    with restore_method(canvas):
+        canvas.translate(160, 20)
+        canvas.rect(0, 0, 20, 60)
+        canvas.fill(fill_style=CORNFLOWERBLUE)
 
-    canvas.reset_transform()
-    canvas.begin_path()
-    canvas.rotate(pi / 4)
-    canvas.rect(200, 0, 20, 60)
-    canvas.fill(fill_style=REBECCAPURPLE)
+    with restore_method(canvas):
+        canvas.begin_path()
+        canvas.rotate(pi / 4)
+        canvas.rect(200, 0, 20, 60)
+        canvas.fill(fill_style=REBECCAPURPLE)
 
-    canvas.reset_transform()
-    canvas.begin_path()
-    canvas.scale(2, 5)
-    canvas.rect(10, 10, 10, 10)
-    canvas.fill(fill_style=GOLDENROD)
+    with restore_method(canvas):
+        canvas.begin_path()
+        canvas.scale(2, 5)
+        canvas.rect(10, 10, 10, 10)
+        canvas.fill(fill_style=GOLDENROD)
 
-    canvas.reset_transform()
     canvas.begin_path()
     canvas.translate(100, 60)
     canvas.rotate(pi / 7 * 4)
@@ -1022,3 +1058,75 @@ async def test_miter_join(canvas, probe):
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "miter_join", threshold=0.025)
+
+
+@pytest.mark.parametrize("restore_method", [state_context_manager, save_and_restore])
+async def test_attributes(canvas, probe, restore_method):
+    """Context attributes can be set and restored."""
+    side = 40
+    gap = 15
+    x = gap
+    y = gap
+
+    def draw_rect(canvas):
+        nonlocal x
+        nonlocal y
+
+        with canvas.stroke():
+            with canvas.fill():
+                canvas.rect(x, y, side, side)
+
+        x += side + gap
+        if x >= 150:
+            x = gap
+            y += side + gap
+
+    # 1. Black on black
+    draw_rect(canvas)
+
+    canvas.fill_style = CORNFLOWERBLUE
+    canvas.stroke_style = REBECCAPURPLE
+    canvas.line_width = 4
+    canvas.line_dash = [2, 2]
+
+    # 2. Purple on blue
+    draw_rect(canvas)
+
+    with restore_method(canvas):
+        canvas.fill_style = GOLDENROD
+        canvas.stroke_style = RED
+        canvas.line_width = 8
+        canvas.line_dash = [5, 1]
+
+        # 3. Red on goldenrod
+        draw_rect(canvas)
+
+        with restore_method(canvas):
+            canvas.fill_style = RED
+            canvas.stroke_style = CORNFLOWERBLUE
+            canvas.line_width = 3
+            canvas.line_dash = []
+
+            # 4. Blue on red
+            draw_rect(canvas)
+
+        # 5. Restore to red on goldenrod
+        draw_rect(canvas)
+
+        with restore_method(canvas):
+            canvas.fill_style = CORNFLOWERBLUE
+            canvas.stroke_style = BLACK
+            canvas.line_width = 5
+            canvas.line_dash = [1, 4]
+
+            # 6. Black on blue
+            draw_rect(canvas)
+
+        # 7. Restore to red on goldenrod
+        draw_rect(canvas)
+
+    # 8. Restore to purple on blue
+    draw_rect(canvas)
+
+    await probe.redraw("Image should be drawn")
+    assert_reference(probe, "attributes", threshold=0.02)

@@ -6,6 +6,9 @@ from System.Windows.Forms import (
     MouseEventArgs,
 )
 
+from toga_winforms.libs import win32constants as wc
+from toga_winforms.libs.user32 import SendMessageW
+
 from .table import TableProbe
 
 
@@ -259,3 +262,21 @@ class TreeProbe(TableProbe):
 
         assert self.impl._mouse_move_hit == -1
         assert self.impl._mouse_down_hit == -1
+
+    async def key_press(self, key, presses: int = 1):
+        hwnd = self.impl._hwnd
+
+        if key == "down":
+            wparam = wc.VK_DOWN
+        elif key == "left":
+            wparam = wc.VK_LEFT
+        elif key == "right":
+            wparam = wc.VK_RIGHT
+        else:
+            return
+
+        for _i in range(presses):
+            SendMessageW(hwnd, wc.WM_KEYDOWN, wparam, 0)
+            await asyncio.sleep(0.1)
+            SendMessageW(hwnd, wc.WM_KEYUP, wparam, 0)
+            await asyncio.sleep(0.1)

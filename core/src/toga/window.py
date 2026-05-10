@@ -252,6 +252,21 @@ class Window:
         if App.app is None:
             raise RuntimeError("Cannot create a Window before creating an App")
 
+        # Initialize event handlers to no-op defaults BEFORE creating the
+        # implementation. Some platforms (Cocoa, .NET Framework 4.x WinForms)
+        # fire resize / focus callbacks during impl construction, before the
+        # explicit `self.on_X = ...` assignments below have run. Without these
+        # defaults the dispatched callback raises AttributeError on
+        # `self._on_resize` / `self._on_gain_focus` / etc.
+        # See beeware/toga#4347 (resize during init on macOS) and #4357
+        # (gain_focus on .NET Framework 4.x).
+        self.on_close = None
+        self.on_gain_focus = None
+        self.on_lose_focus = None
+        self.on_show = None
+        self.on_hide = None
+        self.on_resize = None
+
         self.factory = get_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
@@ -267,7 +282,8 @@ class Window:
         if content:
             self.content = content
 
-        # Set up the event handlers on the interface
+        # Set up the event handlers on the interface (overrides the no-op
+        # defaults installed above with the user-supplied handlers).
         self.on_close = on_close
         self.on_gain_focus = on_gain_focus
         self.on_lose_focus = on_lose_focus
