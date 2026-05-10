@@ -126,11 +126,7 @@ It's also possible to reach beyond the HTML Canvas-based API documented here, an
             - focus
             - redraw
 
-::: toga.widgets.canvas.state.BaseState
-
 ::: toga.widgets.canvas.Path2D
-
-::: toga.widgets.canvas.DrawingAction
 
 ::: toga.widgets.canvas.OnTouchHandler
 
