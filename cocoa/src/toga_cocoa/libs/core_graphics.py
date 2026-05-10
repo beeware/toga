@@ -75,7 +75,7 @@ core_graphics.CGPathCreateMutableCopy.argtypes = [CGPathRef]
 core_graphics.CGPathAddArc.restype = c_void_p
 core_graphics.CGPathAddArc.argtypes = [
     CGMutablePathRef,
-    CGAffineTransform,
+    POINTER(CGAffineTransform),
     CGFloat,
     CGFloat,
     CGFloat,
@@ -86,7 +86,7 @@ core_graphics.CGPathAddArc.argtypes = [
 core_graphics.CGPathAddCurveToPoint.restype = c_void_p
 core_graphics.CGPathAddCurveToPoint.argtypes = [
     CGMutablePathRef,
-    CGAffineTransform,
+    POINTER(CGAffineTransform),
     CGFloat,
     CGFloat,
     CGFloat,
@@ -97,21 +97,25 @@ core_graphics.CGPathAddCurveToPoint.argtypes = [
 core_graphics.CGPathAddLineToPoint.restype = c_void_p
 core_graphics.CGPathAddLineToPoint.argtypes = [
     CGMutablePathRef,
-    CGAffineTransform,
+    POINTER(CGAffineTransform),
     CGFloat,
     CGFloat,
 ]
 core_graphics.CGPathAddQuadCurveToPoint.restype = c_void_p
 core_graphics.CGPathAddQuadCurveToPoint.argtypes = [
     CGMutablePathRef,
-    CGAffineTransform,
+    POINTER(CGAffineTransform),
     CGFloat,
     CGFloat,
     CGFloat,
     CGFloat,
 ]
 core_graphics.CGPathAddRect.restype = c_void_p
-core_graphics.CGPathAddRect.argtypes = [CGMutablePathRef, CGAffineTransform, CGRect]
+core_graphics.CGPathAddRect.argtypes = [
+    CGMutablePathRef,
+    POINTER(CGAffineTransform),
+    CGRect,
+]
 core_graphics.CGPathCloseSubpath.restype = c_void_p
 core_graphics.CGPathCloseSubpath.argtypes = [c_void_p]
 core_graphics.CGPathIsEmpty.restype = c_bool
@@ -119,12 +123,16 @@ core_graphics.CGPathIsEmpty.argtypes = [CGMutablePathRef]
 core_graphics.CGPathMoveToPoint.restype = c_void_p
 core_graphics.CGPathMoveToPoint.argtypes = [
     CGMutablePathRef,
-    CGAffineTransform,
+    POINTER(CGAffineTransform),
     CGFloat,
     CGFloat,
 ]
 core_graphics.CGPathAddPath.restype = c_void_p
-core_graphics.CGPathAddPath.argtypes = [CGMutablePathRef, CGAffineTransform, CGPathRef]
+core_graphics.CGPathAddPath.argtypes = [
+    CGMutablePathRef,
+    POINTER(CGAffineTransform),
+    CGPathRef,
+]
 
 ######################################################################
 # CGImage.h

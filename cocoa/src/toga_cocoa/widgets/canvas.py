@@ -1,4 +1,3 @@
-import platform
 from collections.abc import Sequence
 from copy import copy
 from dataclasses import dataclass
@@ -51,9 +50,7 @@ class Path2D:
             transform = IDENTITY
         else:
             transform = core_graphics.CGAffineTransformMake(*transform)
-        # adding empty path segfaults on intel
-        if not path.is_empty():
-            core_graphics.CGPathAddPath(self.native, transform, path.native)
+        core_graphics.CGPathAddPath(self.native, transform, path.native)
 
     def close_path(self):
         core_graphics.CGPathCloseSubpath(self.native)
@@ -107,28 +104,19 @@ class Path2D:
         endangle,
         counterclockwise,
     ):
-        if (
-            counterclockwise and platform.machine() == "x86_64"
-        ):  # pragma: no-cover-if-arm
-            # Persistent segfaults in CGPathAddArc with counterclockwise True on intel
-            # skip for now
-            return
-        else:  # pragma: no-cover-if-x86
-            transform = core_graphics.CGAffineTransformMake(1, 0, 0, 1, x, y)
-            transform = core_graphics.CGAffineTransformRotate(transform, rotation)
-            transform = core_graphics.CGAffineTransformScale(
-                transform, radiusx, radiusy
-            )
-            core_graphics.CGPathAddArc(
-                self.native,
-                transform,
-                0,
-                0,
-                1.0,
-                startangle,
-                endangle,
-                int(counterclockwise),
-            )
+        transform = core_graphics.CGAffineTransformMake(1, 0, 0, 1, x, y)
+        transform = core_graphics.CGAffineTransformRotate(transform, rotation)
+        transform = core_graphics.CGAffineTransformScale(transform, radiusx, radiusy)
+        core_graphics.CGPathAddArc(
+            self.native,
+            transform,
+            0,
+            0,
+            1.0,
+            startangle,
+            endangle,
+            int(counterclockwise),
+        )
 
     def rect(self, x, y, width, height):
         rectangle = CGRectMake(x, y, width, height)

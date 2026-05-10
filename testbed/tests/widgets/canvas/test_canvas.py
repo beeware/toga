@@ -1,6 +1,5 @@
 import math
 import os
-import platform
 from itertools import chain
 from math import pi, radians, tan
 from unittest.mock import call
@@ -995,10 +994,6 @@ async def test_draw_image_in_rect(canvas, probe):
     assert_reference(probe, "draw_image_in_rect", threshold=0.05)
 
 
-@pytest.mark.xfail(
-    condition=platform.system() == "Darwin" and platform.machine() == "x86_64",
-    reason="Calls to CGPathAddArc with counterclockwise True segfaults on Mac Intel",
-)
 async def test_path_object(canvas, probe):
     path = Path2D()
 
