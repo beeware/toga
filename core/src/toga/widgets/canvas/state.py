@@ -976,6 +976,7 @@ class Fill(BaseState):
         if self.fill_style is not None:
             context.set_fill_style(self.fill_style)
 
+        path = None
         if hasattr(self, "_is_open") or self.drawing_actions:
             # Was used as a context manager (or had drawing actions manually added)
             context.in_fill = True  # 4-2026: Backwards compatibility for Toga <= 0.5.3
@@ -985,16 +986,8 @@ class Fill(BaseState):
                 action._draw(context)
 
             context.in_fill = False  # Backwards compatibility for Toga <= 0.5.3
-
-            if self.path is not None:
-                raise RuntimeError(
-                    "path must be None when using fill as a context manager."
-                )
-            path = None
         elif self.path is not None:
             path = self.path.impl
-        else:
-            path = None
 
         context.fill(fill_rule=self.fill_rule, path=path)
         context.restore()
@@ -1034,6 +1027,7 @@ class Stroke(BaseState):
         if self.line_dash is not None:
             context.set_line_dash(self.line_dash)
 
+        path = None
         if hasattr(self, "_is_open") or self.drawing_actions:
             # Was used as a context manager (or had drawing actions manually added)
             context.in_stroke = True  # Backwards compatibility for Toga <= 0.5.3
@@ -1043,16 +1037,8 @@ class Stroke(BaseState):
                 action._draw(context)
 
             context.in_stroke = False  # Backwards compatibility for Toga <= 0.5.3
-
-            if self.path is not None:
-                raise RuntimeError(
-                    "path must be None when using stroke as a context manager."
-                )
-            path = None
         elif self.path is not None:
             path = self.path.impl
-        else:
-            path = None
 
         context.stroke(path=path)
         context.restore()
