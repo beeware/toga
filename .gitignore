@@ -48,6 +48,11 @@ mprofile_*.dat
 .specify/extensions.yml
 .specify/extensions
 .specify/init-options.json
+.specify/feature.json
+.github/copilot-instructions.md
+.github/agents/
+.github/prompts/
+specs/
 .specify/integration.json
 .specify/integrations
 .specify/workflows
