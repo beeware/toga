@@ -232,9 +232,8 @@ class Window(Scalable):
 
     def set_content(self, widget):
         self.container.clear_content()
-        if widget:
-            widget.container = self.container
-            self.container.content = widget
+        widget.container = self.container
+        self.container.content = widget
 
     ######################################################################
     # Window size
