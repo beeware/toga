@@ -65,7 +65,7 @@ class Window(Scalable):
 
         self.native.LocationChanged += WeakrefCallable(self.winforms_LocationChanged)
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
-        self.container.resize_content()  # Store initial size
+        self.resize_content()  # Store initial size
 
         # Set window border style based on the window resizability setting at interface.
         self.native.FormBorderStyle = getattr(
@@ -105,7 +105,7 @@ class Window(Scalable):
             # State change between NORMAL <-> MINIMIZED doesn't
             # constitute a window resize operation.
             self.interface.on_resize()
-            self.container.resize_content()
+            self.resize_content()
 
         # See DisplaySettingsChanged in app.py.
         if self.get_current_screen().dpi_scale != self._dpi_scale:
@@ -514,4 +514,4 @@ class MainWindow(Window):
             self.native.Controls.Remove(self.toolbar_native)
             self.toolbar_native = None
 
-        self.container.resize_content()
+        self.resize_content()
