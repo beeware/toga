@@ -28,7 +28,7 @@ if TYPE_CHECKING:  # pragma: no cover
 initial_dpi_scale = ScreenImpl(WinForms.Screen.PrimaryScreen).dpi_scale
 
 
-class Window(Container, Scalable):
+class Window(Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
 
@@ -36,7 +36,7 @@ class Window(Container, Scalable):
 
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
         self.native.FormClosing += self._FormClosing_handler
-        super().__init__(self.native)
+        self.container = Container(self.native, on_refresh=self.on_refresh)
         self._dpi_scale = self.get_current_screen().dpi_scale
 
         self.native.MinimizeBox = self.interface.minimizable
@@ -65,7 +65,7 @@ class Window(Container, Scalable):
 
         self.native.LocationChanged += WeakrefCallable(self.winforms_LocationChanged)
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
-        self.resize_content()  # Store initial size
+        self.container.native_content()  # Store initial size
 
         # Set window border style based on the window resizability setting at interface.
         self.native.FormBorderStyle = getattr(
@@ -105,7 +105,7 @@ class Window(Container, Scalable):
             # State change between NORMAL <-> MINIMIZED doesn't
             # constitute a window resize operation.
             self.interface.on_resize()
-            self.resize_content()
+            self.container.native_content()
 
         # See DisplaySettingsChanged in app.py.
         if self.get_current_screen().dpi_scale != self._dpi_scale:
@@ -199,8 +199,7 @@ class Window(Container, Scalable):
     def _top_bars_height(self):
         return 0
 
-    def refreshed(self):
-        super().refreshed()
+    def on_refresh(self, container):
         layout = self.interface.content.layout
         self.native.MinimumSize = WinSize(
             self.scale_in(layout.min_width) + self._decor_width(),
@@ -211,8 +210,8 @@ class Window(Container, Scalable):
 
     def resize_content(self):
         vertical_shift = self._top_bars_height()
-        self.native_content.Location = Point(0, vertical_shift)
-        super().resize_content(
+        self.container.native_content.Location = Point(0, vertical_shift)
+        self.container.resize_content(
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
@@ -230,6 +229,12 @@ class Window(Container, Scalable):
             self.interface.content.refresh()
 
         self.resize_content()
+
+    def set_content(self, widget):
+        self.container.clear_content()
+        if widget:
+            widget.container = self.container
+            self.container.content = widget
 
     ######################################################################
     # Window size
@@ -386,12 +391,15 @@ class Window(Container, Scalable):
     ######################################################################
 
     def get_image_data(self):
-        size = WinSize(self.native_content.Size.Width, self.native_content.Size.Height)
+        size = WinSize(
+            self.container.native_content.Size.Width,
+            self.container.native_content.Size.Height,
+        )
         bitmap = Bitmap(size.Width, size.Height)
         graphics = Graphics.FromImage(bitmap)
 
         graphics.CopyFromScreen(
-            self.native_content.PointToScreen(Point.Empty),
+            self.container.native_content.PointToScreen(Point.Empty),
             Point(0, 0),
             size,
         )
@@ -506,4 +514,4 @@ class MainWindow(Window):
             self.native.Controls.Remove(self.toolbar_native)
             self.toolbar_native = None
 
-        self.resize_content()
+        self.container.native_content()
