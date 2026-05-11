@@ -66,7 +66,7 @@ Toga is part of the [BeeWare suite](https://beeware.org). You can talk to the co
 
 - [@beeware@fosstodon.org on Mastodon](https://fosstodon.org/@beeware)
 - [Discord](https://beeware.org/bee/chat/)
-- The Toga [GitHub Discussions forum](https://github.com/beeware/Toga/discussions)
+- The Toga [GitHub Discussions forum](https://github.com/beeware/toga/discussions/)
 
 ### Code of conduct
 
@@ -76,4 +76,4 @@ If you have any concerns about this code of conduct, or you wish to report a vio
 
 ### Contributing
 
-If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues). If you want to contribute to Toga, you can read through the [Toga contribution guides](how-to/contribute/index.md).
+If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues/). If you want to contribute to Toga, you can read through the [Toga contribution guides](how-to/contribute/index.md).

@@ -8,7 +8,7 @@ If you'd like to contribute to Toga, our [contribution guide](https://toga.beewa
 
 ### Code of Conduct
 
-BeeWare operates under a [Code of Conduct](https://beeware.org/community/behavior/code-of-conduct/). All participation the BeeWare community is governed by this code.
+BeeWare operates under a [Code of Conduct](https://beeware.org/community/code-of-conduct/). All participation the BeeWare community is governed by this code.
 
 ### AI contributions
 
