@@ -56,6 +56,20 @@ Any PR failing one of these is rejected, not waived.
 
 Do not replace or bypass these tools. Add new dependencies only with a clear need and a compatible license (BSD-3-Clause friendly).
 
+### Editable installs
+
+For manual testing outside `tox`, install local packages explicitly in editable mode and always pass `--no-deps`. This repository's packages depend on each other, so normal dependency resolution can install released `toga-*` or `travertino` packages from PyPI instead of using the local checkout.
+
+```console
+# Core with the Dummy backend
+python -m pip install --no-deps -e ./travertino -e ./core -e ./dummy
+
+# Core with a production backend; replace ./gtk with the backend under test
+python -m pip install --no-deps -e ./travertino -e ./core -e ./gtk
+```
+
+Use the local backend path for the platform you are exercising: `./cocoa`, `./gtk`, `./winforms`, `./iOS`, `./android`, `./textual`, `./web`, or `./qt`. Install `./toga` only when you specifically need to test the platform-selecting `toga` meta package, and install `./positron` only when working on the Positron Briefcase plugin.
+
 ## Canonical commands
 
 Run from the repository root unless noted.
