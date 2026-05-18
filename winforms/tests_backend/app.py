@@ -21,7 +21,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = False
     supports_current_window_assignment = True
-    supports_dark_mode = False
+    supports_dark_mode = True
     edit_menu_noop_enabled = False
     supports_psutil = True
 
