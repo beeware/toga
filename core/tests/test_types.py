@@ -17,6 +17,7 @@ def test_latlng_required_properties():
 
     assert ll == (LAT, LNG)  # Tuple equivalence for backwards-compatibility
     assert ll != (LAT + 1, LNG)
+    assert hash(ll) == hash((LAT, LNG))
 
     # Optional values were not filled in
     assert ll.altitude is None

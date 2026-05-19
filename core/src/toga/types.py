@@ -24,10 +24,11 @@ if TYPE_CHECKING:
 
 
 class LatLng(tuple):
-    """A geographic coordinate, with optional altitude and accuracy.
+    """A geographic coordinate, with optional altitude and accuracy attributes.
 
-    LatLng can be compared with a 2-tuple of (lat, lng), the optional attributes
-    (altitude and accuracy values) are not considered when testing equality
+    A LatLng compares equal to a 2-tuple (lat, lng). The optional
+    altitude, horizontal_accuracy, and vertical_accuracy attributes
+    are not considered for equality or hashing.
     """
 
     altitude: float | None = None
