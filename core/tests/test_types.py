@@ -1,4 +1,52 @@
-from toga.types import Position, Size
+import pytest
+
+from toga.types import LatLng, Position, Size
+
+
+def test_latlng_required_properties():
+    """A LatLng class has latitude and longitude values."""
+    LAT = -31.95
+    LNG = 115.86
+    ll = LatLng(LAT, LNG)
+    assert ll.lat == pytest.approx(LAT)
+    assert ll.lng == pytest.approx(LNG)
+    assert str(ll) == f"({LAT:6f}, {LNG:6f})"
+
+    assert ll == LatLng(LAT, LNG)
+    assert ll != LatLng(LAT, LNG + 1)
+
+    assert ll == (LAT, LNG)  # Tuple equivalence for backwards-compatibility
+    assert ll != (LAT + 1, LNG)
+
+    # Optional values were not filled in
+    assert ll.altitude is None
+    assert ll.horizontal_accuracy is None
+    assert ll.vertical_accuracy is None
+
+
+def test_latlng_optional_properties():
+    """A LatLng class has optional values for altitude and accuracies."""
+    LAT = -31.95
+    LNG = 115.86
+    ALT = 20.1
+    HORIZONTAL_ACC = 10.2
+    VERTICAL_ACC = 11.3
+    bare_ll = LatLng(LAT, LNG)
+    ll = LatLng(
+        LAT,
+        LNG,
+        altitude=ALT,
+        horizontal_accuracy=HORIZONTAL_ACC,
+        vertical_accuracy=VERTICAL_ACC,
+    )
+    assert ll.altitude == pytest.approx(ALT)
+    assert ll.horizontal_accuracy == pytest.approx(HORIZONTAL_ACC)
+    assert ll.vertical_accuracy == pytest.approx(VERTICAL_ACC)
+
+    assert bare_ll == ll  # optional values are not used for comparison
+    assert bare_ll.altitude != ll.altitude
+    assert bare_ll.horizontal_accuracy != ll.horizontal_accuracy
+    assert bare_ll.vertical_accuracy != ll.vertical_accuracy
 
 
 def test_position_properties():
