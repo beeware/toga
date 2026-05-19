@@ -164,8 +164,8 @@ Widgets:
     description: Displays columns of tabular data.
     beta:
       - android
-    unsupported:
       - iOS
+    unsupported:
       - web
       - textual
 
