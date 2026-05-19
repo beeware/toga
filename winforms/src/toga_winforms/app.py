@@ -221,10 +221,12 @@ class App:
         key = Registry.CurrentUser.OpenSubKey(
             "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
         )
-        if key is not None:
-            value = key.GetValue("AppsUseLightTheme", 1)
+        if key is None:  # pragma: no branch
+            return False
+        try:
+            return key.GetValue("AppsUseLightTheme", 1) == 0
+        finally:
             key.Close()
-        return value == 0
 
     ######################################################################
     # App capabilities
