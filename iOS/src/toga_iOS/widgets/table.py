@@ -15,7 +15,6 @@ from toga_iOS.libs import (
     UITableViewController,
     UITableViewScrollPositionBottom,
     UITableViewScrollPositionMiddle,
-    UITableViewScrollPositionNone,
     UITableViewScrollPositionTop,
     UIViewAutoresizing,
 )

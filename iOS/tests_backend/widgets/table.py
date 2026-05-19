@@ -66,7 +66,9 @@ class TableProbe(SimpleProbe):
 
     def _cell_labels(self, row):
         cell = self._cell_at_row(row)
-        return [v for v in self._cell_stack(cell).arrangedSubviews if isinstance(v, UILabel)]
+        return [
+            v for v in self._cell_stack(cell).arrangedSubviews if isinstance(v, UILabel)
+        ]
 
     def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
         if widget is not None:

@@ -7,7 +7,6 @@ import toga
 from toga.sources import AccessorColumn, ListListener, ListSource
 from toga.style.pack import Pack
 
-from ..conftest import skip_on_platforms
 from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
