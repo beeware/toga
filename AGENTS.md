@@ -86,6 +86,27 @@ tox -e towncrier-check
 tox -e docs-lint
 ```
 
+### Editable installs
+
+Toga is split into separate packages (`core`, `dummy`, `travertino`, and one package per backend) that depend on each other. Installing them one-by-one with `pip install -e ./core`, `pip install -e ./dummy`, ... fails because each install resolves its dependencies before the next sibling package exists on disk. Agents that work around the failure with `--no-deps` end up with a partial environment that imports but misses the dev tooling.
+
+Install all the packages you need in a single command so pip sees the local sources together. Match your host platform:
+
+```console
+# macOS
+(.venv) $ python -m pip install -e ./core -e ./dummy -e ./cocoa -e ./travertino --group dev
+
+# Linux (GTK or Qt -- swap the backend as needed)
+(.venv) $ python -m pip install -e ./core -e ./dummy -e ./gtk -e ./travertino --group dev
+
+# Windows
+(.venv) C:\...>python -m pip install -e ./core -e ./dummy -e ./winforms -e ./travertino --group dev
+```
+
+`--group dev` pulls in the dev tooling (`tox`, `pre-commit`, `ruff`, ...) so `tox -m test` and `pre-commit run --all-files` work in the same venv. For backend-only work, swap the third `-e ./<backend>` in for `iOS`, `android`, `textual`, `web`, or `qt` -- you only need the backend you are changing plus the always-required `core`, `dummy`, and `travertino` packages.
+
+See `docs/en/how-to/contribute/how/dev-environment.md` for the full setup, including platform prerequisites.
+
 ### Testbed (backend validation)
 
 The core suite uses the Dummy backend. Real backend behaviour is validated through the testbed app. Install only the backend under test in your virtualenv, then:
