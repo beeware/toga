@@ -56,6 +56,10 @@ Any PR failing one of these is rejected, not waived.
 
 Do not replace or bypass these tools. Add new dependencies only with a clear need and a compatible license (BSD-3-Clause friendly).
 
+## Editable installs
+
+Before installing Toga packages editably, read the full [development environment guide](docs/en/how-to/contribute/how/dev-environment.md). Toga's packages depend on each other; install all editable packages in one command as shown in that guide so pip can resolve the local dependencies together. Do not install the editable packages one at a time or use `--no-deps` to force installation, because that can hide real external dependencies.
+
 ## Canonical commands
 
 Run from the repository root unless noted.
