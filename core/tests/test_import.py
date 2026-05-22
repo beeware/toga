@@ -36,3 +36,21 @@ def test_lazy_fail():
         AttributeError, match="module 'toga' has no attribute 'nonexistent'"
     ):
         _ = toga.nonexistent
+
+
+def test_submodule_access(monkeypatch):
+    """Submodules can be accessed directly after a bare `import toga`."""
+    for mod_name in ["toga", "toga.platform"]:
+        monkeypatch.delitem(sys.modules, mod_name, raising=False)
+
+    # A clean import of toga, without touching anything else.
+    import toga
+
+    # Accessing `toga.platform` should load the submodule on demand and
+    # expose its attributes, without needing to import a sibling submodule
+    # first as a side effect.
+    assert toga.platform is sys.modules["toga.platform"]
+    assert hasattr(toga.platform, "current_platform")
+
+    # Repeat access should return the same module object.
+    assert toga.platform is toga.platform

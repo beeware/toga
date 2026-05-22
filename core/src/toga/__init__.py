@@ -25,7 +25,18 @@ def __getattr__(name):
     try:
         module_name = toga_core_imports[name]
     except KeyError:
-        raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None
+        # Fall back to importing `name` as a submodule of toga so that
+        # `toga.<submodule>.<attr>` works after a bare `import toga`
+        # (e.g. `toga.platform.current_platform`). Without this fallback,
+        # the user has to import another submodule first as a side effect.
+        try:
+            module = importlib.import_module(f"{__name__}.{name}")
+        except ImportError:
+            raise AttributeError(
+                f"module '{__name__}' has no attribute '{name}'"
+            ) from None
+        globals()[name] = module
+        return module
     else:
         module = importlib.import_module(module_name)
         value = getattr(module, name)
