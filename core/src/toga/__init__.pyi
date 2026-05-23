@@ -62,3 +62,5 @@ from toga.widgets.tree import Tree as Tree
 from toga.widgets.webview import WebView as WebView
 from toga.window import MainWindow as MainWindow
 from toga.window import Window as Window
+from toga.scaffold import Scaffold as Scaffold
+from toga.scaffold import BaseScaffold as BaseScaffold
