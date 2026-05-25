@@ -207,6 +207,25 @@ async def test_static_content(widget, probe, on_load):
 
 
 @pytest.mark.flaky(retries=5, delay=1)
+async def test_static_style_content(widget, probe, on_load):
+    """Static content with style tags can be loaded into the page."""
+    widget.set_content(
+        "https://example.com/",
+        "<style>h1 { color: #000000; }</style><h1>Nice page</h1>",
+    )
+
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static content with style tags",
+        url="https://example.com/" if probe.content_supports_url else None,
+        content="<h1>Nice page</h1>",
+        on_load=on_load,
+    )
+
+
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_static_large_content(widget, probe, on_load):
     """Static large content can be loaded into the page"""
     large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
