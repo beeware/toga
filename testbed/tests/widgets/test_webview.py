@@ -35,7 +35,15 @@ async def get_content(widget):
     )
 
 
-async def assert_content_change(widget, probe, message, url, content, on_load):
+async def assert_content_change(
+    widget,
+    probe,
+    message,
+    url,
+    content,
+    on_load,
+    timeout=LOAD_TIMEOUT,
+):
     # Web views aren't instantaneous. Even for simple static changes of page
     # content, the DOM won't be immediately rendered. As a result, even though a
     # page loaded signal has been received, it doesn't mean the accessors for
@@ -45,7 +53,7 @@ async def assert_content_change(widget, probe, message, url, content, on_load):
     # *and* content to change in any way before asserting the new values.
 
     changed = False
-    timer = LOAD_TIMEOUT
+    timer = timeout
 
     await probe.redraw(message)
 
@@ -54,7 +62,7 @@ async def assert_content_change(widget, probe, message, url, content, on_load):
         new_url = widget.url
         new_content = await get_content(widget)
 
-        changed = new_url == url and new_content == content
+        changed = (new_url == url) and (new_content == content)
         if not changed:
             timer -= 0.05
             await asyncio.sleep(0.05)
@@ -150,6 +158,7 @@ async def test_clear_url(widget, probe, on_load):
         url=None,
         content="",
         on_load=on_load,
+        timeout=JS_TIMEOUT,
     )
 
 
@@ -168,6 +177,7 @@ async def test_load_empty_url(widget, probe, on_load):
         url=None,
         content="",
         on_load=on_load,
+        timeout=JS_TIMEOUT,
     )
 
 
@@ -203,6 +213,7 @@ async def test_static_content(widget, probe, on_load):
         url="https://example.com/" if probe.content_supports_url else None,
         content="<h1>Nice page</h1>",
         on_load=on_load,
+        timeout=JS_TIMEOUT,
     )
 
 
@@ -224,6 +235,7 @@ async def test_static_large_content(widget, probe, on_load):
         url=url,
         content=large_content,
         on_load=on_load,
+        timeout=JS_TIMEOUT,
     )
 
 
