@@ -41,7 +41,7 @@ class State:
     # onto these values in order to fill or stroke text.
     fill_style: Color = Color.parse(BLACK)
     line_dash: Sequence[float] = ()
-    line_width: float = 2.0
+    line_width: float = 1.0
     stroke_style: Color = Color.parse(BLACK)
 
 
@@ -50,7 +50,7 @@ class Context:
         self.impl = impl
         self.native = NSGraphicsContext.currentContext.CGContext
         self.states = [State()]
-        self.set_line_width(2.0)
+        self.set_line_width(1.0)
 
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
@@ -344,7 +344,7 @@ class Canvas(Widget):
         font,
         fill_style=None,
         stroke_style=None,
-        line_width=2.0,
+        line_width=1.0,
     ):
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = font.native
