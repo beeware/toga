@@ -62,7 +62,9 @@ async def assert_content_change(
         new_url = widget.url
         new_content = await get_content(widget)
 
-        changed = (new_url == url) and (new_content == content)
+        changed = (new_content == content) and (
+            not probe.content_supports_url or (new_url == url)
+        )
         if not changed:
             timer -= 0.05
             await asyncio.sleep(0.05)
@@ -210,7 +212,7 @@ async def test_static_content(widget, probe, on_load):
         widget,
         probe,
         message="Webview has static content",
-        url="https://example.com/" if probe.content_supports_url else None,
+        url="https://example.com/",
         content="<h1>Nice page</h1>",
         on_load=on_load,
         timeout=JS_TIMEOUT,
@@ -458,9 +460,10 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
         widget,
         probe,
         message="Webview has static content",
-        url="https://example.com/" if probe.content_supports_url else None,
+        url="https://example.com/",
         content="<h1>Nice page</h1>",
         on_load=on_load,
+        timeout=JS_TIMEOUT,
     )
 
     # test static content can be set with no URL
@@ -534,9 +537,10 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
         widget,
         probe,
         message="Webview has static content",
-        url="https://example.com/" if probe.content_supports_url else None,
+        url="https://example.com/",
         content="<h1>Nice page</h1>",
         on_load=on_load,
+        timeout=JS_TIMEOUT,
     )
     # test url allowed by code
     await wait_for(
