@@ -61,10 +61,6 @@ class Window(LoggedObject):
         self.container = scaffold.container
         self._action("set scaffold", scaffold=scaffold)
         self._set_value("scaffold", scaffold)
-        # We have to do this, as new "anonymous" scaffold are created in the
-        # interface layer, and in that case we must still track the content.
-        self._action("set content", widget=scaffold.content)
-        self._set_value("content", scaffold.content)
 
     ######################################################################
     # Window size

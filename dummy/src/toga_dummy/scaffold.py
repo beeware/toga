@@ -14,8 +14,9 @@ class Scaffold(LoggedObject):
 
     def refresh(self):
         self._action("refresh")
-        self.content.interface.refresh()
+        if self.content:
+            self.content.interface.refresh()
 
     @property
     def content(self):
-        return self.interface.content._impl
+        return self.interface.content._impl if self.interface.content else None

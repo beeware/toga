@@ -111,6 +111,7 @@ def test_window_created_explicit(app):
 
     assert window.app == app
     assert window.content == window_content
+    assert window.scaffold.content == window_content
 
     assert window_content.window == window
     assert window_content.app == app
@@ -153,17 +154,6 @@ async def test_set_app(window, app):
     app2 = toga.App("Test App 2", "org.beeware.toga.test-app-2")
     with pytest.raises(ValueError, match=r"Window is already associated with an App"):
         window.app = app2
-
-
-def test_set_app_with_content(window, app):
-    """If a window has content, the content is assigned to the app."""
-    assert window.app == app
-
-    content = toga.Box()
-    assert content.app is None
-
-    window.content = content
-    assert content.app == app
 
 
 def test_set_app_with_content_at_instantiation(app):
@@ -209,25 +199,105 @@ def test_change_content(window, app):
     # Set the content of the window
     content1 = toga.Box()
     window.content = content1
+    scaffold1 = window.scaffold
 
     # The content has been assigned and refreshed
+    assert window.content == content1
+    assert window.scaffold == scaffold1
     assert content1.app == app
     assert content1.window == window
-    assert_action_performed_with(window, "set content", widget=content1._impl)
+    assert scaffold1.content == content1
+    assert scaffold1.app == app
+    assert scaffold1.window == window
+    assert_action_performed_with(window, "set scaffold", scaffold=scaffold1._impl)
+    assert_action_performed_with(scaffold1, "set content", widget=content1._impl)
+    assert_action_performed(scaffold1, "refresh")
     assert_action_performed(content1, "refresh")
 
     # Set the content of the window to something new
     content2 = toga.Box()
     window.content = content2
+    scaffold2 = window.scaffold
+
+    # A new scaffold is created
+    assert scaffold2 is not scaffold1
 
     # The content has been assigned and refreshed
+    assert window.content == content2
+    assert window.scaffold == scaffold2
     assert content2.app == app
     assert content2.window == window
-    assert_action_performed_with(window, "set content", widget=content2._impl)
+    assert scaffold2.content == content2
+    assert scaffold2.app == app
+    assert scaffold2.window == window
+    assert_action_performed_with(window, "set scaffold", scaffold=scaffold2._impl)
+    assert_action_performed_with(scaffold2, "set content", widget=content2._impl)
+    assert_action_performed(scaffold2, "refresh")
     assert_action_performed(content2, "refresh")
 
     # The original content has been removed
+    assert scaffold1.window is None
+    assert scaffold1.app is None
     assert content1.window is None
+    assert content1.app is None
+
+
+def test_scaffold_content(window, app):
+    """An explicitly initialized scaffold may be used as content for a window."""
+    scaffold = toga.Scaffold()
+    window.content = scaffold
+
+    assert window.content == scaffold
+    assert window.scaffold == scaffold
+    assert scaffold.app == app
+    assert scaffold.window == window
+    assert scaffold.content is None
+    assert_action_performed_with(window, "set scaffold", scaffold=scaffold._impl)
+    assert_action_performed_with(scaffold, "set content", widget=None)
+    assert_action_performed(scaffold, "refresh")
+
+    # Attach content
+    content1 = toga.Box()
+    scaffold.content = content1
+    assert_action_performed(scaffold, "refresh")
+    assert_action_performed(content1, "refresh")
+    assert window.content == scaffold
+    assert scaffold.content == content1
+    assert content1.window == window
+    assert content1.app == app
+
+    # Attach new content
+    content2 = toga.Box()
+    scaffold.content = content2
+    assert_action_performed(scaffold, "refresh")
+    assert_action_performed(content2, "refresh")
+    assert window.content == scaffold
+    assert scaffold.content == content2
+    assert content1.window is None
+    assert content1.app is None
+    assert content2.window == window
+    assert content2.app == app
+
+    # Detach content
+    scaffold.content = None
+    assert_action_performed(scaffold, "refresh")
+    assert window.content == scaffold
+    assert scaffold.content is None
+    assert content1.window is None
+    assert content1.app is None
+    assert content2.window is None
+    assert content2.app is None
+
+    # Attach content, detach scaffold
+    scaffold.content = content1
+    window.content = None
+    assert_action_performed_with(window, "set scaffold", scaffold=None)
+    assert window.content is None
+    assert scaffold.content == content1
+    assert content1.window is None
+    assert content1.app is None
+    assert scaffold.window is None
+    assert scaffold.app is None
 
 
 def test_set_position(window):
@@ -305,6 +375,7 @@ def test_set_size_with_content(window):
 
     assert window.size == toga.Size(123, 456)
     assert_action_performed(window, "set size")
+    assert_action_performed(window.scaffold, "refresh")
     assert_action_performed(content, "refresh")
     EventLog.reset()
 
@@ -313,6 +384,7 @@ def test_set_size_with_content(window):
 
     assert window.size == toga.Size(123, 456)
     assert_action_not_performed(window, "set size")
+    assert_action_performed(window.scaffold, "refresh")
     assert_action_not_performed(content, "refresh")
 
 
