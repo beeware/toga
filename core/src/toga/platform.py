@@ -69,46 +69,47 @@ def find_backends():
     return sorted(set(entry_points(group="toga.backends")))
 
 
+def _backends_list(backends):
+    return ", ".join([f"{backend.value!r} ({backend.name})" for backend in backends])
+
+
 @cache
 def get_backend():
-    if (backend := os.environ.get("TOGA_BACKEND")) is None:
-        toga_backends = find_backends()
-        if len(toga_backends) == 0:
+    if (backend := os.environ.get("TOGA_BACKEND")) is not None:
+        return backend
+
+    installed_backends = find_backends()
+    match len(installed_backends):
+        case 0:
             raise RuntimeError("No Toga backend could be found.")
-        elif len(toga_backends) == 1:
-            backend = toga_backends[0].value
-        else:
+        case 1:
+            return installed_backends[0].value
+        case _:
             # Multiple backends are installed: choose the one that matches the host
-            # platform
+            # platform.
             matching_backends = [
-                backend for backend in toga_backends if backend.name == current_platform
+                backend
+                for backend in installed_backends
+                if backend.name == current_platform
             ]
-            if len(matching_backends) == 0:
-                toga_backends_string = ", ".join(
-                    [f"{backend.value!r} ({backend.name})" for backend in toga_backends]
-                )
-                raise RuntimeError(
-                    f"Multiple Toga backends are installed ({toga_backends_string}), "
-                    f"but none of them match your current platform "
-                    f"({current_platform!r}). "
-                    f"Install a backend for your current platform, or use "
-                    f"TOGA_BACKEND to specify a backend."
-                )
-            if len(matching_backends) > 1:
-                toga_backends_string = ", ".join(
-                    [
-                        f"{backend.value!r} ({backend.name})"
-                        for backend in matching_backends
-                    ]
-                )
-                raise RuntimeError(
-                    f"Multiple candidate toga backends found: "
-                    f"({toga_backends_string}). "
-                    f"Uninstall the backends you don't require, or use "
-                    f"TOGA_BACKEND to specify a backend."
-                )
-            backend = matching_backends[0].value
-    return backend
+            match len(matching_backends):
+                case 0:
+                    backends_list = _backends_list(installed_backends)
+                    raise RuntimeError(
+                        f"Multiple Toga backends are installed ({backends_list}), "
+                        f"but none of them match your current platform "
+                        f"({current_platform!r}). Install a backend for your current "
+                        f"platform, or use TOGA_BACKEND to specify a backend."
+                    )
+                case 1:
+                    return matching_backends[0].value
+                case _:
+                    backends_list = _backends_list(matching_backends)
+                    raise RuntimeError(
+                        f"Multiple candidate toga backends found: ({backends_list}). "
+                        f"Uninstall the backends you don't require, or use "
+                        f"TOGA_BACKEND to specify a backend."
+                    )
 
 
 @cache
