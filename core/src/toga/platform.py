@@ -62,9 +62,9 @@ used by `current_platform` do not exactly match the names returned by
 
 
 def find_backends():
-    # As of Setuptools 65.5, entry points are returned duplicated if the
-    # package is installed editable. Use a set to ensure that each entry point
-    # is only returned once.
+    # As of Setuptools 65.5, entry points are returned duplicated if the package is
+    # installed editable. Use a set to ensure that each entry point is only returned
+    # once.
     # See https://github.com/pypa/setuptools/issues/3649
     return sorted(set(entry_points(group="toga.backends")))
 
@@ -78,8 +78,8 @@ def get_backend():
         elif len(toga_backends) == 1:
             backend = toga_backends[0].value
         else:
-            # multiple backends are installed: choose the one that
-            # matches the host platform
+            # Multiple backends are installed: choose the one that matches the host
+            # platform
             matching_backends = [
                 backend for backend in toga_backends if backend.name == current_platform
             ]
@@ -214,9 +214,8 @@ class Factory:
 def get_factory(interface: str | None = None) -> Factory | ModuleType:
     """Return the implementation factory for an interface group.
 
-    The object that is returned is a namespace whose attributes are the
-    implementation classes for the current backend contributed by the
-    appropriate entry points.
+    The object that is returned is a namespace whose attributes are the implementation
+    classes for the current backend contributed by the appropriate entry points.
 
     :param interface: the name of the interface group for the factory, or None
         for the default `"toga_core"` interface.  Third-party interface group
@@ -227,8 +226,8 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
     # -------------------------------------------------------------------------
     # 2026-02: Backwards compatibility for version <= 0.5.3
     # -------------------------------------------------------------------------
-    # If we can't find the entrypoint group we expect, drop back to the old
-    # system using a factory module
+    # If we can't find the entrypoint group we expect, drop back to the old system using
+    # a factory module
     if interface is None and len(entry_points(group=factory.group)) == 0:
         backend = get_backend()
         try:
@@ -250,8 +249,8 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
 
 
 backend: str
-"""The name of the backend that is being used by Toga to implement
-platform-specific capabilities (e.g., `toga_cocoa`, `toga_gtk`).
+"""The name of the backend that is being used by Toga to implement platform-specific
+capabilities (e.g., `toga_cocoa`, `toga_gtk`).
 """
 
 
