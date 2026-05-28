@@ -384,7 +384,7 @@ def test_set_size_with_content(window):
 
     assert window.size == toga.Size(123, 456)
     assert_action_not_performed(window, "set size")
-    assert_action_performed(window.scaffold, "refresh")
+    assert_action_not_performed(window.scaffold, "refresh")
     assert_action_not_performed(content, "refresh")
 
 
