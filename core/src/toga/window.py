@@ -450,17 +450,16 @@ class Window:
             self._scaffold.window = None
             self._scaffold.app = None
 
-        if isinstance(content, Widget):
+        if isinstance(content, Widget) or content is None:
             scaffold = Scaffold(content=content)
         else:
             scaffold = content
 
-        if scaffold:
-            # Assign the scaffold to the same app as the window.
-            scaffold.app = self.app
+        # Assign the scaffold to the same app as the window.
+        scaffold.app = self.app
 
-            # Assign the scaffold to the window.
-            scaffold.window = self
+        # Assign the scaffold to the window.
+        scaffold.window = self
 
         # Track our new content and scaffold
         self._content = content
@@ -469,9 +468,8 @@ class Window:
         # Manifest the scaffold
         self._impl.set_scaffold(scaffold._impl if scaffold else None)
 
-        if scaffold:
-            # Update the geometry of the scaffold
-            scaffold.refresh()
+        # Update the geometry of the scaffold
+        scaffold.refresh()
 
     @property
     def widgets(self) -> FilteredWidgetRegistry:

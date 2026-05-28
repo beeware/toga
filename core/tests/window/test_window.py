@@ -241,6 +241,15 @@ def test_change_content(window, app):
     assert content1.window is None
     assert content1.app is None
 
+    # No content:  Scaffold is still implicitly created
+    window.content = None
+    scaffold3 = window.scaffold
+    assert_action_performed_with(window, "set scaffold", scaffold=scaffold3._impl)
+    assert window.content is None
+    assert scaffold3.content is None
+    assert scaffold3.window == window
+    assert scaffold3.app == app
+
 
 def test_scaffold_content(window, app):
     """An explicitly initialized scaffold may be used as content for a window."""
@@ -288,16 +297,16 @@ def test_scaffold_content(window, app):
     assert content2.window is None
     assert content2.app is None
 
-    # Attach content, detach scaffold
+    # Attach content, detach scaffold; scaffold should preserve
+    # content
     scaffold.content = content1
     window.content = None
-    assert_action_performed_with(window, "set scaffold", scaffold=None)
     assert window.content is None
     assert scaffold.content == content1
-    assert content1.window is None
-    assert content1.app is None
     assert scaffold.window is None
     assert scaffold.app is None
+    assert content1.window is None
+    assert content1.app is None
 
 
 def test_set_position(window):
