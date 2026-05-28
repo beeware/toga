@@ -6,6 +6,7 @@ from toga.constants import WindowState
 from toga.types import Size
 from toga.window import _initial_position
 
+from .container import Container
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 
@@ -58,7 +59,7 @@ class Window(LoggedObject):
     ######################################################################
 
     def set_scaffold(self, scaffold):
-        self.container = scaffold.container
+        self.container = scaffold.container if scaffold else Container()
         self._action("set scaffold", scaffold=scaffold)
         self._set_value("scaffold", scaffold)
 
