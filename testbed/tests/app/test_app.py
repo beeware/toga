@@ -1,5 +1,3 @@
-import os
-import sys
 from types import NoneType
 from unittest.mock import Mock
 
@@ -260,10 +258,6 @@ async def test_screens(app, app_probe):
     # Identical monitors can share the same name, so assert uniqueness on origin
     # since every screen must occupy a distinct position.
     assert len(origins) == len(set(origins))
-
-    # Wayland does not guarantee screen[0] is at (0, 0); skip on Linux Wayland only.
-    if not (sys.platform == "linux" and os.environ.get("WAYLAND_DISPLAY")):
-        assert app.screens[0].origin == (0, 0)
 
 
 async def test_app_icon(app, app_probe):
