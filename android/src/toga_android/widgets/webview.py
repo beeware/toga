@@ -1,6 +1,7 @@
 import hashlib
 import json
 import shutil
+import urllib
 from http.cookiejar import CookieJar
 
 from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
@@ -124,7 +125,7 @@ class WebView(Widget):
             # There is a loadDataWithBaseURL method, but it's inconsistent about
             # whether getUrl returns the given URL or a data: URL. Rather than support
             # this feature intermittently, it's better to not support it at all.
-            self.native.loadData(content, "text/html", "utf-8")
+            self.native.loadData(urllib.parse.quote(content), "text/html", "utf-8")
 
     def get_user_agent(self):
         return self.settings.getUserAgentString()

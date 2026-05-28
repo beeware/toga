@@ -8,7 +8,13 @@ from .base import SimpleProbe
 
 class WebViewProbe(SimpleProbe):
     native_class = QWebEngineView
-    content_supports_url = True
+
+    # See #4415. Qt's Webview *does* support content URLs; however, there appears to be
+    # a bug with Qt's WebView that causes the URL to be returned as a `data:text/html`
+    # content URL rather than the requested URL. As a workaround for test reliability,
+    # disable tests for content URLs.
+    # content_supports_url = True
+    content_supports_url = False
     javascript_supports_exception = True
     supports_on_load = True
 

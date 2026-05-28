@@ -15,7 +15,7 @@ from .probe import BaseProbe
 
 class AppProbe(BaseProbe, DialogsMixin):
     supports_key = False
-    supports_dark_mode = False
+    supports_dark_mode = True
     edit_menu_noop_enabled = False
     supports_psutil = False
 

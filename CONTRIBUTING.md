@@ -34,4 +34,4 @@ We require that all new features have full user documentation. We have a [docume
 
 ### Pull Requests
 
-We have a [process for submitting a PR](https://toga.beeware.org/en/latest/how-to/contribute/how/submit-pr/) that all contributions must follow.
+We have a [process for submitting a PR](https://toga.beeware.org/en/latest/how-to/contribute/how/submit-pr/) that all contributions must follow. This includes the use of a [pull request template](https://github.com/beeware/.github/blob/main/.github/pull_request_template.md) that *all* pull requests must include and complete as appropriate.
