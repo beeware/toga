@@ -242,8 +242,7 @@ async def test_beep(app, app_probe):
 
 
 async def test_screens(app, app_probe):
-    """Screens must have unique origins; on Linux Wayland,
-    identical monitors may share names so uniqueness is checked by origin, not name."""
+    """Screens must have unique origins, and a (not necessarily unique) name."""
     assert app.screens
     # Collect origins to verify each monitor occupies a unique position
     origins = []
