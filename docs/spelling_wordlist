@@ -36,6 +36,7 @@ CMD
 codebase
 codepoint
 CommandSet
+config
 coroutine
 cryptographically
 CSS
