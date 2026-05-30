@@ -1,7 +1,7 @@
 from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
-from System.Windows.Drawing import Color
+from System.Drawing import Color
 
 from toga.handlers import WeakrefCallable
 from toga.widgets.slider import IntSliderImpl
