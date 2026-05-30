@@ -794,11 +794,10 @@ async def test_singular_transforms(canvas, probe):
     assert_reference(probe, "singular_transforms")
 
 
-# @pytest.mark.xfail(
-#     condition=os.environ.get("RUNNING_IN_CI") != "true",
-#     reason="Canvas tests are unstable outside of CI. Manual inspection may be
-# required",
-# )
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
+)
 async def test_fill_and_stroke_text(canvas, probe):
     """Text can be measured and filled/stroked."""
 
