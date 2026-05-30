@@ -8,6 +8,8 @@ from System.Drawing import (
 )
 from travertino.size import at_least
 
+import toga.colors as colors
+from toga.colors import rgb
 from toga_winforms.colors import (
     native_color,
     toga_color,
