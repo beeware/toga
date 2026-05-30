@@ -221,15 +221,16 @@ class Context:
         lines = text.splitlines()
         total_height = metrics.line_height * len(lines)
 
-        if baseline == Baseline.TOP:
-            top = y + metrics.ascent
-        elif baseline == Baseline.MIDDLE:
-            top = y + metrics.ascent - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y + metrics.ascent - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y
+        match baseline:
+            case Baseline.TOP:
+                top = y + metrics.ascent
+            case Baseline.MIDDLE:
+                top = y + metrics.ascent - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y + metrics.ascent - total_height
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y
 
         layout = Pango.Layout(pango_context)
         for line_num, line in enumerate(lines):

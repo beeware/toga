@@ -360,15 +360,16 @@ class Context:
         scaled_line_height = self.impl._line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
 
-        if baseline == Baseline.TOP:
-            top = y
-        elif baseline == Baseline.MIDDLE:
-            top = y - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y - font.metric("CellAscent")
+        match baseline:
+            case Baseline.TOP:
+                top = y
+            case Baseline.MIDDLE:
+                top = y - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y - total_height
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y - font.metric("CellAscent")
 
         for line_num, line in enumerate(lines):
             self.current_path.AddString(
