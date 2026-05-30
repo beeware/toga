@@ -322,7 +322,6 @@ class Context:
 
     def fill_text(self, text, x, y, font, baseline, line_height):
         self._fill_or_stroke_text(
-            self,
             text,
             x,
             y,

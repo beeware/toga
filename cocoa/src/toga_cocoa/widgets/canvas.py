@@ -366,11 +366,8 @@ class Canvas(Widget):
 
         if stroke_style:
             textAttributes[NSStrokeColorAttributeName] = native_color(stroke_style)
-            # Stroke width is expressed as a percentage of the font size, or a negative
-            # percentage to get both stroke and fill.
+            # Stroke width is expressed as a percentage of the font size
             stroke_width = line_width / font.native.pointSize * 100
-            if fill_style:
-                stroke_width *= -1
             textAttributes[NSStrokeWidthAttributeName] = stroke_width
 
         if fill_style:
