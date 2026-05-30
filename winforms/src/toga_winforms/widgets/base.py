@@ -154,6 +154,9 @@ class Widget(Scalable, ABC):
             self.native.ForeColor = native_color(color)
 
     def set_background_color(self, color):
+        # If a system color is being reset to, then use it directly,
+        # and set the appropriate semantics for Button-like widgets
+        # to work properly.  System colors are opaque.
         if self._default_background_color.IsSystemColor and color is None:
             self.native.BackColor = self._default_background_color
             try:
@@ -161,12 +164,22 @@ class Widget(Scalable, ABC):
             except NameError:  # Not all winforms widgets have this property
                 pass
         else:
+            # Either not resetting, or the default color is not a system color
+            # (i.e. default color may be modified by us; in this case, there may
+            # be alpha, so we must blend manually).
             if self.interface.parent:
                 parent_color = toga_color(self.interface.parent._impl.native.BackColor)
             else:
                 parent_color = toga_color(SystemColors.Control)
 
-            requested_color = toga_color(self._default_background_color)
+            toga_default_background_color = toga_color(self._default_background_color)
+            match color, toga_default_background_color:
+                case (colors.TRANSPARENT, _) | (None, colors.TRANSPARENT):
+                    requested_color = rgb(0, 0, 0, 0)
+                case None, _:
+                    requested_color = toga_default_background_color
+                case _:
+                    requested_color = color.rgb
 
             blended_color = requested_color.blend_over(parent_color)
             self.native.BackColor = native_color(blended_color)
