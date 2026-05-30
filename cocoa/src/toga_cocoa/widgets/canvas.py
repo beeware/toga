@@ -34,15 +34,17 @@ from toga_cocoa.libs import (
 
 from .base import Widget
 
+BLACK_COLOR = Color.parse(BLACK)
+
 
 @dataclass(slots=True)
 class State:
     # Core graphics holds onto its own state, which works great, except we need to hold
     # onto these values in order to fill or stroke text.
-    fill_style: Color = Color.parse(BLACK)
+    fill_style: Color = BLACK_COLOR
     line_dash: Sequence[float] = ()
     line_width: float = 2.0
-    stroke_style: Color = Color.parse(BLACK)
+    stroke_style: Color = BLACK_COLOR
 
 
 class Context:
@@ -198,36 +200,49 @@ class Context:
         # state on the stack.
         core_graphics.CGContextSaveGState(self.native)
 
-    # This whole method should probably be deprecated in favor of fill_text and
-    # stroke_text.
-    def write_text(self, text, x, y, font, baseline, line_height):
+    # Text
+    def fill_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            fill_style=self.state.fill_style,
+        )
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            stroke_style=self.state.stroke_style,
+            line_width=self.state.line_width,
+        )
+
+    def _fill_or_stroke_text(self, text, x, y, font, baseline, line_height, **kwargs):
         lines = text.splitlines()
         scaled_line_height = self.impl._line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
 
-        if baseline == Baseline.TOP:
-            top = y + font.native.ascender
-        elif baseline == Baseline.MIDDLE:
-            top = y + font.native.ascender - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y + font.native.ascender - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y
+        match baseline:
+            case Baseline.TOP:
+                top = y + font.native.ascender
+            case Baseline.MIDDLE:
+                top = y + font.native.ascender - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y + font.native.ascender - total_height
+            case _:  # Default to Baseline.ALPHABETIC
+                top = y
 
         for line_num, line in enumerate(lines):
             # Rounding minimizes differences between scale factors.
             origin = NSPoint(round(x), round(top) + (scaled_line_height * line_num))
-            kwargs = {}
-            if self.in_fill:
-                kwargs |= {"fill_style": self.state.fill_style}
-            if self.in_stroke:
-                kwargs |= {
-                    "stroke_style": self.state.stroke_style,
-                    "line_width": self.state.line_width,
-                    # Current implementation doesn't respect line dash; should this?
-                }
-            rs = self.impl._render_string(line, font, **kwargs)
+            rendered_string = self.impl._render_string(line, font, **kwargs)
 
             # "This method uses the baseline origin by default. If
             # NSStringDrawingUsesLineFragmentOrigin is not specified, the
@@ -240,7 +255,7 @@ class Context:
             # sets the baseline relative to its bottom
             # (https://www.sketch.com/blog/typesetting-in-sketch/), but it would be
             # unwise to rely on that.
-            rs.drawWithRect(
+            rendered_string.drawWithRect(
                 NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
             )
 
@@ -378,7 +393,7 @@ class Canvas(Widget):
     def measure_text(self, text, font, line_height):
         # We need at least a fill color to render, but that won't change the size.
         sizes = [
-            self._render_string(line, font, fill_style=Color.parse(BLACK)).size()
+            self._render_string(line, font, fill_style=BLACK_COLOR).size()
             for line in text.splitlines()
         ]
         return (

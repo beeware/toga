@@ -191,7 +191,9 @@ This example uses `insert`, but `drawing_actions` is a list, with all of a list'
 
 ::: toga.widgets.canvas.Stroke
 
-::: toga.widgets.canvas.WriteText
+::: toga.widgets.canvas.FillText
+
+::: toga.widgets.canvas.StrokeText
 
 ::: toga.widgets.canvas.DrawImage
 

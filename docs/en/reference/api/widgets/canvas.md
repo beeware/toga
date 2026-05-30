@@ -114,7 +114,8 @@ It's also possible to reach beyond the HTML Canvas-based API documented here, an
             - round_rect
             - fill
             - stroke
-            - write_text
+            - fill_text
+            - stroke_text
             - draw_image
             - rotate
             - scale

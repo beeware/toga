@@ -366,8 +366,8 @@ class Canvas(Widget, DrawingActionDispatch):
         line_height: float | None = None,
     ) -> tuple[float, float]:
         """Measure the size at which
-        [`Canvas.write_text`][toga.Canvas.write_text]
-        would render some text.
+        [`Canvas.fill_text`][toga.Canvas.fill_text] or
+        [`Canvas.stroke_text`][toga.Canvas.stroke_text] would render some text.
 
         :param text: The text to measure. Newlines will cause line breaks, but long
             lines will not be wrapped.
