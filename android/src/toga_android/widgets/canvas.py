@@ -263,18 +263,18 @@ class Context:
 
     def _fill_or_stroke_text(self, text, x, y, font, baseline, line_height, paint):
         lines = text.splitlines()
-        paint = self.impl._text_paint(font)
-        scaled_line_height = self.impl._line_height(paint, line_height)
+        text_paint = self.impl._text_paint(font)
+        scaled_line_height = self.impl._line_height(text_paint, line_height)
         total_height = scaled_line_height * len(lines)
 
         # paint.ascent returns a negative number.
         match baseline:
             case Baseline.TOP:
-                top = y - paint.ascent()
+                top = y - text_paint.ascent()
             case Baseline.MIDDLE:
-                top = y - paint.ascent() - (total_height / 2)
+                top = y - text_paint.ascent() - (total_height / 2)
             case Baseline.BOTTOM:
-                top = y - paint.ascent() - total_height
+                top = y - text_paint.ascent() - total_height
             case _:
                 # Default to Baseline.ALPHABETIC
                 top = y
