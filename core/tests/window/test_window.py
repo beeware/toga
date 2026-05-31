@@ -208,6 +208,7 @@ def test_change_content(window, app):
     assert window.scaffold == scaffold1
     assert content1.app == app
     assert content1.window == window
+    assert content1.scaffold == scaffold1
     assert scaffold1.content == content1
     assert scaffold1.app == app
     assert scaffold1.window == window
@@ -232,6 +233,7 @@ def test_change_content(window, app):
     assert window.scaffold == scaffold2
     assert content2.app == app
     assert content2.window == window
+    assert content2.scaffold == scaffold2
     assert scaffold2.content == content2
     assert scaffold2.app == app
     assert scaffold2.window == window
@@ -245,6 +247,8 @@ def test_change_content(window, app):
     assert scaffold1.app is None
     assert content1.window is None
     assert content1.app is None
+    # Content still attached to scaffold.
+    assert content1.scaffold is scaffold1
 
     # No content:  Scaffold is still implicitly created
     window.content = None
@@ -273,6 +277,7 @@ def test_scaffold_content(window, app):
     # Attach content
     content1 = toga.Box()
     scaffold.content = content1
+    assert content1.scaffold == scaffold
     assert_action_performed(scaffold, "refresh")
     assert_action_performed(content1, "refresh")
     assert window.content == scaffold
@@ -283,6 +288,8 @@ def test_scaffold_content(window, app):
     # Attach new content
     content2 = toga.Box()
     scaffold.content = content2
+    assert content1.scaffold is None
+    assert content2.scaffold == scaffold
     assert_action_performed(scaffold, "refresh")
     assert_action_performed(content2, "refresh")
     assert window.content == scaffold
@@ -294,6 +301,8 @@ def test_scaffold_content(window, app):
 
     # Detach content
     scaffold.content = None
+    assert content1.scaffold is None
+    assert content2.scaffold is None
     assert_action_performed(scaffold, "refresh")
     assert window.content == scaffold
     assert scaffold.content is None
@@ -305,9 +314,11 @@ def test_scaffold_content(window, app):
     # Attach content, detach scaffold; scaffold should preserve
     # content
     scaffold.content = content1
+    assert content1.scaffold is scaffold
     window.content = None
     assert window.content is None
     assert scaffold.content == content1
+    assert content1.scaffold is scaffold
     assert scaffold.window is None
     assert scaffold.app is None
     assert content1.window is None
