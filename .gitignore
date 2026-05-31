@@ -42,13 +42,18 @@ mprofile_*.dat
 .briefcase
 
 # AI tooling (SpecKit v0.8.0)
+.github/agents/
+.github/copilot-instructions.md
+.github/prompts/
 .opencode/
-.specify/scripts
-.specify/templates
-.specify/extensions.yml
 .specify/extensions
+.specify/extensions.yml
+.specify/feature.json
 .specify/init-options.json
 .specify/integration.json
 .specify/integrations
-.specify/workflows
+.specify/scripts
+.specify/templates
 .specify/workflow.yml
+.specify/workflows
+specs/

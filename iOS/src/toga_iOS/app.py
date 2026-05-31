@@ -114,8 +114,11 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        self.interface.factory.not_implemented("dark mode state")
-        return None
+        # UIUserInterfaceStyle is an enum with the following values:
+        # 0: Unspecified
+        # 1: Light
+        # 2: Dark
+        return UIScreen.mainScreen.traitCollection.userInterfaceStyle == 2
 
     ######################################################################
     # App capabilities
