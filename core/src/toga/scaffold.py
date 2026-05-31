@@ -40,10 +40,13 @@ class Scaffold(BaseScaffold):
     @content.setter
     def content(self, value: Widget | None):
         if self._content is not None:
-            # Clear the old content's window and app
+            # Clear the old content's window, app, and scaffold
             self._content.window = None
             self._content.app = None
+            self._content.scaffold = None
         self._content = value
+        if value is not None:
+            value.scaffold = self
         self._impl.set_content(value._impl if value is not None else None)
         if value is not None:
             self._content.window = self._window

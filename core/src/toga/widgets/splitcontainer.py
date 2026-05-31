@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 import toga
 from toga.app import App
 from toga.constants import Direction
+from toga.scaffold import Scaffold
 from toga.window import Window
 
 from .base import StyleT, Widget
@@ -102,6 +103,7 @@ class SplitContainer(Widget):
             if old_content is not None:
                 old_content.app = None
                 old_content.window = None
+                old_content.scaffold = None
 
         try:
             if len(content) != 2:
@@ -135,6 +137,7 @@ class SplitContainer(Widget):
             if widget:
                 widget.app = self.app
                 widget.window = self.window
+                widget.scaffold = self.scaffold
 
         self._impl.set_content(
             [w._impl if w is not None else None for w in _content],
@@ -162,6 +165,16 @@ class SplitContainer(Widget):
         for content in self._content:
             if content:
                 content.window = window
+
+    @Widget.scaffold.setter
+    def scaffold(self, scaffold: Scaffold | None) -> None:
+        # Invoke the superclass property setter
+        Widget.scaffold.fset(self, scaffold)
+
+        # Also assign the scaffold to the content in the container
+        for content in self._content:
+            if content:
+                content.scaffold = scaffold
 
     @property
     def direction(self) -> Direction:
