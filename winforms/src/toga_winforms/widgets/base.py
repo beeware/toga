@@ -161,10 +161,8 @@ class Widget(Scalable, ABC):
         # to work properly.  System colors are opaque.
         if self._default_background_color.IsSystemColor and color is None:
             self.native.BackColor = self._default_background_color
-            try:
+            if hasattr(self.native, "UseVisualStyleBackColor"):
                 self.native.UseVisualStyleBackColor = True
-            except NameError:  # Not all winforms widgets have this property
-                pass
         else:
             # Either not resetting, or the default color is not a system color
             # (i.e. default color may be modified by us; in this case, there may
