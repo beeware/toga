@@ -280,9 +280,7 @@ class Window:
         # Add the window to the app
         App.app.windows.add(self)
 
-        # If content has been provided, set it
-        if content:
-            self.content = content
+        self.content = content
 
         # Set up the event handlers on the interface (overrides the no-op
         # defaults installed above with the user-supplied handlers).
@@ -466,7 +464,7 @@ class Window:
         self._scaffold = scaffold
 
         # Manifest the scaffold
-        self._impl.set_scaffold(scaffold._impl if scaffold else None)
+        self._impl.set_scaffold(scaffold._impl)
 
         # Update the geometry of the scaffold
         scaffold.refresh()

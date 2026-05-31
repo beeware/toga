@@ -28,6 +28,10 @@ class Window(LoggedObject):
         self._state = WindowState.NORMAL
         self._visible = False
 
+    @property
+    def scaffold(self):
+        return self.interface.scaffold._impl
+
     ######################################################################
     # Window properties
     ######################################################################
@@ -60,8 +64,13 @@ class Window(LoggedObject):
 
     def set_scaffold(self, scaffold):
         self.container = scaffold.container if scaffold else Container()
+        self.manage_scaffold_toolbar()
         self._action("set scaffold", scaffold=scaffold)
         self._set_value("scaffold", scaffold)
+
+    def manage_scaffold_toolbar(self):
+        self.scaffold.clear_toolbar()
+        self.scaffold.hide_toolbar()
 
     ######################################################################
     # Window size
@@ -156,4 +165,9 @@ class MainWindow(Window):
         self._action("create Window menus")
 
     def create_toolbar(self):
-        self._action("create toolbar")
+        self.scaffold.create_toolbar()
+
+    def manage_scaffold_toolbar(self):
+        self.scaffold.clear_toolbar()
+        self.scaffold.show_toolbar()
+        self.scaffold.create_toolbar()

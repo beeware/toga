@@ -20,3 +20,15 @@ class Scaffold(LoggedObject):
     @property
     def content(self):
         return self.interface.content._impl if self.interface.content else None
+
+    def show_toolbar(self):
+        self._action("show toolbar")
+
+    def hide_toolbar(self):
+        self._action("hide toolbar")
+
+    def create_toolbar(self):
+        self._action("create toolbar")
+
+    def clear_toolbar(self):
+        self._action("clear toolbar")
