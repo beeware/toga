@@ -353,7 +353,7 @@ jobs:
 
         - backend: "macOS-arm64"
           platform: "macOS"
-          runs-on: "macos-14"
+          runs-on: "macos-latest"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
