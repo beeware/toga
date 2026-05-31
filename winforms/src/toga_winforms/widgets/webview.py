@@ -11,10 +11,10 @@ from System import (
     Uri,
 )
 from System.Collections.Generic import List  # Import List for generics
-from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
 
 import toga
+from toga.colors import TRANSPARENT
 from toga.handlers import WeakrefCallable
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 from toga_winforms.libs.extensions import (
@@ -98,7 +98,6 @@ class WebView(Widget):
         self.corewebview2_available = None
         self.pending_tasks = []
         self.native.EnsureCoreWebView2Async(None)
-        self.native.DefaultBackgroundColor = Color.Transparent
 
         # attribute to store the URL allowed by user interaction or
         # user on_navigation_starting handler
@@ -108,6 +107,8 @@ class WebView(Widget):
         self._large_content_dir = (
             toga.App.app.paths.cache / f"toga/webview-{self.interface.id}"
         )
+
+        self._default_background_color = TRANSPARENT
 
     def __del__(self):  # pragma: nocover
         """Cleaning up the cached files for large content"""
@@ -309,3 +310,7 @@ class WebView(Widget):
 
         self.run_after_initialization(execute)
         return result
+
+    def set_background_color(self, color):
+        super().set_background_color(color)
+        self.native.DefaultBackgroundColor = self.native.BackColor
