@@ -156,16 +156,17 @@ class Window(LoggedObject):
                 self.interface.on_hide()
             # Window is on secondary screen(1366x768), so set the
             # window sizes accordingly.
-            if current_state == WindowState.NORMAL:
-                self.set_size(Size(640, 480))
-            elif current_state == WindowState.MAXIMIZED:
-                self.set_size(Size(1366, 728))
-            elif current_state == WindowState.FULLSCREEN:
-                self.set_size(Size(1366, 748))
-            elif current_state == WindowState.PRESENTATION:
-                self.set_size(Size(1366, 768))
-            else:  # current_state == WindowState.MINIMIZED
-                pass
+            match current_state:
+                case WindowState.NORMAL:
+                    self.set_size(Size(640, 480))
+                case WindowState.MAXIMIZED:
+                    self.set_size(Size(1366, 728))
+                case WindowState.FULLSCREEN:
+                    self.set_size(Size(1366, 748))
+                case WindowState.PRESENTATION:
+                    self.set_size(Size(1366, 768))
+                case _:  # WindowState.MINIMIZED
+                    pass
 
     ######################################################################
     # Window capabilities

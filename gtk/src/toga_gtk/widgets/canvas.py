@@ -329,16 +329,17 @@ class Canvas(Widget):
             self.interface.on_resize(width=allocation.width, height=allocation.height)
 
         def gtk_button_press(self, obj, event):
-            if event.button == 1:
-                if event.type == Gdk.EventType._2BUTTON_PRESS:
-                    self.interface.on_activate(event.x, event.y)
-                else:
-                    self.interface.on_press(event.x, event.y)
-            elif event.button == 3:
-                self.interface.on_alt_press(event.x, event.y)
-            else:  # pragma: no cover
-                # Don't handle other button presses
-                pass
+            match event.button:
+                case 1:
+                    if event.type == Gdk.EventType._2BUTTON_PRESS:
+                        self.interface.on_activate(event.x, event.y)
+                    else:
+                        self.interface.on_press(event.x, event.y)
+                case 3:
+                    self.interface.on_alt_press(event.x, event.y)
+                case _:  # pragma: no cover
+                    # Don't handle other button presses
+                    pass
 
         def gtk_motion_notify(self, obj, event):
             """Handles mouse movement by calling the drag and/or alternative drag

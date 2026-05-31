@@ -311,14 +311,15 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
     def onTouch(self, canvas, event):
         with suppress_reference_error():
             x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
-            if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
-                self.interface.on_press(x, y)
-            elif action == MotionEvent.ACTION_MOVE:
-                self.interface.on_drag(x, y)
-            elif action == MotionEvent.ACTION_UP:
-                self.interface.on_release(x, y)
-            else:  # pragma: no cover
-                return False
+            match event.getAction():
+                case MotionEvent.ACTION_DOWN:
+                    self.interface.on_press(x, y)
+                case MotionEvent.ACTION_MOVE:
+                    self.interface.on_drag(x, y)
+                case MotionEvent.ACTION_UP:
+                    self.interface.on_release(x, y)
+                case _:  # pragma: no cover
+                    return False
         return True
 
 

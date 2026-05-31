@@ -247,20 +247,22 @@ class Location(GObject.Object):
 
     def start_tracking(self):
         """Start tracking GeoClue location updates."""
-        if self.props.state == State.READY:
-            self.notify_location_handle = self.native.connect(
-                "notify::location", self.location_listener
-            )
-            self.props.state = State.MONITORING
-            # Manually notify when connecting in order to propagate the initial location
-            self.native.notify("location")
-        elif self.props.state == State.MONITORING:
-            # Already monitoring, noop
-            pass
-        else:
-            raise RuntimeError(
-                "Unable to start tracking (location service is unavailable)"
-            )
+        match self.props.state:
+            case State.READY:
+                self.notify_location_handle = self.native.connect(
+                    "notify::location", self.location_listener
+                )
+                self.props.state = State.MONITORING
+                # Manually notify when connecting in order to propagate the initial
+                # location
+                self.native.notify("location")
+            case State.MONITORING:
+                # Already monitoring, noop
+                pass
+            case _:
+                raise RuntimeError(
+                    "Unable to start tracking (location service is unavailable)"
+                )
 
     def _stop_tracking(self) -> bool:
         """If monitoring, stop tracking.
