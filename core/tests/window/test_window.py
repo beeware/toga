@@ -24,6 +24,8 @@ from ..utils import (
 def test_window_created(app):
     """A Window can be created with minimal arguments."""
     window = toga.Window()
+    assert_action_performed(window.scaffold, "hide toolbar")
+    assert_action_not_performed(window.scaffold, "show toolbar")
 
     assert window.app == app
     assert window.content is None
@@ -209,6 +211,9 @@ def test_change_content(window, app):
     assert scaffold1.content == content1
     assert scaffold1.app == app
     assert scaffold1.window == window
+    # Test that reassigning content does not reshow toolbar in simple windows
+    assert_action_performed(scaffold1, "hide toolbar")
+    assert_action_not_performed(scaffold1, "show toolbar")
     assert_action_performed_with(window, "set scaffold", scaffold=scaffold1._impl)
     assert_action_performed_with(scaffold1, "set content", widget=content1._impl)
     assert_action_performed(scaffold1, "refresh")
