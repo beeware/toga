@@ -497,8 +497,7 @@ class Window:
             raise RuntimeError(f"Cannot resize window while in {self.state}")
         elif self.size != size:
             self._impl.set_size(size)
-            if self.content:
-                self.content.refresh()
+            self.scaffold.refresh()
 
     ######################################################################
     # Window position
