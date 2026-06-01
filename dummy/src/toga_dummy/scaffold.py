@@ -7,6 +7,10 @@ class Scaffold(LoggedObject):
         self.interface = interface
         self.container = Container()
 
+    @property
+    def native_content(self):
+        return self.container
+
     def set_content(self, widget):
         self.container.content = widget
         self._action("set content", widget=widget)
