@@ -357,9 +357,9 @@ class Window:
     def close(self) -> None:
         """Close the window.
 
-        This *does not* invoke the `on_close` handler. If the window being closed
-        is the app's main window, it will trigger `on_exit` handling; otherwise, the
-        window will be immediately and unconditionally closed.
+        This *does not* invoke the `on_close` handler. If the window being closed is the
+        app's main window, it will trigger `on_exit` handling; otherwise, the window
+        will be immediately and unconditionally closed.
 
         Once a window has been closed, it *cannot* be reused. The behavior of any method
         or property on a [`Window`][toga.Window] instance after it has been closed is
@@ -408,8 +408,7 @@ class Window:
         return self._closed
 
     def show(self) -> None:
-        """Show the window. If the window is already visible, this method has no
-        effect.
+        """Show the window. If the window is already visible, this method has no effect.
 
         :raises ValueError: If the window is currently in a minimized, full screen or
             presentation state.
@@ -586,8 +585,8 @@ class Window:
     def state(self) -> WindowState:
         """The current state of the window.
 
-        When the window is in transition, then this will return the state it
-        is transitioning towards, instead of the actual instantaneous state.
+        When the window is in transition, then this will return the state it is
+        transitioning towards, instead of the actual instantaneous state.
 
         :raises RuntimeError: If state change is requested while the window is
             hidden.
@@ -983,13 +982,12 @@ class MainWindow(Window):
         # Create a toolbar that is linked to the app.
         self._toolbar = CommandSet(app=self.app)
 
-        # If the window has been created during startup(), we don't want to
-        # install a change listener yet, as the startup process may install
-        # additional commands - we want to wait until startup is complete,
-        # create the initial state of the menus and toolbars, and then add a
-        # change listener. However, if startup *has* completed, we can install a
-        # change listener immediately, and trigger the creation of menus and
-        # toolbars.
+        # If the window has been created during startup(), we don't want to install a
+        # change listener yet, as the startup process may install additional commands -
+        # we want to wait until startup is complete, create the initial state of the
+        # menus and toolbars, and then add a change listener. However, if startup *has*
+        # completed, we can install a change listener immediately, and trigger the
+        # creation of menus and toolbars.
         if self.app.commands.on_change:
             self._toolbar.on_change = self._impl.create_toolbar
 

@@ -57,14 +57,12 @@ class DateInput(Widget):
         self.native.datePickerStyle = NSDatePickerStyle.TextFieldAndStepper
         self.native.datePickerElements = NSDatePickerElementFlags.YearMonthDay
 
-        # Ensure there are maximum and minimum dates,
-        # since otherwise the get_min_date and get_max_date
-        # functions return None, which is problematic sometimes.
+        # Ensure there are maximum and minimum dates, since otherwise the get_min_date
+        # and get_max_date functions return None, which is problematic sometimes.
         #
-        # This is already handled on startup by toga_core, but
-        # the implementation also gets the min date and the max
-        # date to clip when setting, which will return null on
-        # the first call.
+        # This is already handled on startup by toga_core, but the implementation also
+        # gets the min date and the max date to clip when setting, which will return
+        # null on the first call.
         self.set_min_date(MIN_DATE)
         self.set_max_date(MAX_DATE)
 
@@ -109,16 +107,14 @@ class DateInput(Widget):
                 self.native.drawsBackground = False
                 self.native.backgroundColor = NSColor.clearColor
             case None:
-                # For some reason, only *not* drawing background
-                # will draw the correct control background color
-                # in dark mode.
+                # For some reason, only *not* drawing background will draw the correct
+                # control background color in dark mode.
                 self.native.drawsBackground = False
                 self.native.setBezeled(True)
                 self.native.backgroundColor = NSColor.controlBackgroundColor
             case _:
                 self.native.drawsBackground = True
-                # On light mode, bezeling implies that
-                # the background color will not be drawn
-                # properly.
+                # On light mode, bezeling implies that the background color will not be
+                # drawn properly.
                 self.native.setBezeled(False)
                 self.native.backgroundColor = native_color(color)

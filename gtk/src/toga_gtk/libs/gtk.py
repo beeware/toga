@@ -6,10 +6,9 @@ gtk_version = "4.0" if os.getenv("TOGA_GTK") == "4" else "3.0"
 gi.require_version("Gdk", gtk_version)
 gi.require_version("Gtk", gtk_version)
 
-# no-covering because we cannot test all DE and TOGA_GTKLIB variables in CI
-# Detect the GTK DE-specific library to be used.  The TOGA_GTKLIB value will
-# be prioritized, or, if no GTK4 library is specified, falls back to detecting
-# with desktop environment.
+# no-covering because we cannot test all DE and TOGA_GTKLIB variables in CI. Detect the
+# GTK DE-specific library to be used.  The TOGA_GTKLIB value will be prioritized, or,
+# if no GTK4 library is specified, falls back to detecting with desktop environment.
 if gtk_version == "4.0":  # pragma: no cover
     match os.getenv("TOGA_GTKLIB"):
         case "Adw":
@@ -99,8 +98,8 @@ if default_display is None:  # pragma: no cover
 
 IS_WAYLAND = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 
-# The following imports will fail if the underlying libraries or their API
-# wrappers aren't installed; handle failure gracefully (see
+# The following imports will fail if the underlying libraries or their API wrappers
+# aren't installed; handle failure gracefully (see
 # https://github.com/beeware/toga/issues/26)
 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     try:

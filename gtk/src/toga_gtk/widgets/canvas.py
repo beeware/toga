@@ -90,9 +90,9 @@ class Context:
         self.native.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
-        # we can convert the single Quadratic control point into the
-        # 2 control points required for the cubic Bézier.
+        # A Quadratic curve is a dimensionally reduced Bézier Cubic curve; we can
+        # convert the single Quadratic control point into the 2 control points required
+        # for the cubic Bézier.
         x0, y0 = self.native.get_current_point()
         self.native.curve_to(
             x0 + 2 / 3 * (cpx - x0),
@@ -160,8 +160,8 @@ class Context:
         self.native.rotate(radians)
 
     def scale(self, sx, sy):
-        # Cairo throws an exception if scale is 0,
-        # so use a small epsilon which will almost be the same
+        # Cairo throws an exception if scale is 0, so use a small epsilon which will
+        # almost be the same
         if sx == 0:
             sx = 2**-24
         if sy == 0:

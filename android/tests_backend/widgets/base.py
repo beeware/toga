@@ -125,9 +125,9 @@ class SimpleProbe(BaseProbe, FontMixin):
                     break
 
         if background is None:
-            # The default background color is TRANSPARENT, but setting it
-            # to TRANSPARENT actually sets it to None, in order to avoid
-            # clipping of ripple and other effects on widgets.
+            # The default background color is TRANSPARENT, but setting it to TRANSPARENT
+            # actually sets it to None, in order to avoid clipping of ripple and other
+            # effects on widgets.
             return TRANSPARENT
         filter = background.getColorFilter()
         if filter:

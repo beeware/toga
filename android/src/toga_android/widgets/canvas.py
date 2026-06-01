@@ -225,8 +225,8 @@ class Context:
     def reset_transform(self):
         self.native.setMatrix(None)
 
-        # current matrix needs to unwind all previous states
-        # can't just ask for current total transform as `getMatrix` is deprecated
+        # current matrix needs to unwind all previous states can't just ask for current
+        # total transform as `getMatrix` is deprecated
         for state in reversed(self.states):
             self.path.transform(state.transform)
             inverse = Matrix()
@@ -351,8 +351,8 @@ class Canvas(Widget):
             return paint.getTextSize() * line_height
 
     def _text_paint(self, font):
-        # font.size applies the scale factor, and the canvas transformation matrix
-        # will apply it again, so we need to cancel one of those with a scale_out.
+        # font.size applies the scale factor, and the canvas transformation matrix will
+        # apply it again, so we need to cancel one of those with a scale_out.
         paint = Paint()
         paint.setTypeface(font.typeface())
         paint.setTextSize(self.scale_out(font.size()))

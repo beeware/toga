@@ -47,14 +47,12 @@ class TimeInput(Widget):
         self.native.datePickerStyle = NSDatePickerStyle.TextFieldAndStepper
         self.native.datePickerElements = NSDatePickerElementFlags.HourMinuteSecond
 
-        # Ensure there are maximum and minimum times,
-        # since otherwise the get_min_time and get_max_time
-        # functions return None, which is problematic sometimes.
+        # Ensure there are maximum and minimum times, since otherwise the get_min_time
+        # and get_max_time functions return None, which is problematic sometimes.
         #
-        # This is already handled on startup by toga_core, but
-        # the implementation also gets the min time and the max
-        # time to clip when setting, which will return null on
-        # the first call.
+        # This is already handled on startup by toga_core, but the implementation also
+        # gets the min time and the max time to clip when setting, which will return
+        # null on the first call.
         self.set_min_time(datetime.time(0, 0, 0))
         self.set_max_time(datetime.time(23, 59, 59))
 
@@ -99,16 +97,14 @@ class TimeInput(Widget):
                 self.native.drawsBackground = False
                 self.native.backgroundColor = NSColor.clearColor
             case None:
-                # For some reason, only *not* drawing background
-                # will draw the correct control background color
-                # in dark mode.
+                # For some reason, only *not* drawing background will draw the correct
+                # control background color in dark mode.
                 self.native.drawsBackground = False
                 self.native.setBezeled(True)
                 self.native.backgroundColor = NSColor.controlBackgroundColor
             case _:
                 self.native.drawsBackground = True
-                # On light mode, bezeling implies that
-                # the background color will not be drawn
-                # properly.
+                # On light mode, bezeling implies that the background color will not be
+                # drawn properly.
                 self.native.setBezeled(False)
                 self.native.backgroundColor = native_color(color)

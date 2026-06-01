@@ -69,9 +69,8 @@ class Command(LoggedObject):
                     "group": Group.HELP,
                 }
             case StandardCommand.VISIT_HOMEPAGE:
-                # Dummy doesn't have a visit homepage menu item.
-                # This lets us verify the "platform doesn't support command"
-                # logic.
+                # Dummy doesn't have a visit homepage menu item. This lets us verify the
+                # "platform doesn't support command" logic.
                 return None
 
         raise ValueError(f"Unknown standard command {id!r}")
