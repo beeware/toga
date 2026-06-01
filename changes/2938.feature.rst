@@ -1,0 +1,1 @@
+Widget layout calculations are now deferred and performed once per event loop, instead of being done immediately when requested.
