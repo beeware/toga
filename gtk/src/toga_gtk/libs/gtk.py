@@ -6,9 +6,11 @@ gtk_version = "4.0" if os.getenv("TOGA_GTK") == "4" else "3.0"
 gi.require_version("Gdk", gtk_version)
 gi.require_version("Gtk", gtk_version)
 
-# no-covering because we cannot test all DE and TOGA_GTKLIB variables in CI. Detect the
-# GTK DE-specific library to be used.  The TOGA_GTKLIB value will be prioritized, or,
-# if no GTK4 library is specified, falls back to detecting with desktop environment.
+# Detect the GTK DE-specific library to be used. The TOGA_GTKLIB value will be
+# prioritized, or, if no GTK4 library is specified, falls back to detecting with
+# desktop environment.
+#
+# no-covering because we cannot test all DE and TOGA_GTKLIB variables in CI.
 if gtk_version == "4.0":  # pragma: no cover
     match os.getenv("TOGA_GTKLIB"):
         case "Adw":

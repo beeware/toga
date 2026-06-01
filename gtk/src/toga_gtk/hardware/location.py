@@ -64,8 +64,8 @@ def is_permissions_error(error):
     due to a (now resolved) bug in ``Geoclue.Simple``'s error handling
     https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/205
 
-    In that case, the error will be a generic IO Failure, so permission failures
-    will be indistinguishable from other systemic failures.
+    In that case, the error will be a generic IO Failure, so permission failures will be
+    indistinguishable from other systemic failures.
 
     :param error: a GLib.Error instance
     :returns: whether the error is one of the known permissions errors
@@ -110,8 +110,8 @@ class Location(GObject.Object):
 
     def __init__(self, interface):
         if Geoclue is None:
-            # CI (where coverage is enforced) must always have GeoClue available
-            # in order to perform the rest of the tests
+            # CI (where coverage is enforced) must always have GeoClue available in
+            # order to perform the rest of the tests
             raise RuntimeError(  # pragma: no cover
                 "Unable to import GeoClue. Ensure that the system package "
                 "providing GeoClue and its GTK bindings have been installed. See "
@@ -137,8 +137,8 @@ class Location(GObject.Object):
     def _start(self):
         """Asynchronously initialize ``Geoclue.Simple``.
 
-        The act of initializing ``Geoclue.Simple`` will itself trigger
-        a permission request. As such, delay this until permission is checked.
+        The act of initializing ``Geoclue.Simple`` will itself trigger a permission
+        request. As such, delay this until permission is checked.
         """
         self.props.state = State.STARTING
 
@@ -169,9 +169,9 @@ class Location(GObject.Object):
 
             def notify_client_active(*args):
                 if not self.native.get_client().props.active:
-                    # If the client explicitly becomes inactive, this indicates
-                    # a failure to retrieve the location
-                    # e.g., when the geoclue service is stopped on the host
+                    # If the client explicitly becomes inactive, this indicates a
+                    # failure to retrieve the location e.g., when the geoclue service
+                    # is stopped on the host
                     self.props.state = State.FAILED
                     self._stop_tracking()
                 else:  # pragma: no cover
@@ -194,8 +194,8 @@ class Location(GObject.Object):
             if State.is_uninitialised(self.props.state):  # pragma: no cover
                 return
 
-            # See note on :func:`~.is_permission_error` regarding error ambiguity
-            # for some Geoclue versions. Because of this ambiguity any initialisation
+            # See note on :func:`~.is_permission_error` regarding error ambiguity for
+            # some Geoclue versions. Because of this ambiguity any initialisation
             # failure needs to be communicated as permissions issue, and ``result``
             # cannot reliably be set to an exception if state is FAILED instead of
             # DENIED.
@@ -218,10 +218,10 @@ class Location(GObject.Object):
     def has_background_permission(self):
         """Check for background permission.
 
-        Background location permission has no meaning for GeoClue,
-        as all location access is mediated through the same location
-        tracking APIs. Therefore, background location permission
-        is handled in identical terms to foreground location permission.
+        Background location permission has no meaning for GeoClue, as all location
+        access is mediated through the same location tracking APIs. Therefore,
+        background location permission is handled in identical terms to foreground
+        location permission.
         """
         return self.has_permission()
 
