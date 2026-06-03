@@ -1,6 +1,6 @@
 # Reproducing an issue
 
-{% extends "contribute/how/reproduce-issue.md" %}
+{% extends "_shared/contribute/how/reproduce-issue.md" %}
 
 {% block front_matter %}
 

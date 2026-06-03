@@ -1,6 +1,6 @@
 # Writing documentation
 
-{% extends "contribute/how/write-docs.md" %}
+{% extends "_shared/contribute/how/write-docs.md" %}
 
 {% block front_matter %}
 

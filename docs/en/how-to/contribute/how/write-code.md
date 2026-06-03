@@ -1,7 +1,7 @@
 # Writing, running, and testing code
 
 <!-- rumdl-disable MD001 -->
-{% extends "contribute/how/write-code.md" %}
+{% extends "_shared/contribute/how/write-code.md" %}
 
 {% block front_matter %}
 

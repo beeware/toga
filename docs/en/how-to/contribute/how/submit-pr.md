@@ -1,6 +1,6 @@
 # Submitting a pull request
 
-{% extends "contribute/how/submit-pr.md" %}
+{% extends "_shared/contribute/how/submit-pr.md" %}
 
 {% block end_matter %}
 
