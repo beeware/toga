@@ -1,4 +1,3 @@
-import asyncio
 import signal
 
 from toga.app import App as toga_App
@@ -31,8 +30,9 @@ class App:
         self.interface._impl = self
         self._exiting_presentation = False
 
+        # PyGObject still requires an event loop policy, even though we no longer set
+        # it globally (https://gitlab.gnome.org/GNOME/pygobject/-/work_items/697).
         self.policy = GLibEventLoopPolicy()
-        asyncio.set_event_loop_policy(self.policy)
         self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
@@ -179,7 +179,8 @@ class App:
         self.native.hold()
 
         # Start the app event loop
-        self.native.run()
+        with self.policy:
+            self.native.run()
 
         # Release the reference to the app. This can't be invoked by the testbed,
         # because it's after the `run_forever()` that runs the testbed.
