@@ -644,9 +644,20 @@ NSTableCellView = ObjCClass("NSTableCellView")
 # NSTableView.h
 NSTableColumn = ObjCClass("NSTableColumn")
 NSTableView = ObjCClass("NSTableView")
+NSTableViewRowAction = ObjCClass("NSTableViewRowAction")
 
 
-class NSTableViewColumnAutoresizingStyle(Enum):
+class NSTableRowActionEdge(IntEnum):
+    Leading = 0
+    Trailing = 1
+
+
+class NSTableViewRowActionStyle(IntEnum):
+    Default = 0
+    Destructive = 1
+
+
+class NSTableViewColumnAutoresizingStyle(IntEnum):
     NoAutoresizing = 0
     Uniform = 1
     Sequential = 2
@@ -655,7 +666,7 @@ class NSTableViewColumnAutoresizingStyle(Enum):
     FirstColumnOnly = 5
 
 
-class NSTableViewAnimation(Enum):
+class NSTableViewAnimation(IntEnum):
     EffectNone = 0x0
     EffectFade = 0x1
     EffectGap = 0x2
