@@ -30,15 +30,15 @@ class TogaList(NSTableView):
     impl = objc_property(object, weak=True)
 
     @objc_method
-    def didCloseMenu_withEvent_(self, menu, event) -> None:
-        # When the menu closes, drop the reference to the menu object.
+    def menuDidClose_(self, menu) -> None:
         self.impl._popup = None
 
     @objc_method
     def menu(self):
-        if (
-            self.clickedRow == -1 or self.clickedColumn == -1
-        ):  # Somehow this happens in VoiceOver
+        # The below branch occurs when using VoiceOver, which calls
+        # for a menu even when there is no right click, which would have
+        # to occur on a specific row; thus it is no-covered.
+        if self.clickedRow == -1 or self.clickedColumn == -1:  # pragma: no cover
             return NSMenu(send_super(__class__, self, "menu"))
         # Create a popup menu to display the possible actions.
         popup = NSMenu.alloc().initWithTitle("popup")
@@ -57,6 +57,7 @@ class TogaList(NSTableView):
                 keyEquivalent="",
             )
             secondary_action_item.tag = self.clickedRow
+
         if self.impl.refresh_enabled:
             popup.addItem(NSMenuItem.separatorItem())
             refresh_action_item = popup.addItemWithTitle(
@@ -67,7 +68,9 @@ class TogaList(NSTableView):
             refresh_action_item.image = REFRESH_IMAGE
             refresh_action_item.tag = self.clickedRow
 
+        # Preserve reference to popup for testing purposes.
         self.impl._popup = popup
+        popup.delegate = self
         return popup
 
     @objc_method
@@ -108,7 +111,8 @@ class TogaList(NSTableView):
             def handler(action: c_void_p, index: int) -> None:
                 row = self.interface.data[index]
                 self.interface.on_secondary_action(row=row)
-                self.impl.leading_handler = handler
+
+            self.impl.leading_handler = handler
 
         if edge == NSTableRowActionEdge.Trailing and self.impl.primary_action_enabled:
             style = (
@@ -151,11 +155,19 @@ class TogaList(NSTableView):
         value = self.interface.data[row]
         try:
             title = getattr(value, self.interface.accessors[0])
+            if title is not None:
+                title = str(title)
+            else:
+                title = self.interface.missing_value
         except AttributeError:
             title = self.interface.missing_value
 
         try:
             subtitle = getattr(value, self.interface.accessors[1])
+            if subtitle is not None:
+                subtitle = str(subtitle)
+            else:
+                subtitle = self.interface.missing_value
         except AttributeError:
             subtitle = self.interface.missing_value
 
@@ -164,8 +176,8 @@ class TogaList(NSTableView):
         except AttributeError:
             icon = None
 
-        view.setTitle(str(title))
-        view.setSubtitle(str(subtitle))
+        view.setTitle(title)
+        view.setSubtitle(subtitle)
         view.setIcon(icon)
 
         return view
