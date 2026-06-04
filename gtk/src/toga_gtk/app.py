@@ -178,7 +178,8 @@ class App:
         self.native.hold()
 
         # Start the app event loop
-        self.native.run()
+        with self.loop:
+            self.native.run()
 
         # Release the reference to the app. This can't be invoked by the testbed,
         # because it's after the `run_forever()` that runs the testbed.
