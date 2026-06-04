@@ -91,14 +91,24 @@ class TogaList(NSTableView):
 
     @objc_method
     def tableView_rowActionsForRow_edge_(self, table, row: int, edge: int):
-        # This API needs a block, not a selector, hence the redefinition of a handler
-        # instead of using primaryActionOnRow: and secondaryActionOnRow:.
-        def handler(action: c_void_p, index: int) -> None:
-            row = self.interface.data[index]
-            if edge == NSTableRowActionEdge.Trailing:
+        # The native API needs a block, not a selector, hence the redefinition of a
+        # handler instead of using primaryActionOnRow: and secondaryActionOnRow:.
+        # The handlers are being preserved for testing purposes, as AppKit doesn't give
+        # us a way to get the handler back from the NSTableViewRowAction.
+        if edge == NSTableRowActionEdge.Trailing:
+
+            def handler(action: c_void_p, index: int) -> None:
+                row = self.interface.data[index]
                 self.interface.on_primary_action(row=row)
-            elif edge == NSTableRowActionEdge.Leading:
+
+            self.impl.trailing_handler = handler
+        # The elif is defensive; there should not be any other edges in practice.
+        elif edge == NSTableRowActionEdge.Leading:  # pragma: no branch
+
+            def handler(action: c_void_p, index: int) -> None:
+                row = self.interface.data[index]
                 self.interface.on_secondary_action(row=row)
+                self.impl.leading_handler = handler
 
         if edge == NSTableRowActionEdge.Trailing and self.impl.primary_action_enabled:
             style = (

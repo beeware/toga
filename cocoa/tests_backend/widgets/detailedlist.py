@@ -8,6 +8,7 @@ from toga_cocoa.libs import (
     NSEvent,
     NSEventType,
     NSScrollView,
+    NSTableRowActionEdge,
     NSTableView,
     core_graphics,
     kCGScrollEventUnitPixel,
@@ -53,18 +54,18 @@ class DetailedListProbe(SimpleProbe):
         )
 
     def assert_cell_content(self, row, title, subtitle, icon=None):
-        data = self.native_detailedlist.tableView(
+        row = self.native_detailedlist.tableView(
             self.native_detailedlist,
-            objectValueForTableColumn=self.native_detailedlist.tableColumns[0],
+            viewForTableColumn=self.native_detailedlist.tableColumns[0],
             row=row,
         )
-        assert str(data.attrs["title"]) == title
-        assert str(data.attrs["subtitle"]) == subtitle
+        assert str(row.titleField.stringValue) == title
+        assert str(row.subtitleField.stringValue) == subtitle
 
         if icon:
-            assert data.attrs["icon"] == icon._impl.native
+            assert row.imageView.image == icon._impl.native
         else:
-            assert data.attrs["icon"] is None
+            assert row.imageView.image is None
 
     @property
     def max_scroll_position(self):
@@ -204,8 +205,23 @@ class DetailedListProbe(SimpleProbe):
             while self.impl._popup is not None:
                 await self.redraw("Action has been selected", delay=0.1)
 
+    def _perform_swipe_action(self, row, edge):
+        actions = self.native_detailedlist.tableView(
+            self.native_detailedlist, rowActionsForRow=row, edge=edge
+        )
+        assert len(actions) == 1, "Expected exactly one action for the row edge"
+        if edge == NSTableRowActionEdge.Trailing:
+            assert actions[0].title == self.widget._primary_action
+            self.impl.trailing_handler(None, row)
+        elif edge == NSTableRowActionEdge.Leading:
+            assert actions[0].title == self.widget._secondary_action
+            self.impl.leading_handler(None, row)
+
     async def perform_primary_action(self, row, active=True):
-        await self._perform_action(row, 0)
+        # Test primary using swipe.
+        if self.impl.primary_action_enabled:
+            self._perform_swipe_action(row, NSTableRowActionEdge.Trailing)
 
     async def perform_secondary_action(self, row, active=True):
+        # Test secondary using menu.
         await self._perform_action(row, 1 if self.impl.primary_action_enabled else 0)
