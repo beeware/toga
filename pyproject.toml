@@ -171,9 +171,8 @@ dev = [
 # Docs are always built on a specific Python version; see RTD and tox config files,
 # and the docs contribution guide.
 docs = [
-    "beeware-docs-tools @ git+https://github.com/kattni/beeware-docs-tools@docs/collapsed-content-rendering-fix",
-#    "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
-#     "beeware-docs-tools @ file://../beeware-docs-tools",
+    "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
+    # "beeware-docs-tools @ file://../beeware-docs-tools",
     "tabulate==0.10.0",
     "mkdocs-redirects==1.2.3",
     "mkdocs-exclude==1.0.2",
