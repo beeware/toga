@@ -1,3 +1,3 @@
 # Adding documentation
 
-{% extends "contribute/what/write-docs.md" %}
+{% extends "_shared/contribute/what/write-docs.md" %}
