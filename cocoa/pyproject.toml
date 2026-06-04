@@ -116,6 +116,7 @@ dependencies = [
     "fonttools >= 4.42.1, < 5.0.0",
     "rubicon-objc >= 0.5.1, < 0.6.0",
     "toga-core == {version}",
+    "packaging >= 24.2",
 ]
 
 [tool.coverage.run]
