@@ -64,7 +64,7 @@ Items in a DetailedList will respond to a primary and secondary action if the `o
 * On **Android**, a long press displays a menu with the primary and secondary actions.
 * On **iOS** and **macOS**, swiping left triggers the primary action, and swiping right triggers the secondary action.
 * On **GTK**, a right click displays buttons for the primary and secondary actions.
-* On **macOS** **Windows**, and **Qt**, a right click displays a context menu with the primary and secondary actions.
+* On **macOS**, **Windows**, and **Qt**, a right click displays a context menu with the primary and secondary actions.
 * On **Qt**, the primary and secondary actions are displayed as standalone buttons.
 
 By default, the primary and secondary action will be labeled as "Delete" and "Action", respectively. These names can be overridden by providing a `primary_action` and `secondary_action` argument when constructing the DetailedList. Although the primary action is labeled "Delete" by default, the DetailedList will not perform any data deletion as part of the UI interaction. It is the responsibility of the application to implement any data deletion behavior as part of the `on_primary_action` handler.
@@ -74,7 +74,7 @@ The DetailedList as a whole will also respond to a refresh UI action if an `on_r
 * On **Android**, **iOS** and **macOS**, pulling down at the top of the list triggers a refresh.
 * On **Qt**, a button bar displays a refresh button.
 * On **GTK**, a floating refresh button is displayed when scrolled to the top.
-* On **Windows** and **macOS**, a right click displays a context menu with a refresh option.
+* On **macOS**, **Windows**, and **Qt**, a right click displays a context menu with a refresh option.
 
 ## Notes
 
