@@ -11,10 +11,10 @@ from System import (
     Uri,
 )
 from System.Collections.Generic import List  # Import List for generics
+from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
 
 import toga
-from toga.colors import TRANSPARENT
 from toga.handlers import WeakrefCallable
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 from toga_winforms.libs.extensions import (
@@ -108,7 +108,7 @@ class WebView(Widget):
             toga.App.app.paths.cache / f"toga/webview-{self.interface.id}"
         )
 
-        self._default_background_color = TRANSPARENT
+        self._default_background_color = Color.Transparent
 
     def __del__(self):  # pragma: nocover
         """Cleaning up the cached files for large content"""
