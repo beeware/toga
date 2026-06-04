@@ -41,7 +41,7 @@ if gtklib == "Adw":  # pragma: no-cover-unless-libadwaita
 elif gtklib is None:  # pragma: no-cover-unless-plain-gtk  # pragma: no branch
     Adw = None
 
-from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
+from gi.events import GLibEventLoop  # noqa: E402, F401
 from gi.repository import (  # noqa: E402, F401
     Gdk,
     GdkPixbuf,

@@ -1,3 +1,4 @@
+import asyncio
 import signal
 
 from toga.app import App as toga_App
@@ -13,7 +14,7 @@ from .libs import (
     Gdk,
     Gio,
     GLib,
-    GLibEventLoopPolicy,
+    GLibEventLoop,
     Gtk,
 )
 from .screens import Screen as ScreenImpl
@@ -30,10 +31,8 @@ class App:
         self.interface._impl = self
         self._exiting_presentation = False
 
-        # PyGObject still requires an event loop policy, even though we no longer set
-        # it globally (https://gitlab.gnome.org/GNOME/pygobject/-/work_items/697).
-        self.policy = GLibEventLoopPolicy()
-        self.loop = self.policy.get_event_loop()
+        self.loop = GLibEventLoop()
+        asyncio.set_event_loop(self.loop)
 
         # Stimulate the build of the app
         if Adw is None:  # pragma: no-cover-unless-plain-gtk
@@ -179,8 +178,7 @@ class App:
         self.native.hold()
 
         # Start the app event loop
-        with self.policy:
-            self.native.run()
+        self.native.run()
 
         # Release the reference to the app. This can't be invoked by the testbed,
         # because it's after the `run_forever()` that runs the testbed.
