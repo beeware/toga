@@ -1,7 +1,6 @@
 from ctypes import c_void_p
 
 from rubicon.objc import SEL, objc_method, objc_property
-from rubicon.objc.runtime import send_super
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
@@ -35,14 +34,9 @@ class TogaList(NSTableView):
 
     @objc_method
     def menu(self):
-        # The below branch occurs when using VoiceOver, which calls
-        # for a menu even when there is no right click, which would have
-        # to occur on a specific row; thus it is no-covered.
-        if self.clickedRow == -1 or self.clickedColumn == -1:  # pragma: no cover
-            return NSMenu(send_super(__class__, self, "menu"))
         # Create a popup menu to display the possible actions.
         popup = NSMenu.alloc().initWithTitle("popup")
-        if self.impl.primary_action_enabled:
+        if self.clickedRow != -1 and self.impl.primary_action_enabled:
             primary_action_item = popup.addItemWithTitle(
                 self.interface._primary_action,
                 action=SEL("primaryActionOnRow:"),
@@ -50,7 +44,7 @@ class TogaList(NSTableView):
             )
             primary_action_item.tag = self.clickedRow
 
-        if self.impl.secondary_action_enabled:
+        if self.clickedRow != -1 and self.impl.secondary_action_enabled:
             secondary_action_item = popup.addItemWithTitle(
                 self.interface._secondary_action,
                 action=SEL("secondaryActionOnRow:"),
