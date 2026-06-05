@@ -161,37 +161,38 @@ class Image:
         self.factory = get_factory()
         self._path = None
 
-        # Any "lump of bytes" should be valid here.
-        if isinstance(src, bytes | bytearray | memoryview):
-            try:
-                self._impl = self.factory.Image(interface=self, data=src)
-            except ImageLoadError as exc:
-                raise ValueError("Unable to load image from data") from exc
+        match src:
+            # Any "lump of bytes" should be valid here.
+            case bytes() | bytearray() | memoryview():
+                try:
+                    self._impl = self.factory.Image(interface=self, data=src)
+                except ImageLoadError as exc:
+                    raise ValueError("Unable to load image from data") from exc
 
-        elif isinstance(src, str | Path):
-            self._path = toga.App.app.paths.app / src
-            if not self._path.is_file():
-                raise FileNotFoundError(f"Image file {self._path} does not exist")
-            data = self._path.read_bytes()
-            try:
-                self._impl = self.factory.Image(interface=self, data=data)
-            except ImageLoadError as exc:
-                raise ValueError(f"Unable to load image from {self._path}") from exc
-
-        elif isinstance(src, Image):
-            self._impl = self.factory.Image(interface=self, data=src.data)
-
-        elif isinstance(src, self.factory.Image.RAW_TYPE):
-            self._impl = self.factory.Image(interface=self, raw=src)
-
-        else:
-            for converter in self._converters():
-                if isinstance(src, converter.image_class):
-                    data = converter.convert_from_format(src)
+            case str() | Path():
+                self._path = toga.App.app.paths.app / src
+                if not self._path.is_file():
+                    raise FileNotFoundError(f"Image file {self._path} does not exist")
+                data = self._path.read_bytes()
+                try:
                     self._impl = self.factory.Image(interface=self, data=data)
-                    return
+                except ImageLoadError as exc:
+                    raise ValueError(f"Unable to load image from {self._path}") from exc
 
-            raise TypeError("Unsupported source type for Image")
+            case Image():
+                self._impl = self.factory.Image(interface=self, data=src.data)
+
+            case self.factory.Image.RAW_TYPE():
+                self._impl = self.factory.Image(interface=self, raw=src)
+
+            case _:
+                for converter in self._converters():
+                    if isinstance(src, converter.image_class):
+                        data = converter.convert_from_format(src)
+                        self._impl = self.factory.Image(interface=self, data=data)
+                        return
+
+                raise TypeError("Unsupported source type for Image")
 
     @classmethod
     @cache

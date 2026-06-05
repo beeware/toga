@@ -56,12 +56,13 @@ def normalize():
     returned by the widget."""
 
     def normalize_date(value):
-        if isinstance(value, datetime):
-            return value.date()
-        elif isinstance(value, date):
-            return value
-        else:
-            raise TypeError(value)
+        match value:
+            case datetime():
+                return value.date()
+            case date():
+                return value
+            case _:
+                raise TypeError(value)
 
     return normalize_date
 

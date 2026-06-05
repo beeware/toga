@@ -1000,7 +1000,7 @@ async def test_cell_widget(widget, probe):
         probe.assert_cell_content((0, 1), 2, "MISSING!")
 
 
-def test_tree_listener(widget):
+async def test_tree_listener(widget):
     """Does the widget Implementation satisfy the ListListener and
     TreeListener APIs"""
     assert isinstance(widget._impl, ListListener)
@@ -1034,7 +1034,7 @@ def test_tree_listener(widget):
         ),
     ],
 )
-def test_deprecated_methods(widget, method_name, args, expected_args):
+async def test_deprecated_methods(widget, method_name, args, expected_args):
     """Does the widget warn about the old ListListener API"""
     impl = widget._impl
     mock_method = Mock()

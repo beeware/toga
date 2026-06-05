@@ -1,3 +1,3 @@
 # Fixing an issue
 
-{% extends "contribute/what/fix-issue.md" %}
+{% extends "_shared/contribute/what/fix-issue.md" %}

@@ -329,7 +329,7 @@ async def test_resize_on_content_change(widget, probe):
         assert probe.width == original_width
 
 
-def test_list_listener(widget):
+async def test_list_listener(widget):
     """Does the widget implement the ListListener API"""
     assert isinstance(widget._impl, ListListener)
 
@@ -343,7 +343,7 @@ def test_list_listener(widget):
         ("remove", {"index": 0, "item": "item"}),
     ],
 )
-def test_deprecated_methods(widget, method_name, args):
+async def test_deprecated_methods(widget, method_name, args):
     """Does the widget warn about the old ListListener API"""
     impl = widget._impl
     mock_method = Mock()
