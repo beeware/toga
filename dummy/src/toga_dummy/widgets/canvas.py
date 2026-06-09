@@ -6,6 +6,110 @@ from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
 from .base import Widget
 
 
+class Path2D:
+    def __init__(self, path=None):
+        if path is None:
+            self.draw_instructions = []
+        else:
+            self.draw_instructions = path.draw_instructions.copy()
+
+    def add_path(self, path, transform=None):
+        self.draw_instructions.append(
+            ("add path", {"path": path, "transform": transform})
+        )
+
+    def close_path(self):
+        self.draw_instructions.append("close path")
+
+    def move_to(self, x, y):
+        self.draw_instructions.append(("move to", {"x": x, "y": y}))
+
+    def line_to(self, x, y):
+        self.draw_instructions.append(("line to", {"x": x, "y": y}))
+
+    # Basic shapes
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self.draw_instructions.append(
+            (
+                "bezier curve to",
+                {
+                    "cp1x": cp1x,
+                    "cp1y": cp1y,
+                    "cp2x": cp2x,
+                    "cp2y": cp2y,
+                    "x": x,
+                    "y": y,
+                },
+            )
+        )
+
+    def quadratic_curve_to(self, cpx, cpy, x, y):
+        self.draw_instructions.append(
+            (
+                "quadratic curve to",
+                {"cpx": cpx, "cpy": cpy, "x": x, "y": y},
+            )
+        )
+
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise):
+        self.draw_instructions.append(
+            (
+                "arc",
+                {
+                    "x": x,
+                    "y": y,
+                    "radius": radius,
+                    "startangle": startangle,
+                    "endangle": endangle,
+                    "counterclockwise": counterclockwise,
+                },
+            )
+        )
+
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        counterclockwise,
+    ):
+        self.draw_instructions.append(
+            (
+                "ellipse",
+                {
+                    "x": x,
+                    "y": y,
+                    "radiusx": radiusx,
+                    "radiusy": radiusy,
+                    "rotation": rotation,
+                    "startangle": startangle,
+                    "endangle": endangle,
+                    "counterclockwise": counterclockwise,
+                },
+            )
+        )
+
+    def rect(self, x, y, width, height):
+        self.draw_instructions.append(
+            (
+                "rect",
+                {"x": x, "y": y, "width": width, "height": height},
+            )
+        )
+
+    def round_rect(self, x, y, width, height, radii):
+        self.draw_instructions.append(
+            (
+                "round rect",
+                {"x": x, "y": y, "width": width, "height": height, "radii": radii},
+            )
+        )
+
+
 class Context:
     def __init__(self, impl):
         self.impl = impl
@@ -126,11 +230,13 @@ class Context:
         )
 
     # Drawing Paths
-    def fill(self, fill_rule):
-        self.impl.draw_instructions.append(("fill", {"fill_rule": fill_rule}))
+    def fill(self, fill_rule, path=None):
+        self.impl.draw_instructions.append(
+            ("fill", {"fill_rule": fill_rule, "path": path})
+        )
 
-    def stroke(self):
-        self.impl.draw_instructions.append("stroke")
+    def stroke(self, path=None):
+        self.impl.draw_instructions.append(("stroke", {"path": path}))
 
     # Transformations
 

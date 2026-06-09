@@ -39,8 +39,100 @@ class CGAffineTransform(Structure):
 core_graphics.CGAffineTransformIdentity = CGAffineTransform
 core_graphics.CGAffineTransformInvert.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.argtypes = [CGAffineTransform]
+core_graphics.CGAffineTransformMake.restype = CGAffineTransform
+core_graphics.CGAffineTransformMake.argtypes = [
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+]
 core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform
 core_graphics.CGAffineTransformMakeScale.argtypes = [CGFloat, CGFloat]
+core_graphics.CGAffineTransformRotate.restype = CGAffineTransform
+core_graphics.CGAffineTransformRotate.argtypes = [CGAffineTransform, CGFloat]
+core_graphics.CGAffineTransformScale.restype = CGAffineTransform
+core_graphics.CGAffineTransformScale.argtypes = [CGAffineTransform, CGFloat, CGFloat]
+core_graphics.CGAffineTransformTranslate.restype = CGAffineTransform
+core_graphics.CGAffineTransformTranslate.argtypes = [
+    CGAffineTransform,
+    CGFloat,
+    CGFloat,
+]
+
+######################################################################
+# CGPath.h
+CGPathRef = c_void_p
+register_preferred_encoding(b"^{__CGPath=}", CGPathRef)
+CGMutablePathRef = c_void_p
+register_preferred_encoding(b"^{__CGMutablePath=}", CGMutablePathRef)
+
+core_graphics.CGPathCreateMutable.restype = CGMutablePathRef
+core_graphics.CGPathCreateMutable.argtypes = []
+core_graphics.CGPathCreateMutableCopy.restype = CGMutablePathRef
+core_graphics.CGPathCreateMutableCopy.argtypes = [CGPathRef]
+core_graphics.CGPathAddArc.restype = c_void_p
+core_graphics.CGPathAddArc.argtypes = [
+    CGMutablePathRef,
+    POINTER(CGAffineTransform),
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    c_bool,
+]
+core_graphics.CGPathAddCurveToPoint.restype = c_void_p
+core_graphics.CGPathAddCurveToPoint.argtypes = [
+    CGMutablePathRef,
+    POINTER(CGAffineTransform),
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+]
+core_graphics.CGPathAddLineToPoint.restype = c_void_p
+core_graphics.CGPathAddLineToPoint.argtypes = [
+    CGMutablePathRef,
+    POINTER(CGAffineTransform),
+    CGFloat,
+    CGFloat,
+]
+core_graphics.CGPathAddQuadCurveToPoint.restype = c_void_p
+core_graphics.CGPathAddQuadCurveToPoint.argtypes = [
+    CGMutablePathRef,
+    POINTER(CGAffineTransform),
+    CGFloat,
+    CGFloat,
+    CGFloat,
+    CGFloat,
+]
+core_graphics.CGPathAddRect.restype = c_void_p
+core_graphics.CGPathAddRect.argtypes = [
+    CGMutablePathRef,
+    POINTER(CGAffineTransform),
+    CGRect,
+]
+core_graphics.CGPathCloseSubpath.restype = c_void_p
+core_graphics.CGPathCloseSubpath.argtypes = [c_void_p]
+core_graphics.CGPathIsEmpty.restype = c_bool
+core_graphics.CGPathIsEmpty.argtypes = [CGMutablePathRef]
+core_graphics.CGPathMoveToPoint.restype = c_void_p
+core_graphics.CGPathMoveToPoint.argtypes = [
+    CGMutablePathRef,
+    POINTER(CGAffineTransform),
+    CGFloat,
+    CGFloat,
+]
+core_graphics.CGPathAddPath.restype = c_void_p
+core_graphics.CGPathAddPath.argtypes = [
+    CGMutablePathRef,
+    POINTER(CGAffineTransform),
+    CGPathRef,
+]
 
 ######################################################################
 # CGImage.h
@@ -182,8 +274,6 @@ core_graphics.CGContextTranslateCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
 core_graphics.CGContextDrawImage.restype = c_void_p
 core_graphics.CGContextDrawImage.argtypes = [CGContextRef, CGRect, CGImageRef]
 
-CGPathRef = c_void_p
-register_preferred_encoding(b"^{__CGPath=}", CGPathRef)
 core_graphics.CGContextCopyPath.restype = CGPathRef
 core_graphics.CGContextCopyPath.argtypes = [CGContextRef]
 core_graphics.CGContextAddPath.restype = c_void_p
