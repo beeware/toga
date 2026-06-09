@@ -8,6 +8,10 @@ from toga.style.pack import Pack
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
+    test_background_color,
+    test_background_color_reset,
+    test_color,
+    test_color_reset,
     test_enable_noop,
     test_flex_widget_size,
     test_focus_noop,
