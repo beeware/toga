@@ -6,12 +6,12 @@ import toga
 from toga.sources import ListListener, ListSource
 from toga.style.pack import Pack
 
-from .conftest import build_cleanup_test
+from .conftest import build_cleanup_test, skip_on_backends
 from .properties import (  # noqa: F401
-    test_background_color,
-    test_background_color_reset,
-    test_color,
-    test_color_reset,
+    test_background_color as check_background_color,
+    test_background_color_reset as check_background_color_reset,
+    test_color as check_color,
+    test_color_reset as check_color_reset,
     test_enable_noop,
     test_flex_widget_size,
     test_focus_noop,
@@ -77,6 +77,58 @@ async def widget(
         on_secondary_action=on_secondary_action_handler,
         style=Pack(flex=1),
     )
+
+
+async def test_background_color(widget, probe):
+    skip_on_backends(
+        "toga_android",
+        "toga_cocoa",
+        "toga_gtk",
+        "toga_iOS",
+        "toga_qt",
+        "toga_textual",
+        "toga_web",
+    )
+    await check_background_color(widget, probe)
+
+
+async def test_background_color_reset(widget, probe):
+    skip_on_backends(
+        "toga_android",
+        "toga_cocoa",
+        "toga_gtk",
+        "toga_iOS",
+        "toga_qt",
+        "toga_textual",
+        "toga_web",
+    )
+    await check_background_color_reset(widget, probe)
+
+
+async def test_color(widget, probe):
+    skip_on_backends(
+        "toga_android",
+        "toga_cocoa",
+        "toga_gtk",
+        "toga_iOS",
+        "toga_qt",
+        "toga_textual",
+        "toga_web",
+    )
+    await check_color(widget, probe)
+
+
+async def test_color_reset(widget, probe):
+    skip_on_backends(
+        "toga_android",
+        "toga_cocoa",
+        "toga_gtk",
+        "toga_iOS",
+        "toga_qt",
+        "toga_textual",
+        "toga_web",
+    )
+    await check_color_reset(widget, probe)
 
 
 test_cleanup = build_cleanup_test(toga.DetailedList)
