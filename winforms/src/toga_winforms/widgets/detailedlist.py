@@ -7,7 +7,6 @@ from System.Drawing import ColorTranslator, Size, SystemColors
 
 from toga.handlers import WeakrefCallable
 
-from ..colors import toga_color
 from ..libs import gdi32, user32 as u32, win32constants as wc, win32structures as ws
 from ..libs.comctl32 import (
     DefSubclassProc,
@@ -74,7 +73,7 @@ class DetailedList(Widget):
         self.native.HandleCreated += WeakrefCallable(self.winforms_handle_created)
         self.native.HandleDestroyed += WeakrefCallable(self.winforms_handle_destroyed)
 
-        self._default_background_color = toga_color(SystemColors.Window)
+        self._default_background_color = SystemColors.Window
         self._first_item = 0
         self._cache = []
 
