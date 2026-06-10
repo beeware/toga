@@ -54,20 +54,20 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 raise exception
 
     async def cleanup(self):
-        # Store the pre closing window state as determination of
-        # window state after closing the window is unreliable.
+        # Store the pre closing window state as determination of window state after
+        # closing the window is unreliable.
         pre_close_window_state = self.window.state
         self.window.close()
-        # We need to use fixed length delays here as NSWindow.close() is
-        # non-blocking in nature, and NSWindow doesn't provide a reliable
-        # indicator to indicate completion of all operations related to
-        # window closing.
-        if pre_close_window_state == WindowState.FULLSCREEN:
-            delay = 1
-        elif pre_close_window_state == WindowState.MINIMIZED:
-            delay = 0.5
-        else:
-            delay = 0.1
+        # We need to use fixed length delays here as NSWindow.close() is non-blocking in
+        # nature, and NSWindow doesn't provide a reliable indicator to indicate
+        # completion of all operations related to window closing.
+        match pre_close_window_state:
+            case WindowState.FULLSCREEN:
+                delay = 1
+            case WindowState.MINIMIZED:
+                delay = 0.5
+            case _:
+                delay = 0.1
         await self.redraw("Closing window", delay=delay)
 
     def close(self):
@@ -134,8 +134,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
         )
 
     def _setup_alert_dialog_result(self, dialog, result, pre_close_test_method=None):
-        # Install an overridden show method that invokes the original,
-        # but then closes the open dialog.
+        # Install an overridden show method that invokes the original, but then closes
+        # the open dialog.
         orig_show = dialog._impl.show
 
         def automated_show(host_window, future):
@@ -150,8 +150,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
                         returnCode=result,
                     )
                 except Exception as e:
-                    # An error occurred closing the dialog; that means the dialog
-                    # isn't what as expected, so record that in the future.
+                    # An error occurred closing the dialog; that means the dialog isn't
+                    # what as expected, so record that in the future.
                     future.set_exception(e)
 
         dialog._impl.show = automated_show

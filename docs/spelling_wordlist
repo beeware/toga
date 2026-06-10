@@ -61,6 +61,7 @@ DrawingAction
 elementaryOS
 elementaryOS's
 Embedder
+FastAPI
 Flatpak
 Flexbox
 fosstodon
@@ -78,6 +79,7 @@ GStreamer
 GTK
 GTK's
 Helvetica
+HiDPI
 HIG
 HSL
 HSLA
@@ -91,6 +93,7 @@ ImageViews
 initializer
 instantiation
 iOS
+iPadOS
 iterable
 KDE
 KWin
@@ -152,6 +155,7 @@ radiusy
 README
 Refactored
 rehint
+rehints
 rehinted
 RemoteCommand
 Ren
