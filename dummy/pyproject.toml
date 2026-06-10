@@ -107,6 +107,9 @@ WebView = "toga_dummy.widgets.webview:WebView"
 MainWindow = "toga_dummy.window:MainWindow"
 Window = "toga_dummy.window:Window"
 
+# Scaffold
+Scaffold = "toga_dummy.scaffold:Scaffold"
+
 # Widget is also required for testing purposes
 # Real backends shouldn't expose Widget.
 Widget = "toga_dummy.widgets.base:Widget"

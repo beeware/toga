@@ -13,12 +13,13 @@ def test_create(app):
 
     assert window._impl.interface == window
     assert_action_performed(window, "create MainWindow")
+    assert_action_performed(window.scaffold, "show toolbar")
 
     # This is a secondary main window; app menus have not been created, but
     # window menus and toolbars have been.
     assert_action_not_performed(window, "create App menus")
     assert_action_performed(window, "create Window menus")
-    assert_action_performed(window, "create toolbar")
+    assert_action_performed(window.scaffold, "create toolbar")
 
     # We can't know what the ID is, but it must be a string.
     assert isinstance(window.id, str)
@@ -37,6 +38,10 @@ def test_create(app):
     # *after* the app has finished initializing; check it has a change handler
     assert len(window.toolbar) == 0
     assert window.toolbar.on_change is not None
+
+    # Resetting content shows toolbar on new scaffold.
+    window.content = toga.Box()
+    assert_action_performed(window.scaffold, "show toolbar")
 
 
 def test_create_explicit(app):
@@ -68,7 +73,7 @@ def test_create_explicit(app):
     # window menus and toolbars have been.
     assert_action_not_performed(window, "create App menus")
     assert_action_performed(window, "create Window menus")
-    assert_action_performed(window, "create toolbar")
+    assert_action_performed(window.scaffold, "create toolbar")
 
     assert window.id == "my-window"
     assert window.title == "My Window"

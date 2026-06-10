@@ -13,14 +13,15 @@ from toga.constants import WindowState
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_factory
+from toga.scaffold import BaseScaffold, Scaffold
 from toga.types import Position, Size
+from toga.widgets.base import Widget
 
 if TYPE_CHECKING:
     from toga.app import App
     from toga.images import ImageT
     from toga.screens import Screen
     from toga.types import PositionT, SizeT
-    from toga.widgets.base import Widget
 
 _window_count = -1
 
@@ -216,7 +217,7 @@ class Window:
         on_show: OnShowHandler | None = None,
         on_hide: OnHideHandler | None = None,
         on_resize: OnResizeHandler | None = None,
-        content: Widget | None = None,
+        content: Widget | BaseScaffold | None = None,
     ) -> None:
         """Create a new Window.
 
@@ -238,7 +239,8 @@ class Window:
 
         self._id = str(id if id else identifier(self))
         self._impl: Any = None
-        self._content: Widget | None = None
+        self._content: Widget | BaseScaffold | None = None
+        self._scaffold: BaseScaffold | None = None
         self._closed = False
 
         self._resizable = resizable
@@ -276,9 +278,7 @@ class Window:
         # Add the window to the app
         App.app.windows.add(self)
 
-        # If content has been provided, set it
-        if content:
-            self.content = content
+        self.content = content
 
         # Set up the event handlers on the interface (overrides the no-op defaults
         # installed above with the user-supplied handlers).
@@ -426,31 +426,45 @@ class Window:
     ######################################################################
 
     @property
-    def content(self) -> Widget | None:
+    def scaffold(self) -> BaseScaffold | None:
+        """The scaffold of the window, if any.  This will always be in scaffold form,
+        TODO docs: clarify the relationship between scaffold and content, and
+        how content can be a scaffold."""
+        return self._scaffold
+
+    @property
+    def content(self) -> Widget | BaseScaffold | None:
         """Content of the window. On setting, the content is added to the same app as
         the window."""
         return self._content
 
     @content.setter
-    def content(self, widget: Widget) -> None:
-        # Set window of old content to None
-        if self._content:
-            self._content.window = None
+    def content(self, content: Widget | BaseScaffold) -> None:
+        # Set window of old scaffold to None
+        if self._scaffold:
+            self._scaffold.window = None
+            self._scaffold.app = None
 
-        # Assign the content widget to the same app as the window.
-        widget.app = self.app
+        if isinstance(content, Widget) or content is None:
+            scaffold = Scaffold(content=content)
+        else:
+            scaffold = content
 
-        # Assign the content widget to the window.
-        widget.window = self
+        # Assign the scaffold to the same app as the window.
+        scaffold.app = self.app
 
-        # Track our new content
-        self._content = widget
+        # Assign the scaffold to the window.
+        scaffold.window = self
 
-        # Manifest the widget
-        self._impl.set_content(widget._impl)
+        # Track our new content and scaffold
+        self._content = content
+        self._scaffold = scaffold
 
-        # Update the geometry of the widget
-        widget.refresh()
+        # Manifest the scaffold
+        self._impl.set_scaffold(scaffold._impl)
+
+        # Update the geometry of the scaffold
+        scaffold.refresh()
 
     @property
     def widgets(self) -> FilteredWidgetRegistry:
@@ -480,8 +494,7 @@ class Window:
             raise RuntimeError(f"Cannot resize window while in {self.state}")
         elif self.size != size:
             self._impl.set_size(size)
-            if self.content:
-                self.content.refresh()
+            self.scaffold.refresh()
 
     ######################################################################
     # Window position

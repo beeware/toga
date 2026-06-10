@@ -10,47 +10,11 @@ from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 
 
-class Container:
-    def __init__(self, content=None):
-        self.baseline_dpi = 96
-        self.dpi = 96
-
-        # Prime the underlying storage before using setter
-        self._content = None
-        self.content = content
-
-    @property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, value):
-        if self._content:
-            self._content.container = None
-
-        self._content = value
-        if value:
-            value.container = self
-
-    @property
-    def width(self):
-        return self.content.get_size().width
-
-    @property
-    def height(self):
-        return self.content.get_size().height
-
-    def refreshed(self):
-        if self.content:
-            self.content.refresh()
-
-
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
         self._action(f"create {self.__class__.__name__}")
         self.interface = interface
-        self.container = Container()
         self.dialog_responses = {}
 
         self.set_title(title)
@@ -62,6 +26,10 @@ class Window(LoggedObject):
         self._size = size if size else Size(640, 480)
         self._state = WindowState.NORMAL
         self._visible = False
+
+    @property
+    def scaffold(self):
+        return self.interface.scaffold._impl
 
     ######################################################################
     # Window properties
@@ -93,10 +61,15 @@ class Window(LoggedObject):
     # Window content and resources
     ######################################################################
 
-    def set_content(self, widget):
-        self.container.content = widget
-        self._action("set content", widget=widget)
-        self._set_value("content", widget)
+    def set_scaffold(self, scaffold):
+        self.native_content = scaffold.native_content
+        self.manage_scaffold_toolbar()
+        self._action("set scaffold", scaffold=scaffold)
+        self._set_value("scaffold", scaffold)
+
+    def manage_scaffold_toolbar(self):
+        self.scaffold.clear_toolbar()
+        self.scaffold.hide_toolbar()
 
     ######################################################################
     # Window size
@@ -192,4 +165,9 @@ class MainWindow(Window):
         self._action("create Window menus")
 
     def create_toolbar(self):
-        self._action("create toolbar")
+        self.scaffold.create_toolbar()
+
+    def manage_scaffold_toolbar(self):
+        self.scaffold.clear_toolbar()
+        self.scaffold.show_toolbar()
+        self.scaffold.create_toolbar()
