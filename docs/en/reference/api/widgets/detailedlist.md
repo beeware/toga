@@ -59,12 +59,12 @@ If the value provided by the title or subtitle accessor is `None`, or the access
 
 The icon accessor should return an [`Icon`][toga.Icon]. If it returns `None`, or the accessor isn't defined, then no icon will be displayed, but space for the icon will remain in the layout.
 
-Items in a DetailedList will respond to a primary and secondary action if the `on_primary_action` and `on_secondary_action` handlers are set:
+Items in a DetailedList will respond to a primary and secondary action if the `on_primary_action` and `on_secondary_action` handlers are set. Each platform may support one or more methods of interaction with actions, as detailed below:
 
 * On **Android**, a long press displays a menu with the primary and secondary actions.
-* On **iOS**, swiping left triggers the primary action, and swiping right triggers the secondary action.
+* On **iOS** and **macOS**, swiping left triggers the primary action, and swiping right triggers the secondary action.
 * On **GTK**, a right click displays buttons for the primary and secondary actions.
-* On **macOS** and **Windows**, a right click displays a context menu with the primary and secondary actions.
+* On **macOS**, **Windows**, and **Qt**, a right click displays a context menu with the primary and secondary actions.
 * On **Qt**, the primary and secondary actions are displayed as standalone buttons.
 
 By default, the primary and secondary action will be labeled as "Delete" and "Action", respectively. These names can be overridden by providing a `primary_action` and `secondary_action` argument when constructing the DetailedList. Although the primary action is labeled "Delete" by default, the DetailedList will not perform any data deletion as part of the UI interaction. It is the responsibility of the application to implement any data deletion behavior as part of the `on_primary_action` handler.
@@ -74,11 +74,11 @@ The DetailedList as a whole will also respond to a refresh UI action if an `on_r
 * On **Android**, **iOS** and **macOS**, pulling down at the top of the list triggers a refresh.
 * On **Qt**, a button bar displays a refresh button.
 * On **GTK**, a floating refresh button is displayed when scrolled to the top.
-* On **Windows**, a right click displays a context menu with a refresh option.
+* On **macOS**, **Windows**, and **Qt**, a right click displays a context menu with a refresh option.
 
 ## Notes
 
-* The iOS Human Interface Guidelines differentiate between "Normal" and "Destructive" actions on a row. Toga will interpret any action with a name of "Delete" or "Remove" as destructive, and will render the action appropriately.
+* The Apple Human Interface Guidelines differentiate between "Normal" and "Destructive" actions on a row. Toga will interpret any action with a name of "Delete" or "Remove" as destructive, and will render the action appropriately.
 * Using DetailedList on Android requires the AndroidX SwipeRefreshLayout widget in your project's Gradle dependencies. Ensure your app declares a dependency on `androidx.swiperefreshlayout:swiperefreshlayout:1.1.0` or later.
 
 ## Reference

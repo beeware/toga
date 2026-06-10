@@ -1,18 +1,27 @@
+from ctypes import c_void_p
+
 from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
     NSFocusRingType,
-    NSIndexSet,
+    NSImage,
     NSMenu,
+    NSMenuItem,
     NSTableColumn,
+    NSTableRowActionEdge,
     NSTableView,
     NSTableViewColumnAutoresizingStyle,
+    NSTableViewRowAction,
+    NSTableViewRowActionStyle,
 )
 from toga_cocoa.widgets.base import Widget
-from toga_cocoa.widgets.internal.cells import TogaDetailedCell
-from toga_cocoa.widgets.internal.data import TogaData
+from toga_cocoa.widgets.internal.cells import TogaDetailedView
 from toga_cocoa.widgets.internal.refresh import RefreshableScrollView
+
+REFRESH_IMAGE = NSImage.imageWithSystemSymbolName_accessibilityDescription_(
+    "arrow.clockwise", "refresh"
+)
 
 
 class TogaList(NSTableView):
@@ -20,47 +29,47 @@ class TogaList(NSTableView):
     impl = objc_property(object, weak=True)
 
     @objc_method
-    def didCloseMenu_withEvent_(self, menu, event) -> None:
-        # When the menu closes, drop the reference to the menu object.
+    def menuDidClose_(self, menu) -> None:
         self.impl._popup = None
 
     @objc_method
-    def menuForEvent_(self, event):
-        if self.impl.primary_action_enabled or self.impl.secondary_action_enabled:
-            # Find the row under the mouse click
-            mousePoint = self.convertPoint(event.locationInWindow, fromView=None)
-            row = self.rowAtPoint(mousePoint)
-
-            # Ensure the row is selected.
-            self.selectRowIndexes(
-                NSIndexSet.indexSetWithIndex(row),
-                byExtendingSelection=False,
+    def menu(self):
+        # Create a popup menu to display the possible actions.
+        popup = NSMenu.alloc().initWithTitle("popup")
+        if self.clickedRow != -1 and self.impl.primary_action_enabled:
+            primary_action_item = popup.addItemWithTitle(
+                self.interface._primary_action,
+                action=SEL("primaryActionOnRow:"),
+                keyEquivalent="",
             )
+            primary_action_item.tag = self.clickedRow
 
-            # Create a popup menu to display the possible actions.
-            popup = NSMenu.alloc().initWithTitle("popup")
-            if self.impl.primary_action_enabled:
-                primary_action_item = popup.addItemWithTitle(
-                    self.interface._primary_action,
-                    action=SEL("primaryActionOnRow:"),
-                    keyEquivalent="",
-                )
-                primary_action_item.tag = row
+        if self.clickedRow != -1 and self.impl.secondary_action_enabled:
+            secondary_action_item = popup.addItemWithTitle(
+                self.interface._secondary_action,
+                action=SEL("secondaryActionOnRow:"),
+                keyEquivalent="",
+            )
+            secondary_action_item.tag = self.clickedRow
 
-            if self.impl.secondary_action_enabled:
-                secondary_action_item = popup.addItemWithTitle(
-                    self.interface._secondary_action,
-                    action=SEL("secondaryActionOnRow:"),
-                    keyEquivalent="",
-                )
-                secondary_action_item.tag = row
+        if self.impl.refresh_enabled:
+            popup.addItem(NSMenuItem.separatorItem())
+            refresh_action_item = popup.addItemWithTitle(
+                "Refresh",
+                action=SEL("onInterfaceRefresh:"),
+                keyEquivalent="",
+            )
+            refresh_action_item.image = REFRESH_IMAGE
+            refresh_action_item.tag = self.clickedRow
 
-        else:
-            popup = None
-
-        # Preserve a Python reference to the popup for testing purposes.
+        # Preserve reference to popup for testing purposes.
         self.impl._popup = popup
+        popup.delegate = self
         return popup
+
+    @objc_method
+    def onInterfaceRefresh_(self, menuitem):
+        self.interface.on_refresh()
 
     @objc_method
     def primaryActionOnRow_(self, menuitem):
@@ -78,14 +87,66 @@ class TogaList(NSTableView):
         return len(self.interface.data) if self.interface.data else 0
 
     @objc_method
-    def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
-        value = self.interface.data[row]
-        try:
-            data = value._impl
-        except AttributeError:
-            data = TogaData.alloc().init()
-            value._impl = data
+    def tableView_rowActionsForRow_edge_(self, table, row: int, edge: int):
+        # The native API needs a block, not a selector, hence the redefinition of a
+        # handler instead of using primaryActionOnRow: and secondaryActionOnRow:.
+        # The handlers are being preserved for testing purposes, as AppKit doesn't give
+        # us a way to get the handler back from the NSTableViewRowAction.
+        if edge == NSTableRowActionEdge.Trailing:
 
+            def handler(action: c_void_p, index: int) -> None:
+                row = self.interface.data[index]
+                self.interface.on_primary_action(row=row)
+
+            self.impl.trailing_handler = handler
+        # The elif is defensive; there should not be any other edges in practice.
+        elif edge == NSTableRowActionEdge.Leading:  # pragma: no branch
+
+            def handler(action: c_void_p, index: int) -> None:
+                row = self.interface.data[index]
+                self.interface.on_secondary_action(row=row)
+
+            self.impl.leading_handler = handler
+
+        if edge == NSTableRowActionEdge.Trailing and self.impl.primary_action_enabled:
+            style = (
+                NSTableViewRowActionStyle.Default
+                if self.interface._primary_action not in self.impl.DESTRUCTIVE_ACTIONS
+                else NSTableViewRowActionStyle.Destructive
+            )
+            return [
+                NSTableViewRowAction.rowActionWithStyle_title_handler_(
+                    style, self.interface._primary_action, handler
+                )
+            ]
+        if edge == NSTableRowActionEdge.Leading and self.impl.secondary_action_enabled:
+            style = (
+                NSTableViewRowActionStyle.Default
+                if self.interface._secondary_action not in self.impl.DESTRUCTIVE_ACTIONS
+                else NSTableViewRowActionStyle.Destructive
+            )
+            return [
+                NSTableViewRowAction.rowActionWithStyle_title_handler_(
+                    style, self.interface._secondary_action, handler
+                )
+            ]
+        return []
+
+    @objc_method
+    def tableView_viewForTableColumn_row_(self, table, column, row: int):
+        identifier = "DetailedCell"
+
+        view = table.makeViewWithIdentifier_owner_(
+            identifier,
+            self,
+        )
+
+        if view is None:
+            view = TogaDetailedView.alloc().init()
+            view.setup()
+            view.setIdentifier(identifier)
+
+        value = self.interface.data[row]
         try:
             title = getattr(value, self.interface.accessors[0])
             if title is not None:
@@ -109,13 +170,11 @@ class TogaList(NSTableView):
         except AttributeError:
             icon = None
 
-        data.attrs = {
-            "title": title,
-            "subtitle": subtitle,
-            "icon": icon,
-        }
+        view.setTitle(title)
+        view.setSubtitle(subtitle)
+        view.setIcon(icon)
 
-        return data
+        return view
 
     # TableDelegate methods
     @objc_method
@@ -134,6 +193,8 @@ class TogaList(NSTableView):
 
 
 class DetailedList(Widget):
+    DESTRUCTIVE_ACTIONS = {"Delete", "Remove"}
+
     def create(self):
         # Create a List, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
@@ -151,6 +212,7 @@ class DetailedList(Widget):
         # Disable all actions by default.
         self.primary_action_enabled = False
         self.secondary_action_enabled = False
+        self.refresh_enabled = False
 
         self.native = RefreshableScrollView.alloc().initWithDocument(
             self.native_detailedlist
@@ -162,9 +224,6 @@ class DetailedList(Widget):
         column = NSTableColumn.alloc().initWithIdentifier("data")
         self.native_detailedlist.addTableColumn(column)
         self.columns = [column]
-
-        cell = TogaDetailedCell.alloc().init()
-        column.dataCell = cell
 
         # Hide the column header.
         self.native_detailedlist.headerView = None
@@ -247,6 +306,7 @@ class DetailedList(Widget):
         self.native_detailedlist.reloadData()
 
     def set_refresh_enabled(self, enabled):
+        self.refresh_enabled = enabled
         self.native.setRefreshEnabled(enabled)
 
     def set_primary_action_enabled(self, enabled):
