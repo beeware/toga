@@ -321,16 +321,38 @@ class Context:
 
     # Text
 
-    def write_text(self, text, x, y, font, baseline, line_height):
+    def fill_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            "fill",
+            (FillRule.NONZERO,),
+        )
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(text, x, y, font, baseline, line_height, "stroke", ())
+
+    def _fill_or_stroke_text(
+        self,
+        text,
+        x,
+        y,
+        font,
+        baseline,
+        line_height,
+        method,
+        args,
+    ):
         # Writing text should not affect current path, so save current paths
         current_paths = self.paths
         # new path for text
         self.begin_path()
         self._text_path(text, x, y, font, baseline, line_height)
-        if self.in_fill:
-            self.fill(FillRule.NONZERO)
-        if self.in_stroke:
-            self.stroke()
+        getattr(self, method)(*args)
         # restore previous current paths - this is a bit hacky
         self.paths = current_paths
 
@@ -339,15 +361,16 @@ class Context:
         scaled_line_height = self.impl._line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
 
-        if baseline == Baseline.TOP:
-            top = y
-        elif baseline == Baseline.MIDDLE:
-            top = y - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y - font.metric("CellAscent")
+        match baseline:
+            case Baseline.TOP:
+                top = y
+            case Baseline.MIDDLE:
+                top = y - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y - total_height
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y - font.metric("CellAscent")
 
         for line_num, line in enumerate(lines):
             self.current_path.AddString(

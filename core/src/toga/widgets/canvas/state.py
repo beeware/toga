@@ -20,6 +20,7 @@ from .drawingaction import (
     DrawImage,
     DrawingAction,
     Ellipse,
+    FillText,
     LineTo,
     MoveTo,
     QuadraticCurveTo,
@@ -28,6 +29,7 @@ from .drawingaction import (
     Rotate,
     RoundRect,
     Scale,
+    StrokeText,
     Translate,
     WriteText,
     color_property,
@@ -386,7 +388,7 @@ class DrawingActionDispatch(ABC):
     # Text drawing
     ###########################################################################
 
-    def write_text(
+    def fill_text(
         self,
         text: str,
         x: float = 0.0,
@@ -394,12 +396,8 @@ class DrawingActionDispatch(ABC):
         font: Font | None = None,
         baseline: Baseline = Baseline.ALPHABETIC,
         line_height: float | None = None,
-    ) -> WriteText:
-        """Write text at a given position.
-
-        Unlike HTML canvas's `fill_text` and `stroke_text`, Toga currently has one
-        method; whether it strokes and/or fills is determined by whether a stroke
-        and/or fill context manager is currently open.
+    ) -> FillText:
+        """Write text at a given position, filled in with the current fill style.
 
         :param text: The text to draw. Newlines will cause line breaks, but long lines
             will not be wrapped.
@@ -409,13 +407,40 @@ class DrawingActionDispatch(ABC):
         :param baseline: Alignment of text relative to the Y coordinate.
         :param line_height: Height of the line box as a multiple of the font size
             when multiple lines are present.
-        :returns: The `WriteText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+        :returns: The `FillText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        write_text = WriteText(text, x, y, font, baseline, line_height)
-        self._add_to_target(write_text)
+        fill_text = FillText(text, x, y, font, baseline, line_height)
+        self._add_to_target(fill_text)
         self._redraw_with_warning_if_state()
-        return write_text
+        return fill_text
+
+    def stroke_text(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+        line_height: float | None = None,
+    ) -> StrokeText:
+        """Write text at a given position, outlined with the current stroke settings.
+
+        :param text: The text to draw. Newlines will cause line breaks, but long lines
+            will not be wrapped.
+        :param x: The X coordinate of the text's left edge.
+        :param y: The Y coordinate: its meaning depends on `baseline`.
+        :param font: The font in which to draw the text. The default is the system font.
+        :param baseline: Alignment of text relative to the Y coordinate.
+        :param line_height: Height of the line box as a multiple of the font size
+            when multiple lines are present.
+        :returns: The `StrokeText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        stroke_text = StrokeText(text, x, y, font, baseline, line_height)
+        self._add_to_target(stroke_text)
+        self._redraw_with_warning_if_state()
+        return stroke_text
 
     ###########################################################################
     # Bitmap drawing
@@ -527,6 +552,35 @@ class DrawingActionDispatch(ABC):
         self._add_to_target(state)
         self._redraw_with_warning_if_state()
         return state
+
+    ######################################################################
+    # 2026-05: Backwards compatibility for <= 0.5.4
+    ######################################################################
+
+    def write_text(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+        line_height: float | None = None,
+    ) -> WriteText:
+        warnings.warn(
+            (
+                "The write_text() method is deprecated. Use fill_text() and/or "
+                "stroke_text() instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        with warnings.catch_warnings():
+            # Suppress the warning from creating the deprecated DrawingAction.
+            warnings.simplefilter("ignore", DeprecationWarning)
+            write_text = WriteText(text, x, y, font, baseline, line_height)
+        self._add_to_target(write_text)
+        self._redraw_with_warning_if_state()
+        return write_text
 
     ######################################################################
     # 2026-02: Backwards compatibility for <= 0.5.3

@@ -8,6 +8,7 @@ from .drawingaction import (
     DrawImage,
     DrawingAction,
     Ellipse,
+    FillText,
     LineTo,
     MoveTo,
     QuadraticCurveTo,
@@ -22,6 +23,7 @@ from .drawingaction import (
     SetLineDash,
     SetLineWidth,
     SetStrokeStyle,
+    StrokeText,
     Translate,
     WriteText,
 )
@@ -80,6 +82,8 @@ __all__ = [
     "RoundRect",
     "Scale",
     "Translate",
+    "FillText",
+    "StrokeText",
     "WriteText",
     # States
     "BaseState",

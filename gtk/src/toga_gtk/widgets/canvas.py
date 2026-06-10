@@ -176,16 +176,39 @@ class Context:
         self.native.set_matrix(self.original_transform_matrix)
 
     # Text
-    def write_text(self, text, x, y, font, baseline, line_height):
+    def fill_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            "fill",
+            (FillRule.NONZERO,),
+        )
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(text, x, y, font, baseline, line_height, "stroke", ())
+
+    def _fill_or_stroke_text(
+        self,
+        text,
+        x,
+        y,
+        font,
+        baseline,
+        line_height,
+        method,
+        args,
+    ):
         # Writing text should not affect current path, so save current path
         current_path = self.native.copy_path()
         # New path for text
         self.native.new_path()
         self._text_path(text, x, y, font, baseline, line_height)
-        if self.in_fill:
-            self.fill(FillRule.NONZERO)
-        if self.in_stroke:
-            self.stroke()
+        # Draw
+        getattr(self, method)(*args)
         # Restore previous path
         self.native.new_path()
         self.native.append_path(current_path)
@@ -198,15 +221,16 @@ class Context:
         lines = text.splitlines()
         total_height = metrics.line_height * len(lines)
 
-        if baseline == Baseline.TOP:
-            top = y + metrics.ascent
-        elif baseline == Baseline.MIDDLE:
-            top = y + metrics.ascent - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y + metrics.ascent - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y
+        match baseline:
+            case Baseline.TOP:
+                top = y + metrics.ascent
+            case Baseline.MIDDLE:
+                top = y + metrics.ascent - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y + metrics.ascent - total_height
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y
 
         layout = Pango.Layout(pango_context)
         for line_num, line in enumerate(lines):
