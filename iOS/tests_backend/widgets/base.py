@@ -1,7 +1,7 @@
 import pytest
 from rubicon.objc import ObjCClass
 
-from toga_iOS.libs import UIApplication
+from toga_iOS.libs import UIApplication, supports_liquid_glass
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
@@ -176,3 +176,7 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     async def redo(self):
         pytest.skip("Redo not supported on this platform")
+
+    def assert_system_effects_top(self, expected, root):
+        expected = expected and (root or supports_liquid_glass)
+        assert (self.native.frame.origin.y == 0) == expected

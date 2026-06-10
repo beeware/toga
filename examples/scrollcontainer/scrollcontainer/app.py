@@ -19,8 +19,6 @@ class ScrollContainerApp(toga.App):
     TOGGLE_CHUNK = 10
 
     def startup(self):
-        main_box = toga.Box(direction=COLUMN)
-
         self.hswitch = toga.Switch(
             "Horizontal",
             value=False,
@@ -46,10 +44,6 @@ class ScrollContainerApp(toga.App):
             value=False,
             on_change=lambda widget: self.update_content(),
         )
-        main_box.add(
-            toga.Box(children=[self.hswitch, self.vswitch]),
-            toga.Box(children=[self.wide_switch, self.tall_switch, self.nested_switch]),
-        )
 
         self.inner_box = toga.Box(
             direction=COLUMN, margin=10, background_color="yellow"
@@ -59,16 +53,23 @@ class ScrollContainerApp(toga.App):
             vertical=self.vswitch.value,
             on_scroll=self.on_scroll,
             flex=1,
-            margin=10,
             background_color="pink",
         )
+        self.button = toga.Button("Toggle Controls", on_press=self.on_control_press)
+        self.button2 = toga.Button("Update Scroll Params", on_press=self.on_scroll)
         self.update_content()
 
         self.scroller.content = self.inner_box
-        main_box.add(self.scroller)
+
+        self.main_box = toga.Box(direction=COLUMN, margin_bottom=10)
+        self.main_box.add(self.scroller)
+        self.main_box.add(
+            toga.Box(children=[self.hswitch, self.vswitch]),
+            toga.Box(children=[self.wide_switch, self.tall_switch, self.nested_switch]),
+        )
 
         self.main_window = toga.MainWindow(size=(400, 700))
-        self.main_window.content = main_box
+        self.main_window.content = self.main_box
         self.main_window.show()
 
         self.commands.add(
@@ -102,6 +103,20 @@ class ScrollContainerApp(toga.App):
             ),
         )
 
+    def on_control_press(self, widget):
+        if self.main_window.content != self.scroller:
+            self.main_box.clear()
+            self.main_window.content = self.scroller
+        else:
+            self.main_window.content = self.main_box
+            self.main_box.add(self.scroller)
+            self.main_box.add(
+                toga.Box(children=[self.hswitch, self.vswitch]),
+                toga.Box(
+                    children=[self.wide_switch, self.tall_switch, self.nested_switch]
+                ),
+            )
+
     def handle_hscrolling(self, widget):
         self.scroller.horizontal = self.hswitch.value
 
@@ -110,6 +125,8 @@ class ScrollContainerApp(toga.App):
 
     def update_content(self):
         self.inner_box.clear()
+        self.inner_box.add(self.button)
+        self.inner_box.add(self.button2)
 
         width = 10 if self.wide_switch.value else 2
         height = 30 if self.tall_switch.value else 2
@@ -117,17 +134,21 @@ class ScrollContainerApp(toga.App):
             label_text = f"Label {x}"
             if self.nested_switch.value:
                 self.inner_box.add(
-                    toga.ScrollContainer(content=Item(width, label_text)),
+                    toga.ScrollContainer(
+                        content=Item(width, label_text), vertical=False
+                    ),
                 )
             else:
                 self.inner_box.add(Item(width, label_text))
 
-    def on_scroll(self, scroller):
+    def on_scroll(self, sender):
         self.hswitch.text = "Horizontal " + (
-            f"({scroller.horizontal_position} / {scroller.max_horizontal_position})"
+            f"({self.scroller.horizontal_position} / "
+            f"{self.scroller.max_horizontal_position})"
         )
         self.vswitch.text = "Vertical " + (
-            f"({scroller.vertical_position} / {scroller.max_vertical_position})"
+            f"({self.scroller.vertical_position} / "
+            f"{self.scroller.max_vertical_position})"
         )
 
     def toggle_up(self, widget):

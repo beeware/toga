@@ -8,14 +8,15 @@ from toga.style.pack import Pack
 
 from .conftest import build_cleanup_test, skip_on_backends
 from .properties import (  # noqa: F401
+    build_test_system_effects_simple,
     test_background_color as check_background_color,
     test_background_color_reset as check_background_color_reset,
     test_color as check_color,
     test_color_reset as check_color_reset,
     test_enable_noop,
-    test_flex_widget_size,
     test_focus_noop,
 )
+from .test_scrollcontainer import test_flex_widget_size  # noqa: F401
 
 
 @pytest.fixture
@@ -132,6 +133,7 @@ async def test_color_reset(widget, probe):
 
 
 test_cleanup = build_cleanup_test(toga.DetailedList)
+test_system_effects_simple = build_test_system_effects_simple()
 
 
 async def test_scroll(widget, probe):

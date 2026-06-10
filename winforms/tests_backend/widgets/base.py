@@ -103,3 +103,6 @@ class SimpleProbe(BaseProbe):
 
     async def redo(self):
         pytest.skip("Redo not supported on this platform")
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("WinForms strictly separates titlebar and content")

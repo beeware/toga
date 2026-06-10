@@ -212,6 +212,14 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
 
 
 class WebView(Widget):
+    @property
+    def scroll_vertical(self):
+        return True
+
+    # @property
+    # def scroll_horizontal(self):
+    #     return True
+
     def create(self):
         self.native = TogaWebView.alloc().init()
         self.native.interface = self.interface

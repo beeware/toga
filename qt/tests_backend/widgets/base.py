@@ -103,3 +103,6 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     async def redo(self):
         await self.type_character("z", ctrl=True, shift=True)
+
+    def assert_system_effects_top(self, expected, root):
+        pytest.xfail("Qt strictly separates titlebar and content")

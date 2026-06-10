@@ -9,9 +9,7 @@ import toga
 from toga.style import Pack
 
 from .conftest import build_cleanup_test, safe_create
-from .properties import (  # noqa: F401
-    test_flex_widget_size,
-)
+from .test_scrollcontainer import test_flex_widget_size  # noqa: F401
 
 # MapVierw can't be given focus on mobile
 if toga.platform.current_platform in {"android", "iOS"}:
@@ -19,6 +17,7 @@ if toga.platform.current_platform in {"android", "iOS"}:
 else:
     from .properties import test_focus  # noqa: F401
 
+from .properties import build_test_system_effects_simple  # noqa: F401
 
 # These timeouts are loose because CI can be very slow, especially on mobile.
 WINDOWS_INIT_TIMEOUT = 60
@@ -60,6 +59,7 @@ async def widget(on_select):
 
 
 test_cleanup = build_cleanup_test(toga.MapView)
+test_system_effects_simple = build_test_system_effects_simple()
 
 
 # The next two tests fail about 75% of the time in the macOS x86_64 CI configuration.
