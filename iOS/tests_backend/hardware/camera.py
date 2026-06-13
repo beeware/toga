@@ -46,14 +46,12 @@ class CameraProbe(AppProbe):
         self._mock_AVCaptureDevice.authorizationStatusForMediaType = _mock_auth_status
 
         def _mock_request_access(media_type, completionHandler):
-            # Fire completion handler
             try:
                 self._mock_permissions[str(media_type)] = abs(
                     self._mock_permissions[str(media_type)]
                 )
                 result = bool(self._mock_permissions[str(media_type)])
             except KeyError:
-                # If there's no explicit permission, it's a denial
                 self._mock_permissions[str(media_type)] = 0
                 result = False
             completionHandler.func(result)
@@ -92,6 +90,83 @@ class CameraProbe(AppProbe):
             iOS, "UIImagePickerController", self._mock_UIImagePickerController
         )
 
+        # Mock AVCaptureSession for scanning
+        self._mock_session = Mock()
+        self._mock_session.running.return_value = False
+        self._mock_AVCaptureSession = Mock()
+        self._mock_AVCaptureSession.new.return_value = None
+
+        def _session_alloc_init():
+            return self._mock_session
+
+        self._mock_AVCaptureSession.alloc = Mock()
+        self._mock_AVCaptureSession.alloc.init = _session_alloc_init
+        monkeypatch.setattr(iOS, "AVCaptureSession", self._mock_AVCaptureSession)
+
+        # Mock AVCaptureDeviceInput
+        self._mock_AVCaptureDeviceInput = Mock()
+        monkeypatch.setattr(
+            iOS, "AVCaptureDeviceInput", self._mock_AVCaptureDeviceInput
+        )
+
+        # Mock AVCaptureMetadataOutput
+        self._mock_metadata_output = Mock()
+        self._mock_metadata_output.isKindOfClass_.return_value = True
+        self._mock_AVCaptureMetadataOutput = Mock()
+        self._mock_AVCaptureMetadataOutput.alloc = Mock()
+        self._mock_AVCaptureMetadataOutput.alloc.init.return_value = (
+            self._mock_metadata_output
+        )
+        monkeypatch.setattr(
+            iOS, "AVCaptureMetadataOutput", self._mock_AVCaptureMetadataOutput
+        )
+
+        # Wire up session.outputs() to return the mocked metadata output
+        self._mock_session.outputs.return_value = [self._mock_metadata_output]
+
+        # Mock AVCaptureVideoPreviewLayer
+        self._mock_preview_layer = Mock()
+        self._mock_AVCaptureVideoPreviewLayer = Mock()
+        self._mock_AVCaptureVideoPreviewLayer.layerWithSession.return_value = (
+            self._mock_preview_layer
+        )
+        monkeypatch.setattr(
+            iOS, "AVCaptureVideoPreviewLayer", self._mock_AVCaptureVideoPreviewLayer
+        )
+
+        # Mock AVMetadataMachineReadableCodeObject
+        self._mock_code_object = Mock()
+        monkeypatch.setattr(
+            iOS,
+            "AVMetadataMachineReadableCodeObject",
+            self._mock_code_object,
+        )
+
+        # Mock the metadata object type constants
+        for const_name in [
+            "AVMetadataObjectTypeQRCode",
+            "AVMetadataObjectTypeCode128Code",
+            "AVMetadataObjectTypeEAN13Code",
+            "AVMetadataObjectTypeEAN8Code",
+            "AVMetadataObjectTypePDF417Code",
+            "AVMetadataObjectTypeAztecCode",
+            "AVMetadataObjectTypeDataMatrixCode",
+        ]:
+            monkeypatch.setattr(iOS, const_name, f"AVMetadataObjectType{const_name}")
+
+        # Mock devicesWithMediaType to return a mock rear camera device
+        self._mock_rear_device = Mock()
+        self._mock_rear_device.position.return_value = 1  # back
+        self._mock_AVCaptureDevice.devicesWithMediaType.return_value = [
+            self._mock_rear_device
+        ]
+
+        # Mock deviceInputWithDevice_error_
+        self._mock_input = Mock()
+        self._mock_AVCaptureDeviceInput.deviceInputWithDevice_error_.return_value = (
+            self._mock_input
+        )
+
         # Load an image that can be used as a sample photo
         self.camera_image = toga.Image("resources/photo.png")
 
@@ -102,6 +177,12 @@ class CameraProbe(AppProbe):
             if not result.future.done():
                 picker.delegate.imagePickerControllerDidCancel(picker)
         except AttributeError:
+            pass
+        # Clean up any active scanner
+        try:
+            if self.app.camera._impl.is_scanning():
+                self.app.camera._impl.stop_scanning()
+        except (NotImplementedError, AttributeError):
             pass
 
     def known_cameras(self):
@@ -116,7 +197,6 @@ class CameraProbe(AppProbe):
         return other
 
     def disconnect_cameras(self):
-        # Set the source type as *not* available and re-create the Camera impl.
         self._mock_UIImagePickerController.isSourceTypeAvailable.return_value = False
         self.app.camera._impl = Camera(self.app)
 
@@ -137,18 +217,15 @@ class CameraProbe(AppProbe):
 
     @property
     def shutter_enabled(self):
-        # Shutter can't be disabled
         return True
 
     async def press_shutter_button(self, photo):
-        # The camera picker was correctly configured
         picker = self.app.camera._impl.native
         assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
         assert (
             picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
         )
 
-        # Fake the result of a successful photo being taken
         picker.delegate.imagePickerController(
             picker,
             didFinishPickingMediaWithInfo={
@@ -161,14 +238,12 @@ class CameraProbe(AppProbe):
         return await photo, picker.cameraDevice, picker.cameraFlashMode
 
     async def cancel_photo(self, photo):
-        # The camera picker was correctly configured
         picker = self.app.camera._impl.native
         assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
         assert (
             picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
         )
 
-        # Fake the result of a cancelling the photo
         picker.delegate.imagePickerControllerDidCancel(picker)
 
         await self.redraw("Photo cancelled", delay=0.5)
@@ -190,3 +265,19 @@ class CameraProbe(AppProbe):
                 UIImagePickerControllerCameraFlashMode.Off: FlashMode.OFF,
             }[actual]
         )
+
+    async def simulate_scan_detection(self, content="scanned_content"):
+        """Simulate a barcode being detected during scanning."""
+        impl = self.app.camera._impl
+        impl._handle_detection(content)
+        await self.redraw("Scan detected", delay=0.1)
+
+    async def cancel_scan(self):
+        """Simulate the user cancelling scanning."""
+        impl = self.app.camera._impl
+        impl.stop_scanning()
+        await self.redraw("Scan cancelled", delay=0.1)
+
+    async def wait_for_scan_start(self):
+        """Wait for the scanner to be initialized."""
+        await self.redraw("Scanner started", delay=0.3)

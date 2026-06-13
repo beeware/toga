@@ -35,6 +35,21 @@ class FillRule(Enum):
 ##########################################################################
 
 
+class BarcodeFormat(Enum):
+    """The types of barcodes that can be detected during scanning."""
+
+    QR = auto()
+    CODE128 = auto()
+    EAN13 = auto()
+    EAN8 = auto()
+    PDF417 = auto()
+    AZTEC = auto()
+    DATA_MATRIX = auto()
+
+    def __str__(self) -> str:
+        return self.name.title()
+
+
 class FlashMode(Enum):
     """The flash mode to use when capturing photos or videos."""
 

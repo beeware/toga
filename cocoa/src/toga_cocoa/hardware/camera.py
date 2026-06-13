@@ -322,3 +322,12 @@ class Camera:
             window.show()
         else:
             raise PermissionError("App does not have permission to take photos")
+
+    def is_scanning(self):
+        raise NotImplementedError("Barcode scanning is not yet implemented on macOS")
+
+    def start_scanning(self, future, device, code_types, continuous):
+        raise NotImplementedError("Barcode scanning is not yet implemented on macOS")
+
+    def stop_scanning(self):
+        raise NotImplementedError("Barcode scanning is not yet implemented on macOS")

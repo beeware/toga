@@ -1,21 +1,51 @@
 import warnings
 
-from rubicon.objc import Block, NSObject, objc_method
+from rubicon.objc import SEL, Block, NSObject, objc_method
 
 import toga
-from toga.constants import FlashMode
-
-# for classes that need to be monkeypatched for testing
+from toga.constants import BarcodeFormat, FlashMode
 from toga_iOS import libs as iOS
 from toga_iOS.libs import (
     AVAuthorizationStatus,
+    AVCaptureDevice,
+    AVCaptureDeviceInput,
+    AVCaptureMetadataOutput,
+    AVCaptureSession,
+    AVCaptureVideoPreviewLayer,
+    AVLayerVideoGravityResizeAspectFill,
     AVMediaTypeVideo,
+    AVMetadataMachineReadableCodeObject,
+    AVMetadataObjectTypeAztecCode,
+    AVMetadataObjectTypeCode128Code,
+    AVMetadataObjectTypeDataMatrixCode,
+    AVMetadataObjectTypeEAN8Code,
+    AVMetadataObjectTypeEAN13Code,
+    AVMetadataObjectTypePDF417Code,
+    AVMetadataObjectTypeQRCode,
     NSBundle,
+    UIButton,
+    UIColor,
+    UIControlEventTouchUpInside,
+    UIControlStateNormal,
     UIImagePickerControllerCameraCaptureMode,
     UIImagePickerControllerCameraDevice,
     UIImagePickerControllerCameraFlashMode,
     UIImagePickerControllerSourceTypeCamera,
+    UIViewController,
 )
+
+BARCODE_FORMAT_MAP = {
+    BarcodeFormat.QR: AVMetadataObjectTypeQRCode,
+    BarcodeFormat.CODE128: AVMetadataObjectTypeCode128Code,
+    BarcodeFormat.EAN13: AVMetadataObjectTypeEAN13Code,
+    BarcodeFormat.EAN8: AVMetadataObjectTypeEAN8Code,
+    BarcodeFormat.PDF417: AVMetadataObjectTypePDF417Code,
+    BarcodeFormat.AZTEC: AVMetadataObjectTypeAztecCode,
+    BarcodeFormat.DATA_MATRIX: AVMetadataObjectTypeDataMatrixCode,
+}
+
+AVCaptureDevicePositionBack = 1
+AVCaptureDevicePositionFront = 2
 
 
 class CameraDevice:
@@ -41,13 +71,6 @@ def native_flash_mode(flash):
     }.get(flash, UIImagePickerControllerCameraFlashMode.Auto)
 
 
-# def native_video_quality(quality):
-#     return {
-#         VideoQuality.HIGH: UIImagePickerControllerQualityType.High,
-#         VideoQuality.LOW: UIImagePickerControllerQualityType.Low,
-#     }.get(quality, UIImagePickerControllerQualityType.Medium)
-
-
 class TogaImagePickerDelegate(NSObject):
     @objc_method
     def imagePickerController_didFinishPickingMediaWithInfo_(
@@ -64,11 +87,35 @@ class TogaImagePickerDelegate(NSObject):
         self.result.set_result(None)
 
 
+class TogaCameraScannerDelegate(NSObject):
+    @objc_method
+    def metadataOutput_didOutputMetadataObjects_fromConnection_(
+        self, output, metadata_objects, connection
+    ) -> None:
+        count = metadata_objects.count()
+        if count > 0:
+            metadata_object = metadata_objects.objectAtIndex(0)
+            if metadata_object.isKindOfClass_(AVMetadataMachineReadableCodeObject):
+                content = str(metadata_object.stringValue())
+                if content:
+                    self.camera._handle_detection(content)
+
+    @objc_method
+    def cancelScanning_(self, sender) -> None:
+        self.camera.stop_scanning()
+
+
 class Camera:
     def __init__(self, interface):
         self.interface = interface
 
         if NSBundle.mainBundle.objectForInfoDictionaryKey("NSCameraUsageDescription"):
+            self._scan_session = None
+            self._scan_preview_controller = None
+            self._scan_delegate = None
+            self._scan_future = None
+            self._scan_continuous = False
+
             if iOS.UIImagePickerController.isSourceTypeAvailable(
                 UIImagePickerControllerSourceTypeCamera
             ):
@@ -79,9 +126,6 @@ class Camera:
             else:
                 self.native = None
         else:  # pragma: no cover
-            # The app doesn't have the NSCameraUsageDescription key (e.g., via
-            # `permission.camera` in Briefcase). No-cover because we can't manufacture
-            # this condition in testing.
             raise RuntimeError(
                 "Application metadata does not declare that the "
                 "app will use the camera."
@@ -102,9 +146,6 @@ class Camera:
         )
 
     def request_permission(self, future):
-        # This block is invoked when the permission is granted; however, permission is
-        # granted from a different (inaccessible) thread, so it isn't picked up by
-        # coverage.
         def permission_complete(result) -> None:
             future.set_result(result)
 
@@ -144,7 +185,6 @@ class Camera:
             warnings.warn("No camera is available", stacklevel=2)
             result.set_result(None)
         elif self.has_permission(allow_unknown=True):
-            # Configure the controller to take a photo
             self.native.cameraCaptureMode = (
                 UIImagePickerControllerCameraCaptureMode.Photo
             )
@@ -157,12 +197,131 @@ class Camera:
             )
             self.native.cameraFlashMode = native_flash_mode(flash)
 
-            # Attach the result to the delegate
             self.native.delegate.result = result
 
-            # Show the pane
             (
                 toga.App.app.current_window._impl.native.rootViewController
             ).presentViewController(self.native, animated=True, completion=None)
         else:
             raise PermissionError("App does not have permission to take photos")
+
+    def is_scanning(self):
+        return self._scan_session is not None
+
+    def start_scanning(self, future, device, code_types, continuous):
+        if not self.has_permission(allow_unknown=True):
+            raise PermissionError("App does not have permission to take photos")
+
+        self._scan_future = future
+        self._scan_continuous = continuous
+
+        session = self._build_scan_session(device, code_types)
+        if session is None:
+            future.set_result(None)
+            return
+
+        self._scan_delegate = TogaCameraScannerDelegate.alloc().init()
+        self._scan_delegate.camera = self
+
+        for output in session.outputs():
+            if output.isKindOfClass_(AVCaptureMetadataOutput):
+                output.setMetadataObjectsDelegate_queue_(self._scan_delegate, None)
+                break
+
+        self._scan_preview_controller = self._build_scan_ui(session)
+        self._scan_session = session
+
+        session.startRunning()
+        self._present_scan_ui(self._scan_preview_controller)
+
+    def _build_scan_session(self, device, code_types):
+        session = AVCaptureSession.alloc().init()
+
+        capture_device = self._resolve_capture_device(device)
+        if capture_device is None:
+            warnings.warn("No camera is available for scanning", stacklevel=2)
+            return None
+
+        device_input = AVCaptureDeviceInput.deviceInputWithDevice_error_(
+            capture_device, None
+        )
+        if not session.canAddInput(device_input):
+            warnings.warn("Cannot add camera input", stacklevel=2)
+            return None
+        session.addInput(device_input)
+
+        metadata_output = AVCaptureMetadataOutput.alloc().init()
+        if not session.canAddOutput(metadata_output):
+            warnings.warn("Cannot add metadata output", stacklevel=2)
+            return None
+        session.addOutput(metadata_output)
+
+        objc_types = [
+            BARCODE_FORMAT_MAP[ct] for ct in code_types if ct in BARCODE_FORMAT_MAP
+        ]
+        if objc_types:
+            metadata_output.setMetadataObjectTypes_(objc_types)
+
+        return session
+
+    def _resolve_capture_device(self, device):
+        position = (
+            AVCaptureDevicePositionFront
+            if device is not None
+            and device._impl.native == UIImagePickerControllerCameraDevice.Front
+            else AVCaptureDevicePositionBack
+        )
+        for dev in AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo):
+            if dev.position() == position:
+                return dev
+        return None
+
+    def _build_scan_ui(self, session):
+        preview_layer = AVCaptureVideoPreviewLayer.layerWithSession(session)
+        preview_layer.setVideoGravity(AVLayerVideoGravityResizeAspectFill)
+
+        controller = UIViewController.alloc().init()
+        controller.view.layer().insertSublayer_atIndex_(preview_layer, 0)
+
+        cancel_button = UIButton.buttonWithType_(0)
+        cancel_button.setTitle_forState_("Cancel", UIControlStateNormal)
+        cancel_button.setTitleColor_forState_(
+            UIColor.whiteColor(), UIControlStateNormal
+        )
+        cancel_button.sizeToFit()
+        cancel_button.addTarget_action_forControlEvents_(
+            self._scan_delegate, SEL("cancelScanning:"), UIControlEventTouchUpInside
+        )
+        cancel_button.setTranslatesAutoresizingMaskIntoConstraints(True)
+        controller.view.addSubview(cancel_button)
+
+        preview_layer.frame = controller.view.bounds
+        return controller
+
+    def _present_scan_ui(self, controller):
+        (
+            toga.App.app.current_window._impl.native.rootViewController
+        ).presentViewController(controller, animated=True, completion=None)
+
+    def stop_scanning(self):
+        if self._scan_session is not None:
+            self._scan_session.stopRunning()
+            self._scan_session = None
+
+        if self._scan_preview_controller is not None:
+            self._scan_preview_controller.dismissViewControllerAnimated(
+                True, completion=None
+            )
+            self._scan_preview_controller = None
+
+        if self._scan_future is not None:
+            self._scan_future.set_result(None)
+            self._scan_future = None
+
+        self._scan_delegate = None
+        self._scan_continuous = False
+
+    def _handle_detection(self, content):
+        self.interface.on_detection(content=content)
+        if not self._scan_continuous:
+            self.stop_scanning()
