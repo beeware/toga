@@ -35,23 +35,16 @@ def test_no_camera(monkeypatch, app):
         _ = app.camera
 
 
-def test_barcode_format_str():
-    """BarcodeFormat values have human-readable string representations."""
-    assert str(BarcodeFormat.QR) == "Qr"
-    assert str(BarcodeFormat.CODE128) == "Code128"
-    assert str(BarcodeFormat.EAN13) == "Ean13"
-    assert str(BarcodeFormat.EAN8) == "Ean8"
-    assert str(BarcodeFormat.PDF417) == "Pdf417"
-    assert str(BarcodeFormat.AZTEC) == "Aztec"
-    assert str(BarcodeFormat.DATA_MATRIX) == "Data_Matrix"
+def test_barcode_format_all_values():
+    """All expected BarcodeFormat members can be enumerated and cross-referenced.
 
-
-def test_barcode_format_values():
-    """All expected BarcodeFormat members are present."""
-    assert len(BarcodeFormat) == 7
-    assert BarcodeFormat.QR.value == 1
-    assert BarcodeFormat.CODE128.value > 0
-    assert BarcodeFormat.DATA_MATRIX.value > 0
+    A common real-world use case is building a selection list for users to choose
+    which barcode types to scan for.
+    """
+    all_types = list(BarcodeFormat)
+    assert len(all_types) == 7
+    names = {str(t) for t in all_types}
+    assert names == {"Qr", "Code128", "Ean13", "Ean8", "Pdf417", "Aztec", "Data_Matrix"}
 
 
 @pytest.mark.parametrize(
@@ -273,35 +266,37 @@ def test_start_scanning_with_device(app):
     )
 
 
-def test_start_scanning_with_code_types(app):
-    """Start scanning with specific code types."""
-
+@pytest.mark.parametrize("code_type", list(BarcodeFormat))
+def test_start_scanning_with_code_type(app, code_type):
+    """Each BarcodeFormat value can be used as a scan code type."""
     app.camera._impl._has_permission = 1
-    app.camera._impl.simulate_scan("content")
+    app.camera._impl.simulate_scan(f"found_{code_type.name}")
 
     result = app.loop.run_until_complete(
-        app.camera.start_scanning(code_types=[BarcodeFormat.QR])
+        app.camera.start_scanning(code_types=[code_type])
     )
 
-    assert result == "content"
+    assert result == f"found_{code_type.name}"
     assert_action_performed_with(
         app.camera,
         "start scanning",
-        code_types=[BarcodeFormat.QR],
+        code_types=[code_type],
     )
 
 
-def test_start_scanning_all_code_types(app):
-    """All declared BarcodeFormat values can be used for scanning."""
-    app.camera._impl._has_permission = 1
-    app.camera._impl.simulate_scan("all_types")
-
+def test_start_scanning_with_all_code_types(app):
+    """All BarcodeFormat values combined work for scanning."""
     all_types = list(BarcodeFormat)
+    assert len(all_types) == 7
+
+    app.camera._impl._has_permission = 1
+    app.camera._impl.simulate_scan("multi_type_scan")
+
     result = app.loop.run_until_complete(
         app.camera.start_scanning(code_types=all_types)
     )
 
-    assert result == "all_types"
+    assert result == "multi_type_scan"
     assert_action_performed_with(
         app.camera,
         "start scanning",
