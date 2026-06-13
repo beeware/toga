@@ -35,6 +35,25 @@ def test_no_camera(monkeypatch, app):
         _ = app.camera
 
 
+def test_barcode_format_str():
+    """BarcodeFormat values have human-readable string representations."""
+    assert str(BarcodeFormat.QR) == "Qr"
+    assert str(BarcodeFormat.CODE128) == "Code128"
+    assert str(BarcodeFormat.EAN13) == "Ean13"
+    assert str(BarcodeFormat.EAN8) == "Ean8"
+    assert str(BarcodeFormat.PDF417) == "Pdf417"
+    assert str(BarcodeFormat.AZTEC) == "Aztec"
+    assert str(BarcodeFormat.DATA_MATRIX) == "Data_Matrix"
+
+
+def test_barcode_format_values():
+    """All expected BarcodeFormat members are present."""
+    assert len(BarcodeFormat) == 7
+    assert BarcodeFormat.QR.value == 1
+    assert BarcodeFormat.CODE128.value > 0
+    assert BarcodeFormat.DATA_MATRIX.value > 0
+
+
 @pytest.mark.parametrize(
     "initial, should_request, has_permission",
     [
