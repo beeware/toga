@@ -30,6 +30,8 @@ from .libs import (
     NSBeep,
     NSBundle,
     NSCursor,
+    NSEvent,
+    NSMakePoint,
     NSMenu,
     NSMenuItem,
     NSPanel,
@@ -298,6 +300,21 @@ class App:
     # We can't call this under test conditions, because it would kill the test harness
     def exit(self):  # pragma: no cover
         self.loop.stop()
+
+        # Shutting down the Cooca event loop needs a follow-up event to ensure that
+        # post-stop processing occurs. See beeware/rubicon-objc#746
+        event = NSEvent.otherEventWithType(
+            15,
+            location=NSMakePoint(0, 0),
+            modifierFlags=0,
+            timestamp=0,
+            windowNumber=0,
+            context=None,
+            subtype=0,
+            data1=0,
+            data2=0,
+        )
+        self.native.postEvent(event, atStart=True)
 
     def main_loop(self):
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
