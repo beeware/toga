@@ -39,6 +39,7 @@ from toga.widgets.box import Column as Column
 from toga.widgets.dateinput import DateInput as DateInput
 from toga.widgets.detailedlist import DetailedList as DetailedList
 from toga.widgets.divider import Divider as Divider
+from toga.widgets.frame import Frame as Frame
 from toga.widgets.imageview import ImageView as ImageView
 from toga.widgets.label import Label as Label
 from toga.widgets.mapview import MapPin as MapPin

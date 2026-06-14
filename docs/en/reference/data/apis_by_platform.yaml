@@ -214,6 +214,17 @@ Container widgets:
       - textual
     display: table
 
+  Frame:
+    description: A container that visually groups its content in a native frame, with an optional title.
+    unsupported:
+      - cocoa
+      - gtk
+      - qt
+      - winforms
+      - iOS
+      - web
+      - textual
+
   ScrollContainer:
     description: A container that can display a layout larger than its own area.
     beta:
