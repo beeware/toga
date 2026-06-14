@@ -103,6 +103,16 @@ class TogaApp(dynamic_proxy(IPythonApp)):
     def onConfigurationChanged(self, new_config):
         pass  # pragma: no cover
 
+    def onBackPressed(self):
+        # The Android hardware/gesture "back" at the root of the task maps to a
+        # request to exit the app. Routing it through request_exit() means the
+        # app's (vetoable) on_exit handler is honored, instead of the activity
+        # being silently finished. Returning True tells MainActivity that Python
+        # has handled the event, so it must not invoke the default behavior.
+        print("Toga app: onBackPressed")
+        self._impl.interface.request_exit()
+        return True
+
     def onOptionsItemSelected(self, menuitem):
         itemid = menuitem.getItemId()
         if itemid == Menu.NONE:
@@ -248,7 +258,10 @@ class App:
     ######################################################################
 
     def exit(self):
-        pass  # pragma: no cover
+        # Finish the activity and remove its task from the recents list. This is
+        # the closest Android equivalent to a desktop app exit; there is no HIG
+        # concept of a process-level "quit".
+        self.native.finishAndRemoveTask()
 
     def main_loop(self):
         # In order to support user asyncio code, start the Python/Android cooperative
