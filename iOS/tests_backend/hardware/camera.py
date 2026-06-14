@@ -46,14 +46,12 @@ class CameraProbe(AppProbe):
         self._mock_AVCaptureDevice.authorizationStatusForMediaType = _mock_auth_status
 
         def _mock_request_access(media_type, completionHandler):
-            # Fire completion handler
             try:
                 self._mock_permissions[str(media_type)] = abs(
                     self._mock_permissions[str(media_type)]
                 )
                 result = bool(self._mock_permissions[str(media_type)])
             except KeyError:
-                # If there's no explicit permission, it's a denial
                 self._mock_permissions[str(media_type)] = 0
                 result = False
             completionHandler.func(result)
@@ -103,6 +101,12 @@ class CameraProbe(AppProbe):
                 picker.delegate.imagePickerControllerDidCancel(picker)
         except AttributeError:
             pass
+        # Clean up any active scanner
+        try:
+            if self.app.camera._impl.is_scanning():
+                self.app.camera._impl.stop_scanning()
+        except (NotImplementedError, AttributeError):
+            pass
 
     def known_cameras(self):
         return {
@@ -116,7 +120,6 @@ class CameraProbe(AppProbe):
         return other
 
     def disconnect_cameras(self):
-        # Set the source type as *not* available and re-create the Camera impl.
         self._mock_UIImagePickerController.isSourceTypeAvailable.return_value = False
         self.app.camera._impl = Camera(self.app)
 
@@ -137,18 +140,15 @@ class CameraProbe(AppProbe):
 
     @property
     def shutter_enabled(self):
-        # Shutter can't be disabled
         return True
 
     async def press_shutter_button(self, photo):
-        # The camera picker was correctly configured
         picker = self.app.camera._impl.native
         assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
         assert (
             picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
         )
 
-        # Fake the result of a successful photo being taken
         picker.delegate.imagePickerController(
             picker,
             didFinishPickingMediaWithInfo={
@@ -161,14 +161,12 @@ class CameraProbe(AppProbe):
         return await photo, picker.cameraDevice, picker.cameraFlashMode
 
     async def cancel_photo(self, photo):
-        # The camera picker was correctly configured
         picker = self.app.camera._impl.native
         assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
         assert (
             picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
         )
 
-        # Fake the result of a cancelling the photo
         picker.delegate.imagePickerControllerDidCancel(picker)
 
         await self.redraw("Photo cancelled", delay=0.5)
@@ -190,3 +188,19 @@ class CameraProbe(AppProbe):
                 UIImagePickerControllerCameraFlashMode.Off: FlashMode.OFF,
             }[actual]
         )
+
+    async def simulate_scan_detection(self, content="scanned_content"):
+        """Simulate a barcode being detected during scanning."""
+        impl = self.app.camera._impl
+        impl._handle_detection(content)
+        await self.redraw("Scan detected", delay=0.1)
+
+    async def cancel_scan(self):
+        """Simulate the user cancelling scanning."""
+        impl = self.app.camera._impl
+        impl.stop_scanning()
+        await self.redraw("Scan cancelled", delay=0.1)
+
+    async def wait_for_scan_start(self):
+        """Wait for the scanner to be initialized."""
+        await self.redraw("Scanner started", delay=0.3)
