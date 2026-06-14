@@ -16,13 +16,6 @@ av_foundation.AudioServicesPlayAlertSound.restype = None
 av_foundation.AudioServicesPlayAlertSound.argtypes = [SystemSoundID]
 
 ######################################################################
-# AVAnimation.h
-
-AVLayerVideoGravityResizeAspectFill = objc_const(
-    av_foundation, "AVLayerVideoGravityResizeAspectFill"
-)
-
-######################################################################
 # AVCaptureDevice.h
 AVCaptureDevice = ObjCClass("AVCaptureDevice")
 
@@ -35,46 +28,6 @@ class AVAuthorizationStatus(Enum):
 
 
 ######################################################################
-# AVCaptureDeviceInput.h
-AVCaptureDeviceInput = ObjCClass("AVCaptureDeviceInput")
-
-######################################################################
-# AVCaptureMetadataOutput.h
-AVCaptureMetadataOutput = ObjCClass("AVCaptureMetadataOutput")
-
-######################################################################
-# AVMetadataObject.h
-AVMetadataMachineReadableCodeObject = ObjCClass("AVMetadataMachineReadableCodeObject")
-
-######################################################################
-# AVMetadataObjectType constants
-AVMetadataObjectTypeQRCode = objc_const(av_foundation, "AVMetadataObjectTypeQRCode")
-AVMetadataObjectTypeCode128Code = objc_const(
-    av_foundation, "AVMetadataObjectTypeCode128Code"
-)
-AVMetadataObjectTypeEAN13Code = objc_const(
-    av_foundation, "AVMetadataObjectTypeEAN13Code"
-)
-AVMetadataObjectTypeEAN8Code = objc_const(av_foundation, "AVMetadataObjectTypeEAN8Code")
-AVMetadataObjectTypePDF417Code = objc_const(
-    av_foundation, "AVMetadataObjectTypePDF417Code"
-)
-AVMetadataObjectTypeAztecCode = objc_const(
-    av_foundation, "AVMetadataObjectTypeAztecCode"
-)
-AVMetadataObjectTypeDataMatrixCode = objc_const(
-    av_foundation, "AVMetadataObjectTypeDataMatrixCode"
-)
-
-######################################################################
 # AVMediaFormat.h
 AVMediaTypeAudio = objc_const(av_foundation, "AVMediaTypeAudio")
 AVMediaTypeVideo = objc_const(av_foundation, "AVMediaTypeVideo")
-
-######################################################################
-# AVCaptureSession.h
-AVCaptureSession = ObjCClass("AVCaptureSession")
-
-######################################################################
-# AVCaptureVideoPreviewLayer.h
-AVCaptureVideoPreviewLayer = ObjCClass("AVCaptureVideoPreviewLayer")
