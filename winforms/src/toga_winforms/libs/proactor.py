@@ -1,8 +1,14 @@
+import _overlapped
+import _winapi
 import asyncio
 import sys
 import threading
+import time
 import traceback
 from asyncio import events
+from asyncio.log import logger
+from asyncio.windows_events import _WaitCancelFuture
+from collections import deque
 
 import System.Windows.Forms as WinForms
 from System import Action
@@ -11,13 +17,255 @@ from System.Threading.Tasks import Task
 from toga.handlers import WeakrefCallable
 
 
+class ReadyDeque(deque):
+    """A deque that wakes an idle loop when a value is appended."""
+
+    def __init__(self, loop):
+        super().__init__()
+        self._loop = loop
+        self._tick = loop.tick
+
+    def append(self, value):
+        super().append(value)
+
+        if getattr(getattr(self, "_loop", None), "_idle", False):
+            self._tick()
+
+
+class TwoThreadIocpProactor(asyncio.IocpProactor):
+    """A version of the IocpProactor class where the IOCP will run on its own thread."""
+
+    ####################################################################################
+    # Overrides of asyncio.IocpProactor methods
+    ####################################################################################
+
+    def __init__(self, concurrency=_winapi.INFINITE):
+        super().__init__(concurrency)
+        self._cache_cleanup_complete = False
+
+        self._listener_lock = threading.Lock()
+        self._cleanup_lock = threading.Lock()
+        self._exit_lock = threading.Lock()
+
+        self._cleanup_lock.acquire()
+
+    def select(self, timeout=None):
+        """A blank select method so that _run_once doesn't poll the IOCP."""
+        return []
+
+    # This method is part of the app shutdown procedure, which can't have test coverage.
+    # So this method is marked as no cover.
+    def close(self):  # pragma: no cover
+        if self._iocp is None:
+            # Already closed.
+            return
+
+        # Wait until the IOCP listener has stopped before cleaning up the cache.
+        with self._listener_lock:
+            self._remove_unregistered_futures()
+
+        # The following codeblock is from the start of the asyncio.IocpProactor.close()
+        # method. The final part of the this method is in the _iocp_listener_cleanup()
+        # method. The reason for splitting the close method is because the polling
+        # function GetQueuedCompletionStatus becomes associated to the first thread that
+        # calls it and it can be associated to at most one thread. See:
+        # learn.microsoft.com/windows/win32/api/ioapiset/nf-ioapiset-getqueuedcompletionstatus # noqa E501
+        #
+        # fmt: off
+        # ruff: disable[B007]
+        # =================================== BEGIN ===================================
+        # Cancel remaining registered operations.
+        for fut, ov, obj, callback in list(self._cache.values()):
+            if fut.cancelled():
+                # Nothing to do with cancelled futures
+                pass
+            elif isinstance(fut, _WaitCancelFuture):
+                # _WaitCancelFuture must not be cancelled
+                pass
+            else:
+                try:
+                    fut.cancel()
+                except OSError as exc:
+                    if self._loop is not None:
+                        context = {
+                            'message': 'Cancelling a future failed',
+                            'exception': exc,
+                            'future': fut,
+                        }
+                        if fut._source_traceback:
+                            context['source_traceback'] = fut._source_traceback
+                        self._loop.call_exception_handler(context)
+        # ==================================== END ====================================
+        # ruff: enable[B007]
+        # fmt: on
+
+        # Let the ICOP thread receive the final messages.
+        self._cleanup_lock.release()
+
+        # Wait for the ICOP thread to shutdown before continuing.
+        with self._exit_lock:
+            _winapi.CloseHandle(self._iocp)
+            self._iocp = None
+
+    ####################################################################################
+    # Methods that run in the IOCP listener thread.
+    ####################################################################################
+
+    def _iocp_listener(self):
+        """Listens for IOCP events and adds them to the queue."""
+        # The exit lock prevents the TwoThreadIocpProactor loop from closing before
+        # the IOCP listener thread has shutdown correctly.
+        with self._exit_lock:
+            # The listener lock forces the close method to wait until the listener
+            # loop is closed.
+            with self._listener_lock:
+                app = self._loop.app
+                app_dispatcher = self._loop.app.app_dispatcher
+                GetQueuedCompletionStatus = _overlapped.GetQueuedCompletionStatus
+
+                while not app._is_exiting:
+                    # Use a timeout (100 milliseconds) only for exiting the thread.
+                    status = GetQueuedCompletionStatus(self._iocp, 100)
+
+                    if status is None:
+
+                        def iocp_action():
+                            return self._remove_unregistered_futures()
+
+                    else:
+
+                        def iocp_action(status=status):
+                            return self._iocp_action(status)
+
+                    app_dispatcher.Invoke(Action(iocp_action))
+
+                ########################################################################
+                # From here onward is part of the app shutdown procedure, which can't
+                # have test coverage. So use no cover.
+                ########################################################################
+
+                # Exit the application. Call here to avoid dispatcher calls after
+                # app.native is exited.
+                action = Action(lambda: app.native.Exit())  # pragma: no cover
+                app_dispatcher.Invoke(action)  # pragma: no cover
+
+            # Wait until the close method has cleaned up the cache before continuing.
+            with self._cleanup_lock:  # pragma: no cover
+                self._iocp_listener_cleanup()  # pragma: no cover
+
+    # This method is part of the app shutdown procedure, which can't have test coverage.
+    # So this method is marked as no cover.
+    def _iocp_listener_cleanup(self):  # pragma: no cover
+        """Cleanup the IOCP listener thread before exiting."""
+        # The following is the last 19 lines of code from asyncio.IocpProactor.close
+        # method. All the first line of this method remain in the close method.
+        #
+        # fmt: off
+        # =================================== BEGIN ===================================
+        # Wait until all cancelled overlapped complete: don't exit with running
+        # overlapped to prevent a crash. Display progress every second if the
+        # loop is still running.
+        msg_update = 1.0
+        start_time = time.monotonic()
+        next_msg = start_time + msg_update
+        while self._cache:
+            if next_msg <= time.monotonic():
+                logger.debug('%r is running after closing for %.1f seconds',
+                             self, time.monotonic() - start_time)
+                next_msg = time.monotonic() + msg_update
+
+            # handle a few events, or timeout
+            self._poll(msg_update)
+
+        self._results = []
+        # ==================================== END ====================================
+        # fmt: on
+
+    ####################################################################################
+    # Methods that run in the main application thread.
+    ####################################################################################
+
+    def start_iocp_listener(self):
+        self._iocp_thread = threading.Thread(
+            target=self._run_iocp_listener,
+        )
+        self._iocp_thread.start()
+
+    def _run_iocp_listener(self):
+        self._iocp_listener()
+
+    def _iocp_action(self, status):
+        # The following codeblock is essentially the same as part of the method
+        # asyncio.IocpProactor._poll(timeout). Here the futures are no longer appended
+        # to the self._results list, since this served no purpose in the proactor event
+        # loop. This codeblock is part of the method that processes the received IOCP
+        # messages.
+        #
+        # fmt: off
+        # ruff: disable[UP031]
+        # =================================== BEGIN ===================================
+        err, transferred, key, address = status
+        try:
+            f, ov, obj, callback = self._cache.pop(address)
+        except KeyError:
+            if self._loop.get_debug():
+                self._loop.call_exception_handler({
+                    'message': ('GetQueuedCompletionStatus() returned an '
+                                'unexpected event'),
+                    'status': ('err=%s transferred=%s key=%#x address=%#x'
+                                % (err, transferred, key, address)),
+                })
+
+            # key is either zero, or it is used to return a pipe
+            # handle which should be closed to avoid a leak.
+            if key not in (0, _overlapped.INVALID_HANDLE_VALUE):
+                _winapi.CloseHandle(key)
+            return
+
+        if obj in self._stopped_serving:
+            f.cancel()
+        # Don't call the callback if _register() already read the result or
+        # if the overlapped has been cancelled
+        elif not f.done():
+            try:
+                value = callback(transferred, key, ov)
+            except OSError as e:
+                f.set_exception(e)
+                # self._results.append(f)
+            else:
+                f.set_result(value)
+                # self._results.append(f)
+            finally:
+                f = None
+        # ==================================== END ====================================
+        # ruff: enable[UP031]
+        # fmt: on
+
+    def _remove_unregistered_futures(self):
+        # Remove unregistered futures
+        for ov in self._unregistered:
+            self._cache.pop(ov.address, None)
+        self._unregistered.clear()
+
+
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
+    def __init__(self):
+        super().__init__(proactor=TwoThreadIocpProactor())
+        self._ready = ReadyDeque(self)
+        self._idle = False
+
     def run_forever(self, app):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
         start the application.
 
-        This largely duplicates the setup behavior of the default Proactor
-        run_forever implementation.
+        This largely duplicates the setup behavior of the run_forever implementation of
+        asyncio.ProactorEventLoop with two main differences:
+            - The need for polling has been removed by running the IOCP on a separate
+              thread and using the WinForms event loop to send the results immediately
+              to the main thread.
+            - The loop on the main thread can become idle when there are no ready or
+              scheduled tasks. The self._ready deque has been replaced by an instance
+              of ReadyDeque which fires and wakes the loop.
 
         :param app_context: The WinForms.ApplicationContext instance
             controlling the lifecycle of the app.
@@ -77,6 +325,9 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # Queue the first asyncio tick.
         self.enqueue_tick()
 
+        # Start the IOCP listener thread.
+        self._proactor.start_iocp_listener()
+
         # Start the Winforms event loop.
         self._inner_loop = None
         WinForms.Application.Run(self.app.app_context)
@@ -100,6 +351,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     def start_inner_loop(self, callback, *args):
         assert self._inner_loop is None
         self._inner_loop = (callback, args)
+        self.enqueue_tick(delay=0)
 
     # We can't get coverage for app shutdown, so this handler must be no-cover.
     def winforms_application_exit(self, app, event):  # pragma: no cover
@@ -128,6 +380,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         """Run one iteration of the event loop, and enqueue the next iteration (if we're
         not stopping).
         """
+        # Setting self._idle to False means that the ReadyDeque instance won't fire
+        # while executing the queued tasks.
+        self._idle = False
+
         try:
             # If the app is exiting, stop the asyncio event loop.
             # Otherwise, perform one more tick of the event loop.
@@ -138,22 +394,24 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             else:
                 self._run_once()
 
-            # Enqueue the next tick, and make sure there will be *something*
-            # to be processed. If you don't ensure there is at least one
-            # message on the queue, the select() call will block, locking
-            # the app.  Determine the delay of the tick by checking if
-            # there are events that can be processed sooner than 5ms, as
-            # we do not want to hold them back from being processed.
-            if self._ready:
-                delay = 0
-            elif self._scheduled:
-                first = self._scheduled[0]
-                ms_until = int(max(0, (first.when() - self.time()) * 1000))
-                delay = min(5, ms_until)
+            # Enqueue the next tick. Determine the delay of the tick by checking if
+            # there are events in the ready list, otherwise then calculating a delay
+            # for scheduled events. If neither of these then the loop becomes idle
+            # until it is woken by the ReadyDeque instance.
+            if len(self._ready) > 0:
+                # Run ready events immiediately.
+                self.enqueue_tick(delay=0)
             else:
-                delay = 5
-            self.enqueue_tick(delay=delay)
-            self.call_soon(self._loop_self_reading)
+                if self._scheduled:
+                    # Calculate a delay for scheduled events.
+                    first = self._scheduled[0]
+                    ms_until = int(max(0, (first.when() - self.time()) * 1000))
+                    delay = min(1000, ms_until)
+                    self.enqueue_tick(delay=delay)
+
+                # Setting self._idle to True, the ReadyDeque instance fires when a task
+                # is appended an wakes the loop.
+                self._idle = True
 
             if self._inner_loop:
                 callback, args = self._inner_loop
