@@ -54,6 +54,11 @@ class Context:
         self.native = native
         self.states = [State()]
 
+        # Pin the default stroke width to 1.0 for Qt
+        pen = self.native.pen()
+        pen.setWidthF(1.0)
+        self.native.setPen(pen)
+
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
         self.in_stroke = False
