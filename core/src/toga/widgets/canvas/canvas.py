@@ -94,12 +94,13 @@ class drawing_context_property:
         for action in chain.from_iterable(
             reversed(state.drawing_actions) for state in reversed(states)
         ):
-            if isinstance(action, Restore):
-                restores += 1
-            elif isinstance(action, Save):
-                restores -= 1
-            elif restores <= 0 and isinstance(action, self.ActionClass):
-                return getattr(action, self.name)
+            match action:
+                case Restore():
+                    restores += 1
+                case Save():
+                    restores -= 1
+                case self.ActionClass() if restores <= 0:
+                    return getattr(action, self.name)
 
         # It's never been set.
         return self.default

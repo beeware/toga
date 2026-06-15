@@ -90,9 +90,9 @@ class Context:
         self.native.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
-        # we can convert the single Quadratic control point into the
-        # 2 control points required for the cubic Bézier.
+        # A Quadratic curve is a dimensionally reduced Bézier Cubic curve; we can
+        # convert the single Quadratic control point into the 2 control points required
+        # for the cubic Bézier.
         x0, y0 = self.native.get_current_point()
         self.native.curve_to(
             x0 + 2 / 3 * (cpx - x0),
@@ -160,8 +160,8 @@ class Context:
         self.native.rotate(radians)
 
     def scale(self, sx, sy):
-        # Cairo throws an exception if scale is 0,
-        # so use a small epsilon which will almost be the same
+        # Cairo throws an exception if scale is 0, so use a small epsilon which will
+        # almost be the same
         if sx == 0:
             sx = 2**-24
         if sy == 0:
@@ -353,16 +353,17 @@ class Canvas(Widget):
             self.interface.on_resize(width=allocation.width, height=allocation.height)
 
         def gtk_button_press(self, obj, event):
-            if event.button == 1:
-                if event.type == Gdk.EventType._2BUTTON_PRESS:
-                    self.interface.on_activate(event.x, event.y)
-                else:
-                    self.interface.on_press(event.x, event.y)
-            elif event.button == 3:
-                self.interface.on_alt_press(event.x, event.y)
-            else:  # pragma: no cover
-                # Don't handle other button presses
-                pass
+            match event.button:
+                case 1:
+                    if event.type == Gdk.EventType._2BUTTON_PRESS:
+                        self.interface.on_activate(event.x, event.y)
+                    else:
+                        self.interface.on_press(event.x, event.y)
+                case 3:
+                    self.interface.on_alt_press(event.x, event.y)
+                case _:  # pragma: no cover
+                    # Don't handle other button presses
+                    pass
 
         def gtk_motion_notify(self, obj, event):
             """Handles mouse movement by calling the drag and/or alternative drag
@@ -486,14 +487,6 @@ class Canvas(Widget):
 
     # Rehint
     def rehint(self):
-        # print(
-        #     "REHINT",
-        #     self,
-        #     self.native.get_preferred_width(),
-        #     self.native.get_preferred_height(),
-        # )
-        # width = self.native.get_allocation().width
-        # height = self.native.get_allocation().height
         width = self.interface._MIN_WIDTH
         height = self.interface._MIN_HEIGHT
         self.interface.intrinsic.height = at_least(width)

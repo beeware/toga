@@ -65,15 +65,16 @@ def component_support(name, width, alt_file):
     """Render component's support by platform, as a table or tabbed view, as needed."""
     component = APIS_BY_NAME[name]
 
-    if component["display"] == "table":
-        return (
-            "Availability ([Key][api-status-key])\n{: #availability-title }\n\n"
-            + tabulate([component["platforms"]], headers="keys", tablefmt="github")
-        )
-    elif component["display"] == "tabs":
-        return component_tab_view(name, component, width, alt_file)
-    else:
-        return ""
+    match component["display"]:
+        case "table":
+            return (
+                "Availability ([Key][api-status-key])\n{: #availability-title }\n\n"
+                + tabulate([component["platforms"]], headers="keys", tablefmt="github")
+            )
+        case "tabs":
+            return component_tab_view(name, component, width, alt_file)
+        case _:
+            return ""
 
 
 def component_tab_view(name, component, width, alt_file):

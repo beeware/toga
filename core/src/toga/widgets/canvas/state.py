@@ -456,14 +456,13 @@ class DrawingActionDispatch(ABC):
     ):
         """Draw a Toga Image.
 
-        The x, y coordinates specify the location of the bottom-left corner
-        of the image. If supplied, the width and height specify the size
-        of the image when it is rendered; the image will be
-        scaled to fit.
+        The x, y coordinates specify the location of the bottom-left corner of the
+        image. If supplied, the width and height specify the size of the image when it
+        is rendered; the image will be scaled to fit.
 
-        Drawing of images is performed with the current transformation matrix
-        applied, so the destination rectangle of the image will be rotated,
-        scaled and translated by any transformations which are currently applied.
+        Drawing of images is performed with the current transformation matrix applied,
+        so the destination rectangle of the image will be rotated, scaled and
+        translated by any transformations which are currently applied.
 
         :param image: a Toga Image
         :param x: The x-coordinate of the bottom-left corner of the image when

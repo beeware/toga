@@ -14,74 +14,75 @@ class Command:
 
     @classmethod
     def standard(self, app, id):
-        # ---- File menu -----------------------------------
-        if id == StandardCommand.NEW:
-            return {
-                "text": "New",
-                "shortcut": Key.MOD_1 + "n",
-                "group": Group.FILE,
-                "section": 0,
-                "order": 0,
-            }
-        elif id == StandardCommand.OPEN:
-            return {
-                "text": "Open...",
-                "shortcut": Key.MOD_1 + "o",
-                "group": Group.FILE,
-                "section": 0,
-                "order": 10,
-            }
-        elif id == StandardCommand.SAVE:
-            return {
-                "text": "Save",
-                "shortcut": Key.MOD_1 + "s",
-                "group": Group.FILE,
-                "section": 0,
-                "order": 20,
-            }
-        elif id == StandardCommand.SAVE_AS:
-            return {
-                "text": "Save As...",
-                "shortcut": Key.MOD_1 + "S",
-                "group": Group.FILE,
-                "section": 0,
-                "order": 21,
-            }
-        elif id == StandardCommand.SAVE_ALL:
-            return {
-                "text": "Save All",
-                "shortcut": Key.MOD_1 + Key.MOD_2 + "s",
-                "group": Group.FILE,
-                "section": 0,
-                "order": 22,
-            }
-        elif id == StandardCommand.PREFERENCES:
-            # Preferences should be towards the end of the File menu.
-            return {
-                "text": "Preferences",
-                "group": Group.FILE,
-                "section": sys.maxsize - 1,
-            }
-        elif id == StandardCommand.EXIT:
-            # Quit should always be the last item, in a section on its own.
-            return {
-                "text": "Exit",
-                "group": Group.FILE,
-                "section": sys.maxsize,
-            }
-        # ---- Help menu -----------------------------------
-        elif id == StandardCommand.VISIT_HOMEPAGE:
-            return {
-                "text": "Visit homepage",
-                "enabled": app.home_page is not None,
-                "group": Group.HELP,
-            }
-        elif id == StandardCommand.ABOUT:
-            return {
-                "text": f"About {app.formal_name}",
-                "group": Group.HELP,
-                "section": sys.maxsize,
-            }
+        match id:
+            # ---- File menu -----------------------------------
+            case StandardCommand.NEW:
+                return {
+                    "text": "New",
+                    "shortcut": Key.MOD_1 + "n",
+                    "group": Group.FILE,
+                    "section": 0,
+                    "order": 0,
+                }
+            case StandardCommand.OPEN:
+                return {
+                    "text": "Open...",
+                    "shortcut": Key.MOD_1 + "o",
+                    "group": Group.FILE,
+                    "section": 0,
+                    "order": 10,
+                }
+            case StandardCommand.SAVE:
+                return {
+                    "text": "Save",
+                    "shortcut": Key.MOD_1 + "s",
+                    "group": Group.FILE,
+                    "section": 0,
+                    "order": 20,
+                }
+            case StandardCommand.SAVE_AS:
+                return {
+                    "text": "Save As...",
+                    "shortcut": Key.MOD_1 + "S",
+                    "group": Group.FILE,
+                    "section": 0,
+                    "order": 21,
+                }
+            case StandardCommand.SAVE_ALL:
+                return {
+                    "text": "Save All",
+                    "shortcut": Key.MOD_1 + Key.MOD_2 + "s",
+                    "group": Group.FILE,
+                    "section": 0,
+                    "order": 22,
+                }
+            case StandardCommand.PREFERENCES:
+                # Preferences should be towards the end of the File menu.
+                return {
+                    "text": "Preferences",
+                    "group": Group.FILE,
+                    "section": sys.maxsize - 1,
+                }
+            case StandardCommand.EXIT:
+                # Quit should always be the last item, in a section on its own.
+                return {
+                    "text": "Exit",
+                    "group": Group.FILE,
+                    "section": sys.maxsize,
+                }
+            # ---- Help menu -----------------------------------
+            case StandardCommand.VISIT_HOMEPAGE:
+                return {
+                    "text": "Visit homepage",
+                    "enabled": app.home_page is not None,
+                    "group": Group.HELP,
+                }
+            case StandardCommand.ABOUT:
+                return {
+                    "text": f"About {app.formal_name}",
+                    "group": Group.HELP,
+                    "section": sys.maxsize,
+                }
 
         raise ValueError(f"Unknown standard command {id!r}")
 

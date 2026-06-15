@@ -40,7 +40,7 @@ The BeeWare project would not be possible without the generous support of our fi
 
 Anaconda Inc. - Advancing AI through open source.
 
-Plus individual contributions from [users like you](https://beeware.org/community/members/). If you find Toga, or other BeeWare tools useful, please consider becoming a financial member.
+Plus individual contributions from [users like you](https://beeware.org/membership/). If you find Toga, or other BeeWare tools useful, please consider becoming a financial member.
 
 ## Community
 
@@ -48,9 +48,9 @@ Toga is part of the [BeeWare suite](https://beeware.org). You can talk to the co
 
 - [@beeware@fosstodon.org on Mastodon](https://fosstodon.org/@beeware)
 - [Discord](https://beeware.org/bee/chat/)
-- The Toga [GitHub Discussions forum](https://github.com/beeware/toga/discussions)
+- The Toga [GitHub Discussions forum](https://github.com/beeware/toga/discussions/)
 
-We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/behavior/).
+We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/code-of-conduct/).
 
 ## Contributing
 

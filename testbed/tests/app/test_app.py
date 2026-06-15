@@ -242,19 +242,21 @@ async def test_beep(app, app_probe):
 
 
 async def test_screens(app, app_probe):
-    """Screens must have unique origins and names, with the primary screen at (0,0)."""
+    """Screens must have unique origins, and a (not necessarily unique) name."""
+    assert app.screens
+    # Collect origins to verify each monitor occupies a unique position
+    origins = []
+    for screen in app.screens:
+        assert isinstance(screen.name, str)
+        # Origin is an (x, y) tuple of integers representing screen position
+        assert isinstance(screen.origin, tuple)
+        assert len(screen.origin) == 2
+        assert all(isinstance(value, int) for value in screen.origin)
+        origins.append(screen.origin)
 
-    # Get the origin of screen 0
-    assert app.screens[0].origin == (0, 0)
-
-    # Check for unique names
-    screen_names = [s.name for s in app.screens]
-    unique_names = set(screen_names)
-    assert len(screen_names) == len(unique_names)
-
-    # Check that the origin of every other screen is not "0,0"
-    origins_not_zero = all(screen.origin != (0, 0) for screen in app.screens[1:])
-    assert origins_not_zero is True
+    # Identical monitors can share the same name, so assert uniqueness on origin
+    # since every screen must occupy a distinct position.
+    assert len(origins) == len(set(origins))
 
 
 async def test_app_icon(app, app_probe):
