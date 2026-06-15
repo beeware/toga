@@ -924,10 +924,11 @@ class ClosePath(BaseState):
 
 def _assign_style(action, name, color):
     """Determine fill_style/stroke_style based on "actual" arg and color."""
-
-    # Normalize to NOT_PROVIDED if it's the property itself.
-    color = NOT_PROVIDED if color is type(action).color else color
     style = getattr(action, f"{name}_style")
+
+    # For each, normalize to NOT_PROVIDED if it's the property itself.
+    color = NOT_PROVIDED if isinstance(color, color_property) else color
+    style = NOT_PROVIDED if isinstance(style, color_property) else style
 
     if style is not NOT_PROVIDED and color is not NOT_PROVIDED:
         raise TypeError(f"Both {name}_style and color provided")
