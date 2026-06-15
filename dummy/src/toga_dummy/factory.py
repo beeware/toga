@@ -14,7 +14,7 @@ from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button
-from .widgets.canvas import Canvas
+from .widgets.canvas import Canvas, Path2D
 from .widgets.dateinput import DateInput
 from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
@@ -75,6 +75,7 @@ __all__ = [
     "NumberInput",
     "OptionContainer",
     "PasswordInput",
+    "Path2D",
     "ProgressBar",
     "ScrollContainer",
     "Selection",

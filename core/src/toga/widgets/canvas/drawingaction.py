@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from toga.colors import ColorT
     from toga.constants import Baseline
 
+
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
 
@@ -63,11 +64,43 @@ class DrawingAction(ABC):
     of the `DrawingAction`, which can be modified as shown in
     [Modifying attributes of Drawing actions][].
 
-    A `DrawingAction` can also be
-    [created manually][creating-and-adding-new-drawing-actions]. Their constructors take
-    the same arguments as the corresponding [`Canvas`][toga.Canvas] drawing method, and
-    their classes have the same names, but capitalized.
-    """
+    `DrawingActions` can also be created manually, then added to a state using the
+    [list of drawing actions][toga.widgets.canvas.state.BaseState.drawing_actions].
+    Their constructors take the same arguments as the corresponding
+    [`Canvas`][toga.Canvas] or [`Path2D`][toga.widgets.canvas.Path2D] methods, and
+    their classes have the same names, but capitalized:
+
+    * [`toga.widgets.canvas.Arc`][toga.Canvas.arc]
+    * [`toga.widgets.canvas.BezierCurveTo`][toga.Canvas.bezier_curve_to]
+    * [`toga.widgets.canvas.Ellipse`][toga.Canvas.ellipse]
+    * [`toga.widgets.canvas.LineTo`][toga.Canvas.line_to]
+    * [`toga.widgets.canvas.MoveTo`][toga.Canvas.move_to]
+    * [`toga.widgets.canvas.QuadraticCurveTo`][toga.Canvas.quadratic_curve_to]
+    * [`toga.widgets.canvas.Rect`][toga.Canvas.rect]
+    * [`toga.widgets.canvas.RoundRect`][toga.Canvas.round_rect]
+
+    The following `DrawingActions` can only be used with `State` objects and not
+    `Path2D`:
+
+    * [`toga.widgets.canvas.BeginPath`][toga.Canvas.begin_path]
+    * [`toga.widgets.canvas.ClosePath`][toga.Canvas.close_path]
+    * [`toga.widgets.canvas.Fill`][toga.Canvas.fill]
+    * [`toga.widgets.canvas.ResetTransform`][toga.Canvas.reset_transform]
+    * [`toga.widgets.canvas.Rotate`][toga.Canvas.rotate]
+    * [`toga.widgets.canvas.Scale`][toga.Canvas.scale]
+    * [`toga.widgets.canvas.Stroke`][toga.Canvas.stroke]
+    * [`toga.widgets.canvas.Translate`][toga.Canvas.translate]
+    * [`toga.widgets.canvas.WriteText`][toga.Canvas.write_text]
+
+    In addition, the `AddPath` `DrawingAction` can be used with `Path2D` objects
+    but not `State` objects:
+
+    * [`toga.widgets.canvas.AddPath`][toga.widgets.canvas.Path2D.add_path]
+    """  # noqa: E501
+
+    # Disable the line-too-long check as there is no way to properly render the list
+    # above with any given list item on multiple lines; an undesired space is added if
+    # the link content is split on two lines.
 
     def __repr__(self) -> str:
         if is_dataclass(self):

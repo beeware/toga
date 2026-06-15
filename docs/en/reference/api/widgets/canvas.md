@@ -126,6 +126,8 @@ It's also possible to reach beyond the HTML Canvas-based API documented here, an
             - focus
             - redraw
 
+::: toga.widgets.canvas.Path2D
+
 ::: toga.widgets.canvas.OnTouchHandler
 
 ::: toga.widgets.canvas.OnResizeHandler

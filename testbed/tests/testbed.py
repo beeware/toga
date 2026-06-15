@@ -180,6 +180,9 @@ def main(main_package_name, backend_override=None):
             "no-cover-if-netcore": (
                 "os_environ.get('TOGA_WINFORMS_USE_NETFX', '') != '1'"
             ),
+            # MacOS platform architectures
+            "no-cover-if-x86": "platform_machine == 'x86_64'",
+            "no-cover-if-arm": "platform_machine != 'x86_64'",
         },
     )
     cov.start()
