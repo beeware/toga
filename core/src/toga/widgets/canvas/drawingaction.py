@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from dataclasses import InitVar, dataclass, fields, is_dataclass
+from dataclasses import KW_ONLY, InitVar, dataclass, fields, is_dataclass
 from enum import Enum
 from math import pi
 from typing import TYPE_CHECKING, Any
@@ -430,6 +430,8 @@ class FillText(DrawingAction):
     text: str
     x: float = 0.0
     y: float = 0.0
+    # TODO: add optional max_width parameter
+    _: KW_ONLY
     font: Font | None = None
     baseline: Baseline = Baseline.ALPHABETIC
     line_height: float | None = None
@@ -458,6 +460,8 @@ class StrokeText(DrawingAction):
     text: str
     x: float = 0.0
     y: float = 0.0
+    # TODO: add optional max_width parameter
+    _: KW_ONLY
     font: Font | None = None
     baseline: Baseline = Baseline.ALPHABETIC
     line_height: float | None = None

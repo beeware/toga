@@ -393,6 +393,8 @@ class DrawingActionDispatch(ABC):
         text: str,
         x: float = 0.0,
         y: float = 0.0,
+        # TODO: add optional max_width parameter
+        *,
         font: Font | None = None,
         baseline: Baseline = Baseline.ALPHABETIC,
         line_height: float | None = None,
@@ -410,7 +412,14 @@ class DrawingActionDispatch(ABC):
         :returns: The `FillText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        fill_text = FillText(text, x, y, font, baseline, line_height)
+        fill_text = FillText(
+            text,
+            x,
+            y,
+            font=font,
+            baseline=baseline,
+            line_height=line_height,
+        )
         self._add_to_target(fill_text)
         self._redraw_with_warning_if_state()
         return fill_text
@@ -420,6 +429,8 @@ class DrawingActionDispatch(ABC):
         text: str,
         x: float = 0.0,
         y: float = 0.0,
+        # TODO: add optional max_width parameter
+        *,
         font: Font | None = None,
         baseline: Baseline = Baseline.ALPHABETIC,
         line_height: float | None = None,
@@ -437,7 +448,14 @@ class DrawingActionDispatch(ABC):
         :returns: The `StrokeText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        stroke_text = StrokeText(text, x, y, font, baseline, line_height)
+        stroke_text = StrokeText(
+            text,
+            x,
+            y,
+            font=font,
+            baseline=baseline,
+            line_height=line_height,
+        )
         self._add_to_target(stroke_text)
         self._redraw_with_warning_if_state()
         return stroke_text
