@@ -107,26 +107,27 @@ class SimpleProbe(BaseProbe, FontMixin):
     def background_color(self):
         background = self.native_toplevel.getBackground()
         while True:
-            if isinstance(background, ColorDrawable):
-                return toga_color(background.getColor())
+            match background:
+                case ColorDrawable():
+                    return toga_color(background.getColor())
 
-            # The following complex Drawables all apply color filters to their children,
-            # but they don't implement getColorFilter, at least not in our current
-            # minimum API level.
-            elif isinstance(background, LayerDrawable):
-                background = background.getDrawable(0)
-            elif isinstance(background, DrawableContainer):
-                background = background.getCurrent()
-            elif isinstance(background, DrawableWrapper):
-                background = background.getDrawable()
+                # The following complex Drawables all apply color filters to their
+                # children, but they don't implement getColorFilter, at least not in
+                # our current minimum API level.
+                case LayerDrawable():
+                    background = background.getDrawable(0)
+                case DrawableContainer():
+                    background = background.getCurrent()
+                case DrawableWrapper():
+                    background = background.getDrawable()
 
-            else:
-                break
+                case _:
+                    break
 
         if background is None:
-            # The default background color is TRANSPARENT, but setting it
-            # to TRANSPARENT actually sets it to None, in order to avoid
-            # clipping of ripple and other effects on widgets.
+            # The default background color is TRANSPARENT, but setting it to TRANSPARENT
+            # actually sets it to None, in order to avoid clipping of ripple and other
+            # effects on widgets.
             return TRANSPARENT
         filter = background.getColorFilter()
         if filter:

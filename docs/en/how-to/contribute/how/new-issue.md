@@ -1,3 +1,3 @@
 # Submitting a new issue
 
-{% extends "contribute/how/new-issue.md" %}
+{% extends "_shared/contribute/how/new-issue.md" %}
