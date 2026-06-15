@@ -47,75 +47,76 @@ class Command:
 
     @classmethod
     def standard(self, app, id):
-        # ---- File menu ----------
-        if id == StandardCommand.PREFERENCES:
-            return {
-                "text": "Configure " + app.formal_name,
-                "shortcut": Key.MOD_1 + Key.SHIFT + ",",
-                "group": Group.SETTINGS,
-                "section": sys.maxsize - 1,
-                "icon": app.icon,
-            }
-        elif id == StandardCommand.EXIT:
-            return {
-                "text": "Quit",
-                "shortcut": Key.MOD_1 + "q",
-                "group": Group.FILE,
-                "section": sys.maxsize,
-            }
+        match id:
+            # ---- File menu ----------
+            case StandardCommand.PREFERENCES:
+                return {
+                    "text": "Configure " + app.formal_name,
+                    "shortcut": Key.MOD_1 + Key.SHIFT + ",",
+                    "group": Group.SETTINGS,
+                    "section": sys.maxsize - 1,
+                    "icon": app.icon,
+                }
+            case StandardCommand.EXIT:
+                return {
+                    "text": "Quit",
+                    "shortcut": Key.MOD_1 + "q",
+                    "group": Group.FILE,
+                    "section": sys.maxsize,
+                }
 
-        # ---- File menu -----------------------------------
-        elif id == StandardCommand.NEW:
-            return {
-                "text": "New",
-                "shortcut": Key.MOD_1 + "n",
-                "group": Group.FILE,
-                "section": 0,
-                "order": 0,
-            }
-        elif id == StandardCommand.OPEN:
-            return {
-                "text": "Open...",
-                "shortcut": Key.MOD_1 + "o",
-                "group": Group.FILE,
-                "section": 10,
-                "order": 0,
-            }
+            # ---- File menu -----------------------------------
+            case StandardCommand.NEW:
+                return {
+                    "text": "New",
+                    "shortcut": Key.MOD_1 + "n",
+                    "group": Group.FILE,
+                    "section": 0,
+                    "order": 0,
+                }
+            case StandardCommand.OPEN:
+                return {
+                    "text": "Open...",
+                    "shortcut": Key.MOD_1 + "o",
+                    "group": Group.FILE,
+                    "section": 10,
+                    "order": 0,
+                }
 
-        elif id == StandardCommand.SAVE:
-            return {
-                "text": "Save",
-                "shortcut": Key.MOD_1 + "s",
-                "group": Group.FILE,
-                "section": 20,
-                "order": 0,
-            }
-        elif id == StandardCommand.SAVE_AS:
-            return {
-                "text": "Save As...",
-                "shortcut": Key.MOD_1 + "S",
-                "group": Group.FILE,
-                "section": 20,
-                "order": 10,
-            }
-        elif id == StandardCommand.SAVE_ALL:
-            return {
-                "text": "Save All",
-                "shortcut": Key.MOD_1 + "l",
-                "group": Group.FILE,
-                "section": 20,
-                "order": 20,
-            }
-        # ---- Help menu -----------------------------------
-        elif id == StandardCommand.VISIT_HOMEPAGE:
-            return None  # KDE apps have homepage link in about dialog
-        elif id == StandardCommand.ABOUT:
-            return {
-                "text": f"About {app.formal_name}",
-                "group": Group.HELP,
-                "section": sys.maxsize,
-                "icon": app.icon,
-            }
+            case StandardCommand.SAVE:
+                return {
+                    "text": "Save",
+                    "shortcut": Key.MOD_1 + "s",
+                    "group": Group.FILE,
+                    "section": 20,
+                    "order": 0,
+                }
+            case StandardCommand.SAVE_AS:
+                return {
+                    "text": "Save As...",
+                    "shortcut": Key.MOD_1 + "S",
+                    "group": Group.FILE,
+                    "section": 20,
+                    "order": 10,
+                }
+            case StandardCommand.SAVE_ALL:
+                return {
+                    "text": "Save All",
+                    "shortcut": Key.MOD_1 + "l",
+                    "group": Group.FILE,
+                    "section": 20,
+                    "order": 20,
+                }
+            # ---- Help menu -----------------------------------
+            case StandardCommand.VISIT_HOMEPAGE:
+                return None  # KDE apps have homepage link in about dialog
+            case StandardCommand.ABOUT:
+                return {
+                    "text": f"About {app.formal_name}",
+                    "group": Group.HELP,
+                    "section": sys.maxsize,
+                    "icon": app.icon,
+                }
 
         raise ValueError(f"Unknown standard command {id!r}")
 
