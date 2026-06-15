@@ -910,7 +910,7 @@ async def test_multiline_text(canvas, probe):
     for size in [8, 12, 16, 20]:
         text = f"{size:02d}"
         font = Font(SYSTEM, size)
-        canvas.fill_text(text, x, y, font)
+        canvas.fill_text(text, x, y, font=font)
         x += canvas.measure_text(text, font)[0] + 5
 
     # Empty text: this should have no effect on the image, but make sure it's
@@ -944,7 +944,7 @@ async def test_multiline_text(canvas, probe):
         with canvas.stroke(stroke_style=CORNFLOWERBLUE):
             canvas.rect(left, top, width, height)
 
-        canvas.fill_text(text, left, y, font, baseline)
+        canvas.fill_text(text, left, y, font=font, baseline=baseline)
 
     await probe.redraw("Multiple text blocks should be drawn")
     assert_reference(probe, "multiline_text")
