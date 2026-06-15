@@ -56,7 +56,7 @@ class State:
         return cls(
             previous_state=None,
             brush=SolidBrush(BLACK),
-            pen=Pen(BLACK, impl.scale_in(2.0, rounding=None)),
+            pen=Pen(BLACK, impl.scale_in(1.0, rounding=None)),
         )
 
     def new_state(self, previous_state):
