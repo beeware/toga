@@ -217,6 +217,9 @@ class DetailedListProbe(SimpleProbe):
         ClientToScreen(hwnd, point)
         WinForms.Cursor.Position = Point(point.x, point.y)
 
+        # Extra delay to ensure that the movement is processed.
+        await asyncio.sleep(0.1)
+
         INPUT_ARRAY = ws.INPUT * 1
         mouse_inputs = INPUT_ARRAY()
         mouse_inputs[0] = ws.INPUT()
@@ -275,7 +278,7 @@ class DetailedListProbe(SimpleProbe):
 
         self._click_shift += int(self.scale_factor)
 
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.2)
 
     async def _select_with_keyboard(self, index):
         hwnd = self.impl._hwnd
