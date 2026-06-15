@@ -18,18 +18,15 @@ from toga.handlers import WeakrefCallable
 
 
 class ReadyDeque(deque):
-    """A deque that wakes an idle loop when a value is appended."""
+    """A deque that enqueues a WinForms event tick when a value is appended."""
 
     def __init__(self, loop):
-        super().__init__()
-        self._loop = loop
-        self._tick = loop.tick
+        super().__init__(loop._ready)
+        self._enqueue_tick = loop.enqueue_tick
 
     def append(self, value):
         super().append(value)
-
-        if getattr(getattr(self, "_loop", None), "_idle", False):
-            self._tick()
+        self._enqueue_tick(delay=0)
 
 
 class TwoThreadIocpProactor(asyncio.IocpProactor):
@@ -251,8 +248,6 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     def __init__(self):
         super().__init__(proactor=TwoThreadIocpProactor())
-        self._ready = ReadyDeque(self)
-        self._idle = False
 
     def run_forever(self, app):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
@@ -325,6 +320,9 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # Queue the first asyncio tick.
         self.enqueue_tick()
 
+        # Change the ready deque to an instance of ReadyDeque.
+        self._ready = ReadyDeque(self)
+
         # Start the IOCP listener thread.
         self._proactor.start_iocp_listener()
 
@@ -380,9 +378,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         """Run one iteration of the event loop, and enqueue the next iteration (if we're
         not stopping).
         """
-        # Setting self._idle to False means that the ReadyDeque instance won't fire
-        # while executing the queued tasks.
-        self._idle = False
+        # run_once_recurring is called asynchronously by the native WinForms loop. The
+        # tasks that triggered the call may have already been processed.
+        if len(self._ready) < 1 and len(self._scheduled) < 1 and not self._inner_loop:
+            return
 
         try:
             # If the app is exiting, stop the asyncio event loop.
@@ -392,7 +391,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             if self.app._is_exiting:
                 self.stop()  # pragma: no cover
             else:
-                self._run_once()
+                if len(self._ready) > 0 or len(self._scheduled) > 0:
+                    self._run_once()
 
             # Enqueue the next tick. Determine the delay of the tick by checking if
             # there are events in the ready list, otherwise then calculating a delay
@@ -403,15 +403,11 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                 self.enqueue_tick(delay=0)
             else:
                 if self._scheduled:
-                    # Calculate a delay for scheduled events.
+                    # Calculate a delay for scheduled events and enqueue a tick.
                     first = self._scheduled[0]
                     ms_until = int(max(0, (first.when() - self.time()) * 1000))
                     delay = min(1000, ms_until)
                     self.enqueue_tick(delay=delay)
-
-                # Setting self._idle to True, the ReadyDeque instance fires when a task
-                # is appended an wakes the loop.
-                self._idle = True
 
             if self._inner_loop:
                 callback, args = self._inner_loop
