@@ -27,7 +27,9 @@ class ReadyDeque(deque):
 
     def append(self, value):
         super().append(value)
+        print(f"proactor._ready.append({value})")
         if getattr(getattr(self, "_loop", None), "_idle", False):
+            print("proactor._ready - firing!")
             self._enqueue_tick(delay=0)
 
 
@@ -386,6 +388,12 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # tasks that triggered the call may have already been processed.
         if len(self._ready) < 1 and len(self._scheduled) < 1 and not self._inner_loop:
             return
+        print(
+            "proactor.run_once_recurring():"
+            + f"len(self._ready)={len(self._ready)}, "
+            + f"len(self._scheduled)={len(self._scheduled)}, "
+            + f"self.time()={self.time()}"
+        )
 
         try:
             # If the app is exiting, stop the asyncio event loop.
@@ -413,6 +421,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                     first = self._scheduled[0]
                     ms_until = int(max(0, (first.when() - self.time()) * 1000))
                     delay = min(1000, ms_until)
+                    print(
+                        f"\tself._scheduled[0] at:{first.when()}, "
+                        + f"loop run scheduled for:{self.time() + delay / 1000}"
+                    )
                     self.enqueue_tick(delay=delay)
 
             if self._inner_loop:
