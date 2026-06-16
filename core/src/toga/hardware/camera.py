@@ -151,7 +151,7 @@ class Camera:
     def start_scanning(
         self,
         device: CameraDevice | None = None,
-        code_types: list[BarcodeFormat] | None = None,
+        code_types: BarcodeFormat | list[BarcodeFormat] | None = None,
         on_detection: Callable | None = None,
         continuous: bool = False,
     ) -> ScanResult:
@@ -175,8 +175,9 @@ class Camera:
 
         :param device: The camera device to use for scanning. If ``None``, the default
             camera will be used.
-        :param code_types: The types of barcodes to scan for. If ``None``, all supported
-            types will be detected.
+        :param code_types: The types of barcodes to scan for. A single
+            :class:`~toga.constants.BarcodeFormat` value, or a ``list`` of values.
+            If ``None``, all supported types will be detected.
         :param on_detection: A handler to invoke when a barcode is detected. This can
             also be set via the :attr:`on_detection` property.
         :param continuous: If ``False`` (default), scanning stops after the first
@@ -191,6 +192,8 @@ class Camera:
 
         if code_types is None:
             code_types = list(BarcodeFormat)
+        elif isinstance(code_types, BarcodeFormat):
+            code_types = [code_types]
 
         result = ScanResult(None)
         self._impl.start_scanning(

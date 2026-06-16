@@ -284,6 +284,23 @@ def test_start_scanning_with_code_type(app, code_type):
     )
 
 
+def test_start_scanning_with_single_code_type(app):
+    """A single BarcodeFormat value (not wrapped in a list) is accepted."""
+    app.camera._impl._has_permission = 1
+    app.camera._impl.simulate_scan("single_qr")
+
+    result = app.loop.run_until_complete(
+        app.camera.start_scanning(code_types=BarcodeFormat.QR)
+    )
+
+    assert result == "single_qr"
+    assert_action_performed_with(
+        app.camera,
+        "start scanning",
+        code_types=[BarcodeFormat.QR],
+    )
+
+
 def test_start_scanning_with_all_code_types(app):
     """All BarcodeFormat values combined work for scanning."""
     all_types = list(BarcodeFormat)
