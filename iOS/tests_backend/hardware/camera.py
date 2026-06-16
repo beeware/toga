@@ -46,12 +46,14 @@ class CameraProbe(AppProbe):
         self._mock_AVCaptureDevice.authorizationStatusForMediaType = _mock_auth_status
 
         def _mock_request_access(media_type, completionHandler):
+            # Fire completion handler
             try:
                 self._mock_permissions[str(media_type)] = abs(
                     self._mock_permissions[str(media_type)]
                 )
                 result = bool(self._mock_permissions[str(media_type)])
             except KeyError:
+                # If there's no explicit permission, it's a denial
                 self._mock_permissions[str(media_type)] = 0
                 result = False
             completionHandler.func(result)
@@ -120,6 +122,7 @@ class CameraProbe(AppProbe):
         return other
 
     def disconnect_cameras(self):
+        # Set the source type as *not* available and re-create the Camera impl.
         self._mock_UIImagePickerController.isSourceTypeAvailable.return_value = False
         self.app.camera._impl = Camera(self.app)
 
@@ -140,15 +143,18 @@ class CameraProbe(AppProbe):
 
     @property
     def shutter_enabled(self):
+        # Shutter can't be disabled
         return True
 
     async def press_shutter_button(self, photo):
+        # The camera picker was correctly configured
         picker = self.app.camera._impl.native
         assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
         assert (
             picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
         )
 
+        # Fake the result of a successful photo being taken
         picker.delegate.imagePickerController(
             picker,
             didFinishPickingMediaWithInfo={
@@ -161,12 +167,14 @@ class CameraProbe(AppProbe):
         return await photo, picker.cameraDevice, picker.cameraFlashMode
 
     async def cancel_photo(self, photo):
+        # The camera picker was correctly configured
         picker = self.app.camera._impl.native
         assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
         assert (
             picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
         )
 
+        # Fake the result of a cancelling the photo
         picker.delegate.imagePickerControllerDidCancel(picker)
 
         await self.redraw("Photo cancelled", delay=0.5)
