@@ -712,6 +712,11 @@ async def test_transforms(canvas, probe, restore_method):
 async def test_transforms_mid_path(canvas, probe):
     """Transforms can be applied mid-path."""
 
+    # See #4474. Right now, Windows doesn't properly stretch the stroke to account for
+    # transforms, *if* the stroke width is 1. Once that's fixed, we should test both 1
+    # and 2 (or a larger number).
+    canvas.line_width = 2.0
+
     # draw a series of rotated rectangles
     canvas.begin_path()
     canvas.translate(100, 100)
