@@ -5,6 +5,8 @@ from rubicon.objc import SEL, Block, NSObject, ObjCClass, objc_const, objc_metho
 
 import toga
 from toga.constants import BarcodeFormat, FlashMode
+
+# for classes that need to be monkeypatched for testing
 from toga_iOS import libs as iOS
 from toga_iOS.libs import (
     AVAuthorizationStatus,
@@ -87,6 +89,11 @@ def _scan_symbols():
     }
 
 
+# def native_video_quality(quality):
+#     return {
+#         VideoQuality.HIGH: UIImagePickerControllerQualityType.High,
+#         VideoQuality.LOW: UIImagePickerControllerQualityType.Low,
+#     }.get(quality, UIImagePickerControllerQualityType.Medium)
 class TogaImagePickerDelegate(NSObject):
     @objc_method
     def imagePickerController_didFinishPickingMediaWithInfo_(

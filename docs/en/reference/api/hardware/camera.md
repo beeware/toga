@@ -25,7 +25,7 @@ Toga will confirm whether the app has been granted permission to use the camera 
 
 ## Scanning for Barcodes
 
-The camera can be used to scan QR codes and other barcode types in real-time. Scanning is supported on iOS and in the Dummy (test) backend.
+The camera can be used to scan QR codes and other barcode types in real-time. Scanning is supported on iOS, macOS, and in the Dummy (test) backend.
 
 To scan a barcode, call [`Camera.start_scanning()`][toga.hardware.camera.Camera.start_scanning]. By default, scanning stops automatically when the first barcode is detected, and the result resolves to the content string:
 
@@ -49,9 +49,13 @@ def stop_scan(self, widget, **kwargs):
     self.camera.stop_scanning()
 ```
 
-You can specify which barcode formats to scan for using the `code_types` parameter:
+You can specify which barcode formats to scan for using the `code_types` parameter. It accepts a single [`BarcodeFormat`][toga.constants.BarcodeFormat] value or a list:
 
 ```python
+# Scan for QR codes only
+content = await self.camera.start_scanning(code_types=BarcodeFormat.QR)
+
+# Scan for multiple formats
 content = await self.camera.start_scanning(
     code_types=[BarcodeFormat.QR, BarcodeFormat.CODE128],
 )
@@ -64,7 +68,7 @@ content = await self.camera.start_scanning(
     - macOS: The `com.apple.security.device.camera` entitlement must be enabled, and `NSCameraUsageDescription` must be defined in the app's `Info.plist` file.
     - Android: The `android.permission.CAMERA` permission must be declared.
 - The iOS simulator implements the iOS Camera APIs, but is not able to take photographs or scan barcodes. To test your app's Camera usage, you must use a physical iOS device.
-- Barcode scanning is currently available on iOS and in the Dummy (test) backend. Other backends will raise `NotImplementedError`.
+- Barcode scanning is currently available on iOS, macOS, and in the Dummy (test) backend. Other backends will raise `NotImplementedError`.
 
 ## Reference
 
