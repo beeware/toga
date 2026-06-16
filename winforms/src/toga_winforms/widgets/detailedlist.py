@@ -118,7 +118,11 @@ class DetailedList(Widget):
 
         # Change the view style to tile.
         # learn.microsoft.com/en-us/windows/win32/controls/use-tile-views
-        u32.SendMessageW(self._hwnd, wc.LVM_SETVIEW, wc.LV_VIEW_TILE, 0)
+        set_view_code = u32.SendMessageW(self._hwnd, wc.LVM_SETVIEW, wc.LV_VIEW_TILE, 0)
+
+        if set_view_code != 1:  # pragma: no cover
+            # This block should not be accessed under normal operations.
+            raise OSError("LVM_SETVIEW failed. Check that comctl32.dll v6 is in use.")
 
         # Configure the tile properties and the image list via winforms_font_changed.
         self.winforms_font_changed(None, None)
