@@ -78,11 +78,14 @@ class Context:
         self.state.fill_style = native_color(color)
 
     def set_line_dash(self, line_dash):
-        if len(line_dash) % 2:
-            line_dash = line_dash * 2  # Avoid *= in case it's mutable
-        self.state.stroke.setDashPattern(
-            [x / self.state.stroke.width() for x in line_dash]
-        )
+        if not line_dash:
+            self.state.stroke.setStyle(Qt.SolidLine)
+        else:
+            if len(line_dash) % 2:
+                line_dash = line_dash * 2  # Avoid *= in case it's mutable
+            self.state.stroke.setDashPattern(
+                [x / self.state.stroke.width() for x in line_dash]
+            )
 
     def set_line_width(self, line_width):
         self.state.stroke.setWidth(line_width)
