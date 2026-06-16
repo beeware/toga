@@ -384,6 +384,7 @@ class DetailedList(Widget):
             RemoveWindowSubclass(hWnd, self.pfn_subclass_list, uIdSubclass)
 
         elif uMsg == wc.WM_LBUTTONDOWN:
+            print(f"WM_LBUTTONDOWN - x={loword(lParam)}, y={hiword(lParam)}")
             return self._wm_l_button_down(lParam)
 
         elif uMsg == wc.WM_RBUTTONDOWN:

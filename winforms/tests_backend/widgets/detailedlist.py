@@ -109,6 +109,7 @@ class DetailedListProbe(SimpleProbe):
 
     async def select_row(self, row, add=False):
         x, y = self._row_midpoint(row)
+        print(f"probe.select_row(row={row}, add={add}) x={x}, y={y}")
         await self._perform_click(x, y, modifier=add)
 
     async def deselect_all(self):
