@@ -135,6 +135,9 @@ class Camera:
             else:
                 self.native = None
         else:  # pragma: no cover
+            # The app doesn't have the NSCameraUsageDescription key (e.g., via
+            # `permission.camera` in Briefcase). No-cover because we can't manufacture
+            # this condition in testing.
             raise RuntimeError(
                 "Application metadata does not declare that the "
                 "app will use the camera."
@@ -155,7 +158,10 @@ class Camera:
         )
 
     def request_permission(self, future):
-        def permission_complete(result) -> None:
+        # This block is invoked when the permission is granted; however, permission is
+        # granted from a different (inaccessible) thread, so it isn't picked up by
+        # coverage.
+        def permission_complete(result) -> None:  # pragma: no cover
             future.set_result(result)
 
         iOS.AVCaptureDevice.requestAccessForMediaType(
@@ -194,6 +200,7 @@ class Camera:
             warnings.warn("No camera is available", stacklevel=2)
             result.set_result(None)
         elif self.has_permission(allow_unknown=True):
+            # Configure the controller to take a photo
             self.native.cameraCaptureMode = (
                 UIImagePickerControllerCameraCaptureMode.Photo
             )
@@ -206,8 +213,10 @@ class Camera:
             )
             self.native.cameraFlashMode = native_flash_mode(flash)
 
+            # Attach the result to the delegate
             self.native.delegate.result = result
 
+            # Show the pane
             (
                 toga.App.app.current_window._impl.native.rootViewController
             ).presentViewController(self.native, animated=True, completion=None)
