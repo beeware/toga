@@ -306,6 +306,9 @@ async def test_quadratic_curve(canvas, probe):
 
 
 async def test_arc(canvas, probe):
+    # The default width of 1.0 causes enough antialiasing that it's harder to compare.
+    canvas.line_width = 2.0
+
     """An arc can be drawn."""
     canvas.begin_path()
 
