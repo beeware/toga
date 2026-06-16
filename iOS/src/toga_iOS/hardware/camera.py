@@ -1,7 +1,6 @@
 import warnings
-from functools import cache
 
-from rubicon.objc import SEL, Block, NSObject, ObjCClass, objc_const, objc_method
+from rubicon.objc import SEL, Block, NSObject, objc_method
 
 import toga
 from toga.constants import BarcodeFormat, FlashMode
@@ -10,7 +9,21 @@ from toga.constants import BarcodeFormat, FlashMode
 from toga_iOS import libs as iOS
 from toga_iOS.libs import (
     AVAuthorizationStatus,
+    AVCaptureDevice,
+    AVCaptureDeviceInput,
+    AVCaptureMetadataOutput,
+    AVCaptureSession,
+    AVCaptureVideoPreviewLayer,
+    AVLayerVideoGravityResizeAspectFill,
     AVMediaTypeVideo,
+    AVMetadataMachineReadableCodeObject,
+    AVMetadataObjectTypeAztecCode,
+    AVMetadataObjectTypeCode128Code,
+    AVMetadataObjectTypeDataMatrixCode,
+    AVMetadataObjectTypeEAN8Code,
+    AVMetadataObjectTypeEAN13Code,
+    AVMetadataObjectTypePDF417Code,
+    AVMetadataObjectTypeQRCode,
     NSBundle,
     UIButton,
     UIColor,
@@ -25,6 +38,16 @@ from toga_iOS.libs import (
 
 AVCaptureDevicePositionBack = 1
 AVCaptureDevicePositionFront = 2
+
+BARCODE_FORMAT_MAP = {
+    BarcodeFormat.QR: AVMetadataObjectTypeQRCode,
+    BarcodeFormat.CODE128: AVMetadataObjectTypeCode128Code,
+    BarcodeFormat.EAN13: AVMetadataObjectTypeEAN13Code,
+    BarcodeFormat.EAN8: AVMetadataObjectTypeEAN8Code,
+    BarcodeFormat.PDF417: AVMetadataObjectTypePDF417Code,
+    BarcodeFormat.AZTEC: AVMetadataObjectTypeAztecCode,
+    BarcodeFormat.DATA_MATRIX: AVMetadataObjectTypeDataMatrixCode,
+}
 
 
 class CameraDevice:
@@ -50,50 +73,13 @@ def native_flash_mode(flash):
     }.get(flash, UIImagePickerControllerCameraFlashMode.Auto)
 
 
-@cache
-def _scan_symbols():
-    av_foundation = iOS.av_foundation
-    return {
-        "capture_device": ObjCClass("AVCaptureDevice"),
-        "capture_device_input": ObjCClass("AVCaptureDeviceInput"),
-        "capture_metadata_output": ObjCClass("AVCaptureMetadataOutput"),
-        "capture_session": ObjCClass("AVCaptureSession"),
-        "capture_video_preview_layer": ObjCClass("AVCaptureVideoPreviewLayer"),
-        "metadata_machine_readable_code_object": ObjCClass(
-            "AVMetadataMachineReadableCodeObject"
-        ),
-        "video_gravity_resize_aspect_fill": objc_const(
-            av_foundation, "AVLayerVideoGravityResizeAspectFill"
-        ),
-        "barcode_format_map": {
-            BarcodeFormat.QR: objc_const(av_foundation, "AVMetadataObjectTypeQRCode"),
-            BarcodeFormat.CODE128: objc_const(
-                av_foundation, "AVMetadataObjectTypeCode128Code"
-            ),
-            BarcodeFormat.EAN13: objc_const(
-                av_foundation, "AVMetadataObjectTypeEAN13Code"
-            ),
-            BarcodeFormat.EAN8: objc_const(
-                av_foundation, "AVMetadataObjectTypeEAN8Code"
-            ),
-            BarcodeFormat.PDF417: objc_const(
-                av_foundation, "AVMetadataObjectTypePDF417Code"
-            ),
-            BarcodeFormat.AZTEC: objc_const(
-                av_foundation, "AVMetadataObjectTypeAztecCode"
-            ),
-            BarcodeFormat.DATA_MATRIX: objc_const(
-                av_foundation, "AVMetadataObjectTypeDataMatrixCode"
-            ),
-        },
-    }
-
-
 # def native_video_quality(quality):
 #     return {
 #         VideoQuality.HIGH: UIImagePickerControllerQualityType.High,
 #         VideoQuality.LOW: UIImagePickerControllerQualityType.Low,
 #     }.get(quality, UIImagePickerControllerQualityType.Medium)
+
+
 class TogaImagePickerDelegate(NSObject):
     @objc_method
     def imagePickerController_didFinishPickingMediaWithInfo_(
@@ -118,9 +104,7 @@ class TogaCameraScannerDelegate(NSObject):
         count = metadata_objects.count()
         if count > 0:
             metadata_object = metadata_objects.objectAtIndex(0)
-            if metadata_object.isKindOfClass_(
-                _scan_symbols()["metadata_machine_readable_code_object"]
-            ):
+            if metadata_object.isKindOfClass_(AVMetadataMachineReadableCodeObject):
                 content = str(metadata_object.stringValue())
                 if content:
                     self.camera._handle_detection(content)
@@ -248,9 +232,8 @@ class Camera:
         self._scan_delegate = TogaCameraScannerDelegate.alloc().init()
         self._scan_delegate.camera = self
 
-        capture_metadata_output = _scan_symbols()["capture_metadata_output"]
         for output in session.outputs():
-            if output.isKindOfClass_(capture_metadata_output):
+            if output.isKindOfClass_(AVCaptureMetadataOutput):
                 output.setMetadataObjectsDelegate_queue_(self._scan_delegate, None)
                 break
 
@@ -261,15 +244,14 @@ class Camera:
         self._present_scan_ui(self._scan_preview_controller)
 
     def _build_scan_session(self, device, code_types):
-        symbols = _scan_symbols()
-        session = symbols["capture_session"].alloc().init()
+        session = AVCaptureSession.alloc().init()
 
         capture_device = self._resolve_capture_device(device)
         if capture_device is None:
             warnings.warn("No camera is available for scanning", stacklevel=2)
             return None
 
-        device_input = symbols["capture_device_input"].deviceInputWithDevice_error_(
+        device_input = AVCaptureDeviceInput.deviceInputWithDevice_error_(
             capture_device, None
         )
         if not session.canAddInput(device_input):
@@ -277,16 +259,14 @@ class Camera:
             return None
         session.addInput(device_input)
 
-        metadata_output = symbols["capture_metadata_output"].alloc().init()
+        metadata_output = AVCaptureMetadataOutput.alloc().init()
         if not session.canAddOutput(metadata_output):
             warnings.warn("Cannot add metadata output", stacklevel=2)
             return None
         session.addOutput(metadata_output)
 
         objc_types = [
-            symbols["barcode_format_map"][ct]
-            for ct in code_types
-            if ct in symbols["barcode_format_map"]
+            BARCODE_FORMAT_MAP[ct] for ct in code_types if ct in BARCODE_FORMAT_MAP
         ]
         if objc_types:
             metadata_output.setMetadataObjectTypes_(objc_types)
@@ -300,17 +280,14 @@ class Camera:
             and device._impl.native == UIImagePickerControllerCameraDevice.Front
             else AVCaptureDevicePositionBack
         )
-        for dev in _scan_symbols()["capture_device"].devicesWithMediaType(
-            AVMediaTypeVideo
-        ):
+        for dev in AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo):
             if dev.position() == position:
                 return dev
         return None
 
     def _build_scan_ui(self, session):
-        symbols = _scan_symbols()
-        preview_layer = symbols["capture_video_preview_layer"].layerWithSession(session)
-        preview_layer.setVideoGravity(symbols["video_gravity_resize_aspect_fill"])
+        preview_layer = AVCaptureVideoPreviewLayer.layerWithSession(session)
+        preview_layer.setVideoGravity(AVLayerVideoGravityResizeAspectFill)
 
         controller = UIViewController.alloc().init()
         controller.view.layer().insertSublayer_atIndex_(preview_layer, 0)
