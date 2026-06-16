@@ -22,11 +22,13 @@ class ReadyDeque(deque):
 
     def __init__(self, loop):
         super().__init__(loop._ready)
+        self._loop = loop
         self._enqueue_tick = loop.enqueue_tick
 
     def append(self, value):
         super().append(value)
-        self._enqueue_tick(delay=0)
+        if getattr(getattr(self, "_loop", None), "_idle", False):
+            self._enqueue_tick(delay=0)
 
 
 class TwoThreadIocpProactor(asyncio.IocpProactor):
@@ -134,6 +136,7 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
                         def iocp_action(status=status):
                             return self._iocp_action(status)
 
+                    # Inkove the actions synchronously on the main thread.
                     app_dispatcher.Invoke(Action(iocp_action))
 
                 ########################################################################
@@ -248,6 +251,7 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     def __init__(self):
         super().__init__(proactor=TwoThreadIocpProactor())
+        self._idle = True
 
     def run_forever(self, app):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
@@ -392,7 +396,9 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                 self.stop()  # pragma: no cover
             else:
                 if len(self._ready) > 0 or len(self._scheduled) > 0:
+                    self._idle = False
                     self._run_once()
+                    self._idle = True
 
             # Enqueue the next tick. Determine the delay of the tick by checking if
             # there are events in the ready list, otherwise then calculating a delay
