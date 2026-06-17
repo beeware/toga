@@ -739,7 +739,7 @@ async def test_transforms_mid_path(canvas, probe):
     canvas.close_path()
     canvas.reset_transform()
 
-    # See #4476. reset_transform() on macOS and iOS also resets other context
+    # See #4044. reset_transform() on macOS and iOS also resets other context
     # attributes, including line width.
     canvas.line_width = 2.0
 
