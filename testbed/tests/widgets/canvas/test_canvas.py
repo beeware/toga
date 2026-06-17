@@ -543,7 +543,7 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.line_to(x=180, y=180)
     canvas.line_to(x=100, y=180)
     canvas.close_path()
-    canvas.stroke(stroke_style=REBECCAPURPLE)
+    canvas.stroke(stroke_style=REBECCAPURPLE, line_width=2.0)
     canvas.fill(fill_style=CORNFLOWERBLUE)
 
     # Draw an open path inside it
@@ -554,7 +554,7 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.line_to(x=150, y=160)
     canvas.line_to(x=110, y=160)
     canvas.fill(fill_style=GOLDENROD, fill_rule=FillRule.EVENODD)
-    canvas.stroke(stroke_style=REBECCAPURPLE)
+    canvas.stroke(stroke_style=REBECCAPURPLE, line_width=2.0)
 
     await probe.redraw("Stroke should be drawn")
     assert_reference(probe, "stroke_and_fill")
