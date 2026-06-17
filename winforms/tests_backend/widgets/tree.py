@@ -189,7 +189,7 @@ class TreeProbe(TableProbe):
             x=int(state_node.arrow_center_x),
             y=int((bounds.Top + bounds.Bottom) / 2),
         )
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.2)
         assert state_node.mouse_hover
         assert self.impl._mouse_move_hit == 0
 
@@ -198,7 +198,7 @@ class TreeProbe(TableProbe):
             x=int(state_node.arrow_center_x + 40),
             y=int((bounds.Top + bounds.Bottom) / 2),
         )
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.2)
         assert not state_node.mouse_hover
         assert self.impl._mouse_move_hit == -1
 
@@ -207,7 +207,7 @@ class TreeProbe(TableProbe):
             x=int(state_node.arrow_center_x + 80),
             y=int((bounds.Top + bounds.Bottom) / 2),
         )
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.2)
         assert not state_node.mouse_hover
         assert self.impl._mouse_move_hit == -1
 
@@ -216,7 +216,7 @@ class TreeProbe(TableProbe):
             x=int(state_node.arrow_center_x),
             y=int((bounds.Top + bounds.Bottom) / 2 + 5 * (bounds.Bottom - bounds.Top)),
         )
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.2)
         assert not state_node.mouse_hover
         assert self.impl._mouse_move_hit == -2
 
