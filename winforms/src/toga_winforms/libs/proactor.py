@@ -265,6 +265,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self._synchronous_queue = ReentrantQueue()
         self._idle = True
 
+        self._run_count = 0
+
     def run_forever(self, app):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
         start the application.
@@ -397,12 +399,17 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         """Run one iteration of the event loop, and enqueue the next iteration (if we're
         not stopping).
         """
+        self._run_count += 1
+        if self._run_count > 1:
+            raise ValueError("Loop count too high.")
         # run_once_recurring is called asynchronously by the native WinForms loop. The
         # tasks that triggered the call may have already been processed.
         if len(self._ready) < 1 and len(self._scheduled) < 1 and not self._inner_loop:
+            self._run_count -= 1
             return
+
         print(
-            "proactor.run_once_recurring():"
+            "proactor.run_once_recurring() - START ++++++++++++++++++++++\n"
             + f"len(self._ready)={len(self._ready)}, "
             + f"len(self._scheduled)={len(self._scheduled)}, "
             + f"self.time()={self.time()}"
@@ -443,3 +450,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # Exceptions thrown by this method will be silently ignored.
         except BaseException:  # pragma: no cover
             traceback.print_exc()
+
+        print("proactor.run_once_recurring() - END --------------------")
+
+        self._run_count -= 1
