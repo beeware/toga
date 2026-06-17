@@ -706,6 +706,35 @@ async def test_transforms(canvas, probe, restore_method):
     assert_reference(probe, "transforms")
 
 
+async def test_transforms_as_context_managers(canvas, probe):
+    """Transforms can be used as context managers."""
+    # Draw the same image as test_transforms above, but using the transforms as context
+    # managers.
+    with canvas.translate(160, 20):
+        canvas.rect(0, 0, 20, 60)
+        canvas.fill(fill_style=CORNFLOWERBLUE)
+
+    with canvas.rotate(pi / 4):
+        canvas.begin_path()
+        canvas.rect(200, 0, 20, 60)
+        canvas.fill(fill_style=REBECCAPURPLE)
+
+    with canvas.scale(2, 5):
+        canvas.begin_path()
+        canvas.rect(10, 10, 10, 10)
+        canvas.fill(fill_style=GOLDENROD)
+
+    with canvas.translate(100, 60):
+        canvas.begin_path()
+        canvas.rotate(pi / 7 * 4)
+        canvas.scale(5, 2)
+        canvas.rect(2, 2, 10, 10)
+        canvas.fill()
+
+    await probe.redraw("Transforms can be applied")
+    assert_reference(probe, "transforms")
+
+
 async def test_transforms_mid_path(canvas, probe):
     """Transforms can be applied mid-path."""
 
