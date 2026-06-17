@@ -26,9 +26,9 @@ class DialogsMixin:
 
             async def _close_dialog():
                 # Give the inner event loop a chance to start, and a chance for users
-                # to view the dialog in slow mode.  The 0.4 delay is required for file
+                # to view the dialog in slow mode.  The 1s delay is required for file
                 # dialogs for some reason.
-                await self.redraw("Dialog opened", delay=0.4)
+                await self.redraw("Dialog opened", delay=1)
 
                 try:
                     if pre_close_test_method:
