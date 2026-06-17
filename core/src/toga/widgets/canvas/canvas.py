@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from contextlib import AbstractContextManager as ContextManager
+import warnings
+from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
     Protocol,
 )
+from weakref import WeakSet
 
 import toga
-from toga.colors import BLACK
-from toga.constants import FillRule
+from toga.colors import BLACK, Color
 from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
@@ -19,11 +20,24 @@ from toga.fonts import (
 from toga.handlers import wrapped_handler
 
 from ..base import StyleT, Widget
-from .context import ClosedPathContext, Context, FillContext, StrokeContext
+from .drawingaction import (
+    Restore,
+    Save,
+    SetFillStyle,
+    SetLineDash,
+    SetLineWidth,
+    SetStrokeStyle,
+)
+from .state import BaseState, DrawingActionDispatch, State
 
 if TYPE_CHECKING:
-    from toga.colors import ColorT
-    from toga.images import ImageT
+    from toga.images import ColorT, ImageT
+
+# Make sure deprecation warnings are shown by default
+warnings.filterwarnings("default", category=DeprecationWarning)
+
+
+BLACK_COLOR = Color.parse(BLACK)
 
 
 class OnTouchHandler(Protocol):
@@ -49,9 +63,70 @@ class OnResizeHandler(Protocol):
         """
 
 
-class Canvas(Widget):
+class drawing_context_property:
+    def __init__(self, ActionClass, default):
+        self.ActionClass = ActionClass
+        self.default = default
+
+    def __set_name__(self, canvas_class, name):
+        self.name = name
+
+    def __get__(self, canvas, canvas_class=None):
+        if canvas is None:
+            return self
+
+        # Run down the nested hierarchy, building a chain of active states.
+        state = canvas.root_state
+        states = [state]
+
+        while (
+            state.drawing_actions
+            # If it's the active state then no substate of it can be currently open.
+            and state is not canvas._action_target
+            and isinstance(state.drawing_actions[-1], BaseState)
+        ):
+            state = state.drawing_actions[-1]
+            states.append(state)
+
+        # Then, run backwards through all active states' drawing actions until we hit a
+        # setting. Restores build up, and are undone by saves.
+        restores = 0
+        for action in chain.from_iterable(
+            reversed(state.drawing_actions) for state in reversed(states)
+        ):
+            match action:
+                case Restore():
+                    restores += 1
+                case Save():
+                    restores -= 1
+                case self.ActionClass() if restores <= 0:
+                    return getattr(action, self.name)
+
+        # It's never been set.
+        return self.default
+
+    def __set__(self, canvas, value):
+        if value is None:
+            self._raise()
+        canvas._add_to_target(self.ActionClass(value))
+
+    def __delete__(self, canvas, canvas_class=None):
+        self._raise()
+
+    def _raise(self):
+        raise ValueError(
+            "Drawing context attributes can't be deleted or set to None. To reset to "
+            "a default or previous value, do so explicitly or reset to a previous "
+            "context state."
+        )
+
+
+class Canvas(Widget, DrawingActionDispatch):
     _MIN_WIDTH = 0
     _MIN_HEIGHT = 0
+
+    # 2026-02: Backwards compatibility for <= 0.5.3
+    _instances: WeakSet = WeakSet()
 
     def __init__(
         self,
@@ -85,7 +160,7 @@ class Canvas(Widget):
         :param on_alt_drag: Initial [`on_alt_drag`][toga.Canvas.on_alt_drag] handler.
         :param kwargs: Initial style properties.
         """
-        self._context = Context(canvas=self)
+        self._root_state = State()
 
         super().__init__(id, style, **kwargs)
 
@@ -98,6 +173,9 @@ class Canvas(Widget):
         self.on_alt_press = on_alt_press
         self.on_alt_release = on_alt_release
         self.on_alt_drag = on_alt_drag
+
+        # 2026-02: Backwards compatibility for <= 0.5.3
+        self._instances.add(self)
 
     def _create(self) -> Any:
         return self.factory.Canvas(interface=self)
@@ -119,94 +197,80 @@ class Canvas(Widget):
         pass
 
     @property
-    def context(self) -> Context:
-        """The root context for the canvas."""
-        return self._context
+    def root_state(self) -> State:
+        """The root state for the canvas. See
+        [`DrawingAction`](/reference/api/data-representation/drawingaction.md).
+        """
+        return self._root_state
+
+    ###########################################################################
+    # State management & attributes
+    ###########################################################################
+
+    def save(self) -> Save:
+        """Save the current state of the drawing context.
+
+        :returns: The `Save`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        save = Save()
+        self._add_to_target(save)
+        # No need to redraw, since this has no visual effect.
+        return save
+
+    def restore(self) -> Save:
+        """Restore to the previous state of the drawing context.
+
+        :returns: The `Restore`
+            [`DrawingAction`][toga.widgets.canvas.DrawingAction] for the operation.
+        """
+        restore = Restore()
+        self._add_to_target(restore)
+        # No need to redraw, since this has no visual effect.
+        return restore
+
+    fill_style: ColorT = drawing_context_property(SetFillStyle, BLACK_COLOR)
+    """The current fill color."""
+    stroke_style: ColorT = drawing_context_property(SetStrokeStyle, BLACK_COLOR)
+    """The current stroke color."""
+    line_width: float = drawing_context_property(SetLineWidth, 2.0)
+    """The current width of the stroke."""
+    line_dash: list[float] = drawing_context_property(SetLineDash, [])
+    """The current dash pattern to follow when drawing the line, expressed as
+    alternating lengths of dashes and spaces. The default is a solid line.
+
+    In the HTML Canvas API, this has to be set via setLineDash(). Here it's directly
+    assignable.
+    """
+
+    ######################################################################
+    # 2026-02: Backwards compatibility for <= 0.5.3
+    ######################################################################
+
+    @property
+    def context(self) -> State:
+        warnings.warn(
+            "Canvas.context has been renamed to Canvas.root_state",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._root_state
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
+
+    @property
+    def _action_target(self):
+        """Return the currently active state."""
+        return self.root_state._active_state
 
     def redraw(self) -> None:
-        """Redraw the Canvas.
-
-        The Canvas will be automatically redrawn after adding or removing a drawing
-        object, or when the Canvas resizes. However, when you modify the properties of a
-        drawing object, you must call `redraw` manually.
+        """Redraw the Canvas. This shouldn't normally need to be manually called; for
+        more info, see
+        [`DrawingAction`](/reference/api/data-representation/drawingaction.md).
         """
         self._impl.redraw()
-
-    def Context(self) -> ContextManager[Context]:
-        """Construct and yield a new sub-[`Context`][toga.widgets.canvas.Context] within
-        the root context of this Canvas.
-
-        :return: Yields the new [`Context`][toga.widgets.canvas.Context] object.
-        """
-        return self.context.Context()
-
-    def ClosedPath(
-        self,
-        x: float | None = None,
-        y: float | None = None,
-    ) -> ContextManager[ClosedPathContext]:
-        """Construct and yield a new
-        [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext]
-        context in the root context of this canvas.
-
-        :param x: The x coordinate of the path's starting point.
-        :param y: The y coordinate of the path's starting point.
-        :return: Yields the new
-            [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext] context object.
-        """
-        return self.context.ClosedPath(x, y)
-
-    def Fill(
-        self,
-        x: float | None = None,
-        y: float | None = None,
-        color: ColorT | None = BLACK,
-        fill_rule: FillRule = FillRule.NONZERO,
-    ) -> ContextManager[FillContext]:
-        """Construct and yield a new [`FillContext`][toga.widgets.canvas.FillContext]
-        in the root context of this canvas.
-
-        A drawing operator that fills the path constructed in the context according to
-        the current fill rule.
-
-        If both an x and y coordinate is provided, the drawing context will begin with
-        a `move_to` operation in that context.
-
-        :param x: The x coordinate of the path's starting point.
-        :param y: The y coordinate of the path's starting point.
-        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
-            even-odd winding rule.
-        :param color: The fill color.
-        :return class: Yields the new [`FillContext`][toga.widgets.canvas.FillContext]
-            context object.
-        """
-        return self.context.Fill(x, y, color, fill_rule)
-
-    def Stroke(
-        self,
-        x: float | None = None,
-        y: float | None = None,
-        color: ColorT | None = BLACK,
-        line_width: float = 2.0,
-        line_dash: list[float] | None = None,
-    ) -> ContextManager[StrokeContext]:
-        """Construct and yield a new
-        [`StrokeContext`][toga.widgets.canvas.StrokeContext] in the
-        root context of this canvas.
-
-        If both an x and y coordinate is provided, the drawing context will begin with
-        a `move_to` operation in that context.
-
-        :param x: The x coordinate of the path's starting point.
-        :param y: The y coordinate of the path's starting point.
-        :param color: The color for the stroke.
-        :param line_width: The width of the stroke.
-        :param line_dash: The dash pattern to follow when drawing the line. Default is a
-            solid line.
-        :return: Yields the new
-            [`StrokeContext`][toga.widgets.canvas.StrokeContext] context object.
-        """
-        return self.context.Stroke(x, y, color, line_width, line_dash)
 
     @property
     def on_resize(self) -> OnResizeHandler:
@@ -303,7 +367,7 @@ class Canvas(Widget):
         line_height: float | None = None,
     ) -> tuple[float, float]:
         """Measure the size at which
-        [`Context.write_text`][toga.widgets.canvas.Context.write_text]
+        [`Canvas.write_text`][toga.Canvas.write_text]
         would render some text.
 
         :param text: The text to measure. Newlines will cause line breaks, but long

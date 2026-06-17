@@ -238,21 +238,26 @@ class WebView(Widget):
         return None if url == "about:blank" else url
 
     def set_url(self, value, future=None):
+        if value is None:
+            value = "about:blank"
+
         if self.interface.on_navigation_starting._raw:
             # mark URL as being allowed
             self._allowed_url = value
-        if value:
-            request = NSURLRequest.requestWithURL(NSURL.URLWithString(value))
-        else:
-            request = NSURLRequest.requestWithURL(NSURL.URLWithString("about:blank"))
+
+        request = NSURLRequest.requestWithURL(NSURL.URLWithString(value))
 
         self.loaded_future = future
         self.native.loadRequest(request)
 
     def set_content(self, root_url, content):
+        if root_url is None:
+            root_url = "about:blank"
+
         if self.interface.on_navigation_starting._raw:
             # mark URL as being allowed
             self._allowed_url = root_url
+
         self.native.loadHTMLString(content, baseURL=NSURL.URLWithString(root_url))
 
     def get_user_agent(self):

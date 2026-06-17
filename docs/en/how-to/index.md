@@ -9,3 +9,7 @@ How-to guides are recipes that take the user through steps in key subjects. They
 ## Internal guides
 
 * [How to cut a Toga release](internal/release.md) - The procedure for cutting a new release of Briefcase.
+
+## Upgrading from previous versions
+
+* [Changes to Canvas in v0.5.4](upgrading/canvas-v0.5.4.md) - The changes needed when using the [Canvas](/reference/api/widgets/canvas.md) widget and upgrading from v0.5.3 (or older) to v0.5.4 (or newer).

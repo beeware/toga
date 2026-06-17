@@ -11,7 +11,14 @@ class CanvasProbe(SimpleProbe):
     screenshot_reset_transform = False
 
     def reference_variant(self, reference):
-        if reference in {"multiline_text", "write_text", "write_text_and_path"}:
+        if reference in {
+            "multiline_text",
+            "write_text",
+            "write_text_and_path",
+            "deprecated_tutorial",
+            "miter_join",
+            "attributes",
+        }:
             return f"{reference}-winforms"
         return reference
 

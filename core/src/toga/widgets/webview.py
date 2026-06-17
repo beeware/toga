@@ -176,15 +176,20 @@ class WebView(Widget):
         indication that some change has occurred, not that a *specific* change has
         occurred, or that a specific change has been fully propagated into the
         rendered content.
-
-        **Note:** This is not currently supported on Android.
         """
         return self._on_webview_load
 
     @on_webview_load.setter
     def on_webview_load(self, handler: OnWebViewLoadHandler) -> None:
         if handler and not getattr(self._impl, "SUPPORTS_ON_WEBVIEW_LOAD", True):
-            self.factory.not_implemented("WebView.on_webview_load")
+            try:
+                # Some backends (e.g., Android) will dynamically disable
+                # SUPPORTS_ON_WEBVIEW_LOAD based on configuration.
+                # If that happens, display an appropriate error; fall back
+                # to a simple "non implemented" otherwise.
+                print(self._impl.ON_LOAD_CONFIG_MISSING_ERROR)
+            except AttributeError:
+                self.factory.not_implemented("WebView.on_webview_load")
 
         self._on_webview_load = wrapped_handler(self, handler)
 

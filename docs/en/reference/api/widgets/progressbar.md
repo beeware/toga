@@ -2,6 +2,8 @@
 
 ## Usage
 
+The task being monitored can be of known or indeterminate length.
+
 If a progress bar has a `max` value, it is a *determinate* progress bar. The value of the progress bar can be altered over time, indicating progress on a task. The visual indicator of the progress bar will be filled indicating the proportion of `value` relative to `max`. `max` can be any positive numerical value.
 
 ```python

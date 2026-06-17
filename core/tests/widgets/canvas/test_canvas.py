@@ -1,13 +1,19 @@
+from contextlib import contextmanager
+
 import pytest
 
 import toga
-from toga.colors import rgb
+from toga import Canvas
+from toga.colors import BLACK, CORNFLOWERBLUE, REBECCAPURPLE, Color
 from toga.constants import FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
-from toga.widgets.canvas import ClosedPathContext, Context, FillContext, StrokeContext
+from toga.widgets.canvas import ClosePath, Fill, State, Stroke
+from toga.widgets.canvas.canvas import drawing_context_property
 from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
-REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
+BLACK_COLOR = Color.parse(BLACK)
+CORNFLOWERBLUE_COLOR = Color.parse(CORNFLOWERBLUE)
+REBECCAPURPLE_COLOR = Color.parse(REBECCAPURPLE)
 
 
 def test_widget_created():
@@ -25,8 +31,8 @@ def test_widget_created():
     assert widget.on_alt_release._raw is None
     assert widget.on_alt_drag._raw is None
 
-    # Canvas has a root context
-    assert isinstance(widget.context, Context)
+    # Canvas has a root state
+    assert isinstance(widget.root_state, State)
 
 
 def test_create_with_value(
@@ -53,8 +59,8 @@ def test_create_with_value(
     assert widget.on_alt_release._raw == on_alt_release_handler
     assert widget.on_alt_drag._raw == on_alt_drag_handler
 
-    # Canvas has a root context
-    assert isinstance(widget.context, Context)
+    # Canvas has a root state
+    assert isinstance(widget.root_state, State)
 
 
 def test_disable_no_op(widget):
@@ -82,58 +88,44 @@ def test_redraw(widget):
 
     assert_action_performed(widget, "redraw")
 
-    # An empty canvas has 2 draw operations - pushing and popping the root context.
+    # An empty canvas has 2 draw operations - pushing and popping the root state.
     assert widget._impl.draw_instructions == [
-        ("push context", {}),
-        ("pop context", {}),
+        "save",
+        "restore",
     ]
 
 
-def test_subcontext(widget):
-    """A canvas can produce a subcontext."""
-    with widget.Context() as subcontext:
-        # A fresh context has been created as a subcontext of the canvas.
-        assert isinstance(subcontext, Context)
-        assert subcontext != widget.context
-
-
 def test_closed_path(widget):
-    """A canvas can produce a ClosedPath subcontext."""
-    with widget.ClosedPath(x=10, y=20) as closed_path:
-        # A fresh context has been created as a subcontext of the canvas.
-        assert isinstance(closed_path, ClosedPathContext)
-        assert closed_path != widget.context
-        assert closed_path.x == 10
-        assert closed_path.y == 20
+    """A canvas can produce a ClosedPath sub-state."""
+    with widget.close_path() as closed_path:
+        # A fresh state has been created as a sub-state of the canvas.
+        assert isinstance(closed_path, ClosePath)
+        assert closed_path is not widget.root_state
 
 
 def test_fill(widget):
-    """A canvas can produce a Fill subcontext."""
-    with widget.Fill(
-        x=10, y=20, color="rebeccapurple", fill_rule=FillRule.EVENODD
-    ) as fill:
-        # A fresh context has been created as a subcontext of the canvas.
-        assert isinstance(fill, FillContext)
-        assert fill != widget.context
+    """A canvas can produce a Fill sub-state."""
+    with widget.fill(fill_rule=FillRule.EVENODD, fill_style=REBECCAPURPLE) as fill:
+        # A fresh state has been created as a sub-state of the canvas.
+        assert isinstance(fill, Fill)
+        assert fill is not widget.root_state
 
-        assert fill.x == 10
-        assert fill.y == 20
-        assert fill.color == REBECCA_PURPLE_COLOR
+        assert fill.fill_style == REBECCAPURPLE_COLOR
         assert fill.fill_rule == FillRule.EVENODD
 
 
 def test_stroke(widget):
-    """A canvas can produce a Stroke subcontext."""
-    with widget.Stroke(
-        x=10, y=20, color="rebeccapurple", line_width=5, line_dash=[2, 7]
+    """A canvas can produce a Stroke sub-state."""
+    with widget.stroke(
+        stroke_style=REBECCAPURPLE,
+        line_width=5,
+        line_dash=[2, 7],
     ) as stroke:
-        # A fresh context has been created as a subcontext of the canvas.
-        assert isinstance(stroke, StrokeContext)
-        assert stroke != widget.context
+        # A fresh state has been created as a sub-state of the canvas.
+        assert isinstance(stroke, Stroke)
+        assert stroke is not widget.root_state
 
-        assert stroke.x == 10
-        assert stroke.y == 20
-        assert stroke.color == REBECCA_PURPLE_COLOR
+        assert stroke.stroke_style == REBECCAPURPLE_COLOR
         assert stroke.line_width == 5.0
         assert stroke.line_dash == [2, 7]
 
@@ -191,3 +183,89 @@ def test_as_image(widget):
     image = widget.as_image()
     assert image is not None
     assert_action_performed(widget, "get image data")
+
+
+# Utility methods to abstract how context is saved and restored. Context attributes
+# should behave the same whether one uses the state() context manager or the save() and
+# restore() methods.
+
+
+def state_context_manager(canvas):
+    # Is already a context manager:
+    return canvas.state()
+
+
+@contextmanager
+def save_and_restore(canvas):
+    canvas.save()
+    try:
+        yield
+    finally:
+        canvas.restore()
+
+
+@pytest.mark.parametrize(
+    "name, default, assign_1, check_1, assign_2, check_2",
+    [
+        (
+            "fill_style",
+            BLACK_COLOR,
+            REBECCAPURPLE,
+            REBECCAPURPLE_COLOR,
+            CORNFLOWERBLUE,
+            CORNFLOWERBLUE_COLOR,
+        ),
+        (
+            "stroke_style",
+            BLACK_COLOR,
+            REBECCAPURPLE,
+            REBECCAPURPLE_COLOR,
+            CORNFLOWERBLUE,
+            CORNFLOWERBLUE_COLOR,
+        ),
+        ("line_width", 2.0, 5, 5.0, 10.0, 10.0),
+        ("line_dash", [], [1, 2], [1.0, 2.0], [2.0, 3.0], [2.0, 3.0]),
+    ],
+)
+@pytest.mark.parametrize("restore_method", [state_context_manager, save_and_restore])
+def test_attributes_save_restore(
+    widget, name, default, assign_1, check_1, assign_2, check_2, restore_method
+):
+    """Context attributes can be set, accessed, and restored, but not deleted."""
+    assert getattr(widget, name) == default
+
+    with restore_method(widget):
+        assert getattr(widget, name) == default
+
+        setattr(widget, name, assign_1)
+        assert getattr(widget, name) == check_1
+
+        with restore_method(widget):
+            assert getattr(widget, name) == check_1
+            setattr(widget, name, assign_2)
+            assert getattr(widget, name) == check_2
+
+        assert getattr(widget, name) == check_1
+
+    assert getattr(widget, name) == default
+
+    match = (
+        r"Drawing context attributes can't be deleted or set to None\. To reset to a "
+        r"default or previous value, do so explicitly or reset to a previous context "
+        r"state\."
+    )
+
+    with pytest.raises(ValueError, match=match):
+        delattr(widget, name)
+
+    with pytest.raises(ValueError, match=match):
+        setattr(widget, name, None)
+
+
+@pytest.mark.parametrize(
+    "attr_name",
+    ["fill_style", "stroke_style", "line_width", "line_dash"],
+)
+def test_attribute_class_level_access(widget, attr_name):
+    """Class-level access of a context attribute returns the property itself."""
+    assert isinstance(getattr(Canvas, attr_name), drawing_context_property)

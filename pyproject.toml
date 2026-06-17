@@ -28,7 +28,6 @@ precision = 1
 exclude_lines = [
     "pragma: no cover",
     "@(abc\\.)?abstractmethod",
-    "NotImplementedError\\(\\)",
     "if TYPE_CHECKING:",
     "class .+?\\(Protocol.*\\):",
     "@overload",
@@ -88,6 +87,41 @@ known-first-party = [
     "toga_winforms",
 ]
 
+[tool.rumdl]
+flavor = "mkdocs"
+include = ["**/*.md"]
+exclude = ["changes/template.md", "comment.md", "CODE_OF_CONDUCT.md", "docs/en/SUMMARY.md"]
+respect-gitignore = true
+force-exclude = true
+
+# Disable rules:
+# MD014: Forces commands in codeblocks to show output
+# MD042: Empty link - buggy, still flagging on valid MkDocs formatting
+# MD052: Reference link not found - buggy, flagging on valis MkDocs links
+disable = ["MD014", "MD042", "MD052"]
+
+[tool.rumdl.per-file-ignores]
+"changes/**/*.md" = ["MD041"]
+"docs/en/reference/api/**/*.md" = ["MD041"]
+"docs/en/snippets/**/*.md" = ["MD041"]
+
+[tool.rumdl.MD007]
+indent = 4
+
+[tool.rumdl.MD013]  # Line length
+line_length = 999999  # Force reflow to paragraph content to remove linebreaks
+reflow = true
+reflow_mode = "normalize"
+
+[tool.rumdl.MD026]  # Remove punctuation at the end of headings
+punctuation = ",;:"
+
+[tool.rumdl.MD033]  # No inline HTML
+allowed_elements = ["nospell",]  # pyspelling inline disable tag
+
+[tool.rumdl.MD046]
+style = "fenced"
+
 [tool.towncrier]
 directory = "changes"
 package = "toga"
@@ -113,19 +147,19 @@ type = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 pre-commit = [
-    "pre-commit == 4.3.0",
+    "pre-commit == 4.6.0",
 ]
 
 setuptools-scm = [
-    "setuptools_scm == 9.2.2",
+    "setuptools_scm == 10.0.5",
 ]
 
 towncrier = [
-    "towncrier==24.8.0",
+    "towncrier==25.8.0",
 ]
 
 tox-uv = [
-    "tox-uv == 1.28.0",
+    "tox-uv == 1.35.2",
 ]
 
 dev = [
@@ -138,6 +172,8 @@ dev = [
 # and the docs contribution guide.
 docs = [
     "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
-    "tabulate==0.9.0",
-    "PyYAML==6.0.3"
+    # "beeware-docs-tools @ file://../beeware-docs-tools",
+    "tabulate==0.10.0",
+    "mkdocs-redirects==1.2.3",
+    "mkdocs-exclude==1.0.2",
 ]

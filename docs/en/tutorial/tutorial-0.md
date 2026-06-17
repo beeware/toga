@@ -1,4 +1,4 @@
-# Your first Toga app
+# A basic app
 
 In this example, we're going to build a desktop app with a single button, that prints to the console when you press the button.
 
@@ -55,7 +55,7 @@ No additional dependencies are necessary.
 
 Before you install Toga, you'll need to install some system packages.
 
--8<- "reference/platforms/linux/gtk-prerequisites.md"
+-8<- "snippets/gtk-prerequisites.md"
 
 ///
 

@@ -293,13 +293,14 @@ class AndroidSelector(selectors.SelectSelector):
     def register(self, fileobj, events, data=None):
         if self._debug:  # pragma: no cover
             print(f"register() fileobj={fileobj} events={events} data={data}")
-        ret = super().register(fileobj, events, data=data)
-        self.register_with_android(fileobj, events)
-        return ret
+        key = super().register(fileobj, events, data=data)
+        self.register_with_android(key.fd, events)
+        return key
 
     def unregister(self, fileobj):  # pragma: no cover
-        self.message_queue.removeOnFileDescriptorEventListener(_create_java_fd(fileobj))
-        return super().unregister(fileobj)
+        key = super().unregister(fileobj)
+        self.message_queue.removeOnFileDescriptorEventListener(_create_java_fd(key.fd))
+        return key
 
     def reregister_with_android_soon(self, fileobj):
         def _reregister():
@@ -321,14 +322,14 @@ class AndroidSelector(selectors.SelectSelector):
         # completion before re-registering.
         self.loop.call_later(0, _reregister)
 
-    def register_with_android(self, fileobj, events):
+    def register_with_android(self, fd, events):
         if self._debug:  # pragma: no cover
-            print(f"register_with_android() fileobj={fileobj} events={events}")
+            print(f"register_with_android() fd={fd} events={events}")
         # `events` is a bitset comprised of `selectors.EVENT_READ` and
         # `selectors.EVENT_WRITE`. Register this FD for read and/or write events from
         # Android.
         self.message_queue.addOnFileDescriptorEventListener(
-            _create_java_fd(fileobj),
+            _create_java_fd(fd),
             # Passing `events` as-is because Android and Python use the same values for
             # read & write events.
             events,

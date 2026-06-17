@@ -1,5 +1,3 @@
-import asyncio
-
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import RubiconEventLoop, iOSLifecycle
 
@@ -44,19 +42,6 @@ class PythonAppDelegate(UIResponder):
     def applicationWillTerminate_(self, application) -> None:
         print("App about to Terminate.")
 
-    @objc_method
-    def application_didChangeStatusBarOrientation_(
-        self, application, oldStatusBarOrientation: int
-    ) -> None:
-        """This callback is invoked when rotating the device from landscape to portrait
-        and vice versa."""
-        asyncio.get_event_loop().call_soon_threadsafe(
-            App.app.interface.current_window.on_resize
-        )
-        asyncio.get_event_loop().call_soon_threadsafe(
-            App.app.interface.main_window.content.refresh
-        )
-
 
 class App:
     # iOS apps exit when the last window is closed
@@ -68,11 +53,14 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
         # Native instance doesn't exist until the lifecycle completes.
         self.native = None
 
         # Add a reference for the PythonAppDelegate class to use.
         App.app = self
+
+        self._exiting_presentation = False
 
         self.loop = RubiconEventLoop()
 
@@ -126,8 +114,11 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        self.interface.factory.not_implemented("dark mode state")
-        return None
+        # UIUserInterfaceStyle is an enum with the following values:
+        # 0: Unspecified
+        # 1: Light
+        # 2: Dark
+        return UIScreen.mainScreen.traitCollection.userInterfaceStyle == 2
 
     ######################################################################
     # App capabilities

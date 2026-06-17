@@ -6,15 +6,15 @@ from .base import Widget
 class TextInput(Widget):
     def create(self):
         self._return_listener = None
-        self.native = self._create_native_widget("sl-input")
+        self.native = self._create_native_widget("wa-input")
         self.native.onkeyup = self.dom_onkeyup
         self.native.addEventListener("onkeyup", create_proxy(self.dom_onkeyup))
-        self.native.addEventListener("sl-change", create_proxy(self.dom_sl_change))
+        self.native.addEventListener("change", create_proxy(self.dom_change))
 
     def dom_onkeyup(self, event):
         self.interface.on_change()
 
-    def dom_sl_change(self, event):
+    def dom_change(self, event):
         self.interface.on_confirm()
 
     def set_readonly(self, value):

@@ -1,11 +1,12 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication
 
 from ..colors import native_color, toga_color
 
 
-class Widget:
+class Widget(ABC):
     def __init__(self, interface):
         self.interface = interface
         self._container = None
@@ -13,11 +14,12 @@ class Widget:
         self.create()
         self.native.hide()
         self._hidden = True
+        self.native.setPalette(QApplication.style().standardPalette())
 
-        # if not hasattr(self, "_background_color_role"):
-        self._background_color_role = self.native.backgroundRole()
-        # if not hasattr(self, "_foreground_color_role"):
-        self._foreground_color_role = self.native.foregroundRole()
+        if not hasattr(self, "_background_color_role"):
+            self._background_color_role = self.native.backgroundRole()
+        if not hasattr(self, "_foreground_color_role"):
+            self._foreground_color_role = self.native.foregroundRole()
         if not hasattr(self, "_default_background_color"):
             self._default_background_color = toga_color(
                 self.native.palette().color(self._background_color_role)
@@ -54,10 +56,10 @@ class Widget:
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):
+    def set_app(self, app):  # noqa B027
         pass
 
-    def set_window(self, window):
+    def set_window(self, window):  # noqa B027
         pass
 
     def get_enabled(self):
@@ -95,7 +97,7 @@ class Widget:
     def _apply_hidden(self, hidden):
         self.native.setHidden(hidden)
 
-    def set_text_align(self, alignment):
+    def set_text_align(self, alignment):  # noqa B027
         pass  # If appropriate, a widget subclass will implement this.
 
     def set_color(self, color):
@@ -131,4 +133,5 @@ class Widget:
     def refresh(self):
         self.rehint()
 
-    # A subclass will implement rehint
+    @abstractmethod
+    def rehint(self): ...

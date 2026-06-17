@@ -7,6 +7,8 @@ from java import dynamic_proxy
 from org.beeware.android import MainActivity
 from pytest import approx
 
+import toga
+
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
     def __init__(self):
@@ -35,9 +37,17 @@ class BaseProbe:
         self.scale_factor = self.dpi / 160
 
     def __del__(self):
-        self.root_view.getViewTreeObserver().removeOnGlobalLayoutListener(
-            self.layout_listener
-        )
+        # Save `self` attributes in local variables, because they may be cleared after
+        # __del__ returns.
+        root_view = self.root_view
+        listener = self.layout_listener
+
+        # __del__ may be called on any thread, but Android APIs must be called on the
+        # main thread.
+        def cleanup_layout_listener():
+            root_view.getViewTreeObserver().removeOnGlobalLayoutListener(listener)
+
+        self.app.loop.call_soon_threadsafe(cleanup_layout_listener)
 
     def get_dialog_view(self):
         new_windows = [
@@ -45,12 +55,13 @@ class BaseProbe:
             for name in self.window_manager.getViewRootNames()
             if name not in self.original_window_names
         ]
-        if len(new_windows) == 0:
-            return None
-        elif len(new_windows) == 1:
-            return self.window_manager.getRootView(new_windows[0])
-        else:
-            raise RuntimeError(f"More than one new window: {new_windows}")
+        match len(new_windows):
+            case 0:
+                return None
+            case 1:
+                return self.window_manager.getRootView(new_windows[0])
+            case _:
+                raise RuntimeError(f"More than one new window: {new_windows}")
 
     def get_dialog_buttons(self, dialog_view):
         button_panel = dialog_view.findViewById(R.id.button1).getParent()
@@ -78,7 +89,7 @@ class BaseProbe:
         else:
             raise ValueError(f"Couldn't find dialog button '{caption}'")
 
-    async def redraw(self, message=None, delay=0):
+    async def redraw(self, message=None, delay=0, wait_for=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         self.root_view.requestLayout()
         try:
@@ -88,14 +99,23 @@ class BaseProbe:
         except asyncio.TimeoutError:
             print("Redraw timed out")
 
-        if self.app.run_slow:
+        # If we're running slow, or we have a wait condition,
+        # wait for at least a second
+        if self.app.run_slow or wait_for:
             delay = max(delay, 1)
 
-        if delay:
+        if delay or wait_for:
             print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(delay)
+            if toga.App.app.run_slow or wait_for is None:
+                await asyncio.sleep(delay)
+            else:
+                delta = 0.1
+                interval = 0.0
+                while not wait_for() and interval < delay:
+                    await asyncio.sleep(delta)
+                    interval += delta
 
-    def assert_image_size(self, image_size, size, screen):
+    def assert_image_size(self, image_size, size, screen, window=None):
         # Sizes are approximate because of scaling inconsistencies.
         assert image_size == (
             approx(size[0] * self.scale_factor, abs=2),

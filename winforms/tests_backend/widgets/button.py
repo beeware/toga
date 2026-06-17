@@ -20,6 +20,9 @@ class ButtonProbe(SimpleProbe):
     def assert_icon_size(self):
         icon = self.native.Image
         if icon:
-            assert (icon.Size.Width, icon.Size.Height) == (32, 32)
+            assert (icon.Size.Width, icon.Size.Height) == (
+                self.impl.scale_in(32),
+                self.impl.scale_in(32),
+            )
         else:
             pytest.fail("Icon does not exist")

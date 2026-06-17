@@ -20,7 +20,7 @@ Although GTK *can* be installed on Windows and macOS, and the `toga-gtk` backend
 
 [](){ #gtk-prerequisites }
 
-## Prerequisites  { #gtk-prerequisites }
+## Prerequisites { #gtk-prerequisites }
 
 `toga-gtk` requires Python 3.10+, and GTK 3.22 or newer.
 
@@ -28,7 +28,7 @@ Most testing occurs with GTK 3.24 as this is the version that has shipped with a
 
 The system packages that provide GTK must be installed manually:
 
--8<- "reference/platforms/linux/gtk-prerequisites.md"
+-8<- "snippets/gtk-prerequisites.md"
 
 Toga has experimental support for GTK 4. GTK 4 support requires a Linux distribution that provides `libgirepository 2.0`. This means it is not possible to use the GTK 4 backend on Debian 11, Debian 12, Ubuntu 22.04, or any other older Debian-based distribution.
 
@@ -51,18 +51,23 @@ $ python -m pip install toga-gtk[gtk4]
 ```
 
 and set the `TOGA_GTK` environment variable:
+
 ```console
 $ export TOGA_GTK=4
 ```
 
-The experimental GTK 4 backend also aims to provides support for integrating with desktop environment-specific libraries.  At present, `libadwaita` is the only supported library of this kind.  This functionality requires libadwaita 1.5 or newer.  libadwaita integration is automatically enabled on GNOME desktops if GTK4 support is enabled, and automatically disabled on non-GNOME desktops when using GTK4.  To explicitly enable integration with libadwaita, set:
+The experimental GTK 4 backend also aims to provides support for integrating with desktop environment-specific libraries. At present, `libadwaita` is the only supported library of this kind. This functionality requires libadwaita 1.5 or newer. libadwaita integration is automatically enabled on GNOME desktops if GTK4 support is enabled, and automatically disabled on non-GNOME desktops when using GTK4. To explicitly enable integration with libadwaita, set:
+
 ```console
 $ export TOGA_GTKLIB=Adw
 ```
+
 To explicitly disable integration with libadwaita, set:
+
 ```console
 $ export TOGA_GTKLIB=None
 ```
+
 An unset or empty ``$TOGA_GTKLIB`` will trigger automatic detection.
 
 Most testing occurs with libadwaita 1.5, as this is the version that ships with Ubuntu 24.04.

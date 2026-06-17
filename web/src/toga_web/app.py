@@ -16,6 +16,8 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
+        self._exiting_presentation = False
+
         self.loop = asyncio.new_event_loop()
 
     def create(self):
@@ -73,8 +75,7 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        self.interface.factory.not_implemented("dark mode state")
-        return None
+        return js.window.matchMedia("(prefers-color-scheme: dark)").matches
 
     ######################################################################
     # App capabilities
@@ -93,10 +94,10 @@ class App:
             copyright = f"\n\nCopyright © {self.interface.author}"
 
         close_button = create_element(
-            "sl-button", slot="footer", variant="primary", content="Ok"
+            "wa-button", slot="footer", variant="brand", content="Ok"
         )
         about_dialog = create_element(
-            "sl-dialog",
+            "wa-dialog",
             id="toga-about-dialog",
             label="About",
             children=[
@@ -109,7 +110,7 @@ class App:
         # Create a button handler to capture the close,
         # and destroy the dialog
         def dialog_close(event):
-            about_dialog.hide()
+            about_dialog.open = False
             self.native.removeChild(about_dialog)
 
         close_button.onclick = dialog_close
@@ -117,15 +118,15 @@ class App:
         # Add the dialog to the DOM.
         self.native.appendChild(about_dialog)
 
-        # If this is the first time a dialog is being shown, the Shoelace
+        # If this is the first time a dialog is being shown, the WebAwesome
         # autoloader needs to construct the Dialog custom element. We can't
         # display the dialog until that element has been fully loaded and
-        # constructed. Only show the dialog when the promise of <sl-dialog>
+        # constructed. Only show the dialog when the promise of <wa-dialog>
         # element construction has been fulfilled.
         def show_dialog(promise):
-            about_dialog.show()
+            about_dialog.open = True
 
-        js.customElements.whenDefined("sl-dialog").then(show_dialog)
+        js.customElements.whenDefined("wa-dialog").then(show_dialog)
 
     ######################################################################
     # Cursor control

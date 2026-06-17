@@ -1,7 +1,6 @@
 # WebView
 
-Test app for the
-[WebView widget](https://toga.beeware.org/en/stable/reference/api/widgets/webview.html).
+Test app for the [WebView widget](https://toga.beeware.org/en/stable/reference/api/widgets/webview.html).
 
 Includes buttons that exercise all the WebView features.
 
@@ -9,7 +8,7 @@ Includes buttons that exercise all the WebView features.
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m webview
 ```

@@ -2,7 +2,7 @@ import warnings
 
 from travertino.size import at_least
 
-import toga
+from toga.handlers import WeakrefCallable
 
 from ..libs import GTK_VERSION, GdkPixbuf, GObject, Gtk
 from .base import Widget
@@ -13,34 +13,21 @@ class TogaRow(GObject.Object):
         super().__init__()
         self.value = value
 
-    def icon(self, attr):
-        data = getattr(self.value, attr, None)
-        if isinstance(data, tuple):
-            if data[0] is not None:
-                return data[0]._impl.native(16)
-            return None
-        else:
-            try:
-                return data.icon._impl.native(16)
-            except AttributeError:
-                return None
+    def icon(self, toga_column):
+        icon = toga_column.icon(self.value)
+        if icon is not None:
+            return icon._impl.native(16)
+        return None
 
-    def text(self, attr, missing_value):
-        data = getattr(self.value, attr, None)
-        if isinstance(data, toga.Widget):
+    def text(self, toga_column, missing_value):
+        return toga_column.text(self.value, missing_value)
+
+    def warn_widget(self, toga_column):
+        if toga_column.widget(self.value) is not None:
             warnings.warn(
                 "GTK does not support the use of widgets in cells",
                 stacklevel=2,
             )
-            text = None
-        elif isinstance(data, tuple):
-            text = data[1]
-        else:
-            text = data
-
-        if text is None:
-            return missing_value
-        return str(text)
 
 
 class Table(Widget):
@@ -50,14 +37,16 @@ class Table(Widget):
         # The scroll view is the native, because it's the outer container.
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_table = Gtk.TreeView(model=self.store)
-            self.native_table.connect("row-activated", self.gtk_on_row_activated)
+            self.native_table.connect(
+                "row-activated", WeakrefCallable(self.gtk_on_row_activated)
+            )
 
             self.selection = self.native_table.get_selection()
             if self.interface.multiple_select:
                 self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
             else:
                 self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-            self.selection.connect("changed", self.gtk_on_select)
+            self.selection.connect("changed", WeakrefCallable(self.gtk_on_select))
 
             self._create_columns()
         else:  # pragma: no-cover-if-gtk3
@@ -73,15 +62,13 @@ class Table(Widget):
             pass
 
     def _create_columns(self):
-        if self.interface.headings:
-            headings = self.interface.headings
-            self.native_table.set_headers_visible(True)
-        else:
-            headings = self.interface.accessors
-            self.native_table.set_headers_visible(False)
+        self.native_table.set_headers_visible(self.interface._show_headings)
+        toga_columns = self.interface._columns
 
-        for i, heading in enumerate(headings):
-            column = Gtk.TreeViewColumn(heading)
+        for i, toga_column in enumerate(toga_columns):
+            column = Gtk.TreeViewColumn(
+                toga_column.heading if toga_column.heading else str(id(toga_column))
+            )
             column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
             column.set_expand(True)
             column.set_resizable(True)
@@ -94,6 +81,9 @@ class Table(Widget):
             value = Gtk.CellRendererText()
             column.pack_start(value, True)
             column.add_attribute(value, "text", i * 2 + 2)
+
+            # Preserve a reference to the accessor for the column
+            column.interface = toga_column
 
             self.native_table.append_column(column)
 
@@ -113,45 +103,116 @@ class Table(Widget):
             # updates by deferring row rendering until the update is complete.
             self.native_table.set_model(None)
 
-            for column in self.native_table.get_columns():
+            # Preserve widths when columns are re-created.
+            existing_columns = self.native_table.get_columns()
+            preserved_widths = {
+                column.interface: column.get_width() for column in existing_columns
+            }
+
+            for column in existing_columns:
                 self.native_table.remove_column(column)
+
             self._create_columns()
 
-            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._accessors)
+            for column in self.native_table.get_columns():
+                try:
+                    width = preserved_widths[column.interface]
+                    if width > 0:
+                        column.set_fixed_width(width)
+                except KeyError:
+                    # It's a new or unknown column
+                    pass
+
+            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._columns)
             self.store = Gtk.ListStore(*types)
 
             for i, row in enumerate(self.interface.data):
-                self.insert(i, row)
+                self.source_insert(index=i, item=row)
 
             self.native_table.set_model(self.store)
             self.refresh()
         else:  # pragma: no-cover-if-gtk3
             pass
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item)
+
+    def source_insert(self, *, index, item):
         row = TogaRow(item)
         values = [row]
-        for accessor in self.interface.accessors:
+        for column in self.interface._columns:
             values.extend(
                 [
-                    row.icon(accessor),
-                    row.text(accessor, self.interface.missing_value),
+                    row.icon(column),
+                    row.text(column, self.interface.missing_value),
                 ]
             )
+            # warn about widgets
+            row.warn_widget(column)
 
         self.store.insert(index, values)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
+        import warnings
+
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
         index = self.interface.data.index(item)
         row = self.store[index]
-        for i, accessor in enumerate(self.interface.accessors):
-            row[i * 2 + 1] = row[0].icon(accessor)
-            row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
+        for i, column in enumerate(self.interface._columns):
+            row[i * 2 + 1] = row[0].icon(column)
+            row[i * 2 + 2] = row[0].text(column, self.interface.missing_value)
+            row[0].warn_widget(column)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item)
+
+    def source_remove(self, *, index, item):
         del self.store[index]
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
         self.store.clear()
 
     def get_selection(self):
@@ -170,7 +231,7 @@ class Table(Widget):
         pos = row / n_rows * self.native.get_vadjustment().get_upper()
         self.native.get_vadjustment().set_value(pos)
 
-    def insert_column(self, index, heading, accessor):
+    def insert_column(self, index, column):
         # Adding/removing a column means completely rebuilding the ListStore
         self.change_source(self.interface.data)
 

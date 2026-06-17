@@ -3,11 +3,15 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.sources import ListSource
+from toga.sources import ListListener, ListSource
 from toga.style.pack import Pack
 
-from .conftest import build_cleanup_test
+from .conftest import build_cleanup_test, skip_on_backends
 from .properties import (  # noqa: F401
+    test_background_color as check_background_color,
+    test_background_color_reset as check_background_color_reset,
+    test_color as check_color,
+    test_color_reset as check_color_reset,
     test_enable_noop,
     test_flex_widget_size,
     test_focus_noop,
@@ -75,9 +79,59 @@ async def widget(
     )
 
 
-test_cleanup = build_cleanup_test(
-    toga.DetailedList, xfail_platforms=("android", "linux")
-)
+async def test_background_color(widget, probe):
+    skip_on_backends(
+        "toga_android",
+        "toga_cocoa",
+        "toga_gtk",
+        "toga_iOS",
+        "toga_qt",
+        "toga_textual",
+        "toga_web",
+    )
+    await check_background_color(widget, probe)
+
+
+async def test_background_color_reset(widget, probe):
+    skip_on_backends(
+        "toga_android",
+        "toga_cocoa",
+        "toga_gtk",
+        "toga_iOS",
+        "toga_qt",
+        "toga_textual",
+        "toga_web",
+    )
+    await check_background_color_reset(widget, probe)
+
+
+async def test_color(widget, probe):
+    skip_on_backends(
+        "toga_android",
+        "toga_cocoa",
+        "toga_gtk",
+        "toga_iOS",
+        "toga_qt",
+        "toga_textual",
+        "toga_web",
+    )
+    await check_color(widget, probe)
+
+
+async def test_color_reset(widget, probe):
+    skip_on_backends(
+        "toga_android",
+        "toga_cocoa",
+        "toga_gtk",
+        "toga_iOS",
+        "toga_qt",
+        "toga_textual",
+        "toga_web",
+    )
+    await check_color_reset(widget, probe)
+
+
+test_cleanup = build_cleanup_test(toga.DetailedList)
 
 
 async def test_scroll(widget, probe):
@@ -148,6 +202,32 @@ async def test_select(widget, probe, source, on_select_handler):
     assert widget.selection == source[2]
     on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
+
+
+async def test_deselect(widget, probe):
+    """Test for deselection"""
+    red = toga.Icon("resources/icons/red")
+    green = toga.Icon("resources/icons/green")
+
+    # Change the data source for something smaller
+    widget.data = [
+        {
+            "a": MyData(i),
+            "b": i,
+            "c": {0: green, 1: red}[i % 2],
+        }
+        for i in range(5)
+    ]
+    await probe.redraw("Data source has been changed")
+
+    # Select a single row
+    await probe.select_row(2)
+    await probe.redraw("Third row is selected")
+    assert widget.selection == widget.data[2]
+    # Deselect all
+    await probe.deselect_all()
+    await probe.redraw("Row is deselected")
+    assert widget.selection is None
 
 
 class MyData:
@@ -295,6 +375,8 @@ async def test_actions(
     on_secondary_action_handler.assert_called_once_with(widget, row=widget.data[4])
     on_secondary_action_handler.reset_mock()
 
+    await probe.redraw("Before perform")
+
     # Disable secondary action
     widget.on_secondary_action = None
     await probe.perform_secondary_action(5, active=False)
@@ -320,3 +402,34 @@ async def test_actions(
     await probe.redraw("A primary action was performed on row 6")
     on_primary_action_handler.assert_called_once_with(widget, row=widget.data[6])
     on_primary_action_handler.reset_mock()
+
+
+async def test_list_listener(widget):
+    """Does the widget implement the ListListener API"""
+    assert isinstance(widget._impl, ListListener)
+
+
+@pytest.mark.parametrize(
+    "method_name,args",
+    [
+        ("clear", {}),
+        ("change", {"item": "item"}),
+        ("insert", {"index": 0, "item": "item"}),
+        ("remove", {"index": 0, "item": "item"}),
+    ],
+)
+async def test_deprecated_methods(widget, method_name, args):
+    """Does the widget warn about the old ListListener API"""
+    impl = widget._impl
+    mock_method = Mock()
+    setattr(impl, f"source_{method_name}", mock_method)
+    method = getattr(impl, method_name)
+    warning_pattern = (
+        f"The {method_name}\\(\\) method is deprecated. "
+        f"Use source_{method_name}\\(\\) instead."
+    )
+
+    with pytest.warns(DeprecationWarning, match=warning_pattern):
+        method(**args)
+
+    mock_method.assert_called_once_with(**args)

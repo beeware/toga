@@ -1,3 +1,4 @@
+accelerometer
 accessor
 accessors
 acknowledgement
@@ -17,9 +18,9 @@ backend
 backends
 Beancount
 Beanquick
+beeware
 BeeWare
 BeeWare's
-beeware
 Bézier
 BMP
 Bugfixes
@@ -41,6 +42,7 @@ CSS
 Ctrl
 dataclass
 DateInput
+deadsnakes
 DetailedList
 DetailedLists
 dev
@@ -55,13 +57,15 @@ DOM
 dotfiles
 dp
 draggable
+DrawingAction
 elementaryOS
 elementaryOS's
 Embedder
+FastAPI
 Flatpak
 Flexbox
-FreeBSD
 fosstodon
+FreeBSD
 GBulb
 GeoClue
 geolocation
@@ -75,6 +79,7 @@ GStreamer
 GTK
 GTK's
 Helvetica
+HiDPI
 HIG
 HSL
 HSLA
@@ -88,6 +93,7 @@ ImageViews
 initializer
 instantiation
 iOS
+iPadOS
 iterable
 KDE
 KWin
@@ -149,6 +155,7 @@ radiusy
 README
 Refactored
 rehint
+rehints
 rehinted
 RemoteCommand
 Ren
@@ -160,18 +167,16 @@ rumdl
 runtime
 sandboxed
 scalable
-ScrollContainer
 scrollable
+ScrollContainer
 scrollers
 ScrollLock
 SDK
 Segoe
 selectable
 Setuptools
-SplitContainer
-SplitContainers
-SplitContainer's
 Sonoma
+SplitContainer
 Stimpy
 stylesheet
 subclasses
@@ -227,6 +232,7 @@ verbing
 viewport
 watchOS
 Wayland
+WebAwesome
 WebKit
 WebView
 WebViews
@@ -236,6 +242,8 @@ widget's
 Winforms
 WinForms
 WinUI
+WxPython
+WxWidgets
 XApp
 Xcode
 XDG

@@ -9,7 +9,7 @@ import toga
 from toga.command import Command, CommandSet, Group
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 if TYPE_CHECKING:
     from toga.icons import IconContentT
@@ -20,7 +20,7 @@ _py_id = id
 class StatusIcon:
     def __init__(self, icon: IconContentT | None = None):
         """An abstract base class for all status icons."""
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = getattr(self.factory, self.__class__.__name__)(interface=self)
 
         self.icon = icon
@@ -138,7 +138,7 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
         The items in the set can be retrieved by instance, or by ID. When iterated, the
         items are returned in the order they were added.
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.StatusIconSet(interface=self)
 
         self.elements: dict[str, StatusIcon] = {}

@@ -37,7 +37,7 @@ async def widget(on_select):
 
     # Some implementations of MapView are a WebView wearing a trenchcoat.
     # Ensure that the webview is fully configured before proceeding.
-    if toga.platform.current_platform in {"linux", "windows"}:
+    if toga.platform.current_platform == "windows" or toga.backend == "toga_gtk":
         deadline = time() + WINDOWS_INIT_TIMEOUT
         while widget._impl.backlog is not None:
             if time() < deadline:
@@ -50,7 +50,7 @@ async def widget(on_select):
 
     yield widget
 
-    if toga.platform.current_platform == "linux":
+    if toga.backend == "toga_gtk":
         # On Gtk, ensure that the MapView evades garbage collection by keeping a
         # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
         # thread disposing of it is not the same thread running the event loop. Since
@@ -59,7 +59,7 @@ async def widget(on_select):
         toga.App.app._gc_protector.append(widget)
 
 
-test_cleanup = build_cleanup_test(toga.MapView, xfail_platforms=("android",))
+test_cleanup = build_cleanup_test(toga.MapView)
 
 
 # The next two tests fail about 75% of the time in the macOS x86_64 CI configuration.

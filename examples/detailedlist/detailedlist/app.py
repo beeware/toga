@@ -10,7 +10,7 @@ class DetailedListApp(toga.App):
     # Detailed list callback functions
     def on_select_handler(self, widget, **kwargs):
         row = widget.selection
-        self.label.text = (
+        self.input.value = (
             f"Bee is {getattr(row, 'title', '')} in {getattr(row, 'subtitle', '')}"
             if row is not None
             else "No row selected"
@@ -26,18 +26,18 @@ class DetailedListApp(toga.App):
         self.dl.on_secondary_action = self.on_visit_handler if switch.value else None
 
     async def on_refresh_handler(self, widget, **kwargs):
-        self.label.text = "Refreshing list..."
+        self.input.value = "Refreshing list..."
         # We are using a local data source, so there's literally no reason
         # to use refresh. However, for demonstration purposes, lets pretend
         # that we're getting the data from an API, which takes 1s to respond.
         await asyncio.sleep(1)
-        self.label.text = "List was refreshed."
+        self.input.value = "List was refreshed."
 
     def on_delete_handler(self, widget, row, **kwargs):
         self.dl.data.remove(row)
 
     def on_visit_handler(self, widget, row, **kwargs):
-        self.label.text = "We're not a travel agent."
+        self.input.value = "We're not a travel agent."
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -97,8 +97,8 @@ class DetailedListApp(toga.App):
             ],
         )
 
-        # Label to show responses.
-        self.label = toga.Label("Ready.")
+        # TextInput to show responses.
+        self.input = toga.TextInput(placeholder="Ready", margin_top=5)
 
         self.dl = toga.DetailedList(
             data=[
@@ -124,7 +124,12 @@ class DetailedListApp(toga.App):
 
         # Outermost box
         outer_box = toga.Box(
-            children=[self.btn_box, self.switch_box, self.dl, self.label],
+            children=[
+                self.btn_box,
+                self.switch_box,
+                self.dl,
+                self.input,
+            ],
             flex=1,
             direction=COLUMN,
             margin=10,

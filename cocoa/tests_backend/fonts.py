@@ -1,5 +1,3 @@
-import pytest
-
 from toga.fonts import (
     BOLD,
     CURSIVE,
@@ -23,17 +21,18 @@ class FontMixin:
     supports_custom_variable_fonts = False
 
     def preinstalled_font(self):
-        pytest.skip("Use of arbitrary system fonts is not yet supported on macOS.")
+        return "Helvetica"
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         # Cocoa's FANTASY (Papyrus) and CURSIVE (Apple Chancery) system
         # fonts don't have any bold/italic variants.
-        if str(self.font.familyName) == "Papyrus":
-            print("Ignoring options on FANTASY system font")
-            return
-        elif str(self.font.familyName) == "Apple Chancery":
-            print("Ignoring options on CURSIVE system font")
-            return
+        match str(self.font.familyName):
+            case "Papyrus":
+                print("Ignoring options on FANTASY system font")
+                return
+            case "Apple Chancery":
+                print("Ignoring options on CURSIVE system font")
+                return
 
         traits = self.font.fontDescriptor.symbolicTraits
 

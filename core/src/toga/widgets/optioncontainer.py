@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Protocol, overload
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 from .base import StyleT, Widget
 
@@ -150,7 +150,7 @@ class OptionItem:
 
     @icon.setter
     def icon(self, icon_or_name: IconContentT | None) -> None:
-        if get_platform_factory().OptionContainer.uses_icons:
+        if get_factory().OptionContainer.uses_icons:
             match icon_or_name:
                 case toga.Icon() | None as icon:
                     pass
@@ -195,6 +195,9 @@ class OptionItem:
         enabled = self._enabled
         del self._enabled
 
+        self._content.app = interface.app
+        self._content.window = interface.window
+
         self._index = index
         self._interface = interface
         interface._impl.add_option(index, text, self.content._impl, icon)
@@ -237,6 +240,8 @@ class OptionList:
         # attributes on the item
         deleted_item = self._options[index]
         deleted_item._preserve_option()
+        deleted_item._content.window = None
+        deleted_item._content.app = None
 
         self.interface._impl.remove_option(index)
         del self._options[index]

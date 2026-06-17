@@ -10,6 +10,14 @@ updates:
       time: "20:00"
 
   - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      # Check for updates on Sunday, 8PM UTC
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+
+  - package-ecosystem: "pip"
     directory: "/toga"
     schedule:
       # Check for updates on Sunday, 8PM UTC
@@ -110,6 +118,14 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/winforms"
+    schedule:
+      # Check for updates on Sunday, 8PM UTC
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
     schedule:
       # Check for updates on Sunday, 8PM UTC
       interval: "weekly"

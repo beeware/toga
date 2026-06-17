@@ -1,3 +1,6 @@
+import asyncio
+from functools import partial
+
 from travertino.size import at_least
 
 from ..container import TogaContainer
@@ -9,6 +12,10 @@ class SplitContainer(Widget):
     def create(self):
         self.native = Gtk.Paned()
         self.native.set_wide_handle(True)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.connect("size-allocate", self.gtk_on_size_allocate)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.sub_containers = [TogaContainer(), TogaContainer()]
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -20,23 +27,26 @@ class SplitContainer(Widget):
 
         self._split_proportion = 0.5
 
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-
+    def gtk_on_size_allocate(self, widget, allocation):
         # If we've got a pending split to apply, set the split position.
         # However, only do this if the layout is more than the min size;
         # there are initial 0-sized layouts for which the split is meaningless.
+        # Note that this cannot be performed in set_bounds, as at that time,
+        # the widget's actual size may be out of sync, and thus set_position
+        # breaks.
         if (
             self._split_proportion
-            and width >= self.interface._MIN_WIDTH
-            and height > self.interface._MIN_HEIGHT
+            and allocation.width > self.interface._MIN_WIDTH
+            and allocation.height > self.interface._MIN_HEIGHT
         ):
             if self.interface.direction == self.interface.VERTICAL:
-                position = int(self._split_proportion * width)
+                position = int(self._split_proportion * allocation.width)
             else:
-                position = int(self._split_proportion * height)
+                position = int(self._split_proportion * allocation.height)
 
-            self.native.set_position(position)
+            asyncio.get_running_loop().call_soon_threadsafe(
+                partial(self.native.set_position, position)
+            )
             self._split_proportion = None
 
     def set_content(self, content, flex):

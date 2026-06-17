@@ -6,8 +6,6 @@ from android.view import Gravity, View
 from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
 from java import dynamic_proxy
 
-import toga
-
 from .base import Widget
 from .label import set_textview_font
 
@@ -52,10 +50,7 @@ class Table(Widget):
 
     def create(self):
         # get the selection color from the current theme
-        attrs = [R.attr.colorControlHighlight]
-        typed_array = self._native_activity.obtainStyledAttributes(attrs)
-        self.color_selected = typed_array.getColor(0, 0)
-        typed_array.recycle()
+        self.color_selected = self.get_theme_color(R.attr.colorControlHighlight)
 
         # add vertical scroll view
         self.native = vscroll_view = ScrollView(self._native_activity)
@@ -81,10 +76,10 @@ class Table(Widget):
         self.table_layout.removeAllViews()
 
         # StretchAllColumns mode causes a divide by zero error if there are no columns.
-        self.table_layout.setStretchAllColumns(bool(self.interface.accessors))
+        self.table_layout.setStretchAllColumns(bool(self.interface.columns))
 
         if source is not None:
-            if self.interface.headings is not None:
+            if self.interface._show_headings:
                 self.table_layout.addView(self.create_table_header())
             for row_index in range(len(source)):
                 table_row = self.create_table_row(row_index)
@@ -109,9 +104,9 @@ class Table(Widget):
             TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
-        for col_index in range(len(self.interface._accessors)):
+        for toga_column in self.interface._columns:
             text_view = TextView(self._native_activity)
-            text_view.setText(self.interface.headings[col_index])
+            text_view.setText(toga_column.heading)
             set_textview_font(
                 text_view,
                 self._font_impl,
@@ -144,9 +139,16 @@ class Table(Widget):
         table_row.setLongClickable(True)
         table_row.setOnLongClickListener(TogaOnLongClickListener(impl=self))
         table_row.setId(row_index)
-        for col_index in range(len(self.interface._accessors)):
+        data_row = self.interface.data[row_index]
+        missing_value = self.interface.missing_value
+        for toga_column in self.interface._columns:
+            if toga_column.widget(data_row) is not None:
+                warn(
+                    "This backend does not support the use of widgets in cells",
+                    stacklevel=1,
+                )
             text_view = TextView(self._native_activity)
-            text_view.setText(self.get_data_value(row_index, col_index))
+            text_view.setText(toga_column.text(data_row, missing_value))
             set_textview_font(
                 text_view,
                 self._font_impl,
@@ -162,24 +164,6 @@ class Table(Widget):
             table_row.addView(text_view)
         return table_row
 
-    def get_data_value(self, row_index, col_index):
-        value = getattr(
-            self.interface.data[row_index],
-            self.interface._accessors[col_index],
-            None,
-        )
-        if isinstance(value, toga.Widget):
-            warn(
-                "This backend does not support the use of widgets in cells",
-                stacklevel=2,
-            )
-            value = None
-        if isinstance(value, tuple):  # TODO: support icons
-            value = value[1]
-        if value is None:
-            value = self.interface.missing_value
-        return str(value)
-
     def get_selection(self):
         selection = sorted(self.selection)
         if self.interface.multiple_select:
@@ -189,17 +173,69 @@ class Table(Widget):
         else:
             return selection[0]
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item):
-        self.change_source(self.interface.data)
+        import warnings
 
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item)
+
+    def source_insert(self, *, index, item):
+        self.change_source(getattr(self.interface, "data", None))
+
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
-        self.change_source(self.interface.data)
+        import warnings
 
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
+        self.change_source(getattr(self.interface, "data", None))
+
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
-        self.change_source(self.interface.data)
+        import warnings
 
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
+        self.change_source(getattr(self.interface, "data", None))
+
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, index, item):
-        self.change_source(self.interface.data)
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item)
+
+    def source_remove(self, *, index, item):
+        self.change_source(getattr(self.interface, "data", None))
 
     def scroll_to_row(self, index):
         if (index != 0) and (self.interface.headings is not None):
@@ -210,12 +246,12 @@ class Table(Widget):
             True,  # Immediate, not animated
         )
 
-    def insert_column(self, index, heading, accessor):
-        self.change_source(self.interface.data)
+    def insert_column(self, index, column):
+        self.change_source(getattr(self.interface, "data", None))
 
     def remove_column(self, index):
-        self.change_source(self.interface.data)
+        self.change_source(getattr(self.interface, "data", None))
 
     def set_font(self, font):
         self._font_impl = font._impl
-        self.change_source(self.interface.data)
+        self.change_source(getattr(self.interface, "data", None))

@@ -7,6 +7,7 @@ from .textinput import TextInputProbe
 
 class MultilineTextInputProbe(TextInputProbe):
     native_class = UITextView
+    supports_simulate_mouse_wheel = False
 
     @property
     def value(self):

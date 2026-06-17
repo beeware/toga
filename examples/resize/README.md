@@ -6,7 +6,7 @@ Test app that demonstrates [resizing of widgets and windows](https://toga.beewar
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m resize
 ```

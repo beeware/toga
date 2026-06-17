@@ -8,9 +8,9 @@ from ..probe import BaseProbe
 class SimpleProbe(BaseProbe, FontMixin):
     invalid_size_while_hidden = False
 
-    async def redraw(self, message=None, delay=0):
+    async def redraw(self, message=None, delay=0, wait_for=None):
         self.native.repaint()
-        await super().redraw(message=message, delay=delay)
+        await super().redraw(message=message, delay=delay, wait_for=wait_for)
 
     def __init__(self, widget):
         super().__init__()

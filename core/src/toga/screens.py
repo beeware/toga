@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from toga.images import Image
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 from toga.types import Position, Size
 
 if TYPE_CHECKING:
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class Screen:
     def __init__(self, _impl: Any):
         self._impl = _impl
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
 
     @property
     def name(self) -> str:
@@ -38,7 +38,7 @@ class Screen:
         :param format: Format to provide. Defaults to [`Image`][toga.images.Image]; also
             supports [`PIL.Image.Image`][] if Pillow is installed, as well as any image
             types defined by installed
-            [image format plugins](/reference/plugins/image_formats.md).
+            [image format plugins](/reference/api/resources/image/image-format-plugins.md).
         :returns: An image containing the screen content, in the format requested.
-        """
+        """  # noqa: E501
         return Image(self._impl.get_image_data()).as_format(format)

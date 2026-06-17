@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
 from toga.handlers import AsyncResult, PermissionResult, wrapped_handler
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 if TYPE_CHECKING:
     from toga.app import App
@@ -35,7 +35,7 @@ class OnLocationChangeHandler(Protocol):
 
 class Location:
     def __init__(self, app: App):
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._app = app
         self._impl = self.factory.Location(self)
 
@@ -125,8 +125,8 @@ class Location:
                     "before confirming foreground location permission."
                 )
             )
-        elif has_background_permission := self.has_background_permission:
-            result.set_result(has_background_permission)
+        elif self.has_background_permission:
+            result.set_result(True)
         else:
             self._impl.request_background_permission(result)
 

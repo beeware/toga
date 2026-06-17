@@ -4,7 +4,7 @@ import asyncio
 from pathlib import Path
 from typing import TYPE_CHECKING, Generic, Literal, TypeVar, overload
 
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 if TYPE_CHECKING:
     from toga.window import Window
@@ -56,7 +56,7 @@ class InfoDialog(Dialog[None]):
         :param title: The title of the dialog window.
         :param message: The message to display.
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.dialogs.InfoDialog(title=title, message=message)
 
 
@@ -72,7 +72,7 @@ class QuestionDialog(Dialog[bool]):
         :param title: The title of the dialog window.
         :param message: The question to be answered.
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.dialogs.QuestionDialog(title=title, message=message)
 
 
@@ -89,7 +89,7 @@ class ConfirmDialog(Dialog[bool]):
         :param title: The title of the dialog window.
         :param message: A message describing the action to be confirmed.
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.dialogs.ConfirmDialog(title=title, message=message)
 
 
@@ -104,7 +104,7 @@ class ErrorDialog(Dialog[None]):
         :param title: The title of the dialog window.
         :param message: The error message to display.
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.dialogs.ErrorDialog(title=title, message=message)
 
 
@@ -143,7 +143,7 @@ class StackTraceDialog(Dialog[DialogResultT]):
         :param retry: If true, the user will be given options to "Retry" or "Quit"; if
             false, a single option to acknowledge the error will be displayed.
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.dialogs.StackTraceDialog(
             title=title,
             message=message,
@@ -182,7 +182,7 @@ class SaveFileDialog(Dialog[Path | None]):
             initial_directory = None
         filename = suggested_path.name
 
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.dialogs.SaveFileDialog(
             title=title,
             filename=filename,
@@ -237,7 +237,7 @@ class OpenFileDialog(Dialog[DialogResultT]):
         :param multiple_select: If True, the user will be able to select multiple files;
             if False, the selection will be restricted to a single file.
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.dialogs.OpenFileDialog(
             title=title,
             initial_directory=Path(initial_directory) if initial_directory else None,
@@ -288,7 +288,7 @@ class SelectFolderDialog(Dialog[DialogResultT]):
             directories; if False, the selection will be restricted to a single
             directory. This option is not supported on WinForms.
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.dialogs.SelectFolderDialog(
             title=title,
             initial_directory=Path(initial_directory) if initial_directory else None,

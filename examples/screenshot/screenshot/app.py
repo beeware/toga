@@ -106,7 +106,7 @@ class ScreenshotGeneratorApp(toga.App):
 
     def create_mapview(self):
         return toga.MapView(
-            zoom=3,
+            zoom=13,
             pins=[toga.MapPin((-31.95064, 115.85889), title="Yagan Square")],
             margin=10,
             width=self.MAX_WIDTH,
@@ -216,7 +216,7 @@ class ScreenshotGeneratorApp(toga.App):
 
     def create_table(self):
         return toga.Table(
-            headings=["Name", "Age", "Planet"],
+            columns=["Name", "Age", "Planet"],
             data=[
                 ("Arthur Dent", 42, "Earth"),
                 ("Ford Prefect", 37, "Betelgeuse Five"),
@@ -252,7 +252,7 @@ class ScreenshotGeneratorApp(toga.App):
 
     def create_tree(self):
         tree = toga.Tree(
-            headings=["Name", "Age", "Status"],
+            columns=["Name", "Age", "Status"],
             data={
                 "Earth": {
                     ("Arthur Dent", 42, "Anxious"): None,

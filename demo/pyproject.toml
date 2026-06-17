@@ -14,7 +14,7 @@ readme = "README.md"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
-    "LICENSE"
+    "LICENSE",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -77,7 +77,6 @@ project_name = "Toga Demo"
 bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
-license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 

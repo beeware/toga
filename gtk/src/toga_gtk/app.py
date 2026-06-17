@@ -14,7 +14,7 @@ from .libs import (
     Gdk,
     Gio,
     GLib,
-    GLibEventLoopPolicy,
+    GLibEventLoop,
     Gtk,
 )
 from .screens import Screen as ScreenImpl
@@ -29,10 +29,10 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+        self._exiting_presentation = False
 
-        self.policy = GLibEventLoopPolicy()
-        asyncio.set_event_loop_policy(self.policy)
-        self.loop = self.policy.get_event_loop()
+        self.loop = GLibEventLoop()
+        asyncio.set_event_loop(self.loop)
 
         # Stimulate the build of the app
         if Adw is None:  # pragma: no-cover-unless-plain-gtk
@@ -178,7 +178,8 @@ class App:
         self.native.hold()
 
         # Start the app event loop
-        self.native.run()
+        with self.loop:
+            self.native.run()
 
         # Release the reference to the app. This can't be invoked by the testbed,
         # because it's after the `run_forever()` that runs the testbed.

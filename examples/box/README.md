@@ -1,7 +1,6 @@
 # Box
 
-Test app for the
-[Box widget](https://toga.beeware.org/en/stable/reference/api/containers/box.html).
+Test app for the [Box widget](https://toga.beeware.org/en/stable/reference/api/containers/box.html).
 
 The following features are present in this example:
 
@@ -13,7 +12,7 @@ The following features are present in this example:
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m box
 ```

@@ -2,6 +2,8 @@ from .textinput import TextInputProbe
 
 
 class MultilineTextInputProbe(TextInputProbe):
+    supports_simulate_mouse_wheel = False
+
     @property
     def document_height(self):
         return self.native.getLayout().getHeight() / self.scale_factor

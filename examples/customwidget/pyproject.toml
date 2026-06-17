@@ -1,0 +1,79 @@
+[build-system]
+requires = ["briefcase"]
+
+[project]
+name = "customwidget"
+version = "0.0.1"
+
+[tool.briefcase]
+project_name = "Custom Widget"
+bundle = "org.beeware.toga.examples.customwidget"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD-3-Clause"
+license-files = [
+    "LICENSE",
+]
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+description = "A testing app"
+requires = [
+    "../../travertino",
+    "../../core",
+    "./helloworld",
+]
+
+[tool.briefcase.app.customwidget]
+formal_name = "Custom Widget"
+sources = ["customwidget"]
+
+[tool.briefcase.app.customwidget-qt]
+formal_name = "Custom Widget (Qt)"
+sources = ["customwidget", "customwidget_qt"]
+
+[tool.briefcase.app.customwidget.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.customwidget.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.customwidget-qt.linux]
+requires = [
+    "../../qt",
+    "PySide6",
+]
+
+[tool.briefcase.app.customwidget.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.customwidget.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.customwidget.android]
+requires = [
+    "../../android",
+]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "com.google.android.material:material:1.12.0",
+]
+
+# Web deployment
+[tool.briefcase.app.customwidget.web]
+requires = [
+    "../../web",
+]

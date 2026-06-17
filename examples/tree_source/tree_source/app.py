@@ -142,7 +142,7 @@ class TreeSourceApp(toga.App):
         self.fs_source = FileSystemSource(Path.cwd())
 
         self.tree = toga.Tree(
-            headings=["Name", "Date Modified"],
+            columns=["Name", "Date Modified"],
             data=self.fs_source,
             flex=1,
             multiple_select=True,

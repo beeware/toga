@@ -15,7 +15,7 @@ from .probe import BaseProbe
 
 class AppProbe(BaseProbe, DialogsMixin):
     supports_key = False
-    supports_dark_mode = False
+    supports_dark_mode = True
     edit_menu_noop_enabled = False
     supports_psutil = False
 
@@ -83,8 +83,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.native.delegate.applicationWillTerminate(self.native)
 
     def rotate(self):
-        self.native = self.app._impl.native
-        self.native.delegate.application(self.native, didChangeStatusBarOrientation=0)
+        raise pytest.xfail("Impossible to simulate device rotation on iOS")
 
     def has_status_icon(self, status_icon):
         pytest.xfail("Status icons not implemented on iOS")

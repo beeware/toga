@@ -64,6 +64,7 @@ class App:
         # Track whether the app is exiting. This is used to stop the event loop,
         # and shortcut close handling on any open windows when the app exits.
         self._is_exiting = False
+        self._exiting_presentation = False
 
         # Winforms cursor visibility is a stack; If you call hide N times, you
         # need to call Show N times to make the cursor re-appear. Store a local
@@ -215,8 +216,17 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        self.interface.factory.not_implemented("dark mode state")
-        return None
+        from Microsoft.Win32 import Registry
+
+        key = Registry.CurrentUser.OpenSubKey(
+            "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+        )
+        if key is None:  # pragma: no cover
+            return False
+        try:
+            return key.GetValue("AppsUseLightTheme", 1) == 0
+        finally:
+            key.Close()
 
     ######################################################################
     # App capabilities

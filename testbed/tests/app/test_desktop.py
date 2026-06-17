@@ -786,6 +786,8 @@ def find_event(event_path, main_window_probe):
     from System import Array, Object
     from System.Reflection import BindingFlags
 
+    from toga_winforms import _use_dotnet_core
+
     event_class, event_name = event_path.split(".")
     if event_class == "Form":
         return getattr(main_window_probe.native, f"On{event_name}")
@@ -801,7 +803,9 @@ def find_event(event_path, main_window_probe):
         ][0]
 
         event_key = SystemEvents_type.GetField(
-            f"On{event_name}Event", binding_flags
+            # .NET Core 10 uses a different naming convention for system events.
+            f"s_on{event_name}Event" if _use_dotnet_core else f"On{event_name}Event",
+            binding_flags,
         ).GetValue(None)
 
         return lambda event_args: RaiseEvent.Invoke(

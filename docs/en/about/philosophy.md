@@ -10,7 +10,7 @@ It's easy to spot apps that have been built using themed widget sets - they're t
 
 On top of that, native widgets are always faster than a themed generic widget. After all, you're using native system capability that has been tuned and optimized, not a drawing engine that's been layered on top of a generic widget.
 
-## Abstract the broad concepts  { #abstract-broad-concepts }
+## Abstract the broad concepts { #abstract-broad-concepts }
 
 It's not enough to just look like a native app, though - you need to *feel* like a native app as well.
 

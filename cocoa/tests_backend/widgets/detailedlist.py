@@ -118,6 +118,11 @@ class DetailedListProbe(SimpleProbe):
             modifierFlags=NSEventModifierFlagCommand if add else 0,
         )
 
+    async def deselect_all(self):
+        # Assume there is blank space at the bottom of the client area.
+        row = self.row_count
+        await self.select_row(row)
+
     async def _refresh_action(self, offset):
         # Create a scroll event where event phase = Began, Momenum scroll phase = Begin,
         # and the pixel value is equal to the requested offset.
