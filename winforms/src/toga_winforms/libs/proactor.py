@@ -16,6 +16,8 @@ from System.Threading.Tasks import Task
 
 from toga.handlers import WeakrefCallable
 
+from .reentrantqueue import ReentrantQueue
+
 
 class ReadyDeque(deque):
     """A deque that enqueues a WinForms event tick when a value is appended."""
@@ -114,16 +116,22 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
 
     def _iocp_listener(self):
         """Listens for IOCP events and adds them to the queue."""
+        app = self._loop.app
+        app_dispatcher = self._loop.app.app_dispatcher
+        GetQueuedCompletionStatus = _overlapped.GetQueuedCompletionStatus
+
+        def enqueue_task(task):
+            def action():
+                return self._loop._synchronous_queue.append(task)
+
+            app_dispatcher.Invoke(Action(action))
+
         # The exit lock prevents the TwoThreadIocpProactor loop from closing before
         # the IOCP listener thread has shutdown correctly.
         with self._exit_lock:
             # The listener lock forces the close method to wait until the listener
             # loop is closed.
             with self._listener_lock:
-                app = self._loop.app
-                app_dispatcher = self._loop.app.app_dispatcher
-                GetQueuedCompletionStatus = _overlapped.GetQueuedCompletionStatus
-
                 while not app._is_exiting:
                     # Use a timeout (100 milliseconds) only for exiting the thread.
                     status = GetQueuedCompletionStatus(self._iocp, 100)
@@ -138,8 +146,8 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
                         def iocp_action(status=status):
                             return self._iocp_action(status)
 
-                    # Inkove the actions synchronously on the main thread.
-                    app_dispatcher.Invoke(Action(iocp_action))
+                    # Queue/run the actions to run synchronously on the main thread.
+                    enqueue_task(iocp_action)
 
                 ########################################################################
                 # From here onward is part of the app shutdown procedure, which can't
@@ -253,6 +261,8 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     def __init__(self):
         super().__init__(proactor=TwoThreadIocpProactor())
+
+        self._synchronous_queue = ReentrantQueue()
         self._idle = True
 
     def run_forever(self, app):
@@ -346,16 +356,19 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     # covered, otherwise nothing would work.
     def tick(self, *args, **kwargs):  # pragma: no cover
         """Cause a single iteration of the event loop to run on the main GUI thread."""
-        action = Action(self.run_once_recurring)
+        action = Action(self.append_tick_task)
         self.app.app_dispatcher.Invoke(action)
+
+    def append_tick_task(self):
+        """Append the run_once_recurring call to the synchronous queue."""
+        return self._synchronous_queue.append(self.run_once_recurring)
 
     # The native dialog `Show` methods are all blocking, as they run an inner native
     # event loop. Call them via this method to ensure the inner loop is correctly linked
     # with this Python loop.
     def start_inner_loop(self, callback, *args):
-        assert self._inner_loop is None
-        self._inner_loop = (callback, args)
-        self.enqueue_tick(delay=0)
+        action = Action(lambda: callback(*args))
+        self.app.app_dispatcher.InvokeAsync(action)
 
     # We can't get coverage for app shutdown, so this handler must be no-cover.
     def winforms_application_exit(self, app, event):  # pragma: no cover
@@ -426,11 +439,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                         + f"loop run scheduled for:{self.time() + delay / 1000}"
                     )
                     self.enqueue_tick(delay=delay)
-
-            if self._inner_loop:
-                callback, args = self._inner_loop
-                self._inner_loop = None
-                callback(*args)
 
         # Exceptions thrown by this method will be silently ignored.
         except BaseException:  # pragma: no cover
