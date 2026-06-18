@@ -64,7 +64,7 @@ def test_closed_path(widget):
         # Defaults
         (
             {},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             {
                 "fill_rule": FillRule.NONZERO,
                 "fill_style": None,
@@ -79,13 +79,13 @@ def test_closed_path(widget):
         # Explicitly don't set fill style
         (
             {"fill_style": None},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
         # Fill Rule
         (
             {"fill_rule": FillRule.EVENODD},
-            "fill_rule=FillRule.EVENODD, fill_style=None",
+            "fill_rule=FillRule.EVENODD",
             {"fill_style": None, "fill_rule": FillRule.EVENODD},
         ),
         # All args
@@ -134,13 +134,13 @@ def test_fill(widget, kwargs, args_repr, properties):
         # Defaults
         (
             {},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "",
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color
         (
             {"stroke_style": REBECCAPURPLE},
-            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            f"stroke_style={REBECCA_PURPLE_COLOR!r}",
             {
                 "stroke_style": REBECCA_PURPLE_COLOR,
                 "line_width": None,
@@ -150,19 +150,19 @@ def test_fill(widget, kwargs, args_repr, properties):
         # Explicitly don't set stroke_style
         (
             {"stroke_style": None},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "",
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "stroke_style=None, line_width=4.500, line_dash=None",
+            "line_width=4.500",
             {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "stroke_style=None, line_width=None, line_dash=[2, 7]",
+            "line_dash=[2, 7]",
             {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args

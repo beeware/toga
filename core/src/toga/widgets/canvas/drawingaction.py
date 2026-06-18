@@ -74,6 +74,9 @@ class DrawingAction(ABC):
             str_fields = []
             for field in fields(self):
                 match value := getattr(self, field.name):
+                    case None:
+                        # Leave None (unset attributes) out of the repr
+                        continue
                     case float():
                         str_value = f"{value:.3f}"
                     case Enum():
