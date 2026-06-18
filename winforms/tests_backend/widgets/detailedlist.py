@@ -109,7 +109,6 @@ class DetailedListProbe(SimpleProbe):
 
     async def select_row(self, row, add=False):
         x, y = self._row_midpoint(row)
-        print(f"probe.select_row(row={row}, add={add}) x={x}, y={y}")
         await self._perform_click(x, y, modifier=add)
 
     async def deselect_all(self):
@@ -218,9 +217,6 @@ class DetailedListProbe(SimpleProbe):
         ClientToScreen(hwnd, point)
         WinForms.Cursor.Position = Point(point.x, point.y)
 
-        print(f"probe._perform_click - Desired cursor: {(point.x, point.y)}")
-        print(f"probe._perform_click - Actual cursor: {WinForms.Cursor.Position}")
-
         INPUT_ARRAY = ws.INPUT * 1
         mouse_inputs = INPUT_ARRAY()
         mouse_inputs[0] = ws.INPUT()
@@ -259,7 +255,6 @@ class DetailedListProbe(SimpleProbe):
                     point.y = point.y + delta[1]
                     WinForms.Cursor.Position = Point(point.x, point.y)
 
-                print("probe._perform_click - click! asyncio.sleep(0.05)")
                 await asyncio.sleep(0.05)
 
         await click()
@@ -280,7 +275,6 @@ class DetailedListProbe(SimpleProbe):
 
         self._click_shift += int(self.scale_factor)
 
-        print("probe._perform_click - end asyncio.sleep(1)")
         await asyncio.sleep(1)
 
     async def _select_with_keyboard(self, index):
