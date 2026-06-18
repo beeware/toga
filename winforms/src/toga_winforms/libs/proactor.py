@@ -210,13 +210,16 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
         # loop. This codeblock is part of the method that processes the received IOCP
         # messages.
         #
+        # Use no cover for the KeyError and OSError codeblocks since these should not be
+        # accessed under normal operations.
+        #
         # fmt: off
         # ruff: disable[UP031]
         # =================================== BEGIN ===================================
         err, transferred, key, address = status
         try:
             f, ov, obj, callback = self._cache.pop(address)
-        except KeyError:
+        except KeyError: # pragma no cover
             if self._loop.get_debug():
                 self._loop.call_exception_handler({
                     'message': ('GetQueuedCompletionStatus() returned an '
@@ -238,7 +241,7 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
         elif not f.done():
             try:
                 value = callback(transferred, key, ov)
-            except OSError as e:
+            except OSError as e: # pragma no cover
                 f.set_exception(e)
                 # self._results.append(f)
             else:
@@ -398,7 +401,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         """
         # run_once_recurring is called asynchronously by the native WinForms loop. The
         # tasks that triggered the call may have already been processed.
-        if len(self._ready) < 1 and len(self._scheduled) < 1 and not self._inner_loop:
+        if len(self._ready) < 1 and len(self._scheduled) < 1:
             return
 
         try:
@@ -409,10 +412,9 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             if self.app._is_exiting:
                 self.stop()  # pragma: no cover
             else:
-                if len(self._ready) > 0 or len(self._scheduled) > 0:
-                    self._idle = False
-                    self._run_once()
-                    self._idle = True
+                self._idle = False
+                self._run_once()
+                self._idle = True
 
             # Enqueue the next tick. Determine the delay of the tick by checking if
             # there are events in the ready list, otherwise then calculating a delay
