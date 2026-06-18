@@ -6,6 +6,11 @@ import pytest
 import toga
 
 
+async def test_event_loop(app_probe):
+    """Runs tests for the apps event loop."""
+    await app_probe.assert_event_loop()
+
+
 async def test_unsupported_widget(app):
     """If a widget isn't implemented, the factory raises NotImplementedError."""
     with pytest.raises(

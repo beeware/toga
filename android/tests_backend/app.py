@@ -144,3 +144,6 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def activate_status_menu_item(self, item_id, title):
         pytest.xfail("Status icons not implemented on Android")
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

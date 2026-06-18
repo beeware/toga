@@ -1,3 +1,5 @@
+import _overlapped
+import asyncio
 import ctypes
 from pathlib import Path
 from time import sleep
@@ -31,6 +33,17 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.main_window = app.main_window
         # The Winforms Application class is a singleton instance
         assert self.app._impl.native == Application
+
+    async def assert_event_loop(self):
+        loop = self.app.loop
+        # Test for unregistering events.
+        event = _overlapped.CreateEvent(None, True, False, None)
+        fut = loop._proactor.wait_for_handle(event, 10)
+        fut.cancel()
+
+        # Wait for the future to removed from the unregistered list.
+        await asyncio.sleep(0.2)
+        assert len(loop._proactor._unregistered) == 0
 
     @property
     def config_path(self):
