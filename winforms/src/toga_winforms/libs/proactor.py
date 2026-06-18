@@ -213,6 +213,10 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
         # Use no cover for the KeyError and OSError codeblocks since these should not be
         # accessed under normal operations.
         #
+        # Use no cover obj in self._stopped_serving since this list is only populated
+        # by the self._stop_serving method, which is only called in the loop.close
+        # method. The loop.close method is part of the shutdown procedure, so no cover.
+        #
         # fmt: off
         # ruff: disable[UP031]
         # =================================== BEGIN ===================================
@@ -234,7 +238,7 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
                 _winapi.CloseHandle(key)
             return
 
-        if obj in self._stopped_serving:
+        if obj in self._stopped_serving: # pragma no cover
             f.cancel()
         # Don't call the callback if _register() already read the result or
         # if the overlapped has been cancelled
