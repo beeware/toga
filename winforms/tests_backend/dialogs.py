@@ -4,10 +4,72 @@ from unittest.mock import Mock
 from System import Array as WinArray, String as WinString
 
 from toga_winforms import _use_dotnet_core
+from toga_winforms.libs.user32 import GetFocus
 
 
 class DialogsMixin:
     supports_multiple_select_folder = False
+
+    async def _close_dialog(
+        self,
+        future,
+        dialog,
+        char,
+        alt=False,
+        char2=None,
+        pre_close_test_method=None,
+    ):
+        # When a dialog is opened, it receives the input focus. An opening event can be
+        # detected by a change in the input focus.
+        focus = GetFocus()
+        while focus == GetFocus():  # noqa ASYNC110
+            await asyncio.sleep(0.01)
+
+        # File dialogs require some extra time to be ready.
+        await self.redraw("Dialog opened", delay=0.2)
+
+        try:
+            if pre_close_test_method:
+                pre_close_test_method(dialog)
+        finally:
+            try:
+                await self.type_character(char, alt=alt)
+                if char2:
+                    # If a second character press is needed, wait a moment
+                    # for the effect of the first character to take effect.
+                    await self.redraw("wait for char", delay=0.1)
+                    await self.type_character(char2)
+            except Exception as e:
+                # An error occurred closing the dialog; that means the dialog
+                # isn't what as expected, so record that in the future.
+                future.set_exception(e)
+
+    async def _open_dialog(
+        self,
+        host_window,
+        future,
+        dialog,
+        char,
+        alt,
+        char2,
+        pre_close_test_method,
+    ):
+
+        asyncio.create_task(
+            self._close_dialog(
+                future,
+                dialog,
+                char,
+                alt,
+                char2,
+                pre_close_test_method,
+            )
+        )
+
+        # A small delay to ensure that _close_dialog has started.
+        await asyncio.sleep(0.1)
+
+        dialog.orig_show(host_window, future)
 
     def _setup_dialog_result(
         self,
@@ -19,34 +81,20 @@ class DialogsMixin:
     ):
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
-        orig_show = dialog._impl.show
+        dialog.orig_show = dialog._impl.show
 
         def automated_show(host_window, future):
-            orig_show(host_window, future)
-
-            async def _close_dialog():
-                # Give the inner event loop a chance to start, and a chance for users
-                # to view the dialog in slow mode.  The 1.5s delay is required for file
-                # dialogs for some reason.
-                await self.redraw("Dialog opened", delay=1.5)
-
-                try:
-                    if pre_close_test_method:
-                        pre_close_test_method(dialog)
-                finally:
-                    try:
-                        await self.type_character(char, alt=alt)
-                        if char2:
-                            # If a second character press is needed, wait a moment
-                            # for the effect of the first character to take effect.
-                            await self.redraw("wait for char", delay=0.1)
-                            await self.type_character(char2)
-                    except Exception as e:
-                        # An error occurred closing the dialog; that means the dialog
-                        # isn't what as expected, so record that in the future.
-                        future.set_exception(e)
-
-            asyncio.create_task(_close_dialog(), name="close-dialog")
+            asyncio.create_task(
+                self._open_dialog(
+                    host_window,
+                    future,
+                    dialog,
+                    char,
+                    alt,
+                    char2,
+                    pre_close_test_method,
+                )
+            )
 
         dialog._impl.show = automated_show
 
