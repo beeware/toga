@@ -170,11 +170,11 @@ async def test_image_data(canvas, probe):
     )
 
 
-def assert_reference(probe, reference, threshold=0.01):
+def assert_reference(probe, reference, threshold=0.01, *, image=None):
     """Assert that the canvas currently matches a reference image, within an
     RMS threshold."""
     # Get the canvas image.
-    image = probe.get_image()
+    image = image if image is not None else probe.get_image()
     scaled_image = image.resize((200, 200))
 
     # Look for a platform-specific reference variant.

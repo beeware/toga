@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from copy import copy
 from dataclasses import dataclass
 from math import ceil
+from warnings import warn
 
 from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
@@ -192,12 +193,39 @@ class Context:
         core_graphics.CGContextTranslateCTM(self.native, tx, ty)
 
     def reset_transform(self):
-        # Restore the "clean" state of the graphics context.
-        core_graphics.CGContextRestoreGState(self.native)
-        # CoreGraphics has a stack-based state representation,
-        # so ensure that there is a new, clean version of the "clean"
-        # state on the stack.
-        core_graphics.CGContextSaveGState(self.native)
+        # Core Graphics has no built-in ability to assign to or reset the transformation
+        # matrix.
+        current = core_graphics.CGContextGetCTM(self.native)
+
+        if current == self.original_matrix:
+            # No resetting necessary.
+            return
+
+        if self.using_standard_coords:
+            transform = current
+        else:
+            # The *original* transform matrix isn't the standard identity; this is
+            # probably because we're rendering to a cache. So we need to know the
+            # transform from what we started with.
+            transform = core_graphics.CGAffineTransformConcat(
+                current,
+                self.inverse_original,
+            )
+
+        inverse_transform = core_graphics.CGAffineTransformInvert(transform)
+        if inverse_transform == transform:
+            # When a matrix has no inverse, TransformInvert returns it unchanged.
+            warn(
+                (
+                    "No way to reset transform on macOS if current transform has no "
+                    "inverse. Did you scale to 0, perhaps?"
+                ),
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            return
+
+        core_graphics.CGContextConcatCTM(self.native, inverse_transform)
 
     # This whole method should probably be deprecated in favor of fill_text and
     # stroke_text.
@@ -275,19 +303,21 @@ class TogaCanvas(NSView):
 
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
-        context = NSGraphicsContext.currentContext.CGContext
+        context = Context(self.impl)
 
         # Store this so we can restore the original if needed.
-        self.original_matrix = core_graphics.CGContextGetCTM(context)
-        self.using_standard_coords = self.original_matrix == CGAffineTransformIdentity
+        context.original_matrix = core_graphics.CGContextGetCTM(context.native)
+        context.using_standard_coords = (
+            context.original_matrix == CGAffineTransformIdentity
+        )
         # If we're not in the normal coordinate space (presumably because we're
         # rendering to a cache), save the inverse as well.
-        if not self.using_standard_coords:
-            self.inverse_original = core_graphics.CGAffineTransformInvert(
-                core_graphics.CGContextGetCTM(context)
+        if not context.using_standard_coords:
+            context.inverse_original = core_graphics.CGAffineTransformInvert(
+                context.original_matrix
             )
 
-        self.interface.root_state._draw(Context(self.impl))
+        self.interface.root_state._draw(context)
 
     @objc_method
     def isFlipped(self) -> bool:
