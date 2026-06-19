@@ -18,6 +18,8 @@ class BaseScaffold(ABC):
     def __init__(self, content: Any = None):
         self.factory = get_factory()
         self._impl = self._create()
+        self._window = None
+        self._app = None
 
     @abstractmethod
     def _create(self) -> Any: ...
@@ -25,18 +27,32 @@ class BaseScaffold(ABC):
     def refresh(self):
         self._impl.refresh()
 
+    @property
+    def window(self) -> Window | None:
+        return self._window
+
+    @window.setter
+    def window(self, value: Window | None):
+        self._window = value
+
+    @property
+    def app(self) -> App | None:
+        return self._app
+
+    @app.setter
+    def app(self, value):
+        self._app = value
+
 
 class Scaffold(BaseScaffold):
 
     def __init__(self, content: Widget | None = None):
         super().__init__()
-        self._window = None
-        self._app = None
         self._content = None
         self.content = content
 
     def _create(self):
-        return get_factory().Scaffold()
+        return get_factory().Scaffold(self)
     
     @property
     def content(self) -> Widget | None:
@@ -58,24 +74,16 @@ class Scaffold(BaseScaffold):
             self._content.app = self.app
         self.refresh()
 
-    @property
-    def window(self) -> Window | None:
-        return self._window
-
-    @window.setter
+    @BaseScaffold.window.setter
     def window(self, value: Window | None):
-        self._window = value
+        BaseScaffold.window.fset(self, window)
         if self.content is not None:
             # Track our content's window
             self.content.window = value
 
-    @property
-    def app(self) -> App | None:
-        return self._app
-
-    @app.setter
+    @BaseScaffold.app.setter
     def app(self, value):
-        self._app = value
+        BaseScaffold.app.fset(self, app)
         if self.content is not None:
             # Track our content's app
             self.content.app = value
