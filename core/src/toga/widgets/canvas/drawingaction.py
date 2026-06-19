@@ -513,44 +513,6 @@ class DrawImage(DrawingAction):
 ###########################################################################
 
 
-@dataclass(repr=False)
-class Rotate(DrawingAction):
-    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
-    [rotate()][toga.Canvas.rotate] method.
-    """
-
-    radians: float
-
-    def _draw(self, context: Any) -> None:
-        context.rotate(self.radians)
-
-
-@dataclass(repr=False)
-class Scale(DrawingAction):
-    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
-    [scale()][toga.Canvas.scale] method.
-    """
-
-    sx: float
-    sy: float
-
-    def _draw(self, context: Any) -> None:
-        context.scale(self.sx, self.sy)
-
-
-@dataclass(repr=False)
-class Translate(DrawingAction):
-    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
-    [translate()][toga.Canvas.translate] method.
-    """
-
-    tx: float
-    ty: float
-
-    def _draw(self, context: Any) -> None:
-        context.translate(self.tx, self.ty)
-
-
 class ResetTransform(DrawingAction):
     """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
     [reset_transform()][toga.Canvas.reset_transform] method.

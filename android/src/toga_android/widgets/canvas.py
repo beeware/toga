@@ -54,7 +54,7 @@ class Context:
         stroke = Paint()
         stroke.setAntiAlias(True)
         stroke.setStyle(Paint.Style.STROKE)
-        stroke.setStrokeWidth(2.0)
+        stroke.setStrokeWidth(1.0)
         stroke.setColor(BLACK)
         stroke.setStrokeMiter(10.0)
 

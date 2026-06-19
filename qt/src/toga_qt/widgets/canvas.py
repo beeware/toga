@@ -39,7 +39,7 @@ class State:
             self.fill_style = BLACK
             self.stroke = QPen(BLACK)
             self.stroke.setCapStyle(Qt.PenCapStyle.FlatCap)
-            self.stroke.setWidth(2.0)
+            self.stroke.setWidth(1.0)
             self.stroke.setJoinStyle(Qt.MiterJoin)
             # Qt measures miter length along the edge of the stroke, from where the
             # bevel would end to the point.
@@ -78,11 +78,14 @@ class Context:
         self.state.fill_style = native_color(color)
 
     def set_line_dash(self, line_dash):
-        if len(line_dash) % 2:
-            line_dash = line_dash * 2  # Avoid *= in case it's mutable
-        self.state.stroke.setDashPattern(
-            [x / self.state.stroke.width() for x in line_dash]
-        )
+        if not line_dash:
+            self.state.stroke.setStyle(Qt.SolidLine)
+        else:
+            if len(line_dash) % 2:
+                line_dash = line_dash * 2  # Avoid *= in case it's mutable
+            self.state.stroke.setDashPattern(
+                [x / self.state.stroke.width() for x in line_dash]
+            )
 
     def set_line_width(self, line_width):
         self.state.stroke.setWidth(line_width)
