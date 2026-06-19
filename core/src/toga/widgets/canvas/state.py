@@ -522,14 +522,34 @@ class DrawingActionDispatch(ABC):
     # Sub-states of this state
     ###########################################################################
 
-    def state(self) -> AbstractContextManager[State]:
+    def state(
+        self,
+        *,
+        fill_style: ColorT | None = None,
+        stroke_style: ColorT | None = None,
+        line_width: float | None = None,
+        line_dash: list[float] | None = None,
+    ) -> AbstractContextManager[State]:
         """A context manager that saves the current state of the Canvas context, and
         restores it upon exiting.
+
+        All parameters to `state()` are optional. If provided, they will set the
+        corresponding drawing context attribute upon entering the context manager.
+
+        :param fill_style: Sets the [`fill_style`](toga.Canvas.fill_style).
+        :param stroke_style: Sets the [`stroke_style`](toga.Canvas.stroke_style).
+        :param line_width: Sets the [`line_width`](toga.Canvas.line_width)
+        :param line_dash: Sets the [`line_dash`](toga.Canvas.line_dash).
 
         :return: Yields the new `State`
           [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
-        state = State()
+        state = State(
+            fill_style=fill_style,
+            stroke_style=stroke_style,
+            line_width=line_width,
+            line_dash=line_dash,
+        )
         self._add_to_target(state)
         self._redraw_with_warning_if_state()
         return state
@@ -874,10 +894,27 @@ class State(BaseState):
     [state()][toga.Canvas.state] method. Functions as a context manager.
     """
 
+    _: KW_ONLY
+    fill_style: ColorT | None = color_property()
+    stroke_style: ColorT | None = color_property()
+    line_width: float | None = None
+    line_dash: list[float] | None = None
+
     def _draw(self, context: Any) -> None:
         context.save()
+
+        if self.fill_style is not None:
+            context.set_fill_style(self.fill_style)
+        if self.stroke_style is not None:
+            context.set_stroke_style(self.stroke_style)
+        if self.line_width is not None:
+            context.set_line_width(self.line_width)
+        if self.line_dash is not None:
+            context.set_line_dash(self.line_dash)
+
         for action in self.drawing_actions:
             action._draw(context)
+
         context.restore()
 
 
@@ -949,8 +986,8 @@ class Fill(BaseState):
     # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
     fill_rule: FillRule = FillRule.NONZERO
     _: KW_ONLY
-    fill_style: ColorT | None | object = color_property()
-    color: InitVar[ColorT | None | object] = color_property()
+    fill_style: ColorT | None | object = color_property(aliased=True)
+    color: InitVar[ColorT | None | object] = color_property(aliased=True)
 
     def __post_init__(self, color):
         super().__post_init__()
@@ -983,8 +1020,8 @@ class Stroke(BaseState):
 
     # Path parameter (positional/keyword) will go here.
     _: KW_ONLY
-    stroke_style: ColorT | None | object = color_property()
-    color: InitVar[ColorT | None | object] = color_property()
+    stroke_style: ColorT | None | object = color_property(aliased=True)
+    color: InitVar[ColorT | None | object] = color_property(aliased=True)
     line_width: float | None = None
     line_dash: list[float] | None = None
 
