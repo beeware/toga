@@ -36,17 +36,16 @@ class CGAffineTransform(Structure):
     ]
 
     def __eq__(self, other):
-        try:
-            return (
-                self.a == other.a
-                and self.b == other.b
-                and self.c == other.c
-                and self.d == other.d
-                and self.tx == other.tx
-                and self.ty == other.ty
-            )
-        except AttributeError:
-            return False
+        return (
+            self.a == other.a
+            and self.b == other.b
+            and self.c == other.c
+            and self.d == other.d
+            and self.tx == other.tx
+            and self.ty == other.ty
+        )
+        # An except AttributeError would theoretically be more robust, but that
+        # shouldn't ever happen, and if it does it should in fact be an error.
 
 
 CGAffineTransformIdentity = CGAffineTransform.in_dll(

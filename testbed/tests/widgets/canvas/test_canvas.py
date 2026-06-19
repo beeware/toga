@@ -853,9 +853,15 @@ async def test_reset_transform(canvas, probe):
         with canvas.fill(fill_style=WHITE):
             # TODO: Update to fill_text either here (in #4045) or in the text
             # PR (#4432), whichever is merged later.
+
+            # The text is *partly* for helpful visual labeling, but it also makes sure
+            # text isn't getting transformed differently in the screenshot.
             canvas.write_text(i, 15 + offset, 10 + offset, baseline=Baseline.TOP)
 
         i += 1
+
+    # Confirm this is a no-op.
+    canvas.reset_transform()
 
     # 1. Top left, default black-on-black
     canvas.line_width = 2

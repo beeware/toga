@@ -35,8 +35,23 @@ class CGAffineTransform(Structure):
         ("ty", CGFloat),
     ]
 
+    def __eq__(self, other):
+        return (
+            self.a == other.a
+            and self.b == other.b
+            and self.c == other.c
+            and self.d == other.d
+            and self.tx == other.tx
+            and self.ty == other.ty
+        )
+        # An except AttributeError would theoretically be more robust, but that
+        # shouldn't ever happen, and if it does it should in fact be an error.
 
-core_graphics.CGAffineTransformIdentity = CGAffineTransform
+
+CGAffineTransformIdentity = CGAffineTransform.in_dll(
+    core_graphics, "CGAffineTransformIdentity"
+)
+
 core_graphics.CGAffineTransformInvert.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.argtypes = [CGAffineTransform]
 core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform
