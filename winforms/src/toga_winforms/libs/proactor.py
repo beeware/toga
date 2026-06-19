@@ -41,8 +41,8 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
     # Overrides of asyncio.IocpProactor methods
     ####################################################################################
 
-    def __init__(self, concurrency=_winapi.INFINITE):
-        super().__init__(concurrency)
+    def __init__(self):
+        super().__init__()
         self._cache_cleanup_complete = False
 
         self._listener_lock = threading.Lock()
@@ -196,12 +196,9 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
 
     def start_iocp_listener(self):
         self._iocp_thread = threading.Thread(
-            target=self._run_iocp_listener,
+            target=self._iocp_listener,
         )
         self._iocp_thread.start()
-
-    def _run_iocp_listener(self):
-        self._iocp_listener()
 
     def _iocp_action(self, status):
         # The following codeblock is essentially the same as part of the method
@@ -425,7 +422,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             # for scheduled events. If neither of these then the loop becomes idle
             # until it is woken by the ReadyDeque instance.
             if len(self._ready) > 0:
-                # Run ready events immiediately.
+                # Run ready events immediately.
                 self.enqueue_tick(delay=0)
             else:
                 if self._scheduled:

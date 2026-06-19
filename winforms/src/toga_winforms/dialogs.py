@@ -8,6 +8,7 @@ from System.Drawing import (
     FontFamily,
 )
 from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
+from travertino.constants import PLACEHOLDER_RESULT
 
 from toga.handlers import WeakrefCallable
 
@@ -148,7 +149,7 @@ class StackTraceDialog(BaseDialog):
         trace.ReadOnly = True
         trace.Font = monospace_font
         trace.Text = content
-        self.result = "placeholder"
+        self.result = PLACEHOLDER_RESULT
 
         self.native.Controls.Add(trace)
 
@@ -196,7 +197,7 @@ class StackTraceDialog(BaseDialog):
         # We cancel this event to prevent the dialog from closing.
         # If a button is pressed, the future will be set, and a close
         # event will be triggered.
-        if self.result == "placeholder":
+        if self.result == PLACEHOLDER_RESULT:
             event.Cancel = True  # pragma: no cover
         else:
             # Reverting the DPI awareness at the end of __init__ would cause the window

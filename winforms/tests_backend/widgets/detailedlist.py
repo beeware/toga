@@ -275,7 +275,7 @@ class DetailedListProbe(SimpleProbe):
 
         self._click_shift += int(self.scale_factor)
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.1)
 
     async def _select_with_keyboard(self, index):
         hwnd = self.impl._hwnd
