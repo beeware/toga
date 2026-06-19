@@ -3,11 +3,8 @@ import _winapi
 import asyncio
 import sys
 import threading
-import time
 import traceback
 from asyncio import events
-from asyncio.log import logger
-from asyncio.windows_events import _WaitCancelFuture
 from collections import deque
 
 import System.Windows.Forms as WinForms
@@ -43,13 +40,7 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
 
     def __init__(self):
         super().__init__()
-        self._cache_cleanup_complete = False
-
         self._listener_lock = threading.Lock()
-        self._cleanup_lock = threading.Lock()
-        self._exit_lock = threading.Lock()
-
-        self._cleanup_lock.acquire()
 
     def select(self, timeout=None):
         """A blank select method so that _run_once doesn't poll the IOCP."""
@@ -62,52 +53,15 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
             # Already closed.
             return
 
-        # Wait until the IOCP listener has stopped before cleaning up the cache.
+        # The loop needs the app to run and visa versa. So ensure that the app is exited
+        # if `close()` is called.
+        self._loop.app._is_exiting = True
+
+        # Wait until the IOCP listener has stopped before closing the loop.
         with self._listener_lock:
             self._remove_unregistered_futures()
 
-        # The following codeblock is from the start of the asyncio.IocpProactor.close()
-        # method. The final part of the this method is in the _iocp_listener_cleanup()
-        # method. The reason for splitting the close method is because the polling
-        # function GetQueuedCompletionStatus becomes associated to the first thread that
-        # calls it and it can be associated to at most one thread. See:
-        # learn.microsoft.com/windows/win32/api/ioapiset/nf-ioapiset-getqueuedcompletionstatus # noqa E501
-        #
-        # fmt: off
-        # ruff: disable[B007]
-        # =================================== BEGIN ===================================
-        # Cancel remaining registered operations.
-        for fut, ov, obj, callback in list(self._cache.values()):
-            if fut.cancelled():
-                # Nothing to do with cancelled futures
-                pass
-            elif isinstance(fut, _WaitCancelFuture):
-                # _WaitCancelFuture must not be cancelled
-                pass
-            else:
-                try:
-                    fut.cancel()
-                except OSError as exc:
-                    if self._loop is not None:
-                        context = {
-                            'message': 'Cancelling a future failed',
-                            'exception': exc,
-                            'future': fut,
-                        }
-                        if fut._source_traceback:
-                            context['source_traceback'] = fut._source_traceback
-                        self._loop.call_exception_handler(context)
-        # ==================================== END ====================================
-        # ruff: enable[B007]
-        # fmt: on
-
-        # Let the ICOP thread receive the final messages.
-        self._cleanup_lock.release()
-
-        # Wait for the ICOP thread to shutdown before continuing.
-        with self._exit_lock:
-            _winapi.CloseHandle(self._iocp)
-            self._iocp = None
+        super().close()
 
     ####################################################################################
     # Methods that run in the IOCP listener thread.
@@ -125,70 +79,35 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
 
             app_dispatcher.Invoke(Action(action))
 
-        # The exit lock prevents the TwoThreadIocpProactor loop from closing before
-        # the IOCP listener thread has shutdown correctly.
-        with self._exit_lock:
-            # The listener lock forces the close method to wait until the listener
-            # loop is closed.
-            with self._listener_lock:
-                while not app._is_exiting:
-                    # Use a timeout (100 milliseconds) only for exiting the thread.
-                    status = GetQueuedCompletionStatus(self._iocp, 100)
+        # The listener lock forces the close method to wait until the listener
+        # loop is closed.
+        with self._listener_lock:
+            while not app._is_exiting:
+                # Use a timeout (100 milliseconds) only for exiting the thread.
+                status = GetQueuedCompletionStatus(self._iocp, 100)
 
-                    if status is None:
+                if status is None:
 
-                        def iocp_action():
-                            return self._remove_unregistered_futures()
+                    def iocp_action():
+                        return self._remove_unregistered_futures()
 
-                    else:
+                else:
 
-                        def iocp_action(status=status):
-                            return self._iocp_action(status)
+                    def iocp_action(status=status):
+                        return self._iocp_action(status)
 
-                    # Queue/run the actions to run synchronously on the main thread.
-                    enqueue_task(iocp_action)
+                # Queue/run the actions to run synchronously on the main thread.
+                enqueue_task(iocp_action)
 
-                ########################################################################
-                # From here onward is part of the app shutdown procedure, which can't
-                # have test coverage. So use no cover.
-                ########################################################################
+            ########################################################################
+            # From here onward is part of the app shutdown procedure, which can't
+            # have test coverage. So use no cover.
+            ########################################################################
 
-                # Exit the application. Call here to avoid dispatcher calls after
-                # app.native is exited.
-                action = Action(lambda: app.native.Exit())  # pragma: no cover
-                app_dispatcher.Invoke(action)  # pragma: no cover
-
-            # Wait until the close method has cleaned up the cache before continuing.
-            with self._cleanup_lock:  # pragma: no cover
-                self._iocp_listener_cleanup()  # pragma: no cover
-
-    # This method is part of the app shutdown procedure, which can't have test coverage.
-    # So this method is marked as no cover.
-    def _iocp_listener_cleanup(self):  # pragma: no cover
-        """Cleanup the IOCP listener thread before exiting."""
-        # The following is the last 19 lines of code from asyncio.IocpProactor.close
-        # method. All the first line of this method remain in the close method.
-        #
-        # fmt: off
-        # =================================== BEGIN ===================================
-        # Wait until all cancelled overlapped complete: don't exit with running
-        # overlapped to prevent a crash. Display progress every second if the
-        # loop is still running.
-        msg_update = 1.0
-        start_time = time.monotonic()
-        next_msg = start_time + msg_update
-        while self._cache:
-            if next_msg <= time.monotonic():
-                logger.debug('%r is running after closing for %.1f seconds',
-                             self, time.monotonic() - start_time)
-                next_msg = time.monotonic() + msg_update
-
-            # handle a few events, or timeout
-            self._poll(msg_update)
-
-        self._results = []
-        # ==================================== END ====================================
-        # fmt: on
+            # Exit the application. Call here to avoid dispatcher calls after
+            # app.native is exited.
+            action = Action(lambda: app.native.Exit())  # pragma: no cover
+            app_dispatcher.Invoke(action)  # pragma: no cover
 
     ####################################################################################
     # Methods that run in the main application thread.
