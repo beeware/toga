@@ -17,6 +17,7 @@ from toga.colors import (
     REBECCAPURPLE,
     RED,
     TRANSPARENT,
+    WHITE,
     rgb,
 )
 from toga.constants import Baseline, FillRule
@@ -837,35 +838,52 @@ async def test_singular_transforms(canvas, probe):
 
 
 async def test_reset_transform(canvas, probe):
-    """Transform can be reset."""
+    """Transform can be reset (and doesn't affect other attributes)."""
 
-    def draw_square(canvas, color, offset=False):
+    i = 1
+
+    def draw_square(canvas, offset=False):
+        nonlocal i
+
         offset = 15 if offset else 0
-        canvas.begin_path()
-        canvas.rect(10 + offset, 10 + offset, 40, 40)
-        canvas.fill(color=color)
+        with canvas.fill():
+            with canvas.stroke():
+                canvas.rect(10 + offset, 10 + offset, 40, 40)
 
-    # Top left
-    draw_square(canvas, BLACK)
+        with canvas.fill(fill_style=WHITE):
+            # TODO: Update to fill_text either here (in #4045) or in the text
+            # PR (#4432), whichever is merged later.
+            canvas.write_text(i, 15 + offset, 10 + offset, baseline=Baseline.TOP)
 
-    # Top right
+        i += 1
+
+    # 1. Top left, default black-on-black
+    canvas.line_width = 2
+    draw_square(canvas)
+
+    # 2. Top right, purple-on-blue
     canvas.translate(110, 0)
-    draw_square(canvas, CORNFLOWERBLUE)
+    canvas.fill_style = CORNFLOWERBLUE
+    canvas.stroke_style = REBECCAPURPLE
+    canvas.line_width = 10
+    canvas.line_dash = [8, 3, 4, 3]
+    draw_square(canvas)
 
     with canvas.state():
-        # Bottom right
+        # 3. Bottom right, red-on-yellow
         canvas.translate(0, 110)
-        draw_square(canvas, GOLDENROD)
+        canvas.fill_style = GOLDENROD
+        canvas.stroke_style = RED
+        canvas.line_width = 4
+        canvas.line_dash = [2, 2]
+        draw_square(canvas)
 
-        # Should reset to top left (true origin)
-        #
-        # But in current implementation, it exits this context and creates a new
-        # one, falling back to the top-right origin previously set.
+        # 4. Top left (true origin), still red-on-yellow
         canvas.reset_transform()
-        draw_square(canvas, REBECCAPURPLE, offset=True)
+        draw_square(canvas, offset=True)
 
-    # Out of subcontext, should be back to top right
-    draw_square(canvas, RED, offset=True)
+    # 5. Top right, purple-on-blue (back out of substate)
+    draw_square(canvas, offset=True)
 
     await probe.redraw("Transform can be reset")
     assert_reference(probe, "reset_transform", threshold=0.015)
@@ -875,7 +893,7 @@ async def test_reset_transform(canvas, probe):
         # can potentially make the on-screen widget look different from the image saved
         # directly from it. So test a screenshot as well, just to make sure.
         screenshot = canvas.window.as_image(format=Image.Image).crop((0, 0, 200, 200))
-        assert_reference(probe, "reset_transform_screenshot", image=screenshot)
+        assert_reference(probe, "reset_transform", image=screenshot)
 
 
 @pytest.mark.xfail(

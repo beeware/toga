@@ -2,7 +2,6 @@ from collections.abc import Sequence
 from copy import copy
 from dataclasses import dataclass
 from math import ceil
-from warnings import warn
 
 from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
@@ -187,6 +186,13 @@ class Context:
         core_graphics.CGContextRotateCTM(self.native, radians)
 
     def scale(self, sx, sy):
+        # Can't apply inverse transform (for reset_transform) if scale is 0, so use a
+        # small epsilon which will almost be the same.
+        if sx == 0:
+            sx = 2**-24
+        if sy == 0:
+            sy = 2**-24
+
         core_graphics.CGContextScaleCTM(self.native, sx, sy)
 
     def translate(self, tx, ty):
@@ -206,24 +212,13 @@ class Context:
         else:
             # The *original* transform matrix isn't the standard identity; this is
             # probably because we're rendering to a cache. So we need to know the
-            # transform from what we started with.
+            # transform from what we started with to the current matrix.
             transform = core_graphics.CGAffineTransformConcat(
                 current,
                 self.inverse_original,
             )
 
         inverse_transform = core_graphics.CGAffineTransformInvert(transform)
-        if inverse_transform == transform:
-            # When a matrix has no inverse, TransformInvert returns it unchanged.
-            warn(
-                (
-                    "No way to reset transform on macOS if current transform has no "
-                    "inverse. Did you scale to 0, perhaps?"
-                ),
-                RuntimeWarning,
-                stacklevel=2,
-            )
-            return
 
         core_graphics.CGContextConcatCTM(self.native, inverse_transform)
 
