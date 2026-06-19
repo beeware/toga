@@ -231,16 +231,14 @@ class Context:
             # No resetting necessary.
             return
 
-        if self.using_standard_coords:
-            transform = current
-        else:
-            # The *original* transform matrix isn't the standard identity; this is
-            # probably because we're rendering to a cache. So we need to know the
-            # transform from what we started with to the current matrix.
-            transform = core_graphics.CGAffineTransformConcat(
-                current,
-                self.inverse_original,
-            )
+        # Apparently unlike Cocoa, iOS *never* uses the standard identity matrix, even
+        # when rendering to the actual screen. (Probably has something to do with
+        # different flipping logistics.) So we need to know the transform from whatever
+        # we started with to the current matrix.
+        transform = core_graphics.CGAffineTransformConcat(
+            current,
+            self.inverse_original,
+        )
 
         inverse_transform = core_graphics.CGAffineTransformInvert(transform)
 
@@ -326,12 +324,10 @@ class TogaCanvas(UIView):
         context.using_standard_coords = (
             context.original_matrix == CGAffineTransformIdentity
         )
-        # If we're not in the normal coordinate space (presumably because we're
-        # rendering to a cache), save the inverse as well.
-        if not context.using_standard_coords:
-            context.inverse_original = core_graphics.CGAffineTransformInvert(
-                context.original_matrix
-            )
+        # It's actually the identity matrix, so save the inverse as well.
+        context.inverse_original = core_graphics.CGAffineTransformInvert(
+            context.original_matrix
+        )
 
         self.interface.root_state._draw(context)
 
