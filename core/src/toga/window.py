@@ -448,7 +448,7 @@ class Window:
             self._scaffold.window = None
             self._scaffold.app = None
 
-        if isinstance(content, Widget) or content is None:
+        if not isinstance(content, BaseScaffold):
             scaffold = Scaffold(content=content)
         else:
             scaffold = content
