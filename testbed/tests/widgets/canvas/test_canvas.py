@@ -1142,4 +1142,4 @@ async def test_attributes(canvas, probe, restore_method):
     draw_rect(canvas)
 
     await probe.redraw("Image should be drawn")
-    assert_reference(probe, "attributes", threshold=0.02)
+    assert_reference(probe, "attributes")
