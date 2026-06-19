@@ -306,6 +306,9 @@ async def test_quadratic_curve(canvas, probe):
 
 
 async def test_arc(canvas, probe):
+    # The default width of 1.0 causes enough antialiasing that it's harder to compare.
+    canvas.line_width = 2.0
+
     """An arc can be drawn."""
     canvas.begin_path()
 
@@ -540,7 +543,7 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.line_to(x=180, y=180)
     canvas.line_to(x=100, y=180)
     canvas.close_path()
-    canvas.stroke(stroke_style=REBECCAPURPLE)
+    canvas.stroke(stroke_style=REBECCAPURPLE, line_width=2.0)
     canvas.fill(fill_style=CORNFLOWERBLUE)
 
     # Draw an open path inside it
@@ -551,7 +554,7 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.line_to(x=150, y=160)
     canvas.line_to(x=110, y=160)
     canvas.fill(fill_style=GOLDENROD, fill_rule=FillRule.EVENODD)
-    canvas.stroke(stroke_style=REBECCAPURPLE)
+    canvas.stroke(stroke_style=REBECCAPURPLE, line_width=2.0)
 
     await probe.redraw("Stroke should be drawn")
     assert_reference(probe, "stroke_and_fill")
@@ -738,6 +741,11 @@ async def test_transforms_as_context_managers(canvas, probe):
 async def test_transforms_mid_path(canvas, probe):
     """Transforms can be applied mid-path."""
 
+    # See #4474. Right now, Windows doesn't properly stretch the stroke to account for
+    # transforms, *if* the stroke width is 1. Once that's fixed, we should test both 1
+    # and 2 (or a larger number).
+    canvas.line_width = 2.0
+
     # draw a series of rotated rectangles
     canvas.begin_path()
     canvas.translate(100, 100)
@@ -759,6 +767,11 @@ async def test_transforms_mid_path(canvas, probe):
         canvas.translate(5, 3)
     canvas.close_path()
     canvas.reset_transform()
+
+    # See #4044. reset_transform() on macOS and iOS also resets other context
+    # attributes, including line width.
+    canvas.line_width = 2.0
+
     canvas.move_to(110, 100)
     canvas.scale(5, 1)
     canvas.ellipse(20, 100, 2, 20, 0, 0, 2 * pi)

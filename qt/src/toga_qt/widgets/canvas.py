@@ -39,7 +39,7 @@ class State:
             self.fill_style = BLACK
             self.stroke = QPen(BLACK)
             self.stroke.setCapStyle(Qt.PenCapStyle.FlatCap)
-            self.stroke.setWidth(2.0)
+            self.stroke.setWidth(1.0)
             self.stroke.setJoinStyle(Qt.MiterJoin)
             # Qt measures miter length along the edge of the stroke, from where the
             # bevel would end to the point.
