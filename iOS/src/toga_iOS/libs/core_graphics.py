@@ -52,6 +52,8 @@ CGAffineTransformIdentity = CGAffineTransform.in_dll(
     core_graphics, "CGAffineTransformIdentity"
 )
 
+core_graphics.CGAffineTransformConcat.argtypes = [CGAffineTransform, CGAffineTransform]
+core_graphics.CGAffineTransformConcat.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.argtypes = [CGAffineTransform]
 core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform

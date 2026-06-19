@@ -12,7 +12,7 @@ class CanvasProbe(SimpleProbe):
     screenshot_reset_transform = False
 
     def reference_variant(self, reference):
-        if reference == "multiline_text":
+        if reference in {"multiline_text", "reset_transform"}:
             if IS_WAYLAND:
                 return f"{reference}-gtk-wayland"
             else:
