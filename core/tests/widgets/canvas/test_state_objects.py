@@ -5,9 +5,11 @@ from toga.constants import FillRule
 from toga.widgets.canvas import (
     ClosePath,
     Fill,
+    Rotate,
     Scale,
     State,
     Stroke,
+    Translate,
 )
 from toga_dummy.utils import assert_action_performed
 
@@ -217,6 +219,46 @@ def test_stroke(widget, kwargs, args_repr, properties):
     # The first and last instructions can be ignored; they're the root canvas state
     assert widget._impl.draw_instructions[1:-1] == [
         command for command in commands if command is not None
+    ]
+
+
+def test_transforms(widget):
+    """Rotate, scale, and translate can be used as context managers."""
+    with widget.rotate(3) as rotate:
+        widget.move_to(10, 10)
+
+    with widget.scale(2, 2) as scale:
+        with widget.translate(0, 10) as translate:
+            widget.move_to(0, 0)
+
+    widget.line_to(100, 100)
+
+    assert isinstance(rotate, Rotate)
+    assert repr(rotate) == "Rotate(radians=3)"
+    assert rotate.radians == 3
+
+    assert isinstance(scale, Scale)
+    assert repr(scale) == "Scale(sx=2, sy=2)"
+    assert scale.sx == 2
+    assert scale.sy == 2
+
+    assert isinstance(translate, Translate)
+    assert repr(translate) == "Translate(tx=0, ty=10)"
+    assert translate.tx == 0
+    assert translate.ty == 10
+    assert widget._impl.draw_instructions[1:-1] == [
+        "save",
+        ("rotate", {"radians": 3}),
+        ("move to", {"x": 10, "y": 10}),
+        "restore",
+        "save",
+        ("scale", {"sx": 2, "sy": 2}),
+        "save",
+        ("translate", {"tx": 0, "ty": 10}),
+        ("move to", {"x": 0, "y": 0}),
+        "restore",
+        "restore",
+        ("line to", {"x": 100, "y": 100}),
     ]
 
 

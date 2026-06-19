@@ -152,7 +152,6 @@ test_sources = [
     "../qt/tests_backend",
 ]
 
-[tool.briefcase.app.testbed-qt.linux]
 requires = [
     "../qt[pyside6]",
     # psutil would ideally be top-level test dependency. However, for Python < 3.13,

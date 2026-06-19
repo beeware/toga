@@ -39,6 +39,7 @@ class Context:
         self.impl = impl
         self.native = native
         self.original_transform_matrix = self.native.get_matrix()
+        self.set_line_width(1.0)
         self.states = [State()]
 
         # Backwards compatibility for Toga <= 0.5.3
