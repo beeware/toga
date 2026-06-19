@@ -18,6 +18,7 @@ class CanvasProbe(SimpleProbe):
             "deprecated_tutorial",
             "miter_join",
             "attributes",
+            "reset_transform",
         }:
             return f"{reference}-winforms"
         return reference

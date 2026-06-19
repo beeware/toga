@@ -19,6 +19,7 @@ class CanvasProbe(SimpleProbe):
             "write_text_and_path",
             "deprecated_tutorial",
             "miter_join",
+            "reset_transform",
         }:
             return f"{reference}-qt"
         else:

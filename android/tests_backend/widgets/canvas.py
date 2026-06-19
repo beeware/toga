@@ -20,6 +20,7 @@ class CanvasProbe(SimpleProbe):
             "write_text_and_path",
             "deprecated_tutorial",
             "attributes",
+            "reset_transform",
         }:
             return f"{reference}-android"
         return reference
