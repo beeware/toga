@@ -536,10 +536,10 @@ class DrawingActionDispatch(ABC):
         All parameters to `state()` are optional. If provided, they will set the
         corresponding drawing context attribute upon entering the context manager.
 
-        :param fill_style: Sets the [`fill_style`](toga.Canvas.fill_style).
-        :param stroke_style: Sets the [`stroke_style`](toga.Canvas.stroke_style).
-        :param line_width: Sets the [`line_width`](toga.Canvas.line_width)
-        :param line_dash: Sets the [`line_dash`](toga.Canvas.line_dash).
+        :param fill_style: Sets the [`fill_style`][toga.Canvas.fill_style].
+        :param stroke_style: Sets the [`stroke_style`][toga.Canvas.stroke_style].
+        :param line_width: Sets the [`line_width`][toga.Canvas.line_width].
+        :param line_dash: Sets the [`line_dash`][toga.Canvas.line_dash].
 
         :return: Yields the new `State`
           [`DrawingAction`][toga.widgets.canvas.DrawingAction].
