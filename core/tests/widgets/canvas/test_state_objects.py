@@ -247,11 +247,6 @@ def test_transforms(widget):
     assert translate.tx == 0
     assert translate.ty == 10
 
-    # The first and last instructions can be ignored; they're the root canvas state
-    from pprint import pprint
-
-    print(rotate._is_open)
-    pprint(widget._impl.draw_instructions[1:-1])
 
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
