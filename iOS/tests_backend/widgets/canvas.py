@@ -32,6 +32,7 @@ class CanvasProbe(SimpleProbe):
             "write_text",
             "write_text_and_path",
             "deprecated_tutorial",
+            "reset_transform",
         }:
             return f"{reference}-iOS"
         else:
