@@ -24,6 +24,7 @@ from toga.widgets.canvas.geometry import round_rect
 from toga_iOS.colors import native_color
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
+    CGAffineTransformIdentity,
     CGPathDrawingMode,
     CGRectMake,
     NSAttributedString,
@@ -209,18 +210,41 @@ class Context:
         core_graphics.CGContextRotateCTM(self.native, radians)
 
     def scale(self, sx, sy):
+        # Can't apply inverse transform (for reset_transform) if scale is 0, so use a
+        # small epsilon which will almost be the same.
+        if sx == 0:
+            sx = 2**-24
+        if sy == 0:
+            sy = 2**-24
+
         core_graphics.CGContextScaleCTM(self.native, sx, sy)
 
     def translate(self, tx, ty):
         core_graphics.CGContextTranslateCTM(self.native, tx, ty)
 
     def reset_transform(self):
-        # Restore the "clean" state of the graphics context.
-        core_graphics.CGContextRestoreGState(self.native)
-        # CoreGraphics has a stack-based state representation,
-        # so ensure that there is a new, clean version of the "clean"
-        # state on the stack.
-        core_graphics.CGContextSaveGState(self.native)
+        # Core Graphics has no built-in ability to assign to or reset the transformation
+        # matrix.
+        current = core_graphics.CGContextGetCTM(self.native)
+
+        if current == self.original_matrix:
+            # No resetting necessary.
+            return
+
+        if self.using_standard_coords:
+            transform = current
+        else:
+            # The *original* transform matrix isn't the standard identity; this is
+            # probably because we're rendering to a cache. So we need to know the
+            # transform from what we started with to the current matrix.
+            transform = core_graphics.CGAffineTransformConcat(
+                current,
+                self.inverse_original,
+            )
+
+        inverse_transform = core_graphics.CGAffineTransformInvert(transform)
+
+        core_graphics.CGContextConcatCTM(self.native, inverse_transform)
 
     # Text
 
@@ -295,7 +319,21 @@ class TogaCanvas(UIView):
 
     @objc_method
     def drawRect_(self, rect: CGRect) -> None:
-        self.interface.root_state._draw(Context(self.impl))
+        context = Context(self.impl)
+
+        # Store this so we can restore the original if needed.
+        context.original_matrix = core_graphics.CGContextGetCTM(context.native)
+        context.using_standard_coords = (
+            context.original_matrix == CGAffineTransformIdentity
+        )
+        # If we're not in the normal coordinate space (presumably because we're
+        # rendering to a cache), save the inverse as well.
+        if not context.using_standard_coords:
+            context.inverse_original = core_graphics.CGAffineTransformInvert(
+                context.original_matrix
+            )
+
+        self.interface.root_state._draw(context)
 
     @objc_method
     def touchesBegan_withEvent_(self, touches, event) -> None:
