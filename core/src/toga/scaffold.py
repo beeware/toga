@@ -27,7 +27,6 @@ class BaseScaffold(ABC):
 
 
 class Scaffold(BaseScaffold):
-    _SCAFFOLD_CLASS = "Scaffold"
 
     def __init__(self, content: Widget | None = None):
         super().__init__()
@@ -36,6 +35,9 @@ class Scaffold(BaseScaffold):
         self._content = None
         self.content = content
 
+    def _create(self):
+        return get_factory().Scaffold()
+    
     @property
     def content(self) -> Widget | None:
         return self._content
