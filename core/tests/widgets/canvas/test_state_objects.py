@@ -246,8 +246,6 @@ def test_transforms(widget):
     assert repr(translate) == "Translate(tx=0, ty=10)"
     assert translate.tx == 0
     assert translate.ty == 10
-
-
     assert widget._impl.draw_instructions[1:-1] == [
         "save",
         ("rotate", {"radians": 3}),
