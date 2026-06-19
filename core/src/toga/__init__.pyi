@@ -25,6 +25,8 @@ from toga.icons import Icon as Icon
 from toga.images import Image as Image
 from toga.keys import Key as Key
 from toga.platform import backend as backend
+from toga.scaffold import Scaffold as Scaffold
+from toga.scaffold import BaseScaffold as BaseScaffold
 from toga.statusicons import MenuStatusIcon as MenuStatusIcon
 from toga.statusicons import SimpleStatusIcon as SimpleStatusIcon
 from toga.types import LatLng as LatLng
@@ -62,5 +64,3 @@ from toga.widgets.tree import Tree as Tree
 from toga.widgets.webview import WebView as WebView
 from toga.window import MainWindow as MainWindow
 from toga.window import Window as Window
-from toga.scaffold import Scaffold as Scaffold
-from toga.scaffold import BaseScaffold as BaseScaffold
