@@ -15,7 +15,12 @@ from abc import ABC, abstractmethod
 
 class BaseScaffold(ABC):
     @abstractmethod
-    def __init__(self, content: Any = None): ...
+    def __init__(self, content: Any = None):
+        self.factory = get_factory()
+        self._impl = self._create()
+
+    @abstractmethod
+    def _create(self) -> Any: ...
 
     def refresh(self):
         self._impl.refresh()
@@ -25,12 +30,10 @@ class Scaffold(BaseScaffold):
     _SCAFFOLD_CLASS = "Scaffold"
 
     def __init__(self, content: Widget | None = None):
-        self.factory = get_factory()
-        self._impl = getattr(self.factory, self._SCAFFOLD_CLASS)(self)
+        super().__init__()
         self._window = None
         self._app = None
         self._content = None
-
         self.content = content
 
     @property
@@ -49,8 +52,8 @@ class Scaffold(BaseScaffold):
             value.scaffold = self
         self._impl.set_content(value._impl if value is not None else None)
         if value is not None:
-            self._content.window = self._window
-            self._content.app = self._app
+            self._content.window = self.window
+            self._content.app = self.app
         self.refresh()
 
     @property
