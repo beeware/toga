@@ -45,7 +45,6 @@ class BaseScaffold(ABC):
 
 
 class Scaffold(BaseScaffold):
-
     def __init__(self, content: Widget | None = None):
         super().__init__()
         self._content = None
@@ -53,7 +52,7 @@ class Scaffold(BaseScaffold):
 
     def _create(self):
         return get_factory().Scaffold(self)
-    
+
     @property
     def content(self) -> Widget | None:
         return self._content
@@ -76,14 +75,14 @@ class Scaffold(BaseScaffold):
 
     @BaseScaffold.window.setter
     def window(self, value: Window | None):
-        BaseScaffold.window.fset(self, window)
+        BaseScaffold.window.fset(self, value)
         if self.content is not None:
             # Track our content's window
             self.content.window = value
 
     @BaseScaffold.app.setter
     def app(self, value):
-        BaseScaffold.app.fset(self, app)
+        BaseScaffold.app.fset(self, value)
         if self.content is not None:
             # Track our content's app
             self.content.app = value
