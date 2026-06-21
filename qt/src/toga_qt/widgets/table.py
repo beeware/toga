@@ -6,7 +6,10 @@ from PySide6.QtCore import QAbstractTableModel, QModelIndex, QPersistentModelInd
 from PySide6.QtWidgets import QHeaderView, QTableView
 from travertino.size import at_least
 
+from toga.constants import CENTER
 from toga.sources import ListSource
+from toga_qt.colors import native_color
+from toga_qt.libs import qt_text_align
 
 from .base import Widget
 
@@ -20,11 +23,12 @@ class TableSourceModel(QAbstractTableModel):
     _source: ListSource | None
     headings: list[str]
 
-    def __init__(self, source, columns, missing_value, **kwargs):
+    def __init__(self, source, columns, missing_value, font_data, **kwargs):
         super().__init__(**kwargs)
         self._source = source
         self._columns = columns
         self._missing_value = missing_value
+        self._font_data = font_data
 
     def set_source(self, source):
         self.beginResetModel()
@@ -120,6 +124,24 @@ class TableSourceModel(QAbstractTableModel):
                         return icon._impl.native
                 elif role == Qt.ItemDataRole.DisplayRole:
                     return column.text(row, self._missing_value)
+                elif role == Qt.ItemDataRole.TextAlignmentRole:
+                    text_align = column.text_align(row)
+                    if text_align is not None:
+                        return qt_text_align(text_align, CENTER)
+                elif role == Qt.ItemDataRole.ForegroundRole:
+                    color = column.color(row)
+                    if color is not None:
+                        return native_color(color)
+                elif role == Qt.ItemDataRole.BackgroundRole:
+                    color = column.background_color(row)
+                    if color is not None:
+                        return native_color(color)
+                elif role == Qt.ItemDataRole.FontRole:
+                    font = column.font(row, self._font_data)
+                    # font is only None if something is very wrong (eg. can't find
+                    # system font) so can't test
+                    if font is not None:  # pragma: no branch
+                        return font._impl.native
             except Exception:  # pragma: no cover
                 logger.exception(
                     f"Could not get data for row {row_index}, column {column_index}"
@@ -157,6 +179,7 @@ class Table(Widget):
             getattr(self.interface, "_data", None),
             self.interface._columns[:],
             self.interface.missing_value,
+            self.interface.style.font,
             parent=self.native,
         )
         self.native.setModel(self.native_model)
@@ -192,6 +215,11 @@ class Table(Widget):
     def qt_column_resized(self, index, old_size, new_size):
         if not self._resizing_columns:
             self._autofit_columns = False
+
+    def set_font(self, font):
+        super().set_font(font)
+        self.native_model._font_data = self.interface.style.font
+        self.native_model.reset_source()
 
     def change_source(self, source):
         self.native_model.set_source(source)

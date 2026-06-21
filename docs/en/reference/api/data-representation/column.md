@@ -32,11 +32,17 @@ table = Table(
 
 You can define your own subclasses that can override the way that text and icons are computed to provide custom formatting of text. Any object which implements the [`ColumnT`][toga.sources.ColumnT] protocol can be used. This protocol requires:
 
-- a read-only [`heading`][toga.sources.ColumnT.heading] property that is the column heding text or `None` for no heading text.;
+- a read-only [`heading`][toga.sources.ColumnT.heading] property that is the column heading text or `None` for no heading text.;
 - a [`value`][toga.sources.ColumnT.value] method that takes a row object and gives the value for the column in that row.
 - a [`text`][toga.sources.ColumnT.text] method that takes a row object and an optional default value and gives the text for the column to display in that row, or `None` if no text is to be displayed.
 - an [`icon`][toga.sources.ColumnT.icon] method that takes a row object and gives the icon for the column to display in that row, or `None` if no icon is to be displayed.
 - a [`widget`][toga.sources.ColumnT.widget] method that takes a row object and gives the widget for the column to use in that row, or `None` if no widget is to be used (this is experimental and is only supported on macOS at present).
+- a set of methods that can be used to style the cells of the column depending on the value of the row:
+    - a [`text_align`][toga.sources.ColumnT.text_align] method that takes a row object and gives the text alignment to use for that row, or None to use the default alignment.
+    - a [`color`][toga.sources.ColumnT.color] method that takes a row object and gives the color to use for the text in that row, or None to use the default color.
+    - a [`background_color`][toga.sources.ColumnT.background_color] method that takes a row object and gives the background color to use for the cell in that row, or None to use the default color.
+    - [`font_style`][toga.sources.ColumnT.font_style], [`font_variant`][toga.sources.ColumnT.font_variant], [`font_weight`][toga.sources.ColumnT.font_weight], [`font_size`][toga.sources.ColumnT.font_size] and [`font_family`][toga.sources.ColumnT.font_family] methods that take a row object and gives the appropriate font property to use for text in that row, or None to use the default.
+    - [`font`][toga.sources.ColumnT.font], a method that takes a row value and a tuple of default font properties, and returns a Toga font that matches as possible to the font properties specified in the font property methods, and uses the defaults where no value is specified (custom columns will rarely need to override this).
 
 For example, we could subclass `AccessorColumn` to make column that takes a value which is a list of strings and formats it as a comma-separated list as follows:
 
@@ -60,6 +66,8 @@ table = Table(
 
 so a row providing the value `["Drama", "Action"]` would be displayed in the table cell as `"Drama, Action"`.
 
+The column style methods are intended to be used for dynamic styling based on values, such as applying a color-map to cell backgrounds, emphasizing outliers or errors, or right-aligning numerical values within a column.
+
 Custom columns can even override the default way of looking up values to allow such things as combining values from multiple attributes, looking up values by index rather than attribute, or using a method or function on the row to get the display values. The [`Column`][toga.sources.Column] class provides a convenient minimal base class for implementing custom columns.
 
 ```python
@@ -71,6 +79,13 @@ class TotalCostColumn(Column):
     def text(self, row, default=None):
         value = self.value(row)
         return f"${value:.2d}"
+
+    def text_color(self, row):
+        value = self.value(row)
+        if value < 0:
+            return Color.parse("#ff0000)
+        else:
+            return None
 
 table = Table(
     columns=[
