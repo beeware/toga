@@ -1,0 +1,1 @@
+Added accuracy data to location results for Android, iOS, and macOS platforms.
