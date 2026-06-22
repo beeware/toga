@@ -75,7 +75,7 @@ def test_close_path(widget):
         # Defaults
         (
             {},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             [("fill", {"fill_rule": FillRule.NONZERO})],
             {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
@@ -102,21 +102,21 @@ def test_close_path(widget):
         # Color explicitly not set
         (
             {"fill_style": None},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             [("fill", {"fill_rule": FillRule.NONZERO})],
             {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
         # Explicit Non-Zero winding
         (
             {"fill_rule": FillRule.NONZERO},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             [("fill", {"fill_rule": FillRule.NONZERO})],
             {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
         # Even-Odd winding
         (
             {"fill_rule": FillRule.EVENODD},
-            "fill_rule=FillRule.EVENODD, fill_style=None",
+            "fill_rule=FillRule.EVENODD",
             [("fill", {"fill_rule": FillRule.EVENODD})],
             {"fill_rule": FillRule.EVENODD, "fill_style": None},
         ),
@@ -186,14 +186,14 @@ def test_fill_kw_only(widget, use_method):
         # Defaults
         (
             {},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "",
             [],
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color as string name
         (
             {"stroke_style": REBECCAPURPLE},
-            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            f"stroke_style={REBECCA_PURPLE_COLOR!r}",
             [("set stroke style", REBECCA_PURPLE_COLOR)],
             {
                 "stroke_style": REBECCA_PURPLE_COLOR,
@@ -204,7 +204,7 @@ def test_fill_kw_only(widget, use_method):
         # Color as RGB object
         (
             {"stroke_style": REBECCA_PURPLE_COLOR},
-            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            f"stroke_style={REBECCA_PURPLE_COLOR!r}",
             [("set stroke style", REBECCA_PURPLE_COLOR)],
             {
                 "stroke_style": REBECCA_PURPLE_COLOR,
@@ -215,21 +215,21 @@ def test_fill_kw_only(widget, use_method):
         # Color explicitly not set
         (
             {"stroke_style": None},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "",
             [],
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "stroke_style=None, line_width=4.500, line_dash=None",
+            "line_width=4.500",
             [("set line width", 4.5)],
             {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "stroke_style=None, line_width=None, line_dash=[2, 7]",
+            "line_dash=[2, 7]",
             [("set line dash", [2, 7])],
             {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
@@ -791,10 +791,7 @@ TEXT_PARAMS = pytest.mark.parametrize(
                 "line_height": None,
                 "font": SYSTEM_FONT_IMPL,
             },
-            (
-                "text='Hello world', x=10, y=20, font=None, "
-                "baseline=Baseline.ALPHABETIC, line_height=None"
-            ),
+            "text='Hello world', x=10, y=20, baseline=Baseline.ALPHABETIC",
             {
                 "text": "Hello world",
                 "x": 10,
@@ -815,10 +812,7 @@ TEXT_PARAMS = pytest.mark.parametrize(
                 "line_height": None,
                 "font": SYSTEM_FONT_IMPL,
             },
-            (
-                "text='Hello world', x=10, y=20, font=None, "
-                "baseline=Baseline.TOP, line_height=None"
-            ),
+            "text='Hello world', x=10, y=20, baseline=Baseline.TOP",
             {
                 "text": "Hello world",
                 "x": 10,
@@ -841,7 +835,7 @@ TEXT_PARAMS = pytest.mark.parametrize(
             },
             (
                 "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>, "
-                "baseline=Baseline.ALPHABETIC, line_height=None"
+                "baseline=Baseline.ALPHABETIC"
             ),
             {
                 "text": "Hello world",
@@ -864,7 +858,7 @@ TEXT_PARAMS = pytest.mark.parametrize(
                 "font": SYSTEM_FONT_IMPL,
             },
             (
-                "text='Hello world', x=10, y=20, font=None, "
+                "text='Hello world', x=10, y=20, "
                 "baseline=Baseline.ALPHABETIC, line_height=1.500"
             ),
             {
@@ -994,7 +988,7 @@ def test_reset_transform(widget):
             # When width and height aren't specified, the image's true dimensions are
             # supplied to the backend.
             {"x": 10, "y": 20, "width": 32, "height": 32},
-            "x=10, y=20, width=None, height=None",
+            "x=10, y=20",
             {
                 "x": 10,
                 "y": 20,

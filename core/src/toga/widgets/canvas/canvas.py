@@ -99,6 +99,12 @@ class drawing_context_property:
                     restores += 1
                 case Save():
                     restores -= 1
+                case State() if getattr(action, "_is_open", False):
+                    if (value := getattr(action, self.name)) is not None:
+                        # This is a state we're currently in, and it sets the attribute.
+                        return value
+                    else:  # no-cover-if-lt-py311
+                        pass
                 case self.ActionClass() if restores <= 0:
                     return getattr(action, self.name)
 

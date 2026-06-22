@@ -61,7 +61,7 @@ When constructing your own [`Font`][toga.Font] instance, ensure that the font fa
 
 ## Notes
 
-- iOS and macOS do not support the use of variant font files (that is, fonts that contain the details of multiple weights/variants in a single file). Variant font files can be registered; however, only the "normal" variant will be used.
+- Some platforms allow the use of font weights and variants that aren't explicitly provided by altering the rendering of a normal font (e.g., using a thick pen to render a normal font to render a fake bold, or applying a skew to render a fake italic). Toga only guarantees that the font faces, variants and weights that are actually defined in a font file will be available for use.
 - Android and Windows do not support the oblique font style. If an oblique font is specified, Toga will attempt to use an italic style of the same font.
 - Android and Windows do not support the small caps font variant. If a Small Caps font is specified, Toga will use the normal variant of the same font.
 
