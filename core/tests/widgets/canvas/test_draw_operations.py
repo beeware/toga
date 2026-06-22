@@ -66,6 +66,7 @@ def test_close_path(widget):
     assert widget._impl.draw_instructions[1:-1] == ["close path"]
 
 
+@pytest.mark.parametrize("use_method", [True, False])
 @pytest.mark.parametrize("alias_kwarg", [True, False])
 @pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
@@ -131,19 +132,33 @@ def test_close_path(widget):
         ),
     ],
 )
-def test_fill(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
+def test_fill(
+    widget,
+    use_method,
+    alias_kwarg,
+    alias_attr,
+    kwargs,
+    args_repr,
+    draw_objs,
+    attrs,
+):
     """A primitive fill operation can be added."""
     if alias_kwarg and "fill_style" in kwargs:
         kwargs["color"] = kwargs.pop("fill_style")
 
-    draw_op = widget.fill(**kwargs)
+    if use_method:
+        draw_op = widget.fill(**kwargs)
 
-    assert_action_performed(widget, "redraw")
+        assert_action_performed(widget, "redraw")
+
+        # The first and last instructions save/restore the root state, and can be
+        # ignored. But the fill itself also saves and then restores.
+        assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
+
+    else:
+        draw_op = Fill(**kwargs)
+
     assert repr(draw_op) == f"Fill({args_repr})"
-
-    # The first and last instructions save/restore the root state, and can be ignored.
-    # But the fill itself also saves and then restores.
-    assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
 
     # All the attributes can be retrieved.
     if alias_attr and "fill_style" in attrs:
@@ -162,6 +177,7 @@ def test_fill_kw_only(widget, use_method):
         fill(FillRule.EVENODD, REBECCAPURPLE)
 
 
+@pytest.mark.parametrize("use_method", [True, False])
 @pytest.mark.parametrize("alias_kwarg", [True, False])
 @pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
@@ -237,24 +253,37 @@ def test_fill_kw_only(widget, use_method):
         ),
     ],
 )
-def test_stroke(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
+def test_stroke(
+    widget,
+    use_method,
+    alias_kwarg,
+    alias_attr,
+    kwargs,
+    args_repr,
+    draw_objs,
+    attrs,
+):
     """A primitive stroke operation can be added."""
     if alias_kwarg and "stroke_style" in kwargs:
         kwargs["color"] = kwargs.pop("stroke_style")
 
-    draw_op = widget.stroke(**kwargs)
+    if use_method:
+        draw_op = widget.stroke(**kwargs)
 
-    assert_action_performed(widget, "redraw")
+        assert_action_performed(widget, "redraw")
+
+        # The first and last instructions save/restore the root state, and can be
+        # ignored. But the stroke itself also saves and then restores.
+        assert widget._impl.draw_instructions[1:-1] == [
+            "save",
+            *draw_objs,
+            "stroke",
+            "restore",
+        ]
+    else:
+        draw_op = Stroke(**kwargs)
+
     assert repr(draw_op) == f"Stroke({args_repr})"
-
-    # The first and last instructions save/restore the root state, and can be ignored.
-    # But the stroke itself also saves and then restores.
-    assert widget._impl.draw_instructions[1:-1] == [
-        "save",
-        *draw_objs,
-        "stroke",
-        "restore",
-    ]
 
     # All the attributes can be retrieved.
     if alias_attr and "stroke_style" in attrs:

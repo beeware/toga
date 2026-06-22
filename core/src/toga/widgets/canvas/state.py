@@ -25,10 +25,7 @@ from .drawingaction import (
     QuadraticCurveTo,
     Rect,
     ResetTransform,
-    Rotate,
     RoundRect,
-    Scale,
-    Translate,
     WriteText,
     color_property,
 )
@@ -397,8 +394,9 @@ class DrawingActionDispatch(ABC):
     ) -> WriteText:
         """Write text at a given position.
 
-        Drawing text is effectively a series of path operations, so the text will have
-        the current color and fill properties.
+        Unlike HTML canvas's `fill_text` and `stroke_text`, Toga currently has one
+        method; whether it strokes and/or fills is determined by whether a stroke
+        and/or fill context manager is currently open.
 
         :param text: The text to draw. Newlines will cause line breaks, but long lines
             will not be wrapped.
@@ -430,14 +428,13 @@ class DrawingActionDispatch(ABC):
     ):
         """Draw a Toga Image.
 
-        The x, y coordinates specify the location of the bottom-left corner
-        of the image. If supplied, the width and height specify the size
-        of the image when it is rendered; the image will be
-        scaled to fit.
+        The x, y coordinates specify the location of the bottom-left corner of the
+        image. If supplied, the width and height specify the size of the image when it
+        is rendered; the image will be scaled to fit.
 
-        Drawing of images is performed with the current transformation matrix
-        applied, so the destination rectangle of the image will be rotated,
-        scaled and translated by any transformations which are currently applied.
+        Drawing of images is performed with the current transformation matrix applied,
+        so the destination rectangle of the image will be rotated, scaled and
+        translated by any transformations which are currently applied.
 
         :param image: a Toga Image
         :param x: The x-coordinate of the bottom-left corner of the image when
@@ -464,6 +461,9 @@ class DrawingActionDispatch(ABC):
     def rotate(self, radians: float) -> Rotate:
         """Add a rotation.
 
+        If used as a context manager, this saves state and applies the rotation when
+        entering, then restores state upon exiting.
+
         :param radians: The angle to rotate clockwise in radians.
         :returns: The `Rotate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
@@ -475,6 +475,9 @@ class DrawingActionDispatch(ABC):
 
     def scale(self, sx: float, sy: float) -> Scale:
         """Add a scaling transformation.
+
+        If used as a context manager, this saves state and applies the scaling when
+        entering, then restores state upon exiting.
 
         :param sx: Scale factor for the X dimension. A negative value flips the
             image horizontally.
@@ -490,6 +493,9 @@ class DrawingActionDispatch(ABC):
 
     def translate(self, tx: float, ty: float) -> Translate:
         """Add a translation.
+
+        If used as a context manager, this saves state and applies the translation when
+        entering, then restores state upon exiting.
 
         :param tx: Translation for the X dimension.
         :param ty: Translation for the Y dimension.
@@ -691,7 +697,7 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
     [`Canvas.redraw()`][toga.Canvas.redraw] for the changes to be rendered.
     """
 
-    def __init__(self):
+    def __post_init__(self):
         self.drawing_actions = []
         self._can_be_entered = True
 
@@ -864,8 +870,9 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
 
 @dataclass(repr=False)
 class State(BaseState):
-    def __post_init__(self):
-        super().__init__()
+    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    [state()][toga.Canvas.state] method. Functions as a context manager.
+    """
 
     def _draw(self, context: Any) -> None:
         context.save()
@@ -876,8 +883,9 @@ class State(BaseState):
 
 @dataclass(repr=False)
 class ClosePath(BaseState):
-    def __post_init__(self):
-        super().__init__()
+    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    [close_path()][toga.Canvas.close_path] method. Can function as a context manager.
+    """
 
     # Backwards compatibility for Toga <= 0.5.4
     # See DrawingActionDispatch.ClosedPath for explanation
@@ -916,10 +924,11 @@ class ClosePath(BaseState):
 
 def _assign_style(action, name, color):
     """Determine fill_style/stroke_style based on "actual" arg and color."""
-
-    # Normalize to NOT_PROVIDED if it's the property itself.
-    color = NOT_PROVIDED if color is type(action).color else color
     style = getattr(action, f"{name}_style")
+
+    # For each, normalize to NOT_PROVIDED if it's the property itself.
+    color = NOT_PROVIDED if isinstance(color, color_property) else color
+    style = NOT_PROVIDED if isinstance(style, color_property) else style
 
     if style is not NOT_PROVIDED and color is not NOT_PROVIDED:
         raise TypeError(f"Both {name}_style and color provided")
@@ -932,6 +941,10 @@ def _assign_style(action, name, color):
 
 @dataclass(repr=False)
 class Fill(BaseState):
+    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    [fill()][toga.Canvas.fill] method. Can function as a context manager.
+    """
+
     # This will need to change to a pair of positional arguments in order to accommodate
     # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
     fill_rule: FillRule = FillRule.NONZERO
@@ -940,7 +953,7 @@ class Fill(BaseState):
     color: InitVar[ColorT | None | object] = color_property()
 
     def __post_init__(self, color):
-        super().__init__()
+        super().__post_init__()
         self.fill_style = _assign_style(self, "fill", color)
 
     def _draw(self, context: Any) -> None:
@@ -964,6 +977,10 @@ class Fill(BaseState):
 
 @dataclass(repr=False)
 class Stroke(BaseState):
+    """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
+    [stroke()][toga.Canvas.stroke] method. Can function as a context manager.
+    """
+
     # Path parameter (positional/keyword) will go here.
     _: KW_ONLY
     stroke_style: ColorT | None | object = color_property()
@@ -972,7 +989,7 @@ class Stroke(BaseState):
     line_dash: list[float] | None = None
 
     def __post_init__(self, color):
-        super().__init__()
+        super().__post_init__()
         self.stroke_style = _assign_style(self, "stroke", color)
 
     def _draw(self, context: Any) -> None:
@@ -996,3 +1013,60 @@ class Stroke(BaseState):
 
         context.stroke()
         context.restore()
+
+
+class TransformState(BaseState, ABC):
+    @abstractmethod
+    def _call_method(self, context: Any) -> None: ...
+
+    def _draw(self, context: Any) -> None:
+        if not (hasattr(self, "_is_open") or self.drawing_actions):
+            # Wasn't used as a context manager (nor had drawing actions manually added)
+            self._call_method(context)
+            return
+
+        context.save()
+        self._call_method(context)
+
+        for action in self.drawing_actions:
+            action._draw(context)
+
+        context.restore()
+
+
+@dataclass(repr=False)
+class Rotate(TransformState):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [rotate()][toga.Canvas.rotate] method. Can function as a context manager.
+    """
+
+    radians: float
+
+    def _call_method(self, context: Any) -> None:
+        context.rotate(self.radians)
+
+
+@dataclass(repr=False)
+class Scale(TransformState):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [scale()][toga.Canvas.scale] method. Can function as a context manager.
+    """
+
+    sx: float
+    sy: float
+
+    def _call_method(self, context: Any) -> None:
+        context.scale(self.sx, self.sy)
+
+
+@dataclass(repr=False)
+class Translate(TransformState):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [translate()][toga.Canvas.translate] method. Can function as a context manager.
+    """
+
+    tx: float
+    ty: float
+
+    def _call_method(self, context: Any) -> None:
+        context.translate(self.tx, self.ty)

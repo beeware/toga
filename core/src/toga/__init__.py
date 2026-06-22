@@ -8,11 +8,11 @@ from travertino import _package_version
 def lazy_load():
     toga_core_imports = {}
     pyi = Path(__file__).with_suffix(".pyi")
-    with pyi.open() as f:
+    with pyi.open(encoding="utf-8") as f:
         for line in f:
-            segments = line.split()
-            if segments[0] == "from":
-                toga_core_imports[segments[3]] = segments[1]
+            match line.split():
+                case "from", module_name, "import", class_name, "as", _:
+                    toga_core_imports[class_name] = module_name
     return toga_core_imports
 
 

@@ -54,7 +54,7 @@ class Context:
         stroke = Paint()
         stroke.setAntiAlias(True)
         stroke.setStyle(Paint.Style.STROKE)
-        stroke.setStrokeWidth(2.0)
+        stroke.setStrokeWidth(1.0)
         stroke.setColor(BLACK)
         stroke.setStrokeMiter(10.0)
 
@@ -225,8 +225,8 @@ class Context:
     def reset_transform(self):
         self.native.setMatrix(None)
 
-        # current matrix needs to unwind all previous states
-        # can't just ask for current total transform as `getMatrix` is deprecated
+        # current matrix needs to unwind all previous states can't just ask for current
+        # total transform as `getMatrix` is deprecated
         for state in reversed(self.states):
             self.path.transform(state.transform)
             inverse = Matrix()
@@ -311,14 +311,15 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
     def onTouch(self, canvas, event):
         with suppress_reference_error():
             x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
-            if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
-                self.interface.on_press(x, y)
-            elif action == MotionEvent.ACTION_MOVE:
-                self.interface.on_drag(x, y)
-            elif action == MotionEvent.ACTION_UP:
-                self.interface.on_release(x, y)
-            else:  # pragma: no cover
-                return False
+            match event.getAction():
+                case MotionEvent.ACTION_DOWN:
+                    self.interface.on_press(x, y)
+                case MotionEvent.ACTION_MOVE:
+                    self.interface.on_drag(x, y)
+                case MotionEvent.ACTION_UP:
+                    self.interface.on_release(x, y)
+                case _:  # pragma: no cover
+                    return False
         return True
 
 
@@ -350,8 +351,8 @@ class Canvas(Widget):
             return paint.getTextSize() * line_height
 
     def _text_paint(self, font):
-        # font.size applies the scale factor, and the canvas transformation matrix
-        # will apply it again, so we need to cancel one of those with a scale_out.
+        # font.size applies the scale factor, and the canvas transformation matrix will
+        # apply it again, so we need to cancel one of those with a scale_out.
         paint = Paint()
         paint.setTypeface(font.typeface())
         paint.setTextSize(self.scale_out(font.size()))

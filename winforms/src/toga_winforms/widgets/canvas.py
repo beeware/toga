@@ -4,6 +4,7 @@ import System.Windows.Forms as WinForms
 from System import Array
 from System.Drawing import (
     Bitmap,
+    Color,
     Graphics,
     Pen,
     PointF,
@@ -23,7 +24,7 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
-from toga.colors import TRANSPARENT, rgb
+from toga.colors import rgb
 from toga.constants import Baseline, FillRule
 from toga.handlers import WeakrefCallable
 from toga.widgets.canvas.geometry import arc_to_bezier, round_rect, sweepangle
@@ -56,7 +57,7 @@ class State:
         return cls(
             previous_state=None,
             brush=SolidBrush(BLACK),
-            pen=Pen(BLACK, impl.scale_in(2.0, rounding=None)),
+            pen=Pen(BLACK, impl.scale_in(1.0, rounding=None)),
         )
 
     def new_state(self, previous_state):
@@ -365,7 +366,7 @@ class Context:
 class Canvas(Box):
     def create(self):
         super().create()
-        self._default_background_color = TRANSPARENT
+        self._default_background_color = Color.Transparent
         self.native.DoubleBuffered = True
         self.native.Paint += WeakrefCallable(self.winforms_paint)
         self.native.Resize += WeakrefCallable(self.winforms_resize)

@@ -26,18 +26,19 @@ class ExamplesOverviewApp(toga.App):
     def open(self, widget, **kwargs):
         row = self.table.selection
 
-        if platform.system() == "Windows":
-            os.startfile(row.path)
-        elif platform.system() == "Darwin":
-            subprocess.run(["open", row.path])
-        else:
-            subprocess.run(["xdg-open", row.path])
+        match platform.system():
+            case "Windows":
+                os.startfile(row.path)
+            case "Darwin":
+                subprocess.run(["open", row.path])
+            case _:
+                subprocess.run(["xdg-open", row.path])
 
     def on_example_selected(self, widget):
         readme_path = widget.selection.path / "README.md"
 
         try:
-            with open(readme_path) as f:
+            with readme_path.open(encoding="utf-8") as f:
                 readme_text = f.read()
         except OSError:
             readme_text = "README could not be loaded"

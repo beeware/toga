@@ -58,12 +58,13 @@ def normalize(probe):
     returned by the widget."""
 
     def normalize_time(value):
-        if isinstance(value, datetime):
-            value = value.time()
-        elif isinstance(value, time):
-            pass
-        else:
-            raise TypeError(value)
+        match value:
+            case datetime():
+                value = value.time()
+            case time():
+                pass
+            case _:
+                raise TypeError(value)
 
         replace_kwargs = {"microsecond": 0}
         if not probe.supports_seconds:

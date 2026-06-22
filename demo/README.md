@@ -2,7 +2,7 @@
 
 <!-- rumdl-disable MD013 -->
 [![Python Versions](https://img.shields.io/pypi/pyversions/toga-demo.svg)](https://pypi.python.org/pypi/toga-demo)
-[![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-demo.svg)](https://github.com/beeware/toga-demo/blob/main/LICENSE)
+[![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-demo.svg)](https://github.com/beeware/toga/blob/main/demo/LICENSE)
 [![Project status](https://img.shields.io/pypi/status/toga-demo.svg)](https://pypi.python.org/pypi/toga-demo)
 <!-- rumdl-enable MD013 -->
 
@@ -49,12 +49,12 @@ Toga Demo is part of the [BeeWare suite](https://beeware.org). You can talk to t
 
 - [@beeware@fosstodon.org on Mastodon](https://fosstodon.org/@beeware)
 - [Discord](https://beeware.org/bee/chat/)
-- The Toga [GitHub Discussions forum](https://github.com/beeware/toga/discussions)
+- The Toga [GitHub Discussions forum](https://github.com/beeware/toga/discussions/)
 
-We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/behavior/).
+We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/code-of-conduct/).
 
 ## Contributing
 
-If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues).
+If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues/).
 
 If you'd like to contribute to Toga development, our [contribution guide](https://toga.beeware.org/en/latest/how-to/contribute/) details how to set up a development environment, and other requirements we have as part of our contribution process.

@@ -50,7 +50,7 @@ class Context:
         self.impl = impl
         self.native = NSGraphicsContext.currentContext.CGContext
         self.states = [State()]
-        self.set_line_width(2.0)
+        self.set_line_width(1.0)
 
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
