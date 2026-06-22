@@ -1102,29 +1102,31 @@ async def test_miter_join(canvas, probe):
     assert_reference(probe, "miter_join", threshold=0.025)
 
 
+class RectDrawer:
+    SIDE = 40
+    GAP = 15
+
+    def __init__(self):
+        self.x = self.y = self.GAP
+
+    def draw(self, canvas):
+        with canvas.stroke():
+            with canvas.fill():
+                canvas.rect(self.x, self.y, self.SIDE, self.SIDE)
+
+        self.x += self.SIDE + self.GAP
+        if self.x >= 150:
+            self.x = self.GAP
+            self.y += self.SIDE + self.GAP
+
+
 @pytest.mark.parametrize("restore_method", [state_context_manager, save_and_restore])
 async def test_attributes(canvas, probe, restore_method):
     """Context attributes can be set and restored."""
-    side = 40
-    gap = 15
-    x = gap
-    y = gap
-
-    def draw_rect(canvas):
-        nonlocal x
-        nonlocal y
-
-        with canvas.stroke():
-            with canvas.fill():
-                canvas.rect(x, y, side, side)
-
-        x += side + gap
-        if x >= 150:
-            x = gap
-            y += side + gap
+    rect = RectDrawer()
 
     # 1. Black on black
-    draw_rect(canvas)
+    rect.draw(canvas)
 
     canvas.fill_style = CORNFLOWERBLUE
     canvas.stroke_style = REBECCAPURPLE
@@ -1132,7 +1134,7 @@ async def test_attributes(canvas, probe, restore_method):
     canvas.line_dash = [2, 2]
 
     # 2. Purple on blue
-    draw_rect(canvas)
+    rect.draw(canvas)
 
     with restore_method(canvas):
         canvas.fill_style = GOLDENROD
@@ -1141,7 +1143,7 @@ async def test_attributes(canvas, probe, restore_method):
         canvas.line_dash = [5, 1]
 
         # 3. Red on goldenrod
-        draw_rect(canvas)
+        rect.draw(canvas)
 
         with restore_method(canvas):
             canvas.fill_style = RED
@@ -1150,10 +1152,10 @@ async def test_attributes(canvas, probe, restore_method):
             canvas.line_dash = []
 
             # 4. Blue on red
-            draw_rect(canvas)
+            rect.draw(canvas)
 
         # 5. Restore to red on goldenrod
-        draw_rect(canvas)
+        rect.draw(canvas)
 
         with restore_method(canvas):
             canvas.fill_style = CORNFLOWERBLUE
@@ -1162,13 +1164,69 @@ async def test_attributes(canvas, probe, restore_method):
             canvas.line_dash = [1, 4]
 
             # 6. Black on blue
-            draw_rect(canvas)
+            rect.draw(canvas)
 
         # 7. Restore to red on goldenrod
-        draw_rect(canvas)
+        rect.draw(canvas)
 
     # 8. Restore to purple on blue
-    draw_rect(canvas)
+    rect.draw(canvas)
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "attributes")
+
+
+async def test_state_parameters(canvas, probe):
+    """Context attributes can be set via parameters to state()."""
+    # Draw the same image as test_attributes above.
+    rect = RectDrawer()
+
+    # 1. Black on black
+    rect.draw(canvas)
+
+    canvas.fill_style = CORNFLOWERBLUE
+    canvas.stroke_style = REBECCAPURPLE
+    canvas.line_width = 4
+    canvas.line_dash = [2, 2]
+
+    # 2. Purple on blue
+    rect.draw(canvas)
+
+    with canvas.state(
+        fill_style=GOLDENROD,
+        stroke_style=RED,
+        line_width=8,
+        line_dash=[5, 1],
+    ):
+        # 3. Red on goldenrod
+        rect.draw(canvas)
+
+        with canvas.state(
+            fill_style=RED,
+            stroke_style=CORNFLOWERBLUE,
+            line_width=3,
+            line_dash=[],
+        ):
+            # 4. Blue on red
+            rect.draw(canvas)
+
+        # 5. Restore to red on goldenrod
+        rect.draw(canvas)
+
+        with canvas.state(
+            fill_style=CORNFLOWERBLUE,
+            stroke_style=BLACK,
+            line_width=5,
+            line_dash=[1, 4],
+        ):
+            # 6. Black on blue
+            rect.draw(canvas)
+
+        # 7. Restore to red on goldenrod
+        rect.draw(canvas)
+
+    # 8. Restore to purple on blue
+    rect.draw(canvas)
+
+    await probe.redraw("Image should be drawn")
+    assert_reference(probe, "attributes", threshold=0.02)

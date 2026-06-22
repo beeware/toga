@@ -74,6 +74,9 @@ class DrawingAction(ABC):
             str_fields = []
             for field in fields(self):
                 match value := getattr(self, field.name):
+                    case None:
+                        # Leave None (unset attributes) out of the repr
+                        continue
                     case float():
                         str_value = f"{value:.3f}"
                     case Enum():
@@ -103,17 +106,27 @@ NOT_PROVIDED = object()
 
 
 class color_property:
+    def __init__(self, aliased=False):
+        self.aliased = aliased
+
+    def __set_name__(self, action_class, name):
+        self.name = name
+
     def __get__(self, action, action_class=None):
         if action is None:
             return self
 
-        return action._color
+        return action._color if self.aliased else getattr(action, f"_{self.name}")
 
     def __set__(self, action, value):
         if value not in {None, NOT_PROVIDED, self}:
             value = Color.parse(value)
 
-        action._color = value
+        if self.aliased:
+            action._color = value
+        else:
+            value = None if value is self else value
+            setattr(action, f"_{self.name}", value)
 
 
 ###########################################################################
