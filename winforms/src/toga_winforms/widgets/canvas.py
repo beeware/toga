@@ -322,37 +322,22 @@ class Context:
     # Text
 
     def fill_text(self, text, x, y, font, baseline, line_height):
-        self._fill_or_stroke_text(
-            text,
-            x,
-            y,
-            font,
-            baseline,
-            line_height,
-            "fill",
-            (FillRule.NONZERO,),
-        )
-
-    def stroke_text(self, text, x, y, font, baseline, line_height):
-        self._fill_or_stroke_text(text, x, y, font, baseline, line_height, "stroke", ())
-
-    def _fill_or_stroke_text(
-        self,
-        text,
-        x,
-        y,
-        font,
-        baseline,
-        line_height,
-        method,
-        args,
-    ):
         # Writing text should not affect current path, so save current paths
         current_paths = self.paths
         # new path for text
         self.begin_path()
         self._text_path(text, x, y, font, baseline, line_height)
-        getattr(self, method)(*args)
+        self.fill(FillRule.NONZERO)
+        # restore previous current paths - this is a bit hacky
+        self.paths = current_paths
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        # Writing text should not affect current path, so save current paths
+        current_paths = self.paths
+        # new path for text
+        self.begin_path()
+        self._text_path(text, x, y, font, baseline, line_height)
+        self.stroke()
         # restore previous current paths - this is a bit hacky
         self.paths = current_paths
 

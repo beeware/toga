@@ -98,8 +98,7 @@ class StartApp(toga.App):
                 self.text_width + 10,
                 text_height + 10,
             )
-        with self.canvas.state():
-            self.canvas.fill_style = rgb(149, 119, 73)
+        with self.canvas.state(fill_style=rgb(149, 119, 73)):
             self.text = self.canvas.fill_text(
                 "Tiberius",
                 x,
