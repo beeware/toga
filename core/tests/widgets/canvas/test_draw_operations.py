@@ -775,8 +775,7 @@ def test_round_rect(widget):
 
 SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
 
-
-@pytest.mark.parametrize(
+TEXT_PARAMS = pytest.mark.parametrize(
     "kwargs, instructions, args_repr, draw_attrs",
     [
         # Defaults
@@ -873,16 +872,41 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
         ),
     ],
 )
-def test_write_text(widget, kwargs, instructions, args_repr, draw_attrs):
+
+
+@TEXT_PARAMS
+def test_fill_text(widget, kwargs, instructions, args_repr, draw_attrs):
     """A write text operation can be added."""
-    draw_op = widget.write_text(**kwargs)
+    draw_op = widget.fill_text(**kwargs)
 
     assert_action_performed(widget, "redraw")
-    assert repr(draw_op) == f"WriteText({args_repr})"
+    assert repr(draw_op) == f"FillText({args_repr})"
 
     # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
-        ("write text", instructions),
+        ("fill text", instructions),
+    ]
+
+    # All the attributes can be retrieved.
+    assert draw_op.text == draw_attrs["text"]
+    assert draw_op.x == draw_attrs["x"]
+    assert draw_op.y == draw_attrs["y"]
+    assert draw_op.font == draw_attrs["font"]
+    assert draw_op.baseline == draw_attrs["baseline"]
+    assert draw_op.line_height == draw_attrs["line_height"]
+
+
+@TEXT_PARAMS
+def test_stroke_text(widget, kwargs, instructions, args_repr, draw_attrs):
+    """A write text operation can be added."""
+    draw_op = widget.stroke_text(**kwargs)
+
+    assert_action_performed(widget, "redraw")
+    assert repr(draw_op) == f"StrokeText({args_repr})"
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == [
+        ("stroke text", instructions),
     ]
 
     # All the attributes can be retrieved.
