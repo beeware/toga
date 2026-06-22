@@ -150,6 +150,14 @@ class ScreenshotGeneratorApp(toga.App):
             width=300,
         )
 
+    def create_openglview(self):
+        from .openglview import CubeRenderer
+
+        renderer = CubeRenderer()
+        openglview = toga.OpenGLView(renderer, margin=10, width=280, height=290)
+
+        return toga.Box(children=[openglview], width=280, height=290)
+
     def create_passwordinput(self):
         return toga.Box(
             children=[
@@ -365,6 +373,7 @@ class ScreenshotGeneratorApp(toga.App):
     async def sequence(self):
         print(f"Saving screenshots to {self.paths.data}")
         for content_type in [
+            "openglview",
             "activityindicator",
             "button",
             "canvas",
@@ -430,7 +439,7 @@ class ScreenshotGeneratorApp(toga.App):
                         content.close()
 
                     elif (
-                        content_type in {"webview", "mapview"}
+                        content_type in {"webview", "mapview", "openglview"}
                         and toga.platform.current_platform == "macOS"
                     ):
                         # Manual screenshot required on macOS because screenshots don't
