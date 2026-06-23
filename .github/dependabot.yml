@@ -26,6 +26,14 @@ updates:
       time: "20:00"
 
   - package-ecosystem: "pip"
+    directory: "/demo"
+    schedule:
+      # Check for updates on Sunday, 8PM UTC
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+
+  - package-ecosystem: "pip"
     directory: "/core"
     schedule:
       # Check for updates on Sunday, 8PM UTC
