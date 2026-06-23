@@ -5,9 +5,8 @@ def _package_version(file, name):
         from setuptools_scm import get_version
 
         # Excluded from coverage because a pure test environment (such as the one
-        # used by tox in CI) won't have setuptools_scm
-        # The tag_regex argument is needed as a workaround
-        # for setuptools_scm#1434
+        # used by tox in CI) won't have setuptools_scm.
+        # The tag_regex argument is needed as a workaround for setuptools_scm#1434
         return get_version(
             root="../../..", relative_to=file, tag_regex=None
         )  # pragma: no cover
