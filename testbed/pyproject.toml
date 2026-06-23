@@ -65,7 +65,7 @@ sources = [
 [tool.briefcase.app.testbed.macOS]
 requires = [
     "../cocoa",
-    "std-nslog~=1.0.0",
+    "std-nslog~=2.0.0",
     # psutil would ideally go only in test dependencies above, so Dependabot can see it.
     # However, for Python < 3.13, we have no way to avoid trying to install it on
     # Android.
