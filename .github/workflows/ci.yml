@@ -182,12 +182,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
+        platform: [ "macos-26", "ubuntu-latest", "windows-latest" ]
         python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
         package: ["core", "travertino"]
         exclude:
         - package: travertino
-          platform: macos-latest
+          platform: macos-26
         - package: travertino
           platform: windows-latest
         include:
@@ -348,12 +348,12 @@ jobs:
 
         - backend: "macOS-x86_64"
           platform: "macOS"
-          runs-on: "macos-15-intel"
+          runs-on: "macos-26-intel"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "macOS-arm64"
           platform: "macOS"
-          runs-on: "macos-latest"
+          runs-on: "macos-26"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
@@ -554,7 +554,7 @@ jobs:
 
         - backend: "textual-macOS"
           platform: "macOS"
-          runs-on: "macos-latest"
+          runs-on: "macos-26"
           testbed-app: "testbed-textual"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed-textual"
 
@@ -582,16 +582,8 @@ jobs:
 
         - backend: "iOS"
           platform: "iOS"
-          runs-on: "macos-latest"
-          pre-command: |
-            # 2025-08-15 - Github Actions are in the process of switching how they
-            # manage Xcode, so they can save disk space.
-            # See https://github.com/actions/runner-images/issues/12541
-            # and https://github.com/actions/runner-images/issues/12751; see
-            # also https://github.com/actions/runner-images/issues/12758 for
-            # a discussion of transition issues.
-            sudo xcode-select --switch /Applications/Xcode_16.4.app
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
+          runs-on: "macos-26"
+          briefcase-run-args: "--device 'iPhone 17e::26.5'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
