@@ -4,7 +4,7 @@ version = "0.0.1"
 
 [project.optional-dependencies]
 test = [
-    "coverage==7.14.2",
+    "coverage==7.14.3",
     "coverage-conditional-plugin == 0.9.0",
     # fonttools is only needed by Android, but we need to use sys.platform == 'linux'
     # for < 3.13 there's no dependency identifier that can target Android exclusively
@@ -65,7 +65,7 @@ sources = [
 [tool.briefcase.app.testbed.macOS]
 requires = [
     "../cocoa",
-    "std-nslog~=1.0.0",
+    "std-nslog~=2.0.0",
     # psutil would ideally go only in test dependencies above, so Dependabot can see it.
     # However, for Python < 3.13, we have no way to avoid trying to install it on
     # Android.

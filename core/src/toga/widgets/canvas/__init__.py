@@ -8,6 +8,7 @@ from .drawingaction import (
     DrawImage,
     DrawingAction,
     Ellipse,
+    FillText,
     LineTo,
     MoveTo,
     QuadraticCurveTo,
@@ -20,6 +21,7 @@ from .drawingaction import (
     SetLineDash,
     SetLineWidth,
     SetStrokeStyle,
+    StrokeText,
     WriteText,
 )
 from .geometry import arc_to_bezier, sweepangle
@@ -74,6 +76,8 @@ __all__ = [
     "Rect",
     "ResetTransform",
     "RoundRect",
+    "FillText",
+    "StrokeText",
     "WriteText",
     # States
     "BaseState",

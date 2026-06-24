@@ -245,42 +245,40 @@ class Context:
         self.state.transform *= inverse
 
     # Text
-    def write_text(self, text, x, y, font, baseline, line_height):
+    def fill_text(self, text, x, y, font, baseline, line_height):
+        path = self._text_path(text, x, y, font, baseline, line_height)
+        self.native.fillPath(path, self.state.fill_style)
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        path = self._text_path(text, x, y, font, baseline, line_height)
+        self.native.strokePath(path, self.state.stroke)
+
+    def _text_path(self, text, x, y, font, baseline, line_height):
         left_offset, top_offset, _, bottom_offset, scaled_line_height = (
             self.impl._text_offsets(text, font, line_height)
         )
+        left = x - left_offset
 
-        lines = text.splitlines()
-        total_height = bottom_offset - top_offset
-
-        self.save()
-        # translate to target base point
-        self.translate(x, y)
-
-        # adjust for alignment
-        if baseline == Baseline.TOP:
-            self.translate(-left_offset, -top_offset)
-        elif baseline == Baseline.MIDDLE:
-            self.translate(-left_offset, -top_offset - (total_height / 2))
-        elif baseline == Baseline.BOTTOM:
-            self.translate(-left_offset, -bottom_offset)
-        else:
-            # Default to Baseline.ALPHABETIC
-            self.translate(-left_offset, 0)
+        # Adjust for alignment
+        match baseline:
+            case Baseline.TOP:
+                top = y - top_offset
+            case Baseline.MIDDLE:
+                total_height = bottom_offset - top_offset
+                top = y - top_offset - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y - bottom_offset
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y
 
         self.native.setFont(font.native)
         path = QPainterPath()
-        for line_num, line in enumerate(lines):
-            y = scaled_line_height * line_num
-            path.addText(0, y, font.native, line)
+        for line_num, line in enumerate(text.splitlines()):
+            line_offset = scaled_line_height * line_num
+            path.addText(left, top + line_offset, font.native, line)
 
-        if self.in_fill:
-            self.native.fillPath(path, self.state.fill_style)
-        if self.in_stroke:
-            self.native.strokePath(path, self.state.stroke)
-
-        # reset state to how things were before translating
-        self.restore()
+        return path
 
     # Bitmap images
     def draw_image(self, image, x, y, width, height):
