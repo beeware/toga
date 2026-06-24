@@ -8,12 +8,13 @@ from System.Drawing import (
     FontFamily,
 )
 from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
-from travertino.constants import PLACEHOLDER_RESULT
 
 from toga.handlers import WeakrefCallable
 
 from .libs.user32 import SetThreadDpiAwarenessContext
 from .libs.win32constants import DPI_AWARENESS_CONTEXT_UNAWARE
+
+PLACEHOLDER_RESULT = object()
 
 
 class BaseDialog:
