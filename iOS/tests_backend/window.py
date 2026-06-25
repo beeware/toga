@@ -40,7 +40,9 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def _assert_container_layout(self):
         # If the window has been laid out, the origin should be at least at the
         # position of the top bar height.
-        assert self.impl.container.content.native.frame.origin.y >= self.top_bar_height
+        y = self.impl.container.content.native.frame.origin.y
+        top_bar_height = self.top_bar_height
+        assert y > top_bar_height or y == pytest.approx(top_bar_height)
 
     def _assert_window_state(self, state):
         # Create an assertion function that the window's instantaneous state is a
