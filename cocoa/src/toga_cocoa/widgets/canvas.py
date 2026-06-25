@@ -65,6 +65,7 @@ class Context:
 
     @cached_property
     def original_matrix_inverse(self):
+        # Only calculate once, and only if reset_transform() is called.
         return core_graphics.CGAffineTransformInvert(self.original_matrix)
 
     @property

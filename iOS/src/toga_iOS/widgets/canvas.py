@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from copy import copy
 from dataclasses import dataclass
+from functools import cached_property
 from math import ceil
 
 from rubicon.objc import (
@@ -24,7 +25,6 @@ from toga.widgets.canvas.geometry import round_rect
 from toga_iOS.colors import native_color
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
-    CGAffineTransformIdentity,
     CGPathDrawingMode,
     CGRectMake,
     NSAttributedString,
@@ -64,6 +64,14 @@ class Context:
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
         self.in_stroke = False
+
+        # Store the original matrix so we can restore to it if needed.
+        self.original_matrix = core_graphics.CGContextGetCTM(self.native)
+
+    @cached_property
+    def original_matrix_inverse(self):
+        # Only calculate once, and only if reset_transform() is called.
+        return core_graphics.CGAffineTransformInvert(self.original_matrix)
 
     @property
     def state(self):
@@ -224,7 +232,7 @@ class Context:
 
     def reset_transform(self):
         # Core Graphics has no built-in ability to assign to or reset the transformation
-        # matrix.
+        # matrix, so we need to calculate how to transform back to the original.
         current = core_graphics.CGContextGetCTM(self.native)
 
         if current == self.original_matrix:
@@ -237,7 +245,7 @@ class Context:
         # we started with to the current matrix.
         transform = core_graphics.CGAffineTransformConcat(
             current,
-            self.inverse_original,
+            self.original_matrix_inverse,
         )
 
         inverse_transform = core_graphics.CGAffineTransformInvert(transform)
@@ -332,19 +340,7 @@ class TogaCanvas(UIView):
 
     @objc_method
     def drawRect_(self, rect: CGRect) -> None:
-        context = Context(self.impl)
-
-        # Store this so we can restore the original if needed.
-        context.original_matrix = core_graphics.CGContextGetCTM(context.native)
-        context.using_standard_coords = (
-            context.original_matrix == CGAffineTransformIdentity
-        )
-        # It's actually the identity matrix, so save the inverse as well.
-        context.inverse_original = core_graphics.CGAffineTransformInvert(
-            context.original_matrix
-        )
-
-        self.interface.root_state._draw(context)
+        self.interface.root_state._draw(Context(self.impl))
 
     @objc_method
     def touchesBegan_withEvent_(self, touches, event) -> None:
