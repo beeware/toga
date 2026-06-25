@@ -23,7 +23,6 @@ class MockTouch(NSObject):
 class CanvasProbe(SimpleProbe):
     native_class = UIView
     screenshot_reset_transform = True
-    screenshot_reset_transform_size = 400
 
     def reference_variant(self, reference):
         # System fonts and sizes are platform specific

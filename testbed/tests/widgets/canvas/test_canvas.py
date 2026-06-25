@@ -850,13 +850,10 @@ async def test_reset_transform(canvas, probe):
             with canvas.stroke():
                 canvas.rect(10 + offset, 10 + offset, 40, 40)
 
-        with canvas.fill(fill_style=WHITE):
-            # TODO: Update to fill_text either here (in #4045) or in the text
-            # PR (#4432), whichever is merged later.
-
+        with canvas.state(fill_style=WHITE):
             # The text is *partly* for helpful visual labeling, but it also makes sure
             # text isn't getting transformed differently in the screenshot.
-            canvas.write_text(i, 15 + offset, 10 + offset, baseline=Baseline.TOP)
+            canvas.fill_text(i, 15 + offset, 10 + offset, baseline=Baseline.TOP)
 
         i += 1
 
@@ -898,8 +895,11 @@ async def test_reset_transform(canvas, probe):
         # On iOS and Cocoa, differing coordinate systems mean that resetting transform
         # can potentially make the on-screen widget look different from the image saved
         # directly from it. So test a screenshot as well, just to make sure.
-        size = probe.screenshot_reset_transform_size
-        screenshot = canvas.window.as_image(format=Image.Image).crop((0, 0, size, size))
+        screenshot = canvas.window.as_image(format=Image.Image)
+        # Resize to correct for screen resolution, then crop to the canvas.
+        crop_size = canvas.as_image().width
+        screenshot = screenshot.crop((0, 0, crop_size, crop_size)).resize((200, 200))
+        print("Transforms also work when saved as an image.")
         assert_reference(probe, "reset_transform", image=screenshot)
 
 

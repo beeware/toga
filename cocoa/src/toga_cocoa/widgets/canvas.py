@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from copy import copy
 from dataclasses import dataclass
+from functools import cached_property
 from math import ceil
 
 from rubicon.objc import CGSize, objc_method, objc_property
@@ -58,6 +59,13 @@ class Context:
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
         self.in_stroke = False
+
+        # Store the original matrix so we can restore to it if needed.
+        self.original_matrix = core_graphics.CGContextGetCTM(self.native)
+
+    @cached_property
+    def original_matrix_inverse(self):
+        return core_graphics.CGAffineTransformInvert(self.original_matrix)
 
     @property
     def state(self):
@@ -202,22 +210,22 @@ class Context:
 
     def reset_transform(self):
         # Core Graphics has no built-in ability to assign to or reset the transformation
-        # matrix.
+        # matrix, so we need to calculate how to transform back to the original.
         current = core_graphics.CGContextGetCTM(self.native)
 
         if current == self.original_matrix:
             # No resetting necessary.
             return
 
-        if self.using_standard_coords:
+        if self.original_matrix == CGAffineTransformIdentity:
             transform = current
         else:
             # The *original* transform matrix isn't the standard identity; this is
-            # probably because we're rendering to a cache. So we need to know the
+            # probably because we're rendering to a cache. So we need to calculate the
             # transform from what we started with to the current matrix.
             transform = core_graphics.CGAffineTransformConcat(
                 current,
-                self.inverse_original,
+                self.original_matrix_inverse,
             )
 
         inverse_transform = core_graphics.CGAffineTransformInvert(transform)
@@ -313,21 +321,7 @@ class TogaCanvas(NSView):
 
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
-        context = Context(self.impl)
-
-        # Store this so we can restore the original if needed.
-        context.original_matrix = core_graphics.CGContextGetCTM(context.native)
-        context.using_standard_coords = (
-            context.original_matrix == CGAffineTransformIdentity
-        )
-        # If we're not in the normal coordinate space (presumably because we're
-        # rendering to a cache), save the inverse as well.
-        if not context.using_standard_coords:
-            context.inverse_original = core_graphics.CGAffineTransformInvert(
-                context.original_matrix
-            )
-
-        self.interface.root_state._draw(context)
+        self.interface.root_state._draw(Context(self.impl))
 
     @objc_method
     def isFlipped(self) -> bool:
