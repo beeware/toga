@@ -317,7 +317,7 @@ class Window:
             native_frame = self.container.native.frame
         else:
             native_frame = self.native.frame
-        return Size(native_frame.size.width, native_frame.size.height)
+        return Size(int(native_frame.size.width), int(native_frame.size.height))
 
     def set_size(self, size):
         frame = self.native.frame
