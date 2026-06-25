@@ -6,6 +6,12 @@ from importlib import import_module
 
 from pytest import fixture, register_assert_rewrite, skip
 
+try:
+    from _pytest.approx import ApproxScalar
+except ImportError:
+    # Location as of 9.1.1
+    from _pytest.python_api import ApproxScalar
+
 import toga
 from toga.colors import GOLDENROD
 from toga.constants import WindowState
@@ -214,3 +220,13 @@ class ProxyTask:
 
     def done(self):
         return False
+
+
+# pytest.approx doesn't support <= / >=
+# See https://github.com/pytest-dev/pytest/issues/2003
+class approx(ApproxScalar):
+    def __ge__(self, other):
+        return self.expected > other or self == other
+
+    def __le__(self, other):
+        return self.expected < other or self == other
