@@ -246,34 +246,49 @@ class Context:
 
     # Text
 
-    def write_text(self, text, x, y, font, baseline, line_height):
+    def fill_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            fill_style=self.state.fill_style,
+        )
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            stroke_style=self.state.stroke_style,
+            line_width=self.state.line_width,
+        )
+
+    def _fill_or_stroke_text(self, text, x, y, font, baseline, line_height, **kwargs):
         lines = text.splitlines()
         scaled_line_height = self.impl._line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
 
-        if baseline == Baseline.TOP:
-            top = y + font.native.ascender
-        elif baseline == Baseline.MIDDLE:
-            top = y + font.native.ascender - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y + font.native.ascender - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y
+        match baseline:
+            case Baseline.TOP:
+                top = y + font.native.ascender
+            case Baseline.MIDDLE:
+                top = y + font.native.ascender - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y + font.native.ascender - total_height
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y
 
         for line_num, line in enumerate(lines):
             # Rounding minimizes differences between scale factors.
             origin = NSPoint(round(x), round(top) + (scaled_line_height * line_num))
-            kwargs = {}
-            if self.in_fill:
-                kwargs |= {"fill_style": self.state.fill_style}
-            if self.in_stroke:
-                kwargs |= {
-                    "stroke_style": self.state.stroke_style,
-                    "line_width": self.state.line_width,
-                    # Current implementation doesn't respect line dash; should this?
-                }
-            rs = self.impl._render_string(line, font, **kwargs)
+            rendered_string = self.impl._render_string(line, font, **kwargs)
 
             # "This method uses the baseline origin by default. If
             # NSStringDrawingUsesLineFragmentOrigin is not specified, the
@@ -286,7 +301,7 @@ class Context:
             # sets the baseline relative to its bottom
             # (https://www.sketch.com/blog/typesetting-in-sketch/), but it would be
             # unwise to rely on that.
-            rs.drawWithRect(
+            rendered_string.drawWithRect(
                 NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
             )
 
@@ -383,11 +398,8 @@ class Canvas(Widget):
 
         if stroke_style:
             textAttributes[NSStrokeColorAttributeName] = native_color(stroke_style)
-            # Stroke width is expressed as a percentage of the font size, or a negative
-            # percentage to get both stroke and fill.
+            # Stroke width is expressed as a percentage of the font size
             stroke_width = line_width / font.native.pointSize * 100
-            if fill_style:
-                stroke_width *= -1
             textAttributes[NSStrokeWidthAttributeName] = stroke_width
 
         if fill_style:

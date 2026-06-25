@@ -20,12 +20,14 @@ from .drawingaction import (
     DrawImage,
     DrawingAction,
     Ellipse,
+    FillText,
     LineTo,
     MoveTo,
     QuadraticCurveTo,
     Rect,
     ResetTransform,
     RoundRect,
+    StrokeText,
     WriteText,
     color_property,
 )
@@ -383,20 +385,18 @@ class DrawingActionDispatch(ABC):
     # Text drawing
     ###########################################################################
 
-    def write_text(
+    def fill_text(
         self,
         text: str,
         x: float = 0.0,
         y: float = 0.0,
+        # TODO: add optional max_width parameter
+        *,
         font: Font | None = None,
         baseline: Baseline = Baseline.ALPHABETIC,
         line_height: float | None = None,
-    ) -> WriteText:
-        """Write text at a given position.
-
-        Unlike HTML canvas's `fill_text` and `stroke_text`, Toga currently has one
-        method; whether it strokes and/or fills is determined by whether a stroke
-        and/or fill context manager is currently open.
+    ) -> FillText:
+        """Write text at a given position, filled in with the current fill style.
 
         :param text: The text to draw. Newlines will cause line breaks, but long lines
             will not be wrapped.
@@ -406,13 +406,56 @@ class DrawingActionDispatch(ABC):
         :param baseline: Alignment of text relative to the Y coordinate.
         :param line_height: Height of the line box as a multiple of the font size
             when multiple lines are present.
-        :returns: The `WriteText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+        :returns: The `FillText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        write_text = WriteText(text, x, y, font, baseline, line_height)
-        self._add_to_target(write_text)
+        fill_text = FillText(
+            text,
+            x,
+            y,
+            font=font,
+            baseline=baseline,
+            line_height=line_height,
+        )
+        self._add_to_target(fill_text)
         self._redraw_with_warning_if_state()
-        return write_text
+        return fill_text
+
+    def stroke_text(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        # TODO: add optional max_width parameter
+        *,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+        line_height: float | None = None,
+    ) -> StrokeText:
+        """Write text at a given position, outlined with the current stroke settings.
+
+        :param text: The text to draw. Newlines will cause line breaks, but long lines
+            will not be wrapped.
+        :param x: The X coordinate of the text's left edge.
+        :param y: The Y coordinate: its meaning depends on `baseline`.
+        :param font: The font in which to draw the text. The default is the system font.
+        :param baseline: Alignment of text relative to the Y coordinate.
+        :param line_height: Height of the line box as a multiple of the font size
+            when multiple lines are present.
+        :returns: The `StrokeText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        stroke_text = StrokeText(
+            text,
+            x,
+            y,
+            font=font,
+            baseline=baseline,
+            line_height=line_height,
+        )
+        self._add_to_target(stroke_text)
+        self._redraw_with_warning_if_state()
+        return stroke_text
 
     ###########################################################################
     # Bitmap drawing
@@ -522,17 +565,66 @@ class DrawingActionDispatch(ABC):
     # Sub-states of this state
     ###########################################################################
 
-    def state(self) -> AbstractContextManager[State]:
+    def state(
+        self,
+        *,
+        fill_style: ColorT | None = None,
+        stroke_style: ColorT | None = None,
+        line_width: float | None = None,
+        line_dash: list[float] | None = None,
+    ) -> AbstractContextManager[State]:
         """A context manager that saves the current state of the Canvas context, and
         restores it upon exiting.
+
+        All parameters to `state()` are optional. If provided, they will set the
+        corresponding drawing context attribute upon entering the context manager.
+
+        :param fill_style: Sets the [`fill_style`][toga.Canvas.fill_style].
+        :param stroke_style: Sets the [`stroke_style`][toga.Canvas.stroke_style].
+        :param line_width: Sets the [`line_width`][toga.Canvas.line_width].
+        :param line_dash: Sets the [`line_dash`][toga.Canvas.line_dash].
 
         :return: Yields the new `State`
           [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
-        state = State()
+        state = State(
+            fill_style=fill_style,
+            stroke_style=stroke_style,
+            line_width=line_width,
+            line_dash=line_dash,
+        )
         self._add_to_target(state)
         self._redraw_with_warning_if_state()
         return state
+
+    ######################################################################
+    # 2026-05: Backwards compatibility for <= 0.5.4
+    ######################################################################
+
+    def write_text(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+        line_height: float | None = None,
+    ) -> WriteText:
+        warnings.warn(
+            (
+                "The write_text() method is deprecated. Use fill_text() and/or "
+                "stroke_text() instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        with warnings.catch_warnings():
+            # Suppress the warning from creating the deprecated DrawingAction.
+            warnings.simplefilter("ignore", DeprecationWarning)
+            write_text = WriteText(text, x, y, font, baseline, line_height)
+        self._add_to_target(write_text)
+        self._redraw_with_warning_if_state()
+        return write_text
 
     ######################################################################
     # 2026-02: Backwards compatibility for <= 0.5.3
@@ -874,10 +966,27 @@ class State(BaseState):
     [state()][toga.Canvas.state] method. Functions as a context manager.
     """
 
+    _: KW_ONLY
+    fill_style: ColorT | None = color_property()
+    stroke_style: ColorT | None = color_property()
+    line_width: float | None = None
+    line_dash: list[float] | None = None
+
     def _draw(self, context: Any) -> None:
         context.save()
+
+        if self.fill_style is not None:
+            context.set_fill_style(self.fill_style)
+        if self.stroke_style is not None:
+            context.set_stroke_style(self.stroke_style)
+        if self.line_width is not None:
+            context.set_line_width(self.line_width)
+        if self.line_dash is not None:
+            context.set_line_dash(self.line_dash)
+
         for action in self.drawing_actions:
             action._draw(context)
+
         context.restore()
 
 
@@ -949,8 +1058,8 @@ class Fill(BaseState):
     # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
     fill_rule: FillRule = FillRule.NONZERO
     _: KW_ONLY
-    fill_style: ColorT | None | object = color_property()
-    color: InitVar[ColorT | None | object] = color_property()
+    fill_style: ColorT | None | object = color_property(aliased=True)
+    color: InitVar[ColorT | None | object] = color_property(aliased=True)
 
     def __post_init__(self, color):
         super().__post_init__()
@@ -983,8 +1092,8 @@ class Stroke(BaseState):
 
     # Path parameter (positional/keyword) will go here.
     _: KW_ONLY
-    stroke_style: ColorT | None | object = color_property()
-    color: InitVar[ColorT | None | object] = color_property()
+    stroke_style: ColorT | None | object = color_property(aliased=True)
+    color: InitVar[ColorT | None | object] = color_property(aliased=True)
     line_width: float | None = None
     line_dash: list[float] | None = None
 
