@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from copy import copy
 from dataclasses import dataclass
+from functools import cached_property
 from math import ceil
 
 from rubicon.objc import CGSize, objc_method, objc_property
@@ -11,6 +12,7 @@ from toga.constants import Baseline, FillRule
 from toga.widgets.canvas.geometry import round_rect
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
+    CGAffineTransformIdentity,
     CGFloat,
     CGPathDrawingMode,
     CGRectMake,
@@ -57,6 +59,14 @@ class Context:
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
         self.in_stroke = False
+
+        # Store the original matrix so we can restore to it if needed.
+        self.original_matrix = core_graphics.CGContextGetCTM(self.native)
+
+    @cached_property
+    def original_matrix_inverse(self):
+        # Only calculate once, and only if reset_transform() is called.
+        return core_graphics.CGAffineTransformInvert(self.original_matrix)
 
     @property
     def state(self):
@@ -187,18 +197,41 @@ class Context:
         core_graphics.CGContextRotateCTM(self.native, radians)
 
     def scale(self, sx, sy):
+        # Can't apply inverse transform (for reset_transform) if scale is 0, so use a
+        # small epsilon which will almost be the same.
+        if sx == 0:
+            sx = 2**-24
+        if sy == 0:
+            sy = 2**-24
+
         core_graphics.CGContextScaleCTM(self.native, sx, sy)
 
     def translate(self, tx, ty):
         core_graphics.CGContextTranslateCTM(self.native, tx, ty)
 
     def reset_transform(self):
-        # Restore the "clean" state of the graphics context.
-        core_graphics.CGContextRestoreGState(self.native)
-        # CoreGraphics has a stack-based state representation,
-        # so ensure that there is a new, clean version of the "clean"
-        # state on the stack.
-        core_graphics.CGContextSaveGState(self.native)
+        # Core Graphics has no built-in ability to assign to or reset the transformation
+        # matrix, so we need to calculate how to transform back to the original.
+        current = core_graphics.CGContextGetCTM(self.native)
+
+        if current == self.original_matrix:
+            # No resetting necessary.
+            return
+
+        if self.original_matrix == CGAffineTransformIdentity:
+            transform = current
+        else:
+            # The *original* transform matrix isn't the standard identity; this is
+            # probably because we're rendering to a cache. So we need to calculate the
+            # transform from what we started with to the current matrix.
+            transform = core_graphics.CGAffineTransformConcat(
+                current,
+                self.original_matrix_inverse,
+            )
+
+        inverse_transform = core_graphics.CGAffineTransformInvert(transform)
+
+        core_graphics.CGContextConcatCTM(self.native, inverse_transform)
 
     # Text
     def fill_text(self, text, x, y, font, baseline, line_height):

@@ -17,6 +17,7 @@ from toga.colors import (
     REBECCAPURPLE,
     RED,
     TRANSPARENT,
+    WHITE,
     rgb,
 )
 from toga.constants import Baseline, FillRule
@@ -170,11 +171,11 @@ async def test_image_data(canvas, probe):
     )
 
 
-def assert_reference(probe, reference, threshold=0.01):
+def assert_reference(probe, reference, threshold=0.01, *, image=None):
     """Assert that the canvas currently matches a reference image, within an
     RMS threshold."""
     # Get the canvas image.
-    image = probe.get_image()
+    image = image if image is not None else probe.get_image()
     scaled_image = image.resize((200, 200))
 
     # Look for a platform-specific reference variant.
@@ -834,6 +835,72 @@ async def test_singular_transforms(canvas, probe):
 
     await probe.redraw("Transforms can be applied")
     assert_reference(probe, "singular_transforms")
+
+
+async def test_reset_transform(canvas, probe):
+    """Transform can be reset (and doesn't affect other attributes)."""
+
+    i = 1
+
+    def draw_square(canvas, offset=False):
+        nonlocal i
+
+        offset = 15 if offset else 0
+        with canvas.fill():
+            with canvas.stroke():
+                canvas.rect(10 + offset, 10 + offset, 40, 40)
+
+        with canvas.state(fill_style=WHITE):
+            # The text is *partly* for helpful visual labeling, but it also makes sure
+            # text isn't getting transformed differently in the screenshot.
+            canvas.fill_text(i, 15 + offset, 10 + offset, baseline=Baseline.TOP)
+
+        i += 1
+
+    # Confirm this is a no-op.
+    canvas.reset_transform()
+
+    # 1. Top left, default black-on-black
+    canvas.line_width = 2
+    draw_square(canvas)
+
+    # 2. Top right, purple-on-blue
+    canvas.translate(110, 0)
+    canvas.fill_style = CORNFLOWERBLUE
+    canvas.stroke_style = REBECCAPURPLE
+    canvas.line_width = 10
+    canvas.line_dash = [8, 3, 4, 3]
+    draw_square(canvas)
+
+    with canvas.state():
+        # 3. Bottom right, red-on-yellow
+        canvas.translate(0, 110)
+        canvas.fill_style = GOLDENROD
+        canvas.stroke_style = RED
+        canvas.line_width = 4
+        canvas.line_dash = [2, 2]
+        draw_square(canvas)
+
+        # 4. Top left (true origin), still red-on-yellow
+        canvas.reset_transform()
+        draw_square(canvas, offset=True)
+
+    # 5. Top right, purple-on-blue (back out of substate)
+    draw_square(canvas, offset=True)
+
+    await probe.redraw("Transform can be reset")
+    assert_reference(probe, "reset_transform", threshold=0.015)
+
+    if probe.screenshot_reset_transform:
+        # On iOS and Cocoa, differing coordinate systems mean that resetting transform
+        # can potentially make the on-screen widget look different from the image saved
+        # directly from it. So test a screenshot as well, just to make sure.
+        screenshot = canvas.window.as_image(format=Image.Image)
+        # Resize to correct for screen resolution, then crop to the canvas.
+        crop_size = canvas.as_image().width
+        screenshot = screenshot.crop((0, 0, crop_size, crop_size)).resize((200, 200))
+        print("Transforms also work when saved as an image.")
+        assert_reference(probe, "reset_transform", image=screenshot)
 
 
 @pytest.mark.xfail(
