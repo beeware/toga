@@ -4,13 +4,8 @@ import inspect
 from dataclasses import dataclass
 from importlib import import_module
 
+from _pytest.python_api import ApproxScalar
 from pytest import fixture, register_assert_rewrite, skip
-
-try:
-    from _pytest.approx import ApproxScalar
-except ImportError:
-    # Location as of 9.1.1
-    from _pytest.python_api import ApproxScalar
 
 import toga
 from toga.colors import GOLDENROD
