@@ -135,8 +135,8 @@ class Window:
 
     def get_size(self) -> Size:
         return Size(
-            UIScreen.mainScreen.bounds.size.width,
-            UIScreen.mainScreen.bounds.size.height,
+            int(UIScreen.mainScreen.bounds.size.width),
+            int(UIScreen.mainScreen.bounds.size.height),
         )
 
     def set_size(self, size):
