@@ -4,6 +4,7 @@ import inspect
 from dataclasses import dataclass
 from importlib import import_module
 
+from _pytest.python_api import ApproxScalar
 from pytest import fixture, register_assert_rewrite, skip
 
 import toga
@@ -214,3 +215,13 @@ class ProxyTask:
 
     def done(self):
         return False
+
+
+# pytest.approx doesn't support <= / >=
+# See https://github.com/pytest-dev/pytest/issues/2003
+class approx(ApproxScalar):
+    def __ge__(self, other):
+        return self.expected > other or self == other
+
+    def __le__(self, other):
+        return self.expected < other or self == other
