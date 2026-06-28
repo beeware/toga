@@ -38,9 +38,9 @@ async def test_approx():
     assert approx(larger) <= smaller
     assert approx(larger) == smaller
 
-    assert approx(smaller) >= smaller
-    assert approx(smaller) <= smaller
-    assert approx(smaller) == smaller
+    assert approx(smaller) >= larger
+    assert approx(smaller) <= larger
+    assert approx(smaller) == larger
 
     # Significantly smaller values should behave as expected.
 
