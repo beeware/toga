@@ -1,10 +1,14 @@
 {{ component_header("DrawingAction") }}
 
-For many if not most applications, the interface documented for [Canvas](/reference/api/widgets/canvas.md) is sufficient. However, it is also possible to directly manipulate a Canvas's stored instructions, thereby modifying the results in a non-linear fashion.
+/// admonition | Here there be dragons
+For many if not most applications, it's recommended to use the primary [`Canvas`](/reference/api/widgets/canvas.md) interface, which should provide an experience analogous to programming an HTML canvas. This page instead documents the lower-level system that underpins that interface by storing lists of drawing actions performed.
+
+You can interact with these stored actions directly in order to retroactively alter or reorder them. Just be aware that you're bypassing the canvas's mechanisms to manage itself; in particular, attempting to mix direct interaction with use of a canvas's [context managers][canvas-additional-features] may yield unintuitive results.
+///
 
 ## Usage
 
-Each drawing operation that has been performed on a Canvas is represented by an object of class [`DrawingAction`][toga.widgets.canvas.DrawingAction]. Each drawing method has a corresponding `DrawingAction` subclass of the same name, except in CamelCase. For example, the [`line_to()`][toga.Canvas.line_to] method creates a [`LineTo`][toga.widgets.canvas.LineTo] object, and `LineTo` is a subclass of `DrawingAction`.
+Each drawing operation that has been performed on a canvas is represented by an object of class [`DrawingAction`][toga.widgets.canvas.DrawingAction]. Each drawing method has a corresponding `DrawingAction` subclass of the same name, except in CamelCase. For example, the [`line_to()`][toga.Canvas.line_to] method creates a [`LineTo`][toga.widgets.canvas.LineTo] object, and `LineTo` is a subclass of `DrawingAction`.
 
 The current state of the drawing context is represented by a state object. All states are subclasses of the abstract [`BaseState`][toga.widgets.canvas.BaseState]; the simplest is [`State`][toga.widgets.canvas.State]. Initially, a canvas has only one state; this initial state is always accessible via the canvas's [`root_state`][toga.Canvas.root_state] attribute.
 
