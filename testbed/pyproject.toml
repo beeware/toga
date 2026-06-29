@@ -175,5 +175,5 @@ sources = [
 ]
 
 test_sources = [
-    # "../textual/tests_backend",
+    "../textual/tests_backend",
 ]

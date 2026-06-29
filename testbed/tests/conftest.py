@@ -71,12 +71,27 @@ def skip_if_unbundled_app(reason=None, allow_module_level=False):
         )
 
 
+def is_textual_internal_task(task):
+    try:
+        code = task.get_coro().cr_code
+    except AttributeError:
+        return False
+
+    return "/textual/" in code.co_filename
+
+
 @fixture(autouse=True)
 def no_dangling_tasks():
     """Ensure any tasks for the test were removed when the test finished."""
     yield
     if toga.App.app:
         tasks = toga.App.app._running_tasks
+        if toga.backend == "toga_textual":
+            tasks = {
+                task
+                for task in tasks
+                if not task.done() and not is_textual_internal_task(task)
+            }
         assert not tasks, f"the app has dangling tasks: {tasks}"
 
 

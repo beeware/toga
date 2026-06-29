@@ -44,6 +44,7 @@ class Widget(Scalable, ABC):
         added. Therefore, when children are added to an unmounted widget, their
         mounting is deferred until their parent is mounted.
         """
+        self.container = parent
         parent.native.mount(self.native)
 
         for child in self.interface.children:
@@ -67,8 +68,8 @@ class Widget(Scalable, ABC):
     def set_enabled(self, value):
         self.native.disabled = not value
 
-    def focus(self):  # noqa B027
-        pass
+    def focus(self):
+        self.native.app.set_focus(self.native)
 
     def get_tab_index(self):
         return None
@@ -148,8 +149,8 @@ class Widget(Scalable, ABC):
     def set_text_align(self, alignment):  # noqa B027
         pass
 
-    def set_hidden(self, hidden):  # noqa B027
-        pass
+    def set_hidden(self, hidden):
+        self.native.display = not hidden
 
     def set_font(self, font):  # noqa B027
         pass
@@ -168,12 +169,17 @@ class Widget(Scalable, ABC):
         # A child can only be added to a widget that is already mounted on the app.
         # So, mounting the child is deferred if the parent is not mounted yet.
         if self.native.is_attached:
-            self.native.mount(child.native)
+            child.install(parent=self)
+        else:
+            child.container = self
 
-    def insert_child(self, index, child):  # noqa B027
-        pass
+    def insert_child(self, index, child):
+        # Textual doesn't have positional mount on all versions. Keep the containment
+        # state correct; layout order will be updated when Textual supports insertion.
+        self.add_child(child)
 
     def remove_child(self, child):
+        child.container = None
         self.native.remove_children([child.native])
 
     def refresh(self):

@@ -115,16 +115,17 @@ class App:
         return self._current_window
 
     def set_current_window(self, window):
+        window_impl = getattr(window, "_impl", window)
         previous_current_window = self._current_window
-        self._current_window = window
-        self.native.switch_screen(window.native)
-        self.native.title = window.get_title()
-        if previous_current_window != window:
+        self._current_window = window_impl
+        self.native.switch_screen(window_impl.native)
+        self.native.title = window_impl.get_title()
+        if previous_current_window != window_impl:
             if previous_current_window is not None:
                 previous_current_window.interface.on_lose_focus()
                 previous_current_window.interface.on_hide()
-            window.interface.on_gain_focus()
-            window.interface.on_show()
+            window_impl.interface.on_gain_focus()
+            window_impl.interface.on_show()
 
     ######################################################################
     # Presentation mode controls

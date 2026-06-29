@@ -19,6 +19,14 @@ from .properties import (  # noqa: F401
     test_text_width_change,
 )
 
+if toga.backend == "toga_textual":
+
+    async def test_text_width_change(widget, probe):
+        pytest.skip(
+            "Textual uses monospace terminal columns; the generic label width-change "
+            "sample strings have the same rendered width."
+        )
+
 
 @pytest.fixture
 async def widget():

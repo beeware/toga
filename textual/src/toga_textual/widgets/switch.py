@@ -34,6 +34,14 @@ class Switch(Widget):
     def set_value(self, value):
         self.native_switch.value = value
 
+    def set_enabled(self, value):
+        super().set_enabled(value)
+        self.native_switch.disabled = not value
+        self.native_label.disabled = not value
+
+    def focus(self):
+        self.native_switch.app.set_focus(self.native_switch)
+
     def rehint(self):
         self.interface.intrinsic.width = at_least(len(self.get_text()) + 8)
         self.interface.intrinsic.height = 3
