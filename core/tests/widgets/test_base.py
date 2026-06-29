@@ -1208,7 +1208,7 @@ def test_set_scaffold(app, widget):
     assert widget.scaffold is None
 
     # Assign the widget to a scaffold
-    widget.scaffold = scaffold
+    scaffold.content = widget
 
     # Scaffold has been assigned
     assert widget.scaffold == scaffold
@@ -1225,7 +1225,7 @@ def test_set_scaffold(app, widget):
     other_scaffold.window = other_window
 
     # Assign child to another scaffold
-    child.scaffold = other_scaffold
+    other_scaffold.content = child
 
     # Child scaffold should be set up properly
     assert child.scaffold == other_scaffold
@@ -1264,7 +1264,7 @@ def test_set_scaffold_with_children(app, widget):
     assert child3.scaffold is None
 
     # Assign the widget to a scaffold
-    widget.scaffold = scaffold
+    scaffold.content = widget
 
     # Scaffold has been assigned, and app and window are consistent
     assert widget.scaffold == scaffold
@@ -1281,39 +1281,60 @@ def test_set_scaffold_with_children(app, widget):
     assert scaffold.app == child3.app
 
 
-def test_reset_scaffold(widget):
+def test_reset_scaffold(app, widget):
     """A widget can be assigned to a different scaffold."""
     scaffold = toga.Scaffold()
+    window = toga.Window()
+    scaffold.window = window
+    scaffold.app = app
     assert widget.scaffold is None
+    assert widget.app is None
+    assert widget.window is None
 
     # Assign the widget to a scaffold
-    widget.scaffold = scaffold
+    scaffold.content = widget
     assert widget.scaffold == scaffold
+    assert widget.window == scaffold.window
+    assert widget.app == scaffold.app
 
     # Create a new scaffold
     new_scaffold = toga.Scaffold()
+    new_window = toga.Window()
+    new_scaffold.window = new_window
+    new_scaffold.app = app
 
     # Assign the widget to the new scaffold
-    widget.scaffold = new_scaffold
+    new_scaffold.content = widget
 
-    # Scaffold has been assigned
+    # Scaffold has been re-assigned
     assert widget.scaffold == new_scaffold
+    assert widget.window == new_scaffold.window
+    assert widget.app == new_scaffold.app
 
 
-def test_unset_scaffold(widget):
+def test_unset_scaffold(app, widget):
     """A widget can be assigned to no scaffold."""
     scaffold = toga.Scaffold()
+    window = toga.Window()
+    scaffold.window = window
+    scaffold.app = app
     assert widget.scaffold is None
+    assert widget.app is None
+    assert widget.window is None
 
     # Assign the widget to a scaffold
-    widget.scaffold = scaffold
+    scaffold.content = widget
     assert widget.scaffold == scaffold
+    assert widget.window == scaffold.window
+    assert widget.app == scaffold.app
 
     # Assign the widget to no scaffold
-    widget.scaffold = None
+    scaffold.content = None
 
-    # The widget doesn't have a scaffold
+    # The widget doesn't have a scaffold anymore
     assert widget.scaffold is None
+    assert widget.app is None
+    assert widget.window is None
 
 
 @pytest.mark.parametrize(
