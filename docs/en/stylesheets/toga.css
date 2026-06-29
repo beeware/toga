@@ -51,6 +51,20 @@
     display: none;
 }
 
+/*
+ * Widget reference screenshots are transparent PNGs captured against the
+ * platform's default light surface. In dark mode the transparency lets the
+ * page background bleed through, which renders dark widget chrome (or pure
+ * white labels) against a dark page and makes the screenshot hard to read
+ * (issue #4389). Wrap them in a light surface in dark mode so the widget
+ * stays legible regardless of the documentation theme.
+ */
+[data-md-color-scheme="slate"] .md-typeset img[src*="/reference/images/"] {
+    background-color: #ffffff;
+    padding: 0.25rem;
+    border-radius: 0.2rem;
+}
+
 /* Success stories */
 .success-story-icon {
     border-radius: 0.85rem;
