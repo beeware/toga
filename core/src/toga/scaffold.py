@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 
 class BaseScaffold(ABC):
-    @abstractmethod
     def __init__(self, content: Any = None):
         self.factory = get_factory()
         self._impl = self._create()
@@ -66,9 +65,6 @@ class BaseScaffold(ABC):
 
 
 class Scaffold(BaseScaffold):
-    def __init__(self, content: Widget | None = None):
-        super().__init__()
-
     def _create(self):
         return get_factory().Scaffold(self)
 
