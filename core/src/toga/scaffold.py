@@ -20,6 +20,9 @@ class BaseScaffold(ABC):
         self._impl = self._create()
         self._window = None
         self._app = None
+        self._content = None
+
+        self.content = content
 
     @abstractmethod
     def _create(self) -> Any: ...
@@ -27,11 +30,14 @@ class BaseScaffold(ABC):
     def refresh(self):
         self._impl.refresh()
 
+    # The setters below are all abstract, as the child class must register
+    # content with app/window and vice versa.
     @property
     def window(self) -> Window | None:
         return self._window
 
     @window.setter
+    @abstractmethod
     def window(self, value: Window | None):
         self._window = value
 
@@ -40,39 +46,44 @@ class BaseScaffold(ABC):
         return self._app
 
     @app.setter
+    @abstractmethod
     def app(self, value):
         self._app = value
+
+    @property
+    def content(self) -> Any | None:
+        return self._content
+
+    @content.setter
+    @abstractmethod
+    def content(self, value: Any | None):
+        self._content = value
+        if value is not None:
+            self._impl.set_content(self._content._impl)
+        else:
+            self._impl.set_content(None)
+        self.refresh()
 
 
 class Scaffold(BaseScaffold):
     def __init__(self, content: Widget | None = None):
         super().__init__()
-        self._content = None
-        self.content = content
 
     def _create(self):
         return get_factory().Scaffold(self)
 
-    @property
-    def content(self) -> Widget | None:
-        return self._content
-
-    @content.setter
+    @BaseScaffold.content.setter
     def content(self, value: Widget | None):
         if self._content is not None:
             # Clear the old content's window, app, and scaffold
             self._content.window = None
             self._content.app = None
             self._content.scaffold = None
-        self._content = value
         if value is not None:
-            self._content.scaffold = self
-            self._impl.set_content(self._content._impl)
-            self._content.window = self.window
-            self._content.app = self.app
-        else:
-            self._impl.set_content(None)
-        self.refresh()
+            value.scaffold = self
+            value.window = self.window
+            value.app = self.app
+        BaseScaffold.content.fset(self, value)
 
     @BaseScaffold.window.setter
     def window(self, value: Window | None):
