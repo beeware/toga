@@ -131,7 +131,7 @@ def test_open_absolute_document(app, converter, tmp_path):
     doc = MyDoc(app)
 
     path = tmp_path / "doc.mydoc"
-    path.write_text("sample file")
+    path.write_text("sample file", encoding="utf-8")
 
     # Read the file
     doc.open(converter(path))
@@ -154,7 +154,7 @@ def test_open_relative_document(app, converter, tmp_path):
         os.chdir(tmp_path / "cwd")
 
         path = tmp_path / "cwd/doc.mydoc"
-        path.write_text("sample file")
+        path.write_text("sample file", encoding="utf-8")
 
         # Read the file
         doc.open(converter(path))

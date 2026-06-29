@@ -16,12 +16,12 @@ class ExampleDocument(toga.Document):
     def read(self):
         # Read the content of the file represented by the document, and populate the
         # widgets in the main window with that content.
-        with self.path.open() as f:
+        with self.path.open(encoding="utf-8") as f:
             self.main_window.content.value = f.read()
 
     def write(self):
         # Save the content currently displayed by the main window.
-        with self.path.open("w") as f:
+        with self.path.open("w", encoding="utf-8") as f:
             f.write(self.main_window.content.value)
 
 

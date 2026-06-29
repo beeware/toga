@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from copy import copy
 from dataclasses import dataclass
+from functools import cached_property
 from math import ceil
 
 from rubicon.objc import (
@@ -49,7 +50,7 @@ class State:
     # onto these values in order to fill or stroke text.
     fill_style: Color = Color.parse(BLACK)
     line_dash: Sequence[float] = ()
-    line_width: float = 2.0
+    line_width: float = 1.0
     stroke_style: Color = Color.parse(BLACK)
 
 
@@ -58,11 +59,19 @@ class Context:
         self.impl = impl
         self.native = uikit.UIGraphicsGetCurrentContext()
         self.states = [State()]
-        self.set_line_width(2.0)
+        self.set_line_width(1.0)
 
         # Backwards compatibility for Toga <= 0.5.3
         self.in_fill = False
         self.in_stroke = False
+
+        # Store the original matrix so we can restore to it if needed.
+        self.original_matrix = core_graphics.CGContextGetCTM(self.native)
+
+    @cached_property
+    def original_matrix_inverse(self):
+        # Only calculate once, and only if reset_transform() is called.
+        return core_graphics.CGAffineTransformInvert(self.original_matrix)
 
     @property
     def state(self):
@@ -209,49 +218,85 @@ class Context:
         core_graphics.CGContextRotateCTM(self.native, radians)
 
     def scale(self, sx, sy):
+        # Can't apply inverse transform (for reset_transform) if scale is 0, so use a
+        # small epsilon which will almost be the same.
+        if sx == 0:
+            sx = 2**-24
+        if sy == 0:
+            sy = 2**-24
+
         core_graphics.CGContextScaleCTM(self.native, sx, sy)
 
     def translate(self, tx, ty):
         core_graphics.CGContextTranslateCTM(self.native, tx, ty)
 
     def reset_transform(self):
-        # Restore the "clean" state of the graphics context.
-        core_graphics.CGContextRestoreGState(self.native)
-        # CoreGraphics has a stack-based state representation,
-        # so ensure that there is a new, clean version of the "clean"
-        # state on the stack.
-        core_graphics.CGContextSaveGState(self.native)
+        # Core Graphics has no built-in ability to assign to or reset the transformation
+        # matrix, so we need to calculate how to transform back to the original.
+        current = core_graphics.CGContextGetCTM(self.native)
+
+        if current == self.original_matrix:
+            # No resetting necessary.
+            return
+
+        # Apparently unlike Cocoa, iOS *never* uses the standard identity matrix, even
+        # when rendering to the actual screen. (Probably has something to do with
+        # different flipping logistics.) So we need to know the transform from whatever
+        # we started with to the current matrix.
+        transform = core_graphics.CGAffineTransformConcat(
+            current,
+            self.original_matrix_inverse,
+        )
+
+        inverse_transform = core_graphics.CGAffineTransformInvert(transform)
+
+        core_graphics.CGContextConcatCTM(self.native, inverse_transform)
 
     # Text
 
-    def write_text(self, text, x, y, font, baseline, line_height):
+    def fill_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            fill_style=self.state.fill_style,
+        )
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            stroke_style=self.state.stroke_style,
+            line_width=self.state.line_width,
+        )
+
+    def _fill_or_stroke_text(self, text, x, y, font, baseline, line_height, **kwargs):
         lines = text.splitlines()
         scaled_line_height = self.impl._line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
 
-        if baseline == Baseline.TOP:
-            top = y + font.native.ascender
-        elif baseline == Baseline.MIDDLE:
-            top = y + font.native.ascender - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y + font.native.ascender - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y
+        match baseline:
+            case Baseline.TOP:
+                top = y + font.native.ascender
+            case Baseline.MIDDLE:
+                top = y + font.native.ascender - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y + font.native.ascender - total_height
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y
 
         for line_num, line in enumerate(lines):
             # Rounding minimizes differences between scale factors.
             origin = NSPoint(round(x), round(top) + (scaled_line_height * line_num))
-            kwargs = {}
-            if self.in_fill:
-                kwargs |= {"fill_style": self.state.fill_style}
-            if self.in_stroke:
-                kwargs |= {
-                    "stroke_style": self.state.stroke_style,
-                    "line_width": self.state.line_width,
-                    # Current implementation doesn't respect line dash; should this?
-                }
-            rs = self.impl._render_string(line, font, **kwargs)
+            rendered_string = self.impl._render_string(line, font, **kwargs)
 
             # "This method uses the baseline origin by default. If
             # NSStringDrawingUsesLineFragmentOrigin is not specified, the
@@ -264,7 +309,7 @@ class Context:
             # sets the baseline relative to its bottom
             # (https://www.sketch.com/blog/typesetting-in-sketch/), but it would be
             # unwise to rely on that.
-            rs.drawWithRect(
+            rendered_string.drawWithRect(
                 NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
             )
 
@@ -349,11 +394,8 @@ class Canvas(Widget):
 
         if stroke_style:
             textAttributes[NSStrokeColorAttributeName] = native_color(stroke_style)
-            # Stroke width is expressed as a percentage of the font size, or a negative
-            # percentage to get both stroke and fill.
+            # Stroke width is expressed as a percentage of the font size
             stroke_width = line_width / font.native.pointSize * 100
-            if fill_style:
-                stroke_width *= -1
             textAttributes[NSStrokeWidthAttributeName] = stroke_width
 
         if fill_style:

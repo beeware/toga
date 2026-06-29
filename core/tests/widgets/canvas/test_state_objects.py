@@ -1,17 +1,21 @@
 import pytest
 
-from toga.colors import REBECCAPURPLE, rgb
+from toga.colors import BLUE, REBECCAPURPLE, rgb
 from toga.constants import FillRule
 from toga.widgets.canvas import (
     ClosePath,
     Fill,
+    Rotate,
     Scale,
     State,
     Stroke,
+    Translate,
 )
 from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
+BLACK_COLOR = rgb(0, 0, 0)
+BLUE_COLOR = rgb(0, 0, 255)
 
 
 def test_sub_state(widget):
@@ -31,6 +35,49 @@ def test_sub_state(widget):
         ("line to", {"x": 30, "y": 40}),
         "restore",
     ]
+
+
+def test_state_parameters(widget):
+    """Drawing context attributes can be set as parameters to state()."""
+
+    def assert_attrs(canvas, fill_style, stroke_style, line_width, line_dash):
+        assert canvas.fill_style == fill_style
+        assert canvas.stroke_style == stroke_style
+        assert canvas.line_width == line_width
+        assert canvas.line_dash == line_dash
+
+    # Can't hurt to double-check the defaults.
+    assert_attrs(widget, BLACK_COLOR, BLACK_COLOR, 1.0, [])
+
+    with widget.state(fill_style=REBECCAPURPLE) as state_1:
+        assert repr(state_1) == f"State(fill_style={REBECCA_PURPLE_COLOR!r})"
+        assert_attrs(widget, REBECCA_PURPLE_COLOR, BLACK_COLOR, 1.0, [])
+
+        with widget.state(line_width=3.0, line_dash=[1, 2]) as state_2:
+            assert repr(state_2) == "State(line_width=3.000, line_dash=[1, 2])"
+            assert_attrs(widget, REBECCA_PURPLE_COLOR, BLACK_COLOR, 3.0, [1, 2])
+
+            # Override one that's already been set.
+            with widget.state(fill_style=BLUE) as state_3:
+                assert repr(state_3) == f"State(fill_style={BLUE_COLOR!r})"
+                assert_attrs(widget, BLUE_COLOR, BLACK_COLOR, 3.0, [1, 2])
+
+            with widget.state(stroke_style=BLUE) as state_4:
+                assert_attrs(widget, REBECCA_PURPLE_COLOR, BLUE_COLOR, 3.0, [1, 2])
+                assert repr(state_4) == f"State(stroke_style={BLUE_COLOR!r})"
+
+    # Set all at once
+    with widget.state(
+        fill_style=BLUE,
+        stroke_style=REBECCAPURPLE,
+        line_dash=[3, 2, 1],
+        line_width=10.0,
+    ) as state_5:
+        assert_attrs(widget, BLUE_COLOR, REBECCA_PURPLE_COLOR, 10.000, [3, 2, 1])
+        assert repr(state_5) == (
+            f"State(fill_style={BLUE_COLOR!r}, stroke_style={REBECCA_PURPLE_COLOR!r}, "
+            "line_width=10.000, line_dash=[3, 2, 1])"
+        )
 
 
 def test_closed_path(widget):
@@ -62,7 +109,7 @@ def test_closed_path(widget):
         # Defaults
         (
             {},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             {
                 "fill_rule": FillRule.NONZERO,
                 "fill_style": None,
@@ -77,13 +124,13 @@ def test_closed_path(widget):
         # Explicitly don't set fill style
         (
             {"fill_style": None},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
         # Fill Rule
         (
             {"fill_rule": FillRule.EVENODD},
-            "fill_rule=FillRule.EVENODD, fill_style=None",
+            "fill_rule=FillRule.EVENODD",
             {"fill_style": None, "fill_rule": FillRule.EVENODD},
         ),
         # All args
@@ -132,13 +179,13 @@ def test_fill(widget, kwargs, args_repr, properties):
         # Defaults
         (
             {},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "",
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color
         (
             {"stroke_style": REBECCAPURPLE},
-            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            f"stroke_style={REBECCA_PURPLE_COLOR!r}",
             {
                 "stroke_style": REBECCA_PURPLE_COLOR,
                 "line_width": None,
@@ -148,19 +195,19 @@ def test_fill(widget, kwargs, args_repr, properties):
         # Explicitly don't set stroke_style
         (
             {"stroke_style": None},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "",
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "stroke_style=None, line_width=4.500, line_dash=None",
+            "line_width=4.500",
             {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "stroke_style=None, line_width=None, line_dash=[2, 7]",
+            "line_dash=[2, 7]",
             {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
         # All args
@@ -217,6 +264,46 @@ def test_stroke(widget, kwargs, args_repr, properties):
     # The first and last instructions can be ignored; they're the root canvas state
     assert widget._impl.draw_instructions[1:-1] == [
         command for command in commands if command is not None
+    ]
+
+
+def test_transforms(widget):
+    """Rotate, scale, and translate can be used as context managers."""
+    with widget.rotate(3) as rotate:
+        widget.move_to(10, 10)
+
+    with widget.scale(2, 2) as scale:
+        with widget.translate(0, 10) as translate:
+            widget.move_to(0, 0)
+
+    widget.line_to(100, 100)
+
+    assert isinstance(rotate, Rotate)
+    assert repr(rotate) == "Rotate(radians=3)"
+    assert rotate.radians == 3
+
+    assert isinstance(scale, Scale)
+    assert repr(scale) == "Scale(sx=2, sy=2)"
+    assert scale.sx == 2
+    assert scale.sy == 2
+
+    assert isinstance(translate, Translate)
+    assert repr(translate) == "Translate(tx=0, ty=10)"
+    assert translate.tx == 0
+    assert translate.ty == 10
+    assert widget._impl.draw_instructions[1:-1] == [
+        "save",
+        ("rotate", {"radians": 3}),
+        ("move to", {"x": 10, "y": 10}),
+        "restore",
+        "save",
+        ("scale", {"sx": 2, "sy": 2}),
+        "save",
+        ("translate", {"tx": 0, "ty": 10}),
+        ("move to", {"x": 0, "y": 0}),
+        "restore",
+        "restore",
+        ("line to", {"x": 100, "y": 100}),
     ]
 
 
@@ -286,16 +373,16 @@ NON_REENTRANT_MATCH = (
 )
 
 
-def test_enter_open_context(widget):
-    """Attempting to enter a currently open context is an error."""
+def test_enter_open_state(widget):
+    """Attempting to enter a currently open state is an error."""
     with widget.stroke() as stroke:
         with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH):
             with stroke:
                 pass
 
 
-def test_enter_closed_context(widget):
-    """Attempting to enter a previously open (now closed) context is an error."""
+def test_enter_closed_state(widget):
+    """Attempting to enter a previously open (now closed) state is an error."""
     with widget.stroke() as stroke:
         pass
 
@@ -304,8 +391,8 @@ def test_enter_closed_context(widget):
             pass
 
 
-def test_enter_context_out_of_order(widget):
-    """Attempting to enter a context manager after making other actions is an error."""
+def test_enter_state_out_of_order(widget):
+    """Attempting to enter a state manager after making other actions is an error."""
     stroke = widget.stroke()
     widget.rect(0, 0, 0, 0)
 

@@ -59,7 +59,7 @@ class TreeApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget):
         node = widget.selection
-        if node is not None and node.title:
+        if node is not None and node.rating:
             self.label.text = f"You selected node: {node.title}"
             self.btn_remove.enabled = True
         else:
@@ -108,7 +108,7 @@ class TreeApp(toga.App):
         )
 
         century_1900s = self.tree.data.append(
-            {"year": "2000s", "title": "20th Century", "rating": "", "genre": ""}
+            {"year": "1900s", "title": "20th Century", "rating": "", "genre": ""}
         )
         century_2000s = self.tree.data.append(
             {"year": "2000s", "title": "21st Century", "rating": "", "genre": ""}

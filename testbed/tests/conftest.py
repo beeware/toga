@@ -4,6 +4,7 @@ import inspect
 from dataclasses import dataclass
 from importlib import import_module
 
+from _pytest.python_api import ApproxScalar
 from pytest import fixture, register_assert_rewrite, skip
 
 import toga
@@ -157,27 +158,16 @@ async def main_window_probe(app, main_window):
     main_window.content = old_content
 
 
-# Controls the event loop used by pytest-asyncio.
-@fixture(scope="session")
-def event_loop_policy(app):
-    yield ProxyEventLoopPolicy(ProxyEventLoop(app._impl.loop))
-
-
-# Loop policy that ensures proxy loop is always used.
-class ProxyEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
-    def __init__(self, proxy_loop: "ProxyEventLoop"):
-        super().__init__()
-        self._proxy_loop = proxy_loop
-
-    def new_event_loop(self):
-        return self._proxy_loop
+def pytest_asyncio_loop_factories(config, item):
+    return {
+        "proxy": ProxyEventLoop,
+    }
 
 
 # Proxy which forwards all tasks to another event loop in a thread-safe manner.
 # It implements only the methods used by pytest-asyncio.
 @dataclass
 class ProxyEventLoop(asyncio.AbstractEventLoop):
-    loop: object
     closed: bool = False
 
     # Used by ensure_future.
@@ -191,7 +181,7 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
             coro = future.coro
         else:
             raise TypeError(f"Future type {type(future)} is not currently supported")
-        return asyncio.run_coroutine_threadsafe(coro, self.loop).result()
+        return asyncio.run_coroutine_threadsafe(coro, toga.App.app._impl.loop).result()
 
     async def shutdown_asyncgens(self):
         # The proxy event loop doesn't need to shut anything down; the
@@ -225,3 +215,13 @@ class ProxyTask:
 
     def done(self):
         return False
+
+
+# pytest.approx doesn't support <= / >=
+# See https://github.com/pytest-dev/pytest/issues/2003
+class approx(ApproxScalar):
+    def __ge__(self, other):
+        return self.expected > other or self == other
+
+    def __le__(self, other):
+        return self.expected < other or self == other

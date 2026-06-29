@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 from importlib import import_module
+from pathlib import Path
 
 import pytest
 from PIL import Image as PIL_Image, ImageDraw as PIL_ImageDraw
@@ -15,7 +16,7 @@ def image_probe(app, image):
     return module.ImageProbe(app, image)
 
 
-def is_open(path: str):
+def is_open(path: Path):
     """Test if any process currently has an open handle for a file with absolute path.
 
     psutil is cross-platform for desktop, but it's not available on iOS, and this method
@@ -31,7 +32,7 @@ def is_open(path: str):
             continue
 
         # Each "file" is a named tuple
-        if any(file.path == path for file in open_files):
+        if any(file.path == str(path) for file in open_files):
             return True
 
     return False
@@ -49,11 +50,11 @@ async def test_closed_file_handle(app, app_probe):
     if not app_probe.supports_psutil:
         pytest.skip("Platform doesn't support psutil-based open file detection.")
 
-    path = str(app.paths.app / "resources/sample.png")
+    path = app.paths.app / "resources/sample.png"
 
     # Confirm that testing file status works.
     assert not is_open(path)
-    with open(path):  # noqa: ASYNC230
+    with path.open("rb"):  # noqa: ASYNC230
         assert is_open(path)
     assert not is_open(path)
 

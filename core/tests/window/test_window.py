@@ -596,20 +596,22 @@ def test_window_state(window, initial_state, final_state):
     def check_final_state_size(window):
         nonlocal closure_exception
         try:
-            if initial_state == WindowState.NORMAL:
-                assert window.size > previous_state_window_size
-            elif initial_state == WindowState.MAXIMIZED:
-                if final_state == WindowState.NORMAL:
-                    assert window.size < previous_state_window_size
-                else:
+            match initial_state, final_state:
+                case WindowState.NORMAL, _:
                     assert window.size > previous_state_window_size
-            elif initial_state == WindowState.FULLSCREEN:
-                if final_state in {WindowState.NORMAL, WindowState.MAXIMIZED}:
+
+                case WindowState.MAXIMIZED, WindowState.NORMAL:
                     assert window.size < previous_state_window_size
-                else:
+                case WindowState.MAXIMIZED, _:
                     assert window.size > previous_state_window_size
-            elif initial_state == WindowState.PRESENTATION:
-                assert window.size < previous_state_window_size
+
+                case WindowState.FULLSCREEN, WindowState.NORMAL | WindowState.MAXIMIZED:
+                    assert window.size < previous_state_window_size
+                case WindowState.FULLSCREEN, _:
+                    assert window.size > previous_state_window_size
+
+                case WindowState.PRESENTATION, _:
+                    assert window.size < previous_state_window_size
         except Exception as e:
             closure_exception = e
 

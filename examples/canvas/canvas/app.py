@@ -585,14 +585,18 @@ class CanvasApp(toga.App):
         width, height = self.canvas.measure_text(
             text, font, self.line_height_slider.value
         )
-        self.canvas.write_text(
-            text,
-            self.x_middle - width / 2,
-            self.y_middle,
-            font,
-            Baseline.MIDDLE,
-            self.line_height_slider.value,
-        )
+        text_kwargs = {
+            "text": text,
+            "x": self.x_middle - width / 2,
+            "y": self.y_middle,
+            "font": font,
+            "baseline": Baseline.MIDDLE,
+            "line_height": self.line_height_slider.value,
+        }
+        if self.state_selection.value == STROKE:
+            self.canvas.stroke_text(**text_kwargs)
+        else:
+            self.canvas.fill_text(**text_kwargs)
         self.canvas.redraw()
 
     def get_weight(self):

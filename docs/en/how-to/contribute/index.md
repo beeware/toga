@@ -1,3 +1,3 @@
 # Contributing to {{ formal_name }}
 
-{% extends "contribute/index.md" %}
+{% extends "_shared/contribute/index.md" %}
