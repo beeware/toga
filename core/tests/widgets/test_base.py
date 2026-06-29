@@ -1199,9 +1199,12 @@ def test_unset_window(widget):
     assert len(window.widgets) == 0
 
 
-def test_set_scaffold(widget):
+def test_set_scaffold(app, widget):
     """A widget can be assigned to a scaffold."""
     scaffold = toga.Scaffold()
+    window = toga.Window()
+    scaffold.app = app
+    scaffold.window = window
     assert widget.scaffold is None
 
     # Assign the widget to a scaffold
@@ -1209,13 +1212,41 @@ def test_set_scaffold(widget):
 
     # Scaffold has been assigned
     assert widget.scaffold == scaffold
-    
+
     # Widget's app and window is consistent with the scaffold
     assert widget.app == scaffold.app
     assert widget.window == scaffold.window
 
+    # Create an orphan child widget
+    child = ExampleLeafWidget(id="child1_id")
+    other_scaffold = toga.Scaffold()
+    other_scaffold.app = app
+    other_window = toga.Window()
+    other_scaffold.window = other_window
 
-def test_set_scaffold_with_children(app, widget):
+    # Assign child to another scaffold
+    child.scaffold = other_scaffold
+
+    # Child scaffold should be set up properly
+    assert child.scaffold == other_scaffold
+    assert child.app == other_scaffold.app
+    assert child.window == other_scaffold.window
+
+    # Parent scaffold remains unchanged
+    assert widget.scaffold == scaffold
+    assert widget.app == scaffold.app
+    assert widget.window == scaffold.window
+
+    # Have the widget parent the child
+    widget.add(child)
+
+    # The child should be with the parent's scaffold now
+    assert child.scaffold == scaffold
+    assert child.app == scaffold.app
+    assert child.window == scaffold.window
+
+
+def test_set_scaffold_with_children(app, window, widget):
     """A widget can be assigned to a scaffold with children."""
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
@@ -1224,6 +1255,9 @@ def test_set_scaffold_with_children(app, widget):
     widget.add(child1, child2, child3)
 
     scaffold = toga.Scaffold()
+    window = toga.Window()
+    scaffold.app = app
+    scaffold.window = window
     assert len(app.widgets) == 0
     assert child1.scaffold is None
     assert child2.scaffold is None
@@ -1232,15 +1266,24 @@ def test_set_scaffold_with_children(app, widget):
     # Assign the widget to a scaffold
     widget.scaffold = scaffold
 
-    # Scaffold has been assigned
+    # Scaffold has been assigned, and app and window are consistent
     assert widget.scaffold == scaffold
+    assert scaffold.window == widget.window
+    assert scaffold.app == widget.app
     assert child1.scaffold == scaffold
+    assert scaffold.window == child1.window
+    assert scaffold.app == child1.app
     assert child2.scaffold == scaffold
+    assert scaffold.window == child2.window
+    assert scaffold.app == child2.app
     assert child3.scaffold == scaffold
+    assert scaffold.window == child3.window
+    assert scaffold.app == child3.app
 
 
 def test_reset_scaffold(widget):
     """A widget can be assigned to a different scaffold."""
+    child1 = ExampleLeafWidget(id="child1_id")
     scaffold = toga.Scaffold()
     assert widget.scaffold is None
 
