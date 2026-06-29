@@ -8,7 +8,7 @@ class Scaffold(LoggedObject):
         self.container = Container()
 
     @property
-    def native_content(self):
+    def window_root(self):
         return self.container
 
     def set_content(self, widget):
