@@ -430,9 +430,13 @@ class Window:
 
     @property
     def scaffold(self) -> BaseScaffold | None:
-        """The scaffold of the window, if any.  This will always be in scaffold form,
+        """The scaffold of the window, if any.
+        
+        This will always be in scaffold form.
+
         TODO docs: clarify the relationship between scaffold and content, and
-        how content can be a scaffold."""
+        how content can be a scaffold.
+        """
         return self._scaffold
 
     @property
