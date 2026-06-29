@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from toga.platform import get_factory
@@ -10,7 +11,6 @@ if TYPE_CHECKING:
     from .app import App
     from .widget import Widget
     from .window import Window
-from abc import ABC, abstractmethod
 
 
 class BaseScaffold(ABC):
