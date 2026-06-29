@@ -1,9 +1,9 @@
 {{ component_header("DrawingAction") }}
 
-/// admonition | Here there be dragons
-For many if not most applications, it's recommended to use the primary [`Canvas`](/reference/api/widgets/canvas.md) interface, which should provide an experience analogous to programming an HTML canvas. This page instead documents the lower-level system that underpins that interface by storing lists of drawing actions performed.
+/// admonition | Caution
+For many, if not most, applications, it's recommended to use the primary [`Canvas`](/reference/api/widgets/canvas.md) interface, which should provide an experience analogous to programming an HTML canvas.
 
-You can interact with these stored actions directly in order to retroactively alter or reorder them. Just be aware that you're bypassing the canvas's mechanisms to manage itself; in particular, attempting to mix direct interaction with use of a canvas's [context managers][canvas-additional-features] may yield unintuitive results.
+That interface is possible, in part, due to a lower-level system that stores lists of drawing actions performed. You can interact with these stored actions directly in order to retroactively alter or reorder them. Just be aware that you're bypassing the canvas's mechanisms for managing itself; in particular, attempting to mix direct interaction with use of a canvas's [context managers][canvas-additional-features] may yield unintuitive results.
 ///
 
 ## Usage

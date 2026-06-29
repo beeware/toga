@@ -26,7 +26,7 @@ Result:
 
 ![Usage example](./canvas-images/usage.png)
 
-## Additional features {: #canvas-additional-features }
+## Additional features { #canvas-additional-features }
 
 Toga adds some additional Pythonic conveniences to the base HTML5 API. First, a number of drawing methods that have a natural open/close life cycle ([`close_path()`][toga.Canvas.close_path], [`stroke()`][toga.Canvas.stroke], and [`fill()`][toga.Canvas.fill]) can additionally function as [context managers](https://docs.python.org/3/reference/datamodel.html#context-managers). Second, `fill` and `stroke` accept optional arguments to specify their parameters directly. Using both of these features, the previous example could be rewritten to:
 
