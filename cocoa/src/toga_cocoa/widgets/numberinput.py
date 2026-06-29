@@ -21,6 +21,8 @@ from toga_cocoa.libs import (
     NSTextFieldSquareBezel,
     NSTextView,
     NSView,
+    c_void_p,
+    send_super,
 )
 
 from .base import Widget
@@ -59,6 +61,13 @@ class TogaNumberInput(NSTextField):
         # Loss of focus; ensure that the displayed value
         # matches the clipped, normalized decimal value
         self.impl.set_value(self.interface.value)
+        send_super(
+            __class__,
+            self,
+            "textDidEndEditing:",
+            notification,
+            argtypes=[c_void_p],
+        )
 
 
 class NumberInput(Widget):

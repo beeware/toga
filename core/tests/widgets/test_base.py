@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 from toga.style import Pack
 from toga_dummy.utils import (
     EventLog,
@@ -26,7 +26,7 @@ from ..utils import ExampleLeafWidget, ExampleWidget
 # exception.
 class WidgetSubclassWithoutCreate(toga.Widget):
     def __init__(self, *args, **kwargs):
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.Widget(interface=self)
 
         super().__init__(*args, **kwargs)

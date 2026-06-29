@@ -359,6 +359,13 @@ NSBackingStoreRetained = 0
 NSBackingStoreNonretained = 1
 NSBackingStoreBuffered = 2
 
+
+class NSFocusRingType(IntEnum):
+    Default = 0
+    None_ = 1
+    Exterior = 2
+
+
 ######################################################################
 # NSGraphicsContext.h
 NSGraphicsContext = ObjCClass("NSGraphicsContext")

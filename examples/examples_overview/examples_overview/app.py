@@ -2,7 +2,10 @@ import os
 import platform
 import subprocess
 import sys
+import webbrowser
 from pathlib import Path
+
+import markdown
 
 import toga
 from toga.constants import COLUMN
@@ -23,23 +26,28 @@ class ExamplesOverviewApp(toga.App):
     def open(self, widget, **kwargs):
         row = self.table.selection
 
-        if platform.system() == "Windows":
-            os.startfile(row.path)
-        elif platform.system() == "Darwin":
-            subprocess.run(["open", row.path])
-        else:
-            subprocess.run(["xdg-open", row.path])
+        match platform.system():
+            case "Windows":
+                os.startfile(row.path)
+            case "Darwin":
+                subprocess.run(["open", row.path])
+            case _:
+                subprocess.run(["xdg-open", row.path])
 
     def on_example_selected(self, widget):
         readme_path = widget.selection.path / "README.md"
 
         try:
-            with open(readme_path) as f:
+            with readme_path.open(encoding="utf-8") as f:
                 readme_text = f.read()
         except OSError:
             readme_text = "README could not be loaded"
 
-        self.info_view.value = readme_text
+        self.info_view.set_content(None, markdown.markdown(readme_text))
+
+    def no_navigation(self, widget, url, **kwargs):
+        webbrowser.open(url)
+        return False
 
     def startup(self):
         # ==== Set up main window ======================================================
@@ -67,7 +75,7 @@ class ExamplesOverviewApp(toga.App):
         self.examples.sort(key=lambda e: e["path"])
 
         self.table = toga.Table(
-            headings=["Name", "Path"],
+            columns=["Name", "Path"],
             data=self.examples,
             on_activate=self.run,
             on_select=self.on_example_selected,
@@ -87,8 +95,10 @@ class ExamplesOverviewApp(toga.App):
 
         # ==== View of example README ==================================================
 
-        self.info_view = toga.MultilineTextInput(
-            placeholder="Please select example", readonly=True, margin=1
+        self.info_view = toga.WebView(
+            content="Please select example",
+            margin=1,
+            on_navigation_starting=self.no_navigation,
         )
 
         # ==== Assemble layout =========================================================

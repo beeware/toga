@@ -11,7 +11,7 @@ class BaseProbe:
         widget.queue_draw()
         event.set()
 
-    async def redraw(self, message=None, delay=0):
+    async def redraw(self, message=None, delay=0, wait_for=None):
         # Queue a queue_draw, and use frame clock to wait for actual rendering
         if (
             hasattr(self, "native")
@@ -50,11 +50,21 @@ class BaseProbe:
         # Always yield to let GTK catch up
         await asyncio.sleep(0)
 
-        if toga.App.app.run_slow:
+        # If we're running slow, or we have a wait condition,
+        # wait for at least a second
+        if toga.App.app.run_slow or wait_for:
             delay = max(1, delay)
-        if delay:
-            print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(delay)
 
-    def assert_image_size(self, image_size, size, screen):
+        if delay or wait_for:
+            print("Waiting for redraw" if message is None else message)
+            if toga.App.app.run_slow or wait_for is None:
+                await asyncio.sleep(delay)
+            else:
+                delta = 0.1
+                interval = 0.0
+                while not wait_for() and interval < delay:
+                    await asyncio.sleep(delta)
+                    interval += delta
+
+    def assert_image_size(self, image_size, size, screen, window=None):
         assert image_size == size

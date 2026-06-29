@@ -8,8 +8,14 @@ from .base import Widget
 class WebView(Widget):
     def create(self):
         self._action("create WebView")
+        # attribute to store the URL allowed by user interaction or
+        # user on_navigation_starting handler
+        self._allowed_url = None
 
     def set_content(self, root_url, content):
+        if self.interface.on_navigation_starting:
+            # mark URL as being allowed
+            self._allowed_url = "about:blank"
         self._action("set content", root_url=root_url, content=content)
 
     def get_user_agent(self):
@@ -23,8 +29,13 @@ class WebView(Widget):
         return self._get_value("url", None)
 
     def set_url(self, value, future=None):
+        if self.interface.on_navigation_starting:
+            # mark URL as being allowed
+            self._allowed_url = value
         self._set_value("url", value)
         self._set_value("loaded_future", future)
+        # allow the URL only once
+        self._allowed_url = None
 
     def get_cookies(self):
         self._action("cookies")
@@ -53,3 +64,25 @@ class WebView(Widget):
         for cookie in cookies:
             cookie_jar.set_cookie(cookie)
         self._cookie_result.set_result(cookie_jar)
+
+    def simulate_navigation_starting(self, url):
+        """Simulate a navigation"""
+        allow = True
+        if self.interface.on_navigation_starting._raw:
+            if self._allowed_url == "about:blank" or self._allowed_url == url:
+                # URL is allowed by user code
+                allow = True
+            else:
+                # allow the URL only once
+                self._allowed_url = None
+                result = self.interface.on_navigation_starting(url=url)
+                if isinstance(result, bool):
+                    # on_navigation_starting handler is synchronous
+                    allow = result
+                else:
+                    # on_navigation_starting handler is asynchronous
+                    # deny navigation until the user defined on_navigation_starting
+                    # coroutine has completed.
+                    allow = False
+        if allow:
+            self.set_url(url)

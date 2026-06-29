@@ -317,7 +317,7 @@ class Window:
             native_frame = self.container.native.frame
         else:
             native_frame = self.native.frame
-        return Size(native_frame.size.width, native_frame.size.height)
+        return Size(int(native_frame.size.width), int(native_frame.size.height))
 
     def set_size(self, size):
         frame = self.native.frame
@@ -415,10 +415,12 @@ class Window:
             self._pending_state_transition = state
         else:
             # If the app is in presentation mode, but this window isn't, then exit app
-            # presentation mode before setting the requested state.
-            if any(
-                window.state == WindowState.PRESENTATION and window != self.interface
+            # presentation mode before setting the requested state — unless we're
+            # entering presentation mode ourselves (to allow multiple windows).
+            if state != WindowState.PRESENTATION and any(
+                window.state == WindowState.PRESENTATION
                 for window in self.interface.app.windows
+                if window != self.interface
             ):
                 self.interface.app.exit_presentation_mode()
 

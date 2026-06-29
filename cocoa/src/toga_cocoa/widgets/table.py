@@ -1,7 +1,6 @@
 from rubicon.objc import SEL, NSPoint, at, objc_method, objc_property
 from travertino.size import at_least
 
-import toga
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -34,32 +33,16 @@ class TogaTable(NSTableView):
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
-        return len(self.interface.data) if self.interface.data else 0
+        return len(getattr(self.interface, "data", ()))
 
     @objc_method
     def tableView_viewForTableColumn_row_(self, table, column, row: int):
         data_row = self.interface.data[row]
-        col_identifier = str(column.identifier)
+        if (widget := column.toga_column.widget(data_row)) is not None:
+            return widget._impl.native
 
-        value = getattr(data_row, col_identifier, None)
-
-        # if the value is a widget itself, just draw the widget!
-        if isinstance(value, toga.Widget):
-            return value._impl.native
-
-        # Allow for an (icon, value) tuple as the simple case
-        # for encoding an icon in a table cell. Otherwise, look
-        # for an icon attribute.
-        elif isinstance(value, tuple):
-            icon, value = value
-        else:
-            try:
-                icon = value.icon
-            except AttributeError:
-                icon = None
-
-        if value is None:
-            value = self.interface.missing_value
+        icon = column.toga_column.icon(data_row)
+        text = column.toga_column.text(data_row, self.interface.missing_value)
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
@@ -71,7 +54,7 @@ class TogaTable(NSTableView):
             tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
-        tcv.setText(str(value))
+        tcv.setText(text)
         if icon:
             tcv.setImage(icon._impl.native)
         else:
@@ -124,9 +107,10 @@ class TogaTable(NSTableView):
     # target methods
     @objc_method
     def onDoubleClick_(self, sender) -> None:
-        clicked = self.interface.data[self.clickedRow]
+        if self.clickedRow >= 0:
+            clicked = self.interface.data[self.clickedRow]
 
-        self.interface.on_activate(row=clicked)
+            self.interface.on_activate(row=clicked)
 
 
 class Table(Widget):
@@ -151,15 +135,10 @@ class Table(Widget):
 
         # Create columns for the table
         self.columns = []
-        if self.interface.headings:
-            for index, (heading, accessor) in enumerate(
-                zip(self.interface.headings, self.interface.accessors, strict=False)
-            ):
-                self._insert_column(index, heading, accessor)
-        else:
+        if not self.interface._show_headings:
             self.native_table.setHeaderView(None)
-            for index, accessor in enumerate(self.interface.accessors):
-                self._insert_column(index, None, accessor)
+        for index, toga_column in enumerate(self.interface._columns):
+            self._insert_column(index, toga_column)
 
         self.native_table.delegate = self.native_table
         self.native_table.dataSource = self.native_table
@@ -175,7 +154,20 @@ class Table(Widget):
     def change_source(self, source):
         self.native_table.reloadData()
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def insert(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item)
+
+    def source_insert(self, *, index, item):
         # set parent = None if inserting to the root item
         index_set = NSIndexSet.indexSetWithIndex(index)
 
@@ -183,7 +175,20 @@ class Table(Widget):
             index_set, withAnimation=NSTableViewAnimation.EffectNone
         )
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
+        import warnings
+
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
         row_index = self.interface.data.index(item)
         row_indexes = NSIndexSet.indexSetWithIndex(row_index)
         column_indexes = NSIndexSet.indexSetWithIndexesInRange(
@@ -194,13 +199,39 @@ class Table(Widget):
             row_indexes, columnIndexes=column_indexes
         )
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def remove(self, index, item):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item)
+
+    def source_remove(self, *, index, item):
         indexes = NSIndexSet.indexSetWithIndex(index)
         self.native_table.removeRowsAtIndexes(
             indexes, withAnimation=NSTableViewAnimation.EffectNone
         )
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
         self.native_table.reloadData()
 
     def get_selection(self):
@@ -231,8 +262,9 @@ class Table(Widget):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
-    def _insert_column(self, index, heading, accessor):
-        column = NSTableColumn.alloc().initWithIdentifier(accessor)
+    def _insert_column(self, index, toga_column):
+        column = NSTableColumn.alloc().initWithIdentifier(str(id(toga_column)))
+        column.toga_column = toga_column
         column.minWidth = 16
 
         self.columns.insert(index, column)
@@ -240,11 +272,10 @@ class Table(Widget):
         if index != len(self.columns) - 1:
             self.native_table.moveColumn(len(self.columns) - 1, toColumn=index)
 
-        if heading is not None:
-            column.headerCell.stringValue = heading
+        column.headerCell.stringValue = toga_column.heading
 
-    def insert_column(self, index, heading, accessor):
-        self._insert_column(index, heading, accessor)
+    def insert_column(self, index, column):
+        self._insert_column(index, column)
         self.native_table.sizeToFit()
 
     def remove_column(self, index):

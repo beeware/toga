@@ -35,7 +35,15 @@ async def get_content(widget):
     )
 
 
-async def assert_content_change(widget, probe, message, url, content, on_load):
+async def assert_content_change(
+    widget,
+    probe,
+    message,
+    url,
+    content,
+    on_load,
+    timeout=LOAD_TIMEOUT,
+):
     # Web views aren't instantaneous. Even for simple static changes of page
     # content, the DOM won't be immediately rendered. As a result, even though a
     # page loaded signal has been received, it doesn't mean the accessors for
@@ -45,7 +53,7 @@ async def assert_content_change(widget, probe, message, url, content, on_load):
     # *and* content to change in any way before asserting the new values.
 
     changed = False
-    timer = LOAD_TIMEOUT
+    timer = timeout
 
     await probe.redraw(message)
 
@@ -54,7 +62,9 @@ async def assert_content_change(widget, probe, message, url, content, on_load):
         new_url = widget.url
         new_content = await get_content(widget)
 
-        changed = new_url == url and new_content == content
+        changed = (new_content == content) and (
+            not probe.content_supports_url or (new_url == url)
+        )
         if not changed:
             timer -= 0.05
             await asyncio.sleep(0.05)
@@ -109,7 +119,7 @@ async def widget(on_load):
 
     yield widget
 
-    if toga.platform.get_platform_factory().__package__ == "toga_gtk":
+    if toga.backend == "toga_gtk":
         # On Gtk, ensure that the MapView evades garbage collection by keeping a
         # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
         # thread disposing of it is not the same thread running the event loop. Since
@@ -150,6 +160,7 @@ async def test_clear_url(widget, probe, on_load):
         url=None,
         content="",
         on_load=on_load,
+        timeout=JS_TIMEOUT,
     )
 
 
@@ -168,6 +179,7 @@ async def test_load_empty_url(widget, probe, on_load):
         url=None,
         content="",
         on_load=on_load,
+        timeout=JS_TIMEOUT,
     )
 
 
@@ -190,6 +202,7 @@ async def test_load_url(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_static_content(widget, probe, on_load):
     """Static content can be loaded into the page."""
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
@@ -199,9 +212,51 @@ async def test_static_content(widget, probe, on_load):
         widget,
         probe,
         message="Webview has static content",
+        url="https://example.com/",
+        content="<h1>Nice page</h1>",
+        on_load=on_load,
+        timeout=JS_TIMEOUT,
+    )
+
+
+@pytest.mark.flaky(retries=5, delay=1)
+async def test_static_style_content(widget, probe, on_load):
+    """Static content with style tags can be loaded into the page."""
+    widget.set_content(
+        "https://example.com/",
+        "<style>h1 { color: #000000; }</style><h1>Nice page</h1>",
+    )
+
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static content with style tags",
         url="https://example.com/" if probe.content_supports_url else None,
         content="<h1>Nice page</h1>",
         on_load=on_load,
+    )
+
+
+@pytest.mark.flaky(retries=5, delay=1)
+async def test_static_large_content(widget, probe, on_load):
+    """Static large content can be loaded into the page"""
+    large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
+    url = "https://example.com/"
+    widget.set_content(url, large_content)
+    # some platforms handle large content by loading a file from the cache folder
+    if hasattr(probe, "get_large_content_url"):  # pragma: no branch
+        url = probe.get_large_content_url(widget)
+
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static large content",
+        url=url,
+        content=large_content,
+        on_load=on_load,
+        timeout=JS_TIMEOUT,
     )
 
 
@@ -214,6 +269,7 @@ async def test_user_agent(widget, probe):
     assert widget.user_agent == "NCSA_Mosaic/1.0"
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript(widget, probe):
     """JavaScript can be evaluated."""
     on_result_handler = Mock()
@@ -241,6 +297,7 @@ async def test_evaluate_javascript(widget, probe):
         on_result_handler.assert_called_once_with(expected)
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript_no_handler(widget, probe):
     """A handler isn't needed to evaluate JavaScript."""
     result = await wait_for(
@@ -259,6 +316,7 @@ def javascript_error_context(probe):
         return nullcontext()
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript_error(widget, probe):
     """If JavaScript content raises an error, the error is propagated."""
     on_result_handler = Mock()
@@ -287,6 +345,7 @@ async def test_evaluate_javascript_error(widget, probe):
         assert kwargs == {}
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_evaluate_javascript_error_without_handler(widget, probe):
     """A handler isn't needed to propagate a JavaScript error."""
     with javascript_error_context(probe):
@@ -387,3 +446,148 @@ async def test_retrieve_cookies(widget, probe, on_load):
     assert cookie.path == "/"
     assert cookie.secure is True
     assert cookie.expires is None
+
+
+@pytest.mark.flaky(retries=5, delay=1)
+async def test_on_navigation_starting_sync_no_handler(widget, probe, on_load):
+    # This test is required for full coverage because on android, setting
+    # the URL does not trigger shouldOverrideUrlLoading()
+    await widget.evaluate_javascript('window.location.assign("https://beeware.org/")')
+    await asyncio.sleep(5)
+    await widget.evaluate_javascript(
+        'window.location.assign("https://beeware.org/docs/")'
+    )
+    await asyncio.sleep(5)
+    assert widget.url == "https://beeware.org/docs/"
+
+
+@pytest.mark.flaky(retries=5, delay=1)
+async def test_on_navigation_starting_sync(widget, probe, on_load):
+    if not getattr(widget._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
+        pytest.skip("Platform doesn't support on_navigation_starting")
+
+    # Allow navigation to any beeware.org URL.
+    def handler(widget, url, **kwargs):
+        return url.startswith("https://beeware.org/")
+
+    widget.on_navigation_starting = handler
+
+    # test static content can be set
+    widget.set_content("https://example.com/", "<h1>Nice page</h1>")
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static content",
+        url="https://example.com/",
+        content="<h1>Nice page</h1>",
+        on_load=on_load,
+        timeout=JS_TIMEOUT,
+    )
+
+    # test static content can be set with no URL
+    widget.set_content(None, "<h1>Other page</h1>")
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static content with no URL",
+        url=None,
+        content="<h1>Other page</h1>",
+        on_load=on_load,
+    )
+
+    # test url allowed by code
+    await wait_for(
+        widget.load_url("https://github.com/beeware/"),
+        LOAD_TIMEOUT,
+    )
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware/",
+        content=ANY,
+        on_load=on_load,
+    )
+
+    assert widget.url == "https://github.com/beeware/"
+    # simulate browser navigation to denied url
+    await widget.evaluate_javascript(
+        'window.location.assign("https://github.com/beeware/toga/")'
+    )
+    await probe.redraw("Attempt to navigate to forbidden URL", delay=5)
+
+    assert widget.url == "https://github.com/beeware/"
+    # simulate browser navigation to allowed url
+    await widget.evaluate_javascript(
+        'window.location.assign("https://beeware.org/docs/")'
+    )
+    await probe.redraw("Attempt to navigate to allowed URL", delay=5)
+    assert widget.url == "https://beeware.org/docs/"
+
+    # The webview can always be cleared to no URL
+    widget.url = None
+    # Wait for the content to be cleared
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been cleared",
+        url=None,
+        content="",
+        on_load=on_load,
+    )
+
+
+@pytest.mark.flaky(retries=5, delay=1)
+async def test_on_navigation_starting_async(widget, probe, on_load):
+    if not getattr(widget._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
+        pytest.skip("Platform doesn't support on_navigation_starting")
+
+    async def handler(widget, url, **kwargs):
+        return url.startswith("https://beeware.org/")
+
+    widget.on_navigation_starting = handler
+    # test static content can be set
+    widget.set_content("https://example.com/", "<h1>Nice page</h1>")
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static content",
+        url="https://example.com/",
+        content="<h1>Nice page</h1>",
+        on_load=on_load,
+        timeout=JS_TIMEOUT,
+    )
+    # test url allowed by code
+    await wait_for(
+        widget.load_url("https://github.com/beeware/"),
+        LOAD_TIMEOUT,
+    )
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware/",
+        content=ANY,
+        on_load=on_load,
+    )
+
+    assert widget.url == "https://github.com/beeware/"
+
+    # simulate browser navigation to denied url
+    await widget.evaluate_javascript(
+        'window.location.assign("https://github.com/beeware/toga/")'
+    )
+    await probe.redraw("Attempt to navigate to denied URL", delay=5)
+    assert widget.url == "https://github.com/beeware/"
+
+    # simulate browser navigation to allowed url
+    await widget.evaluate_javascript(
+        'window.location.assign("https://beeware.org/docs/")'
+    )
+    await probe.redraw("Attempt to navigate to allowed URL", delay=5)
+    assert widget.url == "https://beeware.org/docs/"

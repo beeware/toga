@@ -4,6 +4,13 @@ matrix:
     wordlists:
     - docs/spelling_wordlist
     output: _build/dictionary/python.dic
+  aspell:
+    lang: en
+    d: en_US
+    mode:
+      - markdown
+      - url
+      - email
   sources:
   - 'docs/**/*.md'
   pipeline:

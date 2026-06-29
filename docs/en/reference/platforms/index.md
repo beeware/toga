@@ -19,7 +19,7 @@
 * [Terminal](./terminal.md)
 * [Testing](./testing.md)
 
-## Future Plans
+## Future plans
 
 Eventually, the Toga project would like to provide support for:
 

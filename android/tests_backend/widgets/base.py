@@ -10,6 +10,7 @@ from android.graphics.drawable import (
 from android.os import Build, SystemClock
 from android.view import MotionEvent, View, ViewGroup
 
+import toga
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
@@ -24,7 +25,9 @@ class SimpleProbe(BaseProbe, FontMixin):
     invalid_size_while_hidden = False
 
     def __init__(self, widget):
-        super().__init__(widget.app)
+        # Don't use widget.app, because the widget may not be connected to an app yet.
+        super().__init__(toga.App.app)
+
         self.widget = widget
         self.impl = widget._impl
         self.native = widget._impl.native
@@ -104,26 +107,27 @@ class SimpleProbe(BaseProbe, FontMixin):
     def background_color(self):
         background = self.native_toplevel.getBackground()
         while True:
-            if isinstance(background, ColorDrawable):
-                return toga_color(background.getColor())
+            match background:
+                case ColorDrawable():
+                    return toga_color(background.getColor())
 
-            # The following complex Drawables all apply color filters to their children,
-            # but they don't implement getColorFilter, at least not in our current
-            # minimum API level.
-            elif isinstance(background, LayerDrawable):
-                background = background.getDrawable(0)
-            elif isinstance(background, DrawableContainer):
-                background = background.getCurrent()
-            elif isinstance(background, DrawableWrapper):
-                background = background.getDrawable()
+                # The following complex Drawables all apply color filters to their
+                # children, but they don't implement getColorFilter, at least not in
+                # our current minimum API level.
+                case LayerDrawable():
+                    background = background.getDrawable(0)
+                case DrawableContainer():
+                    background = background.getCurrent()
+                case DrawableWrapper():
+                    background = background.getDrawable()
 
-            else:
-                break
+                case _:
+                    break
 
         if background is None:
-            # The default background color is TRANSPARENT, but setting it
-            # to TRANSPARENT actually sets it to None, in order to avoid
-            # clipping of ripple and other effects on widgets.
+            # The default background color is TRANSPARENT, but setting it to TRANSPARENT
+            # actually sets it to None, in order to avoid clipping of ripple and other
+            # effects on widgets.
             return TRANSPARENT
         filter = background.getColorFilter()
         if filter:

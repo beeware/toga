@@ -6,7 +6,7 @@ import pytest
 
 import toga
 from toga_gtk.keys import gtk_accel, toga_key
-from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -23,11 +23,15 @@ class AppProbe(BaseProbe, DialogsMixin):
     )
     supports_dark_mode = True
     edit_menu_noop_enabled = False
+    supports_psutil = True
 
     def __init__(self, app):
         super().__init__()
         self.app = app
-        assert isinstance(self.app._impl.native, Gtk.Application)
+        if Adw is None:
+            assert isinstance(self.app._impl.native, Gtk.Application)
+        else:
+            assert isinstance(self.app._impl.native, Adw.Application)
         assert IS_WAYLAND is (os.environ.get("WAYLAND_DISPLAY", "") != "")
 
     @property

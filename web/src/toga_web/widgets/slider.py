@@ -1,3 +1,5 @@
+import js
+
 from toga_web.libs import create_proxy
 
 from .base import Widget
@@ -5,45 +7,67 @@ from .base import Widget
 
 class Slider(Widget):
     def create(self):
-        self.native = self._create_native_widget("sl-range")
-        self.native.addEventListener("sl-input", create_proxy(self.dom_sl_input))
+        self._dragging = False
+        self.native = self._create_native_widget("wa-slider")
+        self.native.addEventListener("input", create_proxy(self.dom_input))
         self.native.addEventListener(
             "pointerdown", create_proxy(self.dom_onpointerdown)
         )
-        self.native.addEventListener("pointerup", create_proxy(self.dom_onpointerup))
+        # wa-slider has no pointer capture (unlike sl-range, which wrapped a native
+        # <input type="range"> that the browser captures implicitly). Without capture,
+        # releasing outside the element fires pointerup on whatever is under the
+        # pointer,not on the slider — so on_release would miss and could fire on a
+        # different widget. Listening on document with a _dragging guard fixes both
+        # problems.
+        js.document.addEventListener("pointerup", create_proxy(self.dom_onpointerup))
 
-    def dom_sl_input(self, event):
+    def dom_input(self, event):
         self.interface.value = float(self.native.value)
         if self.interface.on_change:
             self.interface.on_change()
 
     def dom_onpointerdown(self, event):
+        self._dragging = True
         self.interface.on_press()
 
     def dom_onpointerup(self, event):
-        self.interface.on_release()
+        if self._dragging:
+            self._dragging = False
+            self.interface.on_release()
 
     def get_value(self):
-        return float(self.native.value)
+        try:
+            return float(self.native.value)
+        except AttributeError:
+            return 0.0
 
     def set_value(self, value):
         self.native.value = value
 
     def get_min(self):
-        return float(self.native.min)
+        try:
+            return float(self.native.min)
+        except AttributeError:
+            return 0.0
 
     def set_min(self, value):
         self.native.min = value
 
     def get_max(self):
-        return float(self.native.max)
+        try:
+            return float(self.native.max)
+        except AttributeError:
+            return 1.0
 
     def set_max(self, value):
         self.native.max = value
 
     def get_tick_count(self):
-        step = float(self.native.step or 0)
-        return int((float(self.native.max) - float(self.native.min)) / step) + 1
+        try:
+            step = float(self.native.step or 0)
+            return int((float(self.native.max) - float(self.native.min)) / step) + 1
+        except AttributeError:
+            return None
 
     def set_tick_count(self, tick_count):
         if tick_count:

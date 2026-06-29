@@ -1,6 +1,6 @@
 import ctypes
 from ctypes import c_uint
-from ctypes.wintypes import HWND, LPARAM
+from ctypes.wintypes import HWND
 
 from System.Windows.Forms import TextBox
 
@@ -24,11 +24,12 @@ class TextInputProbe(SimpleProbe):
     @property
     def _placeholder(self):
         buffer = ctypes.create_unicode_buffer(1024)
+        buffer_address = ctypes.cast(buffer, ctypes.c_void_p).value
         result = ctypes.windll.user32.SendMessageW(
             HWND(self.native.Handle.ToInt32()),
             c_uint(0x1502),  # EM_GETCUEBANNER
-            buffer,
-            LPARAM(ctypes.sizeof(buffer)),
+            buffer_address,
+            ctypes.sizeof(buffer),
         )
         if not result:
             raise RuntimeError("EM_GETCUEBANNER failed")

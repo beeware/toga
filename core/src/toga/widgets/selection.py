@@ -85,19 +85,23 @@ class Selection(Widget):
 
     @items.setter
     def items(self, items: ListSourceT | Iterable | None) -> None:
+        if getattr(self, "_items", None) is not None:
+            self._items.remove_listener(self._impl)
+
         if self._accessor is None:
             accessors = ["value"]
         else:
             accessors = [self._accessor]
 
-        if items is None:
-            self._items = ListSource(accessors=accessors, data=[])
-        elif isinstance(items, Source):
-            if self._accessor is None:
+        match items:
+            case None:
+                self._items = ListSource(accessors=accessors, data=[])
+            case Source() if self._accessor is None:
                 raise ValueError("Must specify an accessor to use a data source")
-            self._items = items
-        else:
-            self._items = ListSource(accessors=accessors, data=items)
+            case Source():
+                self._items = items
+            case _:
+                self._items = ListSource(accessors=accessors, data=items)
 
         self._items.add_listener(self._impl)
 
@@ -106,9 +110,9 @@ class Selection(Widget):
         self.on_change = None
 
         # Clear the widget, and insert all the data rows
-        self._impl.clear()
+        self._impl.source_clear()
         for index, item in enumerate(self.items):
-            self._impl.insert(index, item)
+            self._impl.source_insert(index=index, item=item)
 
         # Restore the original change handler and trigger it.
         self._on_change = orig_on_change

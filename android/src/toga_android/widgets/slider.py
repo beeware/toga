@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_UP
 
 from android import R
@@ -6,7 +7,8 @@ from android.widget import SeekBar
 from java import dynamic_proxy
 
 from toga.widgets.slider import IntSliderImpl
-from toga_android.widgets.base import ContainedWidget
+
+from .base import ContainedWidget, suppress_reference_error
 
 # Implementation notes
 # ====================
@@ -18,16 +20,19 @@ from toga_android.widgets.base import ContainedWidget
 class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onProgressChanged(self, _view, _progress, _from_user):
-        self.impl.on_change()
+        with suppress_reference_error():
+            self.impl.on_change()
 
     def onStartTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_press()
+        with suppress_reference_error():
+            self.impl.interface.on_press()
 
     def onStopTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_release()
+        with suppress_reference_error():
+            self.impl.interface.on_release()
 
 
 class Slider(ContainedWidget, IntSliderImpl):

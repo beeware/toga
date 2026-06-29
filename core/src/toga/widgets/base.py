@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from abc import ABC
 from builtins import id as identifier
+from functools import cached_property
 from os import environ
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
@@ -8,7 +10,7 @@ from warnings import warn
 from travertino.node import Node
 from travertino.style import BaseStyle
 
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 from toga.style import Pack, TogaApplicator
 from toga.style.mixin import style_mixin
 
@@ -20,7 +22,7 @@ if TYPE_CHECKING:
 StyleT = TypeVar("StyleT", bound=BaseStyle)
 """
 A type describing a style object. By default, this will be
-[Pack](/reference/style/pack.md), but Toga allows for other style representations.
+[Pack](/reference/api/style/pack.md), but Toga allows for other style representations.
 """
 PackMixin = style_mixin(Pack)
 
@@ -43,11 +45,19 @@ DEBUG_BACKGROUND_PALETTE = [
 TAB = "    "
 
 
-class Widget(Node, PackMixin):
+class Widget(Node, PackMixin, ABC):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
 
     DEBUG_LAYOUT_ENABLED = False
+    """Determines whether debug layout mode is enabled.
+
+    When enabled, container widgets use distinct background colors
+    to make the layout more visible and help identify issues during development.
+
+    See the [Debugging Your App][debug-layout] guide for more
+    information.
+    """
     _USE_DEBUG_BACKGROUND = False
     _debug_color_index = 0
 
@@ -86,9 +96,6 @@ class Widget(Node, PackMixin):
         self._window: Window | None = None
         self._app: App | None = None
 
-        # Get factory and assign implementation
-        self.factory = get_platform_factory()
-
         ##################################################################
         # 2024-12: Backwards compatibility for Toga < 0.5.0
         ##################################################################
@@ -111,11 +118,21 @@ class Widget(Node, PackMixin):
 
         self.applicator = TogaApplicator()
 
+    @cached_property
+    def factory(self):
+        return get_factory()
+
     def _create(self) -> Any:
         """Create a platform-specific implementation of this widget.
 
         A subclass of Widget should redefine this method to return its implementation.
         """
+        ##################################################################
+        # 2024-12: Backwards compatibility for Toga < 0.5.0
+        ##################################################################
+
+        # When this is removed, _create can be decorated as @abstractmethod.
+
         warn(
             (
                 "Widgets should create and return their implementation in ._create(). "
@@ -124,6 +141,10 @@ class Widget(Node, PackMixin):
             RuntimeWarning,
             stacklevel=2,
         )
+
+        #############################
+        # End backwards compatibility
+        #############################
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"

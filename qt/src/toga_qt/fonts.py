@@ -120,7 +120,7 @@ class Font:
         if self.interface.variant == SMALL_CAPS:
             font.setCapitalization(QFont.Capitalization.SmallCaps)
         if self.interface.size != SYSTEM_DEFAULT_FONT_SIZE:
-            font.setPointSize(self.interface.size)
+            font.setPointSizeF(self.interface.size)
 
         # Set the native font and remember it
         self.native = font

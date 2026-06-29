@@ -107,7 +107,7 @@ class TableApp(toga.App):
         self.load_data()
 
         self.table = toga.Table(
-            headings=["Title", "Year", "Rating", "Genre"],
+            columns=["Title", "Year", "Rating", "Genre"],
             data=self.initial_data,
             flex=1,
             margin=5,

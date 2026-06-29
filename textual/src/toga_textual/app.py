@@ -32,6 +32,7 @@ class App:
         self.native = TogaApp(self)
 
         self._current_window = None
+        self._exiting_presentation = False
 
         # run the app without displaying it
         self.headless = False

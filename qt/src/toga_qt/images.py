@@ -3,26 +3,24 @@ from pathlib import Path
 from PySide6.QtCore import QBuffer, QIODevice
 from PySide6.QtGui import QImage
 
+from toga.images import ImageLoadError
+
 from .libs import create_qapplication
 
 
 class Image:
     RAW_TYPE = QImage
 
-    def __init__(self, interface, path=None, data=None, raw=None):
+    def __init__(self, interface, data=None, raw=None):
         # A QApplication must exist before pixmaps can be manipulated
         create_qapplication()
 
         self.interface = interface
 
-        if path:
-            self.native = QImage(str(path))
-            if self.native.isNull():
-                raise ValueError(f"Unable to load image from {path}")
-        elif data:
+        if data:
             image = QImage()
             if not image.loadFromData(data):
-                raise ValueError("Unable to load image from data")
+                raise ImageLoadError
             self.native = image
         else:
             self.native = raw

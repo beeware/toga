@@ -1,4 +1,4 @@
-# Your first Toga app
+# A basic app
 
 In this example, we're going to build a desktop app with a single button, that prints to the console when you press the button.
 
@@ -55,7 +55,7 @@ No additional dependencies are necessary.
 
 Before you install Toga, you'll need to install some system packages.
 
--8<- "reference/platforms/linux/gtk-prerequisites.md"
+-8<- "snippets/gtk-prerequisites.md"
 
 ///
 
@@ -152,7 +152,7 @@ Now we will make the button take up all the available width:
 button.style.flex = 1
 ```
 
-The `flex` attribute specifies how a widget is sized with respect to other widgets along its direction. The default direction is row (horizontal) and since the button is the only widget here, it will take up the whole width. Check out [style docs](/reference/style/pack.md/#flex) for more information on how to use the `flex` attribute.
+The `flex` attribute specifies how a widget is sized with respect to other widgets along its direction. The default direction is row (horizontal) and since the button is the only widget here, it will take up the whole width. Check out [style docs][toga.style.pack.Pack.flex] for more information on how to use the `flex` attribute.
 
 The next step is to add the button to the box:
 

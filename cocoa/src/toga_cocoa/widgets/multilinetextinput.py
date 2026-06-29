@@ -5,6 +5,7 @@ from toga.colors import TRANSPARENT
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     NSBezelBorder,
+    NSColor,
     NSScrollView,
     NSTextAlignment,
     NSTextView,
@@ -86,16 +87,23 @@ class MultilineTextInput(Widget):
         self.native_text.textColor = native_color(value)
 
     def set_background_color(self, color):
-        if color is TRANSPARENT:
+        if color == TRANSPARENT:
             # Both the text view and the scroll view need to be made transparent
             self.native.drawsBackground = False
+            # Be explicit about setting background color to
+            # clear here, else a macOS bug will show a spurious
+            # red margin at the right of the scroll view.
+            self.native_text.backgroundColor = NSColor.clearColor
             self.native_text.drawsBackground = False
         else:
             # Both the text view and the scroll view need to be opaque,
             # but only the text view needs a color.
             self.native.drawsBackground = True
             self.native_text.drawsBackground = True
-            self.native_text.backgroundColor = native_color(color)
+            if color is None:
+                self.native_text.backgroundColor = NSColor.textBackgroundColor
+            else:
+                self.native_text.backgroundColor = native_color(color)
 
     def set_text_align(self, value):
         self.native_text.alignment = NSTextAlignment(value)

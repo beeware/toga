@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     ```python
     toga.Box(color=rgb(102, 51, 153, 1.0))
     toga.Box(color=hsl(270, 0.5, 0.4, 1.0))
-    toga.Box(color="#639")
+    toga.Box(color="#639F")
     toga.Box(color="#663399FF")
     ```
 

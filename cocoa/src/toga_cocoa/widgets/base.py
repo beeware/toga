@@ -1,11 +1,11 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from toga.colors import TRANSPARENT
 from toga_cocoa.colors import native_color
 from toga_cocoa.constraints import Constraints
 
 
-class Widget:
+class Widget(ABC):
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
@@ -17,10 +17,10 @@ class Widget:
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):
+    def set_app(self, app):  # noqa B027
         pass
 
-    def set_window(self, window):
+    def set_window(self, window):  # noqa B027
         pass
 
     @property
@@ -59,16 +59,16 @@ class Widget:
         # print(f"SET BOUNDS ON {self.interface} {width}x{height} @ ({x},{y})")
         self.constraints.update(x, y, width, height)
 
-    def set_text_align(self, alignment):
+    def set_text_align(self, alignment):  # noqa B027
         pass
 
     def set_hidden(self, hidden):
         self.native.setHidden(hidden)
 
-    def set_font(self, font):
+    def set_font(self, font):  # noqa B027
         pass
 
-    def set_color(self, color):
+    def set_color(self, color):  # noqa B027
         pass
 
     def set_background_color(self, color):

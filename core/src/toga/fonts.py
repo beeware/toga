@@ -22,7 +22,7 @@ from travertino.constants import (
 from travertino.fonts import Font as BaseFont
 
 import toga
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 SYSTEM_DEFAULT_FONTS = {SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE}
 SYSTEM_DEFAULT_FONT_SIZE = -1
@@ -51,25 +51,25 @@ class Font(BaseFont):
         """Construct a reference to a font.
 
         This class should be used when an API requires an explicit font reference (e.g.
-        [`Context.write_text`][toga.widgets.canvas.Context.write_text]). In all other
+        [`Canvas.fill_text`][toga.Canvas.fill_text]). In all other
         cases, fonts in Toga are controlled
         using the style properties linked below.
 
-        :param family: The [font family][pack-font-family].
-        :param size: The [font size][pack-font-size].
-        :param weight: The [font weight][pack-font-weight].
-        :param style: The [font style][pack-font-style].
-        :param variant: The [font variant][pack-font-variant].
+        :param family: The [font family][toga.style.pack.Pack.font_family].
+        :param size: The [font size][toga.style.pack.Pack.font_size].
+        :param weight: The [font weight][toga.style.pack.Pack.font_weight].
+        :param style: The [font style][toga.style.pack.Pack.font_style].
+        :param variant: The [font variant][toga.style.pack.Pack.font_variant].
 
         :raises UnknownFontError: If the font family requested corresponds to neither
-            one of the [built-in system fonts][pack-font-family], nor a
+            one of the [built-in system fonts][toga.style.pack.Pack.font_family], nor a
             user-registered font, nor (depending on platform) a font installed on the
             system.
         :raises ValueError: If a user-registered font is used, but the file specified
             either doesn't exist or a font can't be successfully loaded from it.
         """
         super().__init__(family, size, weight=weight, style=style, variant=variant)
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
 
         try:
             self._impl = _IMPL_CACHE[self]
@@ -107,12 +107,12 @@ class Font(BaseFont):
     ) -> None:
         """Register a file-based font.
 
-        :param family: The [font family][pack-font-family].
+        :param family: The [font family][toga.style.pack.Pack.font_family].
         :param path: The path to the font file. This can be an absolute path, or a path
             relative to the module that defines your [`App`][toga.App] class.
-        :param weight: The [font weight][pack-font-weight].
-        :param style: The [font style][pack-font-style].
-        :param variant: The [font variant][pack-font-variant].
+        :param weight: The [font weight][toga.style.pack.Pack.font_weight].
+        :param style: The [font style][toga.style.pack.Pack.font_style].
+        :param variant: The [font variant][toga.style.pack.Pack.font_variant].
             relative to the module that defines your :any:`App` class.
 
         :raises ValueError: When the registered family has the same name as the standard

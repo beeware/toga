@@ -4,7 +4,7 @@ import PIL.Image
 import pytest
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QCursor
-from PySide6.QtWidgets import QApplication, QDialog
+from PySide6.QtWidgets import QApplication, QDialog, QSystemTrayIcon
 from toga_qt.keys import qt_to_toga_key, toga_to_qt_key
 from toga_qt.libs import IS_WAYLAND
 
@@ -20,6 +20,7 @@ class AppProbe(BaseProbe):
     supports_current_window_assignment = True
     supports_dark_mode = True
     edit_menu_noop_enabled = True
+    supports_psutil = True
 
     def __init__(self, app):
         super().__init__()
@@ -151,16 +152,31 @@ class AppProbe(BaseProbe):
         pytest.xfail("Qt doesn't support opening documents by drag")
 
     def has_status_icon(self, status_icon):
-        pytest.skip("Status Icons not yet implemented on Qt")
+        return status_icon._impl.native is not None
 
     def status_menu_items(self, status_icon):
-        pytest.skip("Status Icons not yet implemented on Qt")
+        menu = status_icon._impl.native.contextMenu()
+        if menu is None:
+            return None
+        else:
+            return [
+                {
+                    "": "---",
+                    "About Toga Testbed (Qt)": "**ABOUT**",
+                    "Quit": "**EXIT**",
+                }.get(action.text(), action.text())
+                for action in menu.actions()
+            ]
 
     def activate_status_icon_button(self, item_id):
-        pytest.skip("Status Icons not yet implemented on Qt")
+        self.app.status_icons[item_id]._impl.native.activated.emit(
+            QSystemTrayIcon.ActivationReason.Trigger
+        )
 
     def activate_status_menu_item(self, item_id, title):
-        pytest.skip("Status Icons not yet implemented on Qt")
+        menu = self.app.status_icons[item_id]._impl.native.contextMenu()
+        item = {action.text(): action for action in menu.actions()}[title]
+        item.triggered.emit()
 
     def perform_edit_action(self, action):
         self._activate_menu_item(["Edit", action])

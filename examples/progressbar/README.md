@@ -1,7 +1,6 @@
 # ProgressBar
 
-Test app for the
-[ProgressBar widget](https://toga.beeware.org/en/stable/reference/api/widgets/progressbar.html).
+Test app for the [ProgressBar widget](https://toga.beeware.org/en/stable/reference/api/widgets/progressbar.html).
 
 The following features are present in this example:
 
@@ -12,7 +11,7 @@ The following features are present in this example:
 
 To run this example:
 
-```
+```console
 $ python -m pip install toga
 $ python -m progressbar
 ```

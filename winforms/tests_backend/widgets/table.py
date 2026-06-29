@@ -12,7 +12,7 @@ from .base import SimpleProbe
 
 class TableProbe(SimpleProbe):
     native_class = ListView
-    supports_icons = 1  # First column only
+    supports_icons = 2  # All columns
     supports_keyboard_shortcuts = False
     supports_keyboard_boundary_shortcuts = True
     supports_widgets = False
@@ -30,25 +30,26 @@ class TableProbe(SimpleProbe):
             pytest.skip("This backend doesn't support widgets in Tables")
         else:
             lvi = self.native.Items[row]
-            assert lvi.SubItems[col].Text == value
-            if col == 0:
-                if icon is None:
-                    assert lvi.ImageIndex == -1
-                    assert lvi.ImageKey == ""
-                else:
-                    imagelist = self.native.SmallImageList
-                    size = imagelist.ImageSize
-                    assert size.Width == size.Height == 16
 
-                    # The image is resized and copied, so we need to compare the actual
-                    # pixels.
-                    actual = imagelist.Images[lvi.ImageIndex]
-                    expected = Bitmap(icon._impl.bitmap, size)
-                    for x in range(size.Width):
-                        for y in range(size.Height):
-                            assert actual.GetPixel(x, y) == expected.GetPixel(x, y)
-            else:
-                assert icon is None
+            _, icon_indices = self.impl._toga_retrieve_virtual_item(row)
+            icon_index = icon_indices[col]
+
+            assert lvi.SubItems[col].Text == value
+            assert lvi.ImageIndex == -1
+            assert lvi.ImageKey == ""
+
+            if icon is not None:
+                imagelist = self.native.SmallImageList
+                size = imagelist.ImageSize
+                assert size.Width == size.Height == 16
+
+                # The image is resized and copied, so we need to compare the actual
+                # pixels.
+                actual = imagelist.Images[icon_index]
+                expected = Bitmap(icon._impl.bitmap, size)
+                for x in range(size.Width):
+                    for y in range(size.Height):
+                        assert actual.GetPixel(x, y) == expected.GetPixel(x, y)
 
     @property
     def max_scroll_position(self):
@@ -79,6 +80,9 @@ class TableProbe(SimpleProbe):
     def column_width(self, index):
         return round(self.native.Columns[index].Width / self.scale_factor)
 
+    async def resize_column(self, index, width):
+        self.native.Columns[index].Width = round(width * self.scale_factor)
+
     async def select_row(self, row, add=False):
         item = self.native.Items[row]
         if add:
@@ -103,3 +107,8 @@ class TableProbe(SimpleProbe):
     async def select_first_row_keyboard(self):
         # Use the keyboard to ensure first row is selected.
         await self.type_character(" ")
+
+    async def activate_header(self):
+        # No action needed; header activation is unrelated to
+        # and does not contain a bug for regular selection
+        pass

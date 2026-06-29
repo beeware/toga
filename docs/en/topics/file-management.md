@@ -9,7 +9,7 @@ For this guide, we're going to use Briefcase to package our application. However
 If you've worked with accessing files in Python, you're probably used to being able to read from a file in the same directory as your Python script using something like the following:
 
 ```python
-with open("file.txt") as f:
+with open("file.txt", encoding="utf-8") as f:
     f.read()
 ```
 
@@ -141,7 +141,7 @@ So, how do we get the benefits of absolute paths, but ensure that the file can b
 
 ## App paths
 
-Toga includes an [app paths](/reference/api/resources/app_paths.md) feature that provides a selection of known locations on the user's computer. Provided as `pathlib.Path` objects, they are known-safe locations for reading and writing files, that are specific to each operating system. Each user running an application will have their own unique app paths.
+Toga includes an [app paths](/reference/api/data-representation/paths.md) feature that provides a selection of known locations on the user's computer. Provided as `pathlib.Path` objects, they are known-safe locations for reading and writing files, that are specific to each operating system. Each user running an application will have their own unique app paths.
 
 The read-only path location, `paths.app`, provides an anchor from the location of the app file.[^1] It can therefore be used to construct absolute paths based on the app file location within the package.
 
@@ -161,7 +161,7 @@ When we run the app, it starts successfully. We can click the button, and we'll 
 
 We've successfully read from a file packaged within our app. What about writing a file? This gets more complicated. Let's explore how to use app paths to write files to the file system.
 
-## Writing Files
+## Writing files
 
 So far, we've used `paths.app`, which should be considered a *read-only* location. Toga won't stop you from writing to the app directory, and in testing, it will almost always work. However, once you ship your packaged app in production, writing to the app will almost certainly fail. The reason varies depending on your operating system.
 
@@ -214,4 +214,4 @@ This updates the handler to first try to load content from an existing `config.t
 
 ### Footnotes
 
-[^1]: More precisely, `paths.app` is the path of the directory that     contains the Python file that defines the class that is being     executed as the app, specifically the Python file that includes the     app class definition (i.e., `class MyApp(toga.App)`). This is     essentially the same as `Path(__file__).parent` inside `app.py`; but     in more complex applications, `__file__` will refer to the current     file, whereas `paths.app` will return the same location no matter     where it is used.
+[^1]: More precisely, `paths.app` is the path of the directory that contains the Python file that defines the class that is being executed as the app, specifically the Python file that includes the app class definition (i.e., `class MyApp(toga.App)`). This is essentially the same as `Path(__file__).parent` inside `app.py`; but in more complex applications, `__file__` will refer to the current file, whereas `paths.app` will return the same location no matter where it is used.

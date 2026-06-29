@@ -96,8 +96,12 @@ class Window:
         for child in self.native.childNodes:
             self.native.removeChild(child)
 
-        # Add all children to the content widget.
-        self.native.appendChild(widget.native)
+        # widget.native is a NativeProxy (a Python wrapper, not a JsProxy).
+        # NativeProxy.__getattr__ auto-unwraps NativeProxy arguments when you
+        # call a JS method on a NativeProxy — but self.native here is a plain
+        # JsProxy (Window doesn't use _create_native_widget), so auto-unwrap
+        # doesn't apply. We must manually unwrap to give JS a real Node.
+        self.native.appendChild(widget.native.unwrap())
 
     ######################################################################
     # Window size
@@ -156,7 +160,7 @@ class Window:
 class MainWindow(Window):
     def _create_submenu(self, group, items):
         submenu = create_element(
-            "sl-dropdown",
+            "wa-dropdown",
             children=[
                 create_element(
                     "span",
@@ -165,11 +169,8 @@ class MainWindow(Window):
                     slot="trigger",
                     content=group.text,
                 ),
-                create_element(
-                    "sl-menu",
-                    children=items,
-                ),
-            ],
+            ]
+            + items,
         )
         return submenu
 
@@ -187,7 +188,7 @@ class MainWindow(Window):
                 submenu = self._menu_groups.setdefault(cmd.group, [])
 
                 menu_item = create_element(
-                    "sl-menu-item",
+                    "wa-dropdown-item",
                     content=cmd.text,
                     disabled=not cmd.enabled,
                 )

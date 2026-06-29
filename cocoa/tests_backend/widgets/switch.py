@@ -14,4 +14,4 @@ class SwitchProbe(SimpleProbe):
 
     @property
     def color(self):
-        xfail("Can't get/set the text color of a button on macOS")
+        xfail("Can't get/set the text color of a switch on macOS")

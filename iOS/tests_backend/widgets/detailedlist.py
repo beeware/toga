@@ -79,12 +79,27 @@ class DetailedListProbe(SimpleProbe):
             await asyncio.sleep(0.05)
             current = self.scroll_position
 
-    async def select_row(self, row, add=False):
+    async def change_selection(self, row, add=False, deselect=False):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
-        self.native.selectRowAtIndexPath(path, animated=False, scrollPosition=0)
+        if deselect:
+            self.native.deselectRowAtIndexPath(path, animated=False)
+        else:
+            self.native.selectRowAtIndexPath(path, animated=False, scrollPosition=0)
+
         # Need to use the long form of this method because the first argument when used
         # as a selector is ambiguous with a property of the same name on the object.
         self.native.delegate.tableView_didSelectRowAtIndexPath_(self.native, path)
+
+    async def select_row(self, row, add=False):
+        await self.change_selection(row, add)
+
+    async def deselect_all(self):
+        row = self.widget.selection
+        if row is None:
+            return
+
+        row_index = self.widget.data.index(row)
+        await self.change_selection(row_index, deselect=True)
 
     def refresh_available(self):
         return self.scroll_position <= 0

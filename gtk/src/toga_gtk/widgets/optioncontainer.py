@@ -1,4 +1,7 @@
 import asyncio
+from functools import partial
+
+from toga.handlers import WeakrefCallable
 
 from ..container import TogaContainer
 from ..libs import GTK_VERSION, Gtk
@@ -11,7 +14,7 @@ class OptionContainer(Widget):
     def create(self):
         self.native = Gtk.Notebook()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.native.connect("switch-page", self.gtk_on_switch_page)
+            self.native.connect("switch-page", WeakrefCallable(self.gtk_on_switch_page))
         else:  # pragma: no-cover-if-gtk3
             pass
         self.sub_containers = []
@@ -24,12 +27,13 @@ class OptionContainer(Widget):
         # likely need to retrieve the current tab, we need to defer triggering
         # on_select() until we know current_page will return the correct value.
         # We do this by deferring the callback to execute on the event loop.
-        asyncio.get_event_loop().call_soon(self.interface.on_select)
+        asyncio.get_event_loop().call_soon(WeakrefCallable(self.interface.on_select))
 
     def add_option(self, index, text, widget, icon):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             sub_container = TogaContainer()
             sub_container.content = widget
+            sub_container.on_recompute = WeakrefCallable(self.on_recompute)
 
             self.sub_containers.insert(index, sub_container)
             self.native.insert_page(sub_container, Gtk.Label(label=text), index)
@@ -38,6 +42,11 @@ class OptionContainer(Widget):
             self.native.show_all()
         else:  # pragma: no-cover-if-gtk3
             pass
+
+    def on_recompute(self, container):
+        # If a child widget recomputes, rehint this parent
+        # widget the next time.
+        asyncio.get_running_loop().call_soon(partial(self.container.make_dirty, self))
 
     def remove_option(self, index):
         self.native.remove_page(index)

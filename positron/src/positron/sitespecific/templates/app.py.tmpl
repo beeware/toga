@@ -1,0 +1,16 @@
+import toga
+
+
+class {{{{ cookiecutter.class_name }}}}(toga.App):
+
+    def startup(self):
+        self.web_view = toga.WebView()
+        self.web_view.url = f"{site_url}"
+
+        self.main_window = toga.MainWindow()
+        self.main_window.content = self.web_view
+        self.main_window.show()
+
+
+def main():
+    return {{{{ cookiecutter.class_name }}}}()

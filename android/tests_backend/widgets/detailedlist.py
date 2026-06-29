@@ -80,6 +80,9 @@ class DetailedListProbe(SimpleProbe):
     async def select_row(self, row, add=False):
         self._row_layout(row).performClick()
 
+    async def deselect_all(self):
+        self.impl._clear_selection()
+
     def refresh_available(self):
         return self.scroll_position <= 0
 

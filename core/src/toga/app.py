@@ -18,7 +18,7 @@ from toga.documents import Document, DocumentSet
 from toga.handlers import simple_handler, wrapped_handler
 from toga.icons import Icon
 from toga.paths import Paths
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 from toga.statusicons import StatusIconSet
 from toga.window import MainWindow, Window, WindowSet
 
@@ -307,7 +307,7 @@ class App:
             self._description = self.metadata.get("Summary", None)
 
         # Get a platform factory.
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
 
         # Instantiate the paths instance for this app.
         self._paths = Paths()
@@ -799,7 +799,7 @@ class App:
     async def dialog(self, dialog: Dialog) -> Coroutine[None, None, Any]:
         """Display a dialog to the user in the app context.
 
-        :param dialog: The [dialog](/reference/api/resources/dialogs.md) to
+        :param dialog: The [dialog](/reference/api/application/dialogs.md) to
             display to the user.
         :returns: The result of the dialog.
         """
@@ -875,28 +875,42 @@ class App:
             not have content.
         """
         if windows:
-            screen_window_dict = {}
-            if isinstance(windows, list):
-                for window, screen in zip(windows, self.screens, strict=False):
-                    screen_window_dict[screen] = window
-            elif isinstance(windows, dict):
-                screen_window_dict = windows
-            else:
-                raise ValueError(
-                    "Presentation layout should be a list of windows,"
-                    " or a dict mapping windows to screens."
-                )
+            # Exit any existing presentation mode before entering with new windows.
+            # Presentation mode is not cumulative: a new call replaces the previous one.
+            if self.in_presentation_mode:
+                self.exit_presentation_mode()
 
-            for screen, window in screen_window_dict.items():
+            match windows:
+                case dict():
+                    pass
+                case list():
+                    windows = dict(zip(self.screens, windows, strict=False))
+                case _:
+                    raise ValueError(
+                        "Presentation layout should be a list of windows, or a dict "
+                        "mapping windows to screens."
+                    )
+
+            for screen, window in windows.items():
                 window._impl._before_presentation_mode_screen = window.screen
                 window.screen = screen
                 window._impl.set_window_state(WindowState.PRESENTATION)
 
     def exit_presentation_mode(self) -> None:
         """Exit presentation mode."""
-        for window in self.windows:
-            if window.state == WindowState.PRESENTATION:
-                window._impl.set_window_state(WindowState.NORMAL)
+        # Guard against recursion: backend set_window_state guards may call
+        # exit_presentation_mode() when they see other windows still in
+        # presentation mode during the exit loop.
+        if self._impl._exiting_presentation:
+            return
+        self._impl._exiting_presentation = True
+
+        try:
+            for window in self.windows:
+                if window.state == WindowState.PRESENTATION:
+                    window._impl.set_window_state(WindowState.NORMAL)
+        finally:
+            self._impl._exiting_presentation = False
 
     ######################################################################
     # App events

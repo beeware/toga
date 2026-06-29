@@ -1,83 +1,95 @@
 {{ component_header("Canvas", width=300) }}
 
+/// admonition | Seeing deprecation warnings?
+If you've updated Toga from 0.5.3 to 0.5.4 or newer and are seeing deprecation warnings from your existing code that uses Canvas, check the [migration guide](/how-to/upgrading/canvas-v0.5.4.md) for info on how to update to the new API.
+///
+
 ## Usage
 
-Canvas is a 2D vector graphics drawing area, whose API broadly follows the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The Canvas provides a drawing Context; drawing instructions are then added to that context by calling methods on the context. All positions and sizes are measured in [CSS pixels][css-units].
+Canvas is a 2D vector graphics drawing area, whose API broadly follows the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Drawing methods are called directly on the Canvas. All positions and sizes are measured in [CSS pixels][css-units].
 
 For example, the following code will draw an orange horizontal line:
 
 ```python
 import toga
-canvas = toga.Canvas()
-context = canvas.context
 
-context.begin_path()
-context.move_to(20, 20)
-context.line_to(160, 20)
-context.stroke(color="orange")
-```
-
-Toga adds an additional layer of convenience to the base HTML5 API by providing context managers for operations that have a natural open/close life cycle. For example, the previous example could be replaced with:
-
-```python
-import toga
 canvas = toga.Canvas()
 
-with canvas.context.Stroke(20, 20, color="orange") as stroke:
-    stroke.line_to(160, 20)
+canvas.stroke_style = "orange"
+canvas.begin_path()
+canvas.move_to(20, 20)
+canvas.line_to(160, 20)
+canvas.stroke()
 ```
 
-Any argument provided to a drawing operation or context object becomes a property of that object. Those properties can be modified after creation, after which you should invoke [`Canvas.redraw`][toga.Canvas.redraw] to request a redraw of the canvas.
+Result:
 
-Drawing operations can also be added to or removed from a context using the `list` operations `append`, `insert`, `remove` and `clear`. In this case, [`Canvas.redraw`][toga.Canvas.redraw] will be called automatically.
+![Usage example](./canvas-images/usage.png)
 
-For example, if you were drawing a bar chart where the height of the bars changed over time, you don't need to completely reset the canvas and redraw all the objects; you can use the same objects, only modifying the height of existing bars, or adding and removing bars as required.
+## Additional features
 
-In this example, we create 2 filled drawing objects, then manipulate those objects, requesting a redraw after each set of changes.
+Toga adds some additional Pythonic conveniences to the base HTML5 API. First, a number of drawing methods that have a natural open/close life cycle ([`close_path()`][toga.Canvas.close_path], [`stroke()`][toga.Canvas.stroke], and [`fill()`][toga.Canvas.fill]) can additionally function as [context managers](https://docs.python.org/3/reference/datamodel.html#context-managers). Second, `fill` and `stroke` accept optional arguments to specify their parameters directly. Using both of these features, the previous example could be rewritten to:
 
 ```python
 import toga
 
 canvas = toga.Canvas()
-with canvas.context.Fill(color="red") as fill:
-    circle = fill.arc(x=50, y=50, radius=15)
-    rect = fill.rect(x=50, y=50, width=15, height=15)
 
-# We can then change the properties of the drawing objects.
-# Make the circle smaller, and move it closer to the origin.
-circle.x = 25
-circle.y = 25
-circle.radius = 5
-canvas.redraw()
-
-# Change the fill color to blue
-fill.color = "blue"
-canvas.redraw()
-
-# Remove the rectangle from the canvas
-fill.remove(rect)
+with canvas.stroke(stroke_style="orange"):
+    canvas.move_to(20, 20)
+    canvas.line_to(160, 20)
 ```
 
-For detailed tutorials on the use of Canvas drawing instructions, see the MDN documentation for the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other than the change in naming conventions for methods - the HTML5 API uses `lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are very similar.
+Toga also provides one additional method, [`state()`][toga.Canvas.state], which is useful *only* as a context manager; it saves context upon entering, and restores it upon existing. That is, the two following snippets are functionally identical:
+
+```python
+canvas.fill_style = "blue"
+
+canvas.save()
+canvas.fill_style = "red"
+canvas.restore()
+
+# Fill style is now restored to blue.
+```
+
+```python
+canvas.fill_style = "blue"
+
+with canvas.state():
+    canvas.fill_style = "red"
+
+# Fill style is now restored to blue.
+```
+
+## Further reading
+
+This page documents all of Canvas's drawing methods; for more detailed and illustrative tutorials, see the MDN documentation for the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other than the change in naming conventions for methods - the HTML5 API uses `lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are very similar.
 
 ## Notes
 
+- Toga does not guarantee pixel perfect rendering of Canvas content across all platforms. Most drawing instructions will appear identical across all platforms, and in the worst case, any given set of drawing instructions should result in a fundamentally similar image. However, text and other complex curve and line geometries (such as miters on tight corners) will result in minor discrepancies between platforms. Color rendition can also vary slightly between platforms depending on the color profiles of the device being used to render the canvas.
+
 - The Canvas API allows the use of handlers to respond to mouse/pointer events. These event handlers differentiate between "primary" and "alternate" modes of activation. When a mouse is in use, alternate activation will usually be interpreted as a "right click"; however, platforms may not implement an alternate activation mode. To ensure cross-platform compatibility, applications should not use the alternate press handlers as the sole mechanism for accessing critical functionality.
+
+## Advanced usage
+
+It's also possible to reach beyond the HTML Canvas-based API documented here, and interact directly with the underlying structure that Canvas uses to store the series of drawing operations it's performed. This allows you to modify the rendered result non-linearly, going "back in time" to change previous instructions. For more information, see the documentation for [DrawingAction](/reference/api/data-representation/drawingaction.md).
 
 ## Reference
 
+<!-- REMOVE WHEN RESOLVED -->
+<!-- rumdl-disable MD013 MD022 MD023 -->
 ::: toga.Canvas
     options:
+        inherited_members: True
         members:
-            - ClosedPath
-            - Context
-            - Fill
-            - Stroke
-            - as_image
-            - context
+            # Attributes; no way *not* to list them first
+            - fill_style
+            - stroke_style
+            - line_width
+            - line_dash
+            - root_state
             - enabled
-            - focus
-            - measure_text
             - on_activate
             - on_alt_drag
             - on_alt_press
@@ -86,17 +98,34 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
             - on_press
             - on_release
             - on_resize
+            # Drawing methods
+            - save
+            - restore
+            - state
+            - begin_path
+            - close_path
+            - move_to
+            - line_to
+            - bezier_curve_to
+            - quadratic_curve_to
+            - arc
+            - ellipse
+            - rect
+            - round_rect
+            - fill
+            - stroke
+            - fill_text
+            - stroke_text
+            - draw_image
+            - rotate
+            - scale
+            - translate
+            - reset_transform
+            # Other methods
+            - measure_text
+            - as_image
+            - focus
             - redraw
-
-::: toga.widgets.canvas.Context
-
-::: toga.widgets.canvas.DrawingObject
-
-::: toga.widgets.canvas.ClosedPathContext
-
-::: toga.widgets.canvas.FillContext
-
-::: toga.widgets.canvas.StrokeContext
 
 ::: toga.widgets.canvas.OnTouchHandler
 

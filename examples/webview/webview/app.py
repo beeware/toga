@@ -1,8 +1,13 @@
+import asyncio
+import webbrowser
+
 import toga
 from toga.constants import COLUMN, ROW
 
 
 class WebViewApp(toga.App):
+    allowed_base_url = "https://beeware.org/"
+
     async def on_do_async_js(self, widget, **kwargs):
         self.label.text = repr(await self.webview.evaluate_javascript("2 + 2"))
 
@@ -22,7 +27,34 @@ class WebViewApp(toga.App):
         self.label.text = f"{result=!r}, {exception=!r}"
 
     def on_webview_load(self, widget, **kwargs):
-        self.label.text = "www loaded!"
+        self.label.text = f"Loaded: {widget.url}"
+        print(f"on_webview_load: {widget.url}")
+
+    async def on_navigate_js(self, widget, **kwargs):
+        await self.webview.evaluate_javascript(
+            'window.location.assign("https://github.com/beeware/toga/")'
+        )
+
+    def on_navigation_starting_sync(self, widget, url, **kwargs):
+        # By default, on_navigation_starting_async is enabled
+        # To use this synchronous handler here, make a code edit below where
+        # self.webview is created.
+        print(f"on_navigation_starting_sync: {url}")
+        allow = True
+        if not url.startswith(self.allowed_base_url):
+            allow = False
+            message = f"Navigation not allowed to: {url}"
+            dialog = toga.InfoDialog("on_navigation_starting()", message)
+            asyncio.create_task(self.dialog(dialog))
+        return allow
+
+    async def on_navigation_starting_async(self, widget, url, **kwargs):
+        print(f"on_navigation_starting_async: {url}")
+        if not url.startswith(self.allowed_base_url):
+            message = f"Do you want to allow navigation to: {url}"
+            dialog = toga.QuestionDialog("on_navigation_starting_async()", message)
+            return await self.main_window.dialog(dialog)
+        return True
 
     def on_set_url(self, widget, **kwargs):
         self.label.text = "Loading page..."
@@ -36,6 +68,9 @@ class WebViewApp(toga.App):
     def on_clear_url(self, widget, **kwargs):
         self.webview.url = None
 
+    def on_open_browser(self, widget, **kwargs):
+        webbrowser.open("https://github.com/beeware/toga")
+
     def on_set_content(self, widget, **kwargs):
         self.webview.set_content(
             "https://example.com",
@@ -44,6 +79,13 @@ class WebViewApp(toga.App):
                 "<span style='background-color: white;'>content</span></b>"
             ),
         )
+
+    def on_set_large_content(self, widget, **kwargs):
+        # according to the Microsoft documentation, the max content size is
+        # 2 MB but in fact, the limit seems to be at about 1.5 MB
+        large_content = f"<p>{'lorem ipsum ' * 200000}</p>"
+        print(f"content length: {len(large_content)}")
+        self.webview.set_content("https://example.com", large_content)
 
     def on_get_agent(self, widget, **kwargs):
         self.label.text = self.webview.user_agent
@@ -67,6 +109,7 @@ class WebViewApp(toga.App):
                         toga.Button("load URL", on_press=self.on_load_url),
                         toga.Button("clear URL", on_press=self.on_clear_url),
                         toga.Button("get URL", on_press=self.on_get_url),
+                        toga.Button("JS navigate", on_press=self.on_navigate_js),
                     ],
                 ),
                 toga.Box(
@@ -76,6 +119,9 @@ class WebViewApp(toga.App):
                         toga.Button("good js", on_press=self.on_good_js),
                         toga.Button("bad js", on_press=self.on_bad_js),
                         toga.Button("set content", on_press=self.on_set_content),
+                        toga.Button(
+                            "set large content", on_press=self.on_set_large_content
+                        ),
                     ],
                 ),
                 toga.Box(
@@ -83,6 +129,7 @@ class WebViewApp(toga.App):
                     children=[
                         toga.Button("set agent", on_press=self.on_set_agent),
                         toga.Button("get agent", on_press=self.on_get_agent),
+                        toga.Button("open browser", on_press=self.on_open_browser),
                     ],
                 ),
             ],
@@ -95,6 +142,8 @@ class WebViewApp(toga.App):
             url="https://beeware.org/",
             on_webview_load=self.on_webview_load,
             flex=1,
+            on_navigation_starting=self.on_navigation_starting_async,
+            # on_navigation_starting=self.on_navigation_starting_sync,
         )
 
         box = toga.Box(

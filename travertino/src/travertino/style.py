@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from collections import defaultdict
 from collections.abc import Mapping
 from contextlib import contextmanager
@@ -19,7 +20,8 @@ _DEPRECATION_MSG = (
 )
 
 
-class BaseStyle:
+# 2026-1: Backwards compatibility for Toga < 0.5.0; can eventually remove noqa
+class BaseStyle(ABC):  # noqa: B024
     """A base class for style declarations.
 
     Exposes a dict-like interface. Designed for subclasses to be decorated
@@ -157,15 +159,19 @@ class BaseStyle:
     # Interface that style declarations must define
     ######################################################################
 
-    def _apply(self, names: set):
-        raise NotImplementedError(
-            "Style must define an _apply method"
-        )  # pragma: no cover
+    def _apply(self, names: set):  # pragma: no cover
+        """Apply the properties whose names are supplied."""
 
-    def layout(self, viewport):
-        raise NotImplementedError(
-            "Style must define a layout method"
-        )  # pragma: no cover
+        # 2026-1: Backwards compatibility for Toga < 0.5.0: This should eventually be
+        # marked as @abstractmethod, and the error and no-cover removed.
+        raise NotImplementedError
+
+    def layout(self, viewport):  # pragma: no cover
+        """Lay out this style's node in the supplied viewport."""
+
+        # 2026-1: Backwards compatibility for Toga < 0.5.0: This should eventually be
+        # marked as @abstractmethod, and the error and no-cover removed.
+        raise NotImplementedError
 
     ######################################################################
     # Support for batching calls to apply()
@@ -215,7 +221,7 @@ class BaseStyle:
 
     @contextmanager
     def batch_apply(self):
-        """Aggregate calls to appl() into one single call to _apply().
+        """Aggregate calls to apply() into one single call to _apply().
 
         No-op if no applicator is present, or if already in batched mode.
         """
@@ -263,23 +269,21 @@ class BaseStyle:
 
     def __getitem__(self, name):
         name = name.replace("-", "_")
-        if name in self._ALL_PROPERTIES:
-            return getattr(self, name)
-        raise KeyError(name)
+        if name not in self._ALL_PROPERTIES:
+            raise KeyError(name)
+        return getattr(self, name)
 
     def __setitem__(self, name, value):
         name = name.replace("-", "_")
-        if name in self._ALL_PROPERTIES:
-            setattr(self, name, value)
-        else:
+        if name not in self._ALL_PROPERTIES:
             raise KeyError(name)
+        setattr(self, name, value)
 
     def __delitem__(self, name):
         name = name.replace("-", "_")
-        if name in self._ALL_PROPERTIES:
-            delattr(self, name)
-        else:
+        if name not in self._ALL_PROPERTIES:
             raise KeyError(name)
+        delattr(self, name)
 
     def keys(self):
         return {*self}

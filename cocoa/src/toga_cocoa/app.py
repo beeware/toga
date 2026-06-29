@@ -1,7 +1,9 @@
 import asyncio
+import platform
 import sys
 from pathlib import Path
 
+from packaging.version import Version
 from rubicon.objc import (
     SEL,
     NSMutableDictionary,
@@ -104,6 +106,7 @@ class App:
         self.interface._impl = self
 
         self._cursor_visible = True
+        self._exiting_presentation = False
 
         self.loop = RubiconEventLoop()
 
@@ -311,6 +314,11 @@ class App:
             self.native.setActivationPolicy(NSApplicationActivationPolicyAccessory)
         else:
             self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
+
+        # macOS 14 introduced a new API for giving focus to the app
+        # We can't run CI on earlier versions, so this is no-branch.
+        if Version(platform.mac_ver()[0]) >= Version("14.0"):  # pragma: no branch
+            self.native.activate()
 
     ######################################################################
     # App resources

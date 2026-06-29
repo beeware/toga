@@ -1,4 +1,4 @@
-{{ component_header("Location services") }}
+{{ component_header("Location") }}
 
 ## Usage
 
@@ -42,7 +42,7 @@ class MyApp(toga.App):
 
 If you no longer wish to receive location updates, call [`Location.stop_tracking()`][toga.hardware.location.Location.stop_tracking].
 
-## System requirements  { #location-system-requires }
+## System requirements { #location-system-requires }
 
 - Using location services on Linux requires that the user has installed the system packages for GeoClue2, plus the GObject Introspection bindings for GeoClue2. The name of the system package required is distribution dependent:
     - Ubuntu and Debian: `gir1.2-geoclue-2.0`

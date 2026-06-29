@@ -1,5 +1,5 @@
 from toga.colors import TRANSPARENT
-from toga_cocoa.libs import NSRange, NSScrollView, NSTextView
+from toga_cocoa.libs import NSColor, NSRange, NSScrollView, NSTextView
 
 from .base import SimpleProbe
 from .properties import toga_color, toga_text_align
@@ -8,6 +8,7 @@ from .properties import toga_color, toga_text_align
 class MultilineTextInputProbe(SimpleProbe):
     native_class = NSScrollView
     redo_available = True
+    supports_simulate_mouse_wheel = False
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -45,7 +46,10 @@ class MultilineTextInputProbe(SimpleProbe):
         if self.native_text.drawsBackground:
             # Confirm the scroll container is also opaque
             assert self.native.drawsBackground
-            if self.native_text.backgroundColor:
+            # None as a background color is misconfigured, and produces
+            # incorrect results.
+            assert self.native_text.backgroundColor is not None
+            if self.native_text.backgroundColor != NSColor.textBackgroundColor:
                 return toga_color(self.native_text.backgroundColor)
             else:
                 return None

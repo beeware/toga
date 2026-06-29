@@ -39,16 +39,16 @@ def test_listener():
 
     source.value = 37
 
-    listener.change.assert_called_once_with(item=37)
+    listener.source_change.assert_called_once_with(item=37)
 
     # Reset the mock; clear the value
     listener.reset_mock()
     source.value = None
 
-    listener.change.assert_called_once_with(item=None)
+    listener.source_change.assert_called_once_with(item=None)
 
     # Reset the mock; set a *different* attribute on the source
     listener.reset_mock()
     source.something = 1234
 
-    listener.change.assert_not_called()
+    listener.source_change.assert_not_called()

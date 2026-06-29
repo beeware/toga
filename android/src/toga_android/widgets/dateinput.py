@@ -1,3 +1,4 @@
+import weakref
 from datetime import date, datetime, time
 
 from android import R
@@ -6,6 +7,7 @@ from java import dynamic_proxy
 
 from toga_android.widgets.base import ContainedWidget
 
+from .base import suppress_reference_error
 from .internal.pickers import PickerBase
 
 
@@ -20,13 +22,14 @@ def native_date(py_date):
 class DatePickerListener(dynamic_proxy(DatePickerDialog.OnDateSetListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onDateSet(self, view, year, month_0, day):
-        # It should be impossible for the dialog to return an out-of-range value in
-        # normal use, but it can happen in the testbed, so go via the interface to clip
-        # the value.
-        self.impl.interface.value = date(year, month_0 + 1, day)
+        with suppress_reference_error():
+            # It should be impossible for the dialog to return an out-of-range value in
+            # normal use, but it can happen in the testbed, so go via the interface to
+            # clip the value.
+            self.impl.interface.value = date(year, month_0 + 1, day)
 
 
 class DateInput(PickerBase, ContainedWidget):

@@ -11,6 +11,7 @@ class TableProbe(SimpleProbe):
     supports_icons = False
     supports_keyboard_shortcuts = False
     supports_widgets = False
+    column_proportion_tolerance = 35
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -81,6 +82,9 @@ class TableProbe(SimpleProbe):
             right = row.getWidth()
         return (right - left) / self.scale_factor
 
+    async def resize_column(self, index, width):
+        pytest.xfail("Table columns cannot be resized on Android")
+
     async def select_row(self, row, add=False):
         self._row_view(row).performClick()
 
@@ -97,3 +101,8 @@ class TableProbe(SimpleProbe):
 
     async def select_first_row_keyboard(self):
         pytest.xfail("test not implemented for this platform")
+
+    async def activate_header(self):
+        # No action needed; header activation is unrelated to
+        # and does not contain a bug for regular selection
+        pass

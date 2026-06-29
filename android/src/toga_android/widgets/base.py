@@ -1,3 +1,4 @@
+import contextlib
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, Decimal
 
@@ -68,10 +69,10 @@ class Widget(ABC, Scalable):
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):
+    def set_app(self, app):  # noqa B027
         pass
 
-    def set_window(self, window):
+    def set_window(self, window):  # noqa B027
         pass
 
     @property
@@ -121,7 +122,7 @@ class Widget(ABC, Scalable):
         else:
             self.native_toplevel.setVisibility(View.VISIBLE)
 
-    def set_font(self, font):
+    def set_font(self, font):  # noqa B027
         # By default, font can't be changed
         pass
 
@@ -144,11 +145,22 @@ class Widget(ABC, Scalable):
             else PorterDuffColorFilter(native_color(color), PorterDuff.Mode.SRC_IN)
         )
 
-    def set_text_align(self, alignment):
+    def set_text_align(self, alignment):  # noqa B027
         pass  # If appropriate, a widget subclass will implement this.
 
-    def set_color(self, color):
+    def set_color(self, color):  # noqa B027
         pass  # If appropriate, a widget subclass will implement this.
+
+    def get_theme_color(self, attr_id: int) -> int:
+        ta = self._native_activity.getTheme().obtainStyledAttributes([attr_id])
+        try:
+            if not ta.hasValue(0):
+                raise RuntimeError(  # pragma: no cover
+                    f"Required theme color attribute not found: {attr_id}"
+                )
+            return ta.getColor(0, 0)
+        finally:
+            ta.recycle()
 
     # INTERFACE
 
@@ -169,7 +181,7 @@ class Widget(ABC, Scalable):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
 
-    def rehint(self):
+    def rehint(self):  # noqa B027
         pass
 
 
@@ -181,6 +193,21 @@ def android_text_align(value):
         CENTER: Gravity.CENTER_HORIZONTAL,
         JUSTIFY: Gravity.LEFT,
     }[value]
+
+
+# In implementing certain widgets, weak back-references
+# are needed from the native widget back to the implementation
+# object, however, this can sometimes lead to functions
+# being called on the native object even after the implementation
+# has been garbage collected.  Since there is no implementation
+# to emit signals for, such ReferenceErrors we get are often
+# useless, so we suppress them.
+@contextlib.contextmanager
+def suppress_reference_error():
+    try:
+        yield
+    except ReferenceError:  # pragma: no cover
+        pass
 
 
 # The look and feel of Android widgets is sometimes implemented using background

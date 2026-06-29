@@ -1,9 +1,11 @@
+from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
     SEL,
     NSBezelStyle,
     NSButton,
+    NSColor,
     NSOffState,
     NSOnState,
     NSSwitchButton,
@@ -11,6 +13,7 @@ from toga_cocoa.libs import (
     objc_property,
 )
 
+from ..colors import native_color
 from .base import Widget
 
 
@@ -59,3 +62,14 @@ class Switch(Widget):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.width = at_least(content_size.width)
         self.interface.intrinsic.height = content_size.height
+
+    def set_background_color(self, color):
+        if color == TRANSPARENT:
+            # macOS bug: even when drawsBackground=False,
+            # background color still seems drawn in certain
+            # cases.
+            self.native.backgroundColor = NSColor.clearColor
+            self.native.drawsBackground = False
+        else:
+            self.native.backgroundColor = native_color(color)
+            self.native.drawsBackground = True

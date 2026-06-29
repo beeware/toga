@@ -1,20 +1,18 @@
 from pathlib import Path
 
 import PIL.Image
-from rubicon.objc import SEL, NSPoint, ObjCClass, objc_id, send_message
+from rubicon.objc import SEL, ObjCClass, objc_id, send_message
 
 import toga
-from toga_cocoa.keys import cocoa_key, toga_key
+from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import (
     NSApplication,
-    NSEvent,
-    NSEventModifierFlagShift,
-    NSEventType,
     NSPanel,
     NSWindow,
 )
 
 from .dialogs import DialogsMixin
+from .keys import create_key_event
 from .probe import BaseProbe, NSRunLoop
 
 NSDate = ObjCClass("NSDate")
@@ -26,6 +24,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_current_window_assignment = True
     supports_dark_mode = True
     edit_menu_noop_enabled = False
+    supports_psutil = True
 
     def __init__(self, app):
         super().__init__()
@@ -76,6 +75,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 (205, 226, 243, 255),
                 (211, 226, 243, 255),
                 (211, 230, 245, 255),
+                (214, 229, 243, 255),
             }
             mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
             assert mid_color in {
@@ -83,6 +83,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 (6, 204, 8, 255),
                 (14, 197, 8, 255),
                 (105, 192, 32, 255),
+                (92, 201, 61, 255),
             }
         else:
             # The default icon is transparent background, and brown in the center.
@@ -94,6 +95,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 (138, 107, 64, 255),
                 (138, 108, 64, 255),
                 (149, 119, 73, 255),
+                (144, 120, 80, 255),
             }
 
     def _menu_item(self, path):
@@ -234,38 +236,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 assert item.title == title
 
     def keystroke(self, combination):
-        key, modifiers = cocoa_key(combination)
-        key_code = {
-            "a": 0,
-            "A": 0,
-            "1": 18,
-            "!": 18,
-            "'": 39,
-            ";": 41,
-            "|": 42,
-            " ": 49,
-            chr(0xF708): 96,  # F5
-            chr(0xF729): 115,  # Home
-            # This only works because we're *not* testing the numeric 5
-            "5": 87,
-        }[key]
-
-        # Add the shift modifier to disambiguate shifted keys from non-shifted
-        if key in {"!", "|"}:
-            modifiers |= NSEventModifierFlagShift
-
-        event = NSEvent.keyEventWithType(
-            NSEventType.KeyDown,
-            location=NSPoint(0, 0),  # key presses don't have a location.
-            modifierFlags=modifiers,
-            timestamp=0,
-            windowNumber=self.app.main_window._impl.native.windowNumber,
-            context=None,
-            characters="?",
-            charactersIgnoringModifiers="?",
-            isARepeat=False,
-            keyCode=key_code,
-        )
+        event = create_key_event(self.app, combination)
         return toga_key(event)
 
     async def restore_standard_app(self):

@@ -35,12 +35,60 @@ class CGAffineTransform(Structure):
         ("ty", CGFloat),
     ]
 
+    def __eq__(self, other):
+        return (
+            self.a == other.a
+            and self.b == other.b
+            and self.c == other.c
+            and self.d == other.d
+            and self.tx == other.tx
+            and self.ty == other.ty
+        )
+        # An except AttributeError would theoretically be more robust, but that
+        # shouldn't ever happen, and if it does it should in fact be an error.
 
-core_graphics.CGAffineTransformIdentity = CGAffineTransform
+
+CGAffineTransformIdentity = CGAffineTransform.in_dll(
+    core_graphics, "CGAffineTransformIdentity"
+)
+
+core_graphics.CGAffineTransformConcat.argtypes = [CGAffineTransform, CGAffineTransform]
+core_graphics.CGAffineTransformConcat.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.argtypes = [CGAffineTransform]
 core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform
 core_graphics.CGAffineTransformMakeScale.argtypes = [CGFloat, CGFloat]
+
+######################################################################
+# CGImage.h
+
+CGImageRef = c_void_p
+register_preferred_encoding(b"^{CGImage=}", CGImageRef)
+
+core_graphics.CGImageGetWidth.argtypes = [CGImageRef]
+core_graphics.CGImageGetWidth.restype = c_size_t
+
+core_graphics.CGImageGetHeight.argtypes = [CGImageRef]
+core_graphics.CGImageGetHeight.restype = c_size_t
+
+kCGImageAlphaNone = 0
+kCGImageAlphaPremultipliedLast = 1
+kCGImageAlphaPremultipliedFirst = 2
+kCGImageAlphaLast = 3
+kCGImageAlphaFirst = 4
+kCGImageAlphaNoneSkipLast = 5
+kCGImageAlphaNoneSkipFirst = 6
+kCGImageAlphaOnly = 7
+
+kCGBitmapAlphaInfoMask = 0x1F
+kCGBitmapFloatComponents = 1 << 8
+
+kCGBitmapByteOrderMask = 0x7000
+kCGBitmapByteOrderDefault = 0 << 12
+kCGBitmapByteOrder16Little = 1 << 12
+kCGBitmapByteOrder32Little = 2 << 12
+kCGBitmapByteOrder16Big = 3 << 12
+kCGBitmapByteOrder32Big = 4 << 12
 
 ######################################################################
 # CGContext.h
@@ -170,6 +218,15 @@ core_graphics.CGContextShowTextAtPoint.argtypes = [
 ]
 core_graphics.CGContextTranslateCTM.restype = c_void_p
 core_graphics.CGContextTranslateCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
+core_graphics.CGContextDrawImage.restype = c_void_p
+core_graphics.CGContextDrawImage.argtypes = [CGContextRef, CGRect, CGImageRef]
+
+CGPathRef = c_void_p
+register_preferred_encoding(b"^{__CGPath=}", CGPathRef)
+core_graphics.CGContextCopyPath.restype = CGPathRef
+core_graphics.CGContextCopyPath.argtypes = [CGContextRef]
+core_graphics.CGContextAddPath.restype = c_void_p
+core_graphics.CGContextAddPath.argtypes = [CGContextRef, CGPathRef]
 
 ######################################################################
 # CGEvent.h
@@ -199,37 +256,6 @@ core_graphics.CGEventCreateScrollWheelEvent.restype = CGEventRef
 # CGEventTypes.h
 kCGScrollEventUnitPixel = 0
 kCGScrollEventUnitLine = 1
-
-######################################################################
-# CGImage.h
-
-CGImageRef = c_void_p
-register_preferred_encoding(b"^{CGImage=}", CGImageRef)
-
-core_graphics.CGImageGetWidth.argtypes = [CGImageRef]
-core_graphics.CGImageGetWidth.restype = c_size_t
-
-core_graphics.CGImageGetHeight.argtypes = [CGImageRef]
-core_graphics.CGImageGetHeight.restype = c_size_t
-
-kCGImageAlphaNone = 0
-kCGImageAlphaPremultipliedLast = 1
-kCGImageAlphaPremultipliedFirst = 2
-kCGImageAlphaLast = 3
-kCGImageAlphaFirst = 4
-kCGImageAlphaNoneSkipLast = 5
-kCGImageAlphaNoneSkipFirst = 6
-kCGImageAlphaOnly = 7
-
-kCGBitmapAlphaInfoMask = 0x1F
-kCGBitmapFloatComponents = 1 << 8
-
-kCGBitmapByteOrderMask = 0x7000
-kCGBitmapByteOrderDefault = 0 << 12
-kCGBitmapByteOrder16Little = 1 << 12
-kCGBitmapByteOrder32Little = 2 << 12
-kCGBitmapByteOrder16Big = 3 << 12
-kCGBitmapByteOrder32Big = 4 << 12
 
 ######################################################################
 # CGDirectDisplay.h

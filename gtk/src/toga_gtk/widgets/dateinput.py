@@ -49,6 +49,7 @@ class DateInput(Widget):
         self.native.connect("next-year", self.gtk_on_change)
         self.native.connect("prev-month", self.gtk_on_change)
         self.native.connect("prev-year", self.gtk_on_change)
+        self._suppress_signals = False
 
     def get_value(self):
         return py_date(self.native.get_date())
@@ -60,7 +61,18 @@ class DateInput(Widget):
             self.native.select_month(month=month, year=year)
             self.native.select_day(day=day)
         else:  # pragma: no-cover-if-gtk3
-            self.native.select_day(native_date(value))
+            # The signal must be emitted manually on GTK4,
+            # as no signal is emitted when switching between
+            # years without changing date.  Emission of signals
+            # on programmatic change in GTK4 is also undocumented
+            # behavior, as the docs implies that the signals
+            # we connect to emits on user action only.
+            self._suppress_signals = True
+            try:
+                self.native.select_day(native_date(value))
+            finally:
+                self._suppress_signals = False
+            self.gtk_on_change()
 
     def rehint(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -87,6 +99,8 @@ class DateInput(Widget):
         self.native.maxDate = native_date(value)
 
     def gtk_on_change(self, *_args):
+        if self._suppress_signals:  # pragma: no-cover-if-gtk3
+            return
         current_date = self.get_value()
         min_date = self.get_min_date()
         max_date = self.get_max_date()

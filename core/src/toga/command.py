@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Protocol
 from toga.handlers import simple_handler, wrapped_handler
 from toga.icons import Icon
 from toga.keys import Key
-from toga.platform import get_platform_factory
+from toga.platform import get_factory
 
 if TYPE_CHECKING:
     from toga.app import App
@@ -297,7 +297,7 @@ class Command:
 
         self.action = action
 
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         self._impl = self.factory.Command(interface=self)
 
         self._enabled = True
@@ -329,7 +329,7 @@ class Command:
             cmd_kwargs["action"] = None
 
         # Get the platform-specific keyword arguments for the command
-        factory = get_platform_factory()
+        factory = get_factory()
         platform_kwargs = factory.Command.standard(app, id)
 
         if platform_kwargs:

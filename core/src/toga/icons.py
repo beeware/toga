@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import toga
-from toga.platform import get_platform_factory
+from toga.platform import Factory, get_factory
 
 if TYPE_CHECKING:
     from typing import TypeAlias
@@ -81,17 +81,20 @@ class Icon:
     ):
         """Create a new icon.
 
-        :param path: Base filename for the icon. The path can be an absolute file system
-            path, or a path relative to the module that defines your Toga application
-            class. This base filename should *not* contain an extension. If an extension
-            is specified, it will be ignored. If the icon cannot be found, the default
-            icon will be [`Icon.DEFAULT_ICON`][toga.Icon.DEFAULT_ICON]. If an icon file
-            is found, but it cannot be loaded (due to a file format or permission
-            error), an exception
-            will be raised.
+        :param path: Base filename for the icon. Should not contain an extension
+            (If an extension is specified, it will be ignored). Paths can be absolute
+            or relative. Relative paths start from the folder where your [`toga.App`][]
+            subclass is defined.
+
+            If the icon cannot be found, the default icon will be
+            [Icon.DEFAULT_ICON][toga.Icon.DEFAULT_ICON].
+
+            If icon is found, but cannot be loaded (due to a file format
+            or permission error), a warning will be emitted and
+            [Icon.DEFAULT_ICON][toga.Icon.DEFAULT_ICON] will be used.
         :param system: **For internal use only**
         """
-        self.factory = get_platform_factory()
+        self.factory = get_factory()
         try:
             # Try to load the icon with the given path snippet. If the request is for
             # the app icon, use `resources/<app name>` as the path.
@@ -102,7 +105,13 @@ class Icon:
 
             self.system = system
             if self.system:
-                resource_path = Path(self.factory.__file__).parent / "resources"
+                if isinstance(self.factory, Factory):
+                    resource_path = Path(self.factory.resources.__file__).parent
+                else:
+                    # doesn't get covered in core tests
+                    resource_path = (
+                        Path(self.factory.__file__).parent / "resources"
+                    )  # pragma: no cover
             else:
                 resource_path = toga.App.app.paths.app
 
@@ -127,16 +136,26 @@ class Icon:
                 )
 
             self._impl = self.factory.Icon(interface=self, path=full_path)
-        except FileNotFoundError:
-            # Icon path couldn't be found. If the path is the sentinel for the app
-            # icon, and this isn't running as a script, fall back to the application
-            # binary
+        except (FileNotFoundError, ValueError) as exc:
+            # Icon path couldn't be resolved or loaded. If the path is the sentinel
+            # for the app icon, and this isn't running as a script, fall back to the
+            # application binary.
             if path is _APP_ICON:
+                if isinstance(exc, ValueError):
+                    fallback = (
+                        "application binary icon"
+                        if toga.App.app.is_bundled
+                        else "default icon"
+                    )
+                    print(
+                        f"WARNING: Unable to load app icon {self.path}; "
+                        f"falling back to {fallback}"
+                    )
                 if toga.App.app.is_bundled:
                     try:
                         # Use the application binary's icon
                         self._impl = self.factory.Icon(interface=self, path=None)
-                    except FileNotFoundError:
+                    except (FileNotFoundError, ValueError):
                         # Can't find the application binary's icon.
                         print(
                             "WARNING: Can't find app icon; falling back to default icon"
@@ -145,10 +164,16 @@ class Icon:
                 else:
                     self._impl = self.DEFAULT_ICON._impl
             else:
-                print(
-                    f"WARNING: Can't find icon {self.path}; "
-                    f"falling back to default icon"
-                )
+                if isinstance(exc, FileNotFoundError):
+                    print(
+                        f"WARNING: Can't find icon {self.path}; "
+                        f"falling back to default icon"
+                    )
+                else:
+                    print(
+                        f"WARNING: Unable to load icon {self.path}; "
+                        f"falling back to default icon"
+                    )
                 self._impl = self.DEFAULT_ICON._impl
 
     def _full_path(

@@ -2,6 +2,8 @@
 
 ## Usage
 
+A `Switch`'s button has a text label, and two states: `True` (on, checked); and `False` (off, unchecked).
+
 ```python
 import toga
 

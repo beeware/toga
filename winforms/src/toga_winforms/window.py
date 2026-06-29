@@ -28,7 +28,7 @@ if TYPE_CHECKING:  # pragma: no cover
 initial_dpi_scale = ScreenImpl(WinForms.Screen.PrimaryScreen).dpi_scale
 
 
-class Window(Container, Scalable):
+class Window(Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
 
@@ -36,7 +36,7 @@ class Window(Container, Scalable):
 
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
         self.native.FormClosing += self._FormClosing_handler
-        super().__init__(self.native)
+        self.container = Container(self.native, on_refresh=self.on_refresh)
         self._dpi_scale = self.get_current_screen().dpi_scale
 
         self.native.MinimizeBox = self.interface.minimizable
@@ -49,10 +49,11 @@ class Window(Container, Scalable):
         # triggering of visibility events.
         self._previous_state = WindowState.NORMAL
         # On minimization, winforms returns window size as 0 x 0, but this behavior is
-        # inconsistent with other platforms as minimization does not constitute a
-        # window resize operation. Therefore, it should return the same size as before
-        # minimization. So, cache the previous window size before performing
-        # minimization.
+        # inconsistent with other platforms as minimization does not constitute a window
+        # resize operation. Therefore, it should return the same size as before
+        # minimization. Under .NET Core, there's also issues with correctly restoring
+        # the window size when coming back from FULLSCREEN or PRESENTATION mode. This
+        # variable stores the window size so it can be returned/restored as required.
         self._cached_window_size = None
 
         self.set_title(title)
@@ -198,8 +199,7 @@ class Window(Container, Scalable):
     def _top_bars_height(self):
         return 0
 
-    def refreshed(self):
-        super().refreshed()
+    def on_refresh(self, container):
         layout = self.interface.content.layout
         self.native.MinimumSize = WinSize(
             self.scale_in(layout.min_width) + self._decor_width(),
@@ -210,8 +210,8 @@ class Window(Container, Scalable):
 
     def resize_content(self):
         vertical_shift = self._top_bars_height()
-        self.native_content.Location = Point(0, vertical_shift)
-        super().resize_content(
+        self.container.native_content.Location = Point(0, vertical_shift)
+        self.container.resize_content(
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
@@ -229,6 +229,9 @@ class Window(Container, Scalable):
             self.interface.content.refresh()
 
         self.resize_content()
+
+    def set_content(self, widget):
+        self.container.set_content(widget)
 
     ######################################################################
     # Window size
@@ -307,10 +310,12 @@ class Window(Container, Scalable):
 
     def set_window_state(self, state):
         # If the app is in presentation mode, but this window isn't, then exit app
-        # presentation mode before setting the requested state.
-        if any(
-            window.state == WindowState.PRESENTATION and window != self.interface
+        # presentation mode before setting the requested state — unless we're
+        # entering presentation mode ourselves (to allow multiple windows).
+        if state != WindowState.PRESENTATION and any(
+            window.state == WindowState.PRESENTATION
             for window in self.interface.app.windows
+            if window != self.interface
         ):
             self.interface.app.exit_presentation_mode()
 
@@ -330,11 +335,20 @@ class Window(Container, Scalable):
                 self.native.WindowState = WinForms.FormWindowState.Minimized
 
             case WindowState.NORMAL, WindowState.FULLSCREEN:
+                # .NET Core doesn't always restore the window size coming back from
+                # FULLSCREEN mode. Save the window size to make sure it is restored.
+                self._cached_window_size = self.interface.size
+
                 self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
             case WindowState.NORMAL, WindowState.PRESENTATION:
+                # .NET Core doesn't always restore the window size coming back from
+                # PRESENTATION mode. Save the window size and screen to make sure it is
+                # restored.
                 self._before_presentation_mode_screen = self.interface.screen
+                self._cached_window_size = self.interface.size
+
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = False
                 if getattr(self, "toolbar_native", None):
@@ -360,23 +374,29 @@ class Window(Container, Scalable):
                     WinForms.FormBorderStyle,
                     "Sizable" if self.interface.resizable else "FixedSingle",
                 )
-                # Clear the cached window size.
-                self._cached_window_size = None
                 self.native.WindowState = WinForms.FormWindowState.Normal
-
                 self.set_window_state(state)
+
+                # If there was a cached window size, restore that size.
+                # Required for .NET Core restoration of FULLSCREEN/PRESENTATION.
+                if self._cached_window_size:
+                    self.set_size(self._cached_window_size)
+                    self._cached_window_size = None
 
     ######################################################################
     # Window capabilities
     ######################################################################
 
     def get_image_data(self):
-        size = WinSize(self.native_content.Size.Width, self.native_content.Size.Height)
+        size = WinSize(
+            self.container.native_content.Size.Width,
+            self.container.native_content.Size.Height,
+        )
         bitmap = Bitmap(size.Width, size.Height)
         graphics = Graphics.FromImage(bitmap)
 
         graphics.CopyFromScreen(
-            self.native_content.PointToScreen(Point.Empty),
+            self.container.native_content.PointToScreen(Point.Empty),
             Point(0, 0),
             size,
         )

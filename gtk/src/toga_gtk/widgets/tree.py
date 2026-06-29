@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..libs import GTK_VERSION, GdkPixbuf, Gtk
 from .base import Widget
 from .table import TogaRow
@@ -12,7 +14,9 @@ class Tree(Widget):
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self.native_tree = Gtk.TreeView(model=self.store)
-        self.native_tree.connect("row-activated", self.gtk_on_row_activated)
+        self.native_tree.connect(
+            "row-activated", WeakrefCallable(self.gtk_on_row_activated)
+        )
 
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.selection = self.native_tree.get_selection()
@@ -20,7 +24,7 @@ class Tree(Widget):
                 self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
             else:
                 self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-            self.selection.connect("changed", self.gtk_on_select)
+            self.selection.connect("changed", WeakrefCallable(self.gtk_on_select))
 
             self._create_columns()
         else:  # pragma: no-cover-if-gtk3
@@ -36,15 +40,13 @@ class Tree(Widget):
             pass
 
     def _create_columns(self):
-        if self.interface.headings:
-            headings = self.interface.headings
-            self.native_tree.set_headers_visible(True)
-        else:
-            headings = self.interface.accessors
-            self.native_tree.set_headers_visible(False)
+        self.native_tree.set_headers_visible(self.interface._show_headings)
+        toga_columns = self.interface._columns
 
-        for i, heading in enumerate(headings):
-            column = Gtk.TreeViewColumn(heading)
+        for i, toga_column in enumerate(toga_columns):
+            column = Gtk.TreeViewColumn(
+                toga_column.heading if toga_column.heading else str(id(toga_column))
+            )
             column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
             column.set_expand(True)
             column.set_resizable(True)
@@ -80,27 +82,41 @@ class Tree(Widget):
                 self.native_tree.remove_column(column)
             self._create_columns()
 
-            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._accessors)
+            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface.columns)
             self.store = Gtk.TreeStore(*types)
 
             for i, row in enumerate(self.interface.data):
-                self.insert(None, i, row)
+                self.source_insert(parent=None, index=i, item=row)
 
             self.native_tree.set_model(self.store)
             self.refresh()
         else:  # pragma: no-cover-if-gtk3
             pass
 
-    def insert(self, parent, index, item):
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
+    def insert(self, index, item, parent=None):
+        import warnings
+
+        warnings.warn(
+            "The insert() method is deprecated. Use source_insert() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_insert(index=index, item=item, parent=parent)
+
+    def source_insert(self, *, index, item, parent=None):
         row = TogaRow(item)
         values = [row]
-        for accessor in self.interface.accessors:
+        for column in self.interface._columns:
             values.extend(
                 [
-                    row.icon(accessor),
-                    row.text(accessor, self.interface.missing_value),
+                    row.icon(column),
+                    row.text(column, self.interface.missing_value),
                 ]
             )
+            row.warn_widget(column)
 
         if parent is None:
             iter = None
@@ -110,19 +126,59 @@ class Tree(Widget):
         item._impl = self.store.insert(iter, index, values)
 
         for i, child in enumerate(item):
-            self.insert(item, i, child)
+            self.source_insert(parent=item, index=i, item=child)
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def change(self, item):
-        row = self.store[item._impl]
-        for i, accessor in enumerate(self.interface.accessors):
-            row[i * 2 + 1] = row[0].icon(accessor)
-            row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
+        import warnings
 
-    def remove(self, item, index, parent):
+        warnings.warn(
+            "The change() method is deprecated. Use source_change() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_change(item=item)
+
+    def source_change(self, *, item):
+        row = self.store[item._impl]
+        for i, column in enumerate(self.interface._columns):
+            row[i * 2 + 1] = row[0].icon(column)
+            row[i * 2 + 2] = row[0].text(column, self.interface.missing_value)
+            row[0].warn_widget(column)
+
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
+    def remove(self, index, item, parent=None):
+        import warnings
+
+        warnings.warn(
+            "The remove() method is deprecated. Use source_remove() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_remove(index=index, item=item, parent=parent)
+
+    def source_remove(self, *, index, item, parent=None):
         del self.store[item._impl]
         item._impl = None
 
+    # Alias for backwards compatibility:
+    # March 2026: In 0.5.3 and earlier, notification methods
+    # didn't start with 'source_'
     def clear(self):
+        import warnings
+
+        warnings.warn(
+            "The clear() method is deprecated. Use source_clear() instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        self.source_clear()
+
+    def source_clear(self):
         self.store.clear()
 
     def get_selection(self):
@@ -149,11 +205,11 @@ class Tree(Widget):
     def collapse_all(self):
         self.native_tree.collapse_all()
 
-    def insert_column(self, index, heading, accessor):
+    def insert_column(self, index, columns):
         # Adding/removing a column means completely rebuilding the ListStore
         self.change_source(self.interface.data)
 
-    def remove_column(self, accessor):
+    def remove_column(self, index):
         self.change_source(self.interface.data)
 
     def rehint(self):

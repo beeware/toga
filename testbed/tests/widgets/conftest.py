@@ -143,6 +143,10 @@ def build_cleanup_test(
         # Break potential reference cycles
         del widget, local_args, local_kwargs
         gc.collect()
+
+        if ref():
+            print(gc.get_referrers(ref()))
+
         assert ref() is None
 
     return test_cleanup

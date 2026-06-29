@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import string
 import warnings
+from abc import ABC, abstractmethod
 
 from .constants import *  # noqa: F403
 
@@ -13,11 +14,13 @@ def _clamp(value, lower, upper):
     return min(upper, max(lower, value))
 
 
-class Color:
+class Color(ABC):
     """A base class for all colorspace representations.
 
     Not meant to be used directly.
     """
+
+    __slots__ = ["_a"]
 
     @staticmethod
     def parse(value: Color | str) -> Color:
@@ -86,24 +89,24 @@ class Color:
         return self._a
 
     @property
-    def rgb(self) -> rgb:  # pragma: no cover
+    @abstractmethod
+    def rgb(self) -> rgb:
         """This color in RGB format. If it's already RGB, returns the object itself.
 
         Also accessible via the alias `rgba`.
         """
-        raise NotImplementedError
 
     @property
     def rgba(self) -> rgb:
         return self.rgb
 
     @property
-    def hsl(self) -> hsl:  # pragma: no cover
+    @abstractmethod
+    def hsl(self) -> hsl:
         """This color in HSL format. If it's already HSL, returns the object itself.
 
         Also accessible via the alias `rgba`.
         """
-        raise NotImplementedError
 
     @property
     def hsla(self) -> hsl:
@@ -203,6 +206,8 @@ class Color:
 
 
 class rgb(Color):
+    __slots__ = ["_r", "_g", "_b", "_hsl"]
+
     def __init__(self, r: int, g: int, b: int, a: float = 1.0):
         """A color specified via red, green, and blue channels, plus transparency.
 
@@ -299,6 +304,8 @@ rgba = rgb
 
 
 class hsl(Color):
+    __slots__ = ["_h", "_s", "_l", "_rgb"]
+
     def __init__(self, h: int, s: float, l: float, a: float = 1.0):  # noqa: E741
         """A color specified via hue, saturation, and lightness, plus transparency.
 

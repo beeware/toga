@@ -45,6 +45,7 @@ def values():
         date(1960, 12, 31),
         date(2020, 2, 29),  # Leap day
         date(2100, 1, 1),
+        date(3742, 1, 1),
         date(8999, 12, 31),
     ]
 
@@ -55,12 +56,13 @@ def normalize():
     returned by the widget."""
 
     def normalize_date(value):
-        if isinstance(value, datetime):
-            return value.date()
-        elif isinstance(value, date):
-            return value
-        else:
-            raise TypeError(value)
+        match value:
+            case datetime():
+                return value.date()
+            case date():
+                return value
+            case _:
+                raise TypeError(value)
 
     return normalize_date
 
@@ -81,10 +83,7 @@ async def widget():
     return toga.DateInput()
 
 
-test_cleanup = build_cleanup_test(
-    toga.DateInput,
-    xfail_platforms=("android",),
-)
+test_cleanup = build_cleanup_test(toga.DateInput)
 
 
 async def test_init():

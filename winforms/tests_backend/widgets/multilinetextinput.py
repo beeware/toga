@@ -1,13 +1,18 @@
 import System.Windows.Forms
 from System.Drawing import SystemColors
 
+from toga_winforms.libs import user32
+
 from .properties import toga_x_text_align
 from .textinput import TextInputProbe
+
+WM_MOUSEWHEEL = 0x020A
 
 
 class MultilineTextInputProbe(TextInputProbe):
     native_class = System.Windows.Forms.RichTextBox
     fixed_height = None
+    supports_simulate_mouse_wheel = True
 
     @property
     def value(self):
@@ -59,3 +64,12 @@ class MultilineTextInputProbe(TextInputProbe):
     def text_align(self):
         self.native.SelectAll()
         return toga_x_text_align(self.native.SelectionAlignment)
+
+    def simulate_mouse_wheel(self, delta):
+        # delta: +120 = scroll up, -120 = scroll down
+        hwnd = self.native.Handle.ToInt64()  # WinForms Control Handle
+        # WPARAM: High word = delta
+        wparam = delta << 16
+        # LPARAM: mouse position (0 = ignore)
+        lparam = 0
+        user32.SendMessageW(int(hwnd), WM_MOUSEWHEEL, wparam, lparam)

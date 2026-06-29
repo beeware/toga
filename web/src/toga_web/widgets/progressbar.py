@@ -3,7 +3,7 @@ from .base import Widget
 
 class ProgressBar(Widget):
     def create(self):
-        self.native = self._create_native_widget("sl-progress-bar")
+        self.native = self._create_native_widget("wa-progress-bar")
         self._is_running = False
         self._value = 0
         self._max = 0

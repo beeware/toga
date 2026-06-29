@@ -1,18 +1,17 @@
 import importlib
 import warnings
+from importlib.metadata import version
 from pathlib import Path
-
-from travertino import _package_version
 
 
 def lazy_load():
     toga_core_imports = {}
     pyi = Path(__file__).with_suffix(".pyi")
-    with pyi.open() as f:
+    with pyi.open(encoding="utf-8") as f:
         for line in f:
-            segments = line.split()
-            if segments[0] == "from":
-                toga_core_imports[segments[3]] = segments[1]
+            match line.split():
+                case "from", module_name, "import", class_name, "as", _:
+                    toga_core_imports[class_name] = module_name
     return toga_core_imports
 
 
@@ -46,5 +45,4 @@ class NotImplementedWarning(RuntimeWarning):
         )
 
 
-# __name__ is "toga" in this file, but the distribution name is "toga-core".
-__version__ = _package_version(__file__, "toga-core")
+__version__ = version("toga-core")

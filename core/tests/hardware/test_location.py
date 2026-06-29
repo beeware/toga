@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga_dummy import factory
+from toga.platform import get_factory
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -15,11 +15,12 @@ from toga_dummy.utils import (
 def test_no_location(monkeypatch, app):
     """If there's no location service, and no factory implementation,
     accessing camera raises an exception."""
+    factory = get_factory()
     try:
         monkeypatch.delattr(app, "_location")
     except AttributeError:
         pass
-    monkeypatch.delattr(factory, "Location")
+    monkeypatch.delitem(factory._entrypoints, "Location")
 
     # Accessing the location object should raise NotImplementedError
     with pytest.raises(NotImplementedError):

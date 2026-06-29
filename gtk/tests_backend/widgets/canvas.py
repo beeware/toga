@@ -9,14 +9,21 @@ from .base import SimpleProbe
 
 class CanvasProbe(SimpleProbe):
     native_class = Gtk.DrawingArea
+    screenshot_reset_transform = False
 
     def reference_variant(self, reference):
-        if reference == "multiline_text":
+        if reference in {"multiline_text", "reset_transform"}:
             if IS_WAYLAND:
                 return f"{reference}-gtk-wayland"
             else:
                 return f"{reference}-gtk-x11"
-        elif reference == "write_text":
+        elif reference in {
+            "write_text",
+            "write_text_and_path",
+            "deprecated_tutorial",
+            "attributes",
+            "reset_transform",
+        }:
             return f"{reference}-gtk"
         else:
             return reference
