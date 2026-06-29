@@ -1283,7 +1283,6 @@ def test_set_scaffold_with_children(app, window, widget):
 
 def test_reset_scaffold(widget):
     """A widget can be assigned to a different scaffold."""
-    child1 = ExampleLeafWidget(id="child1_id")
     scaffold = toga.Scaffold()
     assert widget.scaffold is None
 
