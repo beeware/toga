@@ -1246,7 +1246,7 @@ def test_set_scaffold(app, widget):
     assert child.window == scaffold.window
 
 
-def test_set_scaffold_with_children(app, window, widget):
+def test_set_scaffold_with_children(app, widget):
     """A widget can be assigned to a scaffold with children."""
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
