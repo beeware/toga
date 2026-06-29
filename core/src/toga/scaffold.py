@@ -67,10 +67,11 @@ class Scaffold(BaseScaffold):
         self._content = value
         if value is not None:
             self._content.scaffold = self
-        self._impl.set_content(value._impl if value is not None else None)
-        if value is not None:
+            self._impl.set_content(self._content._impl)
             self._content.window = self.window
             self._content.app = self.app
+        else:
+            self._impl.set_content(None)
         self.refresh()
 
     @BaseScaffold.window.setter
