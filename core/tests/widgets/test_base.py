@@ -1209,6 +1209,10 @@ def test_set_scaffold(widget):
 
     # Scaffold has been assigned
     assert widget.scaffold == scaffold
+    
+    # Widget's app and window is consistent with the scaffold
+    assert widget.app == scaffold.app
+    assert widget.window == scaffold.window
 
 
 def test_set_scaffold_with_children(app, widget):
