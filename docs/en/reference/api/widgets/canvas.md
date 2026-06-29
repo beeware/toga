@@ -26,7 +26,7 @@ Result:
 
 ![Usage example](./canvas-images/usage.png)
 
-## Additional features
+## Additional features { #canvas-additional-features }
 
 Toga adds some additional Pythonic conveniences to the base HTML5 API. First, a number of drawing methods that have a natural open/close life cycle ([`close_path()`][toga.Canvas.close_path], [`stroke()`][toga.Canvas.stroke], and [`fill()`][toga.Canvas.fill]) can additionally function as [context managers](https://docs.python.org/3/reference/datamodel.html#context-managers). Second, `fill` and `stroke` accept optional arguments to specify their parameters directly. Using both of these features, the previous example could be rewritten to:
 
@@ -63,7 +63,7 @@ with canvas.state():
 
 ## Further reading
 
-This page documents all of Canvas's drawing methods; for more detailed and illustrative tutorials, see the MDN documentation for the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other than the change in naming conventions for methods - the HTML5 API uses `lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are very similar.
+This page documents all of `Canvas`'s drawing methods; for more detailed and illustrative tutorials, see the MDN documentation for the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other than the change in naming conventions for methods - the HTML5 API uses `lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are very similar.
 
 ## Notes
 
@@ -71,9 +71,9 @@ This page documents all of Canvas's drawing methods; for more detailed and illus
 
 - The Canvas API allows the use of handlers to respond to mouse/pointer events. These event handlers differentiate between "primary" and "alternate" modes of activation. When a mouse is in use, alternate activation will usually be interpreted as a "right click"; however, platforms may not implement an alternate activation mode. To ensure cross-platform compatibility, applications should not use the alternate press handlers as the sole mechanism for accessing critical functionality.
 
-## Advanced usage
+## Under the hood
 
-It's also possible to reach beyond the HTML Canvas-based API documented here, and interact directly with the underlying structure that Canvas uses to store the series of drawing operations it's performed. This allows you to modify the rendered result non-linearly, going "back in time" to change previous instructions. For more information, see the documentation for [DrawingAction](/reference/api/data-representation/drawingaction.md).
+What's documented on this page is `Canvas`'s primary user-facing API, which should provide an analogous experience to programming an HTML canvas. If you'd like, it's also possible to reach past this layer and interact directly with the underlying structures that `Canvas` uses to store the series of drawing operations it's performed. For more information, see the documentation for [DrawingAction](/reference/api/data-representation/drawingaction.md).
 
 ## Reference
 
