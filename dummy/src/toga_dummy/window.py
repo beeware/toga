@@ -61,7 +61,7 @@ class Window(LoggedObject):
 
     def set_scaffold(self, scaffold):
         self.scaffold = self.interface.scaffold._impl
-        self.native_content = scaffold.native_content
+        self.window_root = scaffold.window_root
         self.manage_scaffold_toolbar()
         self._action("set scaffold", scaffold=scaffold)
         self._set_value("scaffold", scaffold)
