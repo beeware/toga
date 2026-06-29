@@ -16,6 +16,8 @@ class Window(LoggedObject):
         self._action(f"create {self.__class__.__name__}")
         self.interface = interface
         self.dialog_responses = {}
+        # Currently, there is not a scaffold.
+        self.scaffold = None
 
         self.set_title(title)
         self.set_position(position if position is not None else _initial_position())
@@ -26,10 +28,6 @@ class Window(LoggedObject):
         self._size = size if size else Size(640, 480)
         self._state = WindowState.NORMAL
         self._visible = False
-
-    @property
-    def scaffold(self):
-        return self.interface.scaffold._impl
 
     ######################################################################
     # Window properties
@@ -62,6 +60,7 @@ class Window(LoggedObject):
     ######################################################################
 
     def set_scaffold(self, scaffold):
+        self.scaffold = self.interface.scaffold._impl
         self.native_content = scaffold.native_content
         self.manage_scaffold_toolbar()
         self._action("set scaffold", scaffold=scaffold)
