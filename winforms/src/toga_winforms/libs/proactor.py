@@ -139,7 +139,7 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
         err, transferred, key, address = status
         try:
             f, ov, obj, callback = self._cache.pop(address)
-        except KeyError:
+        except KeyError: # pragma: no cover
             if self._loop.get_debug():
                 self._loop.call_exception_handler({
                     'message': ('GetQueuedCompletionStatus() returned an '
@@ -154,14 +154,14 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
                 _winapi.CloseHandle(key)
             return
 
-        if obj in self._stopped_serving:
+        if obj in self._stopped_serving: # pragma: no cover
             f.cancel()
         # Don't call the callback if _register() already read the result or
         # if the overlapped has been cancelled
         elif not f.done():
             try:
                 value = callback(transferred, key, ov)
-            except OSError as e:
+            except OSError as e: # pragma: no cover
                 f.set_exception(e)
                 # self._results.append(f)
             else:
