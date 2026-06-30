@@ -42,7 +42,9 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
         self._listener_lock = threading.Lock()
 
     def select(self, timeout=None):
-        """A blank select method so that _run_once doesn't poll the IOCP."""
+        """A minimal select method so that _run_once doesn't poll the IOCP."""
+        # Clear the results of the processed IOCP messages.
+        self._results = []
         return []
 
     # This method is part of the app shutdown procedure, which can't have test coverage.
@@ -119,11 +121,8 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
         self._iocp_thread.start()
 
     def _iocp_action(self, status):
-        # The following codeblock is essentially the same as part of the method
-        # asyncio.IocpProactor._poll(timeout). Here the futures are no longer appended
-        # to the self._results list, since this served no purpose in the proactor event
-        # loop. This codeblock is part of the method that processes the received IOCP
-        # messages.
+        # The following codeblock is the part of asyncio.IocpProactor._poll(timeout)
+        # that processes the received IOCP messages.
         #
         # Use no cover for the KeyError and OSError codeblocks since these should not be
         # accessed under normal operations.
@@ -162,10 +161,10 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
                 value = callback(transferred, key, ov)
             except OSError as e: # pragma: no cover
                 f.set_exception(e)
-                # self._results.append(f)
+                self._results.append(f)
             else:
                 f.set_result(value)
-                # self._results.append(f)
+                self._results.append(f)
             finally:
                 f = None
         # ==================================== END ====================================
