@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 
+import pytest
 from pytest import approx
 
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, Color
@@ -275,6 +276,9 @@ async def test_placeholder_color(widget, probe):
 
 async def test_text_width_change(widget, probe):
     "If the widget text is changed, the width of the widget changes"
+    if not getattr(probe, "supports_text_width_change", True):
+        pytest.skip("This backend doesn't support text width changes.")
+
     orig_width = probe.width
 
     # Change the text to something long

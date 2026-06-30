@@ -71,13 +71,14 @@ def skip_if_unbundled_app(reason=None, allow_module_level=False):
         )
 
 
-def is_textual_internal_task(task):
+def is_textual_framework_task(task):
+    """Does the task belong to Textual's own running app machinery?"""
     try:
-        code = task.get_coro().cr_code
+        module = task.get_coro().cr_frame.f_globals["__name__"]
     except AttributeError:
         return False
 
-    return "/textual/" in code.co_filename
+    return module.startswith("textual.")
 
 
 @fixture(autouse=True)
@@ -87,10 +88,12 @@ def no_dangling_tasks():
     if toga.App.app:
         tasks = toga.App.app._running_tasks
         if toga.backend == "toga_textual":
+            # Textual runs framework tasks for the lifetime of the app. Ignore those,
+            # while still failing on unfinished tasks created by Toga test code.
             tasks = {
                 task
                 for task in tasks
-                if not task.done() and not is_textual_internal_task(task)
+                if not task.done() and not is_textual_framework_task(task)
             }
         assert not tasks, f"the app has dangling tasks: {tasks}"
 

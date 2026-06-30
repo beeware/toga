@@ -37,7 +37,7 @@ class Widget(Scalable, ABC):
         self.container = None
         self.create()
 
-    def install(self, parent):
+    def install(self, parent, index=None):
         """Add widget and its children to the native DOM for the app.
 
         Textual does not allow widgets to be added to the DOM until their parent is
@@ -45,7 +45,10 @@ class Widget(Scalable, ABC):
         mounting is deferred until their parent is mounted.
         """
         self.container = parent
-        parent.native.mount(self.native)
+        if index is None:
+            parent.native.mount(self.native)
+        else:
+            parent.native.mount(self.native, before=index)
 
         for child in self.interface.children:
             child._impl.install(parent=self)
@@ -174,9 +177,12 @@ class Widget(Scalable, ABC):
             child.container = self
 
     def insert_child(self, index, child):
-        # Textual doesn't have positional mount on all versions. Keep the containment
-        # state correct; layout order will be updated when Textual supports insertion.
-        self.add_child(child)
+        # A child can only be added to a widget that is already mounted on the app.
+        # So, mounting the child is deferred if the parent is not mounted yet.
+        if self.native.is_attached:
+            child.install(parent=self, index=index)
+        else:
+            child.container = self
 
     def remove_child(self, child):
         child.container = None

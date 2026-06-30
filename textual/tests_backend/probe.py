@@ -12,8 +12,8 @@ class BaseProbe:
 
         await asyncio.sleep(0)
 
+        print("Waiting for redraw" if message is None else message)
         if delay or wait_for:
-            print("Waiting for redraw" if message is None else message)
             if toga.App.app.run_slow or wait_for is None:
                 await asyncio.sleep(delay)
             else:

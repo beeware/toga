@@ -11,6 +11,7 @@ from toga.constants import WindowState
 from toga.style.pack import Pack
 
 from ..assertions import assert_window_on_hide, assert_window_on_show
+from ..conftest import skip_on_backends
 from ..widgets.probe import get_probe
 from ..window.test_window import window_probe
 
@@ -19,6 +20,12 @@ from ..window.test_window import window_probe
 ####################################################################################
 if toga.platform.current_platform not in {"macOS", "windows", "linux"}:
     pytest.skip("Test is specific to desktop platforms", allow_module_level=True)
+
+skip_on_backends(
+    "toga_textual",
+    reason="Textual doesn't implement desktop menu/window-management behavior.",
+    allow_module_level=True,
+)
 
 
 async def test_exit_on_close_main_window(

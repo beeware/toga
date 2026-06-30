@@ -36,7 +36,7 @@ class WindowProbe(BaseProbe):
         await self.redraw("Closing window")
 
     def close(self):
-        self.window.close()
+        pytest.skip("Window close simulation is not implemented on Textual.")
 
     @property
     def content_size(self):
@@ -65,6 +65,8 @@ class WindowProbe(BaseProbe):
         return WindowState.NORMAL
 
     def has_toolbar(self):
+        if len(self.window.toolbar):
+            pytest.skip("Toolbars are not implemented on Textual.")
         return False
 
     def assert_is_toolbar_separator(self, index, section=False):

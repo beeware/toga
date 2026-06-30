@@ -37,7 +37,6 @@ class Switch(Widget):
     def set_enabled(self, value):
         super().set_enabled(value)
         self.native_switch.disabled = not value
-        self.native_label.disabled = not value
 
     def focus(self):
         self.native_switch.app.set_focus(self.native_switch)
