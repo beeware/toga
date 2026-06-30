@@ -102,8 +102,7 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                         print("Incomplete test coverage is expected on GTK4 (for now!)")
                     elif toga.backend == "toga_textual":
                         print(
-                            "Incomplete test coverage is expected on Textual "
-                            "(for now!)"
+                            "Incomplete test coverage is expected on Textual (for now!)"
                         )
                     else:
                         print("Test coverage is incomplete")
