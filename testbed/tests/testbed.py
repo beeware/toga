@@ -100,11 +100,18 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                 if total < 100.0:
                     if os.getenv("TOGA_GTK", None) == "4":
                         print("Incomplete test coverage is expected on GTK4 (for now!)")
+                    elif toga.backend == "toga_textual":
+                        print(
+                            "Incomplete test coverage is expected on Textual "
+                            "(for now!)"
+                        )
                     else:
                         print("Test coverage is incomplete")
                         app.returncode = 1
-                elif os.getenv("TOGA_GTK", None) == "4":
-                    print("Test coverage for GTK4 is unexpectedly complete!")
+                elif os.getenv("TOGA_GTK", None) == "4" or (
+                    toga.backend == "toga_textual"
+                ):
+                    print("Test coverage for this backend is unexpectedly complete!")
                     print("Can we remove the special case in the testbed?")
                     app.returncode = 1
 

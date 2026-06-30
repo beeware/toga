@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import pytest
@@ -21,19 +22,44 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed"
+        if sys.platform == "darwin":
+            return Path.home() / f"Library/Preferences/{self.app.app_id}"
+        elif sys.platform == "win32":
+            return self._windows_app_dir / "Config"
+        else:
+            return Path.home() / f".config/{self.app.app_name}"
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed"
+        if sys.platform == "darwin":
+            return Path.home() / f"Library/Application Support/{self.app.app_id}"
+        elif sys.platform == "win32":
+            return self._windows_app_dir / "Data"
+        else:
+            return Path.home() / f".local/share/{self.app.app_name}"
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed"
+        if sys.platform == "darwin":
+            return Path.home() / f"Library/Caches/{self.app.app_id}"
+        elif sys.platform == "win32":
+            return self._windows_app_dir / "Cache"
+        else:
+            return Path.home() / f".cache/{self.app.app_name}"
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed/log"
+        if sys.platform == "darwin":
+            return Path.home() / f"Library/Logs/{self.app.app_id}"
+        elif sys.platform == "win32":
+            return self._windows_app_dir / "Logs"
+        else:
+            return Path.home() / f".local/state/{self.app.app_name}/log"
+
+    @property
+    def _windows_app_dir(self):
+        author = "Unknown" if self.app.author is None else self.app.author
+        return Path.home() / f"AppData/Local/{author}/{self.app.formal_name}"
 
     @property
     def is_cursor_visible(self):
