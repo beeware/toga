@@ -20,15 +20,14 @@ class ReadyDeque(deque):
     """A deque that enqueues a WinForms event tick when a value is appended."""
 
     def __init__(self, loop):
-        super().__init__(loop._ready)
         self._loop = loop
-        self._enqueue_tick = loop.enqueue_tick
+        super().__init__(loop._ready)
 
     def append(self, value):
         super().append(value)
 
-        if getattr(getattr(self, "_loop", None), "_idle", False):
-            self._enqueue_tick(delay=0)
+        if self._loop._idle:
+            self._loop.enqueue_tick(delay=0)
 
 
 class TwoThreadIocpProactor(asyncio.IocpProactor):
