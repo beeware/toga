@@ -33,7 +33,14 @@ def _find_item(
     if accessors is None and not isinstance(data, Mapping):
         raise ValueError(f"find() requires accessors for non-mapping {value_type} data")
 
-    for item in candidates[start_index:]:
+    if start_index:
+        search_candidates: Iterable[T] = (
+            candidates[index] for index in range(start_index, len(candidates))
+        )
+    else:
+        search_candidates = candidates
+
+    for item in search_candidates:
         try:
             match data:
                 case Mapping():

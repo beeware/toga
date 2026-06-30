@@ -188,6 +188,7 @@ class Widget(Node, PackMixin, ABC):
         :raises ValueError: If this widget cannot have children.
         """
         self._assert_can_have_children()
+        added = False
         for child in children:
             if child.parent is not self:
                 # remove from old parent
@@ -205,9 +206,11 @@ class Widget(Node, PackMixin, ABC):
                 super().add(child)
 
                 self._impl.add_child(child._impl)
+                added = True
 
         # Whatever layout we're a part of needs to be refreshed
-        self.refresh()
+        if added:
+            self.refresh()
 
     def insert(self, index: int, child: Widget) -> None:
         """Insert a widget as a child of this widget.
@@ -239,8 +242,8 @@ class Widget(Node, PackMixin, ABC):
 
             self._impl.insert_child(index, child._impl)
 
-        # Whatever layout we're a part of needs to be refreshed
-        self.refresh()
+            # Whatever layout we're a part of needs to be refreshed
+            self.refresh()
 
     def index(self, child: Widget) -> int:
         """Get the index of a widget in the list of children of this widget.
