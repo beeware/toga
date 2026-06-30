@@ -336,18 +336,21 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
             # Enqueue the next tick. Determine the delay of the tick by checking if
             # there are events in the ready list, otherwise then calculating a delay
-            # for scheduled events. If neither of these then the loop becomes idle
-            # until it is woken by the ReadyDeque instance.
+            # for scheduled events. As a safety catch, tick at least every 1 second;
+            # this shouldn't be required, but it guarantees that the event loop can't
+            # completely stall.
             if len(self._ready) > 0:
                 # Run ready events immediately.
                 self.enqueue_tick(delay=0)
             else:
+                delay = 1000
                 if self._scheduled:
                     # Calculate a delay for scheduled events and enqueue a tick.
                     first = self._scheduled[0]
                     ms_until = int(max(0, (first.when() - self.time()) * 1000))
-                    delay = min(1000, ms_until)
-                    self.enqueue_tick(delay=delay)
+                    delay = min(delay, ms_until)
+
+                self.enqueue_tick(delay=delay)
 
         # Exceptions thrown by this method will be silently ignored.
         except BaseException:  # pragma: no cover
