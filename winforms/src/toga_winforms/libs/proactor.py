@@ -131,6 +131,9 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
         # by the self._stop_serving method, which is only called in the loop.close
         # method. The loop.close method is part of the shutdown procedure, so no cover.
         #
+        # Use no branch for f.done() since it is not consistently hit during normal
+        # operations.
+        #
         # fmt: off
         # ruff: disable[UP031]
         # =================================== BEGIN ===================================
@@ -156,7 +159,7 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
             f.cancel()
         # Don't call the callback if _register() already read the result or
         # if the overlapped has been cancelled
-        elif not f.done():
+        elif not f.done(): # pragma: no branch
             try:
                 value = callback(transferred, key, ov)
             except OSError as e: # pragma: no cover
@@ -246,7 +249,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         )
 
         # Queue the first asyncio tick.
-        self.enqueue_tick()
         self.enqueue_tick(tick=self._safety_catch_tick)
 
         # Change the ready deque to an instance of ReadyDeque.
