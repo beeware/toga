@@ -293,3 +293,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         item = {child.get_label(): child for child in menu.get_children()}[title]
 
         item.emit("activate")
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

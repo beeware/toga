@@ -1074,7 +1074,11 @@ async def test_peripheral_events(widget, probe, on_activate_handler):
     ########################################################
 
     widget.collapse()
-    await probe.redraw("Tree is collapsed and awaiting hover of state-change arrow")
+    # A delay to ensure that the widget has been drawn before calculating coordinates.
+    await probe.redraw(
+        "Tree is collapsed and awaiting hover of state-change arrow",
+        delay=0.2,
+    )
     assert not probe.is_expanded(widget.data[0])
     await probe.assert_item_mouse_hover((0,))
 
