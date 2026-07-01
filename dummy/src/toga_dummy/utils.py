@@ -5,6 +5,8 @@ from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle
 
+from toga import Window
+
 
 class EventLog:
     # Event types that can be logged
@@ -393,3 +395,21 @@ def assert_action_performed_with(_widget, _action, **test_data):
     except AttributeError as e:
         # None of the recorded actions match the test data.
         pytest.fail(str(e))
+
+
+def simulate_event_loop_refresh(window):
+    """Dummy doesn't have an event loop, so we have to manually trigger a refresh."""
+    if window._pending_layout:
+        window._refresh_layouts()
+
+
+def put_in_window(widget, clear_log=True) -> Window:
+    window = Window()
+    window.content = widget
+    # Pump the "event loop" and (by default) clear the log, so we can test whatever we
+    # do next.
+    simulate_event_loop_refresh(window)
+    if clear_log:
+        EventLog.reset()
+
+    return window

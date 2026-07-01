@@ -376,15 +376,24 @@ class Widget(Node, PackMixin, ABC):
     _level = 0
 
     def refresh(self) -> None:
+        print("Refresh called")
         name = type(self).__name__
         # print(TAB * self._level + f"Refresh requested on {name}")
 
         if not self.window:
+            print("\tNo window")
             # No need to do anything if the widget hasn't been added to a window.
             return
 
-        # Is this needed here? Things seem to work fine without it.
+        # print("\tRefreshing impl")
         # self._impl.refresh()
+
+        if self.window._currently_laying_out:
+            print("\tRefreshing impl")
+            self._impl.refresh()
+        else:
+            print("\tDeferring impl refresh")
+            self.window._widget_impls_to_refresh.add(self)
 
         # Refresh the layout
         if self._root:
@@ -396,15 +405,23 @@ class Widget(Node, PackMixin, ABC):
             # Uncomment to always compute layout:
 
             # self._refresh_layout()
+            # self._impl.refresh()
             # return
 
-            print(TAB * self._level + f"Adding {name} to dirty set")
-            self.window._dirty_root_widgets.add(self)
+            print(TAB * self._level + f"{name} needs a layout")
+            if self.window._currently_laying_out:
+                print("\tLayout out right now")
+                self._refresh_layout()
+                print("\tRefreshing impl")
+                self._impl.refresh()
 
-            if self.window._pending_layout is None:
+            elif self.window._pending_layout is None:
+                print("\tMarking window as dirty")
                 self.window._pending_layout = self.app.loop.call_soon(
                     self.window._refresh_layouts
                 )
+            else:
+                print("\tWindow already dirty")
 
     def _refresh_layout(self):
         # print(self._level)
