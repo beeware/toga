@@ -201,14 +201,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         :param app_context: The WinForms.ApplicationContext instance
             controlling the lifecycle of the app.
         """
-        # Python 3.8 added an implementation of run_forever() in
-        # ProactorEventLoop. The only part that actually matters is the
-        # refactoring that moved the initial call to stage _loop_self_reading;
-        # it now needs to be created as part of run_forever; otherwise the
-        # event loop locks up, because there won't be anything for the
-        # select call to process.
-        self.call_soon(self._loop_self_reading)
-
         # Remember the application.
         self.app = app
 
@@ -349,8 +341,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                     # Calculate a delay for scheduled events and enqueue a tick.
                     first = self._scheduled[0]
                     ms_until = int(max(0, (first.when() - self.time()) * 1000))
-                    delay = min(1000, ms_until)
-                    self.enqueue_tick(delay=delay)
+                    self.enqueue_tick(delay=ms_until)
 
         # Exceptions thrown by this method will be silently ignored.
         except BaseException:  # pragma: no cover
