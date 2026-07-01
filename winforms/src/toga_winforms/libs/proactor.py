@@ -255,6 +255,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
         # Queue the first asyncio tick.
         self.enqueue_tick()
+        self.enqueue_tick(tick=self._safety_catch_tick)
 
         # Change the ready deque to an instance of ReadyDeque.
         self._ready = ReadyDeque(self)
@@ -266,9 +267,11 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self._inner_loop = None
         WinForms.Application.Run(self.app.app_context)
 
-    def enqueue_tick(self, delay=5):
+    def enqueue_tick(self, delay=5, tick=None):
+        if not tick:
+            tick = self.tick
         # Queue a call to tick in a specified delay.
-        self.task = Action[Task](self.tick)
+        self.task = Action[Task](tick)
         Task.Delay(delay).ContinueWith(self.task)
 
     # This function doesn't report as covered because it runs on a
@@ -336,23 +339,40 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
             # Enqueue the next tick. Determine the delay of the tick by checking if
             # there are events in the ready list, otherwise then calculating a delay
-            # for scheduled events. As a safety catch, tick at least every 1 second;
-            # this shouldn't be required, but it guarantees that the event loop can't
-            # completely stall.
+            # for scheduled events. If neither of these then the loop becomes idle
+            # until it is woken by the ReadyDeque instance or the safety catch.
             if len(self._ready) > 0:
                 # Run ready events immediately.
                 self.enqueue_tick(delay=0)
             else:
-                if not self._scheduled:
-                    # Schedule the loop to wake after 1 second.
-                    self.call_later(1, self._loop_self_reading)
-
-                # Calculate a delay for scheduled events and enqueue a tick.
-                first = self._scheduled[0]
-                ms_until = int(max(0, (first.when() - self.time()) * 1000))
-                delay = min(1000, ms_until)
-                self.enqueue_tick(delay=delay)
+                if self._scheduled:
+                    # Calculate a delay for scheduled events and enqueue a tick.
+                    first = self._scheduled[0]
+                    ms_until = int(max(0, (first.when() - self.time()) * 1000))
+                    delay = min(1000, ms_until)
+                    self.enqueue_tick(delay=delay)
 
         # Exceptions thrown by this method will be silently ignored.
         except BaseException:  # pragma: no cover
             traceback.print_exc()
+
+    ####################################################################################
+    # Safety catch - A tick at least every 1 second. This shouldn't be required, but it
+    # guarantees that the event loop can't completely stall.
+    ####################################################################################
+
+    # This function doesn't report as covered because it runs on a
+    # non-Python-created thread (see App.run_app). But it must actually be
+    # covered, otherwise nothing would work.
+    def _safety_catch_tick(self, *args, **kwargs):  # pragma: no cover
+        """Cause a single iteration of the safety catch to run on the main thread."""
+        action = Action(self._append_safety_catch_tick_task)
+        self.app.app_dispatcher.Invoke(action)
+
+    def _append_safety_catch_tick_task(self):
+        """Append the _safety_catch call to the synchronous queue."""
+        return self._synchronous_queue.append(self._safety_catch)
+
+    def _safety_catch(self):
+        self.enqueue_tick(delay=1000, tick=self._safety_catch_tick)
+        self.call_soon(self._loop_self_reading)
