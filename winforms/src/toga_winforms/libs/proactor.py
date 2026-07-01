@@ -366,4 +366,4 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
     def _safety_catch(self):
         self.enqueue_tick(delay=1000, tick=self._safety_catch_tick)
-        self.call_soon(self._loop_self_reading)
+        self.run_once_recurring()
