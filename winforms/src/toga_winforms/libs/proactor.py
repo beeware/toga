@@ -343,13 +343,14 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                 # Run ready events immediately.
                 self.enqueue_tick(delay=0)
             else:
-                delay = 1000
-                if self._scheduled:
-                    # Calculate a delay for scheduled events and enqueue a tick.
-                    first = self._scheduled[0]
-                    ms_until = int(max(0, (first.when() - self.time()) * 1000))
-                    delay = min(delay, ms_until)
+                if not self._scheduled:
+                    # Schedule the loop to wake after 1 second.
+                    self.call_later(1, self._loop_self_reading)
 
+                # Calculate a delay for scheduled events and enqueue a tick.
+                first = self._scheduled[0]
+                ms_until = int(max(0, (first.when() - self.time()) * 1000))
+                delay = min(1000, ms_until)
                 self.enqueue_tick(delay=delay)
 
         # Exceptions thrown by this method will be silently ignored.
