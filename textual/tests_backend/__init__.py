@@ -14,7 +14,6 @@ UNIMPLEMENTED_TEST_MODULES = {
     "tests/widgets/test_activityindicator.py",
     "tests/widgets/test_dateinput.py",
     "tests/widgets/test_detailedlist.py",
-    "tests/widgets/test_divider.py",
     "tests/widgets/test_imageview.py",
     "tests/widgets/test_mapview.py",
     "tests/widgets/test_multilinetextinput.py",
