@@ -33,7 +33,8 @@ from .widgets.label import Label
 # from .widgets.selection import Selection
 # from .widgets.slider import Slider
 # from .widgets.splitcontainer import SplitContainer
-# from .widgets.switch import Switch
+from .widgets.switch import Switch
+
 # from .widgets.table import Table
 from .widgets.textinput import TextInput
 
@@ -85,7 +86,7 @@ __all__ = [
     # "Selection",
     # "Slider",
     # "SplitContainer",
-    # "Switch",
+    "Switch",
     # "Table",
     "TextInput",
     # "TimeInput",
