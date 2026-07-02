@@ -105,6 +105,24 @@ def test_dict(StyleClass):
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
+def test_dict_access_rejects_non_property_attributes(StyleClass):
+    """Dict-style access only exposes registered style properties."""
+    style = StyleClass()
+    style.not_a_property = VALUE1
+
+    with pytest.raises(KeyError):
+        style["not_a_property"]
+
+    with pytest.raises(KeyError):
+        style["not_a_property"] = VALUE2
+
+    with pytest.raises(KeyError):
+        del style["not_a_property"]
+
+    assert style.not_a_property == VALUE1
+
+
+@pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 @pytest.mark.parametrize("instantiate", [True, False])
 def test_union_operators(StyleClass, instantiate):
     """Styles support | and |= with dicts and with their own class."""

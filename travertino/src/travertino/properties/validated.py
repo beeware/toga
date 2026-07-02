@@ -32,14 +32,14 @@ class validated_property:
 
     def __set_name__(self, style_class, name):
         self.name = name
-        style_class._BASE_PROPERTIES[style_class].add(name)
-        style_class._BASE_ALL_PROPERTIES[style_class].add(name)
+        self.storage_name = f"_{name}"
+        style_class._register_property(name, self, real=True)
 
     def __get__(self, style, style_class=None):
         if style is None:
             return self
 
-        return getattr(style, f"_{self.name}", self.initial)
+        return getattr(style, self.storage_name, self.initial)
 
     def __set__(self, style, value):
         if value is self:
@@ -54,9 +54,9 @@ class validated_property:
             )
 
         value = self.validate(value)
-        current = style[self.name]  # Fetches initial if not set
+        current = self.__get__(style, type(style))  # Fetches initial if not set
 
-        setattr(style, f"_{self.name}", value)
+        setattr(style, self.storage_name, value)
         if value != current:
             ######################################################################
             # 08-2025: Backwards compatibility for Toga < 0.5.0
@@ -75,8 +75,8 @@ class validated_property:
 
     def __delete__(self, style):
         try:
-            current = getattr(style, f"_{self.name}")
-            delattr(style, f"_{self.name}")
+            current = getattr(style, self.storage_name)
+            delattr(style, self.storage_name)
         except AttributeError:
             pass
         else:
@@ -110,7 +110,7 @@ class validated_property:
             ) from error
 
     def is_set_on(self, style):
-        return hasattr(style, f"_{self.name}")
+        return hasattr(style, self.storage_name)
 
 
 class list_property(validated_property):

@@ -51,7 +51,8 @@ class _alignment_property(validated_property):
         # Hard-coded because it's only called on alignment, not align_items.
 
         self.name = "alignment"
-        owner._BASE_ALL_PROPERTIES[owner].add("alignment")
+        self.storage_name = "_alignment"
+        owner._register_property("alignment", self)
         self.other = "align_items"
         self.derive = {
             _AlignmentCondition(CENTER): CENTER,
@@ -68,12 +69,14 @@ class _alignment_property(validated_property):
         # reference the other.
         owner.align_items = _alignment_property(START, CENTER, END)
         owner.align_items.name = "align_items"
+        owner.align_items.storage_name = "_align_items"
         owner.align_items.other = "alignment"
         owner.align_items.derive = {
             # Invert each condition so that it maps in the opposite direction.
             _AlignmentCondition(result, **condition.properties): condition.main_value
             for condition, result in self.derive.items()
         }
+        owner._register_property("align_items", owner.align_items, real=True)
 
     def __get__(self, obj, objtype=None):
         if obj is None:

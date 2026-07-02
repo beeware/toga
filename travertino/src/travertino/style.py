@@ -35,11 +35,21 @@ class BaseStyle(ABC):  # noqa: B024
     _BASE_PROPERTIES = defaultdict(set)
     # Includes aliases and shorthands
     _BASE_ALL_PROPERTIES = defaultdict(set)
+    _BASE_PROPERTY_DESCRIPTORS = defaultdict(dict)
 
     def __init_subclass__(cls):
         # Give the subclass a direct reference to its properties.
         cls._PROPERTIES = cls._BASE_PROPERTIES[cls]
         cls._ALL_PROPERTIES = cls._BASE_ALL_PROPERTIES[cls]
+        cls._PROPERTY_DESCRIPTORS = cls._BASE_PROPERTY_DESCRIPTORS[cls]
+
+    @classmethod
+    def _register_property(cls, name, descriptor, *, real=False):
+        """Register a style property descriptor on this style class."""
+        if real:
+            cls._BASE_PROPERTIES[cls].add(name)
+        cls._BASE_ALL_PROPERTIES[cls].add(name)
+        cls._BASE_PROPERTY_DESCRIPTORS[cls][name] = descriptor
 
     ###################################################
     # 03-2025: Backwards compatibility for Toga < 0.5.0
@@ -255,10 +265,11 @@ class BaseStyle(ABC):  # noqa: B024
         with self.batch_apply():
             for name, value in properties.items():
                 name = name.replace("-", "_")
-                if name not in self._ALL_PROPERTIES:
-                    raise NameError(f"Unknown property '{name}'")
+                try:
+                    prop = self._PROPERTY_DESCRIPTORS[name]
+                except KeyError:
+                    raise NameError(f"Unknown property '{name}'") from None
 
-                prop = getattr(type(self), name)
                 if isinstance(getattr(prop, "source", None), dict):
                     deferred_aliases[name] = value
                 else:
@@ -269,21 +280,27 @@ class BaseStyle(ABC):  # noqa: B024
 
     def __getitem__(self, name):
         name = name.replace("-", "_")
-        if name not in self._ALL_PROPERTIES:
-            raise KeyError(name)
-        return getattr(self, name)
+        try:
+            prop = self._PROPERTY_DESCRIPTORS[name]
+        except KeyError:
+            raise KeyError(name) from None
+        return prop.__get__(self, type(self))
 
     def __setitem__(self, name, value):
         name = name.replace("-", "_")
-        if name not in self._ALL_PROPERTIES:
-            raise KeyError(name)
-        setattr(self, name, value)
+        try:
+            prop = self._PROPERTY_DESCRIPTORS[name]
+        except KeyError:
+            raise KeyError(name) from None
+        prop.__set__(self, value)
 
     def __delitem__(self, name):
         name = name.replace("-", "_")
-        if name not in self._ALL_PROPERTIES:
-            raise KeyError(name)
-        delattr(self, name)
+        try:
+            prop = self._PROPERTY_DESCRIPTORS[name]
+        except KeyError:
+            raise KeyError(name) from None
+        prop.__delete__(self)
 
     def keys(self):
         return {*self}
@@ -296,9 +313,11 @@ class BaseStyle(ABC):  # noqa: B024
 
     def __contains__(self, name):
         name = name.replace("-", "_")
-        return name in self._ALL_PROPERTIES and (
-            getattr(self.__class__, name).is_set_on(self)
-        )
+        try:
+            prop = self._PROPERTY_DESCRIPTORS[name]
+        except KeyError:
+            return False
+        return prop.is_set_on(self)
 
     def __iter__(self):
         yield from (name for name in self._PROPERTIES if name in self)

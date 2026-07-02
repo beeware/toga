@@ -387,11 +387,6 @@ class PackLogic(BaseStyle):
             main_start, main_end = horizontal
             cross_start, cross_end = TOP, BOTTOM
 
-        main_start_margin = f"margin_{main_start}"
-        main_end_margin = f"margin_{main_end}"
-        cross_start_margin = f"margin_{cross_start}"
-        cross_end_margin = f"margin_{cross_end}"
-
         node = self._applicator.node
         flex_total = 0
         min_flex = 0
@@ -410,8 +405,8 @@ class PackLogic(BaseStyle):
 
         for i, child in enumerate(node.children):
             # self._debug(f"PASS 1 {child}")
-            if getattr(child.style, main_name) != NONE:
-                # self._debug(f"- fixed {main_name} {getattr(child.style, main_name)}")
+            if child.style[main_name] != NONE:
+                # self._debug(f"- fixed {main_name} {child.style[main_name]}")
                 child.style._layout_node_in_direction(
                     direction=self.direction,
                     alloc_main=remaining_main,
@@ -441,9 +436,9 @@ class PackLogic(BaseStyle):
                         min_child_content_main = child_content_main
 
                         min_flex += (
-                            getattr(child.style, main_start_margin)
+                            child.style[f"margin_{main_start}"]
                             + child_content_main
-                            + getattr(child.style, main_end_margin)
+                            + child.style[f"margin_{main_end}"]
                         )
                     else:
                         # self._debug(
@@ -509,17 +504,17 @@ class PackLogic(BaseStyle):
 
             gap = 0 if i == 0 else self.gap
             child_main = (
-                getattr(child.style, main_start_margin)
+                child.style[f"margin_{main_start}"]
                 + child_content_main
-                + getattr(child.style, main_end_margin)
+                + child.style[f"margin_{main_end}"]
             )
             main += gap + child_main
             remaining_main -= gap + child_main
 
             min_child_main = (
-                getattr(child.style, main_start_margin)
+                child.style[f"margin_{main_start}"]
                 + min_child_content_main
-                + getattr(child.style, main_end_margin)
+                + child.style[f"margin_{main_end}"]
             )
             min_main += gap + min_child_main
 
@@ -544,9 +539,9 @@ class PackLogic(BaseStyle):
                             # self._debug(f"- {child} overflows ideal main dimension")
                             flex_total -= child.style.flex
                             min_flex -= (
-                                getattr(child.style, main_start_margin)
+                                child.style[f"margin_{main_start}"]
                                 + child_intrinsic_main.value
-                                + getattr(child.style, main_end_margin)
+                                + child.style[f"margin_{main_end}"]
                             )
                     except AttributeError:
                         # Intrinsic main-axis size isn't flexible
@@ -565,16 +560,16 @@ class PackLogic(BaseStyle):
         # main-axis size specification at all.
         for child in node.children:
             # self._debug(f"PASS 2 {child}")
-            if getattr(child.style, main_name) != NONE:
+            if child.style[main_name] != NONE:
                 # self._debug(f"- already laid out (explicit {main_name})")
                 pass
             elif child.style.flex:
                 if getattr(child.intrinsic, main_name) is not None:
                     try:
                         child_alloc_main = (
-                            getattr(child.style, main_start_margin)
+                            child.style[f"margin_{main_start}"]
                             + getattr(child.intrinsic, main_name).value
-                            + getattr(child.style, main_end_margin)
+                            + child.style[f"margin_{main_end}"]
                         )
                         ideal_main = quantum * child.style.flex
                         # self._debug(
@@ -631,9 +626,10 @@ class PackLogic(BaseStyle):
                         child_alloc_main = quantum * child.style.flex
                     else:
                         # self._debug(f"- unspecified flex {main_name}")
-                        child_alloc_main = getattr(
-                            child.style, main_start_margin
-                        ) + getattr(child.style, main_end_margin)
+                        child_alloc_main = (
+                            child.style[f"margin_{main_start}"]
+                            + child.style[f"margin_{main_end}"]
+                        )
 
                     child.style._layout_node_in_direction(
                         direction=self.direction,
@@ -661,7 +657,7 @@ class PackLogic(BaseStyle):
             # self._debug(f"{main_name} {min_main=} {main=}")
 
         # self._debug(f"PASS 2 COMPLETE; USED {main=} {main_name}")
-        if use_all_main or getattr(self, main_name) != NONE:
+        if use_all_main or self[main_name] != NONE:
             extra = max(0, available_main - main)
             main += extra
         else:
@@ -689,24 +685,24 @@ class PackLogic(BaseStyle):
                 child.layout.content_left = main - offset
                 offset += child.style.margin_left
             else:
-                offset += getattr(child.style, main_start_margin)
+                offset += child.style[f"margin_{main_start}"]
                 setattr(child.layout, f"content_{main_start}", offset)
                 offset += getattr(child.layout, f"content_{main_name}")
-                offset += getattr(child.style, main_end_margin)
+                offset += child.style[f"margin_{main_end}"]
 
             offset += self.gap
 
             child_cross = (
                 getattr(child.layout, f"content_{cross_name}")
-                + getattr(child.style, cross_start_margin)
-                + getattr(child.style, cross_end_margin)
+                + child.style[f"margin_{cross_start}"]
+                + child.style[f"margin_{cross_end}"]
             )
             cross = max(cross, child_cross)
 
             min_child_cross = (
-                getattr(child.style, cross_start_margin)
+                child.style[f"margin_{cross_start}"]
                 + getattr(child.layout, f"min_content_{cross_name}")
-                + getattr(child.style, cross_end_margin)
+                + child.style[f"margin_{cross_end}"]
             )
             min_cross = max(min_cross, min_child_cross)
 
@@ -725,8 +721,7 @@ class PackLogic(BaseStyle):
 
         if cross_start == RIGHT:
             effective_cross_start = LEFT
-            effective_cross_start_margin = "margin_left"
-            effective_cross_end_margin = "margin_right"
+            effective_cross_end = RIGHT
 
             if self.align_items == START:
                 effective_align_items = END
@@ -735,30 +730,29 @@ class PackLogic(BaseStyle):
 
         else:
             effective_cross_start = cross_start
-            effective_cross_start_margin = cross_start_margin
-            effective_cross_end_margin = cross_end_margin
+            effective_cross_end = cross_end
 
         for child in node.children:
             # self._debug(f"PASS 4: {child}")
             extra = cross - (
                 getattr(child.layout, f"content_{cross_name}")
-                + getattr(child.style, effective_cross_start_margin)
-                + getattr(child.style, effective_cross_end_margin)
+                + child.style[f"margin_{effective_cross_start}"]
+                + child.style[f"margin_{effective_cross_end}"]
             )
             # self._debug(f"-  {self.direction} extra {cross_name} {extra}")
 
             if effective_align_items == END:
-                cross_start_value = extra + getattr(child.style, cross_start_margin)
+                cross_start_value = extra + child.style[f"margin_{cross_start}"]
                 # self._debug(f"  align {child} to {cross_end}")
 
             elif effective_align_items == CENTER:
-                cross_start_value = int(extra / 2) + getattr(
-                    child.style, cross_start_margin
+                cross_start_value = (
+                    int(extra / 2) + child.style[f"margin_{cross_start}"]
                 )
                 # self._debug(f"  align {child} to center")
 
             else:
-                cross_start_value = getattr(child.style, cross_start_margin)
+                cross_start_value = child.style[f"margin_{cross_start}"]
                 # self._debug(f"  align {child} to {cross_start} ")
 
             setattr(child.layout, f"content_{effective_cross_start}", cross_start_value)
