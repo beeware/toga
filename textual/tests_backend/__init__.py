@@ -15,7 +15,6 @@ UNIMPLEMENTED_TEST_MODULES = {
     "tests/widgets/test_mapview.py",
     "tests/widgets/test_slider.py",
     "tests/widgets/test_splitcontainer.py",
-    "tests/widgets/test_timeinput.py",
     "tests/widgets/test_webview.py",
 }
 

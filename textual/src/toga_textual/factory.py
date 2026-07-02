@@ -37,9 +37,9 @@ from .widgets.selection import Selection
 from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
+from .widgets.timeinput import TimeInput
 from .widgets.tree import Tree
 
-# from .widgets.timeinput import TimeInput
 # from .widgets.webview import WebView
 from .window import MainWindow, Window
 
@@ -89,7 +89,7 @@ __all__ = [
     "Switch",
     "Table",
     "TextInput",
-    # "TimeInput",
+    "TimeInput",
     "Tree",
     # "WebView",
     # Windows
