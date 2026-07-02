@@ -12,7 +12,6 @@ UNIMPLEMENTED_TEST_MODULES = {
     "tests/widgets/canvas/test_canvas.py",
     "tests/widgets/canvas/test_deprecated_code.py",
     "tests/widgets/test_dateinput.py",
-    "tests/widgets/test_detailedlist.py",
     "tests/widgets/test_imageview.py",
     "tests/widgets/test_mapview.py",
     "tests/widgets/test_slider.py",
