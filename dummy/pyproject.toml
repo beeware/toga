@@ -108,7 +108,7 @@ MainWindow = "toga_dummy.window:MainWindow"
 Window = "toga_dummy.window:Window"
 
 # Scaffold
-Scaffold = "toga_dummy.scaffold:Scaffold"
+Scaffold = "toga_dummy.scaffolds.base:Scaffold"
 
 # Widget is also required for testing purposes
 # Real backends shouldn't expose Widget.

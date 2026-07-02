@@ -1,5 +1,5 @@
-from .container import Container
-from .utils import LoggedObject
+from toga_dummy.container import Container
+from toga_dummy.utils import LoggedObject
 
 
 class Scaffold(LoggedObject):
