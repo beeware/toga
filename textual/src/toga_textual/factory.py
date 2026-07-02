@@ -18,7 +18,7 @@ from .widgets.box import Box
 from .widgets.button import Button
 
 # from .widgets.canvas import Canvas
-# from .widgets.dateinput import DateInput
+from .widgets.dateinput import DateInput
 from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 
@@ -72,7 +72,7 @@ __all__ = [
     "Box",
     "Button",
     # "Canvas",
-    # "DateInput",
+    "DateInput",
     "DetailedList",
     "Divider",
     # "ImageView",
