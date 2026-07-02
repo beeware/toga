@@ -5,6 +5,8 @@ from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -43,7 +45,7 @@ def test_widget_created():
     assert splitcontainer.direction == toga.SplitContainer.VERTICAL
 
 
-def test_widget_created_with_values(content1, content2):
+def test_widget_created_with_values(app, content1, content2):
     """A split container can be created with arguments."""
     splitcontainer = toga.SplitContainer(
         id="foobar",
@@ -52,6 +54,9 @@ def test_widget_created_with_values(content1, content2):
         # A style property
         width=256,
     )
+    # Put in a window and *don't* clear the resulting log; assigning it as content
+    # should trigger a refresh.
+    put_in_window(splitcontainer, clear_log=False)
     assert splitcontainer._impl.interface == splitcontainer
     assert_action_performed(splitcontainer, "create SplitContainer")
 
@@ -263,6 +268,7 @@ def test_focus_noop(splitcontainer):
     ],
 )
 def test_set_content_widgets(
+    app,
     splitcontainer,
     content1,
     content2,
@@ -271,6 +277,8 @@ def test_set_content_widgets(
     include_right,
 ):
     """Widget content can be set to a list of widgets."""
+    window = put_in_window(splitcontainer)
+
     splitcontainer.content = [
         content2 if include_left else None,
         content3 if include_right else None,
@@ -286,6 +294,8 @@ def test_set_content_widgets(
         flex=[1, 1],
     )
 
+    simulate_event_loop_refresh(window)
+
     # The split container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
 
@@ -300,6 +310,7 @@ def test_set_content_widgets(
     ],
 )
 def test_set_content_flex(
+    app,
     splitcontainer,
     content2,
     content3,
@@ -307,6 +318,8 @@ def test_set_content_flex(
     include_right,
 ):
     """Widget content can be set to a list of widgets with flex values."""
+    window = put_in_window(splitcontainer)
+
     splitcontainer.content = [
         (content2 if include_left else None, 2),
         (content3 if include_right else None, 3),
@@ -322,6 +335,8 @@ def test_set_content_flex(
         flex=[2, 3],
     )
 
+    simulate_event_loop_refresh(window)
+
     # The split container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
 
@@ -336,6 +351,7 @@ def test_set_content_flex(
     ],
 )
 def test_set_content_flex_mixed(
+    app,
     splitcontainer,
     content2,
     content3,
@@ -343,6 +359,8 @@ def test_set_content_flex_mixed(
     include_right,
 ):
     """Flex values will be defaulted if missing."""
+    window = put_in_window(splitcontainer)
+
     splitcontainer.content = [
         content2 if include_left else None,
         (content3 if include_right else None, 3),
@@ -357,6 +375,8 @@ def test_set_content_flex_mixed(
         ],
         flex=[1, 3],
     )
+
+    simulate_event_loop_refresh(window)
 
     # The split container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
@@ -408,13 +428,16 @@ def test_set_content_invalid(splitcontainer, content, message):
         splitcontainer.content = content
 
 
-def test_direction(splitcontainer):
+def test_direction(app, splitcontainer):
     """The direction of the splitcontainer can be changed."""
+    window = put_in_window(splitcontainer)
 
     splitcontainer.direction = toga.SplitContainer.HORIZONTAL
 
     # The direction has been set
     assert splitcontainer.direction == toga.SplitContainer.HORIZONTAL
+
+    simulate_event_loop_refresh(window)
 
     # The split container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
