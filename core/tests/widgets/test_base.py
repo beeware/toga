@@ -72,6 +72,7 @@ def test_add_child_to_leaf():
     # Widget doesn't have an app or window
     assert leaf.app is None
     assert leaf.window is None
+    assert leaf.scaffold is None
 
     # Leaf nodes report an empty child list
     assert leaf.children == []
@@ -89,6 +90,7 @@ def test_add_child_without_app(widget):
     # Widget doesn't have an app or window
     assert widget.app is None
     assert widget.window is None
+    assert widget.scaffold is None
 
     # Child list is empty
     assert widget.children == []
@@ -106,6 +108,7 @@ def test_add_child_without_app(widget):
     # Child has inherited parent's app/window details
     assert child.app is None
     assert child.window is None
+    assert widget.scaffold is None
 
     # The impl's add_child has been invoked
     assert_action_performed_with(widget, "add child", child=child._impl)
@@ -119,12 +122,14 @@ def test_add_child(app, widget):
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
+    scaffold = window.scaffold
     # Clear the event log
     EventLog.reset()
 
     # Widget has an app and window
     assert widget.app == app
     assert widget.window == window
+    assert widget.scaffold == scaffold
 
     # Widget is registered with app and window
     assert widget.id in app.widgets
@@ -150,6 +155,7 @@ def test_add_child(app, widget):
     # Child has inherited parent's app/window details
     assert child.app == app
     assert child.window == window
+    assert child.scaffold == scaffold
 
     # The impl's add_child has been invoked
     assert_action_performed_with(widget, "add child", child=child._impl)
@@ -230,6 +236,7 @@ def test_add_multiple_children(app, widget):
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
+    scaffold = window.scaffold
     # Clear the event log
     EventLog.reset()
 
@@ -260,12 +267,15 @@ def test_add_multiple_children(app, widget):
     # Children has inherited parent's app/window details
     assert child1.app == app
     assert child1.window == window
+    assert child1.scaffold == scaffold
 
     assert child2.app == app
     assert child2.window == window
+    assert child2.scaffold == scaffold
 
     assert child3.app == app
     assert child3.window == window
+    assert child3.scaffold == scaffold
 
     # The impl's add_child has been invoked 3 time
     assert_action_performed_with(widget, "add child", child=child1._impl)
@@ -360,6 +370,7 @@ def test_insert_child_into_leaf():
     # Widget doesn't have an app or window
     assert leaf.app is None
     assert leaf.window is None
+    assert leaf.scaffold is None
 
     # Leaf nodes report an empty child list
     assert leaf.children == []
@@ -377,6 +388,7 @@ def test_insert_child_without_app(widget):
     # Widget doesn't have an app or window
     assert widget.app is None
     assert widget.window is None
+    assert widget.scaffold is None
 
     # Child list is empty
     assert widget.children == []
@@ -394,6 +406,7 @@ def test_insert_child_without_app(widget):
     # Child has inherited parent's app/window details
     assert child.app is None
     assert child.window is None
+    assert widget.scaffold is None
 
     # The impl's insert_child has been invoked
     assert_action_performed_with(widget, "insert child", child=child._impl)
@@ -403,16 +416,19 @@ def test_insert_child_without_app(widget):
 
 
 def test_insert_child(app, widget):
-    """A child can be inserted into a node when there's an app & window."""
+    """A child can be inserted into a node when there's an app, window,
+    and scaffold."""
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
+    scaffold = window.scaffold
     # Clear the event log
     EventLog.reset()
 
     # Widget has an app and window
     assert widget.app == app
     assert widget.window == window
+    assert widget.scaffold == scaffold
 
     # Child list is empty
     assert widget.children == []
@@ -431,9 +447,10 @@ def test_insert_child(app, widget):
     assert widget.children == [child]
     assert child.parent == widget
 
-    # Child has inherited parent's app/window details
+    # Child has inherited parent's app/window/scaffold details
     assert child.app == app
     assert child.window == window
+    assert child.scaffold == scaffold
 
     # The impl's insert_child has been invoked
     assert_action_performed_with(widget, "insert child", child=child._impl)
@@ -462,12 +479,14 @@ def test_insert_position(app, widget):
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
+    scaffold = window.scaffold
     # Clear the event log
     EventLog.reset()
 
     # Widget has an app and window
     assert widget.app == app
     assert widget.window == window
+    assert widget.scaffold == scaffold
 
     # Child list is empty
     assert widget.children == []
@@ -497,12 +516,15 @@ def test_insert_position(app, widget):
     # Children has inherited parent's app/window details
     assert child1.app == app
     assert child1.window == window
+    assert child1.scaffold == scaffold
 
     assert child2.app == app
     assert child2.window == window
+    assert child2.scaffold == scaffold
 
     assert child3.app == app
     assert child3.window == window
+    assert child3.scaffold == scaffold
 
     # The impl's insert_child has been invoked 3 time
     assert_action_performed_with(widget, "insert child", child=child1._impl)
@@ -537,12 +559,14 @@ def test_insert_bad_position(app, widget):
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
+    scaffold = window.scaffold
     # Clear the event log
     EventLog.reset()
 
     # Widget has an app and window
     assert widget.app == app
     assert widget.window == window
+    assert widget.scaffold == scaffold
 
     # Child list is empty
     assert widget.children == []
@@ -567,6 +591,7 @@ def test_insert_bad_position(app, widget):
     # Child has inherited parent's app/window details
     assert child.app == app
     assert child.window == window
+    assert child.scaffold == scaffold
 
     # The impl's insert_child has been invoked
     assert_action_performed_with(widget, "insert child", child=child._impl)
@@ -654,6 +679,7 @@ def test_remove_child_from_leaf():
     # Widget doesn't have an app or window
     assert leaf.app is None
     assert leaf.window is None
+    assert leaf.scaffold is None
 
     # Leaf nodes report an empty child list
     assert leaf.children == []
@@ -676,6 +702,7 @@ def test_remove_child_without_app(widget):
     assert child.parent == widget
     assert child.app is None
     assert child.window is None
+    assert child.scaffold is None
 
     # Remove the child
     widget.remove(child)
@@ -687,6 +714,7 @@ def test_remove_child_without_app(widget):
     # App and window are still None
     assert child.app is None
     assert child.window is None
+    assert child.scaffold is None
 
     # The impl's remove_child has been invoked
     assert_action_performed_with(widget, "remove child", child=child._impl)
@@ -703,6 +731,7 @@ def test_remove_child(app, widget):
 
     window = toga.Window()
     window.content = widget
+    scaffold = window.scaffold
     # Clear the event log
     EventLog.reset()
 
@@ -710,6 +739,7 @@ def test_remove_child(app, widget):
     assert child.parent == widget
     assert child.app == app
     assert child.window == window
+    assert child.scaffold == scaffold
     assert dict(app.widgets) == {"widget_id": widget, "child_id": child}
     assert dict(window.widgets) == {"widget_id": widget, "child_id": child}
 
@@ -723,6 +753,7 @@ def test_remove_child(app, widget):
     # app and window have been reset.
     assert child.app is None
     assert child.window is None
+    assert child.scaffold is None
 
     # child widget no longer exists in the app or widgets registries.
     assert dict(app.widgets) == {"widget_id": widget}
@@ -751,6 +782,7 @@ def test_remove_multiple_children(app, widget):
 
     window = toga.Window()
     window.content = widget
+    scaffold = window.scaffold
     # Clear the event log
     EventLog.reset()
 
@@ -759,6 +791,7 @@ def test_remove_multiple_children(app, widget):
         assert child.parent == widget
         assert child.app == app
         assert child.window == window
+        assert child.scaffold == scaffold
         assert app.widgets[child.id] == child
         assert window.widgets[child.id] == child
 
@@ -774,12 +807,15 @@ def test_remove_multiple_children(app, widget):
     # App and window have been reset on the removed widgets
     assert child1.app is None
     assert child1.window is None
+    assert child1.scaffold is None
 
     assert child2.app == app
     assert child2.window == window
+    assert child2.scaffold == scaffold
 
     assert child3.app is None
     assert child3.window is None
+    assert child3.scaffold is None
 
     # The impl's remove_child has been invoked twice
     assert_action_performed_with(widget, "remove child", child=child1._impl)
@@ -1161,6 +1197,144 @@ def test_unset_window(widget):
 
     # Window Widget registry has been updated
     assert len(window.widgets) == 0
+
+
+def test_set_scaffold(app, widget):
+    """A widget can be assigned to a scaffold."""
+    scaffold = toga.Scaffold()
+    window = toga.Window()
+    scaffold.app = app
+    scaffold.window = window
+    assert widget.scaffold is None
+
+    # Assign the widget to a scaffold
+    scaffold.content = widget
+
+    # Scaffold has been assigned
+    assert widget.scaffold == scaffold
+
+    # Widget's app and window is consistent with the scaffold
+    assert widget.app == scaffold.app
+    assert widget.window == scaffold.window
+
+    # Create an orphan child widget
+    child = ExampleLeafWidget(id="child1_id")
+    other_scaffold = toga.Scaffold()
+    other_scaffold.app = app
+    other_window = toga.Window()
+    other_scaffold.window = other_window
+
+    # Assign child to another scaffold
+    other_scaffold.content = child
+
+    # Child scaffold should be set up properly
+    assert child.scaffold == other_scaffold
+    assert child.app == other_scaffold.app
+    assert child.window == other_scaffold.window
+
+    # Parent scaffold remains unchanged
+    assert widget.scaffold == scaffold
+    assert widget.app == scaffold.app
+    assert widget.window == scaffold.window
+
+    # Have the widget parent the child
+    widget.add(child)
+
+    # The child should be with the parent's scaffold now
+    assert child.scaffold == scaffold
+    assert child.app == scaffold.app
+    assert child.window == scaffold.window
+
+
+def test_set_scaffold_with_children(app, widget):
+    """A widget can be assigned to a scaffold with children."""
+    # Add children to the widget
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
+    widget.add(child1, child2, child3)
+
+    scaffold = toga.Scaffold()
+    window = toga.Window()
+    scaffold.app = app
+    scaffold.window = window
+    assert len(app.widgets) == 0
+    assert child1.scaffold is None
+    assert child2.scaffold is None
+    assert child3.scaffold is None
+
+    # Assign the widget to a scaffold
+    scaffold.content = widget
+
+    # Scaffold has been assigned, and app and window are consistent
+    assert widget.scaffold == scaffold
+    assert scaffold.window == widget.window
+    assert scaffold.app == widget.app
+    assert child1.scaffold == scaffold
+    assert scaffold.window == child1.window
+    assert scaffold.app == child1.app
+    assert child2.scaffold == scaffold
+    assert scaffold.window == child2.window
+    assert scaffold.app == child2.app
+    assert child3.scaffold == scaffold
+    assert scaffold.window == child3.window
+    assert scaffold.app == child3.app
+
+
+def test_reset_scaffold(app, widget):
+    """A widget can be assigned to a different scaffold."""
+    scaffold = toga.Scaffold()
+    window = toga.Window()
+    scaffold.window = window
+    scaffold.app = app
+    assert widget.scaffold is None
+    assert widget.app is None
+    assert widget.window is None
+
+    # Assign the widget to a scaffold
+    scaffold.content = widget
+    assert widget.scaffold == scaffold
+    assert widget.window == scaffold.window
+    assert widget.app == scaffold.app
+
+    # Create a new scaffold
+    new_scaffold = toga.Scaffold()
+    new_window = toga.Window()
+    new_scaffold.window = new_window
+    new_scaffold.app = app
+
+    # Assign the widget to the new scaffold
+    new_scaffold.content = widget
+
+    # Scaffold has been re-assigned
+    assert widget.scaffold == new_scaffold
+    assert widget.window == new_scaffold.window
+    assert widget.app == new_scaffold.app
+
+
+def test_unset_scaffold(app, widget):
+    """A widget can be assigned to no scaffold."""
+    scaffold = toga.Scaffold()
+    window = toga.Window()
+    scaffold.window = window
+    scaffold.app = app
+    assert widget.scaffold is None
+    assert widget.app is None
+    assert widget.window is None
+
+    # Assign the widget to a scaffold
+    scaffold.content = widget
+    assert widget.scaffold == scaffold
+    assert widget.window == scaffold.window
+    assert widget.app == scaffold.app
+
+    # Assign the widget to no scaffold
+    scaffold.content = None
+
+    # The widget doesn't have a scaffold anymore
+    assert widget.scaffold is None
+    assert widget.app is None
+    assert widget.window is None
 
 
 @pytest.mark.parametrize(

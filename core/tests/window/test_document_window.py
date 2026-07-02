@@ -50,7 +50,7 @@ def test_create(app):
     # window menus and toolbars have been.
     assert_action_not_performed(window, "create App menus")
     assert_action_performed(window, "create Window menus")
-    assert_action_performed(window, "create toolbar")
+    assert_action_performed(window.scaffold, "create toolbar")
 
     # We can't know what the ID is, but it must be a string.
     assert isinstance(window.id, str)
@@ -105,7 +105,7 @@ def test_create_explicit(app):
     # window menus and toolbars have been.
     assert_action_not_performed(window, "create App menus")
     assert_action_performed(window, "create Window menus")
-    assert_action_performed(window, "create toolbar")
+    assert_action_performed(window.scaffold, "create toolbar")
 
     assert window.id == "my-window"
     assert window.title == "My Window"

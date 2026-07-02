@@ -769,7 +769,7 @@ async def test_startup_method():
     startup.assert_called_once_with(app)
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
-    assert_action_performed(app.main_window, "create toolbar")
+    assert_action_performed(app.main_window.scaffold, "create toolbar")
     assert_action_performed(app.status_icons, "create status icons")
 
     # 2 menu items have been created
@@ -819,7 +819,7 @@ async def test_startup_subclass():
     assert_action_performed(app, "create App commands")
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
-    assert_action_performed(app.main_window, "create toolbar")
+    assert_action_performed(app.main_window.scaffold, "create toolbar")
     assert_action_performed(app.status_icons, "create status icons")
 
     # 3 menu items have been created

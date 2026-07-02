@@ -11,6 +11,7 @@ from travertino.node import Node
 from travertino.style import BaseStyle
 
 from toga.platform import get_factory
+from toga.scaffolds.base import Scaffold
 from toga.style import Pack, TogaApplicator
 from toga.style.mixin import style_mixin
 
@@ -93,6 +94,7 @@ class Widget(Node, PackMixin, ABC):
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
         self._app: App | None = None
+        self._scaffold: Scaffold | None = None
 
         ##################################################################
         # 2024-12: Backwards compatibility for Toga < 0.5.0
@@ -198,6 +200,7 @@ class Widget(Node, PackMixin, ABC):
                 # can be found.
                 child.app = self.app
                 child.window = self.window
+                child.scaffold = self.scaffold
 
                 # add to new parent
                 super().add(child)
@@ -231,6 +234,7 @@ class Widget(Node, PackMixin, ABC):
             # can be found.
             child.app = self.app
             child.window = self.window
+            child.scaffold = self.scaffold
 
             # add to new parent
             super().insert(index, child)
@@ -287,6 +291,7 @@ class Widget(Node, PackMixin, ABC):
                 # so that the widget can be removed from the app-level registry.
                 child.window = None
                 child.app = None
+                child.scaffold = None
 
                 self._impl.remove_child(child._impl)
 
@@ -303,6 +308,17 @@ class Widget(Node, PackMixin, ABC):
         """
         self._assert_can_have_children()
         self.remove(*self.children)
+
+    @property
+    def scaffold(self) -> Scaffold | None:
+        """The Scaffold to which this widget belongs, if any."""
+        return self._scaffold
+
+    @scaffold.setter
+    def scaffold(self, scaffold: Scaffold | None) -> None:
+        self._scaffold = scaffold
+        for child in self.children:
+            child.scaffold = scaffold
 
     @property
     def app(self) -> App | None:
