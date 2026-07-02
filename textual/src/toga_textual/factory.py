@@ -35,8 +35,7 @@ from .widgets.selection import Selection
 # from .widgets.slider import Slider
 # from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
-
-# from .widgets.table import Table
+from .widgets.table import Table
 from .widgets.textinput import TextInput
 
 # from .widgets.timeinput import TimeInput
@@ -88,7 +87,7 @@ __all__ = [
     # "Slider",
     # "SplitContainer",
     "Switch",
-    # "Table",
+    "Table",
     "TextInput",
     # "TimeInput",
     # "Tree",
