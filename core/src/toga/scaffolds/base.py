@@ -8,20 +8,18 @@ from toga.platform import get_factory
 if TYPE_CHECKING:
     from typing import Any
 
-    from .app import App
-    from .widget import Widget
-    from .window import Window
+    from toga.app import App
+    from toga.widgets.base import Widget
+    from toga.window import Window
 
 
 class BaseScaffold(ABC):
-    def __init__(self, content: Any = None):
+    @abstractmethod
+    def __init__(self):
         self.factory = get_factory()
         self._impl = self._create()
         self._window = None
         self._app = None
-        self._content = None
-
-        self.content = content
 
     @abstractmethod
     def _create(self) -> Any: ...
@@ -49,26 +47,21 @@ class BaseScaffold(ABC):
     def app(self, value):
         self._app = value
 
+
+class Scaffold(BaseScaffold):
+    def __init__(self, content: Widget = None):
+        super().__init__()
+        self._content = None
+        self.content = content
+
+    def _create(self):
+        return get_factory().Scaffold(self)
+
     @property
     def content(self) -> Any | None:
         return self._content
 
     @content.setter
-    @abstractmethod
-    def content(self, value: Any | None):
-        self._content = value
-        if value is not None:
-            self._impl.set_content(self._content._impl)
-        else:
-            self._impl.set_content(None)
-        self.refresh()
-
-
-class Scaffold(BaseScaffold):
-    def _create(self):
-        return get_factory().Scaffold(self)
-
-    @BaseScaffold.content.setter
     def content(self, value: Widget | None):
         if self._content is not None:
             # Clear the old content's window, app, and scaffold
@@ -79,7 +72,13 @@ class Scaffold(BaseScaffold):
             value.scaffold = self
             value.window = self.window
             value.app = self.app
-        BaseScaffold.content.fset(self, value)
+
+        self._content = value
+        if value is not None:
+            self._impl.set_content(self._content._impl)
+        else:
+            self._impl.set_content(None)
+        self.refresh()
 
     @BaseScaffold.window.setter
     def window(self, value: Window | None):

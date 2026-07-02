@@ -13,7 +13,7 @@ from toga.constants import WindowState
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_factory
-from toga.scaffold import BaseScaffold, Scaffold
+from toga.scaffolds.base import BaseScaffold, Scaffold
 from toga.types import Position, Size
 from toga.widgets.base import Widget
 

@@ -11,7 +11,7 @@ from travertino.node import Node
 from travertino.style import BaseStyle
 
 from toga.platform import get_factory
-from toga.scaffold import Scaffold
+from toga.scaffolds.base import Scaffold
 from toga.style import Pack, TogaApplicator
 from toga.style.mixin import style_mixin
 

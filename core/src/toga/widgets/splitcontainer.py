@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 import toga
 from toga.app import App
 from toga.constants import Direction
-from toga.scaffold import Scaffold
+from toga.scaffolds.base import Scaffold
 from toga.window import Window
 
 from .base import StyleT, Widget
