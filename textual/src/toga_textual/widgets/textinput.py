@@ -31,7 +31,10 @@ class TextInput(Widget):
     def create(self):
         self._is_valid = True
         self._programmatic_change = False
-        self.native = TogaInput(self)
+        self.native = self.create_native()
+
+    def create_native(self):
+        return TogaInput(self)
 
     def get_readonly(self):
         return self.native.disabled
