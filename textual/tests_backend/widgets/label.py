@@ -12,10 +12,6 @@ class LabelProbe(SimpleProbe):
     def text(self):
         return str(self.native.renderable)
 
-    @property
-    def height(self):
-        return self.widget.layout.content_height
-
     def assert_text_align(self, expected):
         # Textual label alignment is currently not implemented by the backend.
         return

@@ -35,6 +35,7 @@ class Widget(Scalable, ABC):
     def __init__(self, interface):
         self.interface = interface
         self.container = None
+        self._pending_remove = None
         self.create()
 
     def install(self, parent, index=None):
@@ -45,13 +46,30 @@ class Widget(Scalable, ABC):
         mounting is deferred until their parent is mounted.
         """
         self.container = parent
-        if index is None:
-            parent.native.mount(self.native)
-        else:
-            parent.native.mount(self.native, before=index)
 
-        for child in self.interface.children:
-            child._impl.install(parent=self)
+        def mount():
+            if index is None:
+                parent.native.mount(self.native)
+            else:
+                parent.native.mount(self.native, before=index)
+
+            for child in self.interface.children:
+                child._impl.install(parent=self)
+
+        if self._pending_remove is None:
+            mount()
+        else:
+
+            async def mount_after_remove():
+                await self._pending_remove
+                self._pending_remove = None
+
+                if self.container is not parent:
+                    return
+
+                mount()
+
+            self.interface.app._impl.track_dom_operation(mount_after_remove())
 
     def get_size(self) -> Size:
         return Size(0, 0)
@@ -153,7 +171,7 @@ class Widget(Scalable, ABC):
         pass
 
     def set_hidden(self, hidden):
-        self.native.display = not hidden
+        self.native.visible = not hidden
 
     def set_font(self, font):  # noqa B027
         pass
@@ -186,7 +204,9 @@ class Widget(Scalable, ABC):
 
     def remove_child(self, child):
         child.container = None
-        self.native.remove_children([child.native])
+        child._pending_remove = self.interface.app._impl.track_dom_operation(
+            self.native.remove_children([child.native])
+        )
 
     def refresh(self):
         intrinsic = self.interface.intrinsic

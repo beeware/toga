@@ -13,6 +13,12 @@ class BaseProbe:
         await asyncio.sleep(0)
 
         print("Waiting for redraw" if message is None else message)
+        refresh_complete = asyncio.Future()
+        app = toga.App.app._impl.native
+        app.refresh(layout=True)
+        if app.call_after_refresh(refresh_complete.set_result, None):
+            await refresh_complete
+
         if delay or wait_for:
             if toga.App.app.run_slow or wait_for is None:
                 await asyncio.sleep(delay)
