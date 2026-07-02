@@ -105,7 +105,7 @@ Switch = "toga_textual.widgets.switch:Switch"
 Table = "toga_textual.widgets.table:Table"
 TextInput = "toga_textual.widgets.textinput:TextInput"
 # TimeInput = "toga_textual.widgets.timeinput:TimeInput"
-# Tree = "toga_textual.widgets.tree:Tree"
+Tree = "toga_textual.widgets.tree:Tree"
 # WebView = "toga_textual.widgets.webview:WebView"
 
 # Windows
