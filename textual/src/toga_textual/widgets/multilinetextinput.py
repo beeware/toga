@@ -44,9 +44,7 @@ class MultilineTextInput(Widget):
 
     def _display_placeholder(self):
         return (
-            self._value == ""
-            and self._placeholder != ""
-            and not self.native.has_focus
+            self._value == "" and self._placeholder != "" and not self.native.has_focus
         )
 
     def _sync_display(self):

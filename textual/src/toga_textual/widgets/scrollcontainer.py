@@ -100,9 +100,7 @@ class ScrollContainer(Widget):
         content = self.document_container.content
         if content is not None:
             content.native.styles.width = self.scale_in_horizontal(self._document_width)
-            content.native.styles.height = self.scale_in_vertical(
-                self._document_height
-            )
+            content.native.styles.height = self.scale_in_vertical(self._document_height)
 
     def _refresh_document_size(self):
         content = self.interface.content

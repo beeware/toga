@@ -82,10 +82,7 @@ class Table(Widget):
         return column.text(row, self.interface.missing_value)
 
     def row_cells(self, row):
-        return [
-            self.cell_text(row, column)
-            for column in self.interface._columns
-        ]
+        return [self.cell_text(row, column) for column in self.interface._columns]
 
     def _default_column_widths(self):
         count = len(self.interface._columns)
@@ -94,10 +91,7 @@ class Table(Widget):
 
         width = max(self._table_width, count)
         base_width, remainder = divmod(round(width), count)
-        return [
-            base_width + (1 if index < remainder else 0)
-            for index in range(count)
-        ]
+        return [base_width + (1 if index < remainder else 0) for index in range(count)]
 
     def _ensure_column_widths(self):
         count = len(self.interface._columns)
@@ -217,8 +211,7 @@ class Table(Widget):
         self._rows.insert(index, item)
         if self.interface.multiple_select:
             self._selection = [
-                row + 1 if index <= row else row
-                for row in self._selection
+                row + 1 if index <= row else row for row in self._selection
             ]
         elif self._selection is not None and index <= self._selection:
             self._selection += 1

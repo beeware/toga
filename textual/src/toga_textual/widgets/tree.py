@@ -45,10 +45,7 @@ class Tree(Widget):
 
         width = max(self._tree_width, count)
         base_width, remainder = divmod(round(width), count)
-        return [
-            base_width + (1 if index < remainder else 0)
-            for index in range(count)
-        ]
+        return [base_width + (1 if index < remainder else 0) for index in range(count)]
 
     def _ensure_column_widths(self):
         count = len(self.interface._columns)
@@ -73,8 +70,7 @@ class Tree(Widget):
 
     def node_label(self, node):
         return "  ".join(
-            self.cell_text(node, column)
-            for column in self.interface._columns
+            self.cell_text(node, column) for column in self.interface._columns
         )
 
     def _add_native_node(self, parent_impl, node, index=None):
