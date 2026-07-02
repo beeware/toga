@@ -29,8 +29,7 @@ from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import OptionContainer
 from .widgets.passwordinput import PasswordInput
 from .widgets.progressbar import ProgressBar
-
-# from .widgets.scrollcontainer import ScrollContainer
+from .widgets.scrollcontainer import ScrollContainer
 from .widgets.selection import Selection
 
 # from .widgets.slider import Slider
@@ -84,7 +83,7 @@ __all__ = [
     "OptionContainer",
     "PasswordInput",
     "ProgressBar",
-    # "ScrollContainer",
+    "ScrollContainer",
     "Selection",
     # "Slider",
     # "SplitContainer",
