@@ -69,43 +69,43 @@ class AppProbe(BaseProbe):
         pytest.xfail("Textual doesn't have app-level unhide.")
 
     def assert_app_icon(self, icon):
-        pytest.skip("App icon assertions are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app icons.")
 
     def assert_dialog_in_focus(self, dialog):
         pytest.skip("Dialog focus assertions are not implemented on Textual.")
 
     def activate_menu_hide(self):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def activate_menu_exit(self):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def activate_menu_about(self):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     async def close_about_dialog(self):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def activate_menu_visit_homepage(self):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def assert_system_menus(self):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def activate_menu_close_window(self):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def activate_menu_close_all_windows(self):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def activate_menu_minimize(self):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def assert_menu_item(self, path, enabled):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def assert_menu_order(self, path, expected):
-        pytest.skip("Menus are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native app menus.")
 
     def keystroke(self, combination):
         pytest.skip("Keystrokes are not implemented on Textual.")

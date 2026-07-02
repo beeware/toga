@@ -43,7 +43,7 @@ class TableProbe(SimpleProbe):
 
     def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
         if widget:
-            pytest.skip("Textual doesn't support widgets in Tables")
+            pytest.xfail("Textual doesn't support widgets in Tables.")
 
         row_key = self.impl._row_keys[row]
         column_key = self.impl._column_keys[col]

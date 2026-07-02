@@ -52,7 +52,7 @@ class TreeProbe(SimpleProbe):
 
     def assert_cell_content(self, row_path, col, value=None, icon=None, widget=None):
         if widget:
-            pytest.skip("Textual doesn't support widgets in Trees")
+            pytest.xfail("Textual doesn't support widgets in Trees.")
 
         node = node_for_path(self.widget.data, row_path)
         column = self.widget.columns[col]

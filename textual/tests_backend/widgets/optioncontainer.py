@@ -10,7 +10,7 @@ class OptionContainerProbe(SimpleProbe):
     disabled_tab_selectable = False
 
     def assert_supports_content_based_rehint(self):
-        pytest.skip("Content-based window rehinting is not supported on Textual.")
+        pytest.xfail("Textual doesn't support content-based window rehinting.")
 
     def select_tab(self, index):
         if self.tab_enabled(index):

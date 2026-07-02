@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from importlib import import_module
 
 from _pytest.python_api import ApproxScalar
-from pytest import fixture, register_assert_rewrite, skip
+from pytest import fixture, register_assert_rewrite, skip, xfail
 
 import toga
 from toga.colors import GOLDENROD
@@ -62,7 +62,7 @@ def skip_on_backends(*backends, reason=None, allow_module_level=False):
 def xfail_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(reason or f"not applicable on {current_platform}")
+        xfail(reason or f"not applicable on {current_platform}")
 
 
 # Use this for widgets or tests which are not supported on some backends,
@@ -70,7 +70,7 @@ def xfail_on_platforms(*platforms, reason=None):
 def xfail_on_backends(*backends, reason=None):
     current_backend = toga.backend
     if current_backend in backends:
-        skip(reason or f"not applicable on {current_backend}")
+        xfail(reason or f"not applicable on {current_backend}")
 
 
 # Use this for widgets or tests which trip up macOS privacy controls, and requires

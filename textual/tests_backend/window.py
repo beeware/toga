@@ -36,7 +36,7 @@ class WindowProbe(BaseProbe):
         await self.redraw("Closing window")
 
     def close(self):
-        pytest.skip("Window close simulation is not implemented on Textual.")
+        pytest.xfail("Textual doesn't have native window close controls.")
 
     @property
     def content_size(self):
@@ -55,10 +55,10 @@ class WindowProbe(BaseProbe):
         return False
 
     def minimize(self):
-        pytest.skip("Window minimize is not implemented on Textual.")
+        pytest.xfail("Textual doesn't support minimizing windows.")
 
     def unminimize(self):
-        pytest.skip("Window unminimize is not implemented on Textual.")
+        pytest.xfail("Textual doesn't support unminimizing windows.")
 
     @property
     def instantaneous_state(self):
@@ -66,14 +66,14 @@ class WindowProbe(BaseProbe):
 
     def has_toolbar(self):
         if len(self.window.toolbar):
-            pytest.skip("Toolbars are not implemented on Textual.")
+            pytest.xfail("Textual doesn't support native window toolbars.")
         return False
 
     def assert_is_toolbar_separator(self, index, section=False):
-        pytest.skip("Toolbars are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native window toolbars.")
 
     def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
-        pytest.skip("Toolbars are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native window toolbars.")
 
     def press_toolbar_button(self, index):
-        pytest.skip("Toolbars are not implemented on Textual.")
+        pytest.xfail("Textual doesn't support native window toolbars.")
