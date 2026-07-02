@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 
 class BaseScaffold(ABC):
-    @abstractmethod
     def __init__(self):
         self.factory = get_factory()
         self._impl = self._create()
