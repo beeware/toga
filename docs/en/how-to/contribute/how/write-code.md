@@ -266,7 +266,7 @@ This test will take a lot longer to run, but you'll see the widget (Button, in t
 
 #### Running the testbed for mobile platforms
 
-Developer mode is useful for testing desktop platforms (Cocoa, Winforms and GTK); but if you want to test a mobile backend, you'll need to use `briefcase run`.
+Developer mode is useful for testing desktop platforms (Cocoa, WinForms and GTK); but if you want to test a mobile backend, you'll need to use `briefcase run`.
 
 /// tab | macOS
 

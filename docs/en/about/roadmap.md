@@ -31,21 +31,21 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: `NSComboBox`
     - GTK: `Gtk.ComboBox.new_with_model_and_entry`
     - iOS: ?
-    - Winforms: `ComboBox`
+    - WinForms: `ComboBox`
     - Android: `Spinner`
 
 - `ColorInput` - A widget for selecting a color
     - Cocoa: `NSColorWell`
     - GTK: `Gtk.ColorButton` or `Gtk.ColorSelection`
     - iOS: ?
-    - Winforms: ?
+    - WinForms: ?
     - Android: ?
 
 - `SearchInput` - A variant of `TextField` that is decorated as a search box.
     - Cocoa: `NSSearchField`
     - GTK: `Gtk.Entry`
     - iOS: `UISearchBar`?
-    - Winforms: ?
+    - WinForms: ?
     - Android: ?
 
 ### Views
@@ -56,13 +56,13 @@ Views are mechanisms for displaying rich content, usually in a read-only manner.
     - Cocoa: `AVPlayerView`
     - GTK: Custom integration with `GStreamer`
     - iOS: `MPMoviePlayerController`
-    - Winforms: ?
+    - WinForms: ?
     - Android: ?
 - `PDFView` - Display a PDF document
     - Cocoa: `PDFView`
     - GTK: ?
     - iOS: Integration with QuickLook?
-    - Winforms: ?
+    - WinForms: ?
     - Android: ?
 
 ### Container widgets
@@ -73,14 +73,14 @@ Containers are widgets that can contain other widgets.
     - Cocoa: `NSForm`, or `NSView` with pre-set constraints.
     - GTK:
     - iOS:
-    - Winforms: ?
+    - WinForms: ?
     - Android: ?
 
 - `NavigationContainer` - A container view that holds a navigable tree of sub-views    Essentially a view that has a "back" button to return to the previous view in a hierarchy. Example of use: Top level navigation in the macOS System Preferences panel.
     - Cocoa: No native control
     - GTK: No native control; `Gtk.HeaderBar` in 3.10+
     - iOS: `UINavigationBar` + `NavigationController`
-    - Winforms: ?
+    - WinForms: ?
     - Android: ?
 
 ## Other capabilities
@@ -97,4 +97,4 @@ One of the aims of Toga is to provide a rich, feature-driven approach to app dev
 
 ## Platforms
 
-Toga currently has good support for Cocoa on macOS, GTK on Linux, Winforms on Windows, iOS and Android. Proof-of-concept support exists for single page web apps and consoles. Support for a more modern Windows API would be desirable as well.
+Toga currently has good support for Cocoa on macOS, GTK on Linux, WinForms on Windows, iOS and Android. Proof-of-concept support exists for single page web apps and consoles. Support for a more modern Windows API would be desirable as well.

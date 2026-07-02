@@ -4,6 +4,39 @@
 
 <!-- towncrier release notes start -->
 
+## 0.5.5 (2026-07-02)
+
+### Features
+
+- The performance of the WinForms event loop has been significantly improved. ([#2613](https://github.com/beeware/toga/issues/2613))
+- Dark mode can now be detected on iOS, web, and Windows. ([#4408](https://github.com/beeware/toga/issues/4408))
+- In order to better match the HTML canvas API, the Canvas widget now has `fill_text` and `stroke_text` methods, replacing the previous `write_text`. ([#4432](https://github.com/beeware/toga/issues/4432))
+- The Canvas widget's `rotate`, `scale`, and `translate` methods can now be used as context managers. ([#4477](https://github.com/beeware/toga/issues/4477))
+- The canvas widget's `state()` context manager now accepts optional keyword parameters to set drawing context attributes upon entering. ([#4485](https://github.com/beeware/toga/issues/4485))
+- Performance has been improved by avoiding layout refreshes when add and insert operations are redundant and don't move widgets to new parents. ([#4529](https://github.com/beeware/toga/issues/4529))
+
+### Bugfixes
+
+- On Android, `WebView` widgets can now display static content that contains `#` characters (such as CSS color specifications). ([#2242](https://github.com/beeware/toga/issues/2242))
+- 1-pixel black streaks no longer appear on high DPI screens on WebViews whose content has a transparent background on WinForms. ([#3264](https://github.com/beeware/toga/issues/3264))
+- Canvas's `reset_transform` method now correctly resets the transformation on Mac and iOS, instead of clearing the current state. ([#4044](https://github.com/beeware/toga/issues/4044))
+- WinForms buttons now render their interior regions with the correct native background color when no color is set. ([#4342](https://github.com/beeware/toga/issues/4342))
+- The handling of null return values on GTK `MapView` widgets has been corrected. ([#4378](https://github.com/beeware/toga/issues/4378))
+- Initial application focus on macOS is now more reliable on macOS 26. ([#4427](https://github.com/beeware/toga/issues/4427))
+- The DetailedList widget on the Windows platform now honors color and background-color styles. ([#4444](https://github.com/beeware/toga/issues/4444))
+- Providing the `color` parameter alias when instantiating a `Fill` or `Stroke` drawing action no longer throws an erroneous `TypeError`. ([#4472](https://github.com/beeware/toga/issues/4472))
+- On the Qt backend, the Canvas widget now reliably draws a solid line when an empty list is assigned to `line_dash`. ([#4475](https://github.com/beeware/toga/issues/4475))
+- The `size` attribute of a window is now guaranteed to return the width and height as integers. ([#4505](https://github.com/beeware/toga/issues/4505))
+
+### Backward Incompatible Changes
+
+- The Canvas widget's default stroke width has been changed from 2.0 to 1.0, to match that of the HTML canvas. ([#4381](https://github.com/beeware/toga/issues/4381))
+- The Canvas widget's `write_text()` method is now deprecated; use `fill_text()` and/or `stroke_text()` instead. Unlike `write_text`, these don't need to be inside `fill`/`stroke` context managers. ([#4432](https://github.com/beeware/toga/issues/4432))
+
+### Misc
+
+- [#3298](https://github.com/beeware/toga/issues/3298), [#4371](https://github.com/beeware/toga/issues/4371), [#4372](https://github.com/beeware/toga/issues/4372), [#4373](https://github.com/beeware/toga/issues/4373), [#4374](https://github.com/beeware/toga/issues/4374), [#4375](https://github.com/beeware/toga/issues/4375), [#4376](https://github.com/beeware/toga/issues/4376), [#4377](https://github.com/beeware/toga/issues/4377), [#4383](https://github.com/beeware/toga/issues/4383), [#4384](https://github.com/beeware/toga/issues/4384), [#4385](https://github.com/beeware/toga/issues/4385), [#4386](https://github.com/beeware/toga/issues/4386), [#4387](https://github.com/beeware/toga/issues/4387), [#4388](https://github.com/beeware/toga/issues/4388), [#4391](https://github.com/beeware/toga/issues/4391), [#4392](https://github.com/beeware/toga/issues/4392), [#4399](https://github.com/beeware/toga/issues/4399), [#4400](https://github.com/beeware/toga/issues/4400), [#4401](https://github.com/beeware/toga/issues/4401), [#4402](https://github.com/beeware/toga/issues/4402), [#4403](https://github.com/beeware/toga/issues/4403), [#4405](https://github.com/beeware/toga/issues/4405), [#4409](https://github.com/beeware/toga/issues/4409), [#4411](https://github.com/beeware/toga/issues/4411), [#4415](https://github.com/beeware/toga/issues/4415), [#4422](https://github.com/beeware/toga/issues/4422), [#4423](https://github.com/beeware/toga/issues/4423), [#4426](https://github.com/beeware/toga/issues/4426), [#4429](https://github.com/beeware/toga/issues/4429), [#4430](https://github.com/beeware/toga/issues/4430), [#4435](https://github.com/beeware/toga/issues/4435), [#4436](https://github.com/beeware/toga/issues/4436), [#4437](https://github.com/beeware/toga/issues/4437), [#4438](https://github.com/beeware/toga/issues/4438), [#4439](https://github.com/beeware/toga/issues/4439), [#4440](https://github.com/beeware/toga/issues/4440), [#4441](https://github.com/beeware/toga/issues/4441), [#4442](https://github.com/beeware/toga/issues/4442), [#4443](https://github.com/beeware/toga/issues/4443), [#4445](https://github.com/beeware/toga/issues/4445), [#4446](https://github.com/beeware/toga/issues/4446), [#4449](https://github.com/beeware/toga/issues/4449), [#4453](https://github.com/beeware/toga/issues/4453), [#4454](https://github.com/beeware/toga/issues/4454), [#4455](https://github.com/beeware/toga/issues/4455), [#4463](https://github.com/beeware/toga/issues/4463), [#4464](https://github.com/beeware/toga/issues/4464), [#4465](https://github.com/beeware/toga/issues/4465), [#4466](https://github.com/beeware/toga/issues/4466), [#4467](https://github.com/beeware/toga/issues/4467), [#4479](https://github.com/beeware/toga/issues/4479), [#4484](https://github.com/beeware/toga/issues/4484), [#4485](https://github.com/beeware/toga/issues/4485), [#4487](https://github.com/beeware/toga/issues/4487), [#4488](https://github.com/beeware/toga/issues/4488), [#4489](https://github.com/beeware/toga/issues/4489), [#4490](https://github.com/beeware/toga/issues/4490), [#4491](https://github.com/beeware/toga/issues/4491), [#4492](https://github.com/beeware/toga/issues/4492), [#4493](https://github.com/beeware/toga/issues/4493), [#4494](https://github.com/beeware/toga/issues/4494), [#4495](https://github.com/beeware/toga/issues/4495), [#4498](https://github.com/beeware/toga/issues/4498), [#4499](https://github.com/beeware/toga/issues/4499), [#4500](https://github.com/beeware/toga/issues/4500), [#4501](https://github.com/beeware/toga/issues/4501), [#4502](https://github.com/beeware/toga/issues/4502), [#4504](https://github.com/beeware/toga/issues/4504), [#4506](https://github.com/beeware/toga/issues/4506), [#4507](https://github.com/beeware/toga/issues/4507), [#4508](https://github.com/beeware/toga/issues/4508), [#4509](https://github.com/beeware/toga/issues/4509), [#4510](https://github.com/beeware/toga/issues/4510), [#4511](https://github.com/beeware/toga/issues/4511), [#4512](https://github.com/beeware/toga/issues/4512), [#4513](https://github.com/beeware/toga/issues/4513), [#4514](https://github.com/beeware/toga/issues/4514), [#4515](https://github.com/beeware/toga/issues/4515), [#4516](https://github.com/beeware/toga/issues/4516), [#4517](https://github.com/beeware/toga/issues/4517), [#4518](https://github.com/beeware/toga/issues/4518), [#4519](https://github.com/beeware/toga/issues/4519), [#4520](https://github.com/beeware/toga/issues/4520), [#4521](https://github.com/beeware/toga/issues/4521), [#4522](https://github.com/beeware/toga/issues/4522), [#4523](https://github.com/beeware/toga/issues/4523), [#4524](https://github.com/beeware/toga/issues/4524), [#4525](https://github.com/beeware/toga/issues/4525), [#4528](https://github.com/beeware/toga/issues/4528)
+
 ## 0.5.4 (2026-05-06)
 
 ### Features
@@ -64,7 +97,7 @@
 - `MainWindow` objects on iOS will no longer have their content overlap slightly with the navigation bar. ([#4043](https://github.com/beeware/toga/issues/4043))
 - The `ListListener` and `TreeListener` protocols no longer incompatibly override the `insert`, `remove` and `clear` methods of `ListSource` and `TreeSource`, permitting mutable sources which are also listeners. ([#4046](https://github.com/beeware/toga/issues/4046))
 - WinForms buttons with icons will now reliably scale to 32x32px icon size, regardless of the size of the original icon image. ([#4051](https://github.com/beeware/toga/issues/4051))
-- `Screen.as_image` now properly accounts for HiDPI scaling on Winforms. ([#4051](https://github.com/beeware/toga/issues/4051))
+- `Screen.as_image` now properly accounts for HiDPI scaling on WinForms. ([#4051](https://github.com/beeware/toga/issues/4051))
 - Large static content can now be loaded into `WebView` widgets on Windows, Android and Qt. ([#4062](https://github.com/beeware/toga/issues/4062))
 - The initial layout of a `MainWindow` before resize will now be based on the correct size of the container on Qt. ([#4069](https://github.com/beeware/toga/issues/4069))
 - Window state transitions to `MAXIMIZED` from `PRESENTATION` or `FULLSCREEN` will now work reliably with the Qt backend. ([#4069](https://github.com/beeware/toga/issues/4069))
@@ -151,10 +184,10 @@
 ### Bugfixes
 
 - Buttons and other interactive widgets in scroll containers now respond properly to touch events on iOS when scrolled into view. ([#2411](https://github.com/beeware/toga/issues/2411))
-- The performance of the `asyncio` event loop on Winforms has been slightly improved. ([#2613](https://github.com/beeware/toga/issues/2613))
+- The performance of the `asyncio` event loop on WinForms has been slightly improved. ([#2613](https://github.com/beeware/toga/issues/2613))
 - The `NumberInput` widget now uses the correct localization for decimal separators. ([#2773](https://github.com/beeware/toga/issues/2773))
 - Deprecation warnings on style handling will no longer be produced when using GTK4 >= 4.10. ([#3069](https://github.com/beeware/toga/issues/3069))
-- Toga's Winforms wheel is now correctly tagged to indicate that it is x86_64-specific (as it contains an x86-64 DLL for `WebView` support). ([#3179](https://github.com/beeware/toga/issues/3179))
+- Toga's WinForms wheel is now correctly tagged to indicate that it is x86_64-specific (as it contains an x86-64 DLL for `WebView` support). ([#3179](https://github.com/beeware/toga/issues/3179))
 - Registering a font with a name that shadows a built-in font family name now raises an error instead of falling back to the system font silently. ([#3567](https://github.com/beeware/toga/issues/3567))
 - The minimum width hint of the iOS `DateInput` and `TimeInput` widgets will now fit to the actual displayed size of the picker. ([#3580](https://github.com/beeware/toga/issues/3580))
 - The `rgb` and `hsl` classes now have a `__str__` that uses modern CSS syntax. For `rgb` this is simply a nice update, but for `hsl` it corrects color rendering issues when using the web backend. ([#3611](https://github.com/beeware/toga/issues/3611))
@@ -168,7 +201,7 @@
 - Running a single-file app without an explicit app name under PDB no longer crashes. ([#3686](https://github.com/beeware/toga/issues/3686))
 - The interaction between visibility and starting an `ActivityIndicator` on iOS has been resolved. ([#3729](https://github.com/beeware/toga/issues/3729))
 - On macOS, the Close and Minimize menu options use the system-provided handlers, ensuring better adherence to system style guides. ([#3775](https://github.com/beeware/toga/issues/3775))
-- The show/hide cursor test was made more reliable on Winforms. ([#3783](https://github.com/beeware/toga/issues/3783))
+- The show/hide cursor test was made more reliable on WinForms. ([#3783](https://github.com/beeware/toga/issues/3783))
 - `OptionContainer` and `ScrollContainer` widgets will now resize continuously during the drag of a parent `SplitContainer` on macOS. ([#3787](https://github.com/beeware/toga/issues/3787))
 - The `toga-demo` app now correctly identifies its icon when run as a Python module. ([#3926](https://github.com/beeware/toga/issues/3926))
 
@@ -200,7 +233,7 @@
 - `toga.App.paths` properties now create the path on demand, if it does not already exist. ([#3236](https://github.com/beeware/toga/issues/3236))
 - The Web backend now provides Selection and Slider widgets. ([#3334](https://github.com/beeware/toga/issues/3334))
 - Lazily loaded objects in the `toga` namespace now support type checking. ([#3358](https://github.com/beeware/toga/issues/3358))
-- Winforms now provides an ActivityIndicator widget. ([#3473](https://github.com/beeware/toga/issues/3473))
+- WinForms now provides an ActivityIndicator widget. ([#3473](https://github.com/beeware/toga/issues/3473))
 - WebViews on macOS now support file uploads. ([#3484](https://github.com/beeware/toga/issues/3484))
 - `Pack.font_family` now accepts a list of possible values; text will be rendered with the first font family that is available. ([#3526](https://github.com/beeware/toga/issues/3526))
 - App paths are now cached upon first retrieval. ([#3544](https://github.com/beeware/toga/issues/3544))
@@ -249,9 +282,9 @@
 
 ### Bugfixes
 
-- The asyncio event loop used on Winforms now shuts down correctly, ensuring there are no dangling resources on application exit. ([#3266](https://github.com/beeware/toga/issues/3266))
+- The asyncio event loop used on WinForms now shuts down correctly, ensuring there are no dangling resources on application exit. ([#3266](https://github.com/beeware/toga/issues/3266))
 - Changing a widget's `text_direction` now triggers a layout refresh, since it can affect child positioning. ([#3268](https://github.com/beeware/toga/issues/3268))
-- Table rows are now highlighted on Winforms when the widget doesn't have focus. ([#3269](https://github.com/beeware/toga/issues/3269))
+- Table rows are now highlighted on WinForms when the widget doesn't have focus. ([#3269](https://github.com/beeware/toga/issues/3269))
 - Support for GTK3 installs that use a GIO release older than 2.72 has been restored. Ubuntu 22.04, and other Debian 12-derived systems are affected by this issue. ([#3296](https://github.com/beeware/toga/issues/3296))
 - Some errors observed on the Web backend during app startup have been resolved. ([#3301](https://github.com/beeware/toga/issues/3301))
 - An incompatibility with Textual 3.0 that caused log messages to be generated on the console on app exit has been resolved. ([#3342](https://github.com/beeware/toga/issues/3342))
@@ -410,7 +443,7 @@ This release contains no new features. The primary purpose of this release is to
 - An `on_running` event handler was added to `toga.App`. This event will be triggered when the app's main loop starts. ([#2678](https://github.com/beeware/toga/issues/2678))
 - The `on_exit` handler for an app can now be defined by overriding the method on the `toga.App` subclass. ([#2678](https://github.com/beeware/toga/issues/2678))
 - CommandSet now exposes a full set and dictionary interface. Commands can be added to a CommandSet using `[]` notation and a command ID; they can be removed using set-like `remove()` or `discard()` calls with a Command instance, or using dictionary-like `pop()` or `del` calls with the command ID. ([#2701](https://github.com/beeware/toga/issues/2701))
-- WebView2 on Winforms now uses the v1.0.2592.51 WebView2 runtime DLLs. ([#2764](https://github.com/beeware/toga/issues/2764))
+- WebView2 on WinForms now uses the v1.0.2592.51 WebView2 runtime DLLs. ([#2764](https://github.com/beeware/toga/issues/2764))
 
 ### Bugfixes
 
@@ -418,7 +451,7 @@ This release contains no new features. The primary purpose of this release is to
 - The type of the content in a `SplitContainer` was modified to be a list, rather than a tuple. ([#2638](https://github.com/beeware/toga/issues/2638))
 - Programmatically invoking `close()` on the main window will now trigger `on_exit` handling. Previously `on_exit` handling would only be triggered if the close was initiated by a user action. ([#2643](https://github.com/beeware/toga/issues/2643))
 - GTK apps no longer have extra padding between the menu bar and the window content when the app does not have a toolbar. ([#2646](https://github.com/beeware/toga/issues/2646))
-- On Winforms, the window of an application that is set as the main window is no longer shown as a result of assigning the window as `App.main_window`. ([#2653](https://github.com/beeware/toga/issues/2653))
+- On WinForms, the window of an application that is set as the main window is no longer shown as a result of assigning the window as `App.main_window`. ([#2653](https://github.com/beeware/toga/issues/2653))
 - Menu items on macOS are now able to correctly bind to the arrow and home/end/delete keys. ([#2661](https://github.com/beeware/toga/issues/2661))
 - On GTK, the currently selected tab index on an `OptionContainer` can now be retrieved inside an `on_select` handler. ([#2703](https://github.com/beeware/toga/issues/2703))
 - The WebView can now be loaded when using Python from the Windows Store. ([#2752](https://github.com/beeware/toga/issues/2752))
@@ -504,9 +537,9 @@ This release contains no new features. The primary purpose of this release is to
 ### Bugfixes
 
 - Compatibility with macOS 14 (Sonoma) was added. ([#2188](https://github.com/beeware/toga/issues/2188), [#2383](https://github.com/beeware/toga/issues/2383))
-- Key handling for Insert, Delete, NumLock, ScrollLock, and some other esoteric keys was added for GTK and Winforms. Some uses of bare Shift on GTK were also improved. ([#2220](https://github.com/beeware/toga/issues/2220))
+- Key handling for Insert, Delete, NumLock, ScrollLock, and some other esoteric keys was added for GTK and WinForms. Some uses of bare Shift on GTK were also improved. ([#2220](https://github.com/beeware/toga/issues/2220))
 - A crash observed on iOS devices when taking photographs has been resolved. ([#2381](https://github.com/beeware/toga/issues/2381))
-- Key shortcuts for punctuation and special keys (like Page Up and Escape) were added for GTK and Winforms. ([#2414](https://github.com/beeware/toga/issues/2414))
+- Key shortcuts for punctuation and special keys (like Page Up and Escape) were added for GTK and WinForms. ([#2414](https://github.com/beeware/toga/issues/2414))
 - The placement of menu items relative to sub-menus was corrected on GTK. ([#2418](https://github.com/beeware/toga/issues/2418))
 - Tree data nodes can now be modified prior to tree expansion. ([#2439](https://github.com/beeware/toga/issues/2439))
 - Some memory leaks associated with macOS Icon and Image storage were resolved. ([#2472](https://github.com/beeware/toga/issues/2472))
@@ -552,7 +585,7 @@ This release contains no new features. The primary purpose of this release is to
 - The padding around DetailedList on Android has been reduced. ([#2338](https://github.com/beeware/toga/issues/2338))
 - The error returned when an Image is created with no source has been clarified. ([#2347](https://github.com/beeware/toga/issues/2347))
 - On macOS, `toga.Image` objects can now be created from raw data that didn't originate from a file. ([#2355](https://github.com/beeware/toga/issues/2355))
-- Winforms no longer generates a system beep when pressing Enter in a TextInput. ([#2374](https://github.com/beeware/toga/issues/2374))
+- WinForms no longer generates a system beep when pressing Enter in a TextInput. ([#2374](https://github.com/beeware/toga/issues/2374))
 
 ### Backward incompatible changes
 
@@ -618,12 +651,12 @@ This release contains no new features. The primary purpose of this release is to
 - Support for custom font loading was added to the GTK, Cocoa and iOS backends. ([#1837](https://github.com/beeware/toga/issues/1837))
 - The testbed app has better diagnostic output when running in test mode. ([#1847](https://github.com/beeware/toga/issues/1847))
 - A Textual backend was added to support terminal applications. ([#1867](https://github.com/beeware/toga/issues/1867))
-- Support for determining the currently active window was added to Winforms. ([#1872](https://github.com/beeware/toga/issues/1872))
+- Support for determining the currently active window was added to WinForms. ([#1872](https://github.com/beeware/toga/issues/1872))
 - Programmatically scrolling to top and bottom in MultilineTextInput is now possible on iOS. ([#1876](https://github.com/beeware/toga/issues/1876))
 - A handler has been added for users confirming the contents of a TextInput by pressing Enter/Return. ([#1880](https://github.com/beeware/toga/issues/1880))
 - An API for giving a window focus was added. ([#1887](https://github.com/beeware/toga/issues/1887))
 - Widgets now have a `.clear()` method to remove all child widgets. ([#1893](https://github.com/beeware/toga/issues/1893))
-- Winforms now supports hiding and re-showing the app cursor. ([#1894](https://github.com/beeware/toga/issues/1894))
+- WinForms now supports hiding and re-showing the app cursor. ([#1894](https://github.com/beeware/toga/issues/1894))
 - ProgressBar and Switch widgets were added to the Web backend. ([#1901](https://github.com/beeware/toga/issues/1901))
 - Missing value handling was added to the Tree widget. ([#1913](https://github.com/beeware/toga/issues/1913))
 - App paths now include a `config` path for storing configuration files. ([#1964](https://github.com/beeware/toga/issues/1964))
@@ -668,8 +701,8 @@ This release contains no new features. The primary purpose of this release is to
 - The `on_result` handler is now used by Cocoa file dialogs. ([#1947](https://github.com/beeware/toga/issues/1947))
 - Pack layout now honors an explicit width/height setting of 0. ([#1958](https://github.com/beeware/toga/issues/1958))
 - The minimum window size is now correctly recomputed and enforced if window content changes. ([#2020](https://github.com/beeware/toga/issues/2020))
-- The title of windows can now be modified on Winforms. ([#2094](https://github.com/beeware/toga/issues/2094))
-- An error on Winforms when a window has no content has been resolved. ([#2095](https://github.com/beeware/toga/issues/2095))
+- The title of windows can now be modified on WinForms. ([#2094](https://github.com/beeware/toga/issues/2094))
+- An error on WinForms when a window has no content has been resolved. ([#2095](https://github.com/beeware/toga/issues/2095))
 - iOS container views are now set to automatically resize with their parent view ([#2161](https://github.com/beeware/toga/issues/2161))
 
 ### Backward incompatible changes
@@ -696,8 +729,8 @@ This release contains no new features. The primary purpose of this release is to
 - On Android, the user data folder is now a `data` sub-directory of the location returned by `context.getFilesDir()`, rather than the bare `context.getFilesDir()` location. ([#1964](https://github.com/beeware/toga/issues/1964))
 - GTK now returns `~/.local/state/appname/log` as the log file location, rather than `~/.cache/appname/log`. ([#1964](https://github.com/beeware/toga/issues/1964))
 - The location returned by `toga.App.paths.app` is now the folder that contains the Python source file that defines the app class used by the app. If you are using a `toga.App` instance directly, this may alter the path that is returned. ([#1964](https://github.com/beeware/toga/issues/1964))
-- On Winforms, if an application doesn't define an author, an author of `Unknown` is now used in application data paths, rather than `Toga`. ([#1964](https://github.com/beeware/toga/issues/1964))
-- Winforms now returns `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>/Data` as the user data file location, rather than `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>`. ([#1964](https://github.com/beeware/toga/issues/1964))
+- On WinForms, if an application doesn't define an author, an author of `Unknown` is now used in application data paths, rather than `Toga`. ([#1964](https://github.com/beeware/toga/issues/1964))
+- WinForms now returns `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>/Data` as the user data file location, rather than `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>`. ([#1964](https://github.com/beeware/toga/issues/1964))
 - Support for `SplitContainer` instances with more than 2 panels of content has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
 - Support for 3-tuple form of specifying `SplitContainer` items, used to prevent panels from resizing, has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
 - The ability to increment and decrement the current OptionContainer tab was removed. Instead of *container.current_tab += 1*, use *container.current_tab = container.current_tab.index + 1* ([#1996](https://github.com/beeware/toga/issues/1996))
@@ -765,7 +798,7 @@ This release contains no new features. The primary purpose of this release is to
 - The base Toga Widget now has 100% test coverage, and complete API documentation. ([#1834](https://github.com/beeware/toga/pull/1834))
 - Support for FreeBSD was added. ([#1836](https://github.com/beeware/toga/pull/1836))
 - The Web backend now uses Shoelace to provide web components. ([#1838](https://github.com/beeware/toga/pull/1838))
-- Winforms apps can now go full screen. ([#1863](https://github.com/beeware/toga/pull/1863))
+- WinForms apps can now go full screen. ([#1863](https://github.com/beeware/toga/pull/1863))
 
 ### Bugfixes
 
@@ -803,7 +836,7 @@ This release contains no new features. The primary purpose of this release is to
 
 ## 0.2.15
 
-- Added more widgets and cross-platform support, especially for GTK+ and Winforms
+- Added more widgets and cross-platform support, especially for GTK+ and WinForms
 
 ## 0.2.14
 
