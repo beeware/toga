@@ -22,7 +22,7 @@ class shorthand_property(ABC):
 
     def __set_name__(self, style_class, name):
         self.name = name
-        style_class._BASE_ALL_PROPERTIES[style_class].add(self.name)
+        style_class._register_property(name, self)
 
     def __get__(self, style, style_class=None):
         if style is None:
