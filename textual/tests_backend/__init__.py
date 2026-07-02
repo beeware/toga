@@ -21,7 +21,6 @@ UNIMPLEMENTED_TEST_MODULES = {
     "tests/widgets/test_numberinput.py",
     "tests/widgets/test_optioncontainer.py",
     "tests/widgets/test_passwordinput.py",
-    "tests/widgets/test_progressbar.py",
     "tests/widgets/test_scrollcontainer.py",
     "tests/widgets/test_selection.py",
     "tests/widgets/test_slider.py",
