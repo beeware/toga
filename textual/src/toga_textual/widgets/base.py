@@ -35,19 +35,41 @@ class Widget(Scalable, ABC):
     def __init__(self, interface):
         self.interface = interface
         self.container = None
+        self._pending_remove = None
         self.create()
 
-    def install(self, parent):
+    def install(self, parent, index=None):
         """Add widget and its children to the native DOM for the app.
 
         Textual does not allow widgets to be added to the DOM until their parent is
         added. Therefore, when children are added to an unmounted widget, their
         mounting is deferred until their parent is mounted.
         """
-        parent.native.mount(self.native)
+        self.container = parent
 
-        for child in self.interface.children:
-            child._impl.install(parent=self)
+        def mount():
+            if index is None:
+                parent.native.mount(self.native)
+            else:
+                parent.native.mount(self.native, before=index)
+
+            for child in self.interface.children:
+                child._impl.install(parent=self)
+
+        if self._pending_remove is None:
+            mount()
+        else:
+
+            async def mount_after_remove():
+                await self._pending_remove
+                self._pending_remove = None
+
+                if self.container is not parent:
+                    return
+
+                mount()
+
+            self.interface.app._impl.track_dom_operation(mount_after_remove())
 
     def get_size(self) -> Size:
         return Size(0, 0)
@@ -67,8 +89,8 @@ class Widget(Scalable, ABC):
     def set_enabled(self, value):
         self.native.disabled = not value
 
-    def focus(self):  # noqa B027
-        pass
+    def focus(self):
+        self.native.app.set_focus(self.native)
 
     def get_tab_index(self):
         return None
@@ -148,8 +170,8 @@ class Widget(Scalable, ABC):
     def set_text_align(self, alignment):  # noqa B027
         pass
 
-    def set_hidden(self, hidden):  # noqa B027
-        pass
+    def set_hidden(self, hidden):
+        self.native.visible = not hidden
 
     def set_font(self, font):  # noqa B027
         pass
@@ -168,13 +190,23 @@ class Widget(Scalable, ABC):
         # A child can only be added to a widget that is already mounted on the app.
         # So, mounting the child is deferred if the parent is not mounted yet.
         if self.native.is_attached:
-            self.native.mount(child.native)
+            child.install(parent=self)
+        else:
+            child.container = self
 
-    def insert_child(self, index, child):  # noqa B027
-        pass
+    def insert_child(self, index, child):
+        # A child can only be added to a widget that is already mounted on the app.
+        # So, mounting the child is deferred if the parent is not mounted yet.
+        if self.native.is_attached:
+            child.install(parent=self, index=index)
+        else:
+            child.container = self
 
     def remove_child(self, child):
-        self.native.remove_children([child.native])
+        child.container = None
+        child._pending_remove = self.interface.app._impl.track_dom_operation(
+            self.native.remove_children([child.native])
+        )
 
     def refresh(self):
         intrinsic = self.interface.intrinsic

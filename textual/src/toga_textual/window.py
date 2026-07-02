@@ -166,6 +166,17 @@ class Window:
         self.container.content = widget
         widget.install(parent=self)
 
+    @property
+    def width(self):
+        return self.container.width
+
+    @property
+    def height(self):
+        return self.container.height
+
+    def refreshed(self):
+        pass
+
     ######################################################################
     # Window size
     ######################################################################
@@ -203,7 +214,7 @@ class Window:
     # Window state
     ######################################################################
 
-    def get_window_state(self):
+    def get_window_state(self, in_progress_state=False):
         # Windows are always normal
         return WindowState.NORMAL
 

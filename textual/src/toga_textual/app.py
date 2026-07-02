@@ -33,13 +33,27 @@ class App:
 
         self._current_window = None
         self._exiting_presentation = False
+        self._pending_dom_operations = set()
 
         # run the app without displaying it
         self.headless = False
 
+    def track_dom_operation(self, operation):
+        async def wait_for_operation():
+            await operation
+
+        task = self.loop.create_task(wait_for_operation())
+        self._pending_dom_operations.add(task)
+        task.add_done_callback(self._pending_dom_operations.discard)
+        return task
+
+    async def wait_for_dom_operations(self):
+        while self._pending_dom_operations:
+            await asyncio.gather(*self._pending_dom_operations)
+
     def create(self):
         self.interface._startup()
-        self.set_current_window(self.interface.main_window._impl)
+        self.set_current_window(self.interface.main_window)
 
     ######################################################################
     # Commands and menus
@@ -116,15 +130,15 @@ class App:
 
     def set_current_window(self, window):
         previous_current_window = self._current_window
-        self._current_window = window
-        self.native.switch_screen(window.native)
-        self.native.title = window.get_title()
-        if previous_current_window != window:
+        self._current_window = window._impl
+        self.native.switch_screen(window._impl.native)
+        self.native.title = window._impl.get_title()
+        if previous_current_window != window._impl:
             if previous_current_window is not None:
                 previous_current_window.interface.on_lose_focus()
                 previous_current_window.interface.on_hide()
-            window.interface.on_gain_focus()
-            window.interface.on_show()
+            window.on_gain_focus()
+            window.on_show()
 
     ######################################################################
     # Presentation mode controls

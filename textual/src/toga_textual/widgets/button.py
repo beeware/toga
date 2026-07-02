@@ -16,18 +16,20 @@ class TogaButton(TextualButton):
 
 class Button(Widget):
     def create(self):
+        self._icon = None
         self.native = TogaButton(self)
 
     def get_text(self):
-        return self.native.label
+        return str(self.native.label)
 
     def set_text(self, text):
         self.native.label = text
 
     def get_icon(self):
-        return None
+        return self._icon
 
     def set_icon(self, icon):
+        self._icon = icon
         # Icons aren't supported on Textual
         pass
 
