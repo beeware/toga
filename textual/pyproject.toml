@@ -82,7 +82,7 @@ SimpleStatusIcon = "toga_textual.statusicons:SimpleStatusIcon"
 StatusIconSet = "toga_textual.statusicons:StatusIconSet"
 
 # Widgets
-# ActivityIndicator = "toga_textual.widgets.activityindicator:ActivityIndicator"
+ActivityIndicator = "toga_textual.widgets.activityindicator:ActivityIndicator"
 Box = "toga_textual.widgets.box:Box"
 Button = "toga_textual.widgets.button:Button"
 # Canvas = "toga_textual.widgets.canvas:Canvas"
