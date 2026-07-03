@@ -59,7 +59,10 @@
  * (issue #4389). Wrap them in a light surface in dark mode so the widget
  * stays legible regardless of the documentation theme.
  */
-[data-md-color-scheme="slate"] .md-typeset img[src*="/reference/images/"] {
+[data-md-color-scheme="slate"] .md-typeset img:is(
+    [src*="/reference/images/"],
+    [src*="../images/"][alt*=" on "]
+) {
     background-color: #ffffff;
     padding: 0.25rem;
     border-radius: 0.2rem;
