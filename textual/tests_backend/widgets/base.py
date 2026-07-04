@@ -6,6 +6,7 @@ from ..probe import BaseProbe
 
 class SimpleProbe(BaseProbe):
     invalid_size_while_hidden = False
+    supports_tab_index = False
     supports_text_width_change = True
 
     def __init__(self, widget):
