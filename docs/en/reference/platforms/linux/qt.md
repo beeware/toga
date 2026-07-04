@@ -20,19 +20,33 @@ Although Qt *can* be installed on Windows and macOS, and the `toga-qt` backend *
 
 Most Qt testing occurs with Qt 6.10 as this is the version that is installable through `pip`.
 
-The system packages that provide Qt must be installed manually:
+The system packages that provide Qt, its dependencies, and/or PySide6 must be installed manually:
 
 -8<- "snippets/qt-prerequisites.md"
 
 ## Installation
 
-`toga-qt` must be installed directly using `pip`. The `pyside6` optional extra is used to request the installation of the Python language bindings for Qt.
+`toga-qt` must be installed directly using `pip` in a virtual environment. The exact options used will depend on whether you choose to integrate your application with the system PySide6 runtime.
+
+### Without System Integration
+
+The `pyside6` optional extra is used to request the installation of the Python language bindings for Qt directly in the virtual environment.
 
 ```console
 $ python -m pip install toga-qt[pyside6]
 ```
 
-This will install the full `PySide6` package, which includes both `PySide6-Essentials` and `PySide6-Addons`. The `PySide6-Addons` package is required to support the [WebView][] widget. If your app does not use [WebView][], you can specify a requirement of `toga-qt[pyside6-essentials]` to only install the `PySide6-Essentials` package.
+This will install the full `PySide6` package, which includes both `PySide6-Essentials` and `PySide6-Addons`. The `PySide6-Addons` package is required to support the [WebView][] widget. If your app does not use [WebView][], you can specify a requirement of `toga-qt[pyside6-essentials]` to only install the `PySide6-Essentials` package. These will also bundle a full copy of Qt into the virtual environment.
+
+### With System Integration
+
+The `system` optional extra is used to request the integration of the system PySide6 runtime into the virtual environment.
+
+```console
+$ python -m pip install toga-qt[system]
+```
+
+This will install a shim to redirect imports of `PySide6`-relevant packages from system-installed Python packages into the current virtual environment. The instructions to install `PySide6` at the system level is included in the [prerequisites][qt-prerequisites] section.
 
 ## Implementation details
 
