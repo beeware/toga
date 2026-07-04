@@ -38,14 +38,6 @@ class TextInputProbe(SimpleProbe):
         # Text alignment is currently not implemented by the backend.
         return LEFT
 
-    def assert_text_align(self, expected):
-        # Text alignment is currently not implemented by the backend.
-        return
-
-    def assert_vertical_text_align(self, expected):
-        # Textual inputs don't expose configurable vertical text alignment.
-        return
-
     async def type_character(self, char):
         if self.widget.readonly:
             return

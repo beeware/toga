@@ -1,7 +1,7 @@
-from pathlib import Path
-
 import pytest
 from textual.app import App as TextualApp
+
+from toga_textual.paths import Paths
 
 from .probe import BaseProbe
 
@@ -17,23 +17,27 @@ class AppProbe(BaseProbe):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        self.paths = Paths(app.paths)
         assert isinstance(self.app._impl.native, TextualApp)
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed"
+        return self.paths.get_config_path()
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed"
+        return self.paths.get_data_path()
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed"
+        return self.paths.get_cache_path()
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed/log"
+        return self.paths.get_logs_path()
+
+    async def assert_event_loop(self):
+        pytest.skip("Event loop assertions are not implemented on Textual.")
 
     @property
     def is_cursor_visible(self):

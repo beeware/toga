@@ -27,6 +27,11 @@ class SimpleProbe(BaseProbe):
     def assert_text_align(self, expected):
         pytest.skip("Text alignment assertions are not implemented on Textual.")
 
+    def assert_vertical_text_align(self, expected):
+        pytest.skip(
+            "Vertical text alignment assertions are not implemented on Textual."
+        )
+
     @property
     def enabled(self):
         return not self.native.disabled
