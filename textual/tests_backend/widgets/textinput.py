@@ -42,15 +42,14 @@ class TextInputProbe(SimpleProbe):
         if self.widget.readonly:
             return
         if char == "\n":
-            self.widget.on_confirm()
+            await self.native.action_submit()
         elif char == "<esc>":
             return
         else:
-            self.native._reactive_value = f"{self.widget.value}{char}"
-            self.widget._value_changed()
+            self.native.insert_text_at_cursor(char)
 
     def set_cursor_at_end(self):
-        pytest.skip("Cursor positioning is not implemented on Textual.")
+        self.native.action_end()
 
     def select_range(self, start, length):
         pytest.skip("Text selection is not implemented on Textual.")

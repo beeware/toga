@@ -11,7 +11,3 @@ class LabelProbe(SimpleProbe):
     @property
     def text(self):
         return str(self.native.renderable)
-
-    @property
-    def height(self):
-        return self.widget.layout.content_height

@@ -491,8 +491,8 @@ async def test_flex_widget_size(widget, probe):
 
     # Check the initial widget size
     # Match isn't exact because of pixel scaling on some platforms
-    assert probe.width == approx(300, rel=0.01)
-    assert probe.height == approx(200, rel=0.01)
+    probe.assert_width(300 * 0.99, 300 * 1.01)
+    probe.assert_height(200 * 0.99, 200 * 1.01)
 
     # Drop the fixed height, and make the widget flexible
     widget.style.flex = 1
@@ -517,14 +517,14 @@ async def test_flex_widget_size(widget, probe):
 
     await probe.redraw("Widget should be full width, 150px high")
     assert probe.width > 350
-    assert probe.height == approx(150, rel=0.01)
+    probe.assert_height(150 * 0.99, 150 * 1.01)
 
     # Revert to fixed width
     widget.style.width = 250
 
     await probe.redraw("Widget should be reverted to fixed width")
-    assert probe.width == approx(250, rel=0.01)
-    assert probe.height == approx(150, rel=0.01)
+    probe.assert_width(250 * 0.99, 250 * 1.01)
+    probe.assert_height(150 * 0.99, 150 * 1.01)
 
 
 async def test_flex_horizontal_widget_size(widget, probe):

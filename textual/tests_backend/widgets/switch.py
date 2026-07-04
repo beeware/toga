@@ -25,4 +25,5 @@ class SwitchProbe(SimpleProbe):
         return self.native_switch.has_focus
 
     async def press(self):
-        self.widget.value = not self.widget.value
+        self.native_switch.action_toggle_switch()
+        await self.redraw("Switch should be pressed")

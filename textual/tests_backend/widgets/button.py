@@ -19,4 +19,5 @@ class ButtonProbe(SimpleProbe):
         pytest.skip("Button icons are not implemented on Textual.")
 
     async def press(self):
-        self.widget.on_press()
+        self.native.press()
+        await self.redraw("Button should be pressed")
