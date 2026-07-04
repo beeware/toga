@@ -154,9 +154,6 @@ test_sources = [
 
 requires = [
     "../qt[pyside6]",
-]
-
-test_requires = [
     # psutil would ideally be top-level test dependency. However, for Python < 3.13,
     # Android identifies as Linux, and psutil isn't available for Android.
     "psutil==7.2.2 ; python_version < '3.13'",
