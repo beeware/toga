@@ -23,8 +23,7 @@ if toga.platform.current_platform not in {"macOS", "windows", "linux"}:
 skip_on_backends(
     "toga_textual",
     reason=(
-        "Desktop menu and window management assertions are not implemented on "
-        "Textual."
+        "Desktop menu and window management assertions are not implemented on Textual."
     ),
     allow_module_level=True,
 )
