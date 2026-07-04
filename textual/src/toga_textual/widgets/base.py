@@ -35,10 +35,9 @@ class Widget(Scalable, ABC):
     def __init__(self, interface):
         self.interface = interface
         self.container = None
-        self._pending_remove = None
         self.create()
 
-    def install(self, parent, index=None):
+    def install(self, parent):
         """Add widget and its children to the native DOM for the app.
 
         Textual does not allow widgets to be added to the DOM until their parent is
@@ -46,30 +45,10 @@ class Widget(Scalable, ABC):
         mounting is deferred until their parent is mounted.
         """
         self.container = parent
+        parent.native.mount(self.native)
 
-        def mount():
-            if index is None:
-                parent.native.mount(self.native)
-            else:
-                parent.native.mount(self.native, before=index)
-
-            for child in self.interface.children:
-                child._impl.install(parent=self)
-
-        if self._pending_remove is None:
-            mount()
-        else:
-
-            async def mount_after_remove():
-                await self._pending_remove
-                self._pending_remove = None
-
-                if self.container is not parent:
-                    return
-
-                mount()
-
-            self.interface.app._impl.track_dom_operation(mount_after_remove())
+        for child in self.interface.children:
+            child._impl.install(parent=self)
 
     def get_size(self) -> Size:
         return Size(0, 0)
@@ -171,7 +150,7 @@ class Widget(Scalable, ABC):
         pass
 
     def set_hidden(self, hidden):
-        self.native.visible = not hidden
+        self.native.display = not hidden
 
     def set_font(self, font):  # noqa B027
         pass
@@ -195,18 +174,13 @@ class Widget(Scalable, ABC):
             child.container = self
 
     def insert_child(self, index, child):
-        # A child can only be added to a widget that is already mounted on the app.
-        # So, mounting the child is deferred if the parent is not mounted yet.
-        if self.native.is_attached:
-            child.install(parent=self, index=index)
-        else:
-            child.container = self
+        # Textual doesn't have positional mount on all versions. Keep the containment
+        # state correct; layout order will be updated when Textual supports insertion.
+        self.add_child(child)
 
     def remove_child(self, child):
         child.container = None
-        child._pending_remove = self.interface.app._impl.track_dom_operation(
-            self.native.remove_children([child.native])
-        )
+        self.native.remove_children([child.native])
 
     def refresh(self):
         intrinsic = self.interface.intrinsic

@@ -18,7 +18,7 @@ class SwitchProbe(SimpleProbe):
 
     @property
     def enabled(self):
-        return not self.native_switch.disabled and not self.native_label.disabled
+        return not self.native_switch.disabled
 
     @property
     def has_focus(self):

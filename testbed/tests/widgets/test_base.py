@@ -166,10 +166,7 @@ async def test_parenting(widget, probe):
 
 
 async def test_tab_index(widget, probe, other):
-    if (
-        toga.platform.current_platform not in {"windows"}
-        or toga.backend == "toga_textual"
-    ):
+    if toga.platform.current_platform not in {"windows"}:
         assert widget.tab_index is None
         assert other.tab_index is None
     else:

@@ -19,22 +19,6 @@ register_assert_rewrite("tests.widgets")
 register_assert_rewrite("tests_backend")
 
 
-def pytest_collection_modifyitems(items):
-    try:
-        backend_tests = import_module("tests_backend")
-    except ModuleNotFoundError as exc:
-        if exc.name != "tests_backend":
-            raise
-        return
-
-    try:
-        collection_hook = backend_tests.pytest_collection_modifyitems
-    except AttributeError:
-        pass
-    else:
-        collection_hook(items)
-
-
 # Use this for widgets or tests which are not supported on some platforms,
 # but could be supported in the future.
 def skip_on_platforms(*platforms, reason=None, allow_module_level=False):

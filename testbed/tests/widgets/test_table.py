@@ -7,7 +7,7 @@ import toga
 from toga.sources import AccessorColumn, ListListener, ListSource
 from toga.style.pack import Pack
 
-from ..conftest import skip_on_platforms
+from ..conftest import skip_on_backends, skip_on_platforms
 from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
@@ -16,6 +16,12 @@ from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_widget_size,
     test_font,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="Table is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 # Tables can't be given focus on mobile

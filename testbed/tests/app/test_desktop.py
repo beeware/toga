@@ -20,10 +20,12 @@ from ..window.test_window import window_probe
 ####################################################################################
 if toga.platform.current_platform not in {"macOS", "windows", "linux"}:
     pytest.skip("Test is specific to desktop platforms", allow_module_level=True)
-
 skip_on_backends(
     "toga_textual",
-    reason="Textual doesn't implement desktop menu/window-management behavior.",
+    reason=(
+        "Desktop menu and window management assertions are not implemented on "
+        "Textual."
+    ),
     allow_module_level=True,
 )
 

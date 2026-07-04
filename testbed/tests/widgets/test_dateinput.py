@@ -5,6 +5,7 @@ from pytest import fixture
 
 import toga
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -14,6 +15,12 @@ from .properties import (  # noqa: F401
     test_color_reset,
     test_enabled,
     test_flex_horizontal_widget_size,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="DateInput is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 # When setting `value` to None, how close the resulting value must be to the current

@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-import pytest
+from pytest import approx, skip
 
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, Color
 from toga.fonts import (
@@ -276,7 +276,7 @@ async def test_placeholder_color(widget, probe):
 async def test_text_width_change(widget, probe):
     "If the widget text is changed, the width of the widget changes"
     if not getattr(probe, "supports_text_width_change", True):
-        pytest.skip("This backend doesn't support text width changes.")
+        skip("The backend renders these text samples at the same width.")
 
     orig_width = probe.width
 
@@ -491,8 +491,8 @@ async def test_flex_widget_size(widget, probe):
 
     # Check the initial widget size
     # Match isn't exact because of pixel scaling on some platforms
-    probe.assert_width(297, 303)
-    probe.assert_height(198, 202)
+    assert probe.width == approx(300, rel=0.01)
+    assert probe.height == approx(200, rel=0.01)
 
     # Drop the fixed height, and make the widget flexible
     widget.style.flex = 1
@@ -500,7 +500,7 @@ async def test_flex_widget_size(widget, probe):
 
     # Widget should now be 300 pixels wide, but as tall as the container.
     await probe.redraw("Widget should be 300px wide, full height")
-    probe.assert_width(297, 303)
+    assert probe.width == approx(300, rel=0.01)
     assert probe.height > 350
 
     # Make the parent a COLUMN box
@@ -517,14 +517,14 @@ async def test_flex_widget_size(widget, probe):
 
     await probe.redraw("Widget should be full width, 150px high")
     assert probe.width > 350
-    probe.assert_height(148, 152)
+    assert probe.height == approx(150, rel=0.01)
 
     # Revert to fixed width
     widget.style.width = 250
 
     await probe.redraw("Widget should be reverted to fixed width")
-    probe.assert_width(247, 253)
-    probe.assert_height(148, 152)
+    assert probe.width == approx(250, rel=0.01)
+    assert probe.height == approx(150, rel=0.01)
 
 
 async def test_flex_horizontal_widget_size(widget, probe):

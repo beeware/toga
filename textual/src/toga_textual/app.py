@@ -33,23 +33,9 @@ class App:
 
         self._current_window = None
         self._exiting_presentation = False
-        self._pending_dom_operations = set()
 
         # run the app without displaying it
         self.headless = False
-
-    def track_dom_operation(self, operation):
-        async def wait_for_operation():
-            await operation
-
-        task = self.loop.create_task(wait_for_operation())
-        self._pending_dom_operations.add(task)
-        task.add_done_callback(self._pending_dom_operations.discard)
-        return task
-
-    async def wait_for_dom_operations(self):
-        while self._pending_dom_operations:
-            await asyncio.gather(*self._pending_dom_operations)
 
     def create(self):
         self.interface._startup()

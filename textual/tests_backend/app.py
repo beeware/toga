@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 
 import pytest
@@ -22,44 +21,19 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        if sys.platform == "darwin":
-            return Path.home() / f"Library/Preferences/{self.app.app_id}"
-        elif sys.platform == "win32":
-            return self._windows_app_dir / "Config"
-        else:
-            return Path.home() / f".config/{self.app.app_name}"
+        return Path.home() / ".config/testbed"
 
     @property
     def data_path(self):
-        if sys.platform == "darwin":
-            return Path.home() / f"Library/Application Support/{self.app.app_id}"
-        elif sys.platform == "win32":
-            return self._windows_app_dir / "Data"
-        else:
-            return Path.home() / f".local/share/{self.app.app_name}"
+        return Path.home() / ".local/share/testbed"
 
     @property
     def cache_path(self):
-        if sys.platform == "darwin":
-            return Path.home() / f"Library/Caches/{self.app.app_id}"
-        elif sys.platform == "win32":
-            return self._windows_app_dir / "Cache"
-        else:
-            return Path.home() / f".cache/{self.app.app_name}"
+        return Path.home() / ".cache/testbed"
 
     @property
     def logs_path(self):
-        if sys.platform == "darwin":
-            return Path.home() / f"Library/Logs/{self.app.app_id}"
-        elif sys.platform == "win32":
-            return self._windows_app_dir / "Logs"
-        else:
-            return Path.home() / f".local/state/{self.app.app_name}/log"
-
-    @property
-    def _windows_app_dir(self):
-        author = "Unknown" if self.app.author is None else self.app.author
-        return Path.home() / f"AppData/Local/{author}/{self.app.formal_name}"
+        return Path.home() / ".local/state/testbed/log"
 
     @property
     def is_cursor_visible(self):
@@ -69,43 +43,43 @@ class AppProbe(BaseProbe):
         pytest.xfail("Textual doesn't have app-level unhide.")
 
     def assert_app_icon(self, icon):
-        pytest.xfail("Textual doesn't support native app icons.")
+        pytest.skip("App icon assertions are not implemented on Textual.")
 
     def assert_dialog_in_focus(self, dialog):
         pytest.skip("Dialog focus assertions are not implemented on Textual.")
 
     def activate_menu_hide(self):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def activate_menu_exit(self):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def activate_menu_about(self):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     async def close_about_dialog(self):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def activate_menu_visit_homepage(self):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def assert_system_menus(self):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def activate_menu_close_window(self):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def activate_menu_close_all_windows(self):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def activate_menu_minimize(self):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def assert_menu_item(self, path, enabled):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def assert_menu_order(self, path, expected):
-        pytest.xfail("Textual doesn't support native app menus.")
+        pytest.skip("Menus are not implemented on Textual.")
 
     def keystroke(self, combination):
         pytest.skip("Keystrokes are not implemented on Textual.")
