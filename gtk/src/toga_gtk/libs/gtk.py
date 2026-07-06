@@ -6,30 +6,33 @@ gtk_version = "4.0" if os.getenv("TOGA_GTK") == "4" else "3.0"
 gi.require_version("Gdk", gtk_version)
 gi.require_version("Gtk", gtk_version)
 
-# no-covering because we cannot test all DE and TOGA_GTKLIB variables in CI
-# Detect the GTK DE-specific library to be used.  The TOGA_GTKLIB value will
-# be prioritized, or, if no GTK4 library is specified, falls back to detecting
-# with desktop environment.
+# Detect the GTK DE-specific library to be used. The TOGA_GTKLIB value will be
+# prioritized, or, if no GTK4 library is specified, falls back to detecting with
+# desktop environment.
+#
+# no-covering because we cannot test all DE and TOGA_GTKLIB variables in CI.
 if gtk_version == "4.0":  # pragma: no cover
-    if os.getenv("TOGA_GTKLIB") == "Adw":
-        gtklib = "Adw"
-    elif os.getenv("TOGA_GTKLIB") == "None":
-        gtklib = None
-    elif os.getenv("TOGA_GTKLIB", "") == "":
-        # No TOGA_GTKLIB specified; autodetect from DE
-        if "GNOME" in os.getenv("XDG_CURRENT_DESKTOP", "").split(":"):
+    match os.getenv("TOGA_GTKLIB"):
+        case "Adw":
             gtklib = "Adw"
-        else:
+        case "None":
             gtklib = None
-    else:
-        # Fallback -- a specified TOGA_GTKLIB that is unsupported; use no GTK lib
-        # integration for now since libadwaita would look out of place on DEs with
-        # other libs (that we currently don't support).
-        print(
-            f"WARNING: Unsupported TOGA_GTKLIB value {os.getenv('TOGA_GTKLIB', '')!r}. "
-            f"Supported values are: 'Adw', 'None'.  Defaulting to 'None'."
-        )
-        gtklib = None
+        case None:
+            # No TOGA_GTKLIB specified; autodetect from DE
+            if "GNOME" in os.getenv("XDG_CURRENT_DESKTOP", "").split(":"):
+                gtklib = "Adw"
+            else:
+                gtklib = None
+        case _:
+            # Fallback -- a specified TOGA_GTKLIB that is unsupported; use no GTK lib
+            # integration for now since libadwaita would look out of place on DEs with
+            # other libs (that we currently don't support).
+            print(
+                f"WARNING: Unsupported TOGA_GTKLIB value "
+                f"{os.getenv('TOGA_GTKLIB', '')!r}. Supported values are: 'Adw', "
+                f"'None'.  Defaulting to 'None'."
+            )
+            gtklib = None
 else:  # pragma: no-cover-if-gtk4
     gtklib = None
 
@@ -41,7 +44,7 @@ if gtklib == "Adw":  # pragma: no-cover-unless-libadwaita
 elif gtklib is None:  # pragma: no-cover-unless-plain-gtk  # pragma: no branch
     Adw = None
 
-from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
+from gi.events import GLibEventLoop  # noqa: E402, F401
 from gi.repository import (  # noqa: E402, F401
     Gdk,
     GdkPixbuf,
@@ -97,8 +100,8 @@ if default_display is None:  # pragma: no cover
 
 IS_WAYLAND = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 
-# The following imports will fail if the underlying libraries or their API
-# wrappers aren't installed; handle failure gracefully (see
+# The following imports will fail if the underlying libraries or their API wrappers
+# aren't installed; handle failure gracefully (see
 # https://github.com/beeware/toga/issues/26)
 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     try:

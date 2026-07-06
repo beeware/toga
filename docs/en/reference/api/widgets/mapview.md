@@ -63,7 +63,7 @@ Pins can respond to being pressed. When a pin is pressed, the map generates an `
 
 ## Notes
 
-- The Android, GTK and Winforms implementations of MapView use [OpenStreetMap](https://www.openstreetmap.org/about) as a source of map tiles. OpenStreetMap is an open data project with its own [copyright, license terms, and acceptable use policies](https://www.openstreetmap.org/copyright). If you make use of MapView in your application, it is your responsibility to ensure that your app complies with these terms. In addition, we strongly encourage you to financially support the [OpenStreetMap Foundation](https://osmfoundation.org), as their work is what allows Toga to provide map content on these platforms.
+- The Android, GTK and WinForms implementations of MapView use [OpenStreetMap](https://www.openstreetmap.org/about) as a source of map tiles. OpenStreetMap is an open data project with its own [copyright, license terms, and acceptable use policies](https://www.openstreetmap.org/copyright). If you make use of MapView in your application, it is your responsibility to ensure that your app complies with these terms. In addition, we strongly encourage you to financially support the [OpenStreetMap Foundation](https://osmfoundation.org), as their work is what allows Toga to provide map content on these platforms.
 - On macOS and iOS, MapView will not repeat map tiles if the viewable area at the given zoom level is bigger than the entire world. A zoom to a very low level will be clipped to the lowest level that allows displaying the map without repeating tiles.
 
 ## Reference

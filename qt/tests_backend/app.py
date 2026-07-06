@@ -180,3 +180,6 @@ class AppProbe(BaseProbe):
 
     def perform_edit_action(self, action):
         self._activate_menu_item(["Edit", action])
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

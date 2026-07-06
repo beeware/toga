@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import PIL.Image
+import pytest
 from rubicon.objc import SEL, ObjCClass, objc_id, send_message
 
 import toga
@@ -343,3 +344,6 @@ class AppProbe(BaseProbe, DialogsMixin):
             restype=None,
             argtypes=[objc_id],
         )
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

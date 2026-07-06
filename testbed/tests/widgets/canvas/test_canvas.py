@@ -17,6 +17,7 @@ from toga.colors import (
     REBECCAPURPLE,
     RED,
     TRANSPARENT,
+    WHITE,
     rgb,
 )
 from toga.constants import Baseline, FillRule
@@ -170,11 +171,11 @@ async def test_image_data(canvas, probe):
     )
 
 
-def assert_reference(probe, reference, threshold=0.01):
+def assert_reference(probe, reference, threshold=0.01, *, image=None):
     """Assert that the canvas currently matches a reference image, within an
     RMS threshold."""
     # Get the canvas image.
-    image = probe.get_image()
+    image = image if image is not None else probe.get_image()
     scaled_image = image.resize((200, 200))
 
     # Look for a platform-specific reference variant.
@@ -306,6 +307,9 @@ async def test_quadratic_curve(canvas, probe):
 
 
 async def test_arc(canvas, probe):
+    # The default width of 1.0 causes enough antialiasing that it's harder to compare.
+    canvas.line_width = 2.0
+
     """An arc can be drawn."""
     canvas.begin_path()
 
@@ -540,7 +544,7 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.line_to(x=180, y=180)
     canvas.line_to(x=100, y=180)
     canvas.close_path()
-    canvas.stroke(stroke_style=REBECCAPURPLE)
+    canvas.stroke(stroke_style=REBECCAPURPLE, line_width=2.0)
     canvas.fill(fill_style=CORNFLOWERBLUE)
 
     # Draw an open path inside it
@@ -551,7 +555,7 @@ async def test_stroke_and_fill(canvas, probe):
     canvas.line_to(x=150, y=160)
     canvas.line_to(x=110, y=160)
     canvas.fill(fill_style=GOLDENROD, fill_rule=FillRule.EVENODD)
-    canvas.stroke(stroke_style=REBECCAPURPLE)
+    canvas.stroke(stroke_style=REBECCAPURPLE, line_width=2.0)
 
     await probe.redraw("Stroke should be drawn")
     assert_reference(probe, "stroke_and_fill")
@@ -706,8 +710,42 @@ async def test_transforms(canvas, probe, restore_method):
     assert_reference(probe, "transforms")
 
 
+async def test_transforms_as_context_managers(canvas, probe):
+    """Transforms can be used as context managers."""
+    # Draw the same image as test_transforms above, but using the transforms as context
+    # managers.
+    with canvas.translate(160, 20):
+        canvas.rect(0, 0, 20, 60)
+        canvas.fill(fill_style=CORNFLOWERBLUE)
+
+    with canvas.rotate(pi / 4):
+        canvas.begin_path()
+        canvas.rect(200, 0, 20, 60)
+        canvas.fill(fill_style=REBECCAPURPLE)
+
+    with canvas.scale(2, 5):
+        canvas.begin_path()
+        canvas.rect(10, 10, 10, 10)
+        canvas.fill(fill_style=GOLDENROD)
+
+    with canvas.translate(100, 60):
+        canvas.begin_path()
+        canvas.rotate(pi / 7 * 4)
+        canvas.scale(5, 2)
+        canvas.rect(2, 2, 10, 10)
+        canvas.fill()
+
+    await probe.redraw("Transforms can be applied")
+    assert_reference(probe, "transforms")
+
+
 async def test_transforms_mid_path(canvas, probe):
     """Transforms can be applied mid-path."""
+
+    # See #4474. Right now, Windows doesn't properly stretch the stroke to account for
+    # transforms, *if* the stroke width is 1. Once that's fixed, we should test both 1
+    # and 2 (or a larger number).
+    canvas.line_width = 2.0
 
     # draw a series of rotated rectangles
     canvas.begin_path()
@@ -730,6 +768,11 @@ async def test_transforms_mid_path(canvas, probe):
         canvas.translate(5, 3)
     canvas.close_path()
     canvas.reset_transform()
+
+    # See #4044. reset_transform() on macOS and iOS also resets other context
+    # attributes, including line width.
+    canvas.line_width = 2.0
+
     canvas.move_to(110, 100)
     canvas.scale(5, 1)
     canvas.ellipse(20, 100, 2, 20, 0, 0, 2 * pi)
@@ -794,12 +837,78 @@ async def test_singular_transforms(canvas, probe):
     assert_reference(probe, "singular_transforms")
 
 
+async def test_reset_transform(canvas, probe):
+    """Transform can be reset (and doesn't affect other attributes)."""
+
+    i = 1
+
+    def draw_square(canvas, offset=False):
+        nonlocal i
+
+        offset = 15 if offset else 0
+        with canvas.fill():
+            with canvas.stroke():
+                canvas.rect(10 + offset, 10 + offset, 40, 40)
+
+        with canvas.state(fill_style=WHITE):
+            # The text is *partly* for helpful visual labeling, but it also makes sure
+            # text isn't getting transformed differently in the screenshot.
+            canvas.fill_text(i, 15 + offset, 10 + offset, baseline=Baseline.TOP)
+
+        i += 1
+
+    # Confirm this is a no-op.
+    canvas.reset_transform()
+
+    # 1. Top left, default black-on-black
+    canvas.line_width = 2
+    draw_square(canvas)
+
+    # 2. Top right, purple-on-blue
+    canvas.translate(110, 0)
+    canvas.fill_style = CORNFLOWERBLUE
+    canvas.stroke_style = REBECCAPURPLE
+    canvas.line_width = 10
+    canvas.line_dash = [8, 3, 4, 3]
+    draw_square(canvas)
+
+    with canvas.state():
+        # 3. Bottom right, red-on-yellow
+        canvas.translate(0, 110)
+        canvas.fill_style = GOLDENROD
+        canvas.stroke_style = RED
+        canvas.line_width = 4
+        canvas.line_dash = [2, 2]
+        draw_square(canvas)
+
+        # 4. Top left (true origin), still red-on-yellow
+        canvas.reset_transform()
+        draw_square(canvas, offset=True)
+
+    # 5. Top right, purple-on-blue (back out of substate)
+    draw_square(canvas, offset=True)
+
+    await probe.redraw("Transform can be reset")
+    assert_reference(probe, "reset_transform", threshold=0.015)
+
+    if probe.screenshot_reset_transform:
+        # On iOS and Cocoa, differing coordinate systems mean that resetting transform
+        # can potentially make the on-screen widget look different from the image saved
+        # directly from it. So test a screenshot as well, just to make sure.
+        screenshot = canvas.window.as_image(format=Image.Image)
+        # Resize to correct for screen resolution, then crop to the canvas.
+        crop_size = canvas.as_image().width
+        screenshot = screenshot.crop((0, 0, crop_size, crop_size)).resize((200, 200))
+        print("Transforms also work when saved as an image.")
+        assert_reference(probe, "reset_transform", image=screenshot)
+
+
 @pytest.mark.xfail(
     condition=os.environ.get("RUNNING_IN_CI") != "true",
     reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
 )
-async def test_write_text(canvas, probe):
-    """Text can be measured and written."""
+async def test_fill_and_stroke_text(canvas, probe):
+    """Text can be measured and filled/stroked."""
 
     # Use fonts which look different from the system fonts on all platforms.
     Font.register("Droid Serif", "resources/fonts/DroidSerif-Regular.ttf")
@@ -817,8 +926,9 @@ async def test_write_text(canvas, probe):
             hello_size[0],
             hello_size[1],
         )
-    with canvas.fill(fill_style=REBECCAPURPLE):
-        canvas.write_text(
+    with canvas.state():
+        canvas.fill_style = REBECCAPURPLE
+        canvas.fill_text(
             hello_text,
             100 - (hello_size[0] // 2),
             10,
@@ -837,8 +947,9 @@ async def test_write_text(canvas, probe):
             world_size[0],
             world_size[1],
         )
-    with canvas.stroke(line_width=1):
-        canvas.write_text(
+    with canvas.state():
+        canvas.line_width = 1
+        canvas.stroke_text(
             world_text,
             100 - (world_size[0] // 2),
             100,
@@ -857,15 +968,18 @@ async def test_write_text(canvas, probe):
             toga_size[0],
             toga_size[1],
         )
-    with canvas.stroke(stroke_style=REBECCAPURPLE):
-        with canvas.fill(fill_style=CORNFLOWERBLUE):
-            canvas.write_text(
-                toga_text,
-                100 - (toga_size[0] // 2),
-                150,
-                font=toga_font,
-                baseline=Baseline.MIDDLE,
-            )
+
+    canvas.stroke_style = REBECCAPURPLE
+    canvas.fill_style = CORNFLOWERBLUE
+    kwargs = {
+        "text": toga_text,
+        "x": 100 - (toga_size[0] // 2),
+        "y": 150,
+        "font": toga_font,
+        "baseline": Baseline.MIDDLE,
+    }
+    canvas.fill_text(**kwargs)
+    canvas.stroke_text(**kwargs)
 
     await probe.redraw("Text should be drawn")
     # 0.035 is equivalent to 49 pixels out of 4,000 being 100% the wrong color
@@ -900,25 +1014,22 @@ async def test_multiline_text(canvas, probe):
         canvas.move_to(0, y)
         canvas.line_to(canvas.style.width, y)
 
-    with canvas.fill():
-        # Default baseline (ALPHABETIC), with default font and various sizes.
-        x = X[0]
-        for size in [8, 12, 16, 20]:
-            text = f"{size:02d}"
-            font = Font(SYSTEM, size)
-            canvas.write_text(text, x, y, font)
-            x += canvas.measure_text(text, font)[0] + 5
+    # Default baseline (ALPHABETIC), with default font and various sizes.
+    x = X[0]
+    for size in [8, 12, 16, 20]:
+        text = f"{size:02d}"
+        font = Font(SYSTEM, size)
+        canvas.fill_text(text, x, y, font=font)
+        x += canvas.measure_text(text, font)[0] + 5
 
-        # Empty text: this should have no effect on the image, but make sure it's
-        # accepted.
-        canvas.write_text("", X[1], y)
+    # Empty text: this should have no effect on the image, but make sure it's
+    # accepted.
+    canvas.fill_text("", X[1], y)
 
-        # Explicit ALPHABETIC baseline, with default font and size but specified
-        # line height. On most systems, this will go off the right edge of the canvas.
-        line_height = 2.5
-        canvas.write_text(
-            caption(Baseline.ALPHABETIC), X[2], y, line_height=line_height
-        )
+    # Explicit ALPHABETIC baseline, with default font and size but specified
+    # line height. On most systems, this will go off the right edge of the canvas.
+    line_height = 2.5
+    canvas.fill_text(caption(Baseline.ALPHABETIC), X[2], y, line_height=line_height)
 
     # Other baselines, with default font but specified size
     y = 130
@@ -931,18 +1042,18 @@ async def test_multiline_text(canvas, probe):
         text = caption(baseline)
         width, height = canvas.measure_text(text, font)
         left = X[i]
-        if baseline == Baseline.TOP:
-            top = y
-        elif baseline == Baseline.MIDDLE:
-            top = round(y - (height / 2))
-        elif baseline == Baseline.BOTTOM:
-            top = y - height
+        match baseline:
+            case Baseline.TOP:
+                top = y
+            case Baseline.MIDDLE:
+                top = round(y - (height / 2))
+            case Baseline.BOTTOM:
+                top = y - height
 
         with canvas.stroke(stroke_style=CORNFLOWERBLUE):
             canvas.rect(left, top, width, height)
 
-        with canvas.fill():
-            canvas.write_text(text, left, y, font, baseline)
+        canvas.fill_text(text, left, y, font=font, baseline=baseline)
 
     await probe.redraw("Multiple text blocks should be drawn")
     assert_reference(probe, "multiline_text")
@@ -962,41 +1073,37 @@ async def test_write_text_and_path(canvas, probe):
     hello_font = Font("Droid Serif", 24)
     hello_size = canvas.measure_text(hello_text, hello_font)
 
-    with canvas.fill(BLACK):
-        # start building a path
-        canvas.begin_path()
-        canvas.rect(
-            100 - (hello_size[0] // 2),
-            10,
-            hello_size[0],
-            hello_size[1],
-        )
+    # start building a path
+    canvas.begin_path()
+    canvas.rect(
+        100 - (hello_size[0] // 2),
+        10,
+        hello_size[0],
+        hello_size[1],
+    )
 
-        # Draw some text independent of the path
-        # Uses fill color of black.
-        canvas.write_text(
-            hello_text,
-            100 - (hello_size[0] // 2),
-            10,
-            font=hello_font,
-            baseline=Baseline.TOP,
-        )
+    # Draw some text independent of the path
+    # Uses fill color of black.
+    canvas.fill_text(
+        hello_text,
+        100 - (hello_size[0] // 2),
+        10,
+        font=hello_font,
+        baseline=Baseline.TOP,
+    )
 
-        # continue building the path
-        canvas.move_to(
-            100 - (hello_size[0] // 2),
-            10,
-        )
-        canvas.line_to(
-            100 + (hello_size[0] // 2),
-            10 + hello_size[1],
-        )
+    # continue building the path
+    canvas.move_to(
+        100 - (hello_size[0] // 2),
+        10,
+    )
+    canvas.line_to(
+        100 + (hello_size[0] // 2),
+        10 + hello_size[1],
+    )
 
-        # now stroke the path, but *not* the text
-        canvas.stroke(stroke_style=CORNFLOWERBLUE)
-
-        # start a new path so Fill state doesn't fill current path with black
-        canvas.begin_path()
+    # now stroke the path, but *not* the text
+    canvas.stroke(stroke_style=CORNFLOWERBLUE)
 
     await probe.redraw("Text and path should be drawn independently")
     assert_reference(probe, "write_text_and_path", 0.04)
@@ -1060,29 +1167,31 @@ async def test_miter_join(canvas, probe):
     assert_reference(probe, "miter_join", threshold=0.025)
 
 
+class RectDrawer:
+    SIDE = 40
+    GAP = 15
+
+    def __init__(self):
+        self.x = self.y = self.GAP
+
+    def draw(self, canvas):
+        with canvas.stroke():
+            with canvas.fill():
+                canvas.rect(self.x, self.y, self.SIDE, self.SIDE)
+
+        self.x += self.SIDE + self.GAP
+        if self.x >= 150:
+            self.x = self.GAP
+            self.y += self.SIDE + self.GAP
+
+
 @pytest.mark.parametrize("restore_method", [state_context_manager, save_and_restore])
 async def test_attributes(canvas, probe, restore_method):
     """Context attributes can be set and restored."""
-    side = 40
-    gap = 15
-    x = gap
-    y = gap
-
-    def draw_rect(canvas):
-        nonlocal x
-        nonlocal y
-
-        with canvas.stroke():
-            with canvas.fill():
-                canvas.rect(x, y, side, side)
-
-        x += side + gap
-        if x >= 150:
-            x = gap
-            y += side + gap
+    rect = RectDrawer()
 
     # 1. Black on black
-    draw_rect(canvas)
+    rect.draw(canvas)
 
     canvas.fill_style = CORNFLOWERBLUE
     canvas.stroke_style = REBECCAPURPLE
@@ -1090,7 +1199,7 @@ async def test_attributes(canvas, probe, restore_method):
     canvas.line_dash = [2, 2]
 
     # 2. Purple on blue
-    draw_rect(canvas)
+    rect.draw(canvas)
 
     with restore_method(canvas):
         canvas.fill_style = GOLDENROD
@@ -1099,7 +1208,7 @@ async def test_attributes(canvas, probe, restore_method):
         canvas.line_dash = [5, 1]
 
         # 3. Red on goldenrod
-        draw_rect(canvas)
+        rect.draw(canvas)
 
         with restore_method(canvas):
             canvas.fill_style = RED
@@ -1108,10 +1217,10 @@ async def test_attributes(canvas, probe, restore_method):
             canvas.line_dash = []
 
             # 4. Blue on red
-            draw_rect(canvas)
+            rect.draw(canvas)
 
         # 5. Restore to red on goldenrod
-        draw_rect(canvas)
+        rect.draw(canvas)
 
         with restore_method(canvas):
             canvas.fill_style = CORNFLOWERBLUE
@@ -1120,13 +1229,69 @@ async def test_attributes(canvas, probe, restore_method):
             canvas.line_dash = [1, 4]
 
             # 6. Black on blue
-            draw_rect(canvas)
+            rect.draw(canvas)
 
         # 7. Restore to red on goldenrod
-        draw_rect(canvas)
+        rect.draw(canvas)
 
     # 8. Restore to purple on blue
-    draw_rect(canvas)
+    rect.draw(canvas)
+
+    await probe.redraw("Image should be drawn")
+    assert_reference(probe, "attributes")
+
+
+async def test_state_parameters(canvas, probe):
+    """Context attributes can be set via parameters to state()."""
+    # Draw the same image as test_attributes above.
+    rect = RectDrawer()
+
+    # 1. Black on black
+    rect.draw(canvas)
+
+    canvas.fill_style = CORNFLOWERBLUE
+    canvas.stroke_style = REBECCAPURPLE
+    canvas.line_width = 4
+    canvas.line_dash = [2, 2]
+
+    # 2. Purple on blue
+    rect.draw(canvas)
+
+    with canvas.state(
+        fill_style=GOLDENROD,
+        stroke_style=RED,
+        line_width=8,
+        line_dash=[5, 1],
+    ):
+        # 3. Red on goldenrod
+        rect.draw(canvas)
+
+        with canvas.state(
+            fill_style=RED,
+            stroke_style=CORNFLOWERBLUE,
+            line_width=3,
+            line_dash=[],
+        ):
+            # 4. Blue on red
+            rect.draw(canvas)
+
+        # 5. Restore to red on goldenrod
+        rect.draw(canvas)
+
+        with canvas.state(
+            fill_style=CORNFLOWERBLUE,
+            stroke_style=BLACK,
+            line_width=5,
+            line_dash=[1, 4],
+        ):
+            # 6. Black on blue
+            rect.draw(canvas)
+
+        # 7. Restore to red on goldenrod
+        rect.draw(canvas)
+
+    # 8. Restore to purple on blue
+    rect.draw(canvas)
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "attributes", threshold=0.02)

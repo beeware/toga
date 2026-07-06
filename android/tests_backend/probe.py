@@ -55,12 +55,13 @@ class BaseProbe:
             for name in self.window_manager.getViewRootNames()
             if name not in self.original_window_names
         ]
-        if len(new_windows) == 0:
-            return None
-        elif len(new_windows) == 1:
-            return self.window_manager.getRootView(new_windows[0])
-        else:
-            raise RuntimeError(f"More than one new window: {new_windows}")
+        match len(new_windows):
+            case 0:
+                return None
+            case 1:
+                return self.window_manager.getRootView(new_windows[0])
+            case _:
+                raise RuntimeError(f"More than one new window: {new_windows}")
 
     def get_dialog_buttons(self, dialog_view):
         button_panel = dialog_view.findViewById(R.id.button1).getParent()

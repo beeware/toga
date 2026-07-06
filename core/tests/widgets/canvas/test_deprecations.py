@@ -1,3 +1,5 @@
+from contextlib import nullcontext
+
 import pytest
 
 import toga
@@ -24,13 +26,14 @@ from toga.widgets.canvas import (
     State,
     Stroke,
     Translate,
-    WriteText,
 )
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
     assert_action_performed,
 )
+
+from .test_draw_operations import TEXT_PARAMS
 
 REBECCAPURPLE_COLOR = Color.parse(REBECCAPURPLE)
 
@@ -95,7 +98,6 @@ def test_renamed_root_state(widget):
         # Deprecated alias with all arguments
         ("Stroke", (0, 0, REBECCAPURPLE, 0, [0, 0, 0, 0]), Stroke),
         ("Stroke", (0, 0), Stroke),  # Deprecated alias with removed parameters
-        ("write_text", ("",), WriteText),
         ("draw_image", None, DrawImage),
         ("rotate", (0,), Rotate),
         ("scale", (0, 0), Scale),
@@ -103,6 +105,8 @@ def test_renamed_root_state(widget):
         ("reset_transform", (), ResetTransform),
         ("state", (), State),
         ("Context", (), State),  # Deprecated alias
+        # Don't test write_text here, because it won't "fire" unless the context is in a
+        # fill and/or stroke.
     ],
 )
 def test_state_drawing_methods(app, widget, method_name, args, DrawingActionClass):
@@ -505,6 +509,118 @@ def test_deprecated_canvas_methods(widget, method_name, DrawingActionClass):
     assert widget.root_state.drawing_actions == [state, drawing_action]
     assert isinstance(drawing_action, DrawingActionClass)
     assert_action_performed(widget, "redraw")
+
+
+# Use the same set of inputs as the "actual" fill_text and stroke_text test.
+@TEXT_PARAMS
+@pytest.mark.parametrize(
+    # Contexts no longer have an actual write_text() method; the WriteText action calls
+    # fill_text() and/or stroke_text(), depending on whether a fill and/or stroke
+    # context manager is currently active. For simplicity as well as backwards
+    # compatibility, fill_text always happens first, followed by stroke_text.
+    "context1, context2, drawing_actions",
+    [
+        # No context managers used; no instructions performed.
+        (None, None, []),
+        # A single fill context manager
+        (
+            None,
+            "fill",
+            [
+                "save",
+                "begin path",
+                "fill text",
+                ("fill", {"fill_rule": FillRule.NONZERO}),
+                "restore",
+            ],
+        ),
+        # A single stroke context manager
+        (None, "stroke", ["save", "begin path", "stroke text", "stroke", "restore"]),
+        # Fill inside context of stroke
+        (
+            "stroke",
+            "fill",
+            [
+                # Enter stroke context
+                "save",
+                "begin path",
+                # Enter fill context
+                "save",
+                "begin path",
+                # The actual text actions
+                "fill text",
+                "stroke text",
+                # Exit fill context
+                ("fill", {"fill_rule": FillRule.NONZERO}),
+                "restore",
+                # Exit stroke context
+                "stroke",
+                "restore",
+            ],
+        ),
+        # Stroke inside context of fill
+        (
+            "fill",
+            "stroke",
+            [
+                # Enter fill context
+                "save",
+                "begin path",
+                # Enter stroke context
+                "save",
+                "begin path",
+                # The actual text actions
+                "fill text",
+                "stroke text",
+                # Exit stroke context
+                "stroke",
+                "restore",
+                # Exit fill context
+                ("fill", {"fill_rule": FillRule.NONZERO}),
+                "restore",
+            ],
+        ),
+    ],
+)
+def test_deprecated_write_text(
+    widget,
+    kwargs,
+    instructions,
+    args_repr,
+    draw_attrs,
+    context1,
+    context2,
+    drawing_actions,
+):
+    """Canvas.write_text() is deprecated, but still works."""
+    context1 = nullcontext if context1 is None else getattr(widget, context1)
+    context2 = nullcontext if context2 is None else getattr(widget, context2)
+    # "Insert" the proper instructions into the expected text actions. (We don't know
+    #  them "ahead of time" in the actual parametrization decorator above.)
+    drawing_actions = [
+        (action, instructions)
+        if (isinstance(action, str) and action.endswith(" text"))
+        else action
+        for action in drawing_actions
+    ]
+    with pytest.deprecated_call():
+        with context1():
+            with context2():
+                action = widget.write_text(**kwargs)
+
+    assert_action_performed(widget, "redraw")
+    assert repr(action) == f"WriteText({args_repr})"
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == drawing_actions
+
+    # All the attributes can be retrieved.
+    assert action.text == draw_attrs["text"]
+    assert action.x == draw_attrs["x"]
+    assert action.y == draw_attrs["y"]
+    assert action.font == draw_attrs["font"]
+    assert action.baseline == draw_attrs["baseline"]
+    assert action.line_height == draw_attrs["line_height"]
 
 
 def test_deprecated_list_methods(widget):

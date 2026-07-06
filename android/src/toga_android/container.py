@@ -4,12 +4,13 @@ from .widgets.base import Scalable
 
 
 class Container(Scalable):
-    def init_container(self, native_parent):
+    def init_container(self, native_parent, pre_refresh=None):
         context = native_parent.getContext()
         self.native_parent = native_parent
         self.init_scale(context)
         self.native_width = self.native_height = 0
         self.content = None
+        self.pre_refresh = pre_refresh
 
         self.native_content = RelativeLayout(context)
         native_parent.addView(self.native_content)
@@ -40,6 +41,8 @@ class Container(Scalable):
                 self.content.interface.refresh()
 
     def refreshed(self):
+        if self.pre_refresh:
+            self.pre_refresh(self)
         # We must use the correct LayoutParams class, but we don't know what that class
         # is, so reuse the existing object. Calling the constructor of type(lp) is also
         # an option, but would probably be less safe because a subclass might change the

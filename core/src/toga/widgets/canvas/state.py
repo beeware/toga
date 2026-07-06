@@ -20,15 +20,14 @@ from .drawingaction import (
     DrawImage,
     DrawingAction,
     Ellipse,
+    FillText,
     LineTo,
     MoveTo,
     QuadraticCurveTo,
     Rect,
     ResetTransform,
-    Rotate,
     RoundRect,
-    Scale,
-    Translate,
+    StrokeText,
     WriteText,
     color_property,
 )
@@ -386,20 +385,18 @@ class DrawingActionDispatch(ABC):
     # Text drawing
     ###########################################################################
 
-    def write_text(
+    def fill_text(
         self,
         text: str,
         x: float = 0.0,
         y: float = 0.0,
+        # TODO: add optional max_width parameter
+        *,
         font: Font | None = None,
         baseline: Baseline = Baseline.ALPHABETIC,
         line_height: float | None = None,
-    ) -> WriteText:
-        """Write text at a given position.
-
-        Unlike HTML canvas's `fill_text` and `stroke_text`, Toga currently has one
-        method; whether it strokes and/or fills is determined by whether a stroke
-        and/or fill context manager is currently open.
+    ) -> FillText:
+        """Write text at a given position, filled in with the current fill style.
 
         :param text: The text to draw. Newlines will cause line breaks, but long lines
             will not be wrapped.
@@ -409,13 +406,56 @@ class DrawingActionDispatch(ABC):
         :param baseline: Alignment of text relative to the Y coordinate.
         :param line_height: Height of the line box as a multiple of the font size
             when multiple lines are present.
-        :returns: The `WriteText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+        :returns: The `FillText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the operation.
         """
-        write_text = WriteText(text, x, y, font, baseline, line_height)
-        self._add_to_target(write_text)
+        fill_text = FillText(
+            text,
+            x,
+            y,
+            font=font,
+            baseline=baseline,
+            line_height=line_height,
+        )
+        self._add_to_target(fill_text)
         self._redraw_with_warning_if_state()
-        return write_text
+        return fill_text
+
+    def stroke_text(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        # TODO: add optional max_width parameter
+        *,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+        line_height: float | None = None,
+    ) -> StrokeText:
+        """Write text at a given position, outlined with the current stroke settings.
+
+        :param text: The text to draw. Newlines will cause line breaks, but long lines
+            will not be wrapped.
+        :param x: The X coordinate of the text's left edge.
+        :param y: The Y coordinate: its meaning depends on `baseline`.
+        :param font: The font in which to draw the text. The default is the system font.
+        :param baseline: Alignment of text relative to the Y coordinate.
+        :param line_height: Height of the line box as a multiple of the font size
+            when multiple lines are present.
+        :returns: The `StrokeText` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
+            for the operation.
+        """
+        stroke_text = StrokeText(
+            text,
+            x,
+            y,
+            font=font,
+            baseline=baseline,
+            line_height=line_height,
+        )
+        self._add_to_target(stroke_text)
+        self._redraw_with_warning_if_state()
+        return stroke_text
 
     ###########################################################################
     # Bitmap drawing
@@ -431,14 +471,13 @@ class DrawingActionDispatch(ABC):
     ):
         """Draw a Toga Image.
 
-        The x, y coordinates specify the location of the bottom-left corner
-        of the image. If supplied, the width and height specify the size
-        of the image when it is rendered; the image will be
-        scaled to fit.
+        The x, y coordinates specify the location of the bottom-left corner of the
+        image. If supplied, the width and height specify the size of the image when it
+        is rendered; the image will be scaled to fit.
 
-        Drawing of images is performed with the current transformation matrix
-        applied, so the destination rectangle of the image will be rotated,
-        scaled and translated by any transformations which are currently applied.
+        Drawing of images is performed with the current transformation matrix applied,
+        so the destination rectangle of the image will be rotated, scaled and
+        translated by any transformations which are currently applied.
 
         :param image: a Toga Image
         :param x: The x-coordinate of the bottom-left corner of the image when
@@ -465,6 +504,9 @@ class DrawingActionDispatch(ABC):
     def rotate(self, radians: float) -> Rotate:
         """Add a rotation.
 
+        If used as a context manager, this saves state and applies the rotation when
+        entering, then restores state upon exiting.
+
         :param radians: The angle to rotate clockwise in radians.
         :returns: The `Rotate` [`DrawingAction`][toga.widgets.canvas.DrawingAction]
             for the transformation.
@@ -476,6 +518,9 @@ class DrawingActionDispatch(ABC):
 
     def scale(self, sx: float, sy: float) -> Scale:
         """Add a scaling transformation.
+
+        If used as a context manager, this saves state and applies the scaling when
+        entering, then restores state upon exiting.
 
         :param sx: Scale factor for the X dimension. A negative value flips the
             image horizontally.
@@ -491,6 +536,9 @@ class DrawingActionDispatch(ABC):
 
     def translate(self, tx: float, ty: float) -> Translate:
         """Add a translation.
+
+        If used as a context manager, this saves state and applies the translation when
+        entering, then restores state upon exiting.
 
         :param tx: Translation for the X dimension.
         :param ty: Translation for the Y dimension.
@@ -517,17 +565,66 @@ class DrawingActionDispatch(ABC):
     # Sub-states of this state
     ###########################################################################
 
-    def state(self) -> AbstractContextManager[State]:
+    def state(
+        self,
+        *,
+        fill_style: ColorT | None = None,
+        stroke_style: ColorT | None = None,
+        line_width: float | None = None,
+        line_dash: list[float] | None = None,
+    ) -> AbstractContextManager[State]:
         """A context manager that saves the current state of the Canvas context, and
         restores it upon exiting.
+
+        All parameters to `state()` are optional. If provided, they will set the
+        corresponding drawing context attribute upon entering the context manager.
+
+        :param fill_style: Sets the [`fill_style`][toga.Canvas.fill_style].
+        :param stroke_style: Sets the [`stroke_style`][toga.Canvas.stroke_style].
+        :param line_width: Sets the [`line_width`][toga.Canvas.line_width].
+        :param line_dash: Sets the [`line_dash`][toga.Canvas.line_dash].
 
         :return: Yields the new `State`
           [`DrawingAction`][toga.widgets.canvas.DrawingAction].
         """
-        state = State()
+        state = State(
+            fill_style=fill_style,
+            stroke_style=stroke_style,
+            line_width=line_width,
+            line_dash=line_dash,
+        )
         self._add_to_target(state)
         self._redraw_with_warning_if_state()
         return state
+
+    ######################################################################
+    # 2026-05: Backwards compatibility for <= 0.5.4
+    ######################################################################
+
+    def write_text(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+        line_height: float | None = None,
+    ) -> WriteText:
+        warnings.warn(
+            (
+                "The write_text() method is deprecated. Use fill_text() and/or "
+                "stroke_text() instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        with warnings.catch_warnings():
+            # Suppress the warning from creating the deprecated DrawingAction.
+            warnings.simplefilter("ignore", DeprecationWarning)
+            write_text = WriteText(text, x, y, font, baseline, line_height)
+        self._add_to_target(write_text)
+        self._redraw_with_warning_if_state()
+        return write_text
 
     ######################################################################
     # 2026-02: Backwards compatibility for <= 0.5.3
@@ -692,7 +789,7 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
     [`Canvas.redraw()`][toga.Canvas.redraw] for the changes to be rendered.
     """
 
-    def __init__(self):
+    def __post_init__(self):
         self.drawing_actions = []
         self._can_be_entered = True
 
@@ -866,16 +963,30 @@ class BaseState(DrawingAction, DrawingActionDispatch, ABC):
 @dataclass(repr=False)
 class State(BaseState):
     """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
-    [stateh()][toga.Canvas.state] method. Functions as a context manager.
+    [state()][toga.Canvas.state] method. Functions as a context manager.
     """
 
-    def __post_init__(self):
-        super().__init__()
+    _: KW_ONLY
+    fill_style: ColorT | None = color_property()
+    stroke_style: ColorT | None = color_property()
+    line_width: float | None = None
+    line_dash: list[float] | None = None
 
     def _draw(self, context: Any) -> None:
         context.save()
+
+        if self.fill_style is not None:
+            context.set_fill_style(self.fill_style)
+        if self.stroke_style is not None:
+            context.set_stroke_style(self.stroke_style)
+        if self.line_width is not None:
+            context.set_line_width(self.line_width)
+        if self.line_dash is not None:
+            context.set_line_dash(self.line_dash)
+
         for action in self.drawing_actions:
             action._draw(context)
+
         context.restore()
 
 
@@ -884,9 +995,6 @@ class ClosePath(BaseState):
     """The [DrawingAction][toga.widgets.canvas.DrawingAction] representing the
     [close_path()][toga.Canvas.close_path] method. Can function as a context manager.
     """
-
-    def __post_init__(self):
-        super().__init__()
 
     # Backwards compatibility for Toga <= 0.5.4
     # See DrawingActionDispatch.ClosedPath for explanation
@@ -925,10 +1033,11 @@ class ClosePath(BaseState):
 
 def _assign_style(action, name, color):
     """Determine fill_style/stroke_style based on "actual" arg and color."""
-
-    # Normalize to NOT_PROVIDED if it's the property itself.
-    color = NOT_PROVIDED if color is type(action).color else color
     style = getattr(action, f"{name}_style")
+
+    # For each, normalize to NOT_PROVIDED if it's the property itself.
+    color = NOT_PROVIDED if isinstance(color, color_property) else color
+    style = NOT_PROVIDED if isinstance(style, color_property) else style
 
     if style is not NOT_PROVIDED and color is not NOT_PROVIDED:
         raise TypeError(f"Both {name}_style and color provided")
@@ -949,11 +1058,11 @@ class Fill(BaseState):
     # (path), (fill_rule), or (path, fill_rule) usage as in JavaScript.
     fill_rule: FillRule = FillRule.NONZERO
     _: KW_ONLY
-    fill_style: ColorT | None | object = color_property()
-    color: InitVar[ColorT | None | object] = color_property()
+    fill_style: ColorT | None | object = color_property(aliased=True)
+    color: InitVar[ColorT | None | object] = color_property(aliased=True)
 
     def __post_init__(self, color):
-        super().__init__()
+        super().__post_init__()
         self.fill_style = _assign_style(self, "fill", color)
 
     def _draw(self, context: Any) -> None:
@@ -983,13 +1092,13 @@ class Stroke(BaseState):
 
     # Path parameter (positional/keyword) will go here.
     _: KW_ONLY
-    stroke_style: ColorT | None | object = color_property()
-    color: InitVar[ColorT | None | object] = color_property()
+    stroke_style: ColorT | None | object = color_property(aliased=True)
+    color: InitVar[ColorT | None | object] = color_property(aliased=True)
     line_width: float | None = None
     line_dash: list[float] | None = None
 
     def __post_init__(self, color):
-        super().__init__()
+        super().__post_init__()
         self.stroke_style = _assign_style(self, "stroke", color)
 
     def _draw(self, context: Any) -> None:
@@ -1013,3 +1122,60 @@ class Stroke(BaseState):
 
         context.stroke()
         context.restore()
+
+
+class TransformState(BaseState, ABC):
+    @abstractmethod
+    def _call_method(self, context: Any) -> None: ...
+
+    def _draw(self, context: Any) -> None:
+        if not (hasattr(self, "_is_open") or self.drawing_actions):
+            # Wasn't used as a context manager (nor had drawing actions manually added)
+            self._call_method(context)
+            return
+
+        context.save()
+        self._call_method(context)
+
+        for action in self.drawing_actions:
+            action._draw(context)
+
+        context.restore()
+
+
+@dataclass(repr=False)
+class Rotate(TransformState):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [rotate()][toga.Canvas.rotate] method. Can function as a context manager.
+    """
+
+    radians: float
+
+    def _call_method(self, context: Any) -> None:
+        context.rotate(self.radians)
+
+
+@dataclass(repr=False)
+class Scale(TransformState):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [scale()][toga.Canvas.scale] method. Can function as a context manager.
+    """
+
+    sx: float
+    sy: float
+
+    def _call_method(self, context: Any) -> None:
+        context.scale(self.sx, self.sy)
+
+
+@dataclass(repr=False)
+class Translate(TransformState):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [translate()][toga.Canvas.translate] method. Can function as a context manager.
+    """
+
+    tx: float
+    ty: float
+
+    def _call_method(self, context: Any) -> None:
+        context.translate(self.tx, self.ty)

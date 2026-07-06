@@ -1,5 +1,6 @@
 import os
 import platform
+from importlib.metadata import version
 from pathlib import Path
 
 import clr_loader
@@ -62,7 +63,6 @@ and install the .NET Desktop Runtime.""") from None
 
 
 import clr
-import travertino
 
 from .libs.user32 import SetProcessDpiAwarenessContext
 from .libs.win32constants import DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
@@ -103,4 +103,4 @@ if SetProcessDpiAwarenessContext is not None:
     ):  # pragma: no cover
         print("WARNING: Failed to set the DPI Awareness mode for the app.")
 
-__version__ = travertino._package_version(__file__, __name__)
+__version__ = version("toga-winforms")

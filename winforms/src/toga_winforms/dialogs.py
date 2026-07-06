@@ -14,6 +14,8 @@ from toga.handlers import WeakrefCallable
 from .libs.user32 import SetThreadDpiAwarenessContext
 from .libs.win32constants import DPI_AWARENESS_CONTEXT_UNAWARE
 
+PLACEHOLDER_RESULT = object()
+
 
 class BaseDialog:
     def show(self, host_window, future):
@@ -121,6 +123,7 @@ class StackTraceDialog(BaseDialog):
         self.native.MinimizeBox = False
         self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
         self.native.MaximizeBox = False
+        self.native.FormClosed += WeakrefCallable(self.winforms_FormClosed)
         self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
         self.native.Width = 540
         self.native.Height = 320
@@ -147,6 +150,7 @@ class StackTraceDialog(BaseDialog):
         trace.ReadOnly = True
         trace.Font = monospace_font
         trace.Text = content
+        self.result = PLACEHOLDER_RESULT
 
         self.native.Controls.Add(trace)
 
@@ -185,12 +189,16 @@ class StackTraceDialog(BaseDialog):
     def _show(self):
         self.native.ShowDialog()
 
+    def winforms_FormClosed(self, sender, event):
+        # Set the result of the future after exit to prevent it being set too early.
+        self.future.set_result(self.result)
+
     def winforms_FormClosing(self, sender, event):
         # If the close button is pressed, the future won't be done.
         # We cancel this event to prevent the dialog from closing.
         # If a button is pressed, the future will be set, and a close
         # event will be triggered.
-        if not self.future.done():
+        if self.result == PLACEHOLDER_RESULT:
             event.Cancel = True  # pragma: no cover
         else:
             # Reverting the DPI awareness at the end of __init__ would cause the window
@@ -206,15 +214,15 @@ class StackTraceDialog(BaseDialog):
                 SetThreadDpiAwarenessContext(self.prev_dpi_context)
 
     def winforms_Click_quit(self, sender, event):
-        self.future.set_result(False)
+        self.result = False
         self.native.Close()
 
     def winforms_Click_retry(self, sender, event):
-        self.future.set_result(True)
+        self.result = True
         self.native.Close()
 
     def winforms_Click_accept(self, sender, event):
-        self.future.set_result(None)
+        self.result = None
         self.native.Close()
 
 
