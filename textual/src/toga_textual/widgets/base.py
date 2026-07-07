@@ -1,3 +1,4 @@
+import asyncio
 from abc import ABC, abstractmethod
 
 from travertino.size import at_least
@@ -35,9 +36,10 @@ class Widget(Scalable, ABC):
     def __init__(self, interface):
         self.interface = interface
         self.container = None
+        self._pending_remove = None
         self.create()
 
-    def install(self, parent):
+    def install(self, parent, before=None):
         """Add widget and its children to the native DOM for the app.
 
         Textual does not allow widgets to be added to the DOM until their parent is
@@ -45,10 +47,24 @@ class Widget(Scalable, ABC):
         mounting is deferred until their parent is mounted.
         """
         self.container = parent
-        parent.native.mount(self.native)
 
-        for child in self.interface.children:
-            child._impl.install(parent=self)
+        def mount():
+            parent.native.mount(self.native, before=before)
+
+            for child in self.interface.children:
+                child._impl.install(parent=self)
+
+        if self._pending_remove:
+            pending_remove = self._pending_remove
+            self._pending_remove = None
+
+            async def mount_after_remove():
+                await pending_remove
+                mount()
+
+            asyncio.create_task(mount_after_remove())
+        else:
+            mount()
 
     def get_size(self) -> Size:
         return Size(0, 0)
@@ -150,7 +166,7 @@ class Widget(Scalable, ABC):
         pass
 
     def set_hidden(self, hidden):
-        self.native.display = not hidden
+        self.native.visible = not hidden
 
     def set_font(self, font):  # noqa B027
         pass
@@ -174,13 +190,15 @@ class Widget(Scalable, ABC):
             child.container = self
 
     def insert_child(self, index, child):
-        # Textual doesn't have positional mount on all versions. Keep the containment
-        # state correct; layout order will be updated when Textual supports insertion.
-        self.add_child(child)
+        if self.native.is_attached:
+            child.install(parent=self, before=index)
+        else:
+            child.container = self
 
     def remove_child(self, child):
         child.container = None
-        self.native.remove_children([child.native])
+        if child.native.is_attached:
+            child._pending_remove = self.native.remove_children([child.native])
 
     def refresh(self):
         intrinsic = self.interface.intrinsic

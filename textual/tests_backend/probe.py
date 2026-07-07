@@ -12,6 +12,15 @@ class BaseProbe:
     def approx_height(self, height):
         return pytest.approx(height, abs=12)
 
+    async def wait_for_refresh(self):
+        app = toga.App.app._impl.native
+        loop = asyncio.get_running_loop()
+        refreshed = loop.create_future()
+
+        if app.call_after_refresh(refreshed.set_result, None):
+            app.refresh(layout=True)
+            await refreshed
+
     async def redraw(self, message=None, delay=0, wait_for=None):
         if toga.App.app.run_slow or wait_for:
             delay = max(1, delay)
@@ -28,6 +37,8 @@ class BaseProbe:
                 while not wait_for() and interval < delay:
                     await asyncio.sleep(delta)
                     interval += delta
+
+        await self.wait_for_refresh()
 
     def assert_image_size(self, image_size, size, screen, window=None):
         pytest.skip("Image size assertions are not implemented on Textual.")

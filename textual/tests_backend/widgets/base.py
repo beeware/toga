@@ -50,10 +50,16 @@ class SimpleProbe(BaseProbe):
 
     @property
     def x(self):
+        if not self.native.visible:
+            return self.widget.layout.absolute_content_left
+
         return self.native.region.x * self.HORIZONTAL_SCALE
 
     @property
     def y(self):
+        if not self.native.visible:
+            return self.widget.layout.absolute_content_top
+
         window_native = self.widget.window._impl.native
         titlebar_height = 1 if hasattr(window_native, "titlebar") else 0
         return (self.native.region.y - titlebar_height) * self.VERTICAL_SCALE
@@ -92,7 +98,7 @@ class SimpleProbe(BaseProbe):
     def is_hidden(self):
         widget = self.widget
         while widget is not None:
-            if not widget._impl.native.display:
+            if not widget._impl.native.visible:
                 return True
             widget = widget.parent
 

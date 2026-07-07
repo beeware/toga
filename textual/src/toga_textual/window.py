@@ -160,9 +160,13 @@ class Window:
     ######################################################################
 
     def clear_content(self):
-        pass
+        if self.container.content:
+            if self.container.content.native.is_attached:
+                self.native.remove_children([self.container.content.native])
+            self.container.content = None
 
     def set_content(self, widget):
+        self.clear_content()
         self.container.content = widget
         widget.install(parent=self)
 
