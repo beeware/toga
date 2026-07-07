@@ -20,8 +20,13 @@ class TogaInput(TextualInput):
     def on_input_changed(self, event: TextualInput.Changed) -> None:
         if self.impl._programmatic_change:
             self.impl._programmatic_change = False
-        else:
-            self.interface._value_changed()
+            if event.value == self.impl._programmatic_value:
+                self.impl._programmatic_value = None
+                return
+
+            self.impl._programmatic_value = None
+
+        self.interface._value_changed()
 
     def on_input_submitted(self, event: TextualInput.Submitted) -> None:
         self.interface.on_confirm()
@@ -31,6 +36,7 @@ class TextInput(Widget):
     def create(self):
         self._is_valid = True
         self._programmatic_change = False
+        self._programmatic_value = None
         self.native = TogaInput(self)
 
     def get_readonly(self):
@@ -51,6 +57,7 @@ class TextInput(Widget):
     def set_value(self, value):
         old_value = self.native.value
         self._programmatic_change = True
+        self._programmatic_value = value
         try:
             self.native.value = value
         except NoActiveAppError:
@@ -61,6 +68,7 @@ class TextInput(Widget):
         finally:
             if self.native.value == old_value:
                 self._programmatic_change = False
+                self._programmatic_value = None
 
         if self.native.value != old_value:
             self.interface._value_changed()
