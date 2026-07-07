@@ -6,6 +6,12 @@ import toga
 
 
 class BaseProbe:
+    def approx_width(self, width):
+        return pytest.approx(width, abs=5)
+
+    def approx_height(self, height):
+        return pytest.approx(height, abs=12)
+
     async def redraw(self, message=None, delay=0, wait_for=None):
         if toga.App.app.run_slow or wait_for:
             delay = max(1, delay)
