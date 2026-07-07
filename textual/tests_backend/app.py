@@ -1,9 +1,16 @@
+import sys
+from pathlib import Path
+
 import pytest
 from textual.app import App as TextualApp
 
-from toga_textual.paths import Paths
-
 from .probe import BaseProbe
+
+
+APP_ID = "org.beeware.toga.testbed-textual"
+APP_NAME = "testbed-textual"
+AUTHOR = "Tiberius Yak"
+FORMAL_NAME = "Toga Testbed (Textual)"
 
 
 class AppProbe(BaseProbe):
@@ -17,24 +24,43 @@ class AppProbe(BaseProbe):
     def __init__(self, app):
         super().__init__()
         self.app = app
-        self.paths = Paths(app.paths)
         assert isinstance(self.app._impl.native, TextualApp)
 
     @property
     def config_path(self):
-        return self.paths.get_config_path()
+        if sys.platform == "darwin":
+            return Path.home() / f"Library/Preferences/{APP_ID}"
+        elif sys.platform == "win32":
+            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Config"
+        else:
+            return Path.home() / f".config/{APP_NAME}"
 
     @property
     def data_path(self):
-        return self.paths.get_data_path()
+        if sys.platform == "darwin":
+            return Path.home() / f"Library/Application Support/{APP_ID}"
+        elif sys.platform == "win32":
+            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Data"
+        else:
+            return Path.home() / f".local/share/{APP_NAME}"
 
     @property
     def cache_path(self):
-        return self.paths.get_cache_path()
+        if sys.platform == "darwin":
+            return Path.home() / f"Library/Caches/{APP_ID}"
+        elif sys.platform == "win32":
+            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Cache"
+        else:
+            return Path.home() / f".cache/{APP_NAME}"
 
     @property
     def logs_path(self):
-        return self.paths.get_logs_path()
+        if sys.platform == "darwin":
+            return Path.home() / f"Library/Logs/{APP_ID}"
+        elif sys.platform == "win32":
+            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Logs"
+        else:
+            return Path.home() / f".local/state/{APP_NAME}/log"
 
     async def assert_event_loop(self):
         pytest.skip("Event loop assertions are not implemented on Textual.")
