@@ -166,11 +166,7 @@ async def test_parenting(widget, probe):
 
 
 async def test_tab_index(widget, probe, other):
-    if getattr(
-        probe,
-        "supports_tab_index",
-        toga.platform.current_platform == "windows",
-    ):
+    if probe.supports_tab_index:
         assert widget.tab_index == 1
         assert other.tab_index == 2
 
