@@ -7,6 +7,9 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe):
+    HORIZONTAL_SCALE = 800 // 80
+    VERTICAL_SCALE = 600 // 25
+
     supports_as_image = False
     supports_closable = True
     supports_focus = True
@@ -40,7 +43,10 @@ class WindowProbe(BaseProbe):
 
     @property
     def content_size(self):
-        return self.impl.container.width, self.impl.container.height
+        return (
+            self.native.size[0] * self.HORIZONTAL_SCALE,
+            (self.native.size[1] - 1) * self.VERTICAL_SCALE,
+        )
 
     @property
     def is_resizable(self):
