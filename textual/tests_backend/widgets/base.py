@@ -5,9 +5,6 @@ from ..probe import BaseProbe
 
 
 class SimpleProbe(BaseProbe):
-    HORIZONTAL_SCALE = 800 // 80
-    VERTICAL_SCALE = 600 // 25
-
     invalid_size_while_hidden = False
     supports_tab_index = False
     supports_text_width_change = True

@@ -6,6 +6,9 @@ import toga
 
 
 class BaseProbe:
+    HORIZONTAL_SCALE = 800 // 80
+    VERTICAL_SCALE = 600 // 25
+
     def approx_width(self, width):
         return pytest.approx(width, abs=5)
 

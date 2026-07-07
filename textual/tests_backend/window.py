@@ -7,9 +7,6 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe):
-    HORIZONTAL_SCALE = 800 // 80
-    VERTICAL_SCALE = 600 // 25
-
     supports_as_image = False
     supports_closable = True
     supports_focus = True
