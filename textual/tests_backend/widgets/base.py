@@ -48,15 +48,23 @@ class SimpleProbe(BaseProbe):
     def height(self):
         return self.native.styles.height.value * self.VERTICAL_SCALE
 
+    @property
+    def x(self):
+        return self.native.region.x * self.HORIZONTAL_SCALE
+
+    @property
+    def y(self):
+        window_native = self.widget.window._impl.native
+        titlebar_height = 1 if hasattr(window_native, "titlebar") else 0
+        return (self.native.region.y - titlebar_height) * self.VERTICAL_SCALE
+
     def assert_layout(self, size, position):
         assert self.widget._impl.container is not None
 
         assert self.width == self.approx_width(size[0])
         assert self.height == self.approx_height(size[1])
-        assert (
-            self.widget.layout.absolute_content_left,
-            self.widget.layout.absolute_content_top,
-        ) == position
+        assert self.x == self.approx_width(position[0])
+        assert self.y == self.approx_height(position[1])
 
     def assert_width(self, min_width, max_width):
         assert min_width <= self.width <= max_width, (
