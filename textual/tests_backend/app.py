@@ -6,7 +6,6 @@ from textual.app import App as TextualApp
 
 from .probe import BaseProbe
 
-
 APP_ID = "org.beeware.toga.testbed-textual"
 APP_NAME = "testbed-textual"
 AUTHOR = "Tiberius Yak"
