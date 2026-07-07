@@ -1,12 +1,14 @@
 <!-- rumdl-disable-line MD041 -->
 
-The Qt backend can operate either using an installation of PySide6 in the virtual environment used, or using integration with the system-installed PySide6. The latter is required to properly integrate with system themes, which will be important if you run your application under KDE. System integration is only available on recent distribution versions.
+`toga-qt` depends on the PySide6 Qt bindings. However, there are 2 ways to access these bindings: using the bindings provided by your operating system; or by installing the bindings that are published on PyPI.
 
-These instructions are different on almost every version of Linux and Unix, in addition to whether Wayland or X11 is used, or whether the system PySide6 integration is used; here are some of the common alternatives:
+If you install the PySide6 bindings from PyPI, your application will *not* integrate with any themes provided by your operating system. If you are using a Qt-based desktop environment (such as KDE), this will result in an application that doesn't match the appearance of the rest of your system. An app using the system-provided bindings will also be significantly smaller than one using standalone bindings, as the standalone bindings contain a complete copy of Qt.
 
-#### Ubuntu 24.10+ / Debian 13+ (with system integration)
+The process of installing pre-requisites is different on almost every version of Linux and Unix, and is affected by the use of Wayland or X11, and whether the system PySide6 bindings are used. Here are some of the common alternatives:
 
-/// tab | Wayland
+### Ubuntu 24.10+ / Debian 13+
+
+/// tab | Wayland (System)
 
 ```console
 (venv) $ sudo apt install git python3-dev build-essential \
@@ -21,7 +23,7 @@ These instructions are different on almost every version of Linux and Unix, in a
 
 ///
 
-/// tab | X11
+/// tab | X11 (System)
 
 ```console
 (venv) $ sudo apt install git python3-dev build-essential \
@@ -38,9 +40,7 @@ These instructions are different on almost every version of Linux and Unix, in a
 
 ///
 
-### Ubuntu 24.04 / Debian 11+ (without system integration)
-
-/// tab | Wayland
+/// tab | Wayland (Standalone)
 
 ```console
 (venv) $ sudo apt install git python3-dev build-essential \
@@ -50,7 +50,7 @@ These instructions are different on almost every version of Linux and Unix, in a
 
 ///
 
-/// tab | X11
+/// tab | X11 (Standalone)
 
 ```console
 (venv) $ sudo apt install git python3-dev build-essential \
@@ -65,9 +65,9 @@ These instructions are different on almost every version of Linux and Unix, in a
 
 You can use [deadsnakes](https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa) (or a similar third-party source) to install a Python version other than the system default by replacing `python3-dev` with the `-dev` package matching the desired Python version. For example, to use Python 3.12, replace `python3-dev` with `python3.12-dev`.
 
-### Fedora 41+ (with system integration)
+### Fedora 41+
 
-/// tab | Wayland
+/// tab | Wayland (System)
 
 ```console
 (venv) $ sudo dnf install git python3-devel \
@@ -79,7 +79,7 @@ You can use [deadsnakes](https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa) 
 
 ///
 
-/// tab | X11
+/// tab | X11 (System)
 
 ```console
 (venv) $ sudo dnf install git python3-devel \
@@ -93,9 +93,7 @@ You can use [deadsnakes](https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa) 
 
 ///
 
-### Fedora 41+ (without system integration)
-
-/// tab | Wayland
+/// tab | Wayland (Standalone)
 
 ```console
 (venv) $ sudo dnf install git python3-devel \
@@ -106,7 +104,7 @@ You can use [deadsnakes](https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa) 
 
 ///
 
-/// tab | X11
+/// tab | X11 (Standalone)
 
 ```console
 (venv) $ sudo dnf install git python3-devel \
