@@ -50,8 +50,7 @@ Pins can respond to being pressed. When a pin is pressed, the map generates an `
 - Using MapView on Windows 10 requires that your users have installed the [Edge WebView2 Evergreen Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download). This is installed by default on Windows 11.
 
 - Using MapView on Linux requires that the user has installed the system packages for WebKit2, plus the GObject Introspection bindings for WebKit2. The name of the system package required is distribution dependent:
-    - Ubuntu 20.04; Debian 11: `gir1.2-webkit2-4.0`
-    - Ubuntu 22.04+; Debian 12+: `gir1.2-webkit2-4.1`
+    - Ubuntu, Debian: `gir1.2-webkit2-4.1`
     - Fedora: `webkit2gtk4.1`
     - Arch/Manjaro: `webkit2gtk-4.1`
     - OpenSUSE Tumbleweed: `libwebkit2gtk3 typelib(WebKit2)`
