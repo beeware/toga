@@ -22,15 +22,13 @@ Although GTK *can* be installed on Windows and macOS, and the `toga-gtk` backend
 
 ## Prerequisites { #gtk-prerequisites }
 
-`toga-gtk` requires Python 3.10+, and GTK 3.22 or newer.
+`toga-gtk` requires Python 3.10+, and GTK 3.22 or newer. It also requires `libgirepository 2.0`; older Linux distributions (including Debian 12 and Ubuntu 22.04) do not provide this library.
 
-Most testing occurs with GTK 3.24 as this is the version that has shipped with all versions of Ubuntu since Ubuntu 20.04, and all versions of Fedora since Fedora 32.
+Most testing occurs with GTK 3.24 as this is the version that has shipped with Ubuntu 24.04.
 
 The system packages that provide GTK must be installed manually:
 
 -8<- "snippets/gtk-prerequisites.md"
-
-Toga has experimental support for GTK 4. GTK 4 support requires a Linux distribution that provides `libgirepository 2.0`. This means it is not possible to use the GTK 4 backend on Debian 11, Debian 12, Ubuntu 22.04, or any other older Debian-based distribution.
 
 ## Installation
 
@@ -42,7 +40,7 @@ $ python -m pip install toga-gtk
 
 ### GTK 4 support (experimental)
 
-The experimental GTK 4 backend requires the use of GTK 4.10 or newer. This requirement is met by Debian 13, Ubuntu 24.04, and Fedora 41. Most testing occurs with GTK 4.14, as this is the version that ships with Ubuntu 24.04.
+Toga also has experimental support for GTK 4, which requires the use of GTK 4.10 or newer. This requirement is met by Debian 13, Ubuntu 24.04, and Fedora 41. Most testing occurs with GTK 4.14, as this is the version that ships with Ubuntu 24.04.
 
 If you want to use the experimental GTK 4 backend, run:
 
