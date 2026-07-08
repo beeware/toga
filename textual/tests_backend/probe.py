@@ -10,10 +10,10 @@ class BaseProbe:
     VERTICAL_SCALE = 600 // 25
 
     def approx_width(self, width):
-        return pytest.approx(width, abs=5)
+        return pytest.approx(width, abs=self.HORIZONTAL_SCALE // 2)
 
     def approx_height(self, height):
-        return pytest.approx(height, abs=12)
+        return pytest.approx(height, abs=self.VERTICAL_SCALE // 2)
 
     async def wait_for_refresh(self):
         app = toga.App.app._impl.native
