@@ -4,6 +4,20 @@
 
 <!-- towncrier release notes start -->
 
+## 0.5.6 (2026-07-08)
+
+### Features
+
+- Toga's Qt backend can now integrate with system Qt themes, including Breeze on KDE. ([#3995](https://github.com/beeware/toga/issues/3995))
+
+### Backward Incompatible Changes
+
+- Toga's GTK backend now requires the use of PyGObject 3.55.1. This means support for Debian 12 and Ubuntu 22.04 has been dropped. ([#4533](https://github.com/beeware/toga/issues/4533))
+
+### Misc
+
+- [#4389](https://github.com/beeware/toga/issues/4389), [#4536](https://github.com/beeware/toga/issues/4536), [#4537](https://github.com/beeware/toga/issues/4537), [#4538](https://github.com/beeware/toga/issues/4538), [#4539](https://github.com/beeware/toga/issues/4539), [#4540](https://github.com/beeware/toga/issues/4540), [#4541](https://github.com/beeware/toga/issues/4541), [#4542](https://github.com/beeware/toga/issues/4542), [#4543](https://github.com/beeware/toga/issues/4543), [#4544](https://github.com/beeware/toga/issues/4544), [#4545](https://github.com/beeware/toga/issues/4545), [#4546](https://github.com/beeware/toga/issues/4546), [#4547](https://github.com/beeware/toga/issues/4547), [#4548](https://github.com/beeware/toga/issues/4548), [#4549](https://github.com/beeware/toga/issues/4549), [#4550](https://github.com/beeware/toga/issues/4550), [#4551](https://github.com/beeware/toga/issues/4551), [#4552](https://github.com/beeware/toga/issues/4552), [#4553](https://github.com/beeware/toga/issues/4553), [#4554](https://github.com/beeware/toga/issues/4554), [#4555](https://github.com/beeware/toga/issues/4555)
+
 ## 0.5.5 (2026-07-02)
 
 ### Features
