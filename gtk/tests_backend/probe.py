@@ -1,11 +1,19 @@
 import asyncio
 import contextlib
 
+from pytest import approx
+
 import toga
 from toga_gtk.libs import GLib
 
 
 class BaseProbe:
+    def approx_width(self, width):
+        return approx(width, rel=0.01)
+
+    def approx_height(self, height):
+        return approx(height, rel=0.01)
+
     def _queue_draw(self, data):
         widget, event = data
         widget.queue_draw()

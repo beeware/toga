@@ -21,6 +21,8 @@ class AppProbe(BaseProbe):
     supports_dark_mode = True
     edit_menu_noop_enabled = True
     supports_psutil = True
+    # Qt doesn't always beep immediately.
+    beep_delay = 5
 
     def __init__(self, app):
         super().__init__()

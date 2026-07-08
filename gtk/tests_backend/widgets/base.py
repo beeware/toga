@@ -12,6 +12,7 @@ from .properties import toga_color, toga_font
 
 class SimpleProbe(BaseProbe, FontMixin):
     invalid_size_while_hidden = GTK_VERSION >= (4, 0, 0)
+    supports_tab_index = False
 
     def __init__(self, widget):
         super().__init__()

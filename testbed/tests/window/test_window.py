@@ -18,6 +18,13 @@ from ..assertions import (
     assert_window_on_hide,
     assert_window_on_show,
 )
+from ..conftest import skip_on_backends
+
+skip_on_backends(
+    "toga_textual",
+    reason="Full window management assertions are not implemented on Textual.",
+    allow_module_level=True,
+)
 
 
 def window_probe(app, window):

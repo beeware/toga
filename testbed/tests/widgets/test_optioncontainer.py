@@ -6,12 +6,19 @@ import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, SEAGREEN
 from toga.style.pack import Pack
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test, safe_create
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_widget_size,
     test_focus_noop,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="OptionContainer is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 
