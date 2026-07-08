@@ -18,13 +18,13 @@ class TogaInput(TextualInput):
         self.interface.on_lose_focus()
 
     def on_input_changed(self, event: TextualInput.Changed) -> None:
-        if self.impl._programmatic_change:
-            self.impl._programmatic_change = False
-            if event.value == self.impl._programmatic_value:
-                self.impl._programmatic_value = None
+        # If this is a programmatic change, confirm if the change results in a
+        # change in value. If there's no change in value, don't notify the app.
+        if self.impl._programmatic_change is not None:
+            value = self.impl._programmatic_change
+            self.impl._programmatic_change = None
+            if event.value == value:
                 return
-
-            self.impl._programmatic_value = None
 
         self.interface._value_changed()
 
@@ -35,8 +35,7 @@ class TogaInput(TextualInput):
 class TextInput(Widget):
     def create(self):
         self._is_valid = True
-        self._programmatic_change = False
-        self._programmatic_value = None
+        self._programmatic_change = None
         self.native = TogaInput(self)
 
     def get_readonly(self):
@@ -56,8 +55,7 @@ class TextInput(Widget):
 
     def set_value(self, value):
         old_value = self.native.value
-        self._programmatic_change = True
-        self._programmatic_value = value
+        self._programmatic_change = value
         try:
             self.native.value = value
         except NoActiveAppError:
@@ -65,13 +63,11 @@ class TextInput(Widget):
             # app. Toga can set values before the widget is mounted, when there is no
             # active Textual app context yet.
             pass
-        finally:
-            if self.native.value == old_value:
-                self._programmatic_change = False
-                self._programmatic_value = None
 
-        if self.native.value != old_value:
+        if value != old_value:
             self.interface._value_changed()
+        else:
+            self._programmatic_change = None
 
     def set_error(self, error_message):
         self._is_valid = False
