@@ -187,6 +187,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
         self._synchronous_queue = ReentrantQueue()
         self._idle = True
+        self._next_time = None
 
     def run_forever(self, app):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
@@ -261,24 +262,35 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self._inner_loop = None
         WinForms.Application.Run(self.app.app_context)
 
-    def enqueue_tick(self, delay=5, tick=None):
+    def enqueue_tick(self, tick=None, delay=0, scheduled_time=None):
         if not tick:
-            tick = self.tick
+
+            def tick(*args, scheduled_time=scheduled_time, **kwargs):
+                return self.tick(*args, scheduled_time=scheduled_time, **kwargs)
+
         # Queue a call to tick in a specified delay.
-        self.task = Action[Task](tick)
-        Task.Delay(delay).ContinueWith(self.task)
+        action = Action[Task](tick)
+        Task.Delay(delay).ContinueWith(action)
 
     # This function doesn't report as covered because it runs on a
     # non-Python-created thread (see App.run_app). But it must actually be
     # covered, otherwise nothing would work.
-    def tick(self, *args, **kwargs):  # pragma: no cover
+    def tick(self, *args, scheduled_time=None, **kwargs):  # pragma: no cover
         """Cause a single iteration of the event loop to run on the main GUI thread."""
-        action = Action(self.append_tick_task)
+
+        def append_tick_task(scheduled_time=scheduled_time):
+            return self.append_tick_task(scheduled_time=scheduled_time)
+
+        action = Action(append_tick_task)
         self.app.app_dispatcher.Invoke(action)
 
-    def append_tick_task(self):
+    def append_tick_task(self, scheduled_time=None):
         """Append the run_once_recurring call to the synchronous queue."""
-        return self._synchronous_queue.append(self.run_once_recurring)
+
+        def tick_task(scheduled_time=scheduled_time):
+            return self.run_once_recurring(scheduled_time=scheduled_time)
+
+        return self._synchronous_queue.append(tick_task)
 
     # The native dialog `Show` methods are all blocking, as they run an inner native
     # event loop. Call them via this method to ensure the inner loop is correctly linked
@@ -310,7 +322,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         else:  # pragma: no cover
             self._run_forever_cleanup()
 
-    def run_once_recurring(self):
+    def run_once_recurring(self, scheduled_time=None):
         """Run one iteration of the event loop, and enqueue the next iteration (if we're
         not stopping).
         """
@@ -336,14 +348,19 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             # for scheduled events. If neither of these then the loop becomes idle
             # until it is woken by the ReadyDeque instance or the safety catch.
             if len(self._ready) > 0:
-                # Run ready events immediately.
-                self.enqueue_tick(delay=0)
-            else:
-                if self._scheduled:
-                    # Calculate a delay for scheduled events and enqueue a tick.
-                    first = self._scheduled[0]
-                    ms_until = int(max(0, (first.when() - self.time()) * 1000))
-                    self.enqueue_tick(delay=ms_until)
+                if self._scheduled and self._scheduled[0].when == scheduled_time:
+                    self.enqueue_tick(delay=0, scheduled_time=scheduled_time)
+                else:
+                    # Run ready events immediately.
+                    self.enqueue_tick(delay=0)
+            elif self._scheduled:
+                # Calculate a delay for scheduled events and enqueue a tick.
+                next_time = self._scheduled[0].when()
+
+                if next_time != self._next_time or next_time == scheduled_time:
+                    self._next_time = next_time
+                    ms_until = int(max(0, (next_time - self.time()) * 1000))
+                    self.enqueue_tick(delay=ms_until, scheduled_time=next_time)
 
         # Exceptions thrown by this method will be silently ignored.
         except BaseException:  # pragma: no cover
