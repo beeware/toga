@@ -1,7 +1,16 @@
-from ctypes import c_int
+from ctypes import c_int, c_void_p
 from decimal import InvalidOperation
 
-from rubicon.objc import SEL, CGSize, NSRange, objc_method, objc_property, send_message
+from rubicon.objc import (
+    SEL,
+    CGPoint,
+    CGSize,
+    NSRange,
+    objc_method,
+    objc_property,
+    send_message,
+    send_super,
+)
 from travertino.size import at_least
 
 from toga.widgets.numberinput import _clean_decimal
@@ -19,6 +28,30 @@ from toga_iOS.widgets.base import Widget
 class TogaNumericTextField(UITextField):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
+
+    @objc_method
+    def pointInside_withEvent_(self, point: CGPoint, event) -> bool:  # pragma: no cover
+        # To keep consistency with non-mobile platforms, we'll resign the
+        # responder status when you tap somewhere outside this view. This can't
+        # be emulated in CI because it requires an actual touch event; however,
+        # it's entirely cosmetic, so we can live with the missing coverage.
+        point_inside = send_super(
+            __class__,
+            self,
+            "pointInside:withEvent:",
+            point,
+            event,
+            argtypes=[CGPoint, c_void_p],
+        )
+        if not bool(point_inside):
+            # The delay is required for proper animation of keyboard dismissal
+            # for some reason.
+            self.performSelector(
+                SEL("resignFirstResponder"),
+                withObject=None,
+                afterDelay=0.0,
+            )
+        return point_inside
 
     @objc_method
     def textFieldDidChange_(self, notification) -> None:
