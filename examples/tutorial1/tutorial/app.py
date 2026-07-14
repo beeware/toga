@@ -38,10 +38,10 @@ def build(app):
     c_box.style.update(direction=ROW, gap=10)
 
     c_input.style.update(flex=1)
-    f_input.style.update(flex=1, margin_left=210)
+    f_input.style.update(flex=1, margin_left=130)
     c_label.style.update(width=100)
     f_label.style.update(width=100)
-    join_label.style.update(width=200)
+    join_label.style.update(width=120)
 
     button.style.update(margin_top=5)
 
