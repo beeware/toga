@@ -150,7 +150,7 @@ class App:
 
     def exit(self):  # pragma: no cover
         self._is_exiting = True
-        self.native.Exit()
+        # app.native.Exit() is called in the proactor event loop.
 
     def _run_app(self):  # pragma: no cover
         # Enable coverage tracing on this non-Python-created thread

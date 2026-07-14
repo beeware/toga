@@ -4,7 +4,8 @@ import inspect
 from dataclasses import dataclass
 from importlib import import_module
 
-from pytest import fixture, register_assert_rewrite, skip
+from _pytest.python_api import ApproxScalar
+from pytest import fixture, register_assert_rewrite, skip, xfail
 
 import toga
 from toga.colors import GOLDENROD
@@ -45,7 +46,7 @@ def skip_on_backends(*backends, reason=None, allow_module_level=False):
 def xfail_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(reason or f"not applicable on {current_platform}")
+        xfail(reason or f"not applicable on {current_platform}")
 
 
 # Use this for widgets or tests which are not supported on some backends,
@@ -53,7 +54,7 @@ def xfail_on_platforms(*platforms, reason=None):
 def xfail_on_backends(*backends, reason=None):
     current_backend = toga.backend
     if current_backend in backends:
-        skip(reason or f"not applicable on {current_backend}")
+        xfail(reason or f"not applicable on {current_backend}")
 
 
 # Use this for widgets or tests which trip up macOS privacy controls, and requires
@@ -70,12 +71,30 @@ def skip_if_unbundled_app(reason=None, allow_module_level=False):
         )
 
 
+def is_persistent_task(task):
+    """Does the task belong to framework machinery that persists for app lifetime?"""
+    try:
+        module = task.get_coro().cr_frame.f_globals["__name__"]
+    except AttributeError:
+        return False
+
+    return module.startswith("textual.")
+
+
 @fixture(autouse=True)
 def no_dangling_tasks():
     """Ensure any tasks for the test were removed when the test finished."""
     yield
     if toga.App.app:
         tasks = toga.App.app._running_tasks
+        if toga.backend == "toga_textual":
+            # Textual runs framework tasks for the lifetime of the app. Ignore those,
+            # while still failing on unfinished tasks created by Toga test code.
+            tasks = {
+                task
+                for task in tasks
+                if not task.done() and not is_persistent_task(task)
+            }
         assert not tasks, f"the app has dangling tasks: {tasks}"
 
 
@@ -214,3 +233,13 @@ class ProxyTask:
 
     def done(self):
         return False
+
+
+# pytest.approx doesn't support <= / >=
+# See https://github.com/pytest-dev/pytest/issues/2003
+class approx(ApproxScalar):
+    def __ge__(self, other):
+        return self.expected > other or self == other
+
+    def __le__(self, other):
+        return self.expected < other or self == other

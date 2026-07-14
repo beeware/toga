@@ -18,6 +18,13 @@ from ..assertions import (
     assert_window_on_hide,
     assert_window_on_show,
 )
+from ..conftest import skip_on_backends
+
+skip_on_backends(
+    "toga_textual",
+    reason="Full window management assertions are not implemented on Textual.",
+    allow_module_level=True,
+)
 
 
 def window_probe(app, window):
@@ -36,6 +43,13 @@ async def second_window_probe(app, app_probe, second_window):
     probe = window_probe(app, second_window)
     await probe.wait_for_window(f"Window ({second_window.title}) has been created")
     return probe
+
+
+def assert_size(window, expected):
+    size = window.size
+    assert isinstance(size.width, int)
+    assert isinstance(size.height, int)
+    assert size == expected
 
 
 async def test_title(main_window, app_probe, main_window_probe):
@@ -93,12 +107,12 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
         main_window.position = (150, 50)
         await main_window_probe.wait_for_window("Main window can't be moved")
-        assert main_window.size == initial_size
+        assert_size(main_window, initial_size)
         assert main_window.position == (0, 0)
 
         main_window.size = (200, 150)
         await main_window_probe.wait_for_window("Main window cannot be resized")
-        assert main_window.size == initial_size
+        assert_size(main_window, initial_size)
         assert main_window.position == (0, 0)
 
         orig_content = main_window.content
@@ -113,7 +127,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
                 style=Pack(direction=COLUMN, background_color=CORNFLOWERBLUE),
             )
             await main_window_probe.wait_for_window("Main window content has been set")
-            assert main_window.size == initial_size
+            assert_size(main_window, initial_size)
             assert main_window_probe.content_size == content_size
 
             # Alter the content width to exceed window width
@@ -121,7 +135,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             await main_window_probe.wait_for_window(
                 "Content is too wide for the window"
             )
-            assert main_window.size == initial_size
+            assert_size(main_window, initial_size)
             assert main_window_probe.content_size == content_size
 
             space_warning = (
@@ -133,7 +147,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             # Resize content to fit
             box1.style.width = 100
             await main_window_probe.wait_for_window("Content fits in window")
-            assert main_window.size == initial_size
+            assert_size(main_window, initial_size)
             assert main_window_probe.content_size == content_size
             assert not re.search(space_warning, capsys.readouterr().out)
 
@@ -142,7 +156,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             await main_window_probe.wait_for_window(
                 "Content is too tall for the window"
             )
-            assert main_window.size == initial_size
+            assert_size(main_window, initial_size)
             assert main_window_probe.content_size == content_size
             assert re.search(space_warning, capsys.readouterr().out)
 
@@ -318,7 +332,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         initial_size = main_window.size
         main_window.position = (150, 50)
         await main_window_probe.wait_for_window("Main window can't be moved")
-        assert main_window.size == initial_size
+        assert_size(main_window, initial_size)
         assert main_window.position == (0, 0)
         assert main_window.screen_position == (0, 0)
 
@@ -339,7 +353,7 @@ else:
 
         assert second_window.title == formal_name
         # Qt rendering results in a small change in window size
-        assert second_window.size == approx((640, 480), abs=2)
+        assert_size(second_window, approx((640, 480), abs=2))
         # Position should be cascaded; the exact position depends on the platform,
         # and how many windows have been created. As long as it's not at (100,100).
         if second_window_probe.supports_placement:
@@ -382,7 +396,7 @@ else:
 
         assert second_window.title == "Secondary Window"
         # Qt rendering can result in a small change in window size
-        assert second_window.size == approx((300, 200), abs=2)
+        assert_size(second_window, approx((300, 200), abs=2))
         if second_window_probe.supports_placement:
             assert second_window.position == (200, 300)
 
@@ -571,7 +585,7 @@ else:
 
         assert second_window.visible
         # Qt rendering can result in a small change in window size
-        assert second_window.size == approx((640, 480), abs=2)
+        assert_size(second_window, approx((640, 480), abs=2))
         if second_window_probe.supports_placement:
             assert second_window.position == (200, 150)
 
@@ -579,7 +593,7 @@ else:
         second_window.position = (250, 200)
 
         await second_window_probe.wait_for_window("Secondary window has been moved")
-        assert second_window.size == approx((640, 480), abs=2)
+        assert_size(second_window, approx((640, 480), abs=2))
         if second_window_probe.supports_placement:
             assert second_window.position == (250, 200)
 
@@ -590,7 +604,7 @@ else:
             "Secondary window has been resized; position has not changed"
         )
 
-        assert second_window.size == approx((300, 250), abs=2)
+        assert_size(second_window, approx((300, 250), abs=2))
         # We can't confirm position here, because it may have changed. macOS rescales
         # windows relative to the bottom-left corner, which means the position of the
         # window has changed relative to the Toga coordinate frame.
@@ -610,7 +624,7 @@ else:
         )
 
         assert second_window.visible
-        assert second_window.size == approx((250, 200), abs=2)
+        assert_size(second_window, approx((250, 200), abs=2))
         if (
             second_window_probe.supports_move_while_hidden
             and second_window_probe.supports_placement
@@ -637,7 +651,7 @@ else:
 
             assert not second_window_probe.is_minimized
             # Window size hasn't changed as a result of min/unmin cycle
-            assert second_window.size == approx((250, 200), abs=2)
+            assert_size(second_window, approx((250, 200), abs=2))
 
         second_window_probe.close()
         await second_window_probe.wait_for_window("Secondary window has been closed")
@@ -672,7 +686,7 @@ else:
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window("Secondary window has been resized")
         # Qt rendering can result in a small change in window size
-        assert second_window.size == approx((200, 150), abs=2)
+        assert_size(second_window, approx((200, 150), abs=2))
         assert second_window_probe.content_size == approx(
             (
                 200 - extra_width,
@@ -690,7 +704,7 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window has had height adjusted due to content"
         )
-        assert second_window.size == approx((200, 210 + extra_height), abs=2)
+        assert_size(second_window, approx((200, 210 + extra_height), abs=2))
         assert second_window_probe.content_size == approx(
             (200 - extra_width, 210), abs=2
         )
@@ -700,8 +714,9 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window has had width adjusted due to content"
         )
-        assert second_window.size == approx(
-            (250 + extra_width, 210 + extra_height), abs=2
+        assert_size(
+            second_window,
+            approx((250 + extra_width, 210 + extra_height), abs=2),
         )
 
         # Alter both height and width to exceed window size at once
@@ -710,8 +725,9 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window has had width and height adjusted due to content"
         )
-        assert second_window.size == approx(
-            (300 + extra_width, 300 + extra_height), abs=2
+        assert_size(
+            second_window,
+            approx((300 + extra_width, 300 + extra_height), abs=2),
         )
         assert second_window_probe.content_size == approx((300, 300), abs=2)
 
@@ -720,8 +736,9 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window forced resize fails"
         )
-        assert second_window.size == approx(
-            (300 + extra_width, 300 + extra_height), abs=2
+        assert_size(
+            second_window,
+            approx((300 + extra_width, 300 + extra_height), abs=2),
         )
         assert second_window_probe.content_size == approx((300, 300), abs=2)
 
@@ -885,7 +902,7 @@ else:
             second_window_on_resize_handler.assert_not_called()
             second_window_on_resize_handler.reset_mock()
             # Window size should remain the same
-            assert second_window.size == previous_state_window_size
+            assert_size(second_window, previous_state_window_size)
         else:
             second_window_on_resize_handler.assert_called_with(second_window)
             second_window_on_resize_handler.reset_mock()
@@ -934,7 +951,7 @@ else:
             second_window_on_resize_handler.assert_not_called()
             second_window_on_resize_handler.reset_mock()
             # Window size should remain the same
-            assert second_window.size == previous_state_window_size
+            assert_size(second_window, previous_state_window_size)
 
         # Check for visibility event notification
         if initial_state == WindowState.MINIMIZED:
@@ -1246,7 +1263,7 @@ else:
         expected_window_size = None
 
         def check_new_size_on_resize(window):
-            assert window.size == expected_window_size
+            assert_size(window, expected_window_size)
 
         second_window_on_resize_handler = Mock()
         second_window_on_resize_handler.side_effect = check_new_size_on_resize
@@ -1259,7 +1276,7 @@ else:
         expected_window_size = (200, 150)
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window("Second window has been resized")
-        assert second_window.size == (200, 150)
+        assert_size(second_window, (200, 150))
         second_window_on_resize_handler.assert_called_with(second_window)
         second_window_on_resize_handler.reset_mock()
 
@@ -1267,14 +1284,14 @@ else:
         expected_window_size = initial_size
         second_window.size = initial_size
         await second_window_probe.wait_for_window("Second window has been resized")
-        assert second_window.size == initial_size
+        assert_size(second_window, initial_size)
         second_window_on_resize_handler.assert_called_with(second_window)
         second_window_on_resize_handler.reset_mock()
 
         # Again resize to initial size, on_resize() will not be triggered
         second_window.size = initial_size
         await second_window_probe.wait_for_window("Second window has been resized")
-        assert second_window.size == initial_size
+        assert_size(second_window, initial_size)
         second_window_on_resize_handler.assert_not_called()
 
     @pytest.mark.parametrize(

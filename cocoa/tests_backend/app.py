@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import PIL.Image
+import pytest
 from rubicon.objc import SEL, ObjCClass, objc_id, send_message
 
 import toga
@@ -25,6 +26,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_dark_mode = True
     edit_menu_noop_enabled = False
     supports_psutil = True
+    beep_delay = 0.1
 
     def __init__(self, app):
         super().__init__()
@@ -343,3 +345,6 @@ class AppProbe(BaseProbe, DialogsMixin):
             restype=None,
             argtypes=[objc_id],
         )
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

@@ -10,6 +10,14 @@ from PIL import Image as PIL_Image, ImageDraw as PIL_ImageDraw
 
 import toga
 
+from .conftest import skip_on_backends
+
+skip_on_backends(
+    "toga_textual",
+    reason="Images are not implemented on Textual.",
+    allow_module_level=True,
+)
+
 
 def image_probe(app, image):
     module = import_module("tests_backend.images")

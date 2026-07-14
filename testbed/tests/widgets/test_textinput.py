@@ -9,6 +9,7 @@ from toga.style.pack import RIGHT, SERIF
 
 from ..data import TEXTS
 from .conftest import build_cleanup_test
+from .probe import get_probe
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -107,6 +108,31 @@ async def test_on_change_user(widget, probe, on_change):
         expected = "Hello world"[:count]
         assert probe.value == expected
         assert widget.value == expected
+
+
+async def test_on_change_user_after_initial_value(main_window):
+    "User input triggers on_change after setting the initial value before mounting."
+    old_content = main_window.content
+    widget = toga.TextInput(value="Hello")
+    on_change = Mock()
+    widget.on_change = on_change
+
+    try:
+        main_window.content = toga.Box(children=[widget])
+        probe = get_probe(widget)
+        await probe.redraw("TextInput with initial value has been mounted")
+        on_change.assert_not_called()
+
+        widget.focus()
+        probe.set_cursor_at_end()
+        await probe.type_character("!")
+        await probe.redraw("Typed into TextInput after initial value")
+
+        on_change.assert_called_once_with(widget)
+        assert widget.value == "Hello!"
+        assert probe.value == "Hello!"
+    finally:
+        main_window.content = old_content
 
 
 @pytest.mark.parametrize(

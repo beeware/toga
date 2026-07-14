@@ -32,6 +32,11 @@ class DetailedListProbe(SimpleProbe):
         super().__init__(*args, **kwargs)
         self._click_shift = 0
 
+        # https://learn.microsoft.com/en-us/windows/win32/controls/lvm-setview
+        # If the following assertion is failing, there is a high chance comctl32.dll
+        # version 6 has not been loaded correctly.
+        assert 1 == SendMessageW(self.impl._hwnd, wc.LVM_SETVIEW, wc.LV_VIEW_TILE, 0)
+
     @property
     def row_count(self):
         return SendMessageW(self.impl._hwnd, wc.LVM_GETITEMCOUNT, 0, 0)

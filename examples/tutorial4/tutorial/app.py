@@ -68,8 +68,6 @@ class StartApp(toga.App):
                 self.canvas.quadratic_curve_to(145, 65, 139, 36)
                 self.canvas.quadratic_curve_to(130, 60, 109, 75)
 
-        with self.canvas.stroke(line_width=4.0):
-            with self.canvas.fill(fill_style=rgb(212, 212, 212)):
                 self.canvas.move_to(35, 99)
                 self.canvas.quadratic_curve_to(2, 65, 6, 36)
                 self.canvas.quadratic_curve_to(17, 60, 37, 75)
@@ -100,8 +98,14 @@ class StartApp(toga.App):
                 self.text_width + 10,
                 text_height + 10,
             )
-        with self.canvas.fill(fill_style=rgb(149, 119, 73)):
-            self.text = self.canvas.write_text("Tiberius", x, y, font, Baseline.TOP)
+        with self.canvas.state(fill_style=rgb(149, 119, 73)):
+            self.text = self.canvas.fill_text(
+                "Tiberius",
+                x,
+                y,
+                font=font,
+                baseline=Baseline.TOP,
+            )
 
     def draw_tiberius(self):
         self.fill_head()

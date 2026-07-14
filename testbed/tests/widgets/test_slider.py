@@ -7,10 +7,17 @@ from pytest import approx, fixture
 import toga
 
 from ..assertions import assert_set_get
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_enabled,
     test_flex_horizontal_widget_size,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="Slider is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 # Slider can't be given focus on mobile

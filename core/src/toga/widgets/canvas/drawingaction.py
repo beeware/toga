@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from dataclasses import InitVar, dataclass, fields, is_dataclass
+from dataclasses import KW_ONLY, InitVar, dataclass, fields, is_dataclass
 from enum import Enum
 from math import pi
 from typing import TYPE_CHECKING, Any
@@ -74,6 +74,9 @@ class DrawingAction(ABC):
             str_fields = []
             for field in fields(self):
                 match value := getattr(self, field.name):
+                    case None:
+                        # Leave None (unset attributes) out of the repr
+                        continue
                     case float():
                         str_value = f"{value:.3f}"
                     case Enum():
@@ -103,17 +106,27 @@ NOT_PROVIDED = object()
 
 
 class color_property:
+    def __init__(self, aliased=False):
+        self.aliased = aliased
+
+    def __set_name__(self, action_class, name):
+        self.name = name
+
     def __get__(self, action, action_class=None):
         if action is None:
             return self
 
-        return action._color
+        return action._color if self.aliased else getattr(action, f"_{self.name}")
 
     def __set__(self, action, value):
         if value not in {None, NOT_PROVIDED, self}:
             value = Color.parse(value)
 
-        action._color = value
+        if self.aliased:
+            action._color = value
+        else:
+            value = None if value is self else value
+            setattr(action, f"_{self.name}", value)
 
 
 ###########################################################################
@@ -385,9 +398,15 @@ class RoundRect(DrawingAction):
 
 @dataclass(repr=False)
 class WriteText(DrawingAction):
-    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
-    [write_text()][toga.Canvas.write_text] method.
-    """
+    def __post_init__(self):
+        warn(
+            (
+                "The WriteText drawing action is deprecated. Use FillText and/or "
+                "StrokeText instead."
+            ),
+            DeprecationWarning,
+            stacklevel=3,
+        )
 
     text: str
     x: float = 0.0
@@ -397,7 +416,71 @@ class WriteText(DrawingAction):
     line_height: float | None = None
 
     def _draw(self, context: Any) -> None:
-        context.write_text(
+        args = (
+            str(self.text),
+            self.x,
+            self.y,
+            (
+                self.font._impl
+                if self.font is not None
+                else Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)._impl
+            ),
+            self.baseline,
+            self.line_height,
+        )
+        if context.in_fill:
+            context.fill_text(*args)
+        if context.in_stroke:
+            context.stroke_text(*args)
+
+
+@dataclass(repr=False)
+class FillText(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [fill_text()][toga.Canvas.fill_text] method.
+    """
+
+    text: str
+    x: float = 0.0
+    y: float = 0.0
+    # TODO: add optional max_width parameter
+    _: KW_ONLY
+    font: Font | None = None
+    baseline: Baseline = Baseline.ALPHABETIC
+    line_height: float | None = None
+
+    def _draw(self, context: Any) -> None:
+        context.fill_text(
+            str(self.text),
+            self.x,
+            self.y,
+            (
+                self.font._impl
+                if self.font is not None
+                else Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)._impl
+            ),
+            self.baseline,
+            self.line_height,
+        )
+
+
+@dataclass(repr=False)
+class StrokeText(DrawingAction):
+    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
+    [stroke_text()][toga.Canvas.stroke_text] method.
+    """
+
+    text: str
+    x: float = 0.0
+    y: float = 0.0
+    # TODO: add optional max_width parameter
+    _: KW_ONLY
+    font: Font | None = None
+    baseline: Baseline = Baseline.ALPHABETIC
+    line_height: float | None = None
+
+    def _draw(self, context: Any) -> None:
+        context.stroke_text(
             str(self.text),
             self.x,
             self.y,
@@ -441,44 +524,6 @@ class DrawImage(DrawingAction):
 ###########################################################################
 # Transformations
 ###########################################################################
-
-
-@dataclass(repr=False)
-class Rotate(DrawingAction):
-    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
-    [rotate()][toga.Canvas.rotate] method.
-    """
-
-    radians: float
-
-    def _draw(self, context: Any) -> None:
-        context.rotate(self.radians)
-
-
-@dataclass(repr=False)
-class Scale(DrawingAction):
-    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
-    [scale()][toga.Canvas.scale] method.
-    """
-
-    sx: float
-    sy: float
-
-    def _draw(self, context: Any) -> None:
-        context.scale(self.sx, self.sy)
-
-
-@dataclass(repr=False)
-class Translate(DrawingAction):
-    """The [`DrawingAction`][toga.widgets.canvas.DrawingAction] representing the
-    [translate()][toga.Canvas.translate] method.
-    """
-
-    tx: float
-    ty: float
-
-    def _draw(self, context: Any) -> None:
-        context.translate(self.tx, self.ty)
 
 
 class ResetTransform(DrawingAction):

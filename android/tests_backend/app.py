@@ -16,6 +16,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_dark_mode = True
     edit_menu_noop_enabled = False
     supports_psutil = False
+    beep_delay = 0.1
 
     def __init__(self, app):
         super().__init__(app)
@@ -144,3 +145,6 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def activate_status_menu_item(self, item_id, title):
         pytest.xfail("Status icons not implemented on Android")
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

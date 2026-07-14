@@ -66,6 +66,7 @@ def test_close_path(widget):
     assert widget._impl.draw_instructions[1:-1] == ["close path"]
 
 
+@pytest.mark.parametrize("use_method", [True, False])
 @pytest.mark.parametrize("alias_kwarg", [True, False])
 @pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
@@ -74,7 +75,7 @@ def test_close_path(widget):
         # Defaults
         (
             {},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             [("fill", {"fill_rule": FillRule.NONZERO})],
             {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
@@ -101,21 +102,21 @@ def test_close_path(widget):
         # Color explicitly not set
         (
             {"fill_style": None},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             [("fill", {"fill_rule": FillRule.NONZERO})],
             {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
         # Explicit Non-Zero winding
         (
             {"fill_rule": FillRule.NONZERO},
-            "fill_rule=FillRule.NONZERO, fill_style=None",
+            "fill_rule=FillRule.NONZERO",
             [("fill", {"fill_rule": FillRule.NONZERO})],
             {"fill_rule": FillRule.NONZERO, "fill_style": None},
         ),
         # Even-Odd winding
         (
             {"fill_rule": FillRule.EVENODD},
-            "fill_rule=FillRule.EVENODD, fill_style=None",
+            "fill_rule=FillRule.EVENODD",
             [("fill", {"fill_rule": FillRule.EVENODD})],
             {"fill_rule": FillRule.EVENODD, "fill_style": None},
         ),
@@ -131,19 +132,33 @@ def test_close_path(widget):
         ),
     ],
 )
-def test_fill(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
+def test_fill(
+    widget,
+    use_method,
+    alias_kwarg,
+    alias_attr,
+    kwargs,
+    args_repr,
+    draw_objs,
+    attrs,
+):
     """A primitive fill operation can be added."""
     if alias_kwarg and "fill_style" in kwargs:
         kwargs["color"] = kwargs.pop("fill_style")
 
-    draw_op = widget.fill(**kwargs)
+    if use_method:
+        draw_op = widget.fill(**kwargs)
 
-    assert_action_performed(widget, "redraw")
+        assert_action_performed(widget, "redraw")
+
+        # The first and last instructions save/restore the root state, and can be
+        # ignored. But the fill itself also saves and then restores.
+        assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
+
+    else:
+        draw_op = Fill(**kwargs)
+
     assert repr(draw_op) == f"Fill({args_repr})"
-
-    # The first and last instructions save/restore the root state, and can be ignored.
-    # But the fill itself also saves and then restores.
-    assert widget._impl.draw_instructions[1:-1] == ["save", *draw_objs, "restore"]
 
     # All the attributes can be retrieved.
     if alias_attr and "fill_style" in attrs:
@@ -162,6 +177,7 @@ def test_fill_kw_only(widget, use_method):
         fill(FillRule.EVENODD, REBECCAPURPLE)
 
 
+@pytest.mark.parametrize("use_method", [True, False])
 @pytest.mark.parametrize("alias_kwarg", [True, False])
 @pytest.mark.parametrize("alias_attr", [True, False])
 @pytest.mark.parametrize(
@@ -170,14 +186,14 @@ def test_fill_kw_only(widget, use_method):
         # Defaults
         (
             {},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "",
             [],
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Color as string name
         (
             {"stroke_style": REBECCAPURPLE},
-            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            f"stroke_style={REBECCA_PURPLE_COLOR!r}",
             [("set stroke style", REBECCA_PURPLE_COLOR)],
             {
                 "stroke_style": REBECCA_PURPLE_COLOR,
@@ -188,7 +204,7 @@ def test_fill_kw_only(widget, use_method):
         # Color as RGB object
         (
             {"stroke_style": REBECCA_PURPLE_COLOR},
-            f"stroke_style={REBECCA_PURPLE_COLOR!r}, line_width=None, line_dash=None",
+            f"stroke_style={REBECCA_PURPLE_COLOR!r}",
             [("set stroke style", REBECCA_PURPLE_COLOR)],
             {
                 "stroke_style": REBECCA_PURPLE_COLOR,
@@ -199,21 +215,21 @@ def test_fill_kw_only(widget, use_method):
         # Color explicitly not set
         (
             {"stroke_style": None},
-            "stroke_style=None, line_width=None, line_dash=None",
+            "",
             [],
             {"stroke_style": None, "line_width": None, "line_dash": None},
         ),
         # Line width
         (
             {"line_width": 4.5},
-            "stroke_style=None, line_width=4.500, line_dash=None",
+            "line_width=4.500",
             [("set line width", 4.5)],
             {"stroke_style": None, "line_width": 4.5, "line_dash": None},
         ),
         # Line dash
         (
             {"line_dash": [2, 7]},
-            "stroke_style=None, line_width=None, line_dash=[2, 7]",
+            "line_dash=[2, 7]",
             [("set line dash", [2, 7])],
             {"stroke_style": None, "line_width": None, "line_dash": [2, 7]},
         ),
@@ -237,24 +253,37 @@ def test_fill_kw_only(widget, use_method):
         ),
     ],
 )
-def test_stroke(widget, alias_kwarg, alias_attr, kwargs, args_repr, draw_objs, attrs):
+def test_stroke(
+    widget,
+    use_method,
+    alias_kwarg,
+    alias_attr,
+    kwargs,
+    args_repr,
+    draw_objs,
+    attrs,
+):
     """A primitive stroke operation can be added."""
     if alias_kwarg and "stroke_style" in kwargs:
         kwargs["color"] = kwargs.pop("stroke_style")
 
-    draw_op = widget.stroke(**kwargs)
+    if use_method:
+        draw_op = widget.stroke(**kwargs)
 
-    assert_action_performed(widget, "redraw")
+        assert_action_performed(widget, "redraw")
+
+        # The first and last instructions save/restore the root state, and can be
+        # ignored. But the stroke itself also saves and then restores.
+        assert widget._impl.draw_instructions[1:-1] == [
+            "save",
+            *draw_objs,
+            "stroke",
+            "restore",
+        ]
+    else:
+        draw_op = Stroke(**kwargs)
+
     assert repr(draw_op) == f"Stroke({args_repr})"
-
-    # The first and last instructions save/restore the root state, and can be ignored.
-    # But the stroke itself also saves and then restores.
-    assert widget._impl.draw_instructions[1:-1] == [
-        "save",
-        *draw_objs,
-        "stroke",
-        "restore",
-    ]
 
     # All the attributes can be retrieved.
     if alias_attr and "stroke_style" in attrs:
@@ -746,8 +775,7 @@ def test_round_rect(widget):
 
 SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
 
-
-@pytest.mark.parametrize(
+TEXT_PARAMS = pytest.mark.parametrize(
     "kwargs, instructions, args_repr, draw_attrs",
     [
         # Defaults
@@ -763,10 +791,7 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
                 "line_height": None,
                 "font": SYSTEM_FONT_IMPL,
             },
-            (
-                "text='Hello world', x=10, y=20, font=None, "
-                "baseline=Baseline.ALPHABETIC, line_height=None"
-            ),
+            "text='Hello world', x=10, y=20, baseline=Baseline.ALPHABETIC",
             {
                 "text": "Hello world",
                 "x": 10,
@@ -787,10 +812,7 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
                 "line_height": None,
                 "font": SYSTEM_FONT_IMPL,
             },
-            (
-                "text='Hello world', x=10, y=20, font=None, "
-                "baseline=Baseline.TOP, line_height=None"
-            ),
+            "text='Hello world', x=10, y=20, baseline=Baseline.TOP",
             {
                 "text": "Hello world",
                 "x": 10,
@@ -813,7 +835,7 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
             },
             (
                 "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>, "
-                "baseline=Baseline.ALPHABETIC, line_height=None"
+                "baseline=Baseline.ALPHABETIC"
             ),
             {
                 "text": "Hello world",
@@ -836,7 +858,7 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
                 "font": SYSTEM_FONT_IMPL,
             },
             (
-                "text='Hello world', x=10, y=20, font=None, "
+                "text='Hello world', x=10, y=20, "
                 "baseline=Baseline.ALPHABETIC, line_height=1.500"
             ),
             {
@@ -850,16 +872,41 @@ SYSTEM_FONT_IMPL = Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl
         ),
     ],
 )
-def test_write_text(widget, kwargs, instructions, args_repr, draw_attrs):
+
+
+@TEXT_PARAMS
+def test_fill_text(widget, kwargs, instructions, args_repr, draw_attrs):
     """A write text operation can be added."""
-    draw_op = widget.write_text(**kwargs)
+    draw_op = widget.fill_text(**kwargs)
 
     assert_action_performed(widget, "redraw")
-    assert repr(draw_op) == f"WriteText({args_repr})"
+    assert repr(draw_op) == f"FillText({args_repr})"
 
     # The first and last instructions save/restore the root state, and can be ignored.
     assert widget._impl.draw_instructions[1:-1] == [
-        ("write text", instructions),
+        ("fill text", instructions),
+    ]
+
+    # All the attributes can be retrieved.
+    assert draw_op.text == draw_attrs["text"]
+    assert draw_op.x == draw_attrs["x"]
+    assert draw_op.y == draw_attrs["y"]
+    assert draw_op.font == draw_attrs["font"]
+    assert draw_op.baseline == draw_attrs["baseline"]
+    assert draw_op.line_height == draw_attrs["line_height"]
+
+
+@TEXT_PARAMS
+def test_stroke_text(widget, kwargs, instructions, args_repr, draw_attrs):
+    """A write text operation can be added."""
+    draw_op = widget.stroke_text(**kwargs)
+
+    assert_action_performed(widget, "redraw")
+    assert repr(draw_op) == f"StrokeText({args_repr})"
+
+    # The first and last instructions save/restore the root state, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == [
+        ("stroke text", instructions),
     ]
 
     # All the attributes can be retrieved.
@@ -941,7 +988,7 @@ def test_reset_transform(widget):
             # When width and height aren't specified, the image's true dimensions are
             # supplied to the backend.
             {"x": 10, "y": 20, "width": 32, "height": 32},
-            "x=10, y=20, width=None, height=None",
+            "x=10, y=20",
             {
                 "x": 10,
                 "y": 20,

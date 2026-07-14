@@ -99,6 +99,12 @@ class drawing_context_property:
                     restores += 1
                 case Save():
                     restores -= 1
+                case State() if getattr(action, "_is_open", False):
+                    if (value := getattr(action, self.name)) is not None:
+                        # This is a state we're currently in, and it sets the attribute.
+                        return value
+                    else:  # no-cover-if-lt-py311
+                        pass
                 case self.ActionClass() if restores <= 0:
                     return getattr(action, self.name)
 
@@ -233,7 +239,7 @@ class Canvas(Widget, DrawingActionDispatch):
     """The current fill color."""
     stroke_style: ColorT = drawing_context_property(SetStrokeStyle, BLACK_COLOR)
     """The current stroke color."""
-    line_width: float = drawing_context_property(SetLineWidth, 2.0)
+    line_width: float = drawing_context_property(SetLineWidth, 1.0)
     """The current width of the stroke."""
     line_dash: list[float] = drawing_context_property(SetLineDash, [])
     """The current dash pattern to follow when drawing the line, expressed as
@@ -367,8 +373,8 @@ class Canvas(Widget, DrawingActionDispatch):
         line_height: float | None = None,
     ) -> tuple[float, float]:
         """Measure the size at which
-        [`Canvas.write_text`][toga.Canvas.write_text]
-        would render some text.
+        [`Canvas.fill_text`][toga.Canvas.fill_text] or
+        [`Canvas.stroke_text`][toga.Canvas.stroke_text] would render some text.
 
         :param text: The text to measure. Newlines will cause line breaks, but long
             lines will not be wrapped.

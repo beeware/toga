@@ -2,6 +2,14 @@ from importlib import import_module
 
 import toga
 
+from .conftest import skip_on_backends
+
+skip_on_backends(
+    "toga_textual",
+    reason="Icon assertions are not implemented on Textual.",
+    allow_module_level=True,
+)
+
 
 def icon_probe(app, image):
     module = import_module("tests_backend.icons")

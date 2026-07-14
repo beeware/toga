@@ -8,9 +8,16 @@ import pytest
 import toga
 from toga.style import Pack
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test, safe_create
 from .properties import (  # noqa: F401
     test_flex_widget_size,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="MapView is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 # MapVierw can't be given focus on mobile

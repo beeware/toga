@@ -22,14 +22,17 @@ class MockTouch(NSObject):
 
 class CanvasProbe(SimpleProbe):
     native_class = UIView
+    screenshot_reset_transform = True
 
     def reference_variant(self, reference):
         # System fonts and sizes are platform specific
         if reference in {
+            "attributes",
             "multiline_text",
             "write_text",
             "write_text_and_path",
             "deprecated_tutorial",
+            "reset_transform",
         }:
             return f"{reference}-iOS"
         else:

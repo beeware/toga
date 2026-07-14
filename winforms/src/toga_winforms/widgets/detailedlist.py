@@ -7,7 +7,6 @@ from System.Drawing import ColorTranslator, Size, SystemColors
 
 from toga.handlers import WeakrefCallable
 
-from ..colors import toga_color
 from ..libs import gdi32, user32 as u32, win32constants as wc, win32structures as ws
 from ..libs.comctl32 import (
     DefSubclassProc,
@@ -74,7 +73,7 @@ class DetailedList(Widget):
         self.native.HandleCreated += WeakrefCallable(self.winforms_handle_created)
         self.native.HandleDestroyed += WeakrefCallable(self.winforms_handle_destroyed)
 
-        self._default_background_color = toga_color(SystemColors.Window)
+        self._default_background_color = SystemColors.Window
         self._first_item = 0
         self._cache = []
 
@@ -128,12 +127,19 @@ class DetailedList(Widget):
         self.pfn_subclass_list = ws.SUBCLASSPROC(self._subclass_proc_list)
         SetWindowSubclass(self._hwnd, self.pfn_subclass_list, 0, 0)
 
-        # Update the image list if the font changes, and back color of the List-View UI
-        # when the back color of the Panel changes.
+        # Update the image list if the font changes, and colors of the List-View UI when
+        # the colors of the Panel changes.
         self.native.FontChanged += WeakrefCallable(self.winforms_font_changed)
         self.native.BackColorChanged += WeakrefCallable(
             self.winforms_back_color_changed
         )
+        self.native.ForeColorChanged += WeakrefCallable(
+            self.winforms_fore_color_changed
+        )
+
+        # Initialize the colors.
+        self.winforms_back_color_changed(None, None)
+        self.winforms_fore_color_changed(None, None)
 
     ####################################################################################
     # Methods dealing with the geometry of the DetailedList.
@@ -251,6 +257,9 @@ class DetailedList(Widget):
         color = ColorTranslator.ToWin32(self.native.BackColor)
         u32.SendMessageW(self._hwnd, wc.LVM_SETBKCOLOR, 0, color)
 
+        # Invalidate the whole client area.
+        u32.InvalidateRect(self._hwnd, None, True)
+
     def winforms_font_changed(self, sender, e):
         """Matches the font of the Win32 List-View UI to the WinForms Panel."""
         # Update the tile size.
@@ -261,6 +270,15 @@ class DetailedList(Widget):
         # size seems to reduce selection flicker.
         self._set_image_list()
         self._update_data()
+
+    def winforms_fore_color_changed(self, sender, e):
+        """Stores the fore color of the WinForms Panel."""
+        self._fore_color = ColorTranslator.ToWin32(self.native.ForeColor)
+
+        # Only invalidate the text region to reduce icon flicker.
+        left = self._drawing_title_rect(x=0, y=0).left
+        rect = RECT(left, 0, self._width, self._height)
+        u32.InvalidateRect(self._hwnd, byref(rect), True)
 
     def winforms_handle_created(self, sender, e):
         """Sets the Panel subclass process when a handle is created for the Panel."""
@@ -426,6 +444,8 @@ class DetailedList(Widget):
                 # See documentation for "+1".
                 rect = self._drawing_select_rect(x=0, y=y)
                 u32.FillRect(hdc, byref(rect), select_back + 1)
+            else:
+                gdi32.SetTextColor(hdc, self._fore_color)
 
             with FontDeviceContext(hdc, hfont):
                 rect = self._drawing_title_rect(x=0, y=y)
