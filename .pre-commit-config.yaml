@@ -26,7 +26,3 @@ repos:
     hooks:
       - id: rumdl
       - id: rumdl-fmt
-  - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.27.0
-    hooks:
-      - id: zizmor
