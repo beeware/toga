@@ -30,14 +30,12 @@ concurrency:
 
 jobs:
   pre-commit:
-    permissions: {}
     name: Pre-commit checks
     uses: beeware/.github/.github/workflows/pre-commit-run.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
     with:
       pre-commit-source: "--group pre-commit"
 
   towncrier:
-    permissions: {}
     name: Check towncrier
     uses: beeware/.github/.github/workflows/towncrier-run.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
     with:
@@ -145,7 +143,6 @@ jobs:
           skip-sdist: ${{ matrix.skip-sdist || 'false' }}
 
   docs-lint:
-    permissions: {}
     name: Documentation linting
     needs: [ pre-commit ]
     runs-on: ubuntu-latest
@@ -180,7 +177,6 @@ jobs:
         run: python -m tox -e docs-lint
 
   core-and-travertino:
-    permissions: {}
     name: Test ${{ matrix.package }} (${{ matrix.platform }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
     needs: [ pre-commit, towncrier, package ]
@@ -245,7 +241,6 @@ jobs:
         include-hidden-files: true
 
   core-and-travertino-coverage:
-    permissions: {}
     name: "Coverage: ${{ matrix.package }}"
     needs: core-and-travertino
     runs-on: ubuntu-latest
@@ -292,7 +287,6 @@ jobs:
         path: ${{ matrix.package }}/htmlcov
 
   travertino-backwards-compatibility:
-    permissions: {}
     name: Test Travertino backwards compatibility with Toga 0.4.8
     runs-on: "ubuntu-latest"
     needs: [ pre-commit, towncrier, package ]
@@ -325,7 +319,6 @@ jobs:
         tox -e trav-compat
 
   testbed:
-    permissions: {}
     name: Testbed (${{ matrix.backend }})
     needs: [ core-and-travertino ]
     runs-on: ${{ matrix.runs-on }}
@@ -687,7 +680,6 @@ jobs:
     #   if: failure()
 
   bootstraps:
-    permissions: {}
     name: "Bootstrap"
     needs: [ package ]
     runs-on: "ubuntu-24.04"
