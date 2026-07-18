@@ -101,7 +101,8 @@ if default_display is None:  # pragma: no cover
 IS_WSL2_GUI_ENABLED = os.getenv("WSL2_GUI_APPS_ENABLED", "0") == "1"
 
 # Force Wayland on WSL2 if the WSL2 GUI apps feature is enabled
-IS_WAYLAND = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display) or IS_WSL2_GUI_ENABLED
+IS_WAYLAND = (not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
+              or IS_WSL2_GUI_ENABLED)
 
 # The following imports will fail if the underlying libraries or their API wrappers
 # aren't installed; handle failure gracefully (see
