@@ -1302,3 +1302,50 @@ async def test_state_parameters(canvas, probe):
 
     await probe.redraw("Image should be drawn")
     assert_reference(probe, "attributes", threshold=0.02)
+
+
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="may fail outside of a GitHub runner environment",
+)
+async def test_font_variants(canvas, probe):
+    """Each registered font can be rendered in normal, bold, italic, and bold-italic."""
+    from toga.fonts import ITALIC as ITALIC_FONT
+
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf")
+    Font.register("Roboto", "resources/fonts/Roboto-Bold.ttf", weight=BOLD)
+    Font.register("Roboto", "resources/fonts/Roboto-Italic.ttf", style=ITALIC_FONT)
+    Font.register(
+        "Roboto", "resources/fonts/Roboto-BoldItalic.ttf",
+        weight=BOLD, style=ITALIC_FONT,
+    )
+    Font.register("Recursive", "resources/fonts/Recursive-VF.ttf")
+    Font.register("Recursive", "resources/fonts/Recursive-VF.ttf", weight=BOLD)
+    Font.register("Recursive", "resources/fonts/Recursive-VF.ttf", style=ITALIC_FONT)
+    Font.register(
+        "Recursive", "resources/fonts/Recursive-VF.ttf",
+        weight=BOLD, style=ITALIC_FONT,
+    )
+
+    variants = [
+        ("Normal", {}),
+        ("Bold", {"weight": BOLD}),
+        ("Italic", {"style": ITALIC_FONT}),
+        ("Bold Italic", {"weight": BOLD, "style": ITALIC_FONT}),
+    ]
+
+    y = 5
+    font_size = 10
+    for family in ["Endor", "Roboto", "Recursive"]:
+        for label, kwargs in variants:
+            font = Font(family, font_size, **kwargs)
+            canvas.fill_text(
+                f"{family} {label}",
+                5, y,
+                font=font,
+                baseline=Baseline.TOP,
+            )
+            y += 15
+
+    await probe.redraw("Font variants should be rendered")
+    assert_reference(probe, "font_variants", threshold=0.04)

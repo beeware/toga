@@ -54,6 +54,16 @@ class FontApp(toga.App):
         toga.Font.register(
             "Roboto", "resources/Roboto-BoldItalic.ttf", weight=BOLD, style=ITALIC
         )
+        toga.Font.register("Recursive", "resources/Recursive-VF.ttf")
+        toga.Font.register(
+            "Recursive", "resources/Recursive-VF.ttf", weight=BOLD
+        )
+        toga.Font.register(
+            "Recursive", "resources/Recursive-VF.ttf", style=ITALIC
+        )
+        toga.Font.register(
+            "Recursive", "resources/Recursive-VF.ttf", weight=BOLD, style=ITALIC
+        )
 
         button_style = {
             "font_family": "awesome-free-solid",
@@ -147,6 +157,30 @@ class FontApp(toga.App):
             font_weight=BOLD,
             font_style=ITALIC,
         )
+        lbl_r1 = toga.Label(
+            "Recursive",
+            font_family="Recursive",
+            font_size=14,
+        )
+        lbl_r2 = toga.Label(
+            "Recursive bold",
+            font_family="Recursive",
+            font_size=14,
+            font_weight=BOLD,
+        )
+        lbl_r3 = toga.Label(
+            "Recursive italic",
+            font_family="Recursive",
+            font_size=14,
+            font_style=ITALIC,
+        )
+        lbl_r4 = toga.Label(
+            "Recursive bold italic",
+            font_family="Recursive",
+            font_size=14,
+            font_weight=BOLD,
+            font_style=ITALIC,
+        )
 
         unknown_style = {"font_family": "Unknown", "font_size": 14}
         lbl_u = toga.Label("Unknown", **unknown_style)
@@ -178,6 +212,10 @@ class FontApp(toga.App):
                 lbl6,
                 lbl7,
                 lbl8,
+                lbl_r1,
+                lbl_r2,
+                lbl_r3,
+                lbl_r4,
                 lbl_u,
                 lbl_ub,
                 lbl_ui,
