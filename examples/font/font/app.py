@@ -55,12 +55,8 @@ class FontApp(toga.App):
             "Roboto", "resources/Roboto-BoldItalic.ttf", weight=BOLD, style=ITALIC
         )
         toga.Font.register("Recursive", "resources/Recursive-VF.ttf")
-        toga.Font.register(
-            "Recursive", "resources/Recursive-VF.ttf", weight=BOLD
-        )
-        toga.Font.register(
-            "Recursive", "resources/Recursive-VF.ttf", style=ITALIC
-        )
+        toga.Font.register("Recursive", "resources/Recursive-VF.ttf", weight=BOLD)
+        toga.Font.register("Recursive", "resources/Recursive-VF.ttf", style=ITALIC)
         toga.Font.register(
             "Recursive", "resources/Recursive-VF.ttf", weight=BOLD, style=ITALIC
         )

@@ -1316,15 +1316,19 @@ async def test_font_variants(canvas, probe):
     Font.register("Roboto", "resources/fonts/Roboto-Bold.ttf", weight=BOLD)
     Font.register("Roboto", "resources/fonts/Roboto-Italic.ttf", style=ITALIC_FONT)
     Font.register(
-        "Roboto", "resources/fonts/Roboto-BoldItalic.ttf",
-        weight=BOLD, style=ITALIC_FONT,
+        "Roboto",
+        "resources/fonts/Roboto-BoldItalic.ttf",
+        weight=BOLD,
+        style=ITALIC_FONT,
     )
     Font.register("Recursive", "resources/fonts/Recursive-VF.ttf")
     Font.register("Recursive", "resources/fonts/Recursive-VF.ttf", weight=BOLD)
     Font.register("Recursive", "resources/fonts/Recursive-VF.ttf", style=ITALIC_FONT)
     Font.register(
-        "Recursive", "resources/fonts/Recursive-VF.ttf",
-        weight=BOLD, style=ITALIC_FONT,
+        "Recursive",
+        "resources/fonts/Recursive-VF.ttf",
+        weight=BOLD,
+        style=ITALIC_FONT,
     )
 
     variants = [
@@ -1341,7 +1345,8 @@ async def test_font_variants(canvas, probe):
             font = Font(family, font_size, **kwargs)
             canvas.fill_text(
                 f"{family} {label}",
-                5, y,
+                5,
+                y,
                 font=font,
                 baseline=Baseline.TOP,
             )
