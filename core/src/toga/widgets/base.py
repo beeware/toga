@@ -69,10 +69,15 @@ class Widget(Node, PackMixin, ABC):
 
         This is an abstract base class; it cannot be instantiated.
 
+        Properties provided by the widget's style can also be passed as constructor
+        keyword arguments, or read and written directly on the widget. For example,
+        ``widget.margin = 10`` is equivalent to ``widget.style.margin = 10``.
+
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial style properties. These override any matching
+            properties on the ``style`` argument.
         """
         if style is None:
             style = Pack(**kwargs)
