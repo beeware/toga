@@ -25,14 +25,6 @@ class Divider(Widget):
         self._direction = value
 
     def rehint(self):
-        # A previous attempt at direction setting hardcoded widths and heights in
-        # set_direction onto the native widget, and used self.native.Width and
-        # self.native.Height in this block.  This is unreliable, as if rehint
-        # does not immediately happen after set_direction (such as in DPI scaling
-        # adjustments), the current length of the divider would be enforced as the
-        # minimum length.  Thus, all divider-related layout happens at the rehint,
-        # which will manifest the correct direction in set_bounds once Toga's
-        # layout finishes.
         if self.get_direction() == self.interface.HORIZONTAL:
             self.interface.intrinsic.width = at_least(0)
             self.interface.intrinsic.height = self.scale_out(2, ROUND_UP)
