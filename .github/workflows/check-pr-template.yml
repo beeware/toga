@@ -10,4 +10,4 @@ permissions:
 jobs:
   check-pr-template:
     name: Check PR template
-    uses: ./.github/workflows/pr-checklist.yml
+    uses: beeware/.github/.github/workflows/pr-checklist.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main

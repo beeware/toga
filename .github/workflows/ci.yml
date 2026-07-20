@@ -43,6 +43,9 @@ jobs:
   towncrier:
     name: Check towncrier
     uses: beeware/.github/.github/workflows/towncrier-run.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
+    permissions:
+      contents: read
+      pull-requests: write
     with:
       tox-source: "--group tox-uv"
 
