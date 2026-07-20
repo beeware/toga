@@ -1116,8 +1116,6 @@ async def test_write_text_and_path(canvas, probe):
     assert_reference(probe, "write_text_and_path", 0.04)
 
 
-
-
 @pytest.mark.xfail(
     condition=os.environ.get("RUNNING_IN_CI") != "true",
     reason="may fail outside of a GitHub runner environment",
