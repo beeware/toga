@@ -5,10 +5,15 @@ on:
     branches:
       - 'dependabot/**'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   changenote:
     name: Dependabot Change Note
-    uses: beeware/.github/.github/workflows/dependabot-changenote.yml@main
-    secrets: inherit
+    uses: beeware/.github/.github/workflows/dependabot-changenote.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
+    secrets:
+      BRUTUS_PAT_TOKEN: ${{ secrets.BRUTUS_PAT_TOKEN }}
     with:
       changenote-format: "md"
