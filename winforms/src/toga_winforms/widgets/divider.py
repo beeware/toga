@@ -23,20 +23,16 @@ class Divider(Widget):
 
     def set_direction(self, value):
         self._direction = value
-        if value == self.interface.HORIZONTAL:
-            self.native.Height = 2
-            self.native.Width = 0
-        else:
-            self.native.Height = 0
-            self.native.Width = 2
 
     def rehint(self):
-        # Do not use self.native.Width or self.native.Height here, as rehint is not
-        # necessarily called just after set_direction, in which case the Width/Height
-        # will reflect the real width/height and be incorrectly used as minimums.
-        # This issue can be manifested when moving a window with a divider between two
-        # monitors, where the width of the divider will be incorrectly set as the new
-        # minimum.
+        # A previous attempt at direction setting hardcoded widths and heights in
+        # set_direction onto the native widget, and used self.native.Width and
+        # self.native.Height in this block.  This is unreliable, as if rehint
+        # does not immediately happen after set_direction (such as in DPI scaling
+        # adjustments), the current length of the divider would be enforced as the
+        # minimum length.  Thus, all divider-related layout happens at the rehint,
+        # which will manifest the correct direction in set_bounds once Toga's
+        # layout finishes.
         if self.get_direction() == self.interface.HORIZONTAL:
             self.interface.intrinsic.width = at_least(0)
             self.interface.intrinsic.height = self.scale_out(2, ROUND_UP)
