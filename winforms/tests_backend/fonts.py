@@ -45,7 +45,7 @@ class FontMixin:
 
     @property
     def font_size(self):
-        size_in_points = self.font.Size / self.impl.scale_factor * 72 / 96
+        size_in_points = self.font.Size / self.scale_factor * 72 / 96
         # This is a hacky workaround.  We specify font sizes in pixels, so
         # there are rounding issues.  However, returning approximate values
         # here directly means that the result cannot be manipulated by
