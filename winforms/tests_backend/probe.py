@@ -1,4 +1,5 @@
 import asyncio
+from ctypes import byref, c_void_p, windll, wintypes
 
 from pytest import approx
 from System.Windows.Forms import SendKeys
@@ -83,6 +84,22 @@ class BaseProbe(FontMixin):
     @property
     def scale_factor(self):
         return GetDpiForWindow(int(self.native.Handle.ToString())) / 96
+
+    # This is based on screen, which is used for screenshots, etc.
+    def get_scale_factor(self, native_screen):
+        screen_rect = wintypes.RECT(
+            native_screen.Bounds.Left,
+            native_screen.Bounds.Top,
+            native_screen.Bounds.Right,
+            native_screen.Bounds.Bottom,
+        )
+        windll.user32.MonitorFromRect.restype = c_void_p
+        windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
+        # MONITOR_DEFAULTTONEAREST = 2
+        hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
+        pScale = wintypes.UINT()
+        windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
+        return pScale.value / 100
 
     async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
         try:
