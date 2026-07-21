@@ -51,8 +51,8 @@ class FontMixin:
         # arithmetic before a comparison in dpi change tests.  Since all font
         # sizes are integers, we compare to the integer equivalent and return
         # that.
-        assert approx(self.font.SizeInPoints) == int(self.font.SizeInPoints)
-        return int(self.font.SizeInPoints)
+        assert approx(self.font.SizeInPoints) == round(self.font.SizeInPoints)
+        return round(self.font.SizeInPoints)
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
