@@ -45,14 +45,15 @@ class FontMixin:
 
     @property
     def font_size(self):
+        size_in_points = self.font.Size / self.impl.scale_factor * 72 / 96
         # This is a hacky workaround.  We specify font sizes in pixels, so
         # there are rounding issues.  However, returning approximate values
         # here directly means that the result cannot be manipulated by
         # arithmetic before a comparison in dpi change tests.  Since all font
         # sizes are integers, we compare to the integer equivalent and return
         # that.
-        assert approx(self.font.SizeInPoints) == round(self.font.SizeInPoints)
-        return round(self.font.SizeInPoints)
+        assert approx(size_in_points) == round(size_in_points)
+        return round(size_in_points)
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
