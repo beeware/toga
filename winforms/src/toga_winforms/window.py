@@ -106,12 +106,6 @@ class Window(Scalable):
     def _remove_subclass(self):
         RemoveWindowSubclass(int(self.native.Handle.ToString()), self.pfn_subclass, 0)
 
-    def compute_window_size(self, width, height):
-        return (
-            self.scale_in(width) + self._decor_width(),
-            self.scale_in(height) + self._top_bars_height() + self._decor_height(),
-        )
-
     def _subclass_proc(
         self,
         hWnd: int,
@@ -121,6 +115,8 @@ class Window(Scalable):
         uIdSubclass: int,
         dwRefData: int,
     ) -> ws.LRESULT:
+        # Remove the window subclass in the way recommended by Raymond Chen here:
+        # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
         if uMsg == wc.WM_NCDESTROY:
             RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
 
@@ -160,7 +156,9 @@ class Window(Scalable):
             self.resize_content(force_refresh=True)
             return 0
 
-        if uMsg == wc.WM_GETDPISCALEDSIZE:
+        # In tests, we only mock WM_DPICHANGED; but since this is just "let Windows do"
+        # its thing, we can safely no-cover it.
+        if uMsg == wc.WM_GETDPISCALEDSIZE:  # pragma: no cover
             # .NET Core overrides this behavior when not using AutoScaleMode.Dpi,
             # which includes AutoScaleMode.None, which we use.
             # We thus override this again, returning 0 to always let the system
@@ -333,16 +331,6 @@ class Window(Scalable):
         for widget in self.interface.widgets:
             widget._impl.scale_font()
             widget._impl.refresh()
-
-    def update_dpi(self, dpi_scale=None):
-        if dpi_scale is None:
-            dpi_scale = GetDpiForWindow(int(self.native.Handle.ToString())) / 96
-        self._dpi_scale = dpi_scale
-
-        # Then do a single layout pass.
-        if self.interface.content is not None:
-            self.interface.content.refresh()
-        self.resize_content()
 
     def set_content(self, widget):
         self.container.set_content(widget)
