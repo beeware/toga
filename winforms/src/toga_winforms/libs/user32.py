@@ -1,4 +1,4 @@
-from ctypes import POINTER, c_void_p, windll
+from ctypes import POINTER, c_int, c_void_p, windll
 from ctypes.wintypes import (
     BOOL,
     DWORD,
@@ -9,6 +9,7 @@ from ctypes.wintypes import (
     HMONITOR,
     HWND,
     INT,
+    LONG,
     LPCWSTR,
     LPPOINT,
     LPRECT,
@@ -108,6 +109,18 @@ GetSystemMetrics.restype = INT
 GetSystemMetrics.argtypes = [INT]
 
 
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowrect
+GetWindowRect = user32.GetWindowRect
+GetWindowRect.argtypes = [HWND, POINTER(RECT)]
+GetWindowRect.restype = BOOL
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowlongw
+GetWindowLongW = user32.GetWindowLongW
+GetWindowLongW.argtypes = [HWND, c_int]
+GetWindowLongW.restype = LONG
+
+
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-invalidaterect
 InvalidateRect = user32.InvalidateRect
 InvalidateRect.restype = BOOL
@@ -148,6 +161,8 @@ SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM_OBJECT]
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setprocessdpiawarenesscontext
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setthreaddpiawarenesscontext
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdpiforwindow
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-adjustwindowrectexfordpi
 # https://www.lifewire.com/windows-version-numbers-2625171
 win_version = Environment.OSVersion.Version
 if (win_version.Major, win_version.Minor, win_version.Build) >= (10, 0, 15063):
@@ -159,12 +174,48 @@ if (win_version.Major, win_version.Minor, win_version.Build) >= (10, 0, 15063):
     SetThreadDpiAwarenessContext.restype = c_void_p
     SetThreadDpiAwarenessContext.argtypes = [c_void_p]
 
+    GetDpiForWindow = user32.GetDpiForWindow
+    GetDpiForWindow.argtypes = [HWND]
+    GetDpiForWindow.restype = UINT
+
+    AdjustWindowRectExForDpi = user32.AdjustWindowRectExForDpi
+    AdjustWindowRectExForDpi.argtypes = [
+        POINTER(RECT),
+        DWORD,
+        BOOL,
+        DWORD,
+        UINT,
+    ]
+    AdjustWindowRectExForDpi.restype = BOOL
+
 else:  # pragma: no cover
     print(
         "WARNING: Your Windows version doesn't support DPI Awareness setting. "
         "We recommend you upgrade to at least Windows 10 version 1703."
     )
-    SetProcessDpiAwarenessContext = SetThreadDpiAwarenessContext = None
+
+    # Fallbacks for earlier versions.
+    def SetProcessDpiAwarenessContext(value):
+        return True
+
+    def SetThreadDpiAwarenessContext(value):
+        return True
+
+    def GetDpiForWindow(hwnd):
+        return 96
+
+    # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-adjustwindowrectex
+    AdjustWindowRectEx = user32.AdjustWindowRectEx
+    AdjustWindowRectEx.argtypes = [
+        POINTER(RECT),
+        DWORD,
+        BOOL,
+        DWORD,
+    ]
+    AdjustWindowRectEx.restype = BOOL
+
+    def AdjustWindowRectExForDpi(lpRect, dwStyle, bMenu, dwExStyle, dpi):
+        return AdjustWindowRectEx(lpRect, dwStyle, bMenu, dwExStyle)
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setfocus

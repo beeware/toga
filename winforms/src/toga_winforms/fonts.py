@@ -3,6 +3,7 @@ from System.Drawing import (
     Font as WinFont,
     FontFamily,
     FontStyle,
+    GraphicsUnit,
     SystemFonts,
 )
 from System.Drawing.Text import PrivateFontCollection
@@ -23,9 +24,22 @@ from toga.fonts import (
     UnknownFontError,
 )
 
+
+def to_pixel_font(font):
+    pixel_size = font.SizeInPoints * 96.0 / 72.0
+    return WinFont(
+        font.FontFamily,
+        pixel_size,
+        font.Style,
+        GraphicsUnit.Pixel,
+        font.GdiCharSet,
+        font.GdiVerticalFont,
+    )
+
+
 # Unlike SystemFonts.DefaultFont, MessageBoxFont respects the system theme
 # (https://github.com/dotnet/winforms/issues/524).
-DEFAULT_FONT = SystemFonts.MessageBoxFont
+DEFAULT_FONT = to_pixel_font(SystemFonts.MessageBoxFont)
 
 
 class Font:
@@ -109,9 +123,9 @@ class Font:
         if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
             font_size = DEFAULT_FONT.Size
         else:
-            font_size = self.interface.size
+            font_size = self.interface.size * 96 / 72
 
-        self.native = WinFont(font_family, font_size, font_style)
+        self.native = WinFont(font_family, font_size, font_style, GraphicsUnit.Pixel)
         _IMPL_CACHE[self.interface] = self
 
     def metric(self, name):
