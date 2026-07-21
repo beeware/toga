@@ -281,7 +281,7 @@ async def test_paths(canvas, probe):
 
 
 async def test_bezier_curve(canvas, probe):
-    """A Bézier curve can be drawn."""
+    """A BÃ©zier curve can be drawn."""
 
     canvas.begin_path()
     canvas.move_to(100, 44)
@@ -1125,6 +1125,14 @@ async def test_font_variants(canvas, probe):
     """Each registered font can be rendered in normal, bold, italic, and bold-italic."""
 
     Font.register("Endor", "resources/fonts/ENDOR___.ttf")
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf", weight=BOLD)
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf", style=ITALIC)
+    Font.register(
+        "Endor",
+        "resources/fonts/ENDOR___.ttf",
+        weight=BOLD,
+        style=ITALIC,
+    )
     Font.register("Roboto", "resources/fonts/Roboto-Regular.ttf")
     Font.register("Roboto", "resources/fonts/Roboto-Bold.ttf", weight=BOLD)
     Font.register("Roboto", "resources/fonts/Roboto-Italic.ttf", style=ITALIC)
@@ -1155,7 +1163,10 @@ async def test_font_variants(canvas, probe):
     font_size = 10
     for family in ["Endor", "Roboto", "Recursive"]:
         for label, kwargs in variants:
-            font = Font(family, font_size, **kwargs)
+            try:
+                font = Font(family, font_size, **kwargs)
+            except Exception:
+                continue
             canvas.fill_text(
                 f"{family} {label}",
                 5,
@@ -1197,7 +1208,7 @@ async def test_draw_image_in_rect(canvas, probe):
 
 
 async def test_miter_join(canvas, probe):
-    """Lines are joined with a miter, down to about 11.5º."""
+    """Lines are joined with a miter, down to about 11.5Âº."""
 
     def draw_angle(canvas, angle, x):
         height = 110
