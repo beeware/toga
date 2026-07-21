@@ -1,10 +1,10 @@
 import asyncio
-from ctypes import byref, c_void_p, windll, wintypes
 
 from pytest import approx
-from System.Windows.Forms import Screen, SendKeys
+from System.Windows.Forms import SendKeys
 
 import toga
+from toga_winforms.libs.user32 import GetDpiForWindow
 
 from .fonts import FontMixin
 
@@ -82,29 +82,7 @@ class BaseProbe(FontMixin):
 
     @property
     def scale_factor(self):
-        # For ScrollContainer
-        if hasattr(self, "native_content"):
-            return self.get_scale_factor(
-                native_screen=Screen.FromControl(self.native_content)
-            )
-        # For Windows and others
-        else:
-            return self.get_scale_factor(native_screen=Screen.FromControl(self.native))
-
-    def get_scale_factor(self, native_screen):
-        screen_rect = wintypes.RECT(
-            native_screen.Bounds.Left,
-            native_screen.Bounds.Top,
-            native_screen.Bounds.Right,
-            native_screen.Bounds.Bottom,
-        )
-        windll.user32.MonitorFromRect.restype = c_void_p
-        windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
-        # MONITOR_DEFAULTTONEAREST = 2
-        hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
-        pScale = wintypes.UINT()
-        windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
-        return pScale.value / 100
+        return GetDpiForWindow(int(self.native.Handle.ToString())) / 96
 
     async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
         try:

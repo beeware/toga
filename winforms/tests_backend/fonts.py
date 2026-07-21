@@ -44,8 +44,7 @@ class FontMixin:
 
     @property
     def font_size(self):
-        print("UNIT", self.font.Unit)
-        size_in_points = self.font.Size * 72 / 96
+        size_in_points = self.font.SizeInPoints
         # Round to 4 digits for comparison, as the rest may be plagued
         # by floating point issues; 4 digits is often enough for all our
         # tests.

@@ -754,18 +754,29 @@ async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
                 )
 
         assert positions_scaled["menubar"] == approx_fixed((0, 0))
-        assert sizes_scaled["menubar"] == (
-            approx_fixed(client_size.width),
-            approx_font(sizes["menubar"].height * scale_change),
-        )
+        # WinForms seems to impose a minimum height on the menubar and toolbar
+        # for touchablility if the font size gets small; this limit is done relative
+        # to the current DPI, and because we have no way to mock WinForms' internals,
+        # we have to accept that if we're scaling to a very small scale our menubar
+        # height may not be preserved correctly.
+        if scale_change <= 1.5 / 1.25:
+            assert sizes_scaled["menubar"][0] == approx_fixed(client_size.width)
+        else:
+            assert sizes_scaled["menubar"] == (
+                approx_fixed(client_size.width),
+                approx_font(sizes["menubar"].height * scale_change),
+            )
 
         assert positions_scaled["toolbar"] == approx_fixed(
             (0, sizes_scaled["menubar"].height)
         )
-        assert sizes_scaled["toolbar"] == (
-            approx_fixed(client_size.width),
-            approx_font(sizes["toolbar"].height * scale_change),
-        )
+        if scale_change <= 1.5 / 1.25:
+            assert sizes_scaled["toolbar"][0] == approx_fixed(client_size.width)
+        else:
+            assert sizes_scaled["toolbar"] == (
+                approx_fixed(client_size.width),
+                approx_font(sizes["toolbar"].height * scale_change),
+            )
 
         assert positions_scaled["container"] == approx_fixed(
             (0, positions_scaled["toolbar"].y + sizes_scaled["toolbar"].height)
