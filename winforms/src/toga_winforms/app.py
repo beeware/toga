@@ -102,14 +102,6 @@ class App:
         self.loop.call_soon_threadsafe(self.interface._startup)
 
     ######################################################################
-    # Native event handlers
-    ######################################################################
-
-    def update_dpi(self):
-        for window in self.interface.windows:
-            window._impl.update_dpi()
-
-    ######################################################################
     # Commands and menus
     ######################################################################
 
