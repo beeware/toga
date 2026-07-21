@@ -632,15 +632,20 @@ async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
 
     user32.AdjustWindowRectExForDpi = AdjustWindowRectExForDpi_mock
 
-    bounds = main_window._impl.native.Bounds
+    native_window = main_window._impl.native
+    bounds = native_window.Bounds
+    new_width, new_height = (
+        int(bounds.Width * scale_change),
+        int(bounds.Height * scale_change),
+    )
     original_window_rect = RECT(
         bounds.X, bounds.Y, bounds.X + bounds.Width, bounds.Y + bounds.Height
     )
     scaled_window_rect = RECT(
         bounds.X,
         bounds.Y,
-        bounds.X + int(bounds.Width * scale_change),
-        bounds.Y + int(bounds.Height * scale_change),
+        bounds.X + new_width,
+        bounds.Y + new_height,
     )
 
     try:
@@ -734,10 +739,13 @@ async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
         # high word = X dpi, low word = Y dpi -- should be the same
         wParam = mock_dpi * 0x10001
 
-        handle = int(main_window._impl.native.Handle.ToString())
+        handle = int(native_window.Handle.ToString())
         # We don't actually need uIdSubclass and dwRefData here, so we pad them out
         # with 0s.
         main_window._impl._subclass_proc(handle, wc.WM_DPICHANGED, wParam, lParam, 0, 0)
+
+        assert native_window.Width == approx_fixed(new_width)
+        assert native_window.Height == approx_fixed(new_height)
 
         client_size = main_window_probe.client_size
 
@@ -817,7 +825,7 @@ async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
         # high word = X dpi, low word = Y dpi -- should be the same
         wParam = real_dpi * 0x10001
 
-        handle = int(main_window._impl.native.Handle.ToString())
+        handle = int(native_window.Handle.ToString())
         # We don't actually need uIdSubclass and dwRefData here, so we pad them out with
         # 0s.
         main_window._impl._subclass_proc(handle, wc.WM_DPICHANGED, wParam, lParam, 0, 0)
