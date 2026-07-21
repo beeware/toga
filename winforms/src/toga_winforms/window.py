@@ -155,6 +155,7 @@ class Window(Scalable):
                 rect.bottom - rect.top,
                 wc.SWP_NOZORDER,
             )
+
             # Window position setting should force a resize, but do this defensively
             self.resize_content(force_refresh=True)
             return 0
@@ -311,13 +312,12 @@ class Window(Scalable):
 
     def on_refresh(self, container):
         layout = self.interface.content.layout
-        min_width = self.scale_in(layout.min_width) + self._decor_width()
-        min_height = (
+        self.native.MinimumSize = WinSize(
+            self.scale_in(layout.min_width) + self._decor_width(),
             self.scale_in(layout.min_height)
             + self._top_bars_height()
-            + self._decor_height()
+            + self._decor_height(),
         )
-        self.native.MinimumSize = WinSize(min_width, min_height)
 
     def resize_content(self, force_refresh=False):
         vertical_shift = self._top_bars_height()
