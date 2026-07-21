@@ -1124,6 +1124,7 @@ async def test_font_variants(canvas, probe):
     """Each registered font can be rendered in normal, bold, italic, and bold-italic."""
 
     Font.register("Endor", "resources/fonts/ENDOR___.ttf")
+    Font.register("Roboto", "resources/fonts/Roboto-Regular.ttf")
     Font.register("Roboto", "resources/fonts/Roboto-Bold.ttf", weight=BOLD)
     Font.register("Roboto", "resources/fonts/Roboto-Italic.ttf", style=ITALIC)
     Font.register(
