@@ -27,7 +27,7 @@ class ReadyDeque(deque):
         super().append(value)
 
         if self._loop._idle:
-            self._loop.enqueue_tick(delay=0)
+            self._loop.enqueue_task(delay=0, task=self._loop.run_once_recurring)
 
 
 class TwoThreadIocpProactor(asyncio.IocpProactor):
@@ -187,7 +187,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
         self._synchronous_queue = ReentrantQueue()
         self._idle = True
-        self._next_time = None
+        self._wake_times = {}
 
     def run_forever(self, app):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
@@ -237,20 +237,20 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         else:  # pragma: no cover
             self._orig_state = self._run_forever_setup()
 
-        # Rather than going into a `while True:` loop, we're going to use the
-        # Winforms event loop to queue a tick() message that will cause a
-        # single iteration of the asyncio event loop to be executed. Each time
-        # we do this, we queue *another* tick() message in 5ms time. In this
-        # way, we'll get a continuous stream of tick() calls, without blocking
-        # the Winforms event loop. We also add a handler for ApplicationExit
-        # to ensure that loop cleanup occurs when the app exits.
+        # Rather than using a `while True:` loop, the `run_forever` method piggybacks
+        # onto the Winforms event loop:
+        # - Ready tasks are enqueued into the WinForms event loop by a ReadyDeque object
+        #   using the `enqueue_task` method.
+        # - Cleanup is ensured by handling the ApplicationExit event when the app exits.
+        # - Completed I/O tasks are enqueued on a separate thread which is started by
+        #   the `start_iocp_listener` method.
 
         WinForms.Application.ApplicationExit += WeakrefCallable(
             self.winforms_application_exit
         )
 
         # Queue the first asyncio tick.
-        self.enqueue_tick(tick=self._safety_catch_tick)
+        self.enqueue_task(delay=0, task=self._safety_catch_task)
 
         # Change the ready deque to an instance of ReadyDeque.
         self._ready = ReadyDeque(self)
@@ -262,35 +262,26 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self._inner_loop = None
         WinForms.Application.Run(self.app.app_context)
 
-    def enqueue_tick(self, tick=None, delay=0, scheduled_time=None):
-        if not tick:
+    def enqueue_task(self, task, delay):
+        """Use the WinForms event loop to enqueue a task after a given delay."""
 
-            def tick(*args, scheduled_time=scheduled_time, **kwargs):
-                return self.tick(*args, scheduled_time=scheduled_time, **kwargs)
+        def dispatch_task(*args, task=task, **kwargs):
+            return self.dispatch_task(*args, task=task, **kwargs)
 
-        # Queue a call to tick in a specified delay.
-        action = Action[Task](tick)
-        Task.Delay(delay).ContinueWith(action)
+        # Add a call which dispactes the Queue a call to tick in a specified delay.
+        Task.Delay(delay).ContinueWith(Action[Task](dispatch_task))
 
     # This function doesn't report as covered because it runs on a
     # non-Python-created thread (see App.run_app). But it must actually be
     # covered, otherwise nothing would work.
-    def tick(self, *args, scheduled_time=None, **kwargs):  # pragma: no cover
-        """Cause a single iteration of the event loop to run on the main GUI thread."""
+    def dispatch_task(self, *args, task=None, **kwargs):  # pragma: no cover
+        """Use the WinForms dispatcher to add a given task to the synchronous queue."""
 
-        def append_tick_task(scheduled_time=scheduled_time):
-            return self.append_tick_task(scheduled_time=scheduled_time)
+        def enqueue_task_sync(task=task):
+            return self._synchronous_queue.append(task)
 
-        action = Action(append_tick_task)
-        self.app.app_dispatcher.Invoke(action)
-
-    def append_tick_task(self, scheduled_time=None):
-        """Append the run_once_recurring call to the synchronous queue."""
-
-        def tick_task(scheduled_time=scheduled_time):
-            return self.run_once_recurring(scheduled_time=scheduled_time)
-
-        return self._synchronous_queue.append(tick_task)
+        # Using the dispatcher ensures that the task is run on the GUI thread.
+        self.app.app_dispatcher.Invoke(Action(enqueue_task_sync))
 
     # The native dialog `Show` methods are all blocking, as they run an inner native
     # event loop. Call them via this method to ensure the inner loop is correctly linked
@@ -322,9 +313,14 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         else:  # pragma: no cover
             self._run_forever_cleanup()
 
-    def run_once_recurring(self, scheduled_time=None):
-        """Run one iteration of the event loop, and enqueue the next iteration (if we're
-        not stopping).
+    def run_once_recurring(self, wake_time=None):
+        """Run one iteration of the event loop, and (if needed) enqueue the next.
+
+        :param wake_time: A call with `wake_time != None` indicates that the loop has
+            been woken in an attempt to run a task at the time given by `wake_time`.
+            Note that because of the resolution of the internal clocks, it is possible
+            that multiple iterations of the loop will run in an attempt to hit (or pass)
+            the time given by `wake_time`.
         """
         # run_once_recurring is called asynchronously by the native WinForms loop. The
         # tasks that triggered the call may have already been processed.
@@ -332,10 +328,9 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             return
 
         try:
-            # If the app is exiting, stop the asyncio event loop.
-            # Otherwise, perform one more tick of the event loop.
-            # We can't get coverage of app shutdown, so that branch
-            # is marked no cover
+            # If the app is exiting, stop the asyncio event loop. Otherwise, perform one
+            # more tick of the event loop. We can't get coverage of app shutdown, so
+            # that branch is marked no cover.
             if self.app._is_exiting:
                 self.stop()  # pragma: no cover
             else:
@@ -343,24 +338,51 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                 self._run_once()
                 self._idle = True
 
-            # Enqueue the next tick. Determine the delay of the tick by checking if
-            # there are events in the ready list, otherwise then calculating a delay
-            # for scheduled events. If neither of these then the loop becomes idle
-            # until it is woken by the ReadyDeque instance or the safety catch.
-            if len(self._ready) > 0:
-                if self._scheduled and self._scheduled[0].when == scheduled_time:
-                    self.enqueue_tick(delay=0, scheduled_time=scheduled_time)
-                else:
-                    # Run ready events immediately.
-                    self.enqueue_tick(delay=0)
-            elif self._scheduled:
-                # Calculate a delay for scheduled events and enqueue a tick.
-                next_time = self._scheduled[0].when()
+            # self._wake_times records the target wake times for scheduled events. Get
+            # the time for the next scheduled wake-up, and remove and remove any wake
+            # times which have passed.
+            next_wake = self._scheduled[0].when() if self._scheduled else None
+            if next_wake:
+                self._wake_times = {t for t in self._wake_times if t >= next_wake}
 
-                if next_time != self._next_time or next_time == scheduled_time:
-                    self._next_time = next_time
-                    ms_until = int(max(0, (next_time - self.time()) * 1000))
-                    self.enqueue_tick(delay=ms_until, scheduled_time=next_time)
+            # Determine if the loop should become idle, or if another iteration should
+            # be enqueued and when. If there is no event to enqueue the loop becomes
+            # idle until it is woken by the ReadyDeque instance or the safety catch.
+            #
+            # Note that for any given `wake_time`, there is only one chain of wake-up
+            # calls. This is to prevent the loop constantly rescheduling wake-ups for
+            # the same task.
+            if len(self._ready) > 0:
+                delay = 0
+
+                # If the first scheduled task has the same value as `wake_time` it means
+                # that `run_once_recurring` was triggered in an attempt to hit the wake
+                # time. It also means that the task has not been processed, so another
+                # attempt to hit the scheduled time is needed. So, only change the value
+                # of `wake_time` if `next_wake` does not equal `wake_time``.
+                if next_wake != wake_time:
+                    wake_time = None
+
+            # A wake-up of the loop is scheduled for when the:
+            # - First scheduled task is new i.e. `next_wake not in self._wake_times`.
+            # - Current loop iteration is an attempt to hit `wake_time` but the first
+            #   scheduled task has not been processed i.e. `next_wake == wake_time`.
+            elif next_wake and (
+                next_wake not in self._wake_times or next_wake == wake_time
+            ):
+                self._wake_times.add(next_wake)
+                delay = int(max(0, (next_wake - self.time()) * 1000))
+                wake_time = next_wake
+
+            # If there are no tasks to process or new wake-ups scheduled, the loop
+            # becomes idle.
+            else:
+                return
+
+            def task(wake_time=wake_time):
+                self.run_once_recurring(wake_time=wake_time)
+
+            self.enqueue_task(task=task, delay=delay)
 
         # Exceptions thrown by this method will be silently ignored.
         except BaseException:  # pragma: no cover
@@ -371,18 +393,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     # guarantees that the event loop can't completely stall.
     ####################################################################################
 
-    # This function doesn't report as covered because it runs on a
-    # non-Python-created thread (see App.run_app). But it must actually be
-    # covered, otherwise nothing would work.
-    def _safety_catch_tick(self, *args, **kwargs):  # pragma: no cover
-        """Cause a single iteration of the safety catch to run on the main thread."""
-        action = Action(self._append_safety_catch_tick_task)
-        self.app.app_dispatcher.Invoke(action)
-
-    def _append_safety_catch_tick_task(self):
-        """Append the _safety_catch call to the synchronous queue."""
-        return self._synchronous_queue.append(self._safety_catch)
-
-    def _safety_catch(self):
-        self.enqueue_tick(delay=1000, tick=self._safety_catch_tick)
+    def _safety_catch_task(self):
+        self.enqueue_task(delay=1000, task=self._safety_catch_task)
         self.run_once_recurring()
