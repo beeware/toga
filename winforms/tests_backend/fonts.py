@@ -1,5 +1,4 @@
 from System.Drawing import FontFamily, SystemFonts
-from tests.conftest import approx
 
 from toga.fonts import (
     BOLD,
@@ -45,15 +44,12 @@ class FontMixin:
 
     @property
     def font_size(self):
-        size_in_points = self.font.Size / self.scale_factor * 72 / 96
-        # This is a hacky workaround.  We specify font sizes in pixels, so
-        # there are rounding issues.  However, returning approximate values
-        # here directly means that the result cannot be manipulated by
-        # arithmetic before a comparison in dpi change tests.  Since all font
-        # sizes are integers, we compare to the integer equivalent and return
-        # that.
-        assert approx(size_in_points) == round(size_in_points)
-        return round(size_in_points)
+        size_in_points = self.font.Size * 72 / 96
+        # Round to 4 digits for comparison, as the rest may be plagued
+        # by floating point issues; 4 digits is often enough for all our
+        # tests.
+        # We can't use approx() here as that can't be multiplied
+        return round(size_in_points, 4)
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
