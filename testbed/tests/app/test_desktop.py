@@ -604,9 +604,7 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
 
 
 @pytest.mark.parametrize("mock_scale", [1.0, 1.25, 1.5, 1.75, 2.0])
-async def test_system_dpi_change(
-    main_window, main_window_probe, event_path, mock_scale
-):
+async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
     if toga.platform.current_platform != "windows":
         pytest.xfail("This test is winforms backend specific")
 
