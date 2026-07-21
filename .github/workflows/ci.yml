@@ -28,8 +28,6 @@ concurrency:
   group: ${{ github.workflow}}-${{ github.ref }}
   cancel-in-progress: true
 
-# Read-only by default. Called reusable workflows declare any additional
-# permissions they require (e.g. towncrier needs pull-requests: write).
 permissions:
   contents: read
 
@@ -142,7 +140,7 @@ jobs:
 
       - name: Build Package & Upload Artifact
         id: package
-        uses: hynek/build-and-inspect-python-package@ebd3b6c6d32b78607276633a23bdd4481bd23ca8  # v2.18.0
+        uses: hynek/build-and-inspect-python-package@d44ca7d91762de7a7d5436ddae667c6da6d1c3df  # v2.18.0
         with:
           path: ${{ matrix.subdir || matrix.wheel }}
           upload-name-suffix: ${{ format('-{0}', matrix.wheel) }}
