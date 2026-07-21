@@ -117,7 +117,9 @@ class Window(Scalable):
     ) -> ws.LRESULT:
         # Remove the window subclass in the way recommended by Raymond Chen here:
         # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
-        if uMsg == wc.WM_NCDESTROY:
+        # This doesn't seem to be fired in case of top-level Toga windows, but it's kept
+        # for consistency and reliability.  Thus the no-cover.
+        if uMsg == wc.WM_NCDESTROY:  # pragma: no cover
             RemoveWindowSubclass(hWnd, self.pfn_subclass, uIdSubclass)
 
         if uMsg == wc.WM_DPICHANGED:
