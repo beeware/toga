@@ -1166,6 +1166,7 @@ async def test_font_variants(canvas, probe):
     await probe.redraw("Font variants should be rendered")
     assert_reference(probe, "font_variants", threshold=0.04)
 
+
 async def test_draw_image_at_point(canvas, probe):
     """Images can be drawn at a point."""
 
