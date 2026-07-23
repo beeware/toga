@@ -9,6 +9,8 @@ from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
     attribute_value,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -94,8 +96,9 @@ def test_button_both_content(text, icon):
 
 
 @pytest.mark.parametrize("value, expected", TEST_TEXT_VALUES)
-def test_button_text(button, sample_icon, value, expected):
+def test_button_text(app, button, sample_icon, value, expected):
     """The button label can be modified."""
+    window = put_in_window(button, clear_log=False)
     assert button.text == "Test Button"
     assert button.icon is None
 
@@ -110,6 +113,8 @@ def test_button_text(button, sample_icon, value, expected):
     assert attribute_value(button, "text") == expected
     assert attribute_value(button, "icon") is None
 
+    simulate_event_loop_refresh(window)
+
     # A refresh was performed
     assert_action_performed(button, "refresh")
     EventLog.reset()
@@ -122,13 +127,16 @@ def test_button_text(button, sample_icon, value, expected):
     assert attribute_value(button, "text") == ""
     assert attribute_value(button, "icon") == sample_icon
 
+    simulate_event_loop_refresh(window)
+
     # A refresh was performed
     assert_action_performed(button, "refresh")
 
 
 @pytest.mark.parametrize("construct", [True, False])
-def test_button_icon(button, construct):
+def test_button_icon(app, button, construct):
     """The button icon can be modified."""
+    window = put_in_window(button, clear_log=False)
     assert button.text == "Test Button"
     assert button.icon is None
 
@@ -146,6 +154,8 @@ def test_button_icon(button, construct):
     assert attribute_value(button, "text") == ""
     assert attribute_value(button, "icon").path == Path("path/to/icon")
 
+    simulate_event_loop_refresh(window)
+
     # A refresh was performed
     assert_action_performed(button, "refresh")
     EventLog.reset()
@@ -159,12 +169,15 @@ def test_button_icon(button, construct):
     assert attribute_value(button, "text") == "New value"
     assert attribute_value(button, "icon") is None
 
+    simulate_event_loop_refresh(window)
+
     # A refresh was performed
     assert_action_performed(button, "refresh")
 
 
-def test_button_icon_none(button):
+def test_button_icon_none(app, button):
     """The button icon can be modified."""
+    window = put_in_window(button, clear_log=False)
     assert button.text == "Test Button"
     assert button.icon is None
 
@@ -179,6 +192,8 @@ def test_button_icon_none(button):
     assert button.text == "Test Button"
     assert button.icon is None
 
+    simulate_event_loop_refresh(window)
+
     # No refresh was performed
     assert_action_not_performed(button, "refresh")
     EventLog.reset()
@@ -191,6 +206,8 @@ def test_button_icon_none(button):
     # test backend has the right values
     assert attribute_value(button, "text") == ""
     assert attribute_value(button, "icon").path == Path("path/to/icon")
+
+    simulate_event_loop_refresh(window)
 
     # A refresh was performed
     assert_action_performed(button, "refresh")
@@ -205,6 +222,8 @@ def test_button_icon_none(button):
     assert attribute_value(button, "text") == ""
     assert attribute_value(button, "icon") is None
 
+    simulate_event_loop_refresh(window)
+
     # A refresh was performed
     assert_action_performed(button, "refresh")
     EventLog.reset()
@@ -215,6 +234,8 @@ def test_button_icon_none(button):
 
     assert button.text == ""
     assert button.icon is None
+
+    simulate_event_loop_refresh(window)
 
     # No refresh was performed
     assert_action_not_performed(button, "refresh")

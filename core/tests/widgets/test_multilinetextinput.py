@@ -3,7 +3,13 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga_dummy.utils import EventLog, assert_action_performed, attribute_value
+from toga_dummy.utils import (
+    EventLog,
+    assert_action_performed,
+    attribute_value,
+    put_in_window,
+    simulate_event_loop_refresh,
+)
 
 
 @pytest.fixture
@@ -58,16 +64,17 @@ def test_create_with_values():
         ("Contains\nnewline", "Contains\nnewline"),
     ],
 )
-def test_value(widget, value, expected):
+def test_value(app, widget, value, expected):
     """The value of the input can be set."""
-    # Clear the event log
-    EventLog.reset()
+    window = put_in_window(widget)
 
     # Install an on_change handler
     handler = Mock()
     widget.on_change = handler
 
     widget.value = value
+    simulate_event_loop_refresh(window)
+
     assert widget.value == expected
 
     # test backend has the right value
@@ -119,12 +126,13 @@ def test_readonly(widget, value, expected):
         ("Contains\nnewline", "Contains\nnewline"),
     ],
 )
-def test_placeholder(widget, value, expected):
+def test_placeholder(app, widget, value, expected):
     """The value of the placeholder can be set."""
-    # Clear the event log
-    EventLog.reset()
+    window = put_in_window(widget)
 
     widget.placeholder = value
+    simulate_event_loop_refresh(window)
+
     assert widget.placeholder == expected
 
     # test backend has the right value

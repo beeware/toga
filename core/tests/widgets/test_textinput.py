@@ -10,6 +10,8 @@ from toga_dummy.utils import (
     assert_action_performed,
     assert_action_performed_with,
     attribute_value,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -93,10 +95,9 @@ def test_create_with_values():
         (12345, "12345"),
     ],
 )
-def test_value(widget, value, expected, validator):
+def test_value(app, widget, value, expected, validator):
     """The value of the input can be set."""
-    # Clear the event log and validator mock
-    EventLog.reset()
+    window = put_in_window(widget)
     validator.reset_mock()
 
     # Define and set a new change callback
@@ -108,6 +109,8 @@ def test_value(widget, value, expected, validator):
 
     # test backend has the right value
     assert attribute_value(widget, "value") == expected
+
+    simulate_event_loop_refresh(window)
 
     # A refresh was performed
     assert_action_performed(widget, "refresh")
@@ -186,16 +189,17 @@ def test_readonly(widget, value, expected):
         (12345, "12345"),
     ],
 )
-def test_placeholder(widget, value, expected):
+def test_placeholder(app, widget, value, expected):
     """The value of the placeholder can be set."""
-    # Clear the event log
-    EventLog.reset()
+    window = put_in_window(widget)
 
     widget.placeholder = value
     assert widget.placeholder == expected
 
     # test backend has the right value
     assert attribute_value(widget, "placeholder") == expected
+
+    simulate_event_loop_refresh(window)
 
     # A refresh was performed
     assert_action_performed(widget, "refresh")
