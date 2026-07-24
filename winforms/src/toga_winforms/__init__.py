@@ -65,13 +65,13 @@ and install the .NET Desktop Runtime.""") from None
 import clr
 from System import Environment
 
-win_version = Environment.OSVersion.Version
-if (win_version.Major, win_version.Minor, win_version.Build) < (
-    10,
-    0,
-    15063,
-):  # pragma: no cover
-    raise RuntimeError("Toga only support at least Windows 1703")
+_win_version = (
+    Environment.OSVersion.Version.Major,
+    Environment.OSVersion.Version.Minor,
+    Environment.OSVersion.Version.Build,
+)
+if _win_version < (10, 0, 15063):  # pragma: no cover
+    raise RuntimeError("Toga requires Windows 10, version 1703 (build 15063)")
 
 from .libs.user32 import SetProcessDpiAwarenessContext  # noqa: E402
 from .libs.win32constants import (  # noqa: E402
