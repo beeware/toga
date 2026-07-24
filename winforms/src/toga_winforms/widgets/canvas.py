@@ -384,14 +384,6 @@ class Canvas(Box):
         self.string_format = StringFormat.GenericTypographic
         self.dragging = False
 
-    def refresh(self):
-        super().refresh()
-        if hasattr(self.interface, "_on_resize"):
-            self.interface.on_resize(
-                width=self.scale_out(self.native.Width),
-                height=self.scale_out(self.native.Height),
-            )
-
     # The control automatically paints the background color, so painting it again here
     # would give incorrect results if it was semi-transparent. But we do paint it in
     # get_image_data.
@@ -463,7 +455,6 @@ class Canvas(Box):
             graphics.MeasureString(line, font.native, 2**31 - 1, self.string_format)
             for line in text.splitlines()
         ]
-        print(sizes[0].Width)
         return (
             max(size.Width for size in sizes),
             self._line_height(font, line_height) * len(sizes),
