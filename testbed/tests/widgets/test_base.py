@@ -187,3 +187,7 @@ async def test_tab_index(widget, probe, other):
         other.tab_index = 2
         assert widget.tab_index == 4
         assert other.tab_index == 2
+
+
+async def test_native_properties(widget, probe):
+    probe.assert_native_properties()

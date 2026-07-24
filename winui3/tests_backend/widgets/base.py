@@ -128,3 +128,29 @@ class SimpleProbe(BaseProbe, FontMixin):
     @property
     def has_focus(self):
         return self.native.FocusState != FocusState.Unfocused
+
+    def assert_native_properties(self):
+        """Test whether native properties are reset correctly."""
+
+        # Create a local alias for the native property handler.
+        native_properties = self.impl._native_properties
+
+        # Set an unused native dependency property.
+        old_value = self.native.Opacity
+        native_properties.Opacity = 0.5
+
+        assert self.native.Opacity != old_value
+
+        # Test that the property is reset by setting None.
+        native_properties.Opacity = None
+
+        assert self.native.Opacity == old_value
+
+        # Test a native non-dependency property.
+        assert self.native.Resources is not None
+
+        native_properties.Resources = None
+
+        # Setting a non-dependency native property to None should result in the property
+        # being None.
+        assert self.native.Resources is None
