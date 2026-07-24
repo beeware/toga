@@ -622,7 +622,7 @@ async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
     original_content = main_window.content
     AdjustWindowRectExForDpi_original = user32.AdjustWindowRectExForDpi
 
-    # During out testing, we mock DPICHANGED events, but the system does not actually
+    # During our testing, we mock DPICHANGED events, but the system does not actually
     # change the DPI of the titlebar decors.  Thus, we need to be able to keep proper
     # track of those ourselves.
     def AdjustWindowRectExForDpi_mock(lpRect, dwStyle, bMenu, dwExStyle, dpi):
