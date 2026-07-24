@@ -66,13 +66,17 @@ import clr
 from System import Environment
 
 win_version = Environment.OSVersion.Version
-if (
-    (win_version.Major, win_version.Minor, win_version.Build) < (10, 0, 15063)
+if (win_version.Major, win_version.Minor, win_version.Build) < (
+    10,
+    0,
+    15063,
 ):  # pragma: no cover
     raise RuntimeError("Toga only support at least Windows 1703")
 
 from .libs.user32 import SetProcessDpiAwarenessContext  # noqa: E402
-from .libs.win32constants import DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2  # noqa: E402
+from .libs.win32constants import (  # noqa: E402
+    DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,
+)
 
 # Enable DPI awareness. This must be done before calling any other UI-related code
 # (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/high-dpi-support-in-windows-forms).

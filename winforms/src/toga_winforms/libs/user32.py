@@ -19,8 +19,6 @@ from ctypes.wintypes import (
     WPARAM,
 )
 
-from System import Environment
-
 from .win32misc import activation_context
 from .win32structures import LPARAM_OBJECT, LRESULT, UINT_PTR
 
