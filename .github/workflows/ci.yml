@@ -49,7 +49,7 @@ jobs:
 
   package:
     name: Package Toga
-    uses: beeware/.github/.github/workflows/python-package-create.yml@main
+    uses: beeware/.github/.github/workflows/python-package-create.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
     with:
       build-subdirectory: ${{ matrix.wheel }}
       attest: ${{ inputs.attest-package }}
