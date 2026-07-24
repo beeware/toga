@@ -1,20 +1,3 @@
-def is_based_on_recursive(cls, ancestor):
-    for parent in cls.__bases__:
-        if parent == ancestor:
-            return True
-        elif is_based_on_recursive(parent, ancestor):
-            return True
-
-    return False
-
-
-def is_based_on(cls, ancestor):
-    if cls == ancestor:
-        return True
-    else:
-        return is_based_on_recursive(cls, ancestor)
-
-
 def get_attribute_base_recursive(cls, attribute):
     for parent in cls.__bases__:
         if hasattr(parent, attribute):

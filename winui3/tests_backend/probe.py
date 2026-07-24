@@ -28,10 +28,8 @@ class BaseProbe:
         self.native = native
         self._click_count = 0
 
-    async def redraw(self, message=None, delay=0, wait_for=None):
-        """Request a redraw of the app, waiting until that redraw has completed."""
-        # Make sure that any staged properties have sufficient time to completed the
-        # process.
+    async def redraw_staging(self):
+        """Wait until any property staging is finished."""
         widgets = toga.App.app.widgets.values()
         staging_areas = {widget._impl.container.staging_area for widget in widgets}
 
@@ -42,10 +40,36 @@ class BaseProbe:
 
             return True
 
-        for _ in range(1000):
+        for _ in range(50):
             if staging_complete():
                 break
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.02)
+
+    async def redraw_resizing(self):
+        """Wait until any resizing is finished."""
+        try:
+            width = self.native.Width
+            height = self.native.Height
+        except AttributeError:
+            return
+
+        def resizing_complete():
+            return (
+                width - 1 < self.native.ActualWidth < width + 1
+                and height - 1 < self.native.ActualHeight < height + 1
+            )
+
+        for _ in range(50):
+            if resizing_complete():
+                break
+            await asyncio.sleep(0.02)
+
+    async def redraw(self, message=None, delay=0, wait_for=None):
+        """Request a redraw of the app, waiting until that redraw has completed."""
+
+        await self.redraw_staging()
+
+        await self.redraw_resizing()
 
         # If we're running slow, or we have a wait condition,
         # wait for at least a second
