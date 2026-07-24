@@ -63,10 +63,19 @@ and install the .NET Desktop Runtime.""") from None
 
 
 import clr
+from System import Environment
 
-from .libs.user32 import SetProcessDpiAwarenessContext
-from .libs.win32constants import DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+win_version = Environment.OSVersion.Version
+if (
+    (win_version.Major, win_version.Minor, win_version.Build) < (10, 0, 15063)
+):  # pragma: no cover
+    raise RuntimeError("Toga only support at least Windows 1703")
 
+from .libs.user32 import SetProcessDpiAwarenessContext  # noqa: E402
+from .libs.win32constants import DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2  # noqa: E402
+
+# Enable DPI awareness. This must be done before calling any other UI-related code
+# (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/high-dpi-support-in-windows-forms).
 if not SetProcessDpiAwarenessContext(
     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 ):  # pragma: no cover
@@ -77,7 +86,6 @@ clr.AddReference("System.Windows.Forms")
 
 # .NET Core requires some other explicit assemblies
 if _use_dotnet_core:  # pragma: no-cover-if-netfx
-    clr.AddReference("Microsoft.Win32.SystemEvents")
     clr.AddReference("System.Windows.Extensions")
 else:  # pragma: no-cover-if-netcore
     # We can't do conditional branch coverage, so we need a no-op else
@@ -95,8 +103,6 @@ clr.AddReference(
 )
 
 
-# Enable DPI awareness. This must be done before calling any other UI-related code
-# (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/high-dpi-support-in-windows-forms).
 import System.Windows.Forms as WinForms  # noqa: E402
 
 WinForms.Application.EnableVisualStyles()
