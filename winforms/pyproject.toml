@@ -118,6 +118,7 @@ dependencies = [
     "pythonnet >= 3.0.0",
     "toga-core == {version}",
     "pillow >= 10.0.0",
+    "WebView2.runtime >= 1.0.3912.50",
 ]
 
 [tool.coverage.run]
