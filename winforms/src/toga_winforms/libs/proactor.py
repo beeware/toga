@@ -187,7 +187,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
         self._synchronous_queue = ReentrantQueue()
         self._idle = True
-        self._wake_times = {}
+        self._wake_times = set()
 
     def run_forever(self, app):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
@@ -268,7 +268,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         def dispatch_task(*args, task=task, **kwargs):
             return self.dispatch_task(*args, task=task, **kwargs)
 
-        # Add a call which dispactes the Queue a call to tick in a specified delay.
+        # Add a call which dispatches the Queue a call to tick in a specified delay.
         Task.Delay(delay).ContinueWith(Action[Task](dispatch_task))
 
     # This function doesn't report as covered because it runs on a
@@ -339,10 +339,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                 self._idle = True
 
             # self._wake_times records the target wake times for scheduled events. Get
-            # the time for the next scheduled wake-up, and remove and remove any wake
+            # the time for the next scheduled wake-up, and remove any wake
             # times which have passed.
             next_wake = self._scheduled[0].when() if self._scheduled else None
-            if next_wake:
+            if next_wake is not None:
                 self._wake_times = {t for t in self._wake_times if t >= next_wake}
 
             # Determine if the loop should become idle, or if another iteration should
@@ -359,7 +359,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                 # that `run_once_recurring` was triggered in an attempt to hit the wake
                 # time. It also means that the task has not been processed, so another
                 # attempt to hit the scheduled time is needed. So, only change the value
-                # of `wake_time` if `next_wake` does not equal `wake_time``.
+                # of `wake_time` if `next_wake` does not equal `wake_time`.
                 if next_wake != wake_time:
                     wake_time = None
 
