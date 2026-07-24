@@ -98,6 +98,7 @@ class Window(Scalable):
         self.pfn_subclass = ws.SUBCLASSPROC(self._subclass_proc)
         self.native.HandleCreated += WeakrefCallable(self.winforms_handle_created)
         self.native.HandleDestroyed += WeakrefCallable(self.winforms_handle_destroyed)
+        self._set_subclass()
 
     def _set_subclass(self):
         SetWindowSubclass(int(self.native.Handle.ToString()), self.pfn_subclass, 0, 0)
