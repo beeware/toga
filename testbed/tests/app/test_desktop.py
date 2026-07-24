@@ -733,7 +733,7 @@ async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
             (client_size.width - positions["flex"].x, 50)
         )
 
-        # Trigger the DPI change.abs
+        # Trigger the DPI change
         lParam = cast(byref(scaled_window_rect), c_void_p).value
         mock_dpi = int(mock_scale * 96)
         # high word = X dpi, low word = Y dpi -- should be the same
