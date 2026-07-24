@@ -306,8 +306,9 @@ class Context:
         self.transform_path(inverse)
 
     def reset_transform(self):
-        matrix = self.native.Transform
+        matrix = self.state.transform.Clone()
         self.native.ResetTransform()
+        self.native.ScaleTransform(self.impl.dpi_scale, self.impl.dpi_scale)
 
         # Transform active path to current coordinates
         self.transform_path(matrix)
@@ -317,7 +318,6 @@ class Context:
         self.state.transform.Multiply(matrix)
 
         self.state.singular = False
-        self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
 
@@ -388,8 +388,14 @@ class Canvas(Box):
     # would give incorrect results if it was semi-transparent. But we do paint it in
     # get_image_data.
     def winforms_paint(self, panel, event, *args):
-        context = Context(self, event.Graphics)
+        graphics = event.Graphics
+        before_state = graphics.Save()
+        graphics.ScaleTransform(self.dpi_scale, self.dpi_scale)
+
+        context = Context(self, graphics)
         self.interface.root_state._draw(context)
+
+        graphics.Restore(before_state)
 
     def winforms_resize(self, *args):
         self.interface.on_resize(
@@ -450,7 +456,7 @@ class Canvas(Box):
             for line in text.splitlines()
         ]
         return (
-            self.scale_out(max(size.Width for size in sizes)),
+            max(size.Width for size in sizes),
             self._line_height(font, line_height) * len(sizes),
         )
 
