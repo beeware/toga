@@ -278,10 +278,10 @@ class Context:
         # Can't apply inverse transform if scale is 0,
         # so use a small epsilon which will almost be the same
         if sx == 0:
-            sx = 2**-10
+            sx = 2**-24
             self.state.singular = True
         if sy == 0:
-            sy = 2**-10
+            sy = 2**-24
             self.state.singular = True
 
         self.native.ScaleTransform(sx, sy)
