@@ -21,7 +21,6 @@ class Table(Widget):
         self.pfn_subclass = ws.SUBCLASSPROC(self._subclass_proc)
         self.native = WinForms.ListView()
         self._hwnd = int(self.native.Handle.ToString())
-        self._set_subclass()
 
         self.native.HandleCreated += WeakrefCallable(self.winforms_handle_created)
         self.native.HandleDestroyed += WeakrefCallable(self.winforms_handle_destroyed)
