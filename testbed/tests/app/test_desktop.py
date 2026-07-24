@@ -823,7 +823,7 @@ async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
 
     finally:
         user32.AdjustWindowRectExForDpi = AdjustWindowRectExForDpi_original
-        # Trigger the DPI change.abs
+        # Trigger the DPI change
         lParam = cast(byref(original_window_rect), c_void_p).value
         real_dpi = int(real_scale * 96)
         # high word = X dpi, low word = Y dpi -- should be the same
