@@ -278,10 +278,10 @@ class Context:
         # Can't apply inverse transform if scale is 0,
         # so use a small epsilon which will almost be the same
         if sx == 0:
-            sx = 2**-24
+            sx = 2**-10
             self.state.singular = True
         if sy == 0:
-            sy = 2**-24
+            sy = 2**-10
             self.state.singular = True
 
         self.native.ScaleTransform(sx, sy)
@@ -306,8 +306,9 @@ class Context:
         self.transform_path(inverse)
 
     def reset_transform(self):
-        matrix = self.native.Transform
+        matrix = self.state.transform.Clone()
         self.native.ResetTransform()
+        self.native.ScaleTransform(self.impl.dpi_scale, self.impl.dpi_scale)
 
         # Transform active path to current coordinates
         self.transform_path(matrix)
@@ -317,7 +318,6 @@ class Context:
         self.state.transform.Multiply(matrix)
 
         self.state.singular = False
-        self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
 
@@ -384,12 +384,26 @@ class Canvas(Box):
         self.string_format = StringFormat.GenericTypographic
         self.dragging = False
 
+    def refresh(self):
+        super().refresh()
+        if hasattr(self.interface, "_on_resize"):
+            self.interface.on_resize(
+                width=self.scale_out(self.native.Width),
+                height=self.scale_out(self.native.Height),
+            )
+
     # The control automatically paints the background color, so painting it again here
     # would give incorrect results if it was semi-transparent. But we do paint it in
     # get_image_data.
     def winforms_paint(self, panel, event, *args):
-        context = Context(self, event.Graphics)
+        graphics = event.Graphics
+        before_state = graphics.Save()
+        graphics.ScaleTransform(self.dpi_scale, self.dpi_scale)
+
+        context = Context(self, graphics)
         self.interface.root_state._draw(context)
+
+        graphics.Restore(before_state)
 
     def winforms_resize(self, *args):
         self.interface.on_resize(
@@ -449,8 +463,9 @@ class Canvas(Box):
             graphics.MeasureString(line, font.native, 2**31 - 1, self.string_format)
             for line in text.splitlines()
         ]
+        print(sizes[0].Width)
         return (
-            self.scale_out(max(size.Width for size in sizes)),
+            max(size.Width for size in sizes),
             self._line_height(font, line_height) * len(sizes),
         )
 
