@@ -441,7 +441,7 @@ class Canvas(Box):
             return font.metric("LineSpacing")
         else:
             # Get size in CSS pixels
-            return (font.native.SizeInPoints * 96 / 72) * line_height
+            return font.native.Size * line_height
 
     def measure_text(self, text, font, line_height):
         graphics = self.native.CreateGraphics()

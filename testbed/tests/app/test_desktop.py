@@ -603,22 +603,15 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     await app.dialog(app_modal_info_dialog)
 
 
-@pytest.mark.parametrize(
-    "event_path",
-    [
-        "SystemEvents.DisplaySettingsChanged",
-        "Form.LocationChanged",
-        "Form.Resize",
-    ],
-)
 @pytest.mark.parametrize("mock_scale", [1.0, 1.25, 1.5, 1.75, 2.0])
-async def test_system_dpi_change(
-    main_window, main_window_probe, event_path, mock_scale
-):
+async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
     if toga.platform.current_platform != "windows":
         pytest.xfail("This test is winforms backend specific")
 
-    from toga_winforms.libs import shcore
+    from ctypes import byref, c_void_p, cast
+    from ctypes.wintypes import RECT
+
+    from toga_winforms.libs import user32, win32constants as wc
 
     real_scale = main_window_probe.scale_factor
     if real_scale == mock_scale:
@@ -627,8 +620,33 @@ async def test_system_dpi_change(
     client_size = main_window_probe.client_size
 
     original_content = main_window.content
-    GetScaleFactorForMonitor_original = shcore.GetScaleFactorForMonitor
-    dpi_change_event = find_event(event_path, main_window_probe)
+    AdjustWindowRectExForDpi_original = user32.AdjustWindowRectExForDpi
+
+    # During our testing, we mock DPICHANGED events, but the system does not actually
+    # change the DPI of the titlebar decors.  Thus, we need to be able to keep proper
+    # track of those ourselves.
+    def AdjustWindowRectExForDpi_mock(lpRect, dwStyle, bMenu, dwExStyle, dpi):
+        return AdjustWindowRectExForDpi_original(
+            lpRect, dwStyle, bMenu, dwExStyle, real_scale * 96
+        )
+
+    user32.AdjustWindowRectExForDpi = AdjustWindowRectExForDpi_mock
+
+    native_window = main_window._impl.native
+    bounds = native_window.Bounds
+    new_width, new_height = (
+        int(bounds.Width * scale_change),
+        int(bounds.Height * scale_change),
+    )
+    original_window_rect = RECT(
+        bounds.X, bounds.Y, bounds.X + bounds.Width, bounds.Y + bounds.Height
+    )
+    scaled_window_rect = RECT(
+        bounds.X,
+        bounds.Y,
+        bounds.X + new_width,
+        bounds.Y + new_height,
+    )
 
     try:
         main_window.toolbar.add(toga.Command(None, "Test command"))
@@ -715,13 +733,26 @@ async def test_system_dpi_change(
             (client_size.width - positions["flex"].x, 50)
         )
 
-        # Mock the function Toga uses to get the scale factor.
-        def GetScaleFactorForMonitor_mock(hMonitor, pScale):
-            pScale.value = int(mock_scale * 100)
+        # Trigger the DPI change
+        lParam = cast(byref(scaled_window_rect), c_void_p).value
+        mock_dpi = int(mock_scale * 96)
+        # high word = X dpi, low word = Y dpi -- should be the same
+        wParam = mock_dpi * 0x10001
 
-        # Set and Trigger dpi change event with the specified dpi scale
-        shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_mock
-        dpi_change_event(None)
+        handle = int(native_window.Handle.ToString())
+        # We don't actually need uIdSubclass and dwRefData here, so we pad them out
+        # with 0s.
+        main_window._impl._subclass_proc(handle, wc.WM_DPICHANGED, wParam, lParam, 0, 0)
+
+        # We cannot directly compare against new width and height here, as CI's screen
+        # size is limited and clips the window when we resize it too large.
+        if scale_change > 1:
+            assert native_window.Width > bounds.Width
+        else:
+            assert native_window.Height > bounds.Height
+
+        client_size = main_window_probe.client_size
+
         await main_window_probe.redraw(
             f"Triggered dpi change event with {mock_scale} dpi scale"
         )
@@ -735,18 +766,29 @@ async def test_system_dpi_change(
                 )
 
         assert positions_scaled["menubar"] == approx_fixed((0, 0))
-        assert sizes_scaled["menubar"] == (
-            approx_fixed(client_size.width),
-            approx_font(sizes["menubar"].height * scale_change),
-        )
+        # WinForms seems to impose a minimum height on the menubar and toolbar
+        # for touchablility if the font size gets small; this limit is done relative
+        # to the current DPI, and because we have no way to mock WinForms' internals,
+        # we have to accept that if we're scaling to a very small scale our menubar
+        # height may not be preserved correctly.
+        if scale_change <= 1.5 / 1.25:
+            assert sizes_scaled["menubar"][0] == approx_fixed(client_size.width)
+        else:
+            assert sizes_scaled["menubar"] == (
+                approx_fixed(client_size.width),
+                approx_font(sizes["menubar"].height * scale_change),
+            )
 
         assert positions_scaled["toolbar"] == approx_fixed(
             (0, sizes_scaled["menubar"].height)
         )
-        assert sizes_scaled["toolbar"] == (
-            approx_fixed(client_size.width),
-            approx_font(sizes["toolbar"].height * scale_change),
-        )
+        if scale_change <= 1.5 / 1.25:
+            assert sizes_scaled["toolbar"][0] == approx_fixed(client_size.width)
+        else:
+            assert sizes_scaled["toolbar"] == (
+                approx_fixed(client_size.width),
+                approx_font(sizes["toolbar"].height * scale_change),
+            )
 
         assert positions_scaled["container"] == approx_fixed(
             (0, positions_scaled["toolbar"].y + sizes_scaled["toolbar"].height)
@@ -780,48 +822,24 @@ async def test_system_dpi_change(
         )
 
     finally:
-        shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_original
-        dpi_change_event(None)
+        user32.AdjustWindowRectExForDpi = AdjustWindowRectExForDpi_original
+        # Trigger the DPI change
+        lParam = cast(byref(original_window_rect), c_void_p).value
+        real_dpi = int(real_scale * 96)
+        # high word = X dpi, low word = Y dpi -- should be the same
+        wParam = real_dpi * 0x10001
+
+        handle = int(native_window.Handle.ToString())
+        # We don't actually need uIdSubclass and dwRefData here, so we pad them out with
+        # 0s.
+        main_window._impl._subclass_proc(handle, wc.WM_DPICHANGED, wParam, lParam, 0, 0)
+
+        client_size = main_window_probe.client_size
         await main_window_probe.redraw("Restored original state of main_window")
         assert get_metrics() == (positions, sizes, font_sizes)
 
         main_window.toolbar.clear()
         main_window.content = original_content
-
-
-def find_event(event_path, main_window_probe):
-    from Microsoft.Win32 import SystemEvents
-    from System import Array, Object
-    from System.Reflection import BindingFlags
-
-    from toga_winforms import _use_dotnet_core
-
-    event_class, event_name = event_path.split(".")
-    if event_class == "Form":
-        return getattr(main_window_probe.native, f"On{event_name}")
-
-    elif event_class == "SystemEvents":
-        # There are no "On" methods in this class, so we need to use reflection.
-        SystemEvents_type = SystemEvents().GetType()
-        binding_flags = BindingFlags.Static | BindingFlags.NonPublic
-        RaiseEvent = [
-            method
-            for method in SystemEvents_type.GetMethods(binding_flags)
-            if method.Name == "RaiseEvent" and len(method.GetParameters()) == 2
-        ][0]
-
-        event_key = SystemEvents_type.GetField(
-            # .NET Core 10 uses a different naming convention for system events.
-            f"s_on{event_name}Event" if _use_dotnet_core else f"On{event_name}Event",
-            binding_flags,
-        ).GetValue(None)
-
-        return lambda event_args: RaiseEvent.Invoke(
-            None, [event_key, Array[Object]([None, event_args])]
-        )
-
-    else:
-        raise AssertionError(f"unknown event class {event_class}")
 
 
 async def test_session_based_app(

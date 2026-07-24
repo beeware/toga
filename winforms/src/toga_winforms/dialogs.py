@@ -11,8 +11,7 @@ from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
 
 from toga.handlers import WeakrefCallable
 
-from .libs.user32 import SetThreadDpiAwarenessContext
-from .libs.win32constants import DPI_AWARENESS_CONTEXT_UNAWARE
+from .libs.user32 import GetDpiForWindow
 
 PLACEHOLDER_RESULT = object()
 
@@ -101,40 +100,28 @@ class StackTraceDialog(BaseDialog):
     def __init__(self, title, message, content, retry):
         super().__init__()
 
-        # This dialog uses a fixed layout, so we create it as DPI-unaware so it will be
-        # scaled by the system. "When a window is created, its DPI awareness is defined
-        # as the DPI awareness of the calling thread at that time."
-        # (https://learn.microsoft.com/en-us/windows/win32/hidpi/high-dpi-improvements-for-desktop-applications).
-        self.prev_dpi_context = None
-        if SetThreadDpiAwarenessContext is not None:  # pragma: no branch
-            self.prev_dpi_context = SetThreadDpiAwarenessContext(
-                DPI_AWARENESS_CONTEXT_UNAWARE
-            )
-            if not self.prev_dpi_context:  # pragma: no cover
-                print("WARNING: Failed to set DPI Awareness for StackTraceDialog")
-
-        # Changing the DPI awareness causes confusion around font sizes, so set them
-        # all explicitly.
         font_size = 8.25
         message_font = WinFont(FontFamily.GenericSansSerif, font_size)
         monospace_font = WinFont(FontFamily.GenericMonospace, font_size)
 
         self.native = WinForms.Form()
+        dpi_scale = GetDpiForWindow(int(self.native.Handle.ToString())) / 96
+
         self.native.MinimizeBox = False
         self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
         self.native.MaximizeBox = False
         self.native.FormClosed += WeakrefCallable(self.winforms_FormClosed)
         self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
-        self.native.Width = 540
-        self.native.Height = 320
+        self.native.Width = int(540 * dpi_scale)
+        self.native.Height = int(320 * dpi_scale)
         self.native.Text = title
         self.title = title
 
         # The top-of-page introductory message
         textLabel = WinForms.Label()
-        textLabel.Left = 10
-        textLabel.Top = 10
-        textLabel.Width = 520
+        textLabel.Left = int(10 * dpi_scale)
+        textLabel.Top = int(10 * dpi_scale)
+        textLabel.Width = int(520 * dpi_scale)
         textLabel.Alignment = ContentAlignment.MiddleCenter
         textLabel.Text = message
         textLabel.Font = message_font
@@ -142,10 +129,10 @@ class StackTraceDialog(BaseDialog):
 
         # A scrolling text box for the stack trace.
         trace = WinForms.RichTextBox()
-        trace.Left = 10
-        trace.Top = 35
-        trace.Width = 504
-        trace.Height = 205
+        trace.Left = int(10 * dpi_scale)
+        trace.Top = int(35 * dpi_scale)
+        trace.Width = int(504 * dpi_scale)
+        trace.Height = int(205 * dpi_scale)
         trace.Multiline = True
         trace.ReadOnly = True
         trace.Font = monospace_font
@@ -156,35 +143,38 @@ class StackTraceDialog(BaseDialog):
 
         # Add acceptance/close buttons
         if retry:
-            retry = WinForms.Button()
-            retry.Left = 290
-            retry.Top = 250
-            retry.Width = 100
-            retry.Text = "&Retry"
-            retry.Font = message_font
-            retry.Click += WeakrefCallable(self.winforms_Click_retry)
+            retry_button = WinForms.Button()
+            retry_button.Left = int(290 * dpi_scale)
+            retry_button.Top = int(250 * dpi_scale)
+            retry_button.Width = int(100 * dpi_scale)
+            retry_button.Height = int(retry_button.PreferredSize.Height * dpi_scale)
+            retry_button.Text = "&Retry"
+            retry_button.Font = message_font
+            retry_button.Click += WeakrefCallable(self.winforms_Click_retry)
 
-            self.native.Controls.Add(retry)
+            self.native.Controls.Add(retry_button)
 
-            quit = WinForms.Button()
-            quit.Left = 400
-            quit.Top = 250
-            quit.Width = 100
-            quit.Text = "&Quit"
-            quit.Font = message_font
-            quit.Click += WeakrefCallable(self.winforms_Click_quit)
+            quit_button = WinForms.Button()
+            quit_button.Left = int(400 * dpi_scale)
+            quit_button.Top = int(250 * dpi_scale)
+            quit_button.Width = int(100 * dpi_scale)
+            quit_button.Height = int(quit_button.PreferredSize.Height * dpi_scale)
+            quit_button.Text = "&Quit"
+            quit_button.Font = message_font
+            quit_button.Click += WeakrefCallable(self.winforms_Click_quit)
 
-            self.native.Controls.Add(quit)
+            self.native.Controls.Add(quit_button)
         else:
-            accept = WinForms.Button()
-            accept.Left = 400
-            accept.Top = 250
-            accept.Width = 100
-            accept.Text = "&OK"
-            accept.Font = message_font
-            accept.Click += WeakrefCallable(self.winforms_Click_accept)
+            accept_button = WinForms.Button()
+            accept_button.Left = int(400 * dpi_scale)
+            accept_button.Top = int(250 * dpi_scale)
+            accept_button.Width = int(100 * dpi_scale)
+            accept_button.Height = int(accept_button.PreferredSize.Height * dpi_scale)
+            accept_button.Text = "&OK"
+            accept_button.Font = message_font
+            accept_button.Click += WeakrefCallable(self.winforms_Click_accept)
 
-            self.native.Controls.Add(accept)
+            self.native.Controls.Add(accept_button)
 
     def _show(self):
         self.native.ShowDialog()
@@ -200,18 +190,6 @@ class StackTraceDialog(BaseDialog):
         # event will be triggered.
         if self.result == PLACEHOLDER_RESULT:
             event.Cancel = True  # pragma: no cover
-        else:
-            # Reverting the DPI awareness at the end of __init__ would cause the window
-            # to be DPI-aware, presumably because the window isn't actually "created"
-            # until we call ShowDialog.
-            #
-            # This cleanup doesn't make any difference to the dialogs example, because
-            # "When the window procedure for a window is called [e.g. when clicking a
-            # button], the thread is automatically switched to the DPI awareness context
-            # that was in use when the window was created." However, other apps may do
-            # things outside of the context of a window event.
-            if self.prev_dpi_context:  # pragma: no branch
-                SetThreadDpiAwarenessContext(self.prev_dpi_context)
 
     def winforms_Click_quit(self, sender, event):
         self.result = False
