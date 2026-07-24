@@ -141,7 +141,7 @@ class Window(Scalable):
             # changes and a refresh is forced when we do SetWindowPos.
             self.native.ResumeLayout()
 
-            # Set MinimummSize to 0 temporarily, so the window size setting is not
+            # Set MinimumSize to 0 temporarily, so the window size setting is not
             # immediately rejected if moving to a smaller DPI screen.
             self.native.MinimumSize = WinSize(0, 0)
             SetWindowPos(
