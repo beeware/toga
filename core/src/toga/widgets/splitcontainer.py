@@ -49,7 +49,8 @@ class SplitContainer(Widget):
         :param content: Initial
             [SplitContainer content][toga.widgets.splitcontainer.SplitContainerContentT]
             of the container. Defaults to both panels being empty.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         self._content: list[SplitContainerContentT] = [None, None]
         super().__init__(id, style, **kwargs)

@@ -42,7 +42,8 @@ class Button(Widget):
         :param on_press: A handler that will be invoked when the button is pressed.
         :param enabled: Is the button enabled (i.e., can it be pressed?). Optional; by
             default, buttons are created in an enabled state.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 

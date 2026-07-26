@@ -83,7 +83,8 @@ class DetailedList(Widget):
         :param on_secondary_action: Initial
             [`on_secondary_action`][toga.DetailedList.on_secondary_action] handler.
         :param on_refresh: Initial [`on_refresh`][toga.DetailedList.on_refresh] handler.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         # Prime the attributes and handlers that need to exist when the widget is
         # created.

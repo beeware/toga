@@ -27,7 +27,8 @@ class Divider(Widget):
             [`Direction.HORIZONTAL`][toga.constants.Direction.HORIZONTAL] or
             [`Direction.VERTICAL`][toga.constants.Direction.VERTICAL]; defaults to
             [`Direction.HORIZONTAL`][toga.constants.Direction.HORIZONTAL]
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 
