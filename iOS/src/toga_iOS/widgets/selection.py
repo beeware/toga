@@ -1,4 +1,13 @@
-from rubicon.objc import CGSize, objc_method, objc_property
+from ctypes import c_void_p
+
+from rubicon.objc import (
+    SEL,
+    CGPoint,
+    CGSize,
+    objc_method,
+    objc_property,
+    send_super,
+)
 from travertino.size import at_least
 
 from toga_iOS.colors import native_color
@@ -15,6 +24,25 @@ from toga_iOS.widgets.base import Widget
 class TogaBaseTextField(UITextField):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
+
+    @objc_method
+    def pointInside_withEvent_(self, point: CGPoint, event) -> bool:  # pragma: no cover
+        # Schedule dismissal after the touch event so UIKit animates the picker away.
+        point_inside = send_super(
+            __class__,
+            self,
+            "pointInside:withEvent:",
+            point,
+            event,
+            argtypes=[CGPoint, c_void_p],
+        )
+        if not bool(point_inside):
+            self.performSelector(
+                SEL("resignFirstResponder"),
+                withObject=None,
+                afterDelay=0.0,
+            )
+        return point_inside
 
 
 class TogaPickerView(UIPickerView):
