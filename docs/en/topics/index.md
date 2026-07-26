@@ -7,6 +7,7 @@ Topic guides are deeper explorations of concepts and issues related to usage of 
 * [Extending Toga](extending-toga.md) - How to add new widgets to Toga.
 * [Data sources](data-sources.md) - Learn how to structure data storage in a Toga application so it is decoupled from the display of Toga widgets.
 * [Debugging your app](debugging.md) - Learn how to debug issues in Toga.
+* [Event loops](event-loops.md) - Learn how event handlers keep a Toga application responsive.
 * [File management](file-management.md) - Learn how to managing files in Toga using app paths.
 * [Widget layout](layout.md) - Details about widget layout in Toga.
 
