@@ -25,6 +25,11 @@ def native_decimal(value):
         return Convert.ToDecimal(value)
 
 
+def clean_native_decimal(value, step):
+    """Convert a locale-formatted WinForms value to a Toga decimal."""
+    return _clean_decimal(locale.delocalize(value), step)
+
+
 class NumberInput(Widget):
     def create(self):
         self.native = WinForms.NumericUpDown()
@@ -55,7 +60,7 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return _clean_decimal(self.native.Text, self.interface.step)
+            return clean_native_decimal(self.native.Text, self.interface.step)
         except InvalidOperation:
             return None
 
