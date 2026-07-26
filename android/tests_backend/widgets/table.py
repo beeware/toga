@@ -1,6 +1,9 @@
 import pytest
 from android.widget import ScrollView, TableLayout, TextView
 
+from toga_android.colors import native_color
+from toga_android.widgets.base import android_text_align
+
 from .base import SimpleProbe
 
 HEADER = "HEADER"
@@ -11,6 +14,7 @@ class TableProbe(SimpleProbe):
     supports_icons = False
     supports_keyboard_shortcuts = False
     supports_widgets = False
+    supports_styles = True
     column_proportion_tolerance = 35
 
     def __init__(self, widget):
@@ -30,17 +34,62 @@ class TableProbe(SimpleProbe):
     def column_count(self):
         return self._row_view(HEADER).getChildCount()
 
-    def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
+    def assert_cell_content(
+        self,
+        row,
+        col,
+        value=None,
+        icon=None,
+        widget=None,
+        text_align=None,
+        color=None,
+        background_color=None,
+        font=None,
+    ):
         if widget:
             pytest.skip("This backend doesn't support widgets in Tables")
         else:
-            assert self._cell_text(row, col) == value
+            if value is not None:
+                assert self._cell_text(row, col) == value
             assert icon is None
+            if text_align is not None:
+                assert self._cell_gravity(row, col) & android_text_align(text_align)
+            if color is not None:
+                assert self._cell_color(row, col) == native_color(color)
+            if background_color is not None:
+                assert self._cell_background_color(row, col) == native_color(
+                    background_color
+                )
+            if font is not None:
+                assert self._cell_font(row, col) == (
+                    font._impl.typeface(),
+                    font._impl.size(),
+                )
 
     def _cell_text(self, row, col):
         tv = self._row_view(row).getChildAt(col)
         assert isinstance(tv, TextView)
         return str(tv.getText())
+
+    def _cell_color(self, row, col):
+        tv = self._row_view(row).getChildAt(col)
+        assert isinstance(tv, TextView)
+        return tv.getCurrentTextColor()
+
+    def _cell_background_color(self, row, col):
+        tv = self._row_view(row).getChildAt(col)
+        assert isinstance(tv, TextView)
+        return tv.getBackground().getColor()
+
+    def _cell_gravity(self, row, col):
+        tv = self._row_view(row).getChildAt(col)
+        assert isinstance(tv, TextView)
+        return tv.getGravity()
+
+    def _cell_font(self, row, col):
+        tv = self._row_view(row).getChildAt(col)
+        assert isinstance(tv, TextView)
+        return tv.getTypeface(), tv.getTextSize()
 
     def _row_view(self, row):
         if row == HEADER:
