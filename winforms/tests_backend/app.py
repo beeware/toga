@@ -6,7 +6,7 @@ from time import sleep
 
 import PIL.Image
 import pytest
-from System import EventArgs
+from System import Environment, EventArgs
 from System.Drawing import Bitmap, Point
 from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 
@@ -61,6 +61,20 @@ class AppProbe(BaseProbe, DialogsMixin):
     @property
     def logs_path(self):
         return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Logs"
+
+    @property
+    def documents_path(self):
+        return Path(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
+
+    @property
+    def pictures_path(self):
+        return Path(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures))
+
+    @property
+    def desktop_path(self):
+        return Path(
+            Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
+        )
 
     @property
     def is_cursor_visible(self):

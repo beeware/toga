@@ -20,6 +20,9 @@ def main():
     print(f"app.paths.data={app.paths.data.resolve()}")
     print(f"app.paths.cache={app.paths.cache.resolve()}")
     print(f"app.paths.logs={app.paths.logs.resolve()}")
+    print(f"app.paths.documents={app.paths.documents.resolve()}")
+    print(f"app.paths.pictures={app.paths.pictures.resolve()}")
+    print(f"app.paths.desktop={app.paths.desktop.resolve()}")
     print(f"app.paths.toga={app.paths.toga.resolve()}")
 
 

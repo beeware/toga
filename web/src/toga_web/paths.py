@@ -16,3 +16,12 @@ class Paths:
 
     def get_logs_path(self):
         return Path.home() / "log"
+
+    def get_documents_path(self):
+        raise NotImplementedError("No user documents path on the web backend")
+
+    def get_pictures_path(self):
+        raise NotImplementedError("No user pictures path on the web backend")
+
+    def get_desktop_path(self):
+        raise NotImplementedError("No user desktop path on the web backend")

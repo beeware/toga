@@ -10,6 +10,8 @@ To assist with finding an appropriate location to store application files, every
 
 Each location provided by the [`Paths`][toga.paths.Paths] object is a [`pathlib.Path`][] that can be used to construct a full file path. If required, additional subdirectories can be created under these locations. Toga will guarantee that the path provided *by Toga* will exist, but it is up you to create any desired subdirectory - if you want to create a `credentials/user.toml` configuration file, Toga will guarantee that the `apps.path.config` will exist, but you must take responsibility for creating the `credentials` subdirectory before saving `user.toml`.
 
+`documents`, `pictures`, and `desktop` provide the user's corresponding desktop locations. These locations are available on the Cocoa, GTK, Qt, Windows Forms, Textual, and Dummy backends. They are not available on Android, iOS, or the Web backend, where accessing them raises `NotImplementedError`.
+
 ## Reference
 
 ::: toga.paths.Paths

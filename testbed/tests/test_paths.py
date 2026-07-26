@@ -33,3 +33,16 @@ async def test_app_paths(app, app_probe, attr):
                 shutil.rmtree(path)
         except PermissionError:
             pass
+
+
+@pytest.mark.parametrize("attr", ["documents", "pictures", "desktop"])
+async def test_user_paths(app, app_probe, attr):
+    """User paths are platform-appropriate and cached."""
+    if hasattr(app_probe, f"{attr}_path"):
+        path = getattr(app.paths, attr)
+        assert path == getattr(app_probe, f"{attr}_path")
+        assert path.exists()
+        assert getattr(app.paths, attr) == path
+    else:
+        with pytest.raises(NotImplementedError):
+            getattr(app.paths, attr)

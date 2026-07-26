@@ -83,3 +83,27 @@ class Paths:
         path = self._impl.get_logs_path()
         path.mkdir(parents=True, exist_ok=True)
         return path
+
+    @property
+    @functools.cache  # noqa: B019
+    def documents(self) -> Path:
+        """The platform-appropriate location for the user's documents."""
+        path = self._impl.get_documents_path()
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+
+    @property
+    @functools.cache  # noqa: B019
+    def pictures(self) -> Path:
+        """The platform-appropriate location for the user's pictures."""
+        path = self._impl.get_pictures_path()
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+
+    @property
+    @functools.cache  # noqa: B019
+    def desktop(self) -> Path:
+        """The platform-appropriate location for the user's desktop."""
+        path = self._impl.get_desktop_path()
+        path.mkdir(parents=True, exist_ok=True)
+        return path

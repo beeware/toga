@@ -6,7 +6,7 @@ import pytest
 
 import toga
 from toga_gtk.keys import gtk_accel, toga_key
-from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, GLib, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -50,6 +50,27 @@ class AppProbe(BaseProbe, DialogsMixin):
     @property
     def logs_path(self):
         return Path.home() / ".local/state/testbed/log"
+
+    @property
+    def documents_path(self):
+        return Path(
+            GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DOCUMENTS)
+            or Path.home() / "Documents"
+        )
+
+    @property
+    def pictures_path(self):
+        return Path(
+            GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES)
+            or Path.home() / "Pictures"
+        )
+
+    @property
+    def desktop_path(self):
+        return Path(
+            GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DESKTOP)
+            or Path.home() / "Desktop"
+        )
 
     @property
     def is_cursor_visible(self):

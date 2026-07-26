@@ -1,6 +1,8 @@
 from functools import cached_property
 from pathlib import Path
 
+from System import Environment
+
 from toga import App
 
 
@@ -28,3 +30,14 @@ class Paths:
 
     def get_logs_path(self):
         return self._app_dir / "Logs"
+
+    def get_documents_path(self):
+        return Path(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
+
+    def get_pictures_path(self):
+        return Path(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures))
+
+    def get_desktop_path(self):
+        return Path(
+            Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
+        )

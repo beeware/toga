@@ -2,7 +2,7 @@ from pathlib import Path
 
 import PIL.Image
 import pytest
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, QStandardPaths, Qt
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QApplication, QDialog, QSystemTrayIcon
 from toga_qt.keys import qt_to_toga_key, toga_to_qt_key
@@ -50,6 +50,33 @@ class AppProbe(BaseProbe):
     @property
     def logs_path(self):
         return Path.home() / ".local/state/testbed-qt/log"
+
+    @property
+    def documents_path(self):
+        return Path(
+            QStandardPaths.writableLocation(
+                QStandardPaths.StandardLocation.DocumentsLocation
+            )
+            or Path.home() / "Documents"
+        )
+
+    @property
+    def pictures_path(self):
+        return Path(
+            QStandardPaths.writableLocation(
+                QStandardPaths.StandardLocation.PicturesLocation
+            )
+            or Path.home() / "Pictures"
+        )
+
+    @property
+    def desktop_path(self):
+        return Path(
+            QStandardPaths.writableLocation(
+                QStandardPaths.StandardLocation.DesktopLocation
+            )
+            or Path.home() / "Desktop"
+        )
 
     @property
     def is_cursor_visible(self):

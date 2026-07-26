@@ -53,6 +53,18 @@ class AppProbe(BaseProbe, DialogsMixin):
         return Path.home() / "Library/Logs/org.beeware.toga.testbed"
 
     @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
+
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
     def is_cursor_visible(self):
         # There's no API level mechanism to detect cursor visibility;
         # fall back to the implementation's proxy variable.

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from PySide6.QtCore import QStandardPaths
+
 from toga import App
 
 
@@ -18,3 +20,27 @@ class Paths:
 
     def get_logs_path(self):
         return Path.home() / f".local/state/{App.app.app_name}/log"
+
+    def get_documents_path(self):
+        return Path(
+            QStandardPaths.writableLocation(
+                QStandardPaths.StandardLocation.DocumentsLocation
+            )
+            or Path.home() / "Documents"
+        )
+
+    def get_pictures_path(self):
+        return Path(
+            QStandardPaths.writableLocation(
+                QStandardPaths.StandardLocation.PicturesLocation
+            )
+            or Path.home() / "Pictures"
+        )
+
+    def get_desktop_path(self):
+        return Path(
+            QStandardPaths.writableLocation(
+                QStandardPaths.StandardLocation.DesktopLocation
+            )
+            or Path.home() / "Desktop"
+        )

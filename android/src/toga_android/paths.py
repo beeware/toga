@@ -25,3 +25,12 @@ class Paths:
 
     def get_logs_path(self):
         return Path(self._context.getFilesDir().getPath()) / "log"
+
+    def get_documents_path(self):
+        raise NotImplementedError("Android does not provide a user documents path")
+
+    def get_pictures_path(self):
+        raise NotImplementedError("Android does not provide a user pictures path")
+
+    def get_desktop_path(self):
+        raise NotImplementedError("Android does not provide a user desktop path")

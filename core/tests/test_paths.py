@@ -47,6 +47,9 @@ def assert_paths(output, app_path, app_name):
     assert f"app.paths.data={home / 'user_data' / full_name}" in results
     assert f"app.paths.cache={home / 'cache' / full_name}" in results
     assert f"app.paths.logs={home / 'logs' / full_name}" in results
+    assert f"app.paths.documents={home / 'Documents'}" in results
+    assert f"app.paths.pictures={home / 'Pictures'}" in results
+    assert f"app.paths.desktop={home / 'Desktop'}" in results
     assert f"app.paths.toga={Path(toga.__file__).parent.resolve()}" in results
 
 
@@ -132,7 +135,17 @@ def test_subclassed_as_deep_module():
 
 @pytest.mark.parametrize(
     "path_name",
-    ["toga", "app", "config", "data", "cache", "logs"],
+    [
+        "toga",
+        "app",
+        "config",
+        "data",
+        "cache",
+        "logs",
+        "documents",
+        "pictures",
+        "desktop",
+    ],
 )
 def test_cant_reassign(app, path_name):
     """App path attributes are read-only."""
