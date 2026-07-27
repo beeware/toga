@@ -3,7 +3,7 @@ from decimal import InvalidOperation
 
 from travertino.size import at_least
 
-from toga.widgets.numberinput import _clean_decimal
+from toga.widgets.numberinput import _clean_native_decimal
 
 from ..libs import GTK_VERSION, Gtk, gtk_text_align
 from .base import Widget
@@ -49,7 +49,7 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return _clean_decimal(self.native.get_text(), self.interface.step)
+            return _clean_native_decimal(self.native.get_text(), self.interface.step)
         except InvalidOperation:
             return None
 

@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QDoubleSpinBox
 from travertino.constants import CENTER
 from travertino.size import at_least
 
-from toga.widgets.numberinput import _clean_decimal
+from toga.widgets.numberinput import _clean_native_decimal
 
 from ..libs import qt_text_align
 from .base import Widget
@@ -41,7 +41,7 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            value = _clean_decimal(self.native.text(), self.interface.step)
+            value = _clean_native_decimal(self.native.text(), self.interface.step)
         except InvalidOperation:
             return None
         if self.interface.max is not None:

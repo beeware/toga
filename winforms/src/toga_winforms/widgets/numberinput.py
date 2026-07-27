@@ -6,7 +6,7 @@ import System.Windows.Forms as WinForms
 from System import Convert, String
 
 from toga.handlers import WeakrefCallable
-from toga.widgets.numberinput import _clean_decimal
+from toga.widgets.numberinput import _clean_native_decimal
 from toga_winforms.libs.fonts import HorizontalTextAlignment
 
 from .base import Widget
@@ -23,11 +23,6 @@ def native_decimal(value):
     else:
         assert isinstance(value, int)
         return Convert.ToDecimal(value)
-
-
-def clean_native_decimal(value, step):
-    """Convert a locale-formatted WinForms value to a Toga decimal."""
-    return _clean_decimal(locale.delocalize(value), step)
 
 
 class NumberInput(Widget):
@@ -60,7 +55,7 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return clean_native_decimal(self.native.Text, self.interface.step)
+            return _clean_native_decimal(self.native.Text, self.interface.step)
         except InvalidOperation:
             return None
 

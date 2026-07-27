@@ -4,7 +4,11 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.widgets.numberinput import _clean_decimal, _clean_decimal_str
+from toga.widgets.numberinput import (
+    _clean_decimal,
+    _clean_decimal_str,
+    _clean_native_decimal,
+)
 from toga_dummy.utils import (
     EventLog,
     assert_action_performed,
@@ -500,3 +504,12 @@ def test_clean_decimal_str(value, clean):
 )
 def test_clean_decimal(value, step, clean):
     assert _clean_decimal(value, Decimal(step) if step else step) == Decimal(clean)
+
+
+def test_clean_native_decimal_uses_the_local_decimal_separator(monkeypatch):
+    monkeypatch.setattr(
+        "toga.widgets.numberinput.locale.localeconv",
+        lambda: {"thousands_sep": ".", "decimal_point": ","},
+    )
+
+    assert _clean_native_decimal("3,14", Decimal("0.01")) == Decimal("3.14")

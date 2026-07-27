@@ -5,7 +5,11 @@ from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
-from toga.widgets.numberinput import _clean_decimal, _clean_decimal_str
+from toga.widgets.numberinput import (
+    _clean_decimal,
+    _clean_decimal_str,
+    _clean_native_decimal,
+)
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     NSLayoutAttributeBottom,
@@ -231,7 +235,7 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return _clean_decimal(
+            return _clean_native_decimal(
                 str(self.native_input.stringValue), self.interface.step
             )
         except InvalidOperation:

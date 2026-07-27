@@ -1,5 +1,5 @@
 from decimal import Decimal
-from unittest.mock import Mock, call, patch
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -185,23 +185,6 @@ async def test_value(widget, probe):
         widget.value = text
         await probe.redraw(f"Widget value should be {str(text)!r}")
         assert widget.value == value
-
-
-async def test_winforms_localized_value(widget):
-    "WinForms parses a localized decimal separator in the displayed value."
-    if toga.backend != "toga_winforms":
-        pytest.skip("specific to the WinForms backend")
-
-    with patch(
-        "toga_winforms.widgets.numberinput.locale.localeconv",
-        return_value={"thousands_sep": ".", "decimal_point": ","},
-    ):
-        native = widget._impl.native
-        widget._impl.native = Mock(Text="3,14")
-        try:
-            assert widget._impl.get_value() == Decimal("3.14")
-        finally:
-            widget._impl.native = native
 
 
 async def test_increment_decrement(widget, probe):

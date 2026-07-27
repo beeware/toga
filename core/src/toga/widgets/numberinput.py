@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import locale
 import re
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Any, Protocol
@@ -45,6 +46,15 @@ def _clean_decimal(value: NumberInputT, step: NumberInputT | None = None) -> Dec
         # so nothing would change.
         value = value.quantize(step, rounding=ROUND_HALF_UP)
     return value
+
+
+def _clean_native_decimal(
+    value: NumberInputT, step: NumberInputT | None = None
+) -> Decimal:
+    """Convert a locale-formatted native widget value to a decimal."""
+    if isinstance(value, str):
+        value = locale.delocalize(value)
+    return _clean_decimal(value, step)
 
 
 def _clean_decimal_str(value: str) -> str:

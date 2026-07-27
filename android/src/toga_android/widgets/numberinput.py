@@ -2,7 +2,7 @@ from decimal import InvalidOperation
 
 from android.text import InputType
 
-from toga.widgets.numberinput import _clean_decimal
+from toga.widgets.numberinput import _clean_native_decimal
 
 from .textinput import TextInput
 
@@ -17,7 +17,7 @@ class NumberInput(TextInput):
 
     def get_value(self):
         try:
-            return _clean_decimal(super().get_value(), self.interface.step)
+            return _clean_native_decimal(super().get_value(), self.interface.step)
         except InvalidOperation:
             return None
 

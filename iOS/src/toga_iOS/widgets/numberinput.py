@@ -13,7 +13,7 @@ from rubicon.objc import (
 )
 from travertino.size import at_least
 
-from toga.widgets.numberinput import _clean_decimal
+from toga.widgets.numberinput import _clean_native_decimal
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSTextAlignment,
@@ -128,7 +128,7 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return _clean_decimal(str(self.native.text), self.interface.step)
+            return _clean_native_decimal(str(self.native.text), self.interface.step)
         except InvalidOperation:
             return None
 
