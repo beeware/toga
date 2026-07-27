@@ -598,7 +598,7 @@ jobs:
           runs-on: "windows-latest"
           testbed-app: "testbed-winui3"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (WinUI 3)\Data'
-          pre-command: |
+          pre-command-pwsh: |
             Invoke-WebRequest `
             -Uri "https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-x64.exe" `
             -OutFile "windows_app_sdk_installer.exe"
@@ -611,7 +611,7 @@ jobs:
           runs-on: "windows-11-arm"
           testbed-app: "testbed-winui3"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (WinUI 3)\Data'
-          pre-command: |
+          pre-command-pwsh: |
             Invoke-WebRequest `
             -Uri "https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-arm64.exe" `
             -OutFile "windows_app_sdk_installer.exe"
@@ -661,7 +661,12 @@ jobs:
       with:
         python-version: "3.12"
 
-    - name: Install Dependencies
+    - name: Install Dependencies (pwsh)
+      if: ${{ matrix.platform == "windows" }}
+      shell: pwsh
+      run: ${{ matrix.pre-command-pwsh }}
+
+    - name: Install Dependencies (bash)
       env:
         PIP_BREAK_SYSTEM_PACKAGES: "1"
       run: |
