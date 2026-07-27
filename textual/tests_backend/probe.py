@@ -2,7 +2,6 @@ import asyncio
 
 import pytest
 from textual._wait import wait_for_idle
-from textual.app import ScreenStackError
 
 import toga
 
@@ -26,8 +25,8 @@ class BaseProbe:
         native = self.app._impl.native
         try:
             screen = native.screen
-        except ScreenStackError:
-            return
+        except Exception:
+            return False
 
         children = [native, *screen.walk_children(with_self=True)]
         count = 0
@@ -65,6 +64,13 @@ class BaseProbe:
                 pytest.fail(
                     "Timed out while waiting for widgets to process pending messages."
                 )
+
+            # We've either timed out, encountered an exception, or we've finished
+            # decrementing all the counters (all events processed in children).
+            if count > 0:
+                return False
+
+        return True
 
     async def redraw(self, message=None, delay=0, wait_for=None):
         # This implementation is strongly inspired by Textual's Pilot.pause(),
