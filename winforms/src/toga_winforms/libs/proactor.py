@@ -265,8 +265,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     def enqueue_task(self, task, delay):
         """Use the WinForms event loop to enqueue a task after a given delay."""
 
-        def dispatch_task(*args, task=task, **kwargs):
-            return self.dispatch_task(*args, task=task, **kwargs)
+        def dispatch_task(obj):
+            return self._dispatch_task(task)
 
         # Add a call which dispatches the Queue a call to tick in a specified delay.
         Task.Delay(delay).ContinueWith(Action[Task](dispatch_task))
@@ -274,10 +274,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     # This function doesn't report as covered because it runs on a
     # non-Python-created thread (see App.run_app). But it must actually be
     # covered, otherwise nothing would work.
-    def dispatch_task(self, *args, task=None, **kwargs):  # pragma: no cover
+    def _dispatch_task(self, task):  # pragma: no cover
         """Use the WinForms dispatcher to add a given task to the synchronous queue."""
 
-        def enqueue_task_sync(task=task):
+        def enqueue_task_sync():
             return self._synchronous_queue.append(task)
 
         # Using the dispatcher ensures that the task is run on the GUI thread.
