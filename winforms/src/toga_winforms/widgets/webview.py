@@ -5,6 +5,15 @@ import webbrowser
 from http.cookiejar import Cookie, CookieJar
 
 import System.Windows.Forms as WinForms
+import WebView2 as WebView2Runtime  # noqa: F401
+from Microsoft.Web.WebView2.Core import (
+    CoreWebView2Cookie,
+    WebView2RuntimeNotFoundException,
+)
+from Microsoft.Web.WebView2.WinForms import (
+    CoreWebView2CreationProperties,
+    WebView2,
+)
 from System import (
     Action,
     String,
@@ -17,12 +26,6 @@ from System.Threading.Tasks import Task, TaskScheduler
 import toga
 from toga.handlers import WeakrefCallable
 from toga.widgets.webview import CookiesResult, JavaScriptResult
-from toga_winforms.libs.extensions import (
-    CoreWebView2Cookie,
-    CoreWebView2CreationProperties,
-    WebView2,
-    WebView2RuntimeNotFoundException,
-)
 
 from .base import Widget
 
