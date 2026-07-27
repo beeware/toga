@@ -49,6 +49,18 @@ class AppProbe(BaseProbe, DialogsMixin):
     def logs_path(self):
         return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Logs"
 
+    @property
+    def documents_path(self):
+        pytest.xfail("iOS doesn't provide a shared user documents path")
+
+    @property
+    def pictures_path(self):
+        pytest.xfail("iOS doesn't provide a shared user pictures path")
+
+    @property
+    def desktop_path(self):
+        pytest.xfail("iOS doesn't provide a desktop path")
+
     def assert_app_icon(self, icon):
         pytest.xfail("iOS apps don't have app icons at runtime")
 

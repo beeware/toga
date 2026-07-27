@@ -27,10 +27,10 @@ class Paths:
         return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Logs"
 
     def get_documents_path(self):
-        raise NotImplementedError("iOS does not provide a user documents path")
+        raise RuntimeError("iOS does not provide a shared user documents path")
 
     def get_pictures_path(self):
-        raise NotImplementedError("iOS does not provide a user pictures path")
+        raise RuntimeError("iOS does not provide a shared user pictures path")
 
     def get_desktop_path(self):
-        raise NotImplementedError("iOS does not provide a user desktop path")
+        raise RuntimeError("iOS does not provide a user desktop path")

@@ -43,6 +43,18 @@ class AppProbe(BaseProbe, DialogsMixin):
     def logs_path(self):
         return Path(self.get_app_context().getFilesDir().getPath()) / "log"
 
+    @property
+    def documents_path(self):
+        pytest.xfail("Android doesn't provide a shared user documents path")
+
+    @property
+    def pictures_path(self):
+        pytest.xfail("Android doesn't provide a shared user pictures path")
+
+    @property
+    def desktop_path(self):
+        pytest.xfail("Android doesn't provide a desktop path")
+
     def assert_app_icon(self, icon):
         pytest.xfail("Android apps don't have app icons at runtime")
 

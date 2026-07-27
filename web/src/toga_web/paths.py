@@ -18,10 +18,10 @@ class Paths:
         return Path.home() / "log"
 
     def get_documents_path(self):
-        raise NotImplementedError("No user documents path on the web backend")
+        raise RuntimeError("The web backend does not provide a user documents path")
 
     def get_pictures_path(self):
-        raise NotImplementedError("No user pictures path on the web backend")
+        raise RuntimeError("The web backend does not provide a user pictures path")
 
     def get_desktop_path(self):
-        raise NotImplementedError("No user desktop path on the web backend")
+        raise RuntimeError("The web backend does not provide a user desktop path")

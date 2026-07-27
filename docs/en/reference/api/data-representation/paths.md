@@ -8,11 +8,16 @@ Complicating matters further, operating systems have conventions (and in some ca
 
 To assist with finding an appropriate location to store application files, every Toga application instance has a [`paths`][toga.App.paths] attribute that returns an instance of [`Paths`][toga.paths.Paths]. This object provides known file system locations that are appropriate for storing files of given types, such as configuration files, log files, cache files, or user data.
 
-These locations follow the platform's configured storage directories. In particular, Linux backends honor XDG directory configuration, Windows backends use the system's known folders, and Cocoa uses the standard Foundation directories. This means application storage continues to follow user or administrator directory redirection rather than assuming paths below the home directory.
-
 Each location provided by the [`Paths`][toga.paths.Paths] object is a [`pathlib.Path`][] that can be used to construct a full file path. If required, additional subdirectories can be created under these locations. Toga will guarantee that the path provided *by Toga* will exist, but it is up you to create any desired subdirectory - if you want to create a `credentials/user.toml` configuration file, Toga will guarantee that the `apps.path.config` will exist, but you must take responsibility for creating the `credentials` subdirectory before saving `user.toml`.
 
-`documents`, `pictures`, and `desktop` provide the user's corresponding desktop locations. These locations are available on the Cocoa, GTK, Qt, Windows Forms, Textual, and Dummy backends. They are not available on Android, iOS, or the Web backend, where accessing them raises `NotImplementedError`.
+`documents`, `pictures`, and `desktop` provide the user's corresponding desktop locations.
+
+## Notes
+
+- On Linux, paths honor the user's XDG directory configuration.
+- On macOS, paths use the standard Foundation directories.
+- On Windows, paths use the system's known folders, including any user or administrator redirection.
+- The `documents`, `pictures`, and `desktop` locations are available on the Cocoa, GTK, Qt, Windows Forms, Textual, and Dummy backends. Android, iOS, and the Web do not provide equivalent shared user locations; accessing these properties on those platforms raises [`RuntimeError`][].
 
 ## Reference
 

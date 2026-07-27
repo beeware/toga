@@ -44,5 +44,6 @@ async def test_user_paths(app, app_probe, attr):
         assert path.exists()
         assert getattr(app.paths, attr) == path
     else:
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(RuntimeError) as exc_info:
             getattr(app.paths, attr)
+        assert type(exc_info.value) is RuntimeError
