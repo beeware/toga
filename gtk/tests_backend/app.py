@@ -37,19 +37,19 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed"
+        return Path(GLib.get_user_config_dir()) / "testbed"
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed"
+        return Path(GLib.get_user_data_dir()) / "testbed"
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed"
+        return Path(GLib.get_user_cache_dir()) / "testbed"
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed/log"
+        return Path(GLib.get_user_state_dir()) / "testbed" / "log"
 
     @property
     def documents_path(self):

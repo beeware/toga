@@ -2,7 +2,7 @@
 # System/Library/Frameworks/Foundation.framework
 ##########################################################################
 from ctypes import c_bool
-from enum import IntFlag
+from enum import Enum, IntFlag
 
 from rubicon.objc import NSPoint, NSRect, ObjCClass
 from rubicon.objc.runtime import load_library
@@ -27,6 +27,27 @@ NSData = ObjCClass("NSData")
 ######################################################################
 # NSFileWrapper.h
 NSFileWrapper = ObjCClass("NSFileWrapper")
+
+######################################################################
+# NSFileManager.h
+NSFileManager = ObjCClass("NSFileManager")
+
+######################################################################
+# NSPathUtilities.h
+
+
+class NSSearchPathDirectory(Enum):
+    Library = 5
+    Documents = 9
+    Desktop = 12
+    Cache = 13
+    ApplicationSupport = 14
+    Pictures = 19
+
+
+class NSSearchPathDomainMask(Enum):
+    User = 1
+
 
 ######################################################################
 # NSNotification.h

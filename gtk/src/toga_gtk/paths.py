@@ -14,16 +14,16 @@ class Paths:
         self.interface = interface
 
     def get_config_path(self):
-        return Path.home() / f".config/{App.app.app_name}"
+        return Path(GLib.get_user_config_dir()) / App.app.app_name
 
     def get_data_path(self):
-        return Path.home() / f".local/share/{App.app.app_name}"
+        return Path(GLib.get_user_data_dir()) / App.app.app_name
 
     def get_cache_path(self):
-        return Path.home() / f".cache/{App.app.app_name}"
+        return Path(GLib.get_user_cache_dir()) / App.app.app_name
 
     def get_logs_path(self):
-        return Path.home() / f".local/state/{App.app.app_name}/log"
+        return Path(GLib.get_user_state_dir()) / App.app.app_name / "log"
 
     def get_documents_path(self):
         return user_path(GLib.UserDirectory.DIRECTORY_DOCUMENTS, "Documents")

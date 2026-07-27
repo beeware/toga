@@ -6,8 +6,12 @@ from pathlib import Path
 from toga import App
 
 
+def xdg_path(key, default):
+    return Path(os.getenv(key, Path.home() / default))
+
+
 def user_path(key, default):
-    config_home = Path(os.getenv("XDG_CONFIG_HOME", Path.home() / ".config"))
+    config_home = xdg_path("XDG_CONFIG_HOME", ".config")
     try:
         lines = (
             (config_home / "user-dirs.dirs").read_text(encoding="utf-8").splitlines()
@@ -74,7 +78,17 @@ elif sys.platform == "win32":
             # No coverage testing of this because we can't easily configure
             # the app to have no author.
             author = "Unknown" if App.app.author is None else App.app.author
-            return Path.home() / f"AppData/Local/{author}/{App.app.formal_name}"
+            return (
+                Path(
+                    os.path.expandvars(
+                        _user_shell_folder(
+                            "Local AppData", Path.home() / "AppData/Local"
+                        )
+                    )
+                )
+                / author
+                / App.app.formal_name
+            )
 
         # The rest are cached at the interface level:
 
@@ -118,16 +132,16 @@ else:
             self.interface = interface
 
         def get_config_path(self):
-            return Path.home() / f".config/{App.app.app_name}"
+            return xdg_path("XDG_CONFIG_HOME", ".config") / App.app.app_name
 
         def get_data_path(self):
-            return Path.home() / f".local/share/{App.app.app_name}"
+            return xdg_path("XDG_DATA_HOME", ".local/share") / App.app.app_name
 
         def get_cache_path(self):
-            return Path.home() / f".cache/{App.app.app_name}"
+            return xdg_path("XDG_CACHE_HOME", ".cache") / App.app.app_name
 
         def get_logs_path(self):
-            return Path.home() / f".local/state/{App.app.app_name}/log"
+            return xdg_path("XDG_STATE_HOME", ".local/state") / App.app.app_name / "log"
 
         def get_documents_path(self):
             return user_path("XDG_DOCUMENTS_DIR", "Documents")

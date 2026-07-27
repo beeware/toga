@@ -8,7 +8,10 @@ import toga
 from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import (
     NSApplication,
+    NSFileManager,
     NSPanel,
+    NSSearchPathDirectory,
+    NSSearchPathDomainMask,
     NSWindow,
 )
 
@@ -38,31 +41,49 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / "Library/Preferences/org.beeware.toga.testbed"
+        return (
+            self._get_path(NSSearchPathDirectory.Library)
+            / "Preferences"
+            / ("org.beeware.toga.testbed")
+        )
 
     @property
     def data_path(self):
-        return Path.home() / "Library/Application Support/org.beeware.toga.testbed"
+        return self._get_path(NSSearchPathDirectory.ApplicationSupport) / (
+            "org.beeware.toga.testbed"
+        )
 
     @property
     def cache_path(self):
-        return Path.home() / "Library/Caches/org.beeware.toga.testbed"
+        return self._get_path(NSSearchPathDirectory.Cache) / "org.beeware.toga.testbed"
 
     @property
     def logs_path(self):
-        return Path.home() / "Library/Logs/org.beeware.toga.testbed"
+        return (
+            self._get_path(NSSearchPathDirectory.Library)
+            / "Logs"
+            / ("org.beeware.toga.testbed")
+        )
 
     @property
     def documents_path(self):
-        return Path.home() / "Documents"
+        return self._get_path(NSSearchPathDirectory.Documents)
 
     @property
     def pictures_path(self):
-        return Path.home() / "Pictures"
+        return self._get_path(NSSearchPathDirectory.Pictures)
 
     @property
     def desktop_path(self):
-        return Path.home() / "Desktop"
+        return self._get_path(NSSearchPathDirectory.Desktop)
+
+    @staticmethod
+    def _get_path(search_path):
+        file_manager = NSFileManager.defaultManager
+        urls = file_manager.URLsForDirectory(
+            search_path, inDomains=NSSearchPathDomainMask.User
+        )
+        return Path(urls[0].path)
 
     @property
     def is_cursor_visible(self):

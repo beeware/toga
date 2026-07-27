@@ -1,29 +1,41 @@
 from pathlib import Path
 
 from toga import App
+from toga_cocoa.libs import NSFileManager, NSSearchPathDirectory, NSSearchPathDomainMask
 
 
 class Paths:
     def __init__(self, interface):
         self.interface = interface
 
+    def get_path(self, search_path):
+        file_manager = NSFileManager.defaultManager
+        urls = file_manager.URLsForDirectory(
+            search_path, inDomains=NSSearchPathDomainMask.User
+        )
+        return Path(urls[0].path)
+
     def get_config_path(self):
-        return Path.home() / f"Library/Preferences/{App.app.app_id}"
+        return (
+            self.get_path(NSSearchPathDirectory.Library)
+            / "Preferences"
+            / App.app.app_id
+        )
 
     def get_data_path(self):
-        return Path.home() / f"Library/Application Support/{App.app.app_id}"
+        return self.get_path(NSSearchPathDirectory.ApplicationSupport) / App.app.app_id
 
     def get_cache_path(self):
-        return Path.home() / f"Library/Caches/{App.app.app_id}"
+        return self.get_path(NSSearchPathDirectory.Cache) / App.app.app_id
 
     def get_logs_path(self):
-        return Path.home() / f"Library/Logs/{App.app.app_id}"
+        return self.get_path(NSSearchPathDirectory.Library) / "Logs" / App.app.app_id
 
     def get_documents_path(self):
-        return Path.home() / "Documents"
+        return self.get_path(NSSearchPathDirectory.Documents)
 
     def get_pictures_path(self):
-        return Path.home() / "Pictures"
+        return self.get_path(NSSearchPathDirectory.Pictures)
 
     def get_desktop_path(self):
-        return Path.home() / "Desktop"
+        return self.get_path(NSSearchPathDirectory.Desktop)

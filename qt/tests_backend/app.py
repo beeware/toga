@@ -37,19 +37,51 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed-qt"
+        return (
+            Path(
+                QStandardPaths.writableLocation(
+                    QStandardPaths.StandardLocation.GenericConfigLocation
+                )
+                or Path.home() / ".config"
+            )
+            / "testbed-qt"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed-qt"
+        return (
+            Path(
+                QStandardPaths.writableLocation(
+                    QStandardPaths.StandardLocation.GenericDataLocation
+                )
+                or Path.home() / ".local/share"
+            )
+            / "testbed-qt"
+        )
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed-qt"
+        return (
+            Path(
+                QStandardPaths.writableLocation(
+                    QStandardPaths.StandardLocation.GenericCacheLocation
+                )
+                or Path.home() / ".cache"
+            )
+            / "testbed-qt"
+        )
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed-qt/log"
+        return (
+            Path(
+                QStandardPaths.writableLocation(
+                    QStandardPaths.StandardLocation.GenericStateLocation
+                )
+                or Path.home() / ".local/state"
+            )
+            / "testbed-qt/log"
+        )
 
     @property
     def documents_path(self):

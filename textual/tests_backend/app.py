@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from textual.app import App as TextualApp
 
-from toga_textual.paths import user_path
+from toga_textual.paths import user_path, xdg_path
 
 from .probe import BaseProbe
 
@@ -34,36 +34,88 @@ class AppProbe(BaseProbe):
         if sys.platform == "darwin":
             return Path.home() / f"Library/Preferences/{APP_ID}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Config"
+            from toga_textual.paths import _user_shell_folder
+
+            return (
+                Path(
+                    os.path.expandvars(
+                        _user_shell_folder(
+                            "Local AppData", Path.home() / "AppData/Local"
+                        )
+                    )
+                )
+                / AUTHOR
+                / FORMAL_NAME
+                / "Config"
+            )
         else:
-            return Path.home() / f".config/{APP_NAME}"
+            return xdg_path("XDG_CONFIG_HOME", ".config") / APP_NAME
 
     @property
     def data_path(self):
         if sys.platform == "darwin":
             return Path.home() / f"Library/Application Support/{APP_ID}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Data"
+            from toga_textual.paths import _user_shell_folder
+
+            return (
+                Path(
+                    os.path.expandvars(
+                        _user_shell_folder(
+                            "Local AppData", Path.home() / "AppData/Local"
+                        )
+                    )
+                )
+                / AUTHOR
+                / FORMAL_NAME
+                / "Data"
+            )
         else:
-            return Path.home() / f".local/share/{APP_NAME}"
+            return xdg_path("XDG_DATA_HOME", ".local/share") / APP_NAME
 
     @property
     def cache_path(self):
         if sys.platform == "darwin":
             return Path.home() / f"Library/Caches/{APP_ID}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Cache"
+            from toga_textual.paths import _user_shell_folder
+
+            return (
+                Path(
+                    os.path.expandvars(
+                        _user_shell_folder(
+                            "Local AppData", Path.home() / "AppData/Local"
+                        )
+                    )
+                )
+                / AUTHOR
+                / FORMAL_NAME
+                / "Cache"
+            )
         else:
-            return Path.home() / f".cache/{APP_NAME}"
+            return xdg_path("XDG_CACHE_HOME", ".cache") / APP_NAME
 
     @property
     def logs_path(self):
         if sys.platform == "darwin":
             return Path.home() / f"Library/Logs/{APP_ID}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Logs"
+            from toga_textual.paths import _user_shell_folder
+
+            return (
+                Path(
+                    os.path.expandvars(
+                        _user_shell_folder(
+                            "Local AppData", Path.home() / "AppData/Local"
+                        )
+                    )
+                )
+                / AUTHOR
+                / FORMAL_NAME
+                / "Logs"
+            )
         else:
-            return Path.home() / f".local/state/{APP_NAME}/log"
+            return xdg_path("XDG_STATE_HOME", ".local/state") / APP_NAME / "log"
 
     @property
     def documents_path(self):

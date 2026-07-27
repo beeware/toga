@@ -48,19 +48,47 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Config"
+        return (
+            Path(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData
+                )
+            )
+            / "Tiberius Yak/Toga Testbed/Config"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Data"
+        return (
+            Path(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData
+                )
+            )
+            / "Tiberius Yak/Toga Testbed/Data"
+        )
 
     @property
     def cache_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Cache"
+        return (
+            Path(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData
+                )
+            )
+            / "Tiberius Yak/Toga Testbed/Cache"
+        )
 
     @property
     def logs_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Logs"
+        return (
+            Path(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData
+                )
+            )
+            / "Tiberius Yak/Toga Testbed/Logs"
+        )
 
     @property
     def documents_path(self):
