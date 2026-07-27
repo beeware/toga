@@ -40,7 +40,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             timeout = 5
             polling_interval = 0.1
             # Number of consecutive polls the window's size must be unchanged for
-            # before considering the state transition fully settled.
+            # before considering the state transition fully settled. See #3897.
             required_stable_polls = 2
             exception = None
             stable_polls = 0
@@ -51,12 +51,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 try:
                     assert self.instantaneous_state == state
                     assert self.window._impl._pending_state_transition is None
-                    # AppKit can report a window as having completed a state
-                    # transition (e.g. via windowDidEnterFullScreen:) slightly
-                    # before its on-screen frame has finished animating to the
-                    # final size, especially on slower CI runners. Waiting for
-                    # the reported size to be stable across a couple of polls
-                    # avoids capturing a transient, not-yet-settled size (#3897).
                     current_size = self.window.size
                     if current_size == last_size:
                         stable_polls += 1
