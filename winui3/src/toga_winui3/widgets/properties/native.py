@@ -25,8 +25,8 @@ class NativeProperties:
     which can change e.g. DPI, darkmode theme. When a dependency property is manually
     set to a value, it can lose the ability to listen to these changes.
 
-    Using this class to set a dependency property to None reset the property to the
-    default value and restore ability to listen to changes.
+    Using this class to set a dependency property to None resets the property to the
+    default value and restores the ability to listen to changes.
     """
 
     def __init__(self, widget):

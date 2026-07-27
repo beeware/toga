@@ -511,8 +511,17 @@ class Window:
 
 class MainWindow(Window):
     def create_content(self):
-        # Row 0 is allocated for the menu
-        # Row 1 is allocated for toolbar
+        # Create a Grid with the following layout:
+        #
+        #      col 0 - fills the available horizontal space.
+        #  +-----------+
+        #  |   menu    |  row 0 - fits to the vertical size of the menu.
+        #  +-----------+
+        #  |  toolbar  |  row 1 - fits to the vertical size of the toolbar.
+        #  +-----------+
+        #  |  content  |  row 2 - fills the available vertical space.
+        #  +-----------+
+        #
         self.content_native = Grid()
         self.content_native.ColumnDefinitions.Append(column_definition_star(1))
         self.content_native.RowDefinitions.Append(row_definition_auto())

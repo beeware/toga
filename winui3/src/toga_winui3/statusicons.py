@@ -37,6 +37,16 @@ from .libs.shell import Shell_NotifyIconW
 
 
 class StatusIcon:
+    """The WinUI 3 backend implementation of the StatusIcon class.
+
+    The WinUI 3 API does not provide a class that could be used as a StatusIcon (see
+    for example https://github.com/microsoft/microsoft-ui-xaml/issues/2020), so a
+    Win32 approach is used.
+        Moreover, the needed subclassing functionality is not provided in the Win32
+    metadata, so it does not appear in win32more. Hence the need to load it directly
+    using ctypes.
+    """
+
     def __init__(self, interface):
         self.interface = interface
         self.native_window = None
@@ -58,6 +68,8 @@ class StatusIcon:
         presenter = self.native_window.AppWindow.Presenter
         overlapped_presenter = OverlappedPresenter(value=presenter.value)
         overlapped_presenter.SetBorderAndTitleBar(False, False)
+
+        # Setting "always on top" is needed for any menus will appear at the top.
         overlapped_presenter.IsAlwaysOnTop = True
 
         # Subclass the native_window to receive the WM_COMMAND messages.
@@ -155,6 +167,7 @@ class MenuStatusIcon(StatusIcon):
         self._native_menu = native_menu_instance
 
     def native_event_closing(self, sender, args):
+        # Hide the parent window immediately after a menu item is selected.
         self.native_window.AppWindow.Hide()
 
     def native_event_click(self, x, y):

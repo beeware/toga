@@ -17,6 +17,10 @@ from .properties.staged import StagedProperties
 
 class LabelText(EventsHandledMixin):
     def __init__(self, label):
+        """A class the handles the text part of the `Label` widget.
+
+        :param label: The `Label` widget itself.
+        """
         self._label = label
 
         self.native_cls = TextBlock
@@ -46,6 +50,12 @@ class LabelText(EventsHandledMixin):
 
 
 class Label(Widget):
+    """The WinUI 3 `Label` widget implementation.
+
+    This widget is necessarily split into two parts because the WinUI 3 class the widget
+    is based on, `Microsoft.UI.Xaml.Controls.TextBlock`, doesn't have a background.
+    """
+
     def create(self):
         self.native_cls = Grid
         # Label cannot receive input focus, so remove it from the tab sequence.

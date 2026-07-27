@@ -5,16 +5,14 @@ from win32more.Microsoft.UI.Xaml.Controls import (
     ColumnDefinition,
     RowDefinition,
 )
-from win32more.Windows.Win32.Foundation import PWSTR
-from win32more.Windows.Win32.UI.WindowsAndMessaging import (
-    HICON,
-    IMAGE_ICON,
-    LR_LOADFROMFILE,
-    LoadImageW,
-)
+
+########################################################################################
+# Properties to be used by the WinUI 3 Grid class.
+########################################################################################
 
 
 def grid_length_auto():
+    """The grid length will size to fit the content."""
     grid_length = GridLength()
     grid_length.GridUnitType = GridUnitType.Auto
 
@@ -22,6 +20,7 @@ def grid_length_auto():
 
 
 def grid_length_star(value: int = 1):
+    """The grid length will be a weighted division of the remaining space."""
     grid_length = GridLength()
     grid_length.GridUnitType = GridUnitType.Star
     grid_length.Value = value
@@ -30,6 +29,7 @@ def grid_length_star(value: int = 1):
 
 
 def column_definition_star(value: int = 1):
+    """The grid column will be a weighted division of the remaining horizontal space."""
     column_definition = ColumnDefinition()
     column_definition.Width = grid_length_star(value)
 
@@ -37,6 +37,7 @@ def column_definition_star(value: int = 1):
 
 
 def row_definition_auto():
+    """The grid row will size to fit the height of its content."""
     row_definition = RowDefinition()
     row_definition.Height = grid_length_auto()
 
@@ -44,10 +45,16 @@ def row_definition_auto():
 
 
 def row_definition_star(value: int = 1):
+    """The grid row will be a weighted division of the remaining vertical space."""
     row_definition = RowDefinition()
     row_definition.Height = grid_length_star(value)
 
     return row_definition
+
+
+########################################################################################
+# Functions for the upper and lower 16 bits of a 32 bit value.
+########################################################################################
 
 
 # https://learn.microsoft.com/en-us/windows/win32/winmsg/loword
@@ -70,11 +77,3 @@ def get_x_lparam(lparam: int) -> int:
 # https://learn.microsoft.com/en-us/windows/win32/api/windowsx/nf-windowsx-get_y_lparam
 def get_y_lparam(lparam: int) -> int:
     return SHORT(hiword(lparam)).value
-
-
-def load_icon(path: str) -> HICON:
-    """Creates an icon resource from an .ico file."""
-    hwnd = LoadImageW(None, PWSTR(path), IMAGE_ICON, 0, 0, LR_LOADFROMFILE)
-    if hwnd is None:
-        raise OSError(f"LoadImageW failed to load {path}.")
-    return HICON(hwnd)
