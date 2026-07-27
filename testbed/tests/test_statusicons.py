@@ -129,7 +129,7 @@ async def test_unknown_status_icon(app, app_probe):
 
 
 async def test_change_icon(app, app_probe):
-    """A button status icon can be activated."""
+    """The icon of a status icon can be changed."""
     status_icon = app_probe.app.status_icons["button"]
     old_icon = status_icon.icon
     new_icon = toga.Icon("resources/alt-icon")

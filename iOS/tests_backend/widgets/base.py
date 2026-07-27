@@ -177,3 +177,6 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     async def redo(self):
         pytest.skip("Redo not supported on this platform")
+
+    def assert_native_properties(self):
+        pytest.skip("Test not implemented for this platform")
