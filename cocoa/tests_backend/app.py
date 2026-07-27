@@ -348,3 +348,8 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     async def assert_event_loop(self):
         pytest.skip("Test not implemented for this platform")
+
+    def trigger_lifecycle_notification(self, selector, *args):
+        """Directly invoke a method on the app's native delegate, simulating the
+        native lifecycle notification that would normally trigger it."""
+        return getattr(self.app._impl.native.delegate, selector)(*args)
