@@ -662,7 +662,7 @@ jobs:
         python-version: "3.12"
 
     - name: Install Dependencies (pwsh)
-      if: ${{ matrix.platform == "windows" }}
+      if: matrix.platform == 'windows'
       shell: pwsh
       run: ${{ matrix.pre-command-pwsh }}
 
