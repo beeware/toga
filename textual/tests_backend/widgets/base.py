@@ -123,6 +123,9 @@ class SimpleProbe(BaseProbe):
     async def redo(self):
         pytest.skip("Redo is not implemented on Textual probes.")
 
+    def assert_native_properties(self):
+        pytest.skip("Test not implemented for this platform")
+
 
 class TextualWidgetProbe(SimpleProbe):
     native_class = TextualWidget

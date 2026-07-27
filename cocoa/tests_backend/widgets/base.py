@@ -226,5 +226,5 @@ class SimpleProbe(BaseProbe, FontMixin):
     async def redo(self):
         await self.type_character("z", alt=True, shift=True)
 
-    async def test_native_properties(self):
+    def assert_native_properties(self):
         skip("Test not implemented for this platform")
