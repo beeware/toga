@@ -1,3 +1,3 @@
 # Avoiding scope creep
 
-{% extends "contribute/how/scope-creep.md" %}
+{% extends "_shared/contribute/how/scope-creep.md" %}

@@ -349,8 +349,9 @@ def test_reparent_child_to_self(widget):
     # as the widget was already a child
     assert_action_not_performed(widget, "add child")
 
-    # The widget's layout has been refreshed
-    assert_action_performed_with(widget, "refresh")
+    # The widget's layout has *not* been refreshed,
+    # as the widget was already a child
+    assert_action_not_performed(widget, "refresh")
 
 
 def test_insert_child_into_leaf():
@@ -643,8 +644,9 @@ def test_insert_reparent_child_to_self(widget):
     # as the widget was already a child
     assert_action_not_performed(widget, "insert child")
 
-    # The widget's layout has been refreshed
-    assert_action_performed_with(widget, "refresh")
+    # The widget's layout has *not* been refreshed,
+    # as the widget was already a child
+    assert_action_not_performed(widget, "refresh")
 
 
 def test_remove_child_from_leaf():

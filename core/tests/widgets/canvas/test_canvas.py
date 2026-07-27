@@ -223,7 +223,7 @@ def save_and_restore(canvas):
             CORNFLOWERBLUE,
             CORNFLOWERBLUE_COLOR,
         ),
-        ("line_width", 2.0, 5, 5.0, 10.0, 10.0),
+        ("line_width", 1.0, 5, 5.0, 10.0, 10.0),
         ("line_dash", [], [1, 2], [1.0, 2.0], [2.0, 3.0], [2.0, 3.0]),
     ],
 )

@@ -1,6 +1,6 @@
 # Proposing a new feature
 
-{% extends "contribute/how/propose-feature.md" %}
+{% extends "_shared/contribute/how/propose-feature.md" %}
 
 {% block end_matter %}
 

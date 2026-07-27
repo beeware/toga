@@ -24,6 +24,12 @@ from .test_dateinput import (  # noqa: F401
     test_value,
 )
 
+skip_on_backends(
+    "toga_textual",
+    reason="TimeInput is not implemented on Textual.",
+    allow_module_level=True,
+)
+
 
 @fixture
 async def initial_value(widget):
@@ -58,12 +64,13 @@ def normalize(probe):
     returned by the widget."""
 
     def normalize_time(value):
-        if isinstance(value, datetime):
-            value = value.time()
-        elif isinstance(value, time):
-            pass
-        else:
-            raise TypeError(value)
+        match value:
+            case datetime():
+                value = value.time()
+            case time():
+                pass
+            case _:
+                raise TypeError(value)
 
         replace_kwargs = {"microsecond": 0}
         if not probe.supports_seconds:

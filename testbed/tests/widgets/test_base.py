@@ -166,20 +166,7 @@ async def test_parenting(widget, probe):
 
 
 async def test_tab_index(widget, probe, other):
-    if toga.platform.current_platform not in {"windows"}:
-        assert widget.tab_index is None
-        assert other.tab_index is None
-    elif toga.backend == "toga_winui3":
-        # Unset WinUI 3 tab indices default to Int32_MaxValue.
-        Int32_MaxValue = 2**31 - 1
-        assert widget.tab_index == Int32_MaxValue
-        assert other.tab_index == Int32_MaxValue
-
-        widget.tab_index = 4
-        other.tab_index = 2
-        assert widget.tab_index == 4
-        assert other.tab_index == 2
-    else:
+    if probe.supports_tab_index:
         assert widget.tab_index == 1
         assert other.tab_index == 2
 
@@ -187,6 +174,9 @@ async def test_tab_index(widget, probe, other):
         other.tab_index = 2
         assert widget.tab_index == 4
         assert other.tab_index == 2
+    else:
+        assert widget.tab_index is None
+        assert other.tab_index is None
 
 
 async def test_native_properties(widget, probe):

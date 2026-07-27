@@ -6,7 +6,14 @@ import toga
 from toga.colors import WHITE, rgb
 from toga.constants import SANS_SERIF, Baseline
 
+from ...conftest import skip_on_backends
 from .test_canvas import assert_reference
+
+skip_on_backends(
+    "toga_textual",
+    reason="Canvas is not implemented on Textual.",
+    allow_module_level=True,
+)
 
 
 async def test_old_tutorial(canvas, probe):

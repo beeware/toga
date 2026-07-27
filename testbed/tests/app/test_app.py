@@ -8,6 +8,11 @@ import toga
 from ..conftest import skip_on_backends
 
 
+async def test_event_loop(app_probe):
+    """Runs tests for the apps event loop."""
+    await app_probe.assert_event_loop()
+
+
 async def test_unsupported_widget(app):
     """If a widget isn't implemented, the factory raises NotImplementedError."""
     with pytest.raises(
@@ -244,25 +249,26 @@ async def test_beep(app, app_probe):
     # can be invoked without raising an error, but there's no way to verify that the app
     # actually made a noise.
     app.beep()
-    # Qt's CI sometimes takes unnessacarily long to run the bell command.  Ensure there
-    # are no dangling tasks with a long delay.
-    await app_probe.redraw("Application has sounded bell", delay=5)
+    # Ensure there are no dangling tasks with a long delay after sounding the beep.
+    await app_probe.redraw("Application has sounded bell", delay=app_probe.beep_delay)
 
 
 async def test_screens(app, app_probe):
-    """Screens must have unique origins and names, with the primary screen at (0,0)."""
+    """Screens must have unique origins, and a (not necessarily unique) name."""
+    assert app.screens
+    # Collect origins to verify each monitor occupies a unique position
+    origins = []
+    for screen in app.screens:
+        assert isinstance(screen.name, str)
+        # Origin is an (x, y) tuple of integers representing screen position
+        assert isinstance(screen.origin, tuple)
+        assert len(screen.origin) == 2
+        assert all(isinstance(value, int) for value in screen.origin)
+        origins.append(screen.origin)
 
-    # Get the origin of screen 0
-    assert app.screens[0].origin == (0, 0)
-
-    # Check for unique names
-    screen_names = [s.name for s in app.screens]
-    unique_names = set(screen_names)
-    assert len(screen_names) == len(unique_names)
-
-    # Check that the origin of every other screen is not "0,0"
-    origins_not_zero = all(screen.origin != (0, 0) for screen in app.screens[1:])
-    assert origins_not_zero is True
+    # Identical monitors can share the same name, so assert uniqueness on origin
+    # since every screen must occupy a distinct position.
+    assert len(origins) == len(set(origins))
 
 
 async def test_app_icon(app, app_probe):

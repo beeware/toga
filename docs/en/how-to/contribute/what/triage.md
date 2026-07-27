@@ -1,3 +1,3 @@
 # Triaging an issue
 
-{% extends "contribute/what/triage.md" %}
+{% extends "_shared/contribute/what/triage.md" %}

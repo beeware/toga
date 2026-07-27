@@ -1,4 +1,4 @@
-from ctypes import POINTER, c_void_p, windll
+from ctypes import POINTER, c_int, c_void_p, windll
 from ctypes.wintypes import (
     BOOL,
     DWORD,
@@ -9,6 +9,7 @@ from ctypes.wintypes import (
     HMONITOR,
     HWND,
     INT,
+    LONG,
     LPCWSTR,
     LPPOINT,
     LPRECT,
@@ -18,12 +19,22 @@ from ctypes.wintypes import (
     WPARAM,
 )
 
-from System import Environment
-
 from .win32misc import activation_context
 from .win32structures import LPARAM_OBJECT, LRESULT, UINT_PTR
 
 user32 = windll.user32
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-adjustwindowrectexfordpi
+AdjustWindowRectExForDpi = user32.AdjustWindowRectExForDpi
+AdjustWindowRectExForDpi.argtypes = [
+    POINTER(RECT),
+    DWORD,
+    BOOL,
+    DWORD,
+    UINT,
+]
+AdjustWindowRectExForDpi.restype = BOOL
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-appendmenuw
@@ -90,6 +101,12 @@ FillRect.restype = INT
 FillRect.argtypes = [HDC, POINTER(RECT), HBRUSH]
 
 
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdpiforwindow
+GetDpiForWindow = user32.GetDpiForWindow
+GetDpiForWindow.argtypes = [HWND]
+GetDpiForWindow.restype = UINT
+
+
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getfocus
 GetFocus = user32.GetFocus
 GetFocus.restype = HWND
@@ -106,6 +123,18 @@ GetSysColor.argtypes = [INT]
 GetSystemMetrics = user32.GetSystemMetrics
 GetSystemMetrics.restype = INT
 GetSystemMetrics.argtypes = [INT]
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowrect
+GetWindowRect = user32.GetWindowRect
+GetWindowRect.argtypes = [HWND, POINTER(RECT)]
+GetWindowRect.restype = BOOL
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowlongw
+GetWindowLongW = user32.GetWindowLongW
+GetWindowLongW.argtypes = [HWND, c_int]
+GetWindowLongW.restype = LONG
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-invalidaterect
@@ -147,24 +176,15 @@ SendMessageW.argtypes = [HWND, UINT, WPARAM, LPARAM_OBJECT]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setprocessdpiawarenesscontext
+SetProcessDpiAwarenessContext = user32.SetProcessDpiAwarenessContext
+SetProcessDpiAwarenessContext.restype = BOOL
+SetProcessDpiAwarenessContext.argtypes = [c_void_p]
+
+
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setthreaddpiawarenesscontext
-# https://www.lifewire.com/windows-version-numbers-2625171
-win_version = Environment.OSVersion.Version
-if (win_version.Major, win_version.Minor, win_version.Build) >= (10, 0, 15063):
-    SetProcessDpiAwarenessContext = user32.SetProcessDpiAwarenessContext
-    SetProcessDpiAwarenessContext.restype = BOOL
-    SetProcessDpiAwarenessContext.argtypes = [c_void_p]
-
-    SetThreadDpiAwarenessContext = user32.SetThreadDpiAwarenessContext
-    SetThreadDpiAwarenessContext.restype = c_void_p
-    SetThreadDpiAwarenessContext.argtypes = [c_void_p]
-
-else:  # pragma: no cover
-    print(
-        "WARNING: Your Windows version doesn't support DPI Awareness setting. "
-        "We recommend you upgrade to at least Windows 10 version 1703."
-    )
-    SetProcessDpiAwarenessContext = SetThreadDpiAwarenessContext = None
+SetThreadDpiAwarenessContext = user32.SetThreadDpiAwarenessContext
+SetThreadDpiAwarenessContext.restype = c_void_p
+SetThreadDpiAwarenessContext.argtypes = [c_void_p]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setfocus

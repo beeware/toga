@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==82.0.1",
-    "setuptools_scm==10.0.5",
+    "setuptools==83.0.0",
+    "setuptools_scm==10.2.0",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -119,21 +119,10 @@ dependencies = [
     # It is needed to moderate PyGObject version requirements.
     "packaging",
     "pycairo >= 1.17.0",
-    # PyGObject 3.50.0 is the first version with native GTK asyncio integration.
-    #
-    # A version < 3.52.1 is required to support Debian 12 and other distributions that
-    # don't provide libgirepository 2.0.
-    #
-    # However, GTK4 requires the use of a virtual function implementation that is only
-    # available on 3.52.1 and higher. The GTK4 requirement is satisfied with an optional
-    # dependency.
-    "pygobject >= 3.50.0",
+    # PyGObject 3.55.1 is the first version to include support for asyncio event loops
+    # without the use of an EventLoopPolicy. It requires libgirepository 2.0.
+    "pygobject >= 3.55.1",
     "toga-core == {version}",
-]
-
-[project.optional-dependencies]
-gtk4 = [
-    "pygobject >= 3.52.1",
 ]
 
 [tool.coverage.run]

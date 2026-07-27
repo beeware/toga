@@ -26,12 +26,13 @@ class ExamplesOverviewApp(toga.App):
     def open(self, widget, **kwargs):
         row = self.table.selection
 
-        if platform.system() == "Windows":
-            os.startfile(row.path)
-        elif platform.system() == "Darwin":
-            subprocess.run(["open", row.path])
-        else:
-            subprocess.run(["xdg-open", row.path])
+        match platform.system():
+            case "Windows":
+                os.startfile(row.path)
+            case "Darwin":
+                subprocess.run(["open", row.path])
+            case _:
+                subprocess.run(["xdg-open", row.path])
 
     def on_example_selected(self, widget):
         readme_path = widget.selection.path / "README.md"

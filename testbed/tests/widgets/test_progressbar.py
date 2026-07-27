@@ -9,6 +9,12 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
 )
 
+skip_on_backends(
+    "toga_textual",
+    reason="ProgressBar is not implemented on Textual.",
+    allow_module_level=True,
+)
+
 # ProgressBar can't be given focus on mobile or GTK.
 if toga.backend in {"toga_gtk", "toga_android", "toga_iOS"}:
     from .properties import test_focus_noop  # noqa: F401

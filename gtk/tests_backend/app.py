@@ -24,6 +24,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_dark_mode = True
     edit_menu_noop_enabled = False
     supports_psutil = True
+    beep_delay = 0.1
 
     def __init__(self, app):
         super().__init__()
@@ -293,3 +294,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         item = {child.get_label(): child for child in menu.get_children()}[title]
 
         item.emit("activate")
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

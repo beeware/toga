@@ -12,7 +12,17 @@ import toga
 
 from .conftest import skip_on_backends
 
-skip_on_backends("toga_winui3", allow_module_level=True)
+skip_on_backends(
+    "toga_winui3",
+    reason="Images are not implemented yet on WinUI 3.",
+    allow_module_level=True,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="Images are not implemented on Textual.",
+    allow_module_level=True,
+)
 
 
 def image_probe(app, image):

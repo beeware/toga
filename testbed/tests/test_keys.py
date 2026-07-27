@@ -63,7 +63,7 @@ skip_on_backends("toga_winui3", allow_module_level=True)
         (Key.MOD_1 + Key.PIPE, {"key": Key.PIPE, "modifiers": {Key.MOD_1}}),
     ],
 )
-def test_key_combinations(app_probe, key_combo, key_data):
+async def test_key_combinations(app_probe, key_combo, key_data):
     """Key combinations can be round tripped"""
 
     if not app_probe.supports_key:

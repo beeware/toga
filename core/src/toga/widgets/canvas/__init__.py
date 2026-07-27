@@ -8,25 +8,24 @@ from .drawingaction import (
     DrawImage,
     DrawingAction,
     Ellipse,
+    FillText,
     LineTo,
     MoveTo,
     QuadraticCurveTo,
     Rect,
     ResetTransform,
     Restore,
-    Rotate,
     RoundRect,
     Save,
-    Scale,
     SetFillStyle,
     SetLineDash,
     SetLineWidth,
     SetStrokeStyle,
-    Translate,
+    StrokeText,
     WriteText,
 )
 from .geometry import arc_to_bezier, sweepangle
-from .state import BaseState, ClosePath, Fill, State, Stroke
+from .state import BaseState, ClosePath, Fill, Rotate, Scale, State, Stroke, Translate
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -76,10 +75,9 @@ __all__ = [
     "QuadraticCurveTo",
     "Rect",
     "ResetTransform",
-    "Rotate",
     "RoundRect",
-    "Scale",
-    "Translate",
+    "FillText",
+    "StrokeText",
     "WriteText",
     # States
     "BaseState",
@@ -87,6 +85,9 @@ __all__ = [
     "Fill",
     "Stroke",
     "ClosePath",
+    "Rotate",
+    "Scale",
+    "Translate",
     # Geometry
     "arc_to_bezier",
     "sweepangle",

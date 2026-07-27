@@ -1,3 +1,3 @@
 # Providing a pull request review
 
-{% extends "contribute/what/review-pr.md" %}
+{% extends "_shared/contribute/what/review-pr.md" %}

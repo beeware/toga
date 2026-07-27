@@ -73,7 +73,7 @@ class DateInput(Widget):
         return self._impl.get_value()
 
     @value.setter
-    def value(self, value: object) -> None:
+    def value(self, value: datetime.date | str | None) -> None:
         value = self._convert_date(value, check_range=False)
 
         if value < self.min:
@@ -84,16 +84,17 @@ class DateInput(Widget):
         self._impl.set_value(value)
 
     def _convert_date(self, value: object, *, check_range: bool) -> datetime.date:
-        if value is None:
-            value = datetime.date.today()
-        elif isinstance(value, datetime.datetime):
-            value = value.date()
-        elif isinstance(value, datetime.date):
-            pass
-        elif isinstance(value, str):
-            value = datetime.date.fromisoformat(value)
-        else:
-            raise TypeError("Not a valid date value")
+        match value:
+            case None:
+                value = datetime.date.today()
+            case datetime.datetime():
+                value = value.date()
+            case datetime.date():
+                pass
+            case str():
+                value = datetime.date.fromisoformat(value)
+            case _:
+                raise TypeError("Not a valid date value")
 
         if check_range:
             if value < MIN_DATE:

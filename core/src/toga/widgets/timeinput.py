@@ -64,7 +64,7 @@ class TimeInput(Widget):
         return self._impl.get_value()
 
     @value.setter
-    def value(self, value: object) -> None:
+    def value(self, value: datetime.time | datetime.datetime | str | None) -> None:
         value = self._convert_time(value)
 
         if value < self.min:
@@ -75,16 +75,17 @@ class TimeInput(Widget):
         self._impl.set_value(value)
 
     def _convert_time(self, value: object) -> datetime.time:
-        if value is None:
-            value = datetime.datetime.now().time()
-        elif isinstance(value, datetime.datetime):
-            value = value.time()
-        elif isinstance(value, datetime.time):
-            pass
-        elif isinstance(value, str):
-            value = datetime.time.fromisoformat(value)
-        else:
-            raise TypeError("Not a valid time value")
+        match value:
+            case None:
+                value = datetime.datetime.now().time()
+            case datetime.datetime():
+                value = value.time()
+            case datetime.time():
+                pass
+            case str():
+                value = datetime.time.fromisoformat(value)
+            case _:
+                raise TypeError("Not a valid time value")
 
         return value.replace(microsecond=0)
 

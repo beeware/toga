@@ -4,7 +4,14 @@ import pytest
 
 from toga.constants import FlashMode
 
+from ..conftest import skip_on_backends
 from .probe import list_probes
+
+skip_on_backends(
+    "toga_textual",
+    reason="Camera probes are not implemented on Textual.",
+    allow_module_level=True,
+)
 
 
 @pytest.fixture(

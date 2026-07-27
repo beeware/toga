@@ -51,7 +51,7 @@ class Font(BaseFont):
         """Construct a reference to a font.
 
         This class should be used when an API requires an explicit font reference (e.g.
-        [`Canvas.write_text`][toga.Canvas.write_text]). In all other
+        [`Canvas.fill_text`][toga.Canvas.fill_text]). In all other
         cases, fonts in Toga are controlled
         using the style properties linked below.
 

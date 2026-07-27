@@ -125,8 +125,8 @@ class Location:
                     "before confirming foreground location permission."
                 )
             )
-        elif has_background_permission := self.has_background_permission:
-            result.set_result(has_background_permission)
+        elif self.has_background_permission:
+            result.set_result(True)
         else:
             self._impl.request_background_permission(result)
 

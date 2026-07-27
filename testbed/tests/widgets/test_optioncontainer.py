@@ -15,6 +15,12 @@ from .properties import (  # noqa: F401
     test_focus_noop,
 )
 
+skip_on_backends(
+    "toga_textual",
+    reason="OptionContainer is not implemented on Textual.",
+    allow_module_level=True,
+)
+
 
 @pytest.fixture
 async def content1():

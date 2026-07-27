@@ -1,10 +1,10 @@
 # Reproducing an issue
 
-{% extends "contribute/how/reproduce-issue.md" %}
+{% extends "_shared/contribute/how/reproduce-issue.md" %}
 
 {% block front_matter %}
 
-To begin reproducing an issue, you will need a [development environment](dev-environment.md) set up.
+To begin reproducing an issue, you will need a [development environment](../how/dev-environment.md) set up.
 
 {% endblock %}
 

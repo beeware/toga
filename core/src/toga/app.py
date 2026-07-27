@@ -880,19 +880,18 @@ class App:
             if self.in_presentation_mode:
                 self.exit_presentation_mode()
 
-            screen_window_dict = {}
-            if isinstance(windows, list):
-                for window, screen in zip(windows, self.screens, strict=False):
-                    screen_window_dict[screen] = window
-            elif isinstance(windows, dict):
-                screen_window_dict = windows
-            else:
-                raise ValueError(
-                    "Presentation layout should be a list of windows,"
-                    " or a dict mapping windows to screens."
-                )
+            match windows:
+                case dict():
+                    pass
+                case list():
+                    windows = dict(zip(self.screens, windows, strict=False))
+                case _:
+                    raise ValueError(
+                        "Presentation layout should be a list of windows, or a dict "
+                        "mapping windows to screens."
+                    )
 
-            for screen, window in screen_window_dict.items():
+            for screen, window in windows.items():
                 window._impl._before_presentation_mode_screen = window.screen
                 window.screen = screen
                 window._impl.set_window_state(WindowState.PRESENTATION)

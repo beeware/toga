@@ -1,6 +1,6 @@
 from ctypes import c_void_p
 
-from rubicon.objc import CGPoint, NSRange, objc_method, objc_property, send_super
+from rubicon.objc import SEL, CGPoint, NSRange, objc_method, objc_property, send_super
 from travertino.size import at_least
 
 from toga_iOS.colors import native_color
@@ -38,7 +38,13 @@ class TogaMultilineTextView(UITextView, protocols=[UIKeyInput]):
             argtypes=[CGPoint, c_void_p],
         )
         if not bool(point_inside):
-            self.resignFirstResponder()
+            # The delay is required for proper animation of keyboard dismissal
+            # for some reason.
+            self.performSelector(
+                SEL("resignFirstResponder"),
+                withObject=None,
+                afterDelay=0.0,
+            )
         return point_inside
 
     @objc_method

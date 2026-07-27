@@ -28,16 +28,22 @@ concurrency:
   group: ${{ github.workflow}}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   pre-commit:
     name: Pre-commit checks
-    uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
+    uses: beeware/.github/.github/workflows/pre-commit-run.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
     with:
       pre-commit-source: "--group pre-commit"
 
   towncrier:
     name: Check towncrier
-    uses: beeware/.github/.github/workflows/towncrier-run.yml@main
+    uses: beeware/.github/.github/workflows/towncrier-run.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
+    permissions:
+      contents: read
+      pull-requests: write
     with:
       tox-source: "--group tox-uv"
 
@@ -97,17 +103,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           repository: ${{ github.repository }}
           fetch-depth: 0  # Fetch all refs so setuptools_scm can generate the correct version number
+          persist-credentials: false
 
       # Compute the version against the pristine checkout before any tree mutation, and
       # export it as the toga-winforms-scoped pretend version. This ensures that later
       # modifications don't cause a `.devN+...` version.
       - name: Set up Python
         if: ${{ matrix.plat-name }}
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
           python-version: "3.14"
 
@@ -133,7 +140,7 @@ jobs:
 
       - name: Build Package & Upload Artifact
         id: package
-        uses: hynek/build-and-inspect-python-package@v2.18.0
+        uses: hynek/build-and-inspect-python-package@d44ca7d91762de7a7d5436ddae667c6da6d1c3df  # v2.18.0
         with:
           path: ${{ matrix.subdir || matrix.wheel }}
           upload-name-suffix: ${{ format('-{0}', matrix.wheel) }}
@@ -148,12 +155,13 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
           python-version: "3.X"
           cache: pip
@@ -182,12 +190,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
+        platform: [ "macos-15", "ubuntu-latest", "windows-latest" ]
         python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
         package: ["core", "travertino"]
         exclude:
         - package: travertino
-          platform: macos-latest
+          platform: macos-15
         - package: travertino
           platform: windows-latest
         include:
@@ -199,12 +207,13 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -213,7 +222,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Get Packages
-      uses: actions/download-artifact@v8.0.1
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
       with:
         pattern: "Packages-*"
         merge-multiple: true
@@ -230,7 +239,7 @@ jobs:
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v7.0.1
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
       with:
         name: ${{ matrix.package }}-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "${{ matrix.package }}/.coverage.*"
@@ -251,12 +260,13 @@ jobs:
             tox-suffix: "-trav"
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -266,7 +276,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v8.0.1
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
       with:
         pattern: ${{ matrix.package }}-coverage-data-*
         path: ${{ matrix.package }}
@@ -276,7 +286,7 @@ jobs:
       run: tox -e coverage${{ matrix.tox-suffix }}-html-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v7.0.1
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
       if: failure()
       with:
         name: html-coverage-report
@@ -289,12 +299,13 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Set up Python
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
       with:
         python-version: ${{ env.min_python_version }}
 
@@ -302,7 +313,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Get Package
-      uses: actions/download-artifact@v8.0.1
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
       with:
         pattern: "Packages-travertino"
         merge-multiple: true
@@ -355,7 +366,7 @@ jobs:
 
         - backend: "macOS-arm64"
           platform: "macOS"
-          runs-on: "macos-latest"
+          runs-on: "macos-15"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
@@ -556,7 +567,7 @@ jobs:
 
         - backend: "textual-macOS"
           platform: "macOS"
-          runs-on: "macos-latest"
+          runs-on: "macos-15"
           testbed-app: "testbed-textual"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed-textual"
 
@@ -610,15 +621,7 @@ jobs:
 
         - backend: "iOS"
           platform: "iOS"
-          runs-on: "macos-latest"
-          pre-command: |
-            # 2025-08-15 - Github Actions are in the process of switching how they
-            # manage Xcode, so they can save disk space.
-            # See https://github.com/actions/runner-images/issues/12541
-            # and https://github.com/actions/runner-images/issues/12751; see
-            # also https://github.com/actions/runner-images/issues/12758 for
-            # a discussion of transition issues.
-            sudo xcode-select --switch /Applications/Xcode_16.4.app
+          runs-on: "macos-15"
           briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
@@ -644,15 +647,16 @@ jobs:
     # GitHub runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
     - name: Tune GitHub-hosted runner network
-      uses: smorimoto/tune-github-hosted-runner-network@v1.0.0
+      uses: smorimoto/tune-github-hosted-runner-network@bb252dcb5c8609a31087e7993daa086f5a1c0069  # v1.0.0
 
     - name: Checkout
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Set up Python
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
       if: matrix.setup-python
       with:
         python-version: "3.12"
@@ -667,7 +671,7 @@ jobs:
         python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Get Packages
-      uses: actions/download-artifact@v8.0.1
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
       with:
         pattern: "Packages-*"
         merge-multiple: true
@@ -682,7 +686,7 @@ jobs:
           ${{ matrix.briefcase-run-args }} --app ${{ matrix.testbed-app }} -- --ci ${{ matrix.briefcase-test-args }}
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v7.0.1
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -695,7 +699,7 @@ jobs:
         ${{ matrix.copy-command }} "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v7.0.1
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
       if: failure()
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
@@ -736,17 +740,18 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Set up Python
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
       with:
         python-version: "3.12"
 
     - name: Get Packages
-      uses: actions/download-artifact@v8.0.1
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
       with:
         pattern: "Packages-positron"
         merge-multiple: true

@@ -1,3 +1,3 @@
 # Using the tools
 
-{% extends "contribute/what/use-tools.md" %}
+{% extends "_shared/contribute/what/use-tools.md" %}

@@ -25,6 +25,12 @@ from .test_textinput import (  # noqa: F401
     verify_vertical_text_align,
 )
 
+skip_on_backends(
+    "toga_textual",
+    reason="NumberInput is not implemented on Textual.",
+    allow_module_level=True,
+)
+
 
 @pytest.fixture
 async def widget():

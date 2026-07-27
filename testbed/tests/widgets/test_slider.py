@@ -14,6 +14,12 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
 )
 
+skip_on_backends(
+    "toga_textual",
+    reason="Slider is not implemented on Textual.",
+    allow_module_level=True,
+)
+
 # Slider can't be given focus on mobile
 if toga.platform.current_platform in {"android", "iOS"}:
     from .properties import test_focus_noop  # noqa: F401

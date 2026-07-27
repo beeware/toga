@@ -18,11 +18,11 @@ class TogaSlider(NSSlider):
 
     @objc_method
     def onSlide_(self, sender) -> None:
-        event_type = sender.window.currentEvent().type
-        if event_type == NSEventType.LeftMouseDown:
-            self.interface.on_press()
-        elif event_type == NSEventType.LeftMouseUp:
-            self.interface.on_release()
+        match sender.window.currentEvent().type:
+            case NSEventType.LeftMouseDown:
+                self.interface.on_press()
+            case NSEventType.LeftMouseUp:
+                self.interface.on_release()
 
         self.interface.on_change()
 

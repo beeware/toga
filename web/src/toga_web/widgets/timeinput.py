@@ -6,12 +6,13 @@ from .base import Widget
 
 
 def py_time(native_time):
-    if isinstance(native_time, datetime.datetime):
-        time = native_time.time()
-    elif isinstance(native_time, str):
-        time = datetime.time.fromisoformat(native_time)
-    else:
-        time = datetime.datetime.now().time()
+    match native_time:
+        case datetime.datetime():
+            time = native_time.time()
+        case str():
+            time = datetime.time.fromisoformat(native_time)
+        case _:
+            time = datetime.datetime.now().time()
 
     return time.replace(microsecond=0)
 

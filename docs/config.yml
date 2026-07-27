@@ -16,6 +16,7 @@ extra:
   min_python_version_tag: "310"  # The tag version of the minimum python version
   recent_python_version: "3.13"  # The newest Python version known to work on all platforms
   docs_python_version: "3.13"  # The version of Python required to build the documentation
+  contribution_guide_root: how-to/contribute
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/beeware

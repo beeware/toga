@@ -37,6 +37,12 @@ from .test_textinput import (  # noqa: F401
     test_value_not_hidden,
 )
 
+skip_on_backends(
+    "toga_textual",
+    reason="MultilineTextInput is not implemented on Textual.",
+    allow_module_level=True,
+)
+
 
 @pytest.fixture
 async def widget():

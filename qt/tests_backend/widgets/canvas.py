@@ -10,6 +10,7 @@ from .base import SimpleProbe
 
 class CanvasProbe(SimpleProbe):
     native_class = TogaCanvas
+    screenshot_reset_transform = False
 
     def reference_variant(self, reference):
         if reference in {
@@ -18,6 +19,7 @@ class CanvasProbe(SimpleProbe):
             "write_text_and_path",
             "deprecated_tutorial",
             "miter_join",
+            "reset_transform",
         }:
             return f"{reference}-qt"
         else:

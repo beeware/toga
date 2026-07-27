@@ -221,7 +221,7 @@ class BaseStyle(ABC):  # noqa: B024
 
     @contextmanager
     def batch_apply(self):
-        """Aggregate calls to appl() into one single call to _apply().
+        """Aggregate calls to apply() into one single call to _apply().
 
         No-op if no applicator is present, or if already in batched mode.
         """
