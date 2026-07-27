@@ -5,10 +5,15 @@ import pytest
 import toga
 
 ####################################################################################
-# macOS-specific app lifecycle hook tests
+# Cocoa-specific app lifecycle hook tests
+#
+# These tests exercise toga_cocoa.App directly, so they must be gated on the
+# active *backend* (toga.backend), not the host OS (toga.platform.current_platform):
+# macOS can also run the Textual backend (e.g. the "textual-macOS" CI job), which
+# doesn't have any of these cocoa_ methods.
 ####################################################################################
-if toga.platform.current_platform != "macOS":
-    pytest.skip("Test is specific to macOS", allow_module_level=True)
+if toga.backend != "toga_cocoa":
+    pytest.skip("Test is specific to the Cocoa backend", allow_module_level=True)
 
 # Lifecycle hooks that have no default cross-platform behavior; they exist purely
 # as override points for platform-specific extensions (see #4478).
