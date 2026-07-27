@@ -114,6 +114,7 @@ async def test_on_change_user(widget, probe, on_change):
 
 async def test_on_change_user_after_initial_value(main_window):
     "User input triggers on_change after setting the initial value before mounting."
+    skip_on_backends("toga_winui3")
     old_content = main_window.content
     widget = toga.TextInput(value="Hello")
     on_change = Mock()

@@ -1,3 +1,4 @@
+import _overlapped
 import asyncio
 from ctypes import byref, sizeof, windll, wintypes as wt
 from pathlib import Path
@@ -46,6 +47,7 @@ class AppProbe(BaseProbe):
     supports_dark_mode = True
     edit_menu_noop_enabled = False
     supports_psutil = True
+    beep_delay = 0.1
 
     def __init__(self, app):
         super().__init__()
@@ -270,6 +272,21 @@ class AppProbe(BaseProbe):
     ####################################################################################
     # Miscellaneous
     ####################################################################################
+
+    async def assert_event_loop_unregistering(self, loop):
+        """Test that events can be unregistered."""
+        event = _overlapped.CreateEvent(None, True, False, None)
+        fut = loop._proactor.wait_for_handle(event, 10)
+        fut.cancel()
+
+        # Wait for the future to be removed from the unregistered list.
+        await asyncio.sleep(0.2)
+        assert len(loop._proactor._unregistered) == 0
+
+    async def assert_event_loop(self):
+        loop = self.app.loop
+
+        await self.assert_event_loop_unregistering(loop)
 
     async def restore_standard_app(self):
         # No special handling needed to restore standard app.

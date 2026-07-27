@@ -1,8 +1,8 @@
 from ctypes import WinError
+from importlib.metadata import version
 from sys import getwindowsversion
 from warnings import warn
 
-from travertino import _package_version
 from win32more.Windows.Win32.Foundation import ERROR_ACCESS_DENIED, GetLastError
 from win32more.Windows.Win32.UI.HiDpi import (
     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,
@@ -36,5 +36,4 @@ if not success:  # pragma: no cover
         )
 
 
-# Travertino package_version.
-__version__ = _package_version(__file__, __name__)
+__version__ = version("toga-winui3")

@@ -10,6 +10,7 @@ from .properties import brush_to_color
 
 class SimpleProbe(BaseProbe, FontMixin):
     invalid_size_while_hidden = False
+    supports_tab_index = True
 
     def __init__(self, widget):
         self.app = widget.app
@@ -154,3 +155,14 @@ class SimpleProbe(BaseProbe, FontMixin):
         # Setting a non-dependency native property to None should result in the property
         # being None.
         assert self.native.Resources is None
+
+    def assert_tab_index(self, widget, other):
+        # Unset WinUI 3 tab indices default to Int32_MaxValue.
+        Int32_MaxValue = 2**31 - 1
+        assert widget.tab_index == Int32_MaxValue
+        assert other.tab_index == Int32_MaxValue
+
+        widget.tab_index = 4
+        other.tab_index = 2
+        assert widget.tab_index == 4
+        assert other.tab_index == 2

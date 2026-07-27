@@ -6,7 +6,7 @@ from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.constants import Direction
 from toga.style.pack import Pack
 
-from ..conftest import skip_on_backends, skip_on_platforms
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401

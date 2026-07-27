@@ -1,6 +1,7 @@
 import asyncio
 from ctypes import byref, sizeof
 
+from pytest import approx
 from win32more.Windows.Win32.Foundation import POINT
 from win32more.Windows.Win32.UI.Input.KeyboardAndMouse import (
     INPUT,
@@ -27,6 +28,12 @@ class BaseProbe:
     def __init__(self, native=None):
         self.native = native
         self._click_count = 0
+
+    def approx_width(self, width):
+        return approx(width, rel=0.01)
+
+    def approx_height(self, height):
+        return approx(height, rel=0.01)
 
     async def redraw_staging(self):
         """Wait until any property staging is finished."""

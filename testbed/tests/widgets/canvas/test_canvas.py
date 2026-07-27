@@ -36,7 +36,6 @@ from ..properties import (  # noqa: F401
     test_focus_noop,
 )
 
-
 skip_on_backends(
     "toga_textual",
     reason="Canvas is not implemented on Textual.",
