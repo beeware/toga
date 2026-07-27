@@ -199,7 +199,24 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
             coro = future.coro
         else:
             raise TypeError(f"Future type {type(future)} is not currently supported")
-        return asyncio.run_coroutine_threadsafe(coro, toga.App.app._impl.loop).result()
+
+        # A backend may need to establish a context on the app's event loop
+        # before test code runs. If the probe defines a `test_context`
+        # classmethod, the test is run in that context.
+        backend_module = import_module("tests_backend.app")
+        try:
+            test_context = backend_module.AppProbe.test_context
+
+            async def coro_in_context():
+                with test_context():
+                    return await coro
+
+            test_coro = coro_in_context()
+        except AttributeError:
+            test_coro = coro
+
+        loop = toga.App.app._impl.loop
+        return asyncio.run_coroutine_threadsafe(test_coro, loop).result()
 
     async def shutdown_asyncgens(self):
         # The proxy event loop doesn't need to shut anything down; the
