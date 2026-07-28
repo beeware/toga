@@ -128,6 +128,21 @@ async def test_unknown_status_icon(app, app_probe):
         app.status_icons.commands.remove(bad_cmd)
 
 
+async def test_change_icon(app, app_probe):
+    """The icon of a status icon can be changed."""
+    status_icon = app_probe.app.status_icons["button"]
+    old_icon = status_icon.icon
+    new_icon = toga.Icon("resources/alt-icon")
+
+    status_icon.icon = new_icon
+    await app_probe.redraw("Status icon changed to a snake icon.")
+    assert status_icon.icon == new_icon
+
+    status_icon.icon = old_icon
+    await app_probe.redraw("Status icon restored to blue disk.")
+    assert status_icon.icon == old_icon
+
+
 async def test_activate_button_icon(app, app_probe):
     """A button status icon can be activated."""
     app_probe.activate_status_icon_button("button")
