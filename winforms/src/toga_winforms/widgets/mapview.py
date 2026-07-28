@@ -3,6 +3,14 @@ import webbrowser
 from concurrent.futures import Future
 
 import System.Windows.Forms as WinForms
+import WebView2 as WebView2Runtime  # noqa: F401
+from Microsoft.Web.WebView2.Core import (
+    WebView2RuntimeNotFoundException,
+)
+from Microsoft.Web.WebView2.WinForms import (
+    CoreWebView2CreationProperties,
+    WebView2,
+)
 from System import Action, String
 from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
@@ -10,11 +18,6 @@ from System.Threading.Tasks import Task, TaskScheduler
 import toga
 from toga.handlers import WeakrefCallable
 from toga.types import LatLng
-from toga_winforms.libs.extensions import (
-    CoreWebView2CreationProperties,
-    WebView2,
-    WebView2RuntimeNotFoundException,
-)
 
 from .base import Widget
 

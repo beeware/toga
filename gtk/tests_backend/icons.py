@@ -35,7 +35,7 @@ class IconProbe(BaseProbe):
     async def assert_icon_content(self, path):
         if path == "resources/icons/green":
             # Three icons given with size; others sizes match the generic name
-            assert self.icon._impl.paths == {
+            assert self.icon._impl.path == {
                 16: self.app.paths.app / "resources/icons/green-16.png",
                 32: self.app.paths.app / "resources/icons/green-32.png",
                 64: self.app.paths.app / "resources/icons/green.png",
@@ -46,7 +46,7 @@ class IconProbe(BaseProbe):
             }
         elif path == "resources/icons/orange":
             # All icons match the single size .ico
-            assert self.icon._impl.paths == dict.fromkeys(
+            assert self.icon._impl.path == dict.fromkeys(
                 [16, 32, 64, 72, 128, 256, 512],
                 self.app.paths.app / "resources/icons/orange.ico",
             )
@@ -54,14 +54,14 @@ class IconProbe(BaseProbe):
             pytest.fail("Unknown icon resource")
 
     async def assert_default_icon_content(self):
-        assert self.icon._impl.paths == {
+        assert self.icon._impl.path == {
             size: Path(toga_gtk.__file__).parent / "resources/toga.png"
             for size in [16, 32, 64, 72, 128, 256, 512]
         }
 
     async def assert_platform_icon_content(self):
         # Only 32 and 72 pixel forms are available
-        assert self.icon._impl.paths == {
+        assert self.icon._impl.path == {
             32: self.app.paths.app / "resources/logo-linux-32.png",
             72: self.app.paths.app / "resources/logo-linux-72.png",
         }
@@ -71,7 +71,7 @@ class IconProbe(BaseProbe):
             # When running in dev mode, the icon will fall back to the app default.
             assert self.icon._impl == toga.Icon.DEFAULT_ICON._impl
         else:
-            assert self.icon._impl.paths == {
+            assert self.icon._impl.path == {
                 16: (
                     Path(sys.executable).parent.parent
                     / "share/icons/hicolor/16x16/apps/org.beeware.toga.testbed.png"

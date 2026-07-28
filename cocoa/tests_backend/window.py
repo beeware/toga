@@ -39,19 +39,36 @@ class WindowProbe(BaseProbe, DialogsMixin):
         if state:
             timeout = 5
             polling_interval = 0.1
+            # Number of consecutive polls the window's size must be unchanged for
+            # before considering the state transition fully settled. See #3897.
+            required_stable_polls = 2
             exception = None
+            stable_polls = 0
+            last_size = None
             loop = asyncio.get_running_loop()
             start_time = loop.time()
             while (loop.time() - start_time) < timeout:
                 try:
                     assert self.instantaneous_state == state
                     assert self.window._impl._pending_state_transition is None
-                    return
+                    current_size = self.window.size
+                    if current_size == last_size:
+                        stable_polls += 1
+                        if stable_polls >= required_stable_polls:
+                            return
+                    else:
+                        stable_polls = 0
+                    last_size = current_size
                 except AssertionError as e:
                     exception = e
-                    await asyncio.sleep(polling_interval)
-                    continue
+                    stable_polls = 0
+                    last_size = None
+                await asyncio.sleep(polling_interval)
+            if exception:
                 raise exception
+            raise AssertionError(
+                f"Window size did not stabilize in {state} state within {timeout}s"
+            )
 
     async def cleanup(self):
         # Store the pre closing window state as determination of window state after
