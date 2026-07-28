@@ -97,9 +97,10 @@ class StagedProperties:
         widget = self._widget
         duplicate = type(widget.native)()
         self._latest = duplicate
+        staging_area = widget.container.staging_area
 
-        def size_changed(sender, args, duplicate=duplicate):
-            self.native_event_size_changed(sender, args, duplicate)
+        def size_changed(sender, args, duplicate=duplicate, staging_area=staging_area):
+            self.native_event_size_changed(sender, args, duplicate, staging_area)
 
         duplicate.event_handler.SizeChanged += size_changed
 
@@ -108,9 +109,9 @@ class StagedProperties:
             if value is not None:
                 setattr(duplicate, attribute, value)
 
-        widget.container.staging_area.add(duplicate)
+        staging_area.add(duplicate)
 
-    def native_event_size_changed(self, sender, args, duplicate):
+    def native_event_size_changed(self, sender, args, duplicate, staging_area):
         if duplicate == self._latest:
             self._widget._min_width = self._adjusted_width(duplicate)
             self._widget._min_height = duplicate.ActualSize.Y
@@ -118,7 +119,7 @@ class StagedProperties:
 
             self._latest = None
 
-        self._widget.container.staging_area.remove(duplicate)
+        staging_area.remove(duplicate)
 
     def _adjusted_width(self, duplicate):
         # FIXME: The staging method doesn't calculate a large enough width for italic
