@@ -24,14 +24,16 @@ class Icon:
                 if (hicolor / f"{size}x{size}/apps/{toga.App.app.app_id}.png").is_file()
             }
 
-        self.paths = path
+        # Here self.paths might be a more accurate name, but self.path is used for
+        # compatibility with the core interface.
+        self.path = path
 
         if not path:
             raise FileNotFoundError("No icon variants found")
 
         # Preload all the required icon sizes
         try:
-            for size, path in self.paths.items():
+            for size, path in self.path.items():
                 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
                     native = GdkPixbuf.Pixbuf.new_from_file(str(path)).scale_simple(
                         size, size, GdkPixbuf.InterpType.BILINEAR
