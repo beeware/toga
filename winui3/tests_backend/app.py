@@ -358,7 +358,7 @@ class AppProbe(BaseProbe):
         # moving.
         midpoint = get_midpoint()
         for _ in range(10):
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.1)
 
             new_midpoint = get_midpoint()
             print(f"StatusIcon - old_midpoint={midpoint}")
