@@ -1,3 +1,5 @@
+import weakref
+
 from win32more.Microsoft.UI.Xaml.Controls import RelativePanel
 from win32more.Windows.UI.Text import FontStyle
 
@@ -95,37 +97,50 @@ class StagedProperties:
             return
 
         widget = self._widget
-        duplicate = type(widget.native)()
-        self._latest = duplicate
+        clone = type(widget.native)()
         staging_area = widget.container.staging_area
+        self._latest = clone
 
-        def size_changed(sender, args, duplicate=duplicate, staging_area=staging_area):
-            self.native_event_size_changed(sender, args, duplicate, staging_area)
+        # Use a weak reference so that the external process doesn't prevent garbage
+        # collection.
+        clone_weak = weakref.ref(clone)
+        area_weak = weakref.ref(staging_area)
 
-        duplicate.event_handler.SizeChanged += size_changed
+        def size_changed(sender, args, clone_weak=clone_weak, area_weak=area_weak):
+            self.native_event_size_changed(sender, args, clone_weak, area_weak)
+
+        clone.event_handler.SizeChanged += size_changed
 
         for attribute, value_creator in self._staged_properties.items():
             value = value_creator()
             if value is not None:
-                setattr(duplicate, attribute, value)
+                setattr(clone, attribute, value)
 
-        staging_area.add(duplicate)
+        staging_area.add(clone)
 
-    def native_event_size_changed(self, sender, args, duplicate, staging_area):
-        if duplicate == self._latest:
-            self._widget._min_width = self._adjusted_width(duplicate)
-            self._widget._min_height = duplicate.ActualSize.Y
+    def native_event_size_changed(self, sender, args, clone_weak, area_weak):
+        clone = clone_weak()
+        staging_area = area_weak()
+
+        # If the clone or staging area no longer exist then do nothing. This is not
+        # reliably hit during testing to use no over.
+        if not clone or not staging_area:  # pragma: no cover
+            return
+
+        if clone == self._latest:
+            self._widget._min_width = self._adjusted_width(clone)
+            self._widget._min_height = clone.ActualSize.Y
             self._widget.rehint()
 
             self._latest = None
 
-        staging_area.remove(duplicate)
+        staging_area.remove(clone)
 
-    def _adjusted_width(self, duplicate):
+    def _adjusted_width(self, clone):
         # FIXME: The staging method doesn't calculate a large enough width for italic
         # and oblique font styles. Add 0.25em for each of these.
-        if duplicate.FontStyle in {FontStyle.Oblique, FontStyle.Italic}:
-            font_size = duplicate.FontSize
-            return duplicate.ActualSize.X + round(font_size * 96 / 72 / 4, 0)
+        if clone.FontStyle in {FontStyle.Oblique, FontStyle.Italic}:
+            font_size = clone.FontSize
+            return clone.ActualSize.X + round(font_size * 96 / 72 / 4, 0)
 
-        return duplicate.ActualSize.X
+        return clone.ActualSize.X
