@@ -334,7 +334,7 @@ class AppProbe(BaseProbe):
     def has_status_icon(self, status_icon):
         return isinstance(status_icon._impl.native_window, Window)
 
-    async def _click_status_icon(self, status_icon):
+    async def _get_status_icon_midpoint(self, status_icon) -> tuple[int, int]:
         # `Winkey + B` then `Enter` opens the notification icon overflow tray.
         await self._send_key(VK_RWIN, up=False)
         await self._send_key(VK_B)
@@ -367,9 +367,7 @@ class AppProbe(BaseProbe):
                 break
             midpoint = new_midpoint
 
-        await self._send_click(*midpoint)
-
-        print(f"StatusIcon - midpoint after click = {get_midpoint()}")
+        return midpoint
 
     def _get_status_menu_items(self, status_icon):
         native_menu = getattr(status_icon._impl, "native_menu", None)
@@ -400,7 +398,12 @@ class AppProbe(BaseProbe):
     async def activate_status_icon_button(self, item_id):
         # Click on the status icon.
         status_icon = self.app.status_icons[item_id]
-        await self._click_status_icon(status_icon)
+
+        midpoint = await self._get_status_icon_midpoint(status_icon)
+        await self._keyboard_escape()
+
+        midpoint = await self._get_status_icon_midpoint(status_icon)
+        await self._send_click(*midpoint)
 
         # Close the overflow tray
         await self._keyboard_escape()
@@ -408,7 +411,8 @@ class AppProbe(BaseProbe):
     async def activate_status_menu_item(self, item_id, title):
         # Click on the status icon.
         status_icon = self.app.status_icons[item_id]
-        await self._click_status_icon(status_icon)
+        midpoint = await self._get_status_icon_midpoint(status_icon)
+        await self._send_click(*midpoint)
 
         items = self._get_status_menu_items(status_icon)
         index = self.status_menu_items(status_icon).index(title)
