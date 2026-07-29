@@ -142,7 +142,7 @@ plugins:
       default_handler: python
       handlers:
         python:
-          paths: [android/src, core/src]
+          paths: [android/src, cocoa/src, core/src]
           inventories:
             - https://docs.python.org/3/objects.inv
             - https://pillow.readthedocs.io/en/stable/objects.inv

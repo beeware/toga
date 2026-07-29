@@ -347,8 +347,7 @@ class App:
         self._main_window = App._UNDEFINED
         self._windows = WindowSet(self)
 
-        # Create the implementation. This will trigger any startup logic.
-        self.factory.App(interface=self)
+        self._impl = self.create()
 
     ######################################################################
     # App properties
@@ -438,6 +437,16 @@ class App:
     ######################################################################
     # App lifecycle
     ######################################################################
+
+    def create(self) -> Any:
+        """Create the implementation instance for this app.
+
+        Override this method on your app if you wish to install a customized
+        implementation class for this app.
+
+        :returns: A platform-specific implementation instance."""
+        # Create the implementation. This will trigger any startup logic.
+        return self.factory.App(interface=self)
 
     def request_exit(self):
         """Request an exit from the application.
