@@ -104,6 +104,19 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                         print(
                             "Incomplete test coverage is expected on Textual (for now!)"
                         )
+                    elif (
+                        toga.backend == "toga_winui3"
+                        and platform.machine() == "ARM64"
+                        and running_in_ci
+                    ):
+                        # GitHub Windows ARM64 runners don't seem to be able to accept
+                        # input focus. So some tests are skipped and incomplete coverage
+                        # is expected. See
+                        # https://github.com/actions/partner-runner-images/issues/174
+                        print(
+                            "Incomplete test coverage is expected on WinUI 3 with the"
+                            + " ARM64 CI (for now!)"
+                        )
                     else:
                         print("Test coverage is incomplete")
                         app.returncode = 1
