@@ -92,11 +92,13 @@ class AppDelegate(NSObject):
 
     @objc_method
     def applicationShouldTerminate_(self, sender) -> int:
-        return self.impl.cocoa_applicationShouldTerminate(sender)
+        # Marked as no-cover because we can't exercise this in the testbed
+        return self.impl.cocoa_applicationShouldTerminate(sender)  # pragma: no cover
 
     @objc_method
     def applicationWillTerminate_(self, notification):
-        self.impl.cocoa_applicationWillTerminate(notification)
+        # Marked as no-cover because we can't exercise this in the testbed
+        self.impl.cocoa_applicationWillTerminate(notification)  # pragma: no cover
 
     @objc_method
     def applicationSupportsSecureRestorableState_(self, app) -> bool:
@@ -485,7 +487,7 @@ class App:
             `toga_cocoa.libs.NSTerminateCancel`, or
             `toga_cocoa.libs.NSTerminateLater`).
         """
-        return NSTerminateNow
+        return NSTerminateNow  # pragma: no cover
 
     def cocoa_applicationWillTerminate(self, notification):
         """Invoked when `applicationWillTerminate:` is called on the app
