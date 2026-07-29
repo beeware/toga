@@ -358,7 +358,7 @@ class AppProbe(BaseProbe):
         # moving.
         midpoint = get_midpoint()
         for _ in range(10):
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.05)
 
             new_midpoint = get_midpoint()
             print(f"StatusIcon - old_midpoint={midpoint}")
@@ -399,6 +399,9 @@ class AppProbe(BaseProbe):
         # Click on the status icon.
         status_icon = self.app.status_icons[item_id]
 
+        # There is an issue on the x86_64 CI runner where the method used here to open
+        # the system tray overflow menu doesn't work properly the first time. So, open
+        # it twice.
         midpoint = await self._get_status_icon_midpoint(status_icon)
         await self._keyboard_escape()
 

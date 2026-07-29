@@ -547,11 +547,7 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
         if app_probe.supports_current_window_assignment:
             assert app.current_window == main_window
 
-        visibility = main_window._impl.native.Visible
-        print(f"pre-hide main_window._impl.native.Visible={visibility}")
         main_window.hide()
-        visibility = main_window._impl.native.Visible
-        print(f"post-hide main_window._impl.native.Visible={visibility}")
         await main_window_probe.wait_for_window("Hiding main window")
         assert app.current_window is None
 
