@@ -356,16 +356,20 @@ class AppProbe(BaseProbe):
 
         # Make sure the overflow tray is fully open by tracking when the midpoint stops
         # moving.
-        mid_point = get_midpoint()
+        midpoint = get_midpoint()
         for _ in range(10):
             await asyncio.sleep(0.05)
 
-            new_mid_point = get_midpoint()
-            if mid_point == new_mid_point:
+            new_midpoint = get_midpoint()
+            print(f"StatusIcon - old_midpoint={midpoint}")
+            print(f"StatusIcon - new_midpoint={new_midpoint}")
+            if midpoint == new_midpoint:
                 break
-            mid_point = new_mid_point
+            midpoint = new_midpoint
 
-        await self._send_click(*mid_point)
+        await self._send_click(*midpoint)
+
+        print(f"StatusIcon - midpoint after click = {get_midpoint()}")
 
     def _get_status_menu_items(self, status_icon):
         native_menu = getattr(status_icon._impl, "native_menu", None)
@@ -398,6 +402,7 @@ class AppProbe(BaseProbe):
         status_icon = self.app.status_icons[item_id]
         await self._click_status_icon(status_icon)
 
+        # Close the overflow tray
         await self._keyboard_escape()
 
     async def activate_status_menu_item(self, item_id, title):
@@ -417,4 +422,5 @@ class AppProbe(BaseProbe):
 
         await self._keyboard_select()
 
+        # Close the overflow tray
         await self._keyboard_escape()
