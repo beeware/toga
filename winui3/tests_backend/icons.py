@@ -30,19 +30,19 @@ class IconProbe(BaseProbe):
         self.icon = icon
 
         # The WinUI 3 ImageIcon won't load until it has been added to the visual tree.
-        self.container_children = app.main_window._impl.container.native.Children
+        self.container_native = app.main_window._impl.container.native
         self.button = Button()
         image_icon = self.icon._impl.image_icon()
         self.button.Content = image_icon
-        self.container_children.Append(self.button)
+        self.container_native.Children.Append(self.button)
 
         assert isinstance(image_icon, ImageIcon)
         assert isinstance(self.icon._impl.id, IconId)
 
     def __del__(self):
         index = UInt32()
-        self.container_children.IndexOf(self.button, byref(index))
-        self.container_children.RemoveAt(index)
+        self.container_native.Children.IndexOf(self.button, byref(index))
+        self.container_native.Children.RemoveAt(index)
 
     async def _assert_source(self, path: Path):
         assert self.icon._impl.path == path
