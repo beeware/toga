@@ -4,6 +4,8 @@ from pathlib import Path
 import pytest
 from textual.app import App as TextualApp
 
+import toga
+
 from .probe import BaseProbe
 
 APP_ID = "org.beeware.toga.testbed-textual"
@@ -20,6 +22,13 @@ class AppProbe(BaseProbe):
     edit_menu_noop_enabled = False
     supports_psutil = True
     beep_delay = 0.1
+
+    @classmethod
+    def test_context(cls):
+        """Establish the context required to safely run test code on the app's event
+        loop.
+        """
+        return toga.App.app._impl.native._context()
 
     def __init__(self, app):
         super().__init__()

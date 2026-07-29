@@ -4,7 +4,6 @@ import sys
 import threading
 
 import System.Windows.Forms as WinForms
-from Microsoft.Win32 import SystemEvents
 from System import Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
@@ -79,18 +78,6 @@ class App:
         self.app_context = WinForms.ApplicationContext()
         self.app_dispatcher = Dispatcher.CurrentDispatcher
 
-        # We would prefer to detect DPI changes directly, using the DpiChanged,
-        # DpiChangedBeforeParent or DpiChangedAfterParent events on the window. But none
-        # of these events ever fire, possibly because we're missing some app metadata
-        # (https://github.com/beeware/toga/pull/2155#issuecomment-2460374101). So
-        # instead we need to listen to all events which could cause a DPI change:
-        #   * DisplaySettingsChanged
-        #   * Form.LocationChanged and Form.Resize, since a window's DPI is determined
-        #     by which screen most of its area is on.
-        SystemEvents.DisplaySettingsChanged += WeakrefCallable(
-            self.winforms_DisplaySettingsChanged
-        )
-
         # Ensure that TLS1.2 and TLS1.3 are enabled for HTTPS connections.
         # For some reason, some Windows installs have these protocols
         # turned off by default. SSL3, TLS1.0 and TLS1.1 are *not* enabled
@@ -113,19 +100,6 @@ class App:
 
         # Populate the main window as soon as the event loop is running.
         self.loop.call_soon_threadsafe(self.interface._startup)
-
-    ######################################################################
-    # Native event handlers
-    ######################################################################
-
-    def winforms_DisplaySettingsChanged(self, sender, event):
-        # This event is NOT called on the UI thread, so it's not safe for it to access
-        # the UI directly.
-        self.interface.loop.call_soon_threadsafe(self.update_dpi)
-
-    def update_dpi(self):
-        for window in self.interface.windows:
-            window._impl.update_dpi()
 
     ######################################################################
     # Commands and menus

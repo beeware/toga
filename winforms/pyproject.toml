@@ -118,6 +118,7 @@ dependencies = [
     "pythonnet >= 3.0.0",
     "toga-core == {version}",
     "pillow >= 10.0.0",
+    "dotnet-WebView2.WinForms >= 1.0.4078.44",
 ]
 
 [tool.coverage.run]

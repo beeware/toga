@@ -6,7 +6,7 @@ The Toga backend for Windows is [`toga-winforms`](https://github.com/beeware/tog
 
 ## Prerequisites { #windows-prerequisites }
 
-`toga-winforms` requires Python 3.10+, and Windows 10 or newer.
+`toga-winforms` requires Windows 10 (Version 1703, build 15063) or newer.
 
 Toga requires the use of either .NET Framework 4.x, or .NET Core 10.
 
