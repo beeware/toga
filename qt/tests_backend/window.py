@@ -41,7 +41,7 @@ class WindowProbe(BaseProbe):
             self.supports_unminimize = False
             self.supports_minimize = False
 
-    async def wait_for_window(self, message, state=None, is_activated=None):
+    async def wait_for_window(self, message, state=None):
         # 0.15 seconds to allow window size operations to propagate
         # events.
         await self.redraw(message, 0.15)

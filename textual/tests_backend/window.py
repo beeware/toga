@@ -26,7 +26,7 @@ class WindowProbe(BaseProbe):
         self.native = window._impl.native
         assert isinstance(self.native, TextualScreen)
 
-    async def wait_for_window(self, message, state=None, is_activated=None):
+    async def wait_for_window(self, message, state=None):
         await self.redraw(message)
         if state:
             assert self.instantaneous_state == state

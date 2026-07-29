@@ -21,7 +21,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.window = window
         self.impl = self.window._impl
 
-    async def wait_for_window(self, message, state=None, is_activated=None):
+    async def wait_for_window(self, message, state=None):
         await self.redraw(message, delay=0.1)
         if state:
             timeout = 5

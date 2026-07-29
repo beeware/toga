@@ -39,7 +39,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         super().__init__(window._impl.native)
         assert isinstance(self.native, Form)
 
-    async def wait_for_window(self, message, state=None, is_activated=None):
+    async def wait_for_window(self, message, state=None):
         await self.redraw(message)
 
         if state:
