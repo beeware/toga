@@ -36,7 +36,6 @@ from win32more.Windows.Win32.UI.WindowsAndMessaging import (
     MF_GRAYED,
     SC_CLOSE,
     EnableMenuItem,
-    GetForegroundWindow,
     GetSystemMenu,
 )
 
@@ -57,6 +56,8 @@ if TYPE_CHECKING:  # pragma: no cover
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
+
+        self.is_activated = False
         self.create()
 
         # From a native WinUI 3 point of view, presentation mode is indistinguishable
@@ -140,8 +141,10 @@ class Window:
         """Event that fires when the window is activated or deactivated."""
         # learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.window.activated # noqa: E501
         if args.WindowActivationState == WindowActivationState.Deactivated:
+            self.is_activated = False
             self.interface.on_lose_focus()
         else:
+            self.is_activated = True
             self.interface.on_gain_focus()
 
     def native_event_changed(self, sender, args):
@@ -368,7 +371,7 @@ class Window:
         )
 
     ####################################################################################
-    # Window visibility and focus
+    # Window visibility.
     ####################################################################################
 
     def get_visible(self) -> bool:
@@ -379,10 +382,6 @@ class Window:
         """Hides but does not destroy the window."""
         self._visible = False
         self.native.AppWindow.Hide()
-
-    @property
-    def is_activated(self):
-        return self._hwnd == GetForegroundWindow()
 
     ####################################################################################
     # Window state.
