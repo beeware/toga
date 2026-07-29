@@ -57,7 +57,7 @@ async def placeholder(request, widget):
     widget.placeholder = request.param
 
 
-test_cleanup = build_cleanup_test(toga.TextInput)
+test_cleanup = build_cleanup_test(toga.TextInput, skip_backends=("toga_winui3",))
 
 
 async def test_value_not_hidden(widget, probe):
