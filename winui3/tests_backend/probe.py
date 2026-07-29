@@ -136,6 +136,9 @@ class BaseProbe:
 
         await asyncio.sleep(0.05)
 
+        # DEBUG ARM64
+        await asyncio.sleep(1)
+
     async def _send_key(self, key_code, down=True, up=True):
         key_input = INPUT()
         key_input.type = INPUT_KEYBOARD
@@ -150,6 +153,9 @@ class BaseProbe:
             self._send_input(key_input)
 
         await asyncio.sleep(0.1)
+
+        # DEBUG ARM64
+        await asyncio.sleep(1)
 
     async def _keyboard_select(self):
         await self._send_key(VK_RETURN)
