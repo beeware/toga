@@ -48,7 +48,7 @@ class WindowProbe(BaseProbe):
         state=None,
     ):
         # A small delay to allow the window to resize.
-        await self.redraw(message, delay=0.1)
+        await self.redraw(message, delay=0.15)
 
         if state:
             timeout = 5
