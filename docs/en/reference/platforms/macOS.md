@@ -32,25 +32,35 @@ The native APIs are accessed using [Rubicon Objective-C](https://rubicon-objc.re
 
 ### App lifecycle hooks
 
-macOS notifies an app of lifecycle events (app launch, activation, hiding, termination, etc.) by calling methods on an `NSApplicationDelegate` instance. Toga's implementation of this delegate hands off every lifecycle notification it receives to a same-named method on `toga_cocoa`'s `App` implementation class, prefixed with `cocoa_`. For example, the `applicationDidBecomeActive:` notification is handled by `cocoa_applicationDidBecomeActive()`.
+macOS notifies an app of lifecycle events (app launch, activation, hiding, termination, etc.) by calling methods on an `NSApplicationDelegate` instance. Toga's implementation of this delegate hands off every lifecycle notification it receives to a same-named method on the Cocoa `App` implementation class, prefixed with `cocoa_`. For example, the `applicationDidBecomeActive:` notification is handled by `cocoa_applicationDidBecomeActive()` on the Cocoa App class.
 
-In the absence of a cross-platform API for these events, an app can hook into a lifecycle event by replacing the corresponding `cocoa_` method on `toga_cocoa`'s `App` class. Any method that isn't required for Toga's own cross-platform behavior does nothing by default, so it is always safe to override.
+An app can hook into a lifecycle event by defining a custom subclass of a platform's App implementation class:
 
 ```python
 import sys
 
 if sys.platform == "darwin":
-    from toga_cocoa.app import App as NativeApp
+    from toga_cocoa.app import App as CocoaApp
 
-    def my_did_become_active(self, notification):
-        # ... custom logic before base class implementation ...
-        NativeApp.cocoa_applicationDidBecomeActive(self, notification)
-        # ... custom logic after base class implementation ...
-
-    NativeApp.cocoa_applicationDidBecomeActive = my_did_become_active
+    class MyCocoaApp(CocoaApp):
+        def cocoa_applicationDidBecomeActive(self, notification):
+            # ... custom logic before default Toga implementation ...
+            super().cocoa_applicationDidBecomeActive(notification)
+            # ... custom logic after default Toga implementation ...
 ```
 
-The override is applied to the `App` **class**, not to a specific app instance. This matters because of how Python binds methods: a plain function assigned directly to an instance attribute (e.g. `self._impl.cocoa_applicationDidBecomeActive = my_did_become_active`) is *not* bound as a method, so it would be called without `self`, and a function defined with a `self` parameter would raise a `TypeError`. Assigning to the class instead lets Python's normal method resolution bind `self` correctly. Since a Toga app only ever has one instance of its native app class, overriding at the class level has the same practical effect as overriding "for this app".
+You can then direct your app to use this custom class by overriding the [`create()`][toga.App.create] method on your app to construct and return an instance of your custom App class when running on macOS:
+
+```python
+class MyApp(toga.App):
+    def create(self):
+        if sys.platform == "darwin":
+            return MyCocoaApp(interface=self)
+        else:
+            return super().create()
+
+    def startup(self): ...
+```
 
 Each hook receives the same arguments as the underlying `NSApplicationDelegate` method (usually an `NSNotification` instance). `cocoa_applicationWillHide()`, `cocoa_applicationDidUnhide()` and `cocoa_applicationDidFinishLaunching()` already implement behavior required by Toga's cross-platform API (e.g. triggering `on_hide`/`on_show` on windows); if you override one of these, call the base implementation to preserve that behavior, as shown in the example above.
 

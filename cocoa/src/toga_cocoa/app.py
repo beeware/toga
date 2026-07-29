@@ -43,19 +43,9 @@ class AppDelegate(NSObject):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
-    # ------------------------------------------------------------------
+    ######################################################################
     # App lifecycle
-    #
-    # These methods are thin wrappers that hand off to a same-named
-    # ``cocoa_``-prefixed method on the Cocoa App implementation class.
-    # This allows a user to override the platform-specific behavior of a
-    # lifecycle event, in the absence of a cross-platform API for the
-    # event, by replacing the ``cocoa_`` method on the ``toga_cocoa.App``
-    # *class* (not a specific app instance) with their own implementation.
-    # See the "Platform-specific APIs" section of the macOS docs for
-    # details, including why the override must be applied at the class
-    # level for normal Python method binding to work.
-    # ------------------------------------------------------------------
+    ######################################################################
     @objc_method
     def applicationWillFinishLaunching_(self, notification):
         self.impl.cocoa_applicationWillFinishLaunching(notification)
@@ -345,158 +335,6 @@ class App:
     def exit(self):  # pragma: no cover
         self.loop.stop()
 
-    ######################################################################
-    # Platform-specific app lifecycle hooks
-    #
-    # These methods back the AppDelegate's handling of native app lifecycle
-    # notifications. In the absence of a cross-platform API for these
-    # events, they exist as override points for app authors who need to
-    # react to a native lifecycle event; a method can be replaced by
-    # assigning a new function to the *class* (e.g.
-    # ``App.cocoa_applicationDidBecomeActive = my_function``). Assigning
-    # directly to an app's ``_impl`` instance instead won't bind ``self``,
-    # so the replacement callable would need to be created with that in
-    # mind (e.g., via ``types.MethodType``, or a function that doesn't
-    # take ``self``). See the "Platform-specific APIs" section of the
-    # macOS docs for usage details.
-    ######################################################################
-
-    def cocoa_applicationWillFinishLaunching(self, notification):
-        """Invoked when ``applicationWillFinishLaunching:`` is called on the app
-        delegate, before the app has finished launching.
-
-        This is a no-op by default.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-
-    def cocoa_applicationDidFinishLaunching(self, notification):
-        """Invoked when ``applicationDidFinishLaunching:`` is called on the app
-        delegate, once the app has finished launching.
-
-        By default, this brings the app to the foreground.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-        self.native.activateIgnoringOtherApps(True)
-
-    def cocoa_applicationWillBecomeActive(self, notification):
-        """Invoked when ``applicationWillBecomeActive:`` is called on the app
-        delegate, before the app becomes the active app.
-
-        This is a no-op by default.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-
-    def cocoa_applicationDidBecomeActive(self, notification):
-        """Invoked when ``applicationDidBecomeActive:`` is called on the app
-        delegate, once the app has become the active app.
-
-        This is a no-op by default.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-
-    def cocoa_applicationWillResignActive(self, notification):
-        """Invoked when ``applicationWillResignActive:`` is called on the app
-        delegate, before the app stops being the active app.
-
-        This is a no-op by default.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-
-    def cocoa_applicationDidResignActive(self, notification):
-        """Invoked when ``applicationDidResignActive:`` is called on the app
-        delegate, once the app has stopped being the active app.
-
-        This is a no-op by default.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-
-    def cocoa_applicationWillHide(self, notification):
-        """Invoked when ``applicationWillHide:`` is called on the app delegate,
-        before the app is hidden.
-
-        By default, this triggers ``on_hide`` on every window that is
-        currently visible to the user.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-        for window in self.interface.windows:
-            # on_hide() is triggered only on windows which are in
-            # visible-to-user (i.e., not in minimized or hidden).
-            if window.visible and window.state != WindowState.MINIMIZED:
-                window.on_hide()
-
-    def cocoa_applicationDidHide(self, notification):
-        """Invoked when ``applicationDidHide:`` is called on the app delegate,
-        once the app has been hidden.
-
-        This is a no-op by default.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-
-    def cocoa_applicationWillUnhide(self, notification):
-        """Invoked when ``applicationWillUnhide:`` is called on the app delegate,
-        before the app is unhidden.
-
-        This is a no-op by default.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-
-    def cocoa_applicationDidUnhide(self, notification):
-        """Invoked when ``applicationDidUnhide:`` is called on the app delegate,
-        once the app has been unhidden.
-
-        By default, this triggers ``on_show`` on every window that is
-        currently visible to the user.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-        for window in self.interface.windows:
-            # on_show() is triggered only on windows which are in
-            # visible-to-user (i.e., not in minimized or hidden).
-            if window.visible and window.state != WindowState.MINIMIZED:
-                window.on_show()
-
-    def cocoa_applicationDidChangeScreenParameters(self, notification):
-        """Invoked when ``applicationDidChangeScreenParameters:`` is called on
-        the app delegate, when the screen configuration (e.g. resolution, or
-        the set of connected screens) changes.
-
-        This is a no-op by default.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-
-    def cocoa_applicationShouldTerminate(self, sender) -> int:
-        """Invoked when ``applicationShouldTerminate:`` is called on the app
-        delegate, to determine whether the app is allowed to terminate.
-
-        By default, this allows termination to proceed immediately.
-
-        :param sender: The ``NSApplication`` instance that sent the message.
-        :returns: An ``NSApplicationTerminateReply`` value (e.g.
-            ``toga_cocoa.libs.NSTerminateNow``,
-            ``toga_cocoa.libs.NSTerminateCancel``, or
-            ``toga_cocoa.libs.NSTerminateLater``).
-        """
-        return NSTerminateNow
-
-    def cocoa_applicationWillTerminate(self, notification):
-        """Invoked when ``applicationWillTerminate:`` is called on the app
-        delegate, immediately before the app terminates.
-
-        This is a no-op by default.
-
-        :param notification: The ``NSNotification`` provided by macOS.
-        """
-
     def main_loop(self):
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
@@ -517,6 +355,146 @@ class App:
         # We can't run CI on earlier versions, so this is no-branch.
         if Version(platform.mac_ver()[0]) >= Version("14.0"):  # pragma: no branch
             self.native.activate()
+
+    ######################################################################
+    # Platform-specific app lifecycle hooks
+    ######################################################################
+
+    def cocoa_applicationWillFinishLaunching(self, notification):
+        """Invoked when `applicationWillFinishLaunching:` is called on the app
+        delegate, before the app has finished launching.
+
+        This is a no-op by default.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+
+    def cocoa_applicationDidFinishLaunching(self, notification):
+        """Invoked when `applicationDidFinishLaunching:` is called on the app
+        delegate, once the app has finished launching.
+
+        By default, this brings the app to the foreground.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+        self.native.activateIgnoringOtherApps(True)
+
+    def cocoa_applicationWillBecomeActive(self, notification):
+        """Invoked when `applicationWillBecomeActive:` is called on the app
+        delegate, before the app becomes the active app.
+
+        This is a no-op by default.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+
+    def cocoa_applicationDidBecomeActive(self, notification):
+        """Invoked when `applicationDidBecomeActive:` is called on the app
+        delegate, once the app has become the active app.
+
+        This is a no-op by default.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+
+    def cocoa_applicationWillResignActive(self, notification):
+        """Invoked when `applicationWillResignActive:` is called on the app
+        delegate, before the app stops being the active app.
+
+        This is a no-op by default.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+
+    def cocoa_applicationDidResignActive(self, notification):
+        """Invoked when `applicationDidResignActive:` is called on the app
+        delegate, once the app has stopped being the active app.
+
+        This is a no-op by default.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+
+    def cocoa_applicationWillHide(self, notification):
+        """Invoked when `applicationWillHide:` is called on the app delegate,
+        before the app is hidden.
+
+        By default, this triggers `on_hide` on every window that is
+        currently visible to the user.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+        for window in self.interface.windows:
+            # on_hide() is triggered only on windows which are in
+            # visible-to-user (i.e., not in minimized or hidden).
+            if window.visible and window.state != WindowState.MINIMIZED:
+                window.on_hide()
+
+    def cocoa_applicationDidHide(self, notification):
+        """Invoked when `applicationDidHide:` is called on the app delegate,
+        once the app has been hidden.
+
+        This is a no-op by default.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+
+    def cocoa_applicationWillUnhide(self, notification):
+        """Invoked when `applicationWillUnhide:` is called on the app delegate,
+        before the app is unhidden.
+
+        This is a no-op by default.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+
+    def cocoa_applicationDidUnhide(self, notification):
+        """Invoked when `applicationDidUnhide:` is called on the app delegate,
+        once the app has been unhidden.
+
+        By default, this triggers `on_show` on every window that is
+        currently visible to the user.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+        for window in self.interface.windows:
+            # on_show() is triggered only on windows which are in
+            # visible-to-user (i.e., not in minimized or hidden).
+            if window.visible and window.state != WindowState.MINIMIZED:
+                window.on_show()
+
+    def cocoa_applicationDidChangeScreenParameters(self, notification):
+        """Invoked when `applicationDidChangeScreenParameters:` is called on
+        the app delegate, when the screen configuration (e.g. resolution, or
+        the set of connected screens) changes.
+
+        This is a no-op by default.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
+
+    def cocoa_applicationShouldTerminate(self, sender) -> int:
+        """Invoked when `applicationShouldTerminate:` is called on the app
+        delegate, to determine whether the app is allowed to terminate.
+
+        By default, this allows termination to proceed immediately.
+
+        :param sender: The `NSApplication` instance that sent the message.
+        :returns: An `NSApplicationTerminateReply` value (e.g.
+            `toga_cocoa.libs.NSTerminateNow`,
+            `toga_cocoa.libs.NSTerminateCancel`, or
+            `toga_cocoa.libs.NSTerminateLater`).
+        """
+        return NSTerminateNow
+
+    def cocoa_applicationWillTerminate(self, notification):
+        """Invoked when `applicationWillTerminate:` is called on the app
+        delegate, immediately before the app terminates.
+
+        This is a no-op by default.
+
+        :param notification: The `NSNotification` provided by macOS.
+        """
 
     ######################################################################
     # App resources
