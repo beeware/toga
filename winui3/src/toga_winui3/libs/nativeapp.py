@@ -45,15 +45,6 @@ from .nativeevents import events_handled
 
 
 class NativeApp(XamlApplication):
-    def __init__(self):
-        super().__init__()
-        self.UnhandledException += self.native_event_unhandled_exception
-
-    def native_event_unhandled_exception(self, sender, args):
-        message = args.Message
-        code = args.Exception
-        raise OSError(code, message)
-
     def CreateWindow(self):
         return events_handled(Window)
 
