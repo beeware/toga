@@ -42,15 +42,11 @@ class WindowProbe(BaseProbe):
     def _hwnd(self):
         return GetWindowFromWindowId(self.impl.native.AppWindow.Id)
 
-    async def wait_for_window(
-        self,
-        message,
-        state=None,
-    ):
+    async def wait_for_window(self, message, state=None, is_activated=None):
         # A small delay to allow the window to resize.
         await self.redraw(message, delay=0.1)
 
-        if state:
+        if state or is_activated:
             timeout = 5
             polling_interval = 0.1
             exception = None
@@ -58,7 +54,10 @@ class WindowProbe(BaseProbe):
             start_time = loop.time()
             while (loop.time() - start_time) < timeout:
                 try:
-                    assert self.instantaneous_state == state
+                    if state:
+                        assert self.instantaneous_state == state
+                    if is_activated:
+                        assert self.impl.is_activated == is_activated
                     return
                 except AssertionError as e:
                     exception = e

@@ -548,11 +548,17 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
             assert app.current_window == main_window
 
         main_window.hide()
-        await main_window_probe.wait_for_window("Hiding main window")
+        await main_window_probe.wait_for_window(
+            "Hiding main window",
+            is_activated=False,
+        )
         assert app.current_window is None
 
         main_window.show()
-        await main_window_probe.wait_for_window("Showing main window")
+        await main_window_probe.wait_for_window(
+            "Showing main window",
+            is_activated=True,
+        )
         assert app.current_window == main_window
     finally:
         main_window.show()

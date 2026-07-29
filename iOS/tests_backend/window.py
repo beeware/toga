@@ -53,7 +53,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
         return _state_assertion
 
-    async def wait_for_window(self, message, state=None):
+    async def wait_for_window(self, message, state=None, is_activated=None):
         await self.redraw(message)
 
         # There may be some internal rendering delays that mean the container's content
