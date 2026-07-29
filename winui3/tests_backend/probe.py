@@ -1,7 +1,9 @@
 import asyncio
+import os
+import platform
 from ctypes import byref, sizeof
 
-from pytest import approx
+from pytest import approx, skip
 from win32more.Windows.Win32.Foundation import POINT
 from win32more.Windows.Win32.UI.Input.KeyboardAndMouse import (
     INPUT,
@@ -108,6 +110,11 @@ class BaseProbe:
             SetCursorPos(x, y)
 
     def _send_input(self, input):
+        # On GitHub Actions, Windows ARM64 runners don't seem to support SendInput.
+        # See https://github.com/actions/partner-runner-images/issues/174
+        if platform.machine() == "ARM64" and os.environ["RUNNING_IN_CI"] == "true":
+            skip("SendInput not supported.")
+
         return_value = SendInput(1, input, sizeof(input))
         if return_value != 1:
             raise OSError("SendInput failed.")
@@ -136,9 +143,6 @@ class BaseProbe:
 
         await asyncio.sleep(0.05)
 
-        # DEBUG ARM64
-        await asyncio.sleep(1)
-
     async def _send_key(self, key_code, down=True, up=True):
         key_input = INPUT()
         key_input.type = INPUT_KEYBOARD
@@ -153,9 +157,6 @@ class BaseProbe:
             self._send_input(key_input)
 
         await asyncio.sleep(0.1)
-
-        # DEBUG ARM64
-        await asyncio.sleep(1)
 
     async def _keyboard_select(self):
         await self._send_key(VK_RETURN)
