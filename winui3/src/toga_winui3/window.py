@@ -36,6 +36,7 @@ from win32more.Windows.Win32.UI.WindowsAndMessaging import (
     MF_GRAYED,
     SC_CLOSE,
     EnableMenuItem,
+    GetForegroundWindow,
     GetSystemMenu,
 )
 
@@ -56,8 +57,6 @@ if TYPE_CHECKING:  # pragma: no cover
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
-
-        self.is_activated = False
         self.create()
 
         # From a native WinUI 3 point of view, presentation mode is indistinguishable
@@ -141,10 +140,8 @@ class Window:
         """Event that fires when the window is activated or deactivated."""
         # learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.window.activated # noqa: E501
         if args.WindowActivationState == WindowActivationState.Deactivated:
-            self.is_activated = False
             self.interface.on_lose_focus()
         else:
-            self.is_activated = True
             self.interface.on_gain_focus()
 
     def native_event_changed(self, sender, args):
@@ -371,7 +368,7 @@ class Window:
         )
 
     ####################################################################################
-    # Window visibility.
+    # Window visibility and focus
     ####################################################################################
 
     def get_visible(self) -> bool:
@@ -382,6 +379,10 @@ class Window:
         """Hides but does not destroy the window."""
         self._visible = False
         self.native.AppWindow.Hide()
+
+    @property
+    def is_activated(self):
+        return self._hwnd == GetForegroundWindow()
 
     ####################################################################################
     # Window state.
@@ -411,9 +412,8 @@ class Window:
         presenter, _ = self._presenter
 
         if presenter.Kind == AppWindowPresenterKind.FullScreen:
-            # Fullscreen here corresponds to Toga 'PRESENTATION' window state. From the
-            # Microsoft documentation: 'The window does not have a border or title bar,
-            # and hides the system task bar.'
+            # From the Microsoft documentation: 'The window does not have a border
+            # or title bar, and hides the system task bar.'
             # learn.microsoft.com/en-us/windows/apps/develop/ui/manage-app-windows
             if self._in_presentation_mode:
                 return WindowState.PRESENTATION
