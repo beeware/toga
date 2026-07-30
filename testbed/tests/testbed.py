@@ -61,6 +61,22 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         os.environ["RUNNING_IN_CI"] = "true" if running_in_ci else ""
 
+        # Make a mutable container for the error message.
+        native_error = [""]
+
+        if toga.backend == "toga_winui3":
+
+            def native_unhandled_exception(sender, args, native_error=native_error):
+                native_error += "=============WinUI 3 Unhandled Exception============\n"
+                native_error += f"Exception: {args.Exception}\n"
+                native_error += f"Message: {args.Message}\n"
+                native_error += "====================================================\n"
+
+            def add_callback(app=app, callback=native_unhandled_exception):
+                app._impl.native_instance.add_UnhandledException(callback)
+
+            app.loop.call_soon_threadsafe(add_callback)
+
         app.returncode = pytest.main(
             [
                 # Output formatting
@@ -128,6 +144,9 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                     print("Test coverage for Textual is unexpectedly complete!")
                     print("Can we remove the special case in the testbed?")
                     app.returncode = 1
+
+        if toga.backend == "toga_winui3" and native_error[0] != "":
+            print(native_error[0])
 
     except BaseException:
         traceback.print_exc()
