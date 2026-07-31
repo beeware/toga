@@ -31,7 +31,16 @@ class Constraints:
     # Deletion isn't an event we can programmatically invoke; deletion
     # of constraints can take several iterations before it occurs.
     def __del__(self):  # pragma: nocover
-        self._remove_constraints()
+        # If this gets called on the test thread hilarity ensues.
+        # With the addition of the Scaffold layer, collection of this object
+        # on the test thread seems a lot more common for some reason, so this
+        # makes things more reliable.
+        try:
+            self.widget.interface.app.loop.call_soon_threadsafe(
+                self._remove_constraints
+            )
+        except Exception:
+            pass
 
     def _remove_constraints(self):
         if self.container:

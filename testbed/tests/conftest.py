@@ -158,6 +158,11 @@ async def main_window_probe(app, main_window):
     main_window.content = old_content
 
 
+@fixture
+async def scaffold_probe(main_window_probe):
+    yield main_window_probe.scaffold_probe
+
+
 def pytest_asyncio_loop_factories(config, item):
     return {
         "proxy": ProxyEventLoop,

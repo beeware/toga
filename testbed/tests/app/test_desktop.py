@@ -259,10 +259,11 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         window_information = {}
         window_information["window"] = window
         window_information["window_probe"] = window_probe(app, window)
+        window_information["scaffold_probe"] = window_probe(app, window).scaffold_probe
         window_information["initial_screen"] = window_information["window"].screen
         window_information["paired_screen"] = app.screens[i]
         window_information["initial_content_size"] = window_information[
-            "window_probe"
+            "scaffold_probe"
         ].content_size
         window_information["widget_probe"] = get_probe(window_widget)
         window_information["initial_widget_size"] = (
@@ -292,10 +293,10 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         ), f"{window_information['window'].title}:"
         # 1000x700 is bigger than the original window size,
         # while being smaller than any likely screen.
-        assert window_information["window_probe"].content_size[0] > 1000, (
+        assert window_information["scaffold_probe"].content_size[0] > 1000, (
             f"{window_information['window'].title}:"
         )
-        assert window_information["window_probe"].content_size[1] > 700, (
+        assert window_information["scaffold_probe"].content_size[1] > 700, (
             f"{window_information['window'].title}:"
         )
         assert (
@@ -324,7 +325,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             window_information["window_probe"].instantaneous_state == WindowState.NORMAL
         ), f"{window_information['window'].title}:"
         assert (
-            window_information["window_probe"].content_size
+            window_information["scaffold_probe"].content_size
             == window_information["initial_content_size"]
         ), f"{window_information['window'].title}:"
         assert (

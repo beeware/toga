@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from unittest.mock import Mock
 
 import pytest
+from tests_backend.probe import BaseProbe
 
 import toga
 from toga.style.pack import TOP
@@ -147,6 +148,10 @@ def build_cleanup_test(
         if ref():
             print(gc.get_referrers(ref()))
 
+        # Sometimes async things are used to make sure cleanup is called from
+        # UI thread, so... wait_for is needed.
+        probe = BaseProbe()
+        await probe.redraw(delay=2, wait_for=lambda: ref() is None)
         assert ref() is None
 
     return test_cleanup
