@@ -72,7 +72,9 @@ class Scaffold:
     def on_native_layout(self, container):
         # If the navigation bar is hidden, then we must query for the size
         # of the status bar to use as our inset.
-        if self.navigation_bar_hidden:
+        # The testbed will not instantiate a simple app so no-cover the first
+        # branch
+        if self.navigation_bar_hidden:  # pragma: no cover
             # When status bar heights change, a relayout of the window will
             # be triggered by the native layer, which is how we can catch this
             # and use this value correctly here.
