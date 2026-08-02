@@ -110,6 +110,7 @@ def main_window(app):
 @fixture(autouse=True)
 async def window_cleanup(app, app_probe, main_window, main_window_probe):
     original_size = main_window.size
+    original_title = main_window.title
 
     # Ensure that at the beginning of every test, all windows that aren't
     # the main window have been closed and deleted. This needs to be done in
@@ -141,6 +142,7 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Reset the window state and size.
     main_window.state = WindowState.NORMAL
     main_window.size = original_size
+    main_window.title = original_title
 
 
 @fixture(scope="session")
