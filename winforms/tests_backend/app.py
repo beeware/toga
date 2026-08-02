@@ -1,6 +1,7 @@
 import _overlapped
 import asyncio
 import ctypes
+import os
 from pathlib import Path
 from time import sleep
 from unittest.mock import Mock
@@ -91,20 +92,28 @@ class AppProbe(BaseProbe, DialogsMixin):
         await self.assert_event_loop_scheduling(loop)
 
     @property
+    def _app_dir(self):
+        local_app_data = os.environ.get("LOCALAPPDATA")
+        base_dir = (
+            Path(local_app_data) if local_app_data else (Path.home() / "AppData/Local")
+        )
+        return base_dir / "Tiberius Yak/Toga Testbed"
+
+    @property
     def config_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Config"
+        return self._app_dir / "Config"
 
     @property
     def data_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Data"
+        return self._app_dir / "Data"
 
     @property
     def cache_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Cache"
+        return self._app_dir / "Cache"
 
     @property
     def logs_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Logs"
+        return self._app_dir / "Logs"
 
     @property
     def is_cursor_visible(self):

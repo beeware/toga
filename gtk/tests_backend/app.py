@@ -37,19 +37,31 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed"
+        return (
+            Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+            / "testbed"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed"
+        return (
+            Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
+            / "testbed"
+        )
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed"
+        return (
+            Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
+            / "testbed"
+        )
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed/log"
+        return (
+            Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
+            / "testbed/log"
+        )
 
     @property
     def is_cursor_visible(self):

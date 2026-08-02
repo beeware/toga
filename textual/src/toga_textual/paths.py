@@ -1,3 +1,4 @@
+import os
 import sys
 from functools import cached_property
 from pathlib import Path
@@ -33,7 +34,13 @@ elif sys.platform == "win32":
             # No coverage testing of this because we can't easily configure
             # the app to have no author.
             author = "Unknown" if App.app.author is None else App.app.author
-            return Path.home() / f"AppData/Local/{author}/{App.app.formal_name}"
+            local_app_data = os.environ.get("LOCALAPPDATA")
+            base_dir = (
+                Path(local_app_data)
+                if local_app_data
+                else (Path.home() / "AppData/Local")
+            )
+            return base_dir / author / App.app.formal_name
 
         # The rest are cached at the interface level:
 
@@ -56,13 +63,26 @@ else:
             self.interface = interface
 
         def get_config_path(self):
-            return Path.home() / f".config/{App.app.app_name}"
+            return (
+                Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+                / App.app.app_name
+            )
 
         def get_data_path(self):
-            return Path.home() / f".local/share/{App.app.app_name}"
+            return (
+                Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
+                / App.app.app_name
+            )
 
         def get_cache_path(self):
-            return Path.home() / f".cache/{App.app.app_name}"
+            return (
+                Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
+                / App.app.app_name
+            )
 
         def get_logs_path(self):
-            return Path.home() / f".local/state/{App.app.app_name}/log"
+            return (
+                Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
+                / App.app.app_name
+                / "log"
+            )
