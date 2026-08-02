@@ -46,7 +46,10 @@ class Window:
     ######################################################################
 
     def get_title(self):
-        return self._title
+        # This may seem a bit less performant than using self._title, but we do it
+        # so that it's possible to test in the testbed that the title is properly set
+        # (as scaffold.title is a direct native retrieval)
+        return str(self.scaffold.title)
 
     def set_title(self, title):
         self._title = title
