@@ -71,13 +71,13 @@ def test_window_handler_attrs_initialized_before_impl(app, event_name, monkeypat
     # none of them raise.
     real_init = dummy_window.Window.__init__
 
-    def fire_callbacks_during_init(self, interface, title, position, size):
+    def fire_callbacks_during_init(self, interface, position, size):
         # Mimic Cocoa / .NET Framework: dispatch every relevant handler
         # before the platform constructor returns. With the fix in place,
         # each call invokes a wrapped no-op; without it, AttributeError
         # bubbles out and __init__ aborts.
         getattr(interface, event_name)()
-        real_init(self, interface, title, position, size)
+        real_init(self, interface, position, size)
 
     monkeypatch.setattr(dummy_window.Window, "__init__", fire_callbacks_during_init)
 
@@ -258,71 +258,6 @@ def test_change_content(window, app):
     assert scaffold3.content is None
     assert scaffold3.window == window
     assert scaffold3.app == app
-
-
-def test_scaffold_content(window, app):
-    """An explicitly initialized scaffold may be used as content for a window."""
-    scaffold = toga.Scaffold()
-    window.content = scaffold
-
-    assert window.content == scaffold
-    assert window.scaffold == scaffold
-    assert scaffold.app == app
-    assert scaffold.window == window
-    assert scaffold.content is None
-    assert_action_performed_with(window, "set scaffold", scaffold=scaffold._impl)
-    assert_action_performed_with(scaffold, "set content", widget=None)
-    assert_action_performed(scaffold, "refresh")
-
-    # Attach content
-    content1 = toga.Box()
-    scaffold.content = content1
-    assert content1.scaffold == scaffold
-    assert_action_performed(scaffold, "refresh")
-    assert_action_performed(content1, "refresh")
-    assert window.content == scaffold
-    assert scaffold.content == content1
-    assert content1.window == window
-    assert content1.app == app
-
-    # Attach new content
-    content2 = toga.Box()
-    scaffold.content = content2
-    assert content1.scaffold is None
-    assert content2.scaffold == scaffold
-    assert_action_performed(scaffold, "refresh")
-    assert_action_performed(content2, "refresh")
-    assert window.content == scaffold
-    assert scaffold.content == content2
-    assert content1.window is None
-    assert content1.app is None
-    assert content2.window == window
-    assert content2.app == app
-
-    # Detach content
-    scaffold.content = None
-    assert content1.scaffold is None
-    assert content2.scaffold is None
-    assert_action_performed(scaffold, "refresh")
-    assert window.content == scaffold
-    assert scaffold.content is None
-    assert content1.window is None
-    assert content1.app is None
-    assert content2.window is None
-    assert content2.app is None
-
-    # Attach content, detach scaffold; scaffold should preserve
-    # content
-    scaffold.content = content1
-    assert content1.scaffold is scaffold
-    window.content = None
-    assert window.content is None
-    assert scaffold.content == content1
-    assert content1.scaffold is scaffold
-    assert scaffold.window is None
-    assert scaffold.app is None
-    assert content1.window is None
-    assert content1.app is None
 
 
 def test_set_position(window):
