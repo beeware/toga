@@ -67,8 +67,14 @@ extend-select = [
     # "SIM",    # flake8-simplify
 ]
 
-# Ignores needed to pass the Ruff 0.16 update.
 [tool.ruff.lint.per-file-ignores]
+# PEP8 module naming conventions aren't appropriate
+"examples/customwidget/helloworld/src/hello_world_widget/iOS_hello_world.py" = ["N999"]
+"iOS/src/toga_iOS/__init__.py" = ["N999"]
+"iOS/src/toga_iOS/hardware/__init__.py" = ["N999"]
+"iOS/src/toga_iOS/resources/__init__.py" = ["N999"]
+"iOS/src/toga_iOS/widgets/__init__.py" = ["N999"]
+# Ignores needed to pass the Ruff 0.16 update.
 "android/src/toga_android/app.py" = ["RUF012"]
 "android/src/toga_android/icons.py" = ["RUF012"]
 "android/src/toga_android/screens.py" = ["RUF012"]
@@ -126,7 +132,6 @@ extend-select = [
 "dummy/src/toga_dummy/widgets/timeinput.py" = ["DTZ005"]
 "examples/beeliza/beeliza/bot.py" = ["RUF012"]
 "examples/colors/colors/app.py" = ["PLR1704"]
-"examples/customwidget/helloworld/src/hello_world_widget/iOS_hello_world.py" = ["N999"]
 "examples/documentapp/documentapp/app.py" = ["RUF012"]
 "examples/examples_overview/examples_overview/app.py" = ["PLW1510"]
 "examples/screenshot/screenshot/app.py" = ["E501"]
@@ -142,14 +147,10 @@ extend-select = [
 "gtk/src/toga_gtk/widgets/webview.py" = ["BLE001"]
 "gtk/tests_backend/dialogs.py" = ["BLE001", "DTZ005"]
 "gtk/tests_backend/window.py" = ["SIM102"]
-"iOS/src/toga_iOS/__init__.py" = ["N999"]
 "iOS/src/toga_iOS/constraints.py" = ["SIM102"]
-"iOS/src/toga_iOS/hardware/__init__.py" = ["N999"]
 "iOS/src/toga_iOS/icons.py" = ["RUF012"]
 "iOS/src/toga_iOS/libs/uikit.py" = ["PIE796"]
-"iOS/src/toga_iOS/resources/__init__.py" = ["N999"]
 "iOS/src/toga_iOS/screens.py" = ["RUF012"]
-"iOS/src/toga_iOS/widgets/__init__.py" = ["N999"]
 "iOS/src/toga_iOS/widgets/canvas.py" = ["RUF009"]
 "iOS/src/toga_iOS/widgets/detailedlist.py" = ["RUF012"]
 "iOS/tests_backend/dialogs.py" = ["BLE001"]
