@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from PySide6.QtCore import QBuffer, QByteArray, QIODevice
 
 from toga.screens import Screen as ScreenInterface
@@ -7,7 +9,7 @@ from .libs import IS_WAYLAND
 
 
 class Screen:
-    _instances = {}
+    _instances: ClassVar[dict] = {}
 
     def __new__(cls, native):
         if native in cls._instances:
@@ -22,7 +24,7 @@ class Screen:
     def get_name(self):
         # FIXME:  What combinations of values are guaranteed to be
         # unique?
-        return "|".join(
+        return "|".join(  # noqa: FLY002
             [
                 self.native.name(),
                 self.native.model(),

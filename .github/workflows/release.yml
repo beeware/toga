@@ -20,7 +20,7 @@ jobs:
 
   docs:
     name: Verify Docs Build
-    uses: beeware/.github/.github/workflows/docs-build-verify.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
+    uses: beeware/.github/.github/workflows/docs-build-verify.yml@main
     permissions:
       contents: read
     secrets:

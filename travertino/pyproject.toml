@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools==83.0.0",
-    "setuptools_scm==10.2.0",
+    "setuptools_scm==10.2.1",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -52,7 +52,7 @@ test = [
     "pytest-asyncio == 1.4.0",
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
-    "setuptools_scm==10.2.0",
+    "setuptools_scm==10.2.1",
 ]
 
 [project.urls]
@@ -88,6 +88,10 @@ norecursedirs = "compat"
 
 [tool.ruff]
 extend = "../pyproject.toml"
+
+[tool.ruff.lint.per-file-ignores]
+# Ignores needed to pass the Ruff 0.16 update.
+"tests/style/style_classes.py" = ["RUF009"]
 
 [tool.ruff.lint.isort]
 known-third-party = [

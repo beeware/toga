@@ -131,7 +131,6 @@ class App:
 
     def open_document(self, fileURL):  # pragma: no cover
         """Add a new document to this app."""
-        pass
 
     def show_about_dialog(self):
         self.interface.factory.not_implemented("App.show_about_dialog()")

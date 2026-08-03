@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from android.graphics import (
     Bitmap,
     Canvas as A_Canvas,
@@ -10,7 +12,7 @@ from .widgets.base import Scalable
 
 
 class Screen(Scalable):
-    _instances = {}
+    _instances: ClassVar[dict] = {}
 
     def __new__(cls, app, native):
         if native in cls._instances:

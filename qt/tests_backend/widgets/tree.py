@@ -43,8 +43,8 @@ class TreeProbe(SimpleProbe):
         if row_path:
             columns = [0] * len(row_path)
             columns[-1] = col
-            for row, col in zip(row_path, columns, strict=True):
-                index = self.native_model.index(row, col, index)
+            for r, c in zip(row_path, columns, strict=True):
+                index = self.native_model.index(r, c, index)
         return index
 
     def child_count(self, row_path=None):

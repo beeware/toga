@@ -10,7 +10,7 @@ import warnings
 import webbrowser
 from collections.abc import Coroutine, Iterator
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol
 
 from toga.command import Command, CommandSet
 from toga.constants import WindowState
@@ -145,7 +145,7 @@ class App:
     _camera: Camera
     _location: Location
     _main_window: Window | str | None
-    _running_tasks: set[asyncio.Task] = set()
+    _running_tasks: ClassVar[set[asyncio.Task]] = set()
 
     BACKGROUND: str = "background app"
     """A constant that can be used as the main window to indicate that an app will
@@ -347,8 +347,7 @@ class App:
         self._main_window = App._UNDEFINED
         self._windows = WindowSet(self)
 
-        # Create the implementation. This will trigger any startup logic.
-        self.factory.App(interface=self)
+        self._impl = self.create()
 
     ######################################################################
     # App properties
@@ -439,6 +438,16 @@ class App:
     # App lifecycle
     ######################################################################
 
+    def create(self) -> Any:
+        """Create the implementation instance for this app.
+
+        Override this method on your app if you wish to install a customized
+        implementation class for this app.
+
+        :returns: A platform-specific implementation instance."""
+        # Create the implementation. This will trigger any startup logic.
+        return self.factory.App(interface=self)
+
     def request_exit(self):
         """Request an exit from the application.
 
@@ -526,12 +535,12 @@ class App:
             self._main_window = window
             try:
                 self._impl.set_main_window(window)
-            except Exception as e:
+            except Exception:
                 # If the main window could not be changed, revert to the previous value
                 # then reraise the exception
                 if old_window is not App._UNDEFINED:
                     self._main_window = old_window
-                raise e
+                raise
         else:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 

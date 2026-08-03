@@ -34,13 +34,13 @@ permissions:
 jobs:
   pre-commit:
     name: Pre-commit checks
-    uses: beeware/.github/.github/workflows/pre-commit-run.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
+    uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
     with:
       pre-commit-source: "--group pre-commit"
 
   towncrier:
     name: Check towncrier
-    uses: beeware/.github/.github/workflows/towncrier-run.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
+    uses: beeware/.github/.github/workflows/towncrier-run.yml@main
     permissions:
       contents: read
       pull-requests: write
@@ -49,7 +49,7 @@ jobs:
 
   package:
     name: Package Toga
-    uses: beeware/.github/.github/workflows/python-package-create.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
+    uses: beeware/.github/.github/workflows/python-package-create.yml@main
     with:
       build-subdirectory: ${{ matrix.wheel }}
       attest: ${{ inputs.attest-package }}

@@ -383,13 +383,17 @@ def test_set_content_flex_mixed(
         ),
         (
             [toga.Box(), (toga.Box(),)],
-            r"An item in SplitContainer content must be a 2-tuple containing "
-            r"the widget, and the flex weight to assign to that widget.",
+            (
+                r"An item in SplitContainer content must be a 2-tuple containing "
+                r"the widget, and the flex weight to assign to that widget."
+            ),
         ),
         (
             [toga.Box(), (toga.Box(), 42, True)],
-            r"An item in SplitContainer content must be a 2-tuple containing "
-            r"the widget, and the flex weight to assign to that widget.",
+            (
+                r"An item in SplitContainer content must be a 2-tuple containing "
+                r"the widget, and the flex weight to assign to that widget."
+            ),
         ),
         (
             [toga.Box(), (toga.Box(), 0)],

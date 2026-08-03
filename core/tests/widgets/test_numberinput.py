@@ -26,7 +26,7 @@ def test_widget_created():
 
     assert not widget.readonly
     assert widget.value is None
-    assert widget.step == Decimal("1")
+    assert widget.step == Decimal(1)
     assert widget.min is None
     assert widget.max is None
     assert widget._on_change._raw is None
@@ -54,8 +54,8 @@ def test_create_with_values():
     assert widget.readonly
     assert widget.value == Decimal("2.718")
     assert widget.step == Decimal("0.001")
-    assert widget.min == Decimal("-42")
-    assert widget.max == Decimal("420")
+    assert widget.min == Decimal(-42)
+    assert widget.max == Decimal(420)
     assert widget._on_change._raw == on_change
     assert widget.style.width == 256
 
@@ -68,12 +68,12 @@ def test_create_with_values():
     [
         # float
         (1.23, Decimal("1.23")),
-        (1.23e4, Decimal("12300")),
+        (1.23e4, Decimal(12300)),
         # Integer
-        (123, Decimal("123")),
+        (123, Decimal(123)),
         # Float and integer specified as string
         ("1.23", Decimal("1.23")),
-        ("123", Decimal("123")),
+        ("123", Decimal(123)),
         ("1.23e+4", Decimal("1.23e+4")),
         # Excessive precision is rounded to same number of decimal places as step
         # (see QUANTIZE_PARAMS for related tests).
@@ -127,12 +127,12 @@ def test_bad_value(widget, value):
     [
         # float
         (1.23, Decimal("1.23")),
-        (1.23e4, Decimal("12300")),
+        (1.23e4, Decimal(12300)),
         # Integer
-        (123, Decimal("123")),
+        (123, Decimal(123)),
         # Float and integer specified as string
         ("1.23", Decimal("1.23")),
-        ("123", Decimal("123")),
+        ("123", Decimal(123)),
         ("1.23e+4", Decimal("1.23e+4")),
         # Decimal
         (Decimal("1.23"), Decimal("1.23")),
@@ -156,8 +156,8 @@ QUANTIZE_PARAMS = (
         ("0.010", Decimal("12.346")),
         ("0.01", Decimal("12.35")),
         ("0.1", Decimal("12.3")),
-        ("1", Decimal("12")),
-        ("10", Decimal("12")),
+        ("1", Decimal(12)),
+        ("10", Decimal(12)),
     ],
 )
 
@@ -202,14 +202,14 @@ def test_bad_step(widget, value):
     [
         # float; approximate because of float conversion
         (1.23, Decimal("1.23")),
-        (1.23e4, Decimal("12300")),
+        (1.23e4, Decimal(12300)),
         # Integer
-        (123, Decimal("123")),
+        (123, Decimal(123)),
         # Integer (but a value that evaluates as false)
-        (0, Decimal("0")),
+        (0, Decimal(0)),
         # Float and integer specified as string
         ("1.23", Decimal("1.23")),
-        ("123", Decimal("123")),
+        ("123", Decimal(123)),
         ("1.23e+4", Decimal("1.23e+4")),
         # Excessive precision is truncated to step value
         ("1.23456", Decimal("1.23")),
@@ -271,14 +271,14 @@ def test_min_quantized(widget, step, expected):
     [
         # float
         (1.23, Decimal("1.23")),
-        (1.23e4, Decimal("12300")),
+        (1.23e4, Decimal(12300)),
         # Integer
-        (123, Decimal("123")),
+        (123, Decimal(123)),
         # Integer (but a value that evaluates as false)
-        (0, Decimal("0")),
+        (0, Decimal(0)),
         # Float and integer specified as string
         ("1.23", Decimal("1.23")),
-        ("123", Decimal("123")),
+        ("123", Decimal(123)),
         ("1.23e+4", Decimal("1.23e+4")),
         # Excessive precision is truncated to step value
         ("1.23456", Decimal("1.23")),

@@ -12,7 +12,7 @@ permissions:
 jobs:
   changenote:
     name: Dependabot Change Note
-    uses: beeware/.github/.github/workflows/dependabot-changenote.yml@741cc5a311012ee0ee195938889a337449d01eeb  # main
+    uses: beeware/.github/.github/workflows/dependabot-changenote.yml@main
     secrets:
       BRUTUS_PAT_TOKEN: ${{ secrets.BRUTUS_PAT_TOKEN }}
     with:

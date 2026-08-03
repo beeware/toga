@@ -86,13 +86,15 @@ async def test_old_tutorial(canvas, probe):
 
         # Outline head
 
-        with canvas.Stroke(line_width=4.0) as head_outline:
-            with head_outline.ClosedPath(112, 103) as closed_head:
-                closed_head.line_to(112, 113)
-                closed_head.ellipse(73, 114, 39, 47, 0, 0, math.pi)
-                closed_head.line_to(35, 84)
-                closed_head.arc(65, 84, 30, math.pi, 3 * math.pi / 2)
-                closed_head.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
+        with (
+            canvas.Stroke(line_width=4.0) as head_outline,
+            head_outline.ClosedPath(112, 103) as closed_head,
+        ):
+            closed_head.line_to(112, 113)
+            closed_head.ellipse(73, 114, 39, 47, 0, 0, math.pi)
+            closed_head.line_to(35, 84)
+            closed_head.arc(65, 84, 30, math.pi, 3 * math.pi / 2)
+            closed_head.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
 
         # Text
 

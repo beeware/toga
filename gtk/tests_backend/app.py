@@ -189,7 +189,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     async def assert_menu_order(self, path, expected):
         if GTK_VERSION >= (4, 0, 0):
             pytest.skip("GTK4 doesn't support menu items")
-        item, action = self._menu_item(path)
+        item, _action = self._menu_item(path)
         menu = item[0].get_item_link(item[1], "submenu")
 
         # Loop over the sections

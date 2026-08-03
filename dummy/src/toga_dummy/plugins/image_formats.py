@@ -41,11 +41,11 @@ class DisabledImageConverter:
 
     @staticmethod
     def convert_from_format(image_in_format: Any):
-        raise Exception("Converter should be disabled")
+        raise RuntimeError("Converter should be disabled")
 
     @staticmethod
     def convert_to_format(
         data: BytesLikeT,
         image_class: type[Any],
     ) -> Any:
-        raise Exception("Converter should be disabled")
+        raise RuntimeError("Converter should be disabled")

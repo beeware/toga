@@ -110,7 +110,6 @@ class ImageView(Widget):
 
     def focus(self) -> None:
         """No-op; ImageView cannot accept input focus."""
-        pass
 
     @property
     def image(self) -> toga.Image | None:
