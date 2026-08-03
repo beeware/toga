@@ -829,7 +829,7 @@ else:
                             WindowState.FULLSCREEN,
                             WindowState.PRESENTATION,
                         }:
-                            if second_window_probe.maximize_fullscreen_presentation_equal_size:
+                            if second_window_probe.maximize_fullscreen_presentation_equal_size:  # noqa: E501
                                 assert current_size == previous_state_window_size
                             else:
                                 assert current_size > previous_state_window_size
@@ -842,7 +842,7 @@ else:
                             else:
                                 assert current_size > previous_state_window_size
                         elif final_state == WindowState.MAXIMIZED:
-                            if second_window_probe.maximize_fullscreen_presentation_equal_size:
+                            if second_window_probe.maximize_fullscreen_presentation_equal_size:  # noqa: E501
                                 assert current_size == previous_state_window_size
                             else:
                                 assert current_size < previous_state_window_size
@@ -855,7 +855,7 @@ else:
                             else:
                                 assert current_size < previous_state_window_size
                         elif final_state == WindowState.MAXIMIZED:
-                            if second_window_probe.maximize_fullscreen_presentation_equal_size:
+                            if second_window_probe.maximize_fullscreen_presentation_equal_size:  # noqa: E501
                                 assert current_size == previous_state_window_size
                             else:
                                 assert current_size < previous_state_window_size

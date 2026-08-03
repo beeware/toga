@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 
@@ -5,7 +7,7 @@ from .widgets.base import Scalable
 
 
 class Screen(Scalable):
-    _instances = {}
+    _instances: ClassVar[dict] = {}
 
     def __new__(cls, native):
         if native in cls._instances:

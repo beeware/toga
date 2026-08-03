@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import ClassVar
 
 import toga
 
@@ -7,8 +8,8 @@ from .libs import GTK_VERSION, Gdk, GdkPixbuf, GLib, Gtk
 
 
 class Icon:
-    EXTENSIONS = [".png", ".ico", ".icns"]
-    SIZES = [512, 256, 128, 72, 64, 32, 16]
+    EXTENSIONS: ClassVar[list[str]] = [".png", ".ico", ".icns"]
+    SIZES: ClassVar[list[int]] = [512, 256, 128, 72, 64, 32, 16]
 
     def __init__(self, interface, path):
         self.interface = interface

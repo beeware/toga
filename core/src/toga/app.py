@@ -10,7 +10,7 @@ import warnings
 import webbrowser
 from collections.abc import Coroutine, Iterator
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol
 
 from toga.command import Command, CommandSet
 from toga.constants import WindowState
@@ -145,7 +145,7 @@ class App:
     _camera: Camera
     _location: Location
     _main_window: Window | str | None
-    _running_tasks: set[asyncio.Task] = set()
+    _running_tasks: ClassVar[set[asyncio.Task]] = set()
 
     BACKGROUND: str = "background app"
     """A constant that can be used as the main window to indicate that an app will

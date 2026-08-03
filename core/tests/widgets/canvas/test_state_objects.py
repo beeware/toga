@@ -374,7 +374,7 @@ NON_REENTRANT_MATCH = (
 
 def test_enter_open_state(widget):
     """Attempting to enter a currently open state is an error."""
-    with widget.stroke() as stroke:
+    with widget.stroke() as stroke:  # noqa: SIM117
         with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH):
             with stroke:
                 pass

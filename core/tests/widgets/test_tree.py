@@ -1327,15 +1327,17 @@ def test_insert_column_deprecated_implementation(tree):
     def insert_column(self, index, heading, accessor):
         self._action("insert column", index=index, heading=heading, accessor=accessor)
 
-    with patch.object(tree._impl.__class__, "insert_column", insert_column):
-        with pytest.warns(
+    with (
+        patch.object(tree._impl.__class__, "insert_column", insert_column),
+        pytest.warns(
             DeprecationWarning,
             match=(
                 "Tree implementations of insert_column should expect a column object "
                 "not heading and accessor."
             ),
-        ):
-            tree.insert_column(1, AccessorColumn("New Column", "extra"))
+        ),
+    ):
+        tree.insert_column(1, AccessorColumn("New Column", "extra"))
 
     # The column was added
     assert_action_performed_with(

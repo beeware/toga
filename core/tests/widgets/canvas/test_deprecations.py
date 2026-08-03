@@ -100,7 +100,7 @@ def test_renamed_root_state(widget):
             "Stroke",
             (0, 0, REBECCAPURPLE, 0, [0, 0, 0, 0]),
             Stroke,
-        ),  # Deprecated alias with removed parameters
+        ),
         ("draw_image", None, DrawImage),
         ("rotate", (0,), Rotate),
         ("scale", (0, 0), Scale),
@@ -183,9 +183,11 @@ def test_capitalized_canvas_methods_xy(
             rf"call move_to\(x, y\) after entering the {new_name} context\."
         )
 
-    with pytest.deprecated_call():
-        with getattr(widget, method_name)(*args, **kwargs) as substate:
-            pass
+    with (
+        pytest.deprecated_call(),
+        getattr(widget, method_name)(*args, **kwargs) as substate,
+    ):
+        pass
 
     assert widget.root_state.drawing_actions == [active_state, substate]
     if has_move:
@@ -506,10 +508,9 @@ def test_unattached_state(widget):
 )
 def test_deprecated_canvas_methods(widget, method_name, DrawingActionClass):
     """The Canvas CamelCase methods are deprecated, and add to root state."""
-    with widget.state() as state:
-        # Test within an open sub-state, to verify it adds to root state.
-        with pytest.deprecated_call():
-            drawing_action = getattr(widget, method_name)()
+    # Test within an open sub-state, to verify it adds to root state.
+    with widget.state() as state, pytest.deprecated_call():
+        drawing_action = getattr(widget, method_name)()
 
     assert widget.root_state.drawing_actions == [state, drawing_action]
     assert isinstance(drawing_action, DrawingActionClass)

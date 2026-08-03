@@ -66,8 +66,6 @@ front_back_blended = pytest.mark.parametrize(
         (hsl(0, 1, 0.5), hsl(120.0, 1, 0.5), rgb(255, 0, 0)),
         (hsl(120.0, 1, 0.5), hsl(0, 1, 0.5), rgb(0, 255, 0)),
         (hsl(240.0, 1, 0.5), hsl(0, 1, 0.5), rgb(0, 0, 255)),
-        # Transparent primaries
-        (hsl(0, 1, 0.5), hsl(120.0, 1, 0.5), rgb(255, 0, 0)),
         # Color with different channel values...
         (hsl(208.8, 0.6, 0.49), hsl(0, 0, 1), rgb(50, 128, 200, 1.0)),
         (hsl(208.8, 0.6, 0.49), hsl(0, 0, 0.5), rgb(50, 128, 200, 1.0)),
@@ -112,8 +110,6 @@ front_back_blended = pytest.mark.parametrize(
         # Primaries
         (rgb(0, 255, 0), hsl(0, 1, 0.5, 1.0), rgb(0, 255, 0, 1.0)),
         (rgb(0, 0, 255), hsl(0, 1, 0.5, 1.0), rgb(0, 0, 255, 1.0)),
-        # Color with different channel values, including transparency
-        (rgb(50, 128, 200, 0.5), hsl(0, 0, 0.5), rgb(89, 128, 164, 1)),
         # Both front_color and back_color having intermediate values
         (rgb(150, 50, 100, 0.4), hsl(90.0, 0.5, 0.39, 0.6), rgb(126, 97, 76, 0.76)),
         (rgb(50, 60, 70, 0.55), hsl(210.0, 0.12, 0.31, 0.45), rgb(55, 65, 75, 0.75)),

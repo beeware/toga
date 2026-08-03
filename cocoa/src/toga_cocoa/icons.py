@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import ClassVar
 
 from rubicon.objc import NSSize
 
@@ -6,7 +7,7 @@ from toga_cocoa.libs import NSBundle, NSImage
 
 
 class Icon:
-    EXTENSIONS = [".icns", ".png", ".pdf"]
+    EXTENSIONS: ClassVar[list[str]] = [".icns", ".png", ".pdf"]
     SIZES = None
 
     def __init__(self, interface, path):

@@ -236,7 +236,7 @@ class DetailedListProbe(SimpleProbe):
 
             return_value = SendInput(1, modifier_inputs, sizeof(ws.INPUT))
             if return_value != 1:
-                raise Exception(
+                raise ValueError(
                     "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (down)."
                 )
             await asyncio.sleep(0.05)
@@ -251,7 +251,7 @@ class DetailedListProbe(SimpleProbe):
                 mouse_inputs[0]._.mi.dwFlags = message
                 return_value = SendInput(1, mouse_inputs, sizeof(ws.INPUT))
                 if return_value != 1:
-                    raise Exception(
+                    raise ValueError(
                         f"SendInput failed. Type: Mouse, right button: {right}."
                     )
 
@@ -273,7 +273,7 @@ class DetailedListProbe(SimpleProbe):
 
             return_value = SendInput(1, modifier_inputs, sizeof(ws.INPUT))
             if return_value != 1:
-                raise Exception(
+                raise ValueError(
                     "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (up)."
                 )
             await asyncio.sleep(0.05)

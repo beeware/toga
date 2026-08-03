@@ -115,7 +115,21 @@ class ScreenshotGeneratorApp(toga.App):
 
     def create_multilinetextinput(self):
         return toga.MultilineTextInput(
-            value="I am the very model of a modern Major-General.\nI've information vegetable, animal, and mineral.\nI know the kings of England, and I quote the fights historical\nFrom Marathon to Waterloo, in order categorical.\nI'm very well acquainted, too, with matters mathematical,\nI understand equations, both the simple and quadratical,\nAbout binomial theorem I'm teeming with a lot o' news,\nWith many cheerful facts about the square of the hypotenuse.\n\nI'm very good at integral and differential calculus;\nI know the scientific names of beings animalculous:\nIn short, in matters vegetable, animal, and mineral,\nI am the very model of a modern Major-General.",
+            value=(
+                "I am the very model of a modern Major-General.\n"
+                "I've information vegetable, animal, and mineral.\n"
+                "I know the kings of England, and I quote the fights historical\n"
+                "From Marathon to Waterloo, in order categorical.\n"
+                "I'm very well acquainted, too, with matters mathematical,\n"
+                "I understand equations, both the simple and quadratical,\n"
+                "About binomial theorem I'm teeming with a lot o' news,\n"
+                "With many cheerful facts about the square of the hypotenuse.\n"
+                "\n"
+                "I'm very good at integral and differential calculus;\n"
+                "I know the scientific names of beings animalculous:\n"
+                "In short, in matters vegetable, animal, and mineral,\n"
+                "I am the very model of a modern Major-General."
+            ),
             margin=10,
             width=self.MAX_WIDTH,
             height=200,

@@ -639,11 +639,13 @@ async def test_nested_stroke_and_fill_state(canvas, probe):
         # Should still be goldenrod
         canvas.rect(10, 10, 50, 50)
 
-    with canvas.stroke(stroke_style=REBECCAPURPLE, line_width=15, line_dash=[15, 14]):
-        with canvas.stroke():
-            # Should still be wide, dashed, and purple
-            canvas.move_to(100, 10)
-            canvas.line_to(100, 150)
+    with (
+        canvas.stroke(stroke_style=REBECCAPURPLE, line_width=15, line_dash=[15, 14]),
+        canvas.stroke(),
+    ):
+        # Should still be wide, dashed, and purple
+        canvas.move_to(100, 10)
+        canvas.line_to(100, 150)
 
     await probe.redraw("Nested stroke and fill states should be drawn")
     assert_reference(probe, "nested_stroke_and_fill_state")

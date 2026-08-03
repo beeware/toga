@@ -1225,15 +1225,17 @@ def test_insert_column_deprecated_implementation(table):
     def insert_column(self, index, heading, accessor):
         self._action("insert column", index=index, heading=heading, accessor=accessor)
 
-    with patch.object(table._impl.__class__, "insert_column", insert_column):
-        with pytest.warns(
+    with (
+        patch.object(table._impl.__class__, "insert_column", insert_column),
+        pytest.warns(
             DeprecationWarning,
             match=(
                 "Table implementations of insert_column should expect a column object "
                 "not heading and accessor."
             ),
-        ):
-            table.insert_column(1, AccessorColumn("New Column", "extra"))
+        ),
+    ):
+        table.insert_column(1, AccessorColumn("New Column", "extra"))
 
     # The column was added
     assert_action_performed_with(

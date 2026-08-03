@@ -4,6 +4,7 @@ from abc import ABC
 from collections import defaultdict
 from collections.abc import Mapping
 from contextlib import contextmanager
+from typing import ClassVar
 from warnings import filterwarnings, warn
 
 from .compat import _toga_lt_5
@@ -32,9 +33,9 @@ class BaseStyle(ABC):  # noqa: B024
     """
 
     # Only "real" properties
-    _BASE_PROPERTIES = defaultdict(set)
+    _BASE_PROPERTIES: ClassVar[defaultdict] = defaultdict(set)
     # Includes aliases and shorthands
-    _BASE_ALL_PROPERTIES = defaultdict(set)
+    _BASE_ALL_PROPERTIES: ClassVar[defaultdict] = defaultdict(set)
 
     def __init_subclass__(cls):
         # Give the subclass a direct reference to its properties.
@@ -64,8 +65,8 @@ class BaseStyle(ABC):  # noqa: B024
                         f"argument '{name}'"
                     ) from error
             # The above for loop should never run to completion, so that needs to be
-            # excluded from coverage.
-            else:  # pragma: no cover
+            # excluded from coverage and Ruff checks.
+            else:  # pragma: no cover # noqa: PLW0120
                 pass
 
     ######################################################################

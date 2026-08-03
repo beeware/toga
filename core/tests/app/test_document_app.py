@@ -1,4 +1,5 @@
 import sys
+from typing import ClassVar
 from unittest.mock import AsyncMock, Mock
 
 import pytest
@@ -15,8 +16,8 @@ from toga_dummy.utils import (
 
 
 class ExampleDocument(toga.Document):
-    description = "Example Document"
-    extensions = ["foobar", "fbr"]
+    description: str = "Example Document"
+    extensions: ClassVar[list[str]] = ["foobar", "fbr"]
     read_error = None
 
     def create(self):
@@ -40,8 +41,8 @@ class ExampleDocument(toga.Document):
 
 
 class OtherDocument(toga.Document):
-    description = "Other Document"
-    extensions = ["other"]
+    description: str = "Other Document"
+    extensions: ClassVar[list[str]] = ["other"]
     read_error = None
 
     def create(self):

@@ -379,11 +379,11 @@ UIStackView = ObjCClass("UIStackView")
 class UIStackViewAlignment(Enum):
     Fill = 0
     Leading = 1
-    Top = 1
+    Top = Leading
     FirstBaseline = 2
     Center = 3
     Trailing = 4
-    Bottom = 4
+    Bottom = Trailing
     LastBaseline = 5
 
 
