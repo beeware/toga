@@ -479,7 +479,6 @@ else:
     )
     async def test_secondary_window_toolbar(app, second_window, second_window_probe):
         """A toolbar can be added to a secondary window"""
-        skip_on_backends("toga_winui3")
         second_window.toolbar.add(app.cmd1)
 
         # Window doesn't have content. This is intentional.

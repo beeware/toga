@@ -4,8 +4,6 @@ from PIL.Image import Image as PILImage
 
 from toga.images import Image as TogaImage
 
-from ..conftest import skip_on_backends
-
 
 def screen_probe(screen):
     module = import_module("tests_backend.screens")
@@ -40,7 +38,6 @@ async def test_size(app):
 
 async def test_as_image(app):
     """A screen can be captured as an image"""
-    skip_on_backends("toga_winui3", reason="Screen.get_image_data is no implemented.")
     # Using a probe for test as the feature is not implemented on some platforms.
     for screen in app.screens:
         probe = screen_probe(screen)

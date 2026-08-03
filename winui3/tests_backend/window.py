@@ -2,6 +2,7 @@ import asyncio
 from ctypes import byref, sizeof, windll
 from typing import Literal
 
+from pytest import skip
 from win32more.Microsoft.UI.Interop import GetWindowFromWindowId
 from win32more.Microsoft.UI.Windowing import (
     AppWindowPresenterKind,
@@ -129,3 +130,6 @@ class WindowProbe(BaseProbe):
     def unminimize(self):
         presenter, _ = self.impl._presenter
         presenter.Restore()
+
+    def has_toolbar(self):
+        skip("Toolbars are not implemented on on toga_winui3 yet.")
