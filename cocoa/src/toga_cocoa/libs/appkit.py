@@ -746,6 +746,10 @@ NSBezelBorder = 2
 NSGrooveBorder = 3
 
 ######################################################################
+# NSViewController.h
+NSViewController = ObjCClass("NSViewController")
+
+######################################################################
 # NSWindow.h
 NSWindow = ObjCClass("NSWindow")
 NSWindow.declare_property("frame")

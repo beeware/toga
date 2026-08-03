@@ -55,9 +55,9 @@ class LayoutApp(toga.App):
         for _ in range(3):
             self.add_label()
 
-        self.main_window = toga.MainWindow()
-        self.main_window.content = self.box
+        self.main_window = toga.MainWindow(size=(100, 100))
         self.main_window.show()
+        self.main_window.content = self.box
 
     def hide_label(self, sender):
         if self.labels[0].visibility == HIDDEN:

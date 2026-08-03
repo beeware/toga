@@ -12,7 +12,7 @@ from toga.command import Command, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
-from toga_cocoa.container import Container
+from toga_cocoa.container import ControlledContainer
 from toga_cocoa.libs import (
     NSBackingStoreBuffered,
     NSImage,
@@ -248,8 +248,8 @@ class Window:
 
         self.native.delegate = self.native
 
-        self.container = Container(on_refresh=self.content_refreshed)
-        self.native.contentView = self.container.native
+        self.container = ControlledContainer(on_refresh=self.content_refreshed)
+        self.native.contentViewController = self.container.controller
 
         # Ensure that the container renders it's background in the same color as the
         # window.
@@ -288,21 +288,9 @@ class Window:
     ######################################################################
 
     def content_refreshed(self, container):
-        min_width = self.interface.content.layout.min_width
-        min_height = self.interface.content.layout.min_height
-
-        # If the minimum layout is bigger than the current window,
-        # increase the size of the window.
-        frame = self.native.frame
-        if frame.size.width < min_width and frame.size.height < min_height:
-            self.set_size((min_width, min_height))
-        elif frame.size.width < min_width:
-            self.set_size((min_width, frame.size.height))
-        elif frame.size.height < min_height:
-            self.set_size((frame.size.width, min_height))
-
-        self.container.min_width = min_width
-        self.container.min_height = min_height
+        # Apply the minimum size.  This will autoresize the window if needed.
+        self.container.min_width = self.interface.content.layout.min_width
+        self.container.min_height = self.interface.content.layout.min_height
 
     def set_content(self, widget):
         # Set the content of the window's container
