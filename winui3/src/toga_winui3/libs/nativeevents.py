@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from win32more import ComError
 
 from toga import App
@@ -17,7 +19,7 @@ cleanup and avoid any dangling pointers.
 
 
 class NativeEvent:
-    _cleared_callbacks = {}
+    _cleared_callbacks: ClassVar[dict] = {}
 
     def __init__(self, owner, name: str):
         """Manages the adding and clearing of callbacks of a native instance event.
@@ -98,7 +100,7 @@ class NativeEventsHandler:
         if not event_name[0].isupper():  # pragma: no cover
             raise ValueError("Native events use the PascalCase naming convention.")
 
-        if event_name not in self._event_registry.keys():
+        if event_name not in self._event_registry:
             self._event_registry[event_name] = NativeEvent(self._owner, event_name)
 
         return self._event_registry[event_name]

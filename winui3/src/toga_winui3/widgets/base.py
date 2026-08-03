@@ -33,11 +33,11 @@ class Widget(EventsHandledMixin, ABC):
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):  # noqa B027
+    def set_app(self, app):
         # Everything is already handled by the Toga core interface.
         pass
 
-    def set_window(self, window):  # noqa B027
+    def set_window(self, window):
         # Everything is already handled by the Toga core interface.
         pass
 
@@ -106,7 +106,7 @@ class Widget(EventsHandledMixin, ABC):
         state = Visibility.Collapsed if hidden else Visibility.Visible
         self.native.Visibility = state
 
-    def set_text_align(self, alignment):  # noqa B027
+    def set_text_align(self, alignment):
         # Where appropriate, this is implement on a widget by widget basis.
         pass
 

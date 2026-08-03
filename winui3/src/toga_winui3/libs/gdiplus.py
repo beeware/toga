@@ -25,7 +25,7 @@ from win32more.Windows.Win32.UI.WindowsAndMessaging import HICON
 
 # https://learn.microsoft.com/en-us/windows/win32/gdiplus/-gdiplus-flatapi-flat
 # https://learn.microsoft.com/windows/win32/api/Gdiplustypes/ne-gdiplustypes-status
-status_dict = {
+STATUS_DICT = {
     0: "Ok",
     1: "GenericError",
     2: "InvalidParameter",
@@ -55,8 +55,7 @@ def gdi_plus_function(function):
     def wrapper(*args, **kwargs):
         status_code = function(*args, **kwargs)
         if status_code != 0 and status_code is not None:
-            global status_dict
-            error = str(status_dict[status_code])
+            error = str(STATUS_DICT[status_code])
             function_name = str(function._prototype.__name__)
             message = f"The GDI+ function {function_name} exit with status {error}."
 

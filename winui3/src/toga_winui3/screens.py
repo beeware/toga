@@ -1,5 +1,6 @@
 from ctypes import byref
 from decimal import ROUND_HALF_EVEN, Decimal
+from typing import ClassVar
 
 from win32more.Microsoft.UI.Interop import GetMonitorFromDisplayId
 from win32more.Windows.Win32.Graphics.Gdi import HMONITOR
@@ -16,7 +17,7 @@ def round_pixels(value) -> int:
 
 
 class Screen:
-    _instances = {}
+    _instances: ClassVar[dict] = {}
 
     def __new__(cls, native):
         native_id = str(native.DisplayId.Value)

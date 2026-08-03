@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import ClassVar
 
 from win32more.Microsoft.UI import IconId
 from win32more.Microsoft.UI.Interop import GetIconIdFromIcon
@@ -35,7 +36,16 @@ class Icon:
     To avoid loading unnecessary resources, the needed icon resources are lazy loaded.
     """
 
-    EXTENSIONS = [".png", ".ico", ".bmp", ".jpg", ".jpeg", ".gif", ".tif", ".tiff"]
+    EXTENSIONS: ClassVar[list[str]] = [
+        ".png",
+        ".ico",
+        ".bmp",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".tif",
+        ".tiff",
+    ]
     SIZES = None
 
     def __init__(self, interface, path):
