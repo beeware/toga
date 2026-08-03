@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ctypes import byref
 from typing import TYPE_CHECKING
 
 from win32more.Microsoft.UI.Interop import GetWindowFromWindowId
@@ -29,7 +30,11 @@ from win32more.Microsoft.UI.Xaml.Controls import (
 )
 from win32more.Microsoft.UI.Xaml.Media import MicaBackdrop
 from win32more.Windows.Graphics import PointInt32, SizeInt32
+from win32more.Windows.Win32.Foundation import RECT
+from win32more.Windows.Win32.UI.HiDpi import AdjustWindowRectExForDpi, GetDpiForWindow
 from win32more.Windows.Win32.UI.WindowsAndMessaging import (
+    GWL_EXSTYLE,
+    GWL_STYLE,
     MF_BYCOMMAND,
     MF_DISABLED,
     MF_ENABLED,
@@ -37,6 +42,7 @@ from win32more.Windows.Win32.UI.WindowsAndMessaging import (
     SC_CLOSE,
     EnableMenuItem,
     GetSystemMenu,
+    GetWindowLongW,
 )
 
 from toga import App
@@ -271,6 +277,21 @@ class Window:
     # Example: For a 200% scale factor 1 css pixel is a 2x2 block of physical pixels.
     ####################################################################################
 
+    def _window_frame_size(self, dpi):
+        """The difference between `Bounds` and `AppWindow.Size` in physical pixels."""
+        rect = RECT()
+        style = GetWindowLongW(self._hwnd, GWL_STYLE)
+        ex_style = GetWindowLongW(self._hwnd, GWL_EXSTYLE)
+
+        AdjustWindowRectExForDpi(byref(rect), style, False, ex_style, dpi)
+
+        return (rect.right - rect.left, rect.bottom - rect.top)
+
+    @property
+    def _dpi(self):
+        """DPI is returned as 96 multiplied by the scale factor."""
+        return GetDpiForWindow(self._hwnd)
+
     def get_size(self) -> Size:
         """Gets the size of the window in CSS pixels (effective pixels)."""
         # If the window is minimized from a maxmimized state, then toga expects the size
@@ -287,29 +308,24 @@ class Window:
 
     def set_size(self, size: SizeT):
         """Sets the size of the window in CSS pixels (effective pixels)."""
-        css_to_physical = self.get_current_screen().css_to_physical
+        dpi = self._dpi
 
-        current_bounds = self.native.Bounds
-        current_size = self.native.AppWindow.Size
-
-        diff_width = current_size.Width - css_to_physical(current_bounds.Width)
-        diff_height = current_size.Height - css_to_physical(current_bounds.Height)
+        frame_size_physical = self._window_frame_size(dpi)
+        width_physical = round_pixels(size[0] * dpi / 96)
+        height_physical = round_pixels(size[1] * dpi / 96)
 
         self.native.AppWindow.Resize(
             SizeInt32(
-                css_to_physical(size[0]) + diff_width,
-                css_to_physical(size[1]) + diff_height,
+                width_physical + frame_size_physical[0],
+                height_physical + frame_size_physical[1],
             )
         )
 
     @property
     def min_size(self):
         """The minimum size of the window in physical pixels (device pixels)."""
-        css_to_physical = self.get_current_screen().css_to_physical
-
-        # Window and client sizes are in physical pixels.
-        window_size = self.native.AppWindow.Size
-        client_size = self.native.AppWindow.ClientSize
+        dpi = self._dpi
+        frame_size_physical = self._window_frame_size(dpi)
 
         # Menu, toolbar and layout values are in CSS pixels.
         menu_native = getattr(self, "menu_native", None)
@@ -320,19 +336,20 @@ class Window:
 
         layout = self.interface.content.layout
 
-        # Compute the minimum values for the client area.
-        client_min_width = css_to_physical(layout.min_width)
-        client_min_height = css_to_physical(
-            layout.min_height + menu_height + toolbar_height
+        # Compute the minimum values for the client area in physical pixels.
+        client_min_width = round_pixels(layout.min_width * dpi / 96)
+        client_min_height = round_pixels(
+            (layout.min_height + menu_height + toolbar_height) * dpi / 96
         )
 
         return Size(
-            window_size.Width - client_size.Width + client_min_width,
-            window_size.Height - client_size.Height + client_min_height,
+            client_min_width + frame_size_physical[0],
+            client_min_height + frame_size_physical[1],
         )
 
     @property
     def _normal_size(self):
+        """The size of the window when it was last in the `Normal` state."""
         if self._cached_state == WindowState.NORMAL:
             return self.get_size()
 
