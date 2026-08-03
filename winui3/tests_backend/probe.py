@@ -1,9 +1,7 @@
 import asyncio
-import os
-import platform
 from ctypes import byref, sizeof
 
-from pytest import approx, skip
+from pytest import approx
 from win32more.Windows.Win32.Foundation import POINT
 from win32more.Windows.Win32.UI.Input.KeyboardAndMouse import (
     INPUT,
@@ -112,7 +110,7 @@ class BaseProbe:
     def _send_input(self, input):
         # On GitHub Actions, Windows ARM64 runners don't seem to support SendInput.
         # See https://github.com/actions/partner-runner-images/issues/174
-        #if platform.machine() == "ARM64" and os.environ["RUNNING_IN_CI"] == "true":
+        # if platform.machine() == "ARM64" and os.environ["RUNNING_IN_CI"] == "true":
         #    skip("SendInput not supported.")
 
         return_value = SendInput(1, input, sizeof(input))
