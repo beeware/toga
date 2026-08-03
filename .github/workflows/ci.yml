@@ -536,7 +536,7 @@ jobs:
 
         - backend: "windows-winui3-arm64"
           platform: "windows"
-          runs-on: "windows-11-arm"
+          runs-on: "windows-11-vs2026-arm"
           testbed-app: "testbed-winui3"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (WinUI 3)\Data'
           pre-command-pwsh: |

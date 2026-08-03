@@ -112,8 +112,8 @@ class BaseProbe:
     def _send_input(self, input):
         # On GitHub Actions, Windows ARM64 runners don't seem to support SendInput.
         # See https://github.com/actions/partner-runner-images/issues/174
-        if platform.machine() == "ARM64" and os.environ["RUNNING_IN_CI"] == "true":
-            skip("SendInput not supported.")
+        #if platform.machine() == "ARM64" and os.environ["RUNNING_IN_CI"] == "true":
+        #    skip("SendInput not supported.")
 
         return_value = SendInput(1, input, sizeof(input))
         if return_value != 1:
