@@ -8,11 +8,15 @@ from .base import Widget
 
 class Button(Widget):
     def create(self):
+        # Setting native_cls defines self.native and means that events are managed by
+        # the nativeevents module.
         self.native_cls = NativeButton
+
         self._icon = None
         self._text = ""
 
-        # Initial minimum sizes are 0 so that the staged properties are sized up.
+        # Initial minimum sizes are 0 because the staged properties are delayed, and
+        # this allows to the widget to be sized up.
         self._min_width = 0
         self._min_height = 0
 

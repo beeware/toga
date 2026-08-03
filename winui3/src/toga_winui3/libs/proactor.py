@@ -15,7 +15,7 @@ from win32more.Windows.Win32.System.WindowsProgramming import QueryInterruptTime
 
 
 class ReadyDeque(deque):
-    """A deque that enqueues a WinForms event tick when a value is appended."""
+    """A deque that enqueues a WinUI3 event tick when a value is appended."""
 
     def __init__(self, loop):
         self._loop = loop

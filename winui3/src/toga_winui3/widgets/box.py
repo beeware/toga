@@ -5,7 +5,10 @@ from .base import Widget
 
 class Box(Widget):
     def create(self):
+        # Setting native_cls defines self.native and means that events are managed by
+        # the nativeevents module.
         self.native_cls = Canvas
+
         # Box cannot receive input focus, so remove it from the tab sequence.
         self.native.IsTabStop = False
 

@@ -48,7 +48,6 @@ class App:
     def create_menus(self):
         """Creates menu bars for the windows with the 'create_menus' attribute."""
         for window in self.interface.windows:
-            # From toga_winforms:
             # It's difficult to trigger this on a simple window, because we can't easily
             # modify the set of app-level commands that are registered, and a simple
             # window doesn't exist when the app starts up. Therefore, no-branch the else

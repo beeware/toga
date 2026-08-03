@@ -23,14 +23,18 @@ class LabelText(EventsHandledMixin):
         """
         self._label = label
 
+        # Setting native_cls defines self.native and means that events are managed by
+        # the nativeevents module.
         self.native_cls = TextBlock
+
         # LabelText cannot receive input focus, so remove it from the tab sequence.
         self.native.IsTabStop = False
 
         self._native_properties = NativeProperties(self)
         self._staged_properties = StagedProperties(self)
 
-        # Initial minimum sizes are 0 so that the staged properties are sized up.
+        # Initial minimum sizes are 0 because the staged properties are delayed, and
+        # this allows to the widget to be sized up.
         self._min_width = 0
         self._min_height = 0
 
@@ -57,7 +61,10 @@ class Label(Widget):
     """
 
     def create(self):
+        # Setting native_cls defines self.native and means that events are managed by
+        # the nativeevents module.
         self.native_cls = Grid
+
         # Label cannot receive input focus, so remove it from the tab sequence.
         self.native.IsTabStop = False
 

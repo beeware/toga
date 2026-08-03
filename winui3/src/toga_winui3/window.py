@@ -173,11 +173,9 @@ class Window:
 
             if old_state != new_state:
                 if old_state == WindowState.MINIMIZED:
-                    print("Showing after minimize")
                     self.interface.on_show()
 
                 elif new_state == WindowState.MINIMIZED:
-                    print("Hiding via minimize")
                     self.interface.on_hide()
 
         if args.DidVisibilityChange:

@@ -123,7 +123,7 @@ class StagedProperties:
         staging_area = area_weak()
 
         # If the clone or staging area no longer exist then do nothing. This is not
-        # reliably hit during testing to use no over.
+        # reliably hit during testing, so use no cover.
         if not clone or not staging_area:  # pragma: no cover
             return
 

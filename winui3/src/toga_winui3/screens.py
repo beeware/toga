@@ -84,6 +84,5 @@ class Screen:
     # Screen capabilities
     ####################################################################################
 
-    def get_image_data(self):  # pragma: no cover
-        # FIXME: Remove 'no cover' when implemented.
-        print("Not yet implemented on WinUI3 - Screen.get_image_data")
+    def get_image_data(self):
+        self.interface.factory.not_implemented("Screen.get_image_data()")
