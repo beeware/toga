@@ -46,34 +46,34 @@ async def test_approx():
 
     assert much_smaller <= approx(smaller)
     assert not much_smaller >= approx(smaller)
-    assert not much_smaller == approx(smaller)
+    assert much_smaller != approx(smaller)
 
     assert smaller >= approx(much_smaller)
     assert not smaller <= approx(much_smaller)
-    assert not smaller == approx(much_smaller)
+    assert smaller != approx(much_smaller)
 
     assert approx(much_smaller) <= smaller
     assert not approx(much_smaller) >= smaller
-    assert not approx(much_smaller) == smaller
+    assert approx(much_smaller) != smaller
 
     assert approx(smaller) >= much_smaller
     assert not approx(smaller) <= much_smaller
-    assert not approx(smaller) == much_smaller
+    assert approx(smaller) != much_smaller
 
     # Significantly larger values should behave as expected.
 
     assert much_larger >= approx(smaller)
     assert not much_larger <= approx(smaller)
-    assert not much_larger == approx(smaller)
+    assert much_larger != approx(smaller)
 
     assert smaller <= approx(much_larger)
     assert not smaller >= approx(much_larger)
-    assert not smaller == approx(much_larger)
+    assert smaller != approx(much_larger)
 
     assert approx(much_larger) >= smaller
     assert not approx(much_larger) <= smaller
-    assert not approx(much_larger) == smaller
+    assert approx(much_larger) != smaller
 
     assert approx(smaller) <= much_larger
     assert not approx(smaller) >= much_larger
-    assert not approx(smaller) == much_larger
+    assert approx(smaller) != much_larger

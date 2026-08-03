@@ -89,6 +89,10 @@ norecursedirs = "compat"
 [tool.ruff]
 extend = "../pyproject.toml"
 
+[tool.ruff.lint.per-file-ignores]
+# Ignores needed to pass the Ruff 0.16 update.
+"tests/style/style_classes.py" = ["RUF009"]
+
 [tool.ruff.lint.isort]
 known-third-party = [
 ]

@@ -463,7 +463,7 @@ class Canvas(Widget):
         widths = []
         for line in text.splitlines():
             layout.set_text(line)
-            ink, logical = layout.get_extents()
+            _ink, logical = layout.get_extents()
             widths.append(logical.width / Pango.SCALE)
 
         return (

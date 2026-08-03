@@ -20,7 +20,6 @@ def toga_x_text_align(alignment):
         ContentAlignment.TopRight: RIGHT,
         ContentAlignment.MiddleRight: RIGHT,
         ContentAlignment.BottomRight: RIGHT,
-        #
         HorizontalAlignment.Left: LEFT,
         HorizontalAlignment.Center: CENTER,
         HorizontalAlignment.Right: RIGHT,

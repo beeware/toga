@@ -85,7 +85,6 @@ class App:
 
     def get_dark_mode_state(self):
         self.interface.factory.not_implemented("dark mode state")
-        return None
 
     ######################################################################
     # App capabilities

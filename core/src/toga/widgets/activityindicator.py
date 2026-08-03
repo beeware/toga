@@ -45,7 +45,6 @@ class ActivityIndicator(Widget):
 
     def focus(self) -> None:
         """No-op; ActivityIndicator cannot accept input focus."""
-        pass
 
     @property
     def is_running(self) -> bool:

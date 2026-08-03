@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import ClassVar
 
 from PySide6.QtGui import QIcon
 
@@ -11,7 +12,7 @@ IMPL_DICT = {}
 
 
 class Icon:
-    EXTENSIONS = [".png", ".jpeg", ".jpg", ".gif", ".bmp", ".ico"]
+    EXTENSIONS: ClassVar[list[str]] = [".png", ".jpeg", ".jpg", ".gif", ".bmp", ".ico"]
     SIZES = None
 
     def __init__(self, interface, path):

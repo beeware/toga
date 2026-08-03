@@ -120,7 +120,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 if menu is None:
                     raise AssertionError(
                         f"Menu {' > '.join(orig_path)} not found; "
-                        f"{str(item.title)} does not have a submenu"
+                        f"{item.title!s} does not have a submenu"
                     )
             else:
                 # No more path segments; we've found the full path.

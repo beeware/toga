@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from rubicon.objc import Block, objc_id
 
 from toga.screens import Screen as ScreenInterface
@@ -6,7 +8,7 @@ from toga_iOS.libs import UIGraphicsImageRenderer, UIImage
 
 
 class Screen:
-    _instances = {}
+    _instances: ClassVar[dict] = {}
 
     def __new__(cls, native):
         # native is an instance of UIScreen

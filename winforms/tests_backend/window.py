@@ -127,8 +127,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         for control in self.native.Controls:
             if isinstance(control, ToolStrip) and not isinstance(control, MenuStrip):
                 return control
-        else:
-            return None
+        return None
 
     def has_toolbar(self):
         return self._native_toolbar() is not None

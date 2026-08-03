@@ -62,7 +62,7 @@ async def test_closed_file_handle(app, app_probe):
 
     # Confirm that testing file status works.
     assert not is_open(path)
-    with path.open("rb"):  # noqa: ASYNC230
+    with path.open("rb"):
         assert is_open(path)
     assert not is_open(path)
 

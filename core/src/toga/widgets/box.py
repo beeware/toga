@@ -51,7 +51,6 @@ class Box(Widget):
 
     def focus(self) -> None:
         """No-op; Box cannot accept input focus."""
-        pass
 
 
 def Row(*args, **kwargs):

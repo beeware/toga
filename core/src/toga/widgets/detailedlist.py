@@ -120,7 +120,6 @@ class DetailedList(Widget):
 
     def focus(self) -> None:
         """No-op; DetailedList cannot accept input focus."""
-        pass
 
     @property
     def data(self) -> ListSourceT | ListSource:

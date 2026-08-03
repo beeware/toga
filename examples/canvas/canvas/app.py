@@ -582,7 +582,7 @@ class CanvasApp(toga.App):
             weight=self.get_weight(),
             style=self.get_style(),
         )
-        width, height = self.canvas.measure_text(
+        width, _height = self.canvas.measure_text(
             text, font, self.line_height_slider.value
         )
         text_kwargs = {

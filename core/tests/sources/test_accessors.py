@@ -7,7 +7,6 @@ from toga.sources.accessors import build_accessors, to_accessor
     "heading, accessor",
     [
         ("hello", "hello"),
-        ("hello", "hello"),
         ("Hello", "hello"),
         ("Hello1", "hello1"),
         ("Hello 1", "hello_1"),

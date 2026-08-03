@@ -34,8 +34,12 @@ You'll also notice in the full example below that the drawing operations utilize
 
 Here's the source code
 
+<!-- fmt:off -->
+
 ```python
 -8<- "tutorial4/tutorial/app.py"
 ```
+
+<!-- fmt:on -->
 
 In this example, we see a new Toga widget - [`Canvas`][toga.Canvas].

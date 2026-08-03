@@ -575,9 +575,7 @@ class PackLogic(BaseStyle):
                         # self._debug(
                         #     f"- flexible intrinsic {main_name} {child_alloc_main=}"
                         # )
-                        if ideal_main > child_alloc_main:
-                            # self._debug(f"  {ideal_main=}")
-                            child_alloc_main = ideal_main
+                        child_alloc_main = max(child_alloc_main, ideal_main)
 
                         child.style._layout_node_in_direction(
                             direction=self.direction,

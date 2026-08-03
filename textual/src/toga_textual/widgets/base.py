@@ -74,10 +74,10 @@ class Widget(Scalable, ABC):
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):  # noqa B027
+    def set_app(self, app):
         pass
 
-    def set_window(self, window):  # noqa B027
+    def set_window(self, window):
         pass
 
     def get_enabled(self):
@@ -92,7 +92,7 @@ class Widget(Scalable, ABC):
     def get_tab_index(self):
         return None
 
-    def set_tab_index(self, tab_index):  # noqa B027
+    def set_tab_index(self, tab_index):
         pass
 
     ######################################################################
@@ -164,19 +164,19 @@ class Widget(Scalable, ABC):
             self.scale_in_horizontal(margin_left),
         )
 
-    def set_text_align(self, alignment):  # noqa B027
+    def set_text_align(self, alignment):
         pass
 
     def set_hidden(self, hidden):
         self.native.visible = not hidden
 
-    def set_font(self, font):  # noqa B027
+    def set_font(self, font):
         pass
 
-    def set_color(self, color):  # noqa B027
+    def set_color(self, color):
         pass
 
-    def set_background_color(self, color):  # noqa B027
+    def set_background_color(self, color):
         pass
 
     ######################################################################
