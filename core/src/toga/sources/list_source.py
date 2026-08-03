@@ -98,8 +98,9 @@ class Row(Generic[T]):
         :param value: The new attribute value.
         """
         super().__setattr__(attr, value)
-        if not attr.startswith("_") and self._source is not None:
-            self._source.notify("change", item=self)
+        if not attr.startswith("_"):
+            if self._source is not None:
+                self._source.notify("change", item=self)
 
     def __delattr__(self, attr: str) -> None:
         """Remove an attribute from the Row object, notifying the source of the change.
@@ -107,8 +108,9 @@ class Row(Generic[T]):
         :param attr: The attribute to change.
         """
         super().__delattr__(attr)
-        if not attr.startswith("_") and self._source is not None:
-            self._source.notify("change", item=self)
+        if not attr.startswith("_"):
+            if self._source is not None:
+                self._source.notify("change", item=self)
 
 
 class ListSource(Source):

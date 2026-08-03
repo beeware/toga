@@ -57,7 +57,6 @@ extend-select = [
     "F",      # pyflakes
     "UP",     # pyupgrade
     "B",      # flake8-bugbear
-    "YTT",    # flake8-2020
     "ASYNC",  # flake8-async
     "C4",     # flake8-comprehensions
     "I",      # isort
@@ -75,7 +74,8 @@ ignore = [
     "DTZ011",
     "DTZ012",
     "RUF009",
-    "SIM102",
+    # The SIM rules are *very* opinionated, and don't necessarily make for better code.
+    "SIM102",  # collapsible-if makes code (and testing paths) harder to verify.
 ]
 
 [tool.ruff.lint.per-file-ignores]
