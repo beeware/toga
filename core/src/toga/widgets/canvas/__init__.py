@@ -55,14 +55,12 @@ def __getattr__(name):
 
 __all__ = [
     "Arc",
-    # States
     "BaseState",
     "BeginPath",
     "BezierCurveTo",
     "Canvas",
     "ClosePath",
     "DrawImage",
-    # Drawing Actions
     "DrawingAction",
     "Ellipse",
     "Fill",
@@ -88,7 +86,6 @@ __all__ = [
     "StrokeText",
     "Translate",
     "WriteText",
-    # Geometry
     "arc_to_bezier",
     "sweepangle",
 ]

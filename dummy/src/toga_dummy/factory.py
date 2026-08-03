@@ -44,12 +44,10 @@ def not_implemented(feature):
 
 
 __all__ = [
-    # Widgets
     "ActivityIndicator",
     "App",
     "Box",
     "Button",
-    # Hardware
     "Camera",
     "Canvas",
     "Command",
@@ -63,10 +61,8 @@ __all__ = [
     "ImageView",
     "Label",
     "Location",
-    # Windows
     "MainWindow",
     "MapView",
-    # Status Icons
     "MenuStatusIcon",
     "MultilineTextInput",
     "NumberInput",
