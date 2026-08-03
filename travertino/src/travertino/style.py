@@ -65,6 +65,8 @@ class BaseStyle(ABC):  # noqa: B024
                     ) from error
             # The above for loop should never run to completion, so that needs to be
             # excluded from coverage.
+            else:  # pragma: no cover
+                pass
 
     ######################################################################
     # End backwards compatibility

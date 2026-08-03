@@ -92,7 +92,11 @@ extend = "../pyproject.toml"
 # Ignores needed to pass the Ruff 0.16 update.
 [tool.ruff.lint.per-file-ignores]
 "src/travertino/properties/shorthand.py" = ["RUF012"]
-"src/travertino/style.py" = ["RUF012"]
+# The `else: pass  # pragma: no cover` is retained deliberately: it marks the
+# for-loop's "completed without raising" branch as intentionally excluded
+# from coverage. Removing it (per PLW0120) leaves that branch uncovered
+# with no pragma to exclude it, which fails the 100%-coverage requirement.
+"src/travertino/style.py" = ["RUF012", "PLW0120"]
 # The `h` parameter is annotated as `int`, but the `round()` call intentionally
 # also accepts (and rounds) floats at runtime; the `except TypeError` clause
 # handles genuinely invalid input.
