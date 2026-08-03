@@ -106,7 +106,7 @@ combine-as-imports = true
 known-third-party = [
     "android",  # isort defaults to making this first-party because it can't be imported.
     "textual",  # We don't ever import textual, so Ruff doesn't know about it.
-    "travertino", # In this repo, but still a separate package
+    "travertino",  # In this repo, but still a separate package
 ]
 known-first-party = [
     "testbed",
