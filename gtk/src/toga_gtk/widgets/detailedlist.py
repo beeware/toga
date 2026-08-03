@@ -56,23 +56,8 @@ class DetailedListRow(Gtk.ListBoxRow):
         and accessors from the detailedList"""
 
         # Set the title and subtitle as a block of HTML text.
-        try:
-            title = getattr(self.row, dl.accessors[0])
-            if title is not None:
-                title = str(title)
-            else:
-                title = dl.missing_value
-        except AttributeError:
-            title = dl.missing_value
-
-        try:
-            subtitle = getattr(self.row, dl.accessors[1])
-            if subtitle is not None:
-                subtitle = str(subtitle)
-            else:
-                subtitle = dl.missing_value
-        except AttributeError:
-            subtitle = dl.missing_value
+        title = dl._title(self.row)
+        subtitle = dl._subtitle(self.row)
 
         markup = "".join(
             [
@@ -89,10 +74,8 @@ class DetailedListRow(Gtk.ListBoxRow):
         if self.icon:
             self.content.remove(self.icon)
 
-        try:
-            pixbuf = getattr(self.row, dl.accessors[2])._impl.native(32)
-        except AttributeError:
-            pixbuf = None
+        icon = dl._icon(self.row)
+        pixbuf = icon._impl.native(32) if icon is not None else None
 
         if pixbuf is not None:
             self.icon = Gtk.Image.new_from_pixbuf(pixbuf)

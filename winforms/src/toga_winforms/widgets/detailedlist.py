@@ -746,14 +746,10 @@ class DetailedList(Widget):
 
     def _new_item(self, index) -> tuple[str, str, int]:
         row = self._data[index]
-
-        title, subtitle, icon = (
-            getattr(row, attr, None) for attr in self.interface.accessors
-        )
-
+        icon = self.interface._icon(row)
         return (
-            str(self._missing_value) if title is None else str(title),
-            str(self._missing_value) if subtitle is None else str(subtitle),
+            self.interface._title(row),
+            self.interface._subtitle(row),
             -1 if icon is None else self._image_index(icon._impl),
         )
 

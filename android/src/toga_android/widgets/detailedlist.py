@@ -140,14 +140,10 @@ class DetailedList(Widget):
         row_view.setOnLongClickListener(DetailedListOnLongClickListener(self, i))
         row_height = self.scale_in(64)
 
-        title, subtitle, icon = (
-            getattr(row, attr, None) for attr in self.interface.accessors
-        )
-
         # Add user-provided icon to layout.
         icon_image_view = ImageView(self._native_activity)
-        if icon is not None:
-            icon_image_view.setImageBitmap(icon._impl.native)
+        if self.interface._icon(row) is not None:
+            icon_image_view.setImageBitmap(self.interface._icon(row)._impl.native)
         icon_layout_params = RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.WRAP_CONTENT,
             RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -172,18 +168,14 @@ class DetailedList(Widget):
         text_container.setOrientation(LinearLayout.VERTICAL)
         text_container.setWeightSum(2.0)
 
-        # Create top & bottom text; add them to layout.
-        def get_string(value):
-            if value is None:
-                value = self.interface.missing_value
-            return str(value)
-
+        # _title() and _subtitle() handle None, convert to str, and return only the
+        # first line so that newline characters are not rendered by the TextView.
         top_text = TextView(self._native_activity)
-        top_text.setText(get_string(title))
+        top_text.setText(self.interface._title(row))
         top_text.setTextSize(20.0)
         top_text.setTextColor(self.get_theme_color(R.attr.textColorPrimary))
         bottom_text = TextView(self._native_activity)
-        bottom_text.setText(get_string(subtitle))
+        bottom_text.setText(self.interface._subtitle(row))
         bottom_text.setTextSize(16.0)
         bottom_text.setTextColor(self.get_theme_color(R.attr.textColorSecondary))
         top_text_params = LinearLayout.LayoutParams(

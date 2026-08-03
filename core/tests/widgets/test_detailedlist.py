@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
@@ -321,3 +322,66 @@ def test_scroll_to_bottom(detailedlist):
     detailedlist.scroll_to_bottom()
 
     assert_action_performed_with(detailedlist, "scroll to row", row=2)
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        # Plain text is returned unchanged
+        ("hello", "hello"),
+        # Non-string values are converted to string first
+        (42, "42"),
+        # None is replaced by the widget's missing_value (default is "")
+        (None, ""),
+        # Only the first line is returned when \n is present
+        ("hello\nworld", "hello"),
+        # Windows-style line endings (\r\n) are also handled
+        ("hello\r\nworld", "hello"),
+        # A leading newline means the first line is empty
+        ("\nhello", ""),
+        # A completely empty string stays empty
+        ("", ""),
+    ],
+)
+def test_as_text(detailedlist, value, expected):
+    """_as_text() converts a value to a single-line display string.
+
+    Only the first line of the string representation is returned.
+    None values are replaced by the widget's missing_value.
+    """
+    assert detailedlist._as_text(value) == expected
+
+
+def test_title(detailedlist):
+    """_title() reads the title accessor from a row and returns a single-line string."""
+    # Multiline value is truncated at the first newline
+    row = SimpleNamespace(key="hello\nworld", value="subtitle", icon=None)
+    assert detailedlist._title(row) == "hello"
+
+
+def test_title_missing_attribute(detailedlist):
+    """_title() returns missing_value when the row has no title attribute."""
+    row = SimpleNamespace(value="subtitle", icon=None)  # no 'key' attribute
+    assert detailedlist._title(row) == ""  # default missing_value is ""
+
+
+def test_subtitle(detailedlist):
+    """_subtitle() reads the subtitle attribute from a row as a single-line string."""
+    row = SimpleNamespace(key="title", value="hello\nworld", icon=None)
+    assert detailedlist._subtitle(row) == "hello"
+
+
+def test_subtitle_missing_attribute(detailedlist):
+    """_subtitle() returns missing_value when the row has no subtitle attribute."""
+    row = SimpleNamespace(key="title", icon=None)  # no 'value' attribute
+    assert detailedlist._subtitle(row) == ""  # default missing_value is ""
+
+
+def test_icon(detailedlist):
+    """_icon() returns the icon attribute of a row, or None if absent."""
+    mock_icon = object()
+    row = SimpleNamespace(key="", value="", icon=mock_icon)
+    assert detailedlist._icon(row) is mock_icon
+    assert detailedlist._icon(SimpleNamespace(key="", value="", icon=None)) is None
+    # Missing attribute returns None via getattr default
+    assert detailedlist._icon(SimpleNamespace(key="", value="")) is None
