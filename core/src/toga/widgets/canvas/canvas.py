@@ -200,7 +200,6 @@ class Canvas(Widget, DrawingActionDispatch):
 
     def focus(self) -> None:
         """No-op; Canvas cannot accept input focus."""
-        pass
 
     @property
     def root_state(self) -> State:

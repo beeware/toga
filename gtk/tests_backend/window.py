@@ -48,9 +48,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         if Adw is None:
             assert isinstance(self.native, Gtk.Window)
         else:
-            assert isinstance(self.native, Adw.Window) or isinstance(
-                self.native, Adw.ApplicationWindow
-            )
+            assert isinstance(self.native, (Adw.Window, Adw.ApplicationWindow))
 
     async def wait_for_window(
         self,

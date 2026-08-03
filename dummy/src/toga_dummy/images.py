@@ -33,8 +33,8 @@ class Image(LoggedObject):
     def __init__(
         self,
         interface: toga.Image,
-        data: bytes = None,
-        raw: BytesIO = None,
+        data: bytes | None = None,
+        raw: BytesIO | None = None,
     ):
         super().__init__()
         self.interface = interface

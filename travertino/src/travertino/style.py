@@ -65,8 +65,6 @@ class BaseStyle(ABC):  # noqa: B024
                     ) from error
             # The above for loop should never run to completion, so that needs to be
             # excluded from coverage.
-            else:  # pragma: no cover
-                pass
 
     ######################################################################
     # End backwards compatibility
@@ -329,7 +327,7 @@ class BaseStyle(ABC):  # noqa: B024
 
     def __repr__(self):
         properties = ", ".join(
-            f"{name}={repr(value)}" for name, value in sorted(self.items())
+            f"{name}={value!r}" for name, value in sorted(self.items())
         )
         return f"{type(self).__name__}({properties})"
 

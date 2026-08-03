@@ -635,10 +635,9 @@ async def test_stroke_and_fill_state(canvas, probe):
 
 async def test_nested_stroke_and_fill_state(canvas, probe):
     """Inner states don't override unsupplied attributes."""
-    with canvas.fill(fill_style=GOLDENROD):
-        with canvas.fill():
-            # Should still be goldenrod
-            canvas.rect(10, 10, 50, 50)
+    with canvas.fill(fill_style=GOLDENROD), canvas.fill():
+        # Should still be goldenrod
+        canvas.rect(10, 10, 50, 50)
 
     with canvas.stroke(stroke_style=REBECCAPURPLE, line_width=15, line_dash=[15, 14]):
         with canvas.stroke():
@@ -853,9 +852,8 @@ async def test_reset_transform(canvas, probe):
         nonlocal i
 
         offset = 15 if offset else 0
-        with canvas.fill():
-            with canvas.stroke():
-                canvas.rect(10 + offset, 10 + offset, 40, 40)
+        with canvas.fill(), canvas.stroke():
+            canvas.rect(10 + offset, 10 + offset, 40, 40)
 
         with canvas.state(fill_style=WHITE):
             # The text is *partly* for helpful visual labeling, but it also makes sure
@@ -1182,9 +1180,8 @@ class RectDrawer:
         self.x = self.y = self.GAP
 
     def draw(self, canvas):
-        with canvas.stroke():
-            with canvas.fill():
-                canvas.rect(self.x, self.y, self.SIDE, self.SIDE)
+        with canvas.stroke(), canvas.fill():
+            canvas.rect(self.x, self.y, self.SIDE, self.SIDE)
 
         self.x += self.SIDE + self.GAP
         if self.x >= 150:

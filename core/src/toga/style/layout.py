@@ -66,11 +66,10 @@ class PackLogic(BaseStyle):
                 else:
                     value = LEFT
             self._applicator.set_text_align(value)
-        if "text_direction" in names:
-            if self.text_align is None:
-                self._applicator.set_text_align(
-                    RIGHT if self.text_direction == RTL else LEFT
-                )
+        if "text_direction" in names and self.text_align is None:
+            self._applicator.set_text_align(
+                RIGHT if self.text_direction == RTL else LEFT
+            )
         if "color" in names:
             self._applicator.set_color(self.color)
         if "background_color" in names:
@@ -575,9 +574,7 @@ class PackLogic(BaseStyle):
                         # self._debug(
                         #     f"- flexible intrinsic {main_name} {child_alloc_main=}"
                         # )
-                        if ideal_main > child_alloc_main:
-                            # self._debug(f"  {ideal_main=}")
-                            child_alloc_main = ideal_main
+                        child_alloc_main = max(child_alloc_main, ideal_main)
 
                         child.style._layout_node_in_direction(
                             direction=self.direction,

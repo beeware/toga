@@ -11,7 +11,7 @@ To see how this works in practice, lets look at a more complex example, involvin
 Here's the source code:
 
 ```python
--8<-  "tutorial2/tutorial/app.py"
+-8 < -"tutorial2/tutorial/app.py"
 ```
 
 In order to render the icons, you will need to move the icons folder into the same directory as your app file.

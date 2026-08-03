@@ -91,7 +91,7 @@ async def doc_app(monkeypatch, example_file):
     )
     # The app will have a single window; set this window as the current window
     # so that dialogs have something to hang off.
-    app.current_window = list(app.windows)[0]
+    app.current_window = next(iter(app.windows))
     return app
 
 
@@ -126,7 +126,7 @@ async def test_create_no_cmdline(monkeypatch):
 
     # Document window has been created and shown
     assert len(app.windows) == 1
-    assert list(app.windows)[0] == app.documents[0].main_window
+    assert next(iter(app.windows)) == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
@@ -239,7 +239,7 @@ async def test_create_with_cmdline(monkeypatch, example_file):
 
     # Document window has been created and shown
     assert len(app.windows) == 1
-    assert list(app.windows)[0] == app.documents[0].main_window
+    assert next(iter(app.windows)) == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
@@ -275,7 +275,7 @@ async def test_create_with_unknown_document_type(monkeypatch, capsys):
 
     # Document window has been created and shown
     assert len(app.windows) == 1
-    assert list(app.windows)[0] == app.documents[0].main_window
+    assert next(iter(app.windows)) == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
@@ -302,7 +302,7 @@ async def test_create_with_missing_file(monkeypatch, capsys):
     # Document window has been created.
     # However, it will not be shown, as the app will exit.
     assert len(app.windows) == 1
-    assert list(app.windows)[0] == app.documents[0].main_window
+    assert next(iter(app.windows)) == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_not_performed(app.documents[0].main_window, "show")
 
@@ -332,7 +332,7 @@ async def test_create_with_bad_file(monkeypatch, example_file, capsys):
     # Document window has been created.
     # However, it will not be shown, as the app will exit.
     assert len(app.windows) == 1
-    assert list(app.windows)[0] == app.documents[0].main_window
+    assert next(iter(app.windows)) == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_not_performed(app.documents[0].main_window, "show")
 
@@ -429,7 +429,7 @@ async def test_close_last_document_non_persistent(
 
     # Close the first document window (in a running app loop)
     async def close_window(app):
-        list(app.windows)[0].close()
+        next(iter(app.windows)).close()
 
     await app.loop.create_task(close_window(app))
 
@@ -469,7 +469,7 @@ async def test_close_last_document_persistent(monkeypatch, example_file, other_f
 
     # Close the first document window (in a running app loop)
     async def close_window(app):
-        list(app.windows)[0].close()
+        next(iter(app.windows)).close()
 
     await app.loop.create_task(close_window(app))
 

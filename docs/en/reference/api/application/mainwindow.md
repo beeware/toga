@@ -13,7 +13,7 @@ Toolbar items can be added by adding them to [`toolbar`][toga.MainWindow.toolbar
 ```python
 import toga
 
-main_window = toga.MainWindow(title='My Application')
+main_window = toga.MainWindow(title="My Application")
 
 self.toga.App.main_window = main_window
 main_window.show()

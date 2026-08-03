@@ -45,5 +45,5 @@ class TimeInput(Widget):
             value.hour,
             value.minute,
             value.second,
-            int(round(value.microsecond / 1000)),
+            round(value.microsecond / 1000),
         )

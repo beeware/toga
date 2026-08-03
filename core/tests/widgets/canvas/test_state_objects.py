@@ -272,9 +272,8 @@ def test_transforms(widget):
     with widget.rotate(3) as rotate:
         widget.move_to(10, 10)
 
-    with widget.scale(2, 2) as scale:
-        with widget.translate(0, 10) as translate:
-            widget.move_to(0, 0)
+    with widget.scale(2, 2) as scale, widget.translate(0, 10) as translate:
+        widget.move_to(0, 0)
 
     widget.line_to(100, 100)
 
@@ -386,9 +385,8 @@ def test_enter_closed_state(widget):
     with widget.stroke() as stroke:
         pass
 
-    with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH):
-        with stroke:
-            pass
+    with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH), stroke:
+        pass
 
 
 def test_enter_state_out_of_order(widget):
@@ -396,6 +394,5 @@ def test_enter_state_out_of_order(widget):
     stroke = widget.stroke()
     widget.rect(0, 0, 0, 0)
 
-    with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH):
-        with stroke:
-            pass
+    with pytest.raises(RuntimeError, match=NON_REENTRANT_MATCH), stroke:
+        pass

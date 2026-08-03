@@ -30,7 +30,6 @@ class Label(Widget):
 
     def focus(self) -> None:
         """No-op; Label cannot accept input focus."""
-        pass
 
     @property
     def text(self) -> str:

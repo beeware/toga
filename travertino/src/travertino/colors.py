@@ -206,7 +206,7 @@ class Color(ABC):
 
 
 class rgb(Color):
-    __slots__ = ["_r", "_g", "_b", "_hsl"]
+    __slots__ = ["_b", "_g", "_hsl", "_r"]
 
     def __init__(self, r: int, g: int, b: int, a: float = 1.0):
         """A color specified via red, green, and blue channels, plus transparency.
@@ -304,7 +304,7 @@ rgba = rgb
 
 
 class hsl(Color):
-    __slots__ = ["_h", "_s", "_l", "_rgb"]
+    __slots__ = ["_h", "_l", "_rgb", "_s"]
 
     def __init__(self, h: int, s: float, l: float, a: float = 1.0):  # noqa: E741
         """A color specified via hue, saturation, and lightness, plus transparency.
@@ -321,7 +321,7 @@ class hsl(Color):
             lower values will be clipped. Defaults to fully opaque.
         """
         try:
-            self._h = round(h) % 360
+            self._h = (h) % 360
         except TypeError as exc:
             raise TypeError(f"Value for hue must be a number; got {h!r}") from exc
         self._s = self._validate_zero_to_one("saturation", s)

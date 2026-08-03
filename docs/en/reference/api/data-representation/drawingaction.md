@@ -31,7 +31,6 @@ canvas.stroke()
 print(canvas.root_state.drawing_actions)
 # [Rect(x=0, y=0, width=10, height=10),
 #  Stroke(stroke_style=None, line_width=None, line_dash=None)]
-
 ```
 
 When you save and then restore the state of the drawing context using a context manager (e.g., [`state()`][toga.Canvas.state], [`stroke()`][toga.Canvas.stroke], or [`fill()`][toga.Canvas.fill]), a new state object is created and inserted into the currently active state's `drawing_actions`. This is possible because `BaseState` is itself a subclass of `DrawingAction`.

@@ -40,6 +40,7 @@ This is particularly important if you might change the source that the listener 
 ```python
 class DataSourceListener:
     ...
+
     @property
     def data(self):
         return self._data

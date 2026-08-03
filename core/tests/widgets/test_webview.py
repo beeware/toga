@@ -404,10 +404,7 @@ def test_navigation_starting_sync(widget, initial_url, url, final_url):
     """Navigation can be controlled by a synchronous handler."""
 
     def handler(widget, url, **kwargs):
-        if url == "https://beeware.org":
-            return True
-        else:
-            return False
+        return url == "https://beeware.org"
 
     widget.url = initial_url
     widget.on_navigation_starting = handler
@@ -430,10 +427,7 @@ async def test_navigation_starting_async(widget, initial_url, url, final_url):
     """Navigation can be controlled by an async handler."""
 
     async def handler(widget, url, **kwargs):
-        if url == "https://beeware.org":
-            return True
-        else:
-            return False
+        return url == "https://beeware.org"
 
     widget.url = initial_url
     widget.on_navigation_starting = handler

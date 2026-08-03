@@ -37,14 +37,13 @@ class StartApp(toga.App):
             self.canvas.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
 
     def stroke_head(self):
-        with self.canvas.stroke(line_width=4.0):
-            with self.canvas.close_path():
-                self.canvas.move_to(112, 103)
-                self.canvas.line_to(112, 113)
-                self.canvas.ellipse(73, 114, 39, 47, 0, 0, math.pi)
-                self.canvas.line_to(35, 84)
-                self.canvas.arc(65, 84, 30, math.pi, 3 * math.pi / 2)
-                self.canvas.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
+        with self.canvas.stroke(line_width=4.0), self.canvas.close_path():
+            self.canvas.move_to(112, 103)
+            self.canvas.line_to(112, 113)
+            self.canvas.ellipse(73, 114, 39, 47, 0, 0, math.pi)
+            self.canvas.line_to(35, 84)
+            self.canvas.arc(65, 84, 30, math.pi, 3 * math.pi / 2)
+            self.canvas.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
 
     def draw_eyes(self):
         with self.canvas.fill(fill_style=WHITE):

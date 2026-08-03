@@ -31,6 +31,7 @@ import toga
 
 toga.Widget.DEBUG_LAYOUT_ENABLED = True
 
+
 class DebugLayoutColors(toga.App):
     def startup(self):
         main_box = toga.Box()
@@ -43,8 +44,12 @@ class DebugLayoutColors(toga.App):
         self.main_window = toga.MainWindow(content=main_box)
         self.main_window.show()
 
+
 def main():
-    return DebugLayoutColors("Debug Layout Colors Demo", "org.beeware.toga.debug.layout")
+    return DebugLayoutColors(
+        "Debug Layout Colors Demo", "org.beeware.toga.debug.layout"
+    )
+
 
 if __name__ == "__main__":
     main().main_loop()

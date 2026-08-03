@@ -9,7 +9,7 @@ So - let's build a tool that lets our pet yak graze the web - a primitive web br
 Here's the source code:
 
 ```python
--8<- "tutorial3/tutorial/app.py"
+-8 < -"tutorial3/tutorial/app.py"
 ```
 
 In this example, you can see an application being developed as a class, rather than as a build method. You can also see boxes defined in a declarative manner - if you don't need to retain a reference to a particular widget, you can define a widget inline, and pass it as an argument to a box, and it will become a child of that box.

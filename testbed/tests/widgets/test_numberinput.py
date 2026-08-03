@@ -136,13 +136,13 @@ async def test_focus_value_clipping(widget, probe, other):
     assert handler.mock_calls == [call(widget)] * event_count
 
     for char, value, events_delta in [
-        ("1", Decimal("100"), allows_unchanged_updates),  # less than min
-        ("2", Decimal("100"), allows_unchanged_updates),  # less than min
-        ("3", Decimal("123"), 1),
-        ("4", Decimal("1234"), 1),
+        ("1", Decimal(100), allows_unchanged_updates),  # less than min
+        ("2", Decimal(100), allows_unchanged_updates),  # less than min
+        ("3", Decimal(123), 1),
+        ("4", Decimal(1234), 1),
         (
             "5",
-            Decimal("2000") if allows_unchanged_updates else Decimal("1234"),
+            Decimal(2000) if allows_unchanged_updates else Decimal(1234),
             allows_unchanged_updates,
         ),  # exceeds max
     ]:
@@ -157,7 +157,7 @@ async def test_focus_value_clipping(widget, probe, other):
     # On loss of focus, the value will be clipped
     other.focus()
     await probe.redraw("Lost focus; value is clipped")
-    expected_value = Decimal("2000") if allows_unchanged_updates else Decimal("1234")
+    expected_value = Decimal(2000) if allows_unchanged_updates else Decimal(1234)
     assert widget.value == expected_value
     # The raw value from the implementation matches the widget
     expected_str = "2000" if allows_unchanged_updates else "1234"
@@ -169,9 +169,7 @@ async def test_value(widget, probe):
     # If the implementation allows empty values, the widget can return None.
     # Otherwise, a value set to None will return zero.
     empty_value = (
-        None
-        if (probe.allows_invalid_value or probe.allows_empty_value)
-        else Decimal("0")
+        None if (probe.allows_invalid_value or probe.allows_empty_value) else Decimal(0)
     )
 
     for text, value in [
@@ -198,7 +196,7 @@ async def test_increment_decrement(widget, probe):
     widget.value = 12.34
     await probe.redraw("Widget value should be 12")
 
-    assert widget.value == Decimal("12")
+    assert widget.value == Decimal(12)
     assert handler.mock_calls == [call(widget)]
 
     # Hit the increment button

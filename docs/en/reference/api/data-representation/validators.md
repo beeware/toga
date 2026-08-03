@@ -19,10 +19,7 @@ A list of validators can then be provided to any widget that performs validation
 import toga
 from toga.validators import MinLength
 
-widget = toga.TextInput(validators=[
-    must_say_hello,
-    MinLength(10)
-])
+widget = toga.TextInput(validators=[must_say_hello, MinLength(10)])
 ```
 
 Whenever the input changes, all validators will be evaluated in the order they have been specified. The first validator to fail will put the widget into an "error" state, and the error message returned by that validator will be displayed to the user.

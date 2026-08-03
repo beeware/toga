@@ -535,12 +535,12 @@ class App:
             self._main_window = window
             try:
                 self._impl.set_main_window(window)
-            except Exception as e:
+            except Exception:
                 # If the main window could not be changed, revert to the previous value
                 # then reraise the exception
                 if old_window is not App._UNDEFINED:
                     self._main_window = old_window
-                raise e
+                raise
         else:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 
@@ -621,10 +621,9 @@ class App:
         one window, the app's default initial document handling will be triggered.
         """
         # Process command line arguments if the backend doesn't handle them
-        if not self._impl.HANDLES_COMMAND_LINE:
-            if self.documents.types:
-                for filename in sys.argv[1:]:
-                    self._open_initial_document(filename)
+        if not self._impl.HANDLES_COMMAND_LINE and self.documents.types:
+            for filename in sys.argv[1:]:
+                self._open_initial_document(filename)
 
         # Ensure there is at least one window
         if self.main_window is None and len(self.windows) == 0:

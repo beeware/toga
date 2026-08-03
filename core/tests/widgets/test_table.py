@@ -904,12 +904,14 @@ def test_insert_column_heading_by_accessor(table):
 
 def test_insert_column_unknown_accessor(table):
     """If the insertion index accessor is unknown, an error is raised."""
-    with pytest.raises(ValueError, match=r"not in list"):
-        with pytest.warns(
+    with (
+        pytest.raises(ValueError, match=r"not in list"),
+        pytest.warns(
             DeprecationWarning,
             match=r"Using accessors is deprecated; use columns instead.",
-        ):
-            table.insert_column("unknown", AccessorColumn("New Column", "extra"))
+        ),
+    ):
+        table.insert_column("unknown", AccessorColumn("New Column", "extra"))
 
 
 def test_insert_column_heading_column_object_index(table):
@@ -1403,12 +1405,14 @@ def test_remove_column_accessor(table):
 def test_remove_column_unknown_accessor(table):
     """If the column named for removal doesn't exist, an error is raised."""
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=("Using accessors is deprecated; use columns instead."),
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=("Using accessors is deprecated; use columns instead."),
+        ),
+        pytest.raises(ValueError, match=r"not in list"),
     ):
-        with pytest.raises(ValueError, match=r"not in list"):
-            table.remove_column("unknown")
+        table.remove_column("unknown")
 
 
 def test_remove_column_invalid_index(table):

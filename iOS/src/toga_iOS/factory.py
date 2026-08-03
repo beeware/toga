@@ -57,42 +57,40 @@ def not_implemented(feature):  # pragma: no cover
 
 
 __all__ = [
-    "not_implemented",
     "ActivityIndicator",
     "App",
-    "Command",
-    # Resources
-    "native_color",  # colors
-    "Font",
-    "Icon",
-    "Image",
-    "Paths",
-    "dialogs",
-    # Hardware
-    "Camera",
-    "Location",
-    # Status icons
-    "MenuStatusIcon",
-    "SimpleStatusIcon",
-    "StatusIconSet",
     # Widgets
     "Box",
     "Button",
+    # Hardware
+    "Camera",
     "Canvas",
+    "Command",
     "DateInput",
     "DetailedList",
     "Divider",
+    "Font",
+    "Icon",
+    "Image",
     "ImageView",
     "Label",
+    "Location",
+    # Windows
+    "MainWindow",
     "MapView",
+    # Status icons
+    "MenuStatusIcon",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
     "PasswordInput",
+    "Paths",
     "ProgressBar",
     "ScrollContainer",
     "Selection",
+    "SimpleStatusIcon",
     "Slider",
+    "StatusIconSet",
     # 'SplitContainer',
     "Switch",
     # 'Table',
@@ -100,9 +98,11 @@ __all__ = [
     "TimeInput",
     # 'Tree',
     "WebView",
-    # Windows
-    "MainWindow",
     "Window",
+    "dialogs",
+    # Resources
+    "native_color",  # colors
+    "not_implemented",
 ]
 
 

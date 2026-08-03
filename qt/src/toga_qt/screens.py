@@ -22,14 +22,7 @@ class Screen:
     def get_name(self):
         # FIXME:  What combinations of values are guaranteed to be
         # unique?
-        return "|".join(
-            [
-                self.native.name(),
-                self.native.model(),
-                self.native.manufacturer(),
-                self.native.serialNumber(),
-            ]
-        )
+        return f"{self.native.name()}|{self.native.model()}|{self.native.manufacturer()}|{self.native.serialNumber()}"
 
     def get_origin(self) -> Position:
         return Position(

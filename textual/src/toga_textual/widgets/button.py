@@ -31,7 +31,6 @@ class Button(Widget):
     def set_icon(self, icon):
         self._icon = icon
         # Icons aren't supported on Textual
-        pass
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(len(self.native.label) + 8)

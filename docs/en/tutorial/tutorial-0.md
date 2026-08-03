@@ -100,7 +100,7 @@ After a successful installation of Toga you are ready to get coding.
 Create a new file called `helloworld.py` in your `toga-tutorial` directory, and add the following code for the "Hello world" app:
 
 ```python
--8<- "tutorial0/tutorial/app.py"
+-8 < -"tutorial0/tutorial/app.py"
 ```
 
 Let's walk through this one line at a time.

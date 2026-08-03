@@ -420,17 +420,16 @@ class DocumentWindow(MainWindow):
         return self.doc.title
 
     async def _confirm_close(self, window, **kwargs):
-        if self.doc.modified:
-            if await self.dialog(
-                toga.QuestionDialog(
-                    "Save changes?",
-                    (
-                        "This document has unsaved changes. Do you want to save these "
-                        "changes?"
-                    ),
-                )
-            ):
-                return await self.save()
+        if self.doc.modified and await self.dialog(
+            toga.QuestionDialog(
+                "Save changes?",
+                (
+                    "This document has unsaved changes. Do you want to save these "
+                    "changes?"
+                ),
+            )
+        ):
+            return await self.save()
         return True
 
     async def _commit(self):

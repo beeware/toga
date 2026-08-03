@@ -1010,9 +1010,9 @@ def test_insert_column_unknown_accessor(tree):
             DeprecationWarning,
             match=r"Using accessors is deprecated; use columns instead.",
         ),
+        pytest.raises(ValueError, match=r"not in list"),
     ):
-        with pytest.raises(ValueError, match=r"not in list"):
-            tree.insert_column("unknown", "New Column", accessor="extra")
+        tree.insert_column("unknown", "New Column", accessor="extra")
 
 
 def test_insert_column_heading_column_object_index(tree):
@@ -1507,12 +1507,14 @@ def test_remove_column_accessor(tree):
 def test_remove_column_unknown_accessor(tree):
     """If the column named for removal doesn't exist, an error is raised."""
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Using accessors is deprecated; use columns instead.",
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Using accessors is deprecated; use columns instead.",
+        ),
+        pytest.raises(ValueError, match=r"not in list"),
     ):
-        with pytest.raises(ValueError, match=r"not in list"):
-            tree.remove_column("unknown")
+        tree.remove_column("unknown")
 
 
 def test_remove_column_invalid_index(tree):

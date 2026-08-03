@@ -51,7 +51,6 @@ class Divider(Widget):
 
     def focus(self) -> None:
         """No-op; Divider cannot accept input focus."""
-        pass
 
     @property
     def direction(self) -> Direction:

@@ -35,7 +35,7 @@ You'll also notice in the full example below that the drawing operations utilize
 Here's the source code
 
 ```python
--8<- "tutorial4/tutorial/app.py"
+-8 < -"tutorial4/tutorial/app.py"
 ```
 
 In this example, we see a new Toga widget - [`Canvas`][toga.Canvas].

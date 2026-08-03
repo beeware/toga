@@ -49,49 +49,49 @@ def not_implemented(feature):  # pragma: no cover
 
 
 __all__ = [
-    "not_implemented",
+    # Widgets
+    "ActivityIndicator",
     "App",
+    "Box",
+    "Button",
+    "Canvas",
     "Command",
+    "DateInput",
+    "DetailedList",
+    "Divider",
     # Resources
     "Font",
     "Icon",
     "Image",
-    "Paths",
-    "dialogs",
-    # Hardware
-    "Location",
-    # Status icons
-    "MenuStatusIcon",
-    "SimpleStatusIcon",
-    "StatusIconSet",
-    # Widgets
-    "ActivityIndicator",
-    "Box",
-    "Button",
-    "Canvas",
-    "DateInput",
-    "DetailedList",
-    "Divider",
     "ImageView",
     "Label",
+    # Hardware
+    "Location",
+    # Windows
+    "MainWindow",
     "MapView",
+    # Status icons
+    "MenuStatusIcon",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
     "PasswordInput",
+    "Paths",
     "ProgressBar",
     "ScrollContainer",
     "Selection",
+    "SimpleStatusIcon",
     "Slider",
     "SplitContainer",
+    "StatusIconSet",
     "Switch",
     "Table",
     "TextInput",
     "Tree",
     "WebView",
-    # Windows
-    "MainWindow",
     "Window",
+    "dialogs",
+    "not_implemented",
 ]
 
 

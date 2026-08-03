@@ -92,7 +92,6 @@ class ScrollContainer(Widget):
 
     def focus(self) -> None:
         """No-op; ScrollContainer cannot accept input focus."""
-        pass
 
     @property
     def content(self) -> Widget | None:
@@ -232,8 +231,7 @@ class ScrollContainer(Widget):
                 horizontal_position = 0
             else:
                 max_value = self.max_horizontal_position
-                if horizontal_position > max_value:
-                    horizontal_position = max_value
+                horizontal_position = min(horizontal_position, max_value)
         else:
             horizontal_position = self.horizontal_position
 
@@ -242,8 +240,7 @@ class ScrollContainer(Widget):
                 vertical_position = 0
             else:
                 max_value = self.max_vertical_position
-                if vertical_position > max_value:
-                    vertical_position = max_value
+                vertical_position = min(vertical_position, max_value)
         else:
             vertical_position = self.vertical_position
 
