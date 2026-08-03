@@ -20,6 +20,7 @@ from toga_cocoa.libs import (
     NSMutableDictionary,
     NSNumber,
     NSScreen,
+    NSTitleBinding,
     NSToolbar,
     NSToolbarItem,
     NSWindow,
@@ -208,9 +209,11 @@ class TogaWindow(NSWindow):
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, position, size):
         self.interface = interface
         self.interface._impl = self
+
+        self._title = ""
 
         mask = NSWindowStyleMask.Titled
         if self.interface.closable:
@@ -230,6 +233,12 @@ class Window:
             backing=NSBackingStoreBuffered,
             defer=False,
         )
+        self.native.bind(
+            NSTitleBinding,
+            toObject=self.native,
+            withKeyPath="contentViewController.title",
+            options=None,
+        )
         self.native.interface = self.interface
         self.native.impl = self
 
@@ -242,7 +251,6 @@ class Window:
         # Pending Window state transition variable:
         self._pending_state_transition = None
 
-        self.set_title(title)
         self.set_size(size)
         self.set_position(position if position is not None else _initial_position())
 
@@ -261,10 +269,11 @@ class Window:
     ######################################################################
 
     def get_title(self):
-        return str(self.native.title)
+        return str(self._scaffold.title)
 
     def set_title(self, title):
-        self.native.title = title
+        self._title = title
+        self._scaffold.title = title
 
     ######################################################################
     # Window lifecycle
@@ -292,9 +301,11 @@ class Window:
         self.container.min_width = self.interface.content.layout.min_width
         self.container.min_height = self.interface.content.layout.min_height
 
-    def set_content(self, widget):
+    def set_scaffold(self, scaffold):
+        self._scaffold = scaffold
         # Set the content of the window's container
-        self.container.content = widget
+        self.native.contentViewController = scaffold.container.controller
+        scaffold.title = self._title
 
     ######################################################################
     # Window size
@@ -527,8 +538,8 @@ class Window:
 
 
 class MainWindow(Window):
-    def __init__(self, interface, title, position, size):
-        super().__init__(interface, title, position, size)
+    def __init__(self, interface, position, size):
+        super().__init__(interface, position, size)
 
         # By default, no toolbar
         self._toolbar_items = {}

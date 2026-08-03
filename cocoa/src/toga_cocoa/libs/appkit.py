@@ -838,3 +838,8 @@ class NSDatePickerStyle(IntEnum):
 # NSDatePicker.h
 
 NSDatePicker = ObjCClass("NSDatePicker")
+
+######################################################################
+# NSKeyValueBinding.h
+
+NSTitleBinding = objc_const(appkit, "NSTitleBinding")
