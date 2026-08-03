@@ -321,7 +321,7 @@ class hsl(Color):
             lower values will be clipped. Defaults to fully opaque.
         """
         try:
-            self._h = (h) % 360
+            self._h = round(h) % 360
         except TypeError as exc:
             raise TypeError(f"Value for hue must be a number; got {h!r}") from exc
         self._s = self._validate_zero_to_one("saturation", s)

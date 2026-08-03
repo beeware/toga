@@ -110,7 +110,8 @@ class TimeInput(Widget):
         if self.max < min:
             self._impl.set_max_time(min)
         self._impl.set_min_time(min)
-        self.value = max(self.value, min)
+        if self.value < min:
+            self.value = min
 
     @property
     def max(self) -> datetime.time:
@@ -133,7 +134,8 @@ class TimeInput(Widget):
         if self.min > max:
             self._impl.set_min_time(max)
         self._impl.set_max_time(max)
-        self.value = min(self.value, max)
+        if self.value > max:
+            self.value = max
 
     @property
     def on_change(self) -> OnChangeHandler:

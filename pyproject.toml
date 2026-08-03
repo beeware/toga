@@ -89,8 +89,18 @@ extend-select = [
 "core/src/toga/style/pack.py" = ["RUF009"]
 "core/src/toga/widgets/base.py" = ["SIM102"]
 "core/src/toga/widgets/canvas/state.py" = ["RUF009"]
-"core/src/toga/widgets/dateinput.py" = ["DTZ011"]
-"core/src/toga/widgets/timeinput.py" = ["DTZ005"]
+"core/src/toga/widgets/dateinput.py" = [
+    "DTZ011",
+    # The `if` form is retained deliberately: converting to `self.value =
+    # max(self.value, min)` unconditionally invokes the `value` setter (and
+    # its `on_change` side effect) even when no clipping is required.
+    "PLR1730",
+]
+"core/src/toga/widgets/timeinput.py" = [
+    "DTZ005",
+    # See the comment on the equivalent dateinput.py ignore above.
+    "PLR1730",
+]
 "core/src/toga/window.py" = ["PLC0105"]
 "core/tests/app/test_document_app.py" = ["RUF012"]
 "core/tests/command/test_command.py" = ["PLR0124"]

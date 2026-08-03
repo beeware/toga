@@ -93,6 +93,10 @@ extend = "../pyproject.toml"
 [tool.ruff.lint.per-file-ignores]
 "src/travertino/properties/shorthand.py" = ["RUF012"]
 "src/travertino/style.py" = ["RUF012"]
+# The `h` parameter is annotated as `int`, but the `round()` call intentionally
+# also accepts (and rounds) floats at runtime; the `except TypeError` clause
+# handles genuinely invalid input.
+"src/travertino/colors.py" = ["RUF057"]
 "tests/colors/test_alpha_blending.py" = ["PT014"]
 "tests/style/style_classes.py" = ["RUF009"]
 
