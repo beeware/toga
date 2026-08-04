@@ -3,6 +3,7 @@ from functools import partial
 from unittest.mock import Mock
 
 import pytest
+from tests_backend.scaffolds.base import ScaffoldProbe
 
 import toga
 from toga import Position, Size
@@ -259,7 +260,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         window_information = {}
         window_information["window"] = window
         window_information["window_probe"] = window_probe(app, window)
-        window_information["scaffold_probe"] = window_probe(app, window).scaffold_probe
+        window_information["scaffold_probe"] = ScaffoldProbe(window.scaffold)
         window_information["initial_screen"] = window_information["window"].screen
         window_information["paired_screen"] = app.screens[i]
         window_information["initial_content_size"] = window_information[

@@ -219,7 +219,7 @@ class Window:
 
     def get_size(self) -> Size:
         if self.interface.state == WindowState.PRESENTATION:
-            native_frame = self.native.contentViewController.view.native.frame
+            native_frame = self.native.contentViewController.view.frame
         else:
             native_frame = self.native.frame
         return Size(int(native_frame.size.width), int(native_frame.size.height))

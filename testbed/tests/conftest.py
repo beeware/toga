@@ -161,8 +161,11 @@ async def main_window_probe(app, main_window):
 
 
 @fixture
-async def scaffold_probe(main_window_probe):
-    yield main_window_probe.scaffold_probe
+async def scaffold_probe(main_window):
+    # This needs to be late to avoid circular imports
+    from tests_backend.scaffolds.base import ScaffoldProbe
+
+    return ScaffoldProbe(main_window.scaffold)
 
 
 def pytest_asyncio_loop_factories(config, item):

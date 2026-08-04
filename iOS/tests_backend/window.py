@@ -29,13 +29,9 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
         return _state_assertion
 
-    @property
-    def scaffold_probe(self):
-        return ScaffoldProbe(self.window.scaffold)
-
     async def wait_for_window(self, message, state=None):
         await self.redraw(message)
-        await self.scaffold_probe.wait_for_layout()
+        await ScaffoldProbe(self.window.scaffold).wait_for_layout()
 
         # If a specific window state has been requested, wait for that state to occur.
         if state:
