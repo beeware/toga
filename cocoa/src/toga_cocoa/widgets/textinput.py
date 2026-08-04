@@ -185,6 +185,10 @@ class TextInput(Widget):
         self.native.cell.placeholderString = value
 
     def set_text_align(self, value):
+        if self.interface.window and self.has_focus:
+            # Drop focus if we're currently focussed, or else alignment setting
+            # will not work properly with Cocoa
+            self.interface.window._impl.native.makeFirstResponder(None)
         self.native.alignment = NSTextAlignment(value)
         # The alert label should be on the trailing edge
         if value == RIGHT:
