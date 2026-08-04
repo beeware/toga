@@ -92,7 +92,7 @@ class Scaffold:
         self.toolbar_delegate.impl = self
         self.toolbar_delegate.interface = self.interface
 
-    def __del_(self):
+    def __del__(self):
         self.purge_toolbar()
 
     @property
