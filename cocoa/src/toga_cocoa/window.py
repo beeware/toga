@@ -197,14 +197,20 @@ class Window:
     ######################################################################
 
     def set_scaffold(self, scaffold):
+        restore_presentation = False
+        if self.get_window_state() == WindowState.PRESENTATION:
+            restore_presentation = True
+            # This is instaneous so yay!!!
+            self.set_window_state(WindowState.NORMAL)
         frame = self.native.frame
-        print(frame)
         self._scaffold = scaffold
         # Set the content of the window's container
         self.native.contentViewController = scaffold.root_controller
         scaffold.title = self._title
         self.update_toolbar()
         self.native.setFrame(frame, display=True, animate=False)
+        if restore_presentation:
+            self.set_window_state(WindowState.PRESENTATION)
 
     def update_toolbar(self):
         if self._scaffold is not None:
@@ -289,7 +295,10 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
-        if self._scaffold.root_controller.view.isInFullScreenMode():
+        if (
+            hasattr(self, "_scaffold")
+            and self._scaffold.current_container.controller.view.isInFullScreenMode()
+        ):
             return WindowState.PRESENTATION
         if self.native.styleMask & NSWindowStyleMask.FullScreen:
             return WindowState.FULLSCREEN
@@ -374,15 +383,17 @@ class Window:
                 # window._impl.native.contentView is window._impl.container.native.
                 # Hence, we need to go fullscreen on window._impl.container.native
                 # instead.
-                self._scaffold.root_controller.view.enterFullScreenMode(
+                self._scaffold.current_container.controller.view.enterFullScreenMode(
                     self.interface.screen._impl.native, withOptions=opts
                 )
 
                 # Going presentation mode causes the window content to be re-homed in
                 # a NSFullScreenWindow; Teach the new parent window about its Toga
                 # representations.
-                self._scaffold.root_controller.view.window._impl = self
-                self._scaffold.root_controller.view.window.interface = self.interface
+                self._scaffold.current_container.controller.view.window._impl = self
+                self._scaffold.current_container.controller.view.window.interface = (
+                    self.interface
+                )
                 # Manually trigger the resize event as the original NSWindow's size
                 # remains unchanged, hence the windowDidResize_ would not be notified
                 # when the window goes into presentation mode.
@@ -409,7 +420,9 @@ class Window:
                 opts.setObject(
                     NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
                 )
-                self._scaffold.root_controller.view.exitFullScreenModeWithOptions(opts)
+                self._scaffold.current_container.controller.view.exitFullScreenModeWithOptions(
+                    opts
+                )
                 # Manually trigger the resize event as the original NSWindow's size
                 # remains unchanged, hence the windowDidResize_ would not be notified
                 # when the window goes out of the presentation mode.
