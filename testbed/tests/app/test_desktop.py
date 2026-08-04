@@ -6,7 +6,7 @@ import pytest
 from tests_backend.scaffolds.base import ScaffoldProbe
 
 import toga
-from toga import Position, Size
+from toga import Position, Scaffold, Size
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import Pack
@@ -338,6 +338,35 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         assert (
             window_information["window"].screen == window_information["initial_screen"]
         ), f"{window_information['window'].title}:"
+
+
+async def test_presentation_mode_scaffold_change(
+    app, app_probe, main_window, main_window_probe, scaffold_probe
+):
+    new_scaffold = Scaffold(toga.Box(background_color=CORNFLOWERBLUE))
+    new_scaffold_probe = ScaffoldProbe(new_scaffold)
+
+    main_window.state = WindowState.PRESENTATION
+    await main_window_probe.wait_for_window(
+        "Main window is now in presentation state", state=WindowState.PRESENTATION
+    )
+
+    presentation_content_size = scaffold_probe.content_size
+
+    main_window.content = new_scaffold
+    await main_window_probe.redraw("Window now has new scaffold attached")
+
+    # Still in presentation
+    assert main_window_probe.instantaneous_state == WindowState.PRESENTATION
+    # Content size remains unchanged
+    assert new_scaffold_probe.content_size == presentation_content_size
+
+    main_window.state = WindowState.NORMAL
+    await main_window_probe.wait_for_window(
+        "Main window is no longer in presentation mode", state=WindowState.NORMAL
+    )
+
+    assert main_window_probe.instantaneous_state == WindowState.NORMAL
 
 
 async def test_window_presentation_exit_on_another_window_presentation(

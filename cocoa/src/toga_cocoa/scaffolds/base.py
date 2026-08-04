@@ -118,16 +118,17 @@ class Scaffold:
     def toolbar_commands(self):
         return self._toolbar_commands
 
-    def notify_toolbar_change(self):
-        window = self.interface.window
-        if window is not None and getattr(window, "_impl", None) is not None:
-            window._impl.update_toolbar(self)
+    # def notify_toolbar_change(self):
+    #     window = self.interface.window
+    #     if window is not None and getattr(window, "_impl", None) is not None:
+    #         window._impl.update_toolbar(self)
 
     def create_toolbar(self):
         window = self.interface.window
         self.purge_toolbar()
 
-        if window is None:
+        # Shouldn't happen in normal operations, but just in case
+        if window is None:  # pragma: no cover
             self.native_toolbar = None
             self._toolbar_commands = []
             return
@@ -154,7 +155,9 @@ class Scaffold:
 
     def purge_toolbar(self):
         window = self.interface.window
-        if window is None:
+
+        # Defensive measure
+        if window is None:  # pragma: no cover
             return
 
         while self._toolbar_items:

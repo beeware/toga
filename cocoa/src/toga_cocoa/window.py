@@ -213,11 +213,8 @@ class Window:
             self.set_window_state(WindowState.PRESENTATION)
 
     def update_toolbar(self):
-        if self._scaffold is not None:
-            self._scaffold.create_toolbar()
-            self.native.setToolbar(self._scaffold.native_toolbar)
-        else:
-            self.native.setToolbar(None)
+        self._scaffold.create_toolbar()
+        self.native.setToolbar(self._scaffold.native_toolbar)
 
     ######################################################################
     # Window size
