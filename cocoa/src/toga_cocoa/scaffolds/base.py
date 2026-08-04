@@ -84,7 +84,7 @@ class Scaffold:
     def __init__(self, interface):
         self.interface = interface
         self.container = ControlledContainer(on_refresh=self.content_refreshed)
-        self.root_container = self.container
+        self.root_controller = self.container.controller
         self._toolbar_items = {}
         self._toolbar_commands = []
         self.native_toolbar = None

@@ -14,6 +14,8 @@ from toga.window import _initial_position
 from toga_cocoa.libs import (
     NSBackingStoreBuffered,
     NSImage,
+    NSMutableDictionary,
+    NSNumber,
     NSScreen,
     NSTitleBinding,
     NSWindow,
@@ -199,7 +201,7 @@ class Window:
         print(frame)
         self._scaffold = scaffold
         # Set the content of the window's container
-        self.native.contentViewController = scaffold.root_container.controller
+        self.native.contentViewController = scaffold.root_controller
         scaffold.title = self._title
         self.update_toolbar()
         self.native.setFrame(frame, display=True, animate=False)
@@ -287,9 +289,8 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
-        # if self.container.native.isInFullScreenMode():
-        #     return WindowState.PRESENTATION
-        # el
+        if self._scaffold.root_controller.view.isInFullScreenMode():
+            return WindowState.PRESENTATION
         if self.native.styleMask & NSWindowStyleMask.FullScreen:
             return WindowState.FULLSCREEN
         elif self.native.isZoomed:
@@ -361,40 +362,37 @@ class Window:
             case _, WindowState.FULLSCREEN:
                 self.native.toggleFullScreen(self.native)
 
-            case _, WindowState.PRESENTATION:  # TODO: Merge
-                raise NotImplementedError(
-                    "Presentation mode is not yet implemented on macOS."
+            case _, WindowState.PRESENTATION:
+                self._before_presentation_mode_screen = self.interface.screen
+                opts = NSMutableDictionary.alloc().init()
+                opts.setObject(
+                    NSNumber.numberWithBool(True),
+                    forKey="NSFullScreenModeAllScreens",
                 )
-                # self._before_presentation_mode_screen = self.interface.screen
-                # opts = NSMutableDictionary.alloc().init()
-                # opts.setObject(
-                #     NSNumber.numberWithBool(True),
-                #     forKey="NSFullScreenModeAllScreens",
-                # )
-                # # The widgets are actually added to window._impl.container.native,
-                # # instead of window.content._impl.native. And
-                # # window._impl.native.contentView is window._impl.container.native.
-                # # Hence, we need to go fullscreen on window._impl.container.native
-                # # instead.
-                # self.container.native.enterFullScreenMode(
-                #     self.interface.screen._impl.native, withOptions=opts
-                # )
+                # The widgets are actually added to window._impl.container.native,
+                # instead of window.content._impl.native. And
+                # window._impl.native.contentView is window._impl.container.native.
+                # Hence, we need to go fullscreen on window._impl.container.native
+                # instead.
+                self._scaffold.root_controller.view.enterFullScreenMode(
+                    self.interface.screen._impl.native, withOptions=opts
+                )
 
-                # # Going presentation mode causes the window content to be re-homed in
-                # # a NSFullScreenWindow; Teach the new parent window about its Toga
-                # # representations.
-                # self.container.native.window._impl = self
-                # self.container.native.window.interface = self.interface
-                # # Manually trigger the resize event as the original NSWindow's size
-                # # remains unchanged, hence the windowDidResize_ would not be notified
-                # # when the window goes into presentation mode.
-                # self.interface.on_resize()
-                # self.interface.content.refresh()
+                # Going presentation mode causes the window content to be re-homed in
+                # a NSFullScreenWindow; Teach the new parent window about its Toga
+                # representations.
+                self._scaffold.root_controller.view.window._impl = self
+                self._scaffold.root_controller.view.window.interface = self.interface
+                # Manually trigger the resize event as the original NSWindow's size
+                # remains unchanged, hence the windowDidResize_ would not be notified
+                # when the window goes into presentation mode.
+                self.interface.on_resize()
+                self.interface.content.refresh()
 
-                # # No need to check for other pending states, since this is fully
-                # # applied
-                # # at this point.
-                # self._pending_state_transition = None
+                # No need to check for other pending states, since this is fully
+                # applied
+                # at this point.
+                self._pending_state_transition = None
 
             case WindowState.MAXIMIZED, WindowState.NORMAL:
                 self.native.setIsZoomed(False)
@@ -407,22 +405,21 @@ class Window:
                 self.native.toggleFullScreen(self.native)
 
             case _:  # PRESENTATION -> NORMAL
-                pass  # TODO: Merge
-                # opts = NSMutableDictionary.alloc().init()
-                # opts.setObject(
-                #     NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-                # )
-                # self.container.native.exitFullScreenModeWithOptions(opts)
-                # # Manually trigger the resize event as the original NSWindow's size
-                # # remains unchanged, hence the windowDidResize_ would not be notified
-                # # when the window goes out of the presentation mode.
-                # self.interface.on_resize()
-                # self.interface.content.refresh()
+                opts = NSMutableDictionary.alloc().init()
+                opts.setObject(
+                    NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+                )
+                self._scaffold.root_controller.view.exitFullScreenModeWithOptions(opts)
+                # Manually trigger the resize event as the original NSWindow's size
+                # remains unchanged, hence the windowDidResize_ would not be notified
+                # when the window goes out of the presentation mode.
+                self.interface.on_resize()
+                self.interface.content.refresh()
 
-                # self.interface.screen = self._before_presentation_mode_screen
-                # del self._before_presentation_mode_screen
+                self.interface.screen = self._before_presentation_mode_screen
+                del self._before_presentation_mode_screen
 
-                # self._apply_state(self._pending_state_transition)
+                self._apply_state(self._pending_state_transition)
 
     ######################################################################
     # Window capabilities
