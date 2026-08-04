@@ -8,31 +8,20 @@ from rubicon.objc import (
     objc_property,
 )
 
-from toga.command import Command, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
-from toga_cocoa.container import ControlledContainer
 from toga_cocoa.libs import (
     NSBackingStoreBuffered,
     NSImage,
-    NSMutableArray,
-    NSMutableDictionary,
-    NSNumber,
     NSScreen,
     NSTitleBinding,
-    NSToolbar,
-    NSToolbarItem,
     NSWindow,
     NSWindowStyleMask,
     core_graphics,
 )
 
 from .screens import Screen as ScreenImpl
-
-
-def toolbar_identifier(cmd):
-    return f"Toolbar-{type(cmd).__name__}-{id(cmd)}"
 
 
 class TogaWindow(NSWindow):
@@ -124,89 +113,6 @@ class TogaWindow(NSWindow):
     def windowDidExitFullScreen_(self, notification) -> None:
         self.impl._apply_state(self.impl._pending_state_transition)
 
-    ######################################################################
-    # Toolbar delegate methods
-    ######################################################################
-
-    @objc_method
-    def toolbarAllowedItemIdentifiers_(self, toolbar):  # pragma: no cover
-        """Determine the list of available toolbar items."""
-        # This method is required by the Cocoa API, but it's only ever called if the
-        # toolbar allows user customization. We don't turn that option on so this method
-        # can't ever be invoked - but we need to provide an implementation.
-        allowed = NSMutableArray.alloc().init()
-        for item in self.interface.toolbar:
-            allowed.addObject_(toolbar_identifier(item))
-        return allowed
-
-    @objc_method
-    def toolbarDefaultItemIdentifiers_(self, toolbar):
-        """Determine the list of toolbar items that will display by default."""
-        default = NSMutableArray.alloc().init()
-        prev_group = None
-        for item in self.interface.toolbar:
-            # If there's been a group change, and this item isn't a separator,
-            # add a separator between groups.
-            if (
-                prev_group is not None
-                and item.group != prev_group
-                and not isinstance(item, Separator)
-            ):
-                default.addObject_(toolbar_identifier(prev_group))
-            default.addObject_(toolbar_identifier(item))
-            prev_group = item.group
-
-        return default
-
-    @objc_method
-    def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(
-        self,
-        toolbar,
-        identifier,
-        insert: bool,
-    ):
-        """Create the requested toolbar button."""
-        native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
-        try:
-            item = self.impl._toolbar_items[str(identifier)]
-            native.setLabel(item.text)
-            native.setPaletteLabel(item.text)
-            if item.tooltip:
-                native.setToolTip(item.tooltip)
-            if item.icon:
-                native.setImage(item.icon._impl.native)
-
-            item._impl.native.add(native)
-
-            native.setTarget_(self)
-            native.setAction_(SEL("onToolbarButtonPress:"))
-        except KeyError:  # Separator items
-            pass
-
-        return native
-
-    @objc_method
-    def validateToolbarItem_(self, item) -> bool:
-        """Confirm if the toolbar item should be enabled."""
-        try:
-            return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
-        except KeyError:  # pragma: nocover
-            # This branch *shouldn't* ever happen; but there's an edge
-            # case where a toolbar redraw happens in the middle of deleting
-            # a toolbar item that can't be reliably reproduced, so it sometimes
-            # happens in testing.
-            return False
-
-    ######################################################################
-    # Toolbar button press delegate methods
-    ######################################################################
-
-    @objc_method
-    def onToolbarButtonPress_(self, obj) -> None:
-        """Invoke the action tied to the toolbar button."""
-        item = self.impl._toolbar_items[str(obj.itemIdentifier)]
-        item.action()
-
 
 class Window:
     def __init__(self, interface, position, size):
@@ -256,14 +162,6 @@ class Window:
 
         self.native.delegate = self.native
 
-        self.container = ControlledContainer(on_refresh=self.content_refreshed)
-        self.native.contentViewController = self.container.controller
-
-        # Ensure that the container renders it's background in the same color as the
-        # window.
-        self.native.wantsLayer = True
-        self.container.native.backgroundColor = self.native.backgroundColor
-
     ######################################################################
     # Window properties
     ######################################################################
@@ -296,16 +194,22 @@ class Window:
     # Window content and resources
     ######################################################################
 
-    def content_refreshed(self, container):
-        # Apply the minimum size.  This will autoresize the window if needed.
-        self.container.min_width = self.interface.content.layout.min_width
-        self.container.min_height = self.interface.content.layout.min_height
-
     def set_scaffold(self, scaffold):
+        frame = self.native.frame
+        print(frame)
         self._scaffold = scaffold
         # Set the content of the window's container
-        self.native.contentViewController = scaffold.container.controller
+        self.native.contentViewController = scaffold.root_container.controller
         scaffold.title = self._title
+        self.update_toolbar()
+        self.native.setFrame(frame, display=True, animate=False)
+
+    def update_toolbar(self):
+        if self._scaffold is not None:
+            self._scaffold.create_toolbar()
+            self.native.setToolbar(self._scaffold.native_toolbar)
+        else:
+            self.native.setToolbar(None)
 
     ######################################################################
     # Window size
@@ -313,7 +217,7 @@ class Window:
 
     def get_size(self) -> Size:
         if self.interface.state == WindowState.PRESENTATION:
-            native_frame = self.container.native.frame
+            native_frame = self.native.contentViewController.view.native.frame
         else:
             native_frame = self.native.frame
         return Size(int(native_frame.size.width), int(native_frame.size.height))
@@ -321,7 +225,7 @@ class Window:
     def set_size(self, size):
         frame = self.native.frame
         frame.size = NSSize(size[0], size[1])
-        self.native.setFrame(frame, display=True, animate=True)
+        self.native.setFrame(frame, display=True, animate=False)
 
     ######################################################################
     # Window position
@@ -383,9 +287,10 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
-        if self.container.native.isInFullScreenMode():
-            return WindowState.PRESENTATION
-        elif self.native.styleMask & NSWindowStyleMask.FullScreen:
+        # if self.container.native.isInFullScreenMode():
+        #     return WindowState.PRESENTATION
+        # el
+        if self.native.styleMask & NSWindowStyleMask.FullScreen:
             return WindowState.FULLSCREEN
         elif self.native.isZoomed:
             return WindowState.MAXIMIZED
@@ -456,36 +361,40 @@ class Window:
             case _, WindowState.FULLSCREEN:
                 self.native.toggleFullScreen(self.native)
 
-            case _, WindowState.PRESENTATION:
-                self._before_presentation_mode_screen = self.interface.screen
-                opts = NSMutableDictionary.alloc().init()
-                opts.setObject(
-                    NSNumber.numberWithBool(True),
-                    forKey="NSFullScreenModeAllScreens",
+            case _, WindowState.PRESENTATION:  # TODO: Merge
+                raise NotImplementedError(
+                    "Presentation mode is not yet implemented on macOS."
                 )
-                # The widgets are actually added to window._impl.container.native,
-                # instead of window.content._impl.native. And
-                # window._impl.native.contentView is window._impl.container.native.
-                # Hence, we need to go fullscreen on window._impl.container.native
-                # instead.
-                self.container.native.enterFullScreenMode(
-                    self.interface.screen._impl.native, withOptions=opts
-                )
+                # self._before_presentation_mode_screen = self.interface.screen
+                # opts = NSMutableDictionary.alloc().init()
+                # opts.setObject(
+                #     NSNumber.numberWithBool(True),
+                #     forKey="NSFullScreenModeAllScreens",
+                # )
+                # # The widgets are actually added to window._impl.container.native,
+                # # instead of window.content._impl.native. And
+                # # window._impl.native.contentView is window._impl.container.native.
+                # # Hence, we need to go fullscreen on window._impl.container.native
+                # # instead.
+                # self.container.native.enterFullScreenMode(
+                #     self.interface.screen._impl.native, withOptions=opts
+                # )
 
-                # Going presentation mode causes the window content to be re-homed in a
-                # NSFullScreenWindow; Teach the new parent window about its Toga
-                # representations.
-                self.container.native.window._impl = self
-                self.container.native.window.interface = self.interface
-                # Manually trigger the resize event as the original NSWindow's size
-                # remains unchanged, hence the windowDidResize_ would not be notified
-                # when the window goes into presentation mode.
-                self.interface.on_resize()
-                self.interface.content.refresh()
+                # # Going presentation mode causes the window content to be re-homed in
+                # # a NSFullScreenWindow; Teach the new parent window about its Toga
+                # # representations.
+                # self.container.native.window._impl = self
+                # self.container.native.window.interface = self.interface
+                # # Manually trigger the resize event as the original NSWindow's size
+                # # remains unchanged, hence the windowDidResize_ would not be notified
+                # # when the window goes into presentation mode.
+                # self.interface.on_resize()
+                # self.interface.content.refresh()
 
-                # No need to check for other pending states, since this is fully applied
-                # at this point.
-                self._pending_state_transition = None
+                # # No need to check for other pending states, since this is fully
+                # # applied
+                # # at this point.
+                # self._pending_state_transition = None
 
             case WindowState.MAXIMIZED, WindowState.NORMAL:
                 self.native.setIsZoomed(False)
@@ -498,32 +407,34 @@ class Window:
                 self.native.toggleFullScreen(self.native)
 
             case _:  # PRESENTATION -> NORMAL
-                opts = NSMutableDictionary.alloc().init()
-                opts.setObject(
-                    NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-                )
-                self.container.native.exitFullScreenModeWithOptions(opts)
-                # Manually trigger the resize event as the original NSWindow's size
-                # remains unchanged, hence the windowDidResize_ would not be notified
-                # when the window goes out of the presentation mode.
-                self.interface.on_resize()
-                self.interface.content.refresh()
+                pass  # TODO: Merge
+                # opts = NSMutableDictionary.alloc().init()
+                # opts.setObject(
+                #     NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+                # )
+                # self.container.native.exitFullScreenModeWithOptions(opts)
+                # # Manually trigger the resize event as the original NSWindow's size
+                # # remains unchanged, hence the windowDidResize_ would not be notified
+                # # when the window goes out of the presentation mode.
+                # self.interface.on_resize()
+                # self.interface.content.refresh()
 
-                self.interface.screen = self._before_presentation_mode_screen
-                del self._before_presentation_mode_screen
+                # self.interface.screen = self._before_presentation_mode_screen
+                # del self._before_presentation_mode_screen
 
-                self._apply_state(self._pending_state_transition)
+                # self._apply_state(self._pending_state_transition)
 
     ######################################################################
     # Window capabilities
     ######################################################################
 
     def get_image_data(self):
-        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
-            self.container.native.bounds
+        container = self._scaffold.current_container
+        bitmap = container.native.bitmapImageRepForCachingDisplayInRect(
+            container.native.bounds
         )
-        self.container.native.cacheDisplayInRect(
-            self.container.native.bounds, toBitmapImageRep=bitmap
+        container.native.cacheDisplayInRect(
+            container.native.bounds, toBitmapImageRep=bitmap
         )
 
         # Get a reference to the CGImage from the bitmap
@@ -541,55 +452,9 @@ class MainWindow(Window):
     def __init__(self, interface, position, size):
         super().__init__(interface, position, size)
 
-        # By default, no toolbar
-        self._toolbar_items = {}
-        self.native_toolbar = None
-
-    def __del__(self):
-        self.purge_toolbar()
-
     def create_menus(self):
         # macOS doesn't have window-level menus
         pass
 
     def create_toolbar(self):
-        # Purge any existing toolbar items
-        self.purge_toolbar()
-
-        # Create the new toolbar items.
-        if self.interface.toolbar:
-            for cmd in self.interface.toolbar:
-                if isinstance(cmd, Command):
-                    self._toolbar_items[toolbar_identifier(cmd)] = cmd
-
-            self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
-                f"Toolbar-{id(self)}"
-            )
-            self.native_toolbar.setDelegate(self.native)
-        else:
-            self.native_toolbar = None
-
-        self.native.setToolbar(self.native_toolbar)
-
-        # Adding/removing a toolbar changes the size of the content window.
-        if self.interface.content:
-            self.interface.content.refresh()
-
-    def purge_toolbar(self):
-        while self._toolbar_items:
-            dead_items = []
-            _, cmd = self._toolbar_items.popitem()
-            # The command might have toolbar representations on multiple window
-            # toolbars, and may have other representations (at the very least, a menu
-            # item). Only clean up the representation pointing at *this* window. Do this
-            # in 2 passes so that we're not modifying the set of native objects while
-            # iterating over it.
-            for item_native in cmd._impl.native:
-                if (
-                    isinstance(item_native, NSToolbarItem)
-                    and item_native.target == self.native
-                ):
-                    dead_items.append(item_native)
-
-            for item_native in dead_items:
-                cmd._impl.native.remove(item_native)
+        self.update_toolbar()
