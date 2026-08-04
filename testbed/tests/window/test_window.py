@@ -128,7 +128,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
                 style=Pack(direction=COLUMN, background_color=CORNFLOWERBLUE),
             )
             # Changed content so new scaffold is created
-            new_scaffold_probe = ScaffoldProbe(main_window)
+            new_scaffold_probe = ScaffoldProbe(main_window.scaffold)
             await main_window_probe.wait_for_window("Main window content has been set")
             assert_size(main_window, initial_size)
             assert new_scaffold_probe.content_size == content_size
@@ -1118,7 +1118,7 @@ else:
         await second_window_probe.wait_for_window("Secondary window is shown")
 
         # Do this here as content is reassigned
-        second_scaffold_probe = ScaffoldProbe(second_window)
+        second_scaffold_probe = ScaffoldProbe(second_window.scaffold)
 
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
         assert second_window_probe.is_resizable
