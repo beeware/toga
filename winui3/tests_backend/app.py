@@ -101,6 +101,14 @@ class AppProbe(BaseProbe):
 
         item = self.main_window._impl.menu_native
         for i, label in enumerate(path):
+            if open_menus:
+                for _ in range(50):
+                    if item.IsLoaded:
+                        break
+                    await asyncio.sleep(0.02)
+                else:
+                    raise ValueError(f"The menu item {item} was never loaded.")
+
             children, child_labels = self._menu_children(item)
 
             try:
