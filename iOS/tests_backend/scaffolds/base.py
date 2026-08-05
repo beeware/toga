@@ -6,7 +6,7 @@ from ..probe import BaseProbe
 CATransaction = ObjCClass("CATransaction")
 
 
-class BaseScaffoldProbe(BaseProbe):
+class ScaffoldProbe(BaseProbe):
     def __init__(self, scaffold):
         super().__init__()
         self.window = scaffold.window
@@ -26,16 +26,9 @@ class BaseScaffoldProbe(BaseProbe):
 
         await super().redraw(message=message, delay=delay, wait_for=wait_for)
 
-    def assert_container_layout(self): ...
-
-    @property
-    def content_size(self): ...
-
     async def wait_for_layout(self):
         await self._wait_for_assertion(self.assert_container_layout)
 
-
-class ScaffoldProbe(BaseScaffoldProbe):
     def assert_container_layout(self):
         # If the window has been laid out, the origin should be at least at the
         # position of the top bar height.
