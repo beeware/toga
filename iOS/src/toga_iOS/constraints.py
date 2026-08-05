@@ -1,3 +1,6 @@
+from functools import partial
+from weakref import ref
+
 from toga_iOS.libs import (
     NSLayoutAttributeBottom,
     NSLayoutAttributeLeft,
@@ -6,6 +9,19 @@ from toga_iOS.libs import (
     NSLayoutConstraint,
     NSLayoutRelationEqual,
 )
+
+
+def _remove_constraints(container_ref, constraints_created, constraint_refs):
+    if container_ref():
+        container = container_ref()
+        if container.native and constraints_created:
+            for constraint_ref in constraint_refs:
+                if constraint_ref():
+                    constraint = constraint_ref()
+                    container.native.removeConstraint(constraint)
+                    container.native.removeConstraint(constraint)
+                    container.native.removeConstraint(constraint)
+                    container.native.removeConstraint(constraint)
 
 
 class Constraints:
@@ -31,13 +47,22 @@ class Constraints:
     # Deletion isn't an event we can programmatically invoke; deletion
     # of constraints can take several iterations before it occurs.
     def __del__(self):  # pragma: nocover
-        # If this gets called on the test thread hilarity ensues.
-        # With the addition of the Scaffold layer, collection of this object
-        # on the test thread seems a lot more common for some reason, so this
-        # makes things more reliable.
+        # If this gets called on the other threads than hilarity ensues.
+        # So we delegate cleanup to another non-self-bound function and
+        # use Weakrefs for everything.
         try:
             self.widget.interface.app.loop.call_soon_threadsafe(
-                self._remove_constraints
+                partial(
+                    _remove_constraints,
+                    ref(self.container),
+                    self.constraints_created,
+                    [
+                        ref(self.width_constraint),
+                        ref(self.height_constraint),
+                        ref(self.left_constraint),
+                        ref(self.top_constraint),
+                    ],
+                )
             )
         except Exception:
             pass
