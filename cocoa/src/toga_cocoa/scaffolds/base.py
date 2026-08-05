@@ -17,7 +17,7 @@ class ToolbarDelegate(NSObject):
     def toolbarAllowedItemIdentifiers_(self, toolbar):  # pragma: no cover
         """Determine the list of available toolbar items."""
         allowed = NSMutableArray.alloc().init()
-        for item in self.impl._toolbar_items:
+        for item in self.impl._toolbar_commands:
             allowed.addObject_(toolbar_identifier(item))
         return allowed
 
@@ -26,7 +26,7 @@ class ToolbarDelegate(NSObject):
         """Determine the list of toolbar items that will display by default."""
         default = NSMutableArray.alloc().init()
         prev_group = None
-        for item in self.impl._toolbar_items:
+        for item in self.impl._toolbar_commands:
             if (
                 prev_group is not None
                 and item.group != prev_group
