@@ -17,7 +17,7 @@ class ToolbarDelegate(NSObject):
     def toolbarAllowedItemIdentifiers_(self, toolbar):  # pragma: no cover
         """Determine the list of available toolbar items."""
         allowed = NSMutableArray.alloc().init()
-        for item in self.impl.toolbar_commands:
+        for item in self.impl._toolbar_items:
             allowed.addObject_(toolbar_identifier(item))
         return allowed
 
@@ -26,7 +26,7 @@ class ToolbarDelegate(NSObject):
         """Determine the list of toolbar items that will display by default."""
         default = NSMutableArray.alloc().init()
         prev_group = None
-        for item in self.impl.toolbar_commands:
+        for item in self.impl._toolbar_items:
             if (
                 prev_group is not None
                 and item.group != prev_group
@@ -113,15 +113,6 @@ class Scaffold:
     def refresh(self):
         if self.container.content:
             self.container.content.interface.refresh()
-
-    @property
-    def toolbar_commands(self):
-        return self._toolbar_commands
-
-    # def notify_toolbar_change(self):
-    #     window = self.interface.window
-    #     if window is not None and getattr(window, "_impl", None) is not None:
-    #         window._impl.update_toolbar(self)
 
     def create_toolbar(self):
         window = self.interface.window
