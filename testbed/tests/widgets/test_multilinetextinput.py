@@ -56,10 +56,7 @@ def verify_font_sizes():
     return False, False
 
 
-test_cleanup = build_cleanup_test(
-    toga.MultilineTextInput,
-    skip_backends=("toga_winui3",),
-)
+test_cleanup = build_cleanup_test(toga.MultilineTextInput)
 
 
 async def test_scroll_position(widget, probe):

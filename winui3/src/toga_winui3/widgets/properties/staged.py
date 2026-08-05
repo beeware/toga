@@ -1,7 +1,9 @@
-import weakref
+from typing import ClassVar
 
 from win32more.Microsoft.UI.Xaml.Controls import RelativePanel
 from win32more.Windows.UI.Text import FontStyle
+
+from .native import NativeProperties
 
 """
 Overview of content staging
@@ -40,36 +42,101 @@ class StagingArea:
         self.native = RelativePanel()
         self.native.Opacity = 0
 
-        self._native_widgets = []
+        self._staging_clones = []
 
         # Add the container
         self._container = container
         self._container.widgets.add(self)
 
-    def add(self, native_widget):
-        self._native_widgets.append(native_widget)
-        self.native.Children.Append(native_widget)
+    def add(self, staging_clone):
+        self._staging_clones.append(staging_clone)
+        self.native.Children.Append(staging_clone.native)
 
-    def remove(self, native_widget):
+    def remove(self, staging_clone):
         """Removes a widget and triggers a layout refresh."""
-        index = self._native_widgets.index(native_widget)
-        self._native_widgets.remove(native_widget)
+        index = self._staging_clones.index(staging_clone)
+        self._staging_clones.remove(staging_clone)
         self.native.Children.RemoveAt(index)
 
-        # It is possible that self._container._content was removed during the staging
-        # process. It is difficult to reliably create this scenario during testing, so
-        # use no branch here.
-        if self._container._content:  # pragma: no branch
-            self._container._content.interface.refresh()
+
+class StagingClone:
+    """A facsimile of a widget that resizes to fit its content and reports its size.
+
+    Note that a new SizeChanged callback is created when a property is updated during
+    an incomplete staging process. This is because an event callback could already be in
+    the queue when a property is updated.
+    """
+
+    def __init__(self, widget, properties):
+        self._widget = widget
+        self._removed = False
+        self._latest_callback_id = 0
+
+        self.native = type(self._widget.native)()
+        self.native.event_handler.SizeChanged += self.create_size_changed_callback()
+        self._native_properties = NativeProperties(self)
+
+        for property, value_creator in properties.items():
+            value = value_creator()
+            if value is not None:
+                setattr(self.native, property, value)
+
+        self._widget.container.staging_area.add(self)
+
+    def stage_property(self, name, value):
+        self.native.event_handler.SizeChanged.clear()
+        self.native.event_handler.SizeChanged += self.create_size_changed_callback()
+        setattr(self._native_properties, name, value())
+
+    def remove(self):
+        """Remove the clone from the staging process.
+
+        This method is called by the SizeChanged event and when the associated widget is
+        removed from its container.
+        """
+        self._widget._staged_properties._clone = None
+        self._widget.container.staging_area.remove(self)
+        self._removed = True
+
+    def create_size_changed_callback(self):
+        self._latest_callback_id += 1
+
+        def size_changed_callback(sender, args, callback_id=self._latest_callback_id):
+            if callback_id != self._latest_callback_id:
+                return
+
+            if self._removed:
+                return
+
+            self._widget._min_width = self._adjusted_width(self.native)
+            self._widget._min_height = self.native.ActualSize.Y
+            self._widget.rehint()
+            self._widget.container._content.interface.refresh()
+
+            self.remove()
+
+        return size_changed_callback
+
+    def _adjusted_width(self, native):
+        # FIXME: The staging method doesn't calculate a large enough width for italic
+        # and oblique font styles. Add 0.25em for each of these.
+        if native.FontStyle in {FontStyle.Oblique, FontStyle.Italic}:
+            font_size = native.FontSize
+            return native.ActualSize.X + round(font_size * 96 / 72 / 4, 0)
+
+        return native.ActualSize.X
 
 
 class StagedProperties:
+    _font_properties: ClassVar = {"FontFamily", "FontSize", "FontStyle", "FontWeight"}
+
     def __init__(self, widget):
         self._widget = widget
-        self._staged_properties = {}
-        self._latest = None
+        self._clone = None
+        self._properties_dict = {}
 
-        self._font_keys = {"FontFamily", "FontSize", "FontStyle", "FontWeight"}
+        self._initialized = False
+        self._active = False
 
     def __setattr__(self, name, value):
         """Sets the native property value for a name with a capital first character.
@@ -81,66 +148,36 @@ class StagedProperties:
             super().__setattr__(name, value)
             return
 
-        # Set and cache the native property.
+        # Set the property for the widget and add it to the properties dict.
         setattr(self._widget._native_properties, name, value())
-        self._staged_properties[name] = value
+        self._properties_dict[name] = value
 
-        self.refresh()
+        # Font properties in the widget base are set using this class, but the widget
+        # may not require staging. So, only initialize the staging process if another
+        # property has been explicitly staged.
+        if not self._initialized:
+            if name in self._font_properties:
+                return
+            else:
+                self._initialized = True
 
-    def refresh(self):
-        if not self._widget.container:
+        if not self._active:
             return
 
-        # The properties in self._font_keys are only staged if other content such as
-        # text is being staged as well.
-        if set(self._staged_properties.keys()) - self._font_keys == set():
-            return
+        # Only one clone of the widget exists at any given time.
+        if not self._clone:
+            self._clone = StagingClone(self._widget, self._properties_dict)
 
-        widget = self._widget
-        clone = type(widget.native)()
-        staging_area = widget.container.staging_area
-        self._latest = clone
+        self._clone.stage_property(name, value)
 
-        # Use a weak reference so that the external process doesn't prevent garbage
-        # collection.
-        clone_weak = weakref.ref(clone)
-        area_weak = weakref.ref(staging_area)
+    def activate(self):
+        self._active = True
 
-        def size_changed(sender, args, clone_weak=clone_weak, area_weak=area_weak):
-            self.native_event_size_changed(sender, args, clone_weak, area_weak)
+        if self._initialized:
+            self._clone = StagingClone(self._widget, self._properties_dict)
 
-        clone.event_handler.SizeChanged += size_changed
+    def deactivate(self):
+        self._active = False
 
-        for attribute, value_creator in self._staged_properties.items():
-            value = value_creator()
-            if value is not None:
-                setattr(clone, attribute, value)
-
-        staging_area.add(clone)
-
-    def native_event_size_changed(self, sender, args, clone_weak, area_weak):
-        clone = clone_weak()
-        staging_area = area_weak()
-
-        # If the clone or staging area no longer exist then do nothing. This is not
-        # reliably hit during testing, so use no cover.
-        if not clone or not staging_area:  # pragma: no cover
-            return
-
-        if clone == self._latest:
-            self._widget._min_width = self._adjusted_width(clone)
-            self._widget._min_height = clone.ActualSize.Y
-            self._widget.rehint()
-
-            self._latest = None
-
-        staging_area.remove(clone)
-
-    def _adjusted_width(self, clone):
-        # FIXME: The staging method doesn't calculate a large enough width for italic
-        # and oblique font styles. Add 0.25em for each of these.
-        if clone.FontStyle in {FontStyle.Oblique, FontStyle.Italic}:
-            font_size = clone.FontSize
-            return clone.ActualSize.X + round(font_size * 96 / 72 / 4, 0)
-
-        return clone.ActualSize.X
+        if self._clone:
+            self._clone.remove()

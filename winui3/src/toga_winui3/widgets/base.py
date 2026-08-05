@@ -31,7 +31,10 @@ class Widget(EventsHandledMixin, ABC):
         self.create()
 
     @abstractmethod
-    def create(self): ...
+    def create(self):
+        ...
+        # Note: Use self.native_cls = NativeClass. This will instantiate self.native and
+        # means that events are managed by the nativeevents module.
 
     def set_app(self, app):
         # Everything is already handled by the Toga core interface.
@@ -52,12 +55,13 @@ class Widget(EventsHandledMixin, ABC):
     @container.setter
     def container(self, container):
         if self._container:
+            self._staged_properties.deactivate()
             self._container.widgets.remove(self)
 
         self._container = container
         if container:
             container.widgets.add(self)
-            self._staged_properties.refresh()
+            self._staged_properties.activate()
 
         for child in self.interface.children:
             child._impl.container = container
