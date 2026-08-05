@@ -3,6 +3,7 @@ from importlib import import_module
 import pytest
 
 import toga
+from toga.colors import AQUAMARINE
 from toga.fonts import (
     BOLD,
     FONT_STYLES,
@@ -30,7 +31,10 @@ skip_on_backends(
 # Fully testing fonts requires a manifested widget.
 @pytest.fixture
 async def widget():
-    return toga.Label("This is a font test")
+    label = toga.Label("This is a font test")
+    # Add a background color to see if the label is resized correctly.
+    label.style.background_color = AQUAMARINE
+    return label
 
 
 @pytest.fixture

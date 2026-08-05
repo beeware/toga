@@ -123,7 +123,7 @@ class SimpleProbe(BaseProbe):
     async def redo(self):
         pytest.skip("Redo is not implemented on Textual probes.")
 
-    def assert_native_properties(self):
+    async def assert_backend_specific_properties(self):
         pytest.skip("Test not implemented for this platform")
 
 

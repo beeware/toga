@@ -173,5 +173,5 @@ async def test_tab_index(widget, probe, other):
         assert other.tab_index is None
 
 
-async def test_native_properties(widget, probe):
-    probe.assert_native_properties()
+async def test_backend_specific_properties(widget, probe):
+    await probe.assert_backend_specific_properties()

@@ -44,7 +44,7 @@ class BaseProbe:
 
         def staging_complete():
             for staging_area in staging_areas:
-                if len(staging_area._native_widgets) > 0:
+                if len(staging_area._staging_clones) > 0:
                     return False
 
             return True
@@ -53,6 +53,14 @@ class BaseProbe:
             if staging_complete():
                 break
             await asyncio.sleep(0.02)
+        else:
+            message = "Non-empty StagingArea:\n"
+            for staging_area in staging_areas:
+                if len(staging_area._staging_clones) > 0:
+                    message += str(staging_area) + "\n"
+                    message += str(staging_area._staging_clones) + "\n"
+
+            raise ValueError(message)
 
     async def redraw_resizing(self):
         """Wait until any resizing is finished."""

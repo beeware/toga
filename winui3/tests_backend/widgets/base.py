@@ -1,7 +1,11 @@
+from unittest.mock import Mock
+
 from pytest import approx
 from win32more.Microsoft.UI.Xaml import FocusState, Visibility
 from win32more.Windows.Foundation import Rect
 from win32more.Windows.Win32.UI.Input.KeyboardAndMouse import GetFocus
+
+import toga
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
@@ -155,6 +159,132 @@ class SimpleProbe(BaseProbe, FontMixin):
         # Setting a non-dependency native property to None should result in the property
         # being None.
         assert self.native.Resources is None
+
+    async def assert_staged_properties_containerless(self, staging_area):
+        """Test that there is no staging for a widget with no container."""
+        mock = Mock()
+
+        def callback_mock(sender, args):
+            mock()
+
+        await self.redraw("Creating Label widget.")
+
+        label = toga.Label("Label text")
+        staged_properties = label._impl._staged_properties
+
+        # After creating label, but not adding it to a container, there should be no
+        # properties being staged.
+        assert len(staging_area._staging_clones) == 0
+        assert staged_properties._clone is None
+
+        # Adding the label as a child should initiate the label properties being staged.
+        self.widget.add(label)
+        label_clone = staging_area._staging_clones[0]
+        label_clone.native.event_handler.SizeChanged += callback_mock
+
+        assert len(staging_area._staging_clones) == 1
+        assert staged_properties._clone == label_clone
+
+        # Immediately remove the label from the widget. The staging process should be
+        # removed.
+        self.widget.remove(label)
+        assert len(staging_area._staging_clones) == 0
+        assert staged_properties._clone is None
+
+        # Since the label_clone has been removed from the visual tree, the native
+        # SizeChanged event should not fire.
+        await self.redraw("Label added to and removed from a container.", delay=0.1)
+        mock.assert_not_called()
+        mock.reset_mock()
+
+    async def assert_staged_properties_same_value(self, staging_area):
+        """Staging property with the same value is a no-op or triggers SizeChanged."""
+        # Create a widget and set some style properties.
+        properties = {
+            "text": "Label text",
+            "font_family": "serif",
+            "font_size": 20,
+            "font_style": "italic",
+            "font_weight": "bold",
+        }
+
+        def set_property(label, name):
+            if name == "text":
+                setattr(label, name, properties[name])
+            else:
+                setattr(label.style, name, properties[name])
+
+        label = toga.Label(text="")
+        for name in properties:
+            set_property(label, name)
+
+        self.widget.add(label)
+
+        await self.redraw("Label widget created and added to a container.")
+        # Staging should be complete.
+        assert len(staging_area._staging_clones) == 0
+
+        for name in properties:
+            set_property(label, name)
+
+            if name == "text":
+                # For `text` the staging process starts and completes.
+                assert len(staging_area._staging_clones) == 1
+
+                await self.redraw(f"Label.{name} has re-set to the same value.")
+                assert len(staging_area._staging_clones) == 0
+            else:
+                # For font style attributes the staging process is a no-op.
+                assert len(staging_area._staging_clones) == 0
+
+    async def assert_staged_properties_events(self, staging_area):
+        await self.redraw("Creating Label widget.")
+        label = toga.Label("Label text")
+        self.widget.add(label)
+
+        # Get the widget clone from the staging process, and assert that only one
+        # SizeChanged callback has been created.
+        label_clone = staging_area._staging_clones[0]
+        assert label_clone._latest_callback_id == 1
+
+        # Save the current SizeChanged callback.
+        native_event = label_clone.native.event_handler.SizeChanged
+        _, callback = next(iter(native_event._registry.values()))
+
+        # Staging another property creates a new callback and clears the old.
+        label.style.font_weight = "bold"
+        _, new_callback = next(iter(native_event._registry.values()))
+        assert len(staging_area._staging_clones) == 1
+        assert label_clone._latest_callback_id > 1
+        assert new_callback != callback
+
+        # Simluate the old callback being called. The could occur if it was already in
+        # the queue when the new property was staged. Assert that the staging process
+        # is not completed by this call.
+        callback(sender=None, args=None)
+        assert len(staging_area._staging_clones) == 1
+
+        # Assert that the staging process is finished after a small wait.
+        await self.redraw("Staging process completed with extra callback.", delay=0.1)
+        assert len(staging_area._staging_clones) == 0
+
+        # Simulate a callback after the staging process is finished. This can occur if
+        # a callback was already in the queue when the widget was removed from its
+        # container. This call should not result in any errors.
+        new_callback(sender=None, args=None)
+
+    async def assert_staged_properties(self):
+        """Test whether staged properties are created and deleted correctly."""
+        staging_area = self.widget._impl.container.staging_area
+
+        await self.assert_staged_properties_containerless(staging_area)
+        await self.assert_staged_properties_same_value(staging_area)
+        await self.assert_staged_properties_events(staging_area)
+
+    async def assert_backend_specific_properties(self):
+        self.assert_native_properties()
+
+        await self.assert_staged_properties()
 
     def assert_tab_index(self, widget, other):
         # Unset WinUI 3 tab indices default to Int32_MaxValue.
