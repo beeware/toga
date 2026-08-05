@@ -11,16 +11,16 @@ from toga_iOS.libs import (
 )
 
 
-def _remove_constraints(container_ref, constraints_created, constraint_refs):
+# Destructors may not be called reliably in testing.
+def _remove_constraints(
+    container_ref, constraints_created, constraint_refs
+):  # pragma: no cover
     if container_ref():
         container = container_ref()
         if container.native and constraints_created:
             for constraint_ref in constraint_refs:
                 if constraint_ref():
                     constraint = constraint_ref()
-                    container.native.removeConstraint(constraint)
-                    container.native.removeConstraint(constraint)
-                    container.native.removeConstraint(constraint)
                     container.native.removeConstraint(constraint)
 
 
