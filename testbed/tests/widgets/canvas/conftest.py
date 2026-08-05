@@ -5,8 +5,6 @@ import pytest
 import toga
 from toga.colors import WHITE
 
-from ..conftest import skip_on_backends
-
 
 @pytest.fixture
 def on_resize_handler():
@@ -59,7 +57,6 @@ async def widget(
     on_alt_release_handler,
     on_alt_drag_handler,
 ):
-    skip_on_backends("toga_winui3")
     return toga.Canvas(
         on_resize=on_resize_handler,
         on_press=on_press_handler,

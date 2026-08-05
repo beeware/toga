@@ -16,8 +16,11 @@ from .properties import (  # noqa: F401
 )
 
 skip_on_backends(
+    "toga_android",
+    "toga_iOS",
     "toga_textual",
-    reason="SplitContainer is not implemented on Textual.",
+    "toga_winui3",
+    reason="SplitContainer is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -63,7 +66,6 @@ async def content3_probe(content3):
 
 @pytest.fixture
 async def widget(content1, content2):
-    skip_on_backends("toga_android", "toga_iOS", "toga_winui3")
     return toga.SplitContainer(content=[content1, content2], style=Pack(flex=1))
 
 
@@ -71,7 +73,6 @@ test_cleanup = build_cleanup_test(
     # Pass a function here to prevent init of toga.Box() in a different thread than
     # toga.SplitContainer. This would raise a runtime error on Windows.
     lambda: toga.SplitContainer(content=[toga.Box(), toga.Box()]),
-    skip_backends=("toga_android", "toga_iOS", "toga_winui3"),
 )
 
 

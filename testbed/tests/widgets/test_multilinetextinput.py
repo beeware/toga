@@ -39,14 +39,14 @@ from .test_textinput import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="MultilineTextInput is not implemented on Textual.",
+    "toga_winui3",
+    reason="MultilineTextInput is not implemented on this backend.",
     allow_module_level=True,
 )
 
 
 @pytest.fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.MultilineTextInput(value="Hello", style=Pack(flex=1))
 
 

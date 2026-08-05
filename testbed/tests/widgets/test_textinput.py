@@ -29,10 +29,15 @@ from .properties import (  # noqa: F401
     test_text_align,
 )
 
+skip_on_backends(
+    "toga_winui3",
+    reason="TextInput is not implemented on this backend.",
+    allow_module_level=True,
+)
+
 
 @pytest.fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.TextInput(value="Hello")
 
 
@@ -57,7 +62,7 @@ async def placeholder(request, widget):
     widget.placeholder = request.param
 
 
-test_cleanup = build_cleanup_test(toga.TextInput, skip_backends=("toga_winui3",))
+test_cleanup = build_cleanup_test(toga.TextInput)
 
 
 async def test_value_not_hidden(widget, probe):
@@ -114,7 +119,6 @@ async def test_on_change_user(widget, probe, on_change):
 
 async def test_on_change_user_after_initial_value(main_window):
     "User input triggers on_change after setting the initial value before mounting."
-    skip_on_backends("toga_winui3")
     old_content = main_window.content
     widget = toga.TextInput(value="Hello")
     on_change = Mock()

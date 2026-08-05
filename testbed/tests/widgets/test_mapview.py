@@ -16,7 +16,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="MapView is not implemented on Textual.",
+    "toga_winui3",
+    reason="MapView is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -39,7 +40,6 @@ async def on_select():
 
 @pytest.fixture
 async def widget(on_select):
-    skip_on_backends("toga_winui3")
     with safe_create():
         widget = toga.MapView(style=Pack(flex=1), on_select=on_select)
 
@@ -67,10 +67,7 @@ async def widget(on_select):
         toga.App.app._gc_protector.append(widget)
 
 
-test_cleanup = build_cleanup_test(
-    toga.MapView,
-    skip_backends=("toga_winui3",),
-)
+test_cleanup = build_cleanup_test(toga.MapView)
 
 
 # The next two tests fail about 75% of the time in the macOS x86_64 CI configuration.

@@ -25,8 +25,10 @@ from .test_dateinput import (  # noqa: F401
 )
 
 skip_on_backends(
+    "toga_gtk",
     "toga_textual",
-    reason="TimeInput is not implemented on Textual.",
+    "toga_winui3",
+    reason="TimeInput is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -82,19 +84,14 @@ def normalize(probe):
 
 @fixture
 async def widget():
-    skip_on_backends("toga_gtk", "toga_winui3")
     return toga.TimeInput()
 
 
-test_cleanup = build_cleanup_test(
-    toga.TimeInput,
-    skip_backends=("toga_gtk", "toga_winui3"),
-)
+test_cleanup = build_cleanup_test(toga.TimeInput)
 
 
 async def test_init(normalize):
     "Properties can be set in the constructor"
-    skip_on_backends("toga_gtk", "toga_winui3")
 
     value = time(10, 10, 30)
     min = time(2, 3, 4)

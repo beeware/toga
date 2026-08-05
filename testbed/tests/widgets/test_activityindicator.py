@@ -14,20 +14,18 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="ActivityIndicator is not implemented on Textual.",
+    "toga_winui3",
+    reason="ActivityIndicator is not implemented on this backend.",
     allow_module_level=True,
 )
 
 
 @pytest.fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.ActivityIndicator()
 
 
-test_cleanup = build_cleanup_test(
-    toga.ActivityIndicator, skip_backends=("toga_winui3",)
-)
+test_cleanup = build_cleanup_test(toga.ActivityIndicator)
 
 
 async def test_start_stop(widget, probe):

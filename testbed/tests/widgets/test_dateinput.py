@@ -19,7 +19,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="DateInput is not implemented on Textual.",
+    "toga_winui3",
+    reason="DateInput is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -87,16 +88,14 @@ def assert_none_value(normalize):
 
 @fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.DateInput()
 
 
-test_cleanup = build_cleanup_test(toga.DateInput, skip_backends=("toga_winui3",))
+test_cleanup = build_cleanup_test(toga.DateInput)
 
 
 async def test_init():
     "Properties can be set in the constructor"
-    skip_on_backends("toga_winui3")
 
     value = date(1999, 12, 31)
     min = date(1999, 12, 30)

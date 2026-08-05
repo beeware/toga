@@ -23,7 +23,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="Selection is not implemented on Textual.",
+    "toga_winui3",
+    reason="Selection is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -45,7 +46,6 @@ else:
 
 @pytest.fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.Selection(items=["first", "second", "third"])
 
 
@@ -63,7 +63,6 @@ def verify_vertical_text_align():
 test_cleanup = build_cleanup_test(
     toga.Selection,
     kwargs={"items": ["first", "second", "third"]},
-    skip_backends=("toga_winui3",),
 )
 
 

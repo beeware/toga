@@ -19,7 +19,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="DetailedList is not implemented on Textual.",
+    "toga_winui3",
+    reason="DetailedList is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -71,7 +72,6 @@ async def widget(
     on_primary_action_handler,
     on_secondary_action_handler,
 ):
-    skip_on_backends("toga_winui3")
     return toga.DetailedList(
         data=source,
         accessors=("a", "b", "c"),
@@ -138,7 +138,7 @@ async def test_color_reset(widget, probe):
     await check_color_reset(widget, probe)
 
 
-test_cleanup = build_cleanup_test(toga.DetailedList, skip_backends=("toga_winui3",))
+test_cleanup = build_cleanup_test(toga.DetailedList)
 
 
 async def test_scroll(widget, probe):

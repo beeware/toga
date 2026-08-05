@@ -20,7 +20,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="ScrollContainer is not implemented on Textual.",
+    "toga_winui3",
+    reason="ScrollContainer is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -75,7 +76,6 @@ async def on_scroll():
 
 @pytest.fixture
 async def widget(content, on_scroll):
-    skip_on_backends("toga_winui3")
     return toga.ScrollContainer(
         content=content, style=Pack(flex=1), on_scroll=on_scroll
     )
@@ -85,7 +85,6 @@ test_cleanup = build_cleanup_test(
     # Pass a function here to prevent init of toga.Box() in a different thread than
     # toga.ScrollContainer. This would raise a runtime error on Windows.
     lambda: toga.ScrollContainer(content=toga.Box()),
-    skip_backends=("toga_winui3",),
 )
 
 

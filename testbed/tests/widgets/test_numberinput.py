@@ -27,14 +27,14 @@ from .test_textinput import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="NumberInput is not implemented on Textual.",
+    "toga_winui3",
+    reason="NumberInput is not implemented on this backend.",
     allow_module_level=True,
 )
 
 
 @pytest.fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.NumberInput(value="1.23", step="0.01")
 
 
@@ -49,7 +49,7 @@ def verify_focus_handlers():
     return False
 
 
-test_cleanup = build_cleanup_test(toga.NumberInput, skip_backends=("toga_winui3",))
+test_cleanup = build_cleanup_test(toga.NumberInput)
 
 
 async def test_on_change_handler(widget, probe):

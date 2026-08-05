@@ -38,11 +38,12 @@ from ..properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="Canvas is not implemented on Textual.",
+    "toga_winui3",
+    reason="Canvas is not implemented on this backend.",
     allow_module_level=True,
 )
 
-test_cleanup = build_cleanup_test(toga.Canvas, skip_backends=("toga_winui3",))
+test_cleanup = build_cleanup_test(toga.Canvas)
 
 
 async def test_resize(widget, probe, on_resize_handler):

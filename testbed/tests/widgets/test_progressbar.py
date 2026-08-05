@@ -11,7 +11,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="ProgressBar is not implemented on Textual.",
+    "toga_winui3",
+    reason="ProgressBar is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -24,11 +25,10 @@ else:
 
 @pytest.fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.ProgressBar(max=100, value=5)
 
 
-test_cleanup = build_cleanup_test(toga.ProgressBar, skip_backends=("toga_winui3",))
+test_cleanup = build_cleanup_test(toga.ProgressBar)
 
 
 async def test_start_stop_determinate(widget, probe):

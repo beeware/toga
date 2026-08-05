@@ -36,14 +36,14 @@ from .test_textinput import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="PasswordInput is not implemented on Textual.",
+    "toga_winui3",
+    reason="PasswordInput is not implemented on this backend.",
     allow_module_level=True,
 )
 
 
 @pytest.fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.PasswordInput(value="sekrit")
 
 
@@ -53,7 +53,7 @@ def verify_font_sizes():
     return False, True
 
 
-test_cleanup = build_cleanup_test(toga.PasswordInput, skip_backends=("toga_winui3",))
+test_cleanup = build_cleanup_test(toga.PasswordInput)
 
 
 async def test_value_hidden(widget, probe):

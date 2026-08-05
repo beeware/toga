@@ -16,7 +16,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="Slider is not implemented on Textual.",
+    "toga_winui3",
+    reason="Slider is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -39,7 +40,6 @@ SCALES = [0.0001, 0.1, 1, pi, 10000]
 
 @fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.Slider()
 
 
@@ -50,7 +50,7 @@ def on_change(widget):
     return handler
 
 
-test_cleanup = build_cleanup_test(toga.Slider, skip_backends=("toga_winui3",))
+test_cleanup = build_cleanup_test(toga.Slider)
 
 
 async def test_init(widget, probe):
@@ -62,7 +62,6 @@ async def test_init(widget, probe):
 
 
 async def test_init_handlers():
-    skip_on_backends("toga_winui3")
     handlers = {
         name: Mock(name=name) for name in ["on_change", "on_press", "on_release"]
     }

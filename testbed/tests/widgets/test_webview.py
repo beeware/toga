@@ -19,7 +19,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="WebView is not implemented on Textual.",
+    "toga_winui3",
+    reason="WebView is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -97,7 +98,6 @@ async def on_load():
 
 @pytest.fixture
 async def widget(on_load):
-    skip_on_backends("toga_winui3")
     with safe_create():
         widget = toga.WebView(style=Pack(flex=1), on_webview_load=on_load)
 
@@ -139,7 +139,6 @@ async def widget(on_load):
 test_cleanup = build_cleanup_test(
     toga.WebView,
     xfail_backends=("toga_gtk",),
-    skip_backends=("toga_winui3",),
 )
 
 

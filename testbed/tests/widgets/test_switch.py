@@ -26,17 +26,21 @@ if toga.backend in {"toga_gtk", "toga_android", "toga_iOS"}:
 else:
     from .properties import test_focus  # noqa: F401
 
+skip_on_backends(
+    "toga_winui3",
+    reason="Switch is not implemented on this backend.",
+    allow_module_level=True,
+)
+
 
 @fixture
 async def widget():
-    skip_on_backends("toga_winui3")
     return toga.Switch("Hello")
 
 
 test_cleanup = build_cleanup_test(
     toga.Switch,
     args=("Hello",),
-    skip_backends=("toga_winui3",),
 )
 
 
