@@ -228,7 +228,7 @@ class NumberInput(Widget):
             # Drop focus if we're currently focussed, or else alignment setting
             # will not work properly with Cocoa
             self.interface.window._impl.native.makeFirstResponder(None)
-        self.native_input.setAlignment(NSTextAlignment(value))
+        self.native_input.alignment = NSTextAlignment(value)
 
     def set_font(self, font):
         self.native_input.font = font._impl.native
