@@ -79,6 +79,7 @@ class Window:
         # In WinUI 3 a minimized window is not considered visible. This variable keeps
         # track of this property.
         self._visible = self.native.Visible
+        print(f"\ninitial - self._visible:{self._visible} {App.app.loop.time()}")
 
         self._set_restrictions()
         self.set_title(title)
@@ -182,9 +183,11 @@ class Window:
             # Minimize is not considered visible but it also doesn't trigger this event.
             if self.native.AppWindow.IsVisible:
                 self._visible = True
+                print(f"\nEvent - self._visible:{self._visible} {App.app.loop.time()}")
                 self.interface.on_show()
             else:
                 self._visible = False
+                print(f"\nEvent - self._visible:{self._visible} {App.app.loop.time()}")
                 self.interface.on_hide()
 
         if args.DidPresenterChange:

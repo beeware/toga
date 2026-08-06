@@ -26,6 +26,8 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         i = 0
         ready = False
         while i < 200 and not ready:
+            if i % 5 == 0:
+                print(f"i:{i}")
             time.sleep(0.05)
             ready = getattr(app, "is_visible", False)
             i += 1
