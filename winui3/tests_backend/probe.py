@@ -164,7 +164,7 @@ class BaseProbe:
             key_input.Anonymous.ki.dwFlags = KEYEVENTF_KEYUP
             self._send_input(key_input)
 
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.05)
 
     async def _keyboard_select(self):
         await self._send_key(VK_RETURN)

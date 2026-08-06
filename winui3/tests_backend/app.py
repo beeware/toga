@@ -93,6 +93,43 @@ class AppProbe(BaseProbe):
         child_labels = [self._menu_item_label(child) for child in children]
         return children, child_labels
 
+    async def _menu_item_open_or_select(self, item, select: bool):
+        # Wait to enure that the item can receive the input focus.
+        for _ in range(50):
+            item.Focus(FocusState.Programmatic)
+
+            if item.FocusState != FocusState.Unfocused:
+                break
+            await asyncio.sleep(0.01)
+        else:
+            raise ValueError(f"{item} was never given the input focus.")
+
+        if not select:
+            await self._keyboard_select()
+            return
+
+        # Make a mutable boolean.
+        item_selected = [False]
+
+        def callback(sender, args, item_selected=item_selected):
+            item_selected[0] = True
+
+        # A selectable final menu item is always of type MenuFlyoutItem
+        selectable_item: MenuFlyoutItem = self._menu_item_casted(item)
+        token = selectable_item.add_Click(callback)
+
+        await self._keyboard_select()
+
+        # Wait to enure that the item has been selected.
+        for _ in range(50):
+            if item_selected[0]:
+                selectable_item.remove_Click(token)
+                break
+            await asyncio.sleep(0.01)
+        else:
+            selectable_item.remove_Click(token)
+            raise ValueError(f"{item} was never selected.")
+
     async def _menu_item(self, path, open_menus=False):
         """Select a menu item with the given path."""
         # Note that retrieving a submenu's items via menu.Items gives a list of
@@ -101,14 +138,6 @@ class AppProbe(BaseProbe):
 
         item = self.main_window._impl.menu_native
         for i, label in enumerate(path):
-            if open_menus:
-                for _ in range(50):
-                    if item.IsLoaded:
-                        break
-                    await asyncio.sleep(0.02)
-                else:
-                    raise ValueError(f"The menu item {item} was never loaded.")
-
             children, child_labels = self._menu_children(item)
 
             try:
@@ -121,10 +150,8 @@ class AppProbe(BaseProbe):
             item = children[child_index]
 
             if open_menus:
-                item.Focus(FocusState.Programmatic)
-                await self._keyboard_select()
+                await self._menu_item_open_or_select(item, len(path) == i + 1)
 
-        # A selectable final menu item is always of type MenuFlyoutItem
         return item
 
     def _menu_item_label(self, menu_item):
@@ -245,8 +272,6 @@ class AppProbe(BaseProbe):
         cursor_info.cbSize = sizeof(CURSORINFO)
         if not GetCursorInfo(byref(cursor_info)):
             raise RuntimeError("GetCursorInfo failed")
-
-        print(f"cursor_info.flags = {cursor_info.flags}")
 
         # Visibility *should* be exposed by CursorInfo.flags; but in CI,
         # CursorInfo.flags returns 2 ("the system is not drawing the cursor
@@ -369,8 +394,7 @@ class AppProbe(BaseProbe):
             await asyncio.sleep(0.05)
 
             new_midpoint = get_midpoint()
-            print(f"StatusIcon - old_midpoint={midpoint}")
-            print(f"StatusIcon - new_midpoint={new_midpoint}")
+
             if midpoint == new_midpoint:
                 break
             midpoint = new_midpoint
