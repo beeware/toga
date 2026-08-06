@@ -16,6 +16,8 @@ import testbed.app
 
 def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
     try:
+        import toga
+
         # Wait for the app's main window to be visible. The visibility property
         # is set by the app in an on_running handler; this is required because
         # visibility is a GUI property, and accessing that property from a
@@ -30,6 +32,16 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         if not ready:
             print("\nApp didn't display a main window.")
+            if toga.backend == "toga_winui3":
+                ready_append = app.loop._ready.append
+
+                def append(value):
+                    ready_append(value)
+                    print(app.loop._ready)
+
+                app.loop._ready.append = append
+                app.loop.call_soon_threadsafe(lambda: print("\nDEBUG - Loop running\n"))
+
             app.returncode = 1
             return
 
@@ -37,7 +49,9 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         # Some backends and platforms do not support interactive GUI testing.
         # On those platforms, perform a basic app start test.
-        import toga
+
+        if toga.backend == "toga_winui3":
+            print(f"toga_winui3 startup time = {0.05 * i}s")
 
         if (
             # On GitHub Actions, Windows/ARM64 runners don't have an interactive
