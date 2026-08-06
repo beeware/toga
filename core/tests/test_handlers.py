@@ -538,6 +538,14 @@ async def test_async_result_non_comparable():
     ):
         _ = result != 42
 
+    # Truthiness must raise the same helpful error (regression:
+    # __bool__ carried an extra parameter, so bool() raised TypeError).
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check Test result directly; use await or an on_result handler",
+    ):
+        _ = bool(result)
+
 
 async def test_async_result():
     """An async result can be set."""
