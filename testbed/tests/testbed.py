@@ -25,7 +25,7 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         print("Waiting for app to be ready for testing... ", end="", flush=True)
         i = 0
         ready = False
-        while i < 100 and not ready:
+        while i < 200 and not ready:
             time.sleep(0.05)
             ready = getattr(app, "is_visible", False)
             i += 1
@@ -42,6 +42,8 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                 app.loop._ready.append = append
                 app.loop.call_soon_threadsafe(lambda: print("\nDEBUG - Loop running\n"))
 
+                time.sleep(1)
+
             app.returncode = 1
             return
 
@@ -52,6 +54,9 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         if toga.backend == "toga_winui3":
             print(f"toga_winui3 startup time = {0.05 * i}s")
+
+        else:
+            raise ValueError("DEBUG - only running WinUI 3 tested.")
 
         if (
             # On GitHub Actions, Windows/ARM64 runners don't have an interactive
