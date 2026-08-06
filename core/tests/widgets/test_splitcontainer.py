@@ -413,8 +413,7 @@ def test_set_content_invalid(splitcontainer, content, message):
 
 
 def test_set_content_invalid_keeps_previous_content(content1, content2):
-    """A failed content assignment must not orphan the widgets currently shown
-    (regression: the old content was detached before validation)."""
+    """A failed content assignment must not orphan the widgets currently shown."""
     app = toga.App("Test App", "org.beeware.toga.splitcontainer-test")
     window = toga.Window()
     splitcontainer = toga.SplitContainer(content=[content1, content2])
