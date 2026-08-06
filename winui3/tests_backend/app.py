@@ -93,18 +93,22 @@ class AppProbe(BaseProbe):
         child_labels = [self._menu_item_label(child) for child in children]
         return children, child_labels
 
-    async def _menu_item_open_or_select(self, item, select: bool):
-        # Wait to enure that the item can receive the input focus.
-        for _ in range(50):
+    async def _menu_item_open_or_select(self, path, item, final_select: bool):
+        # Wait to enure that the item has received the input focus.
+        count = 0
+        focus_state = FocusState.Unfocused
+
+        while focus_state == FocusState.Unfocused and count < 50:
             item.Focus(FocusState.Programmatic)
-
-            if item.FocusState != FocusState.Unfocused:
-                break
+            count += 1
+            focus_state = item.FocusState
             await asyncio.sleep(0.01)
-        else:
-            raise ValueError(f"{item} was never given the input focus.")
 
-        if not select:
+        if focus_state == FocusState.Unfocused:
+            raise ValueError(f"Menu item {path} was never given the input focus.")
+
+        # If a final menu items is not being selected then open the next submenu.
+        if not final_select:
             await self._keyboard_select()
             return
 
@@ -121,13 +125,15 @@ class AppProbe(BaseProbe):
         await self._keyboard_select()
 
         # Wait to enure that the item has been selected.
-        for _ in range(50):
-            if item_selected[0]:
-                selectable_item.remove_Click(token)
-                break
+        count = 0
+
+        while not item_selected[0] and count < 50:
+            count += 1
             await asyncio.sleep(0.01)
-        else:
-            selectable_item.remove_Click(token)
+
+        selectable_item.remove_Click(token)
+
+        if not item_selected[0]:
             raise ValueError(f"{item} was never selected.")
 
     async def _menu_item(self, path, open_menus=False):
@@ -144,13 +150,17 @@ class AppProbe(BaseProbe):
                 child_index = child_labels.index(label)
             except ValueError:
                 raise AssertionError(
-                    f"no item named {path[: i + 1]}; options are {child_labels}"
+                    f"No item named {path[: i + 1]}; options are {child_labels}"
                 ) from None
 
             item = children[child_index]
 
             if open_menus:
-                await self._menu_item_open_or_select(item, len(path) == i + 1)
+                await self._menu_item_open_or_select(
+                    path[: i + 1],
+                    item,
+                    len(path) == i + 1,
+                )
 
         return item
 
