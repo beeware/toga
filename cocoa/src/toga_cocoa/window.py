@@ -543,9 +543,13 @@ class Window:
 class MainWindow(Window):
     def __init__(self, interface, position, size):
         super().__init__(interface, position, size)
+
         # By default, no toolbar
         self._toolbar_items = {}
         self.native_toolbar = None
+
+    def __del__(self):
+        self.purge_toolbar()
 
     def create_menus(self):
         # macOS doesn't have window-level menus
@@ -573,9 +577,6 @@ class MainWindow(Window):
         # Adding/removing a toolbar changes the size of the content window.
         if self.interface.content:
             self.interface.content.refresh()
-
-    def __del__(self):
-        self.purge_toolbar()
 
     def purge_toolbar(self):
         while self._toolbar_items:
