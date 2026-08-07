@@ -140,9 +140,21 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def toolbarDefaultItemIdentifiers_(self, toolbar):
+        """Determine the list of toolbar items that will display by default."""
         default = NSMutableArray.alloc().init()
+        prev_group = None
         for item in self.interface.toolbar:
+            # If there's been a group change, and this item isn't a separator,
+            # add a separator between groups.
+            if (
+                prev_group is not None
+                and item.group != prev_group
+                and not isinstance(item, Separator)
+            ):
+                default.addObject_(toolbar_identifier(prev_group))
             default.addObject_(toolbar_identifier(item))
+            prev_group = item.group
+
         return default
 
     @objc_method
