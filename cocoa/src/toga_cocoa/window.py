@@ -382,7 +382,7 @@ class Window:
             and self._scaffold.current_container.controller.view.isInFullScreenMode()
         ):
             return WindowState.PRESENTATION
-        if self.native.styleMask & NSWindowStyleMask.FullScreen:
+        elif self.native.styleMask & NSWindowStyleMask.FullScreen:
             return WindowState.FULLSCREEN
         elif self.native.isZoomed:
             return WindowState.MAXIMIZED
