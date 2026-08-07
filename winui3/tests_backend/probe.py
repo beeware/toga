@@ -4,6 +4,7 @@ import platform
 from ctypes import byref, sizeof
 
 from pytest import approx, skip
+from win32more.Microsoft.UI.Xaml import FocusState
 from win32more.Windows.Win32.Foundation import POINT
 from win32more.Windows.Win32.UI.Input.KeyboardAndMouse import (
     INPUT,
@@ -49,11 +50,12 @@ class BaseProbe:
 
             return True
 
-        for _ in range(50):
-            if staging_complete():
-                break
+        count = 0
+        while not staging_complete() and count < 50:
+            count += 1
             await asyncio.sleep(0.02)
-        else:
+
+        if not staging_complete():
             message = "Non-empty StagingArea:\n"
             for staging_area in staging_areas:
                 if len(staging_area._staging_clones) > 0:
@@ -76,9 +78,9 @@ class BaseProbe:
                 and height - 1 < self.native.ActualHeight < height + 1
             )
 
-        for _ in range(50):
-            if resizing_complete():
-                break
+        count = 0
+        while not resizing_complete() and count < 50:
+            count += 1
             await asyncio.sleep(0.02)
 
     async def redraw(self, message=None, delay=0, wait_for=None):
@@ -171,3 +173,18 @@ class BaseProbe:
 
     async def _keyboard_escape(self):
         await self._send_key(VK_ESCAPE)
+
+    async def _wait_for_focus(self, native_object):
+        """Attempts to set the input focus on a WinUI 3 object for 2 seconds."""
+        # Make sure that the menu item is selected before sending select command.
+        count = 0
+        focus_state = FocusState.Unfocused
+
+        while focus_state == FocusState.Unfocused and count < 50:
+            native_object.Focus(FocusState.Programmatic)
+            count += 1
+            focus_state = native_object.FocusState
+            await asyncio.sleep(0.01)
+
+        if focus_state == FocusState.Unfocused:
+            raise ValueError(f"{native_object} was never given the input focus.")

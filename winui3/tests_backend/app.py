@@ -12,7 +12,7 @@ from toga_winui3.libs.nativeapp import NativeApp
 from toga_winui3.libs.shell import Shell_NotifyIconGetRect
 from win32more.Microsoft.UI.Input import InputCursor
 from win32more.Microsoft.UI.Interop import GetWindowFromWindowId
-from win32more.Microsoft.UI.Xaml import FocusState, Window
+from win32more.Microsoft.UI.Xaml import Window
 from win32more.Microsoft.UI.Xaml.Controls import (
     MenuBarItem,
     MenuFlyout,
@@ -95,17 +95,7 @@ class AppProbe(BaseProbe):
 
     async def _menu_item_open_or_select(self, path, item, final_select: bool):
         # Wait to enure that the item has received the input focus.
-        count = 0
-        focus_state = FocusState.Unfocused
-
-        while focus_state == FocusState.Unfocused and count < 50:
-            item.Focus(FocusState.Programmatic)
-            count += 1
-            focus_state = item.FocusState
-            await asyncio.sleep(0.01)
-
-        if focus_state == FocusState.Unfocused:
-            raise ValueError(f"Menu item {path} was never given the input focus.")
+        await self._wait_for_focus(item)
 
         # If a final menu items is not being selected then open the next submenu.
         if not final_select:
@@ -399,15 +389,16 @@ class AppProbe(BaseProbe):
 
         # Make sure the overflow tray is fully open by tracking when the midpoint stops
         # moving.
+        count = 0
+        old_midpoint = None
         midpoint = get_midpoint()
-        for _ in range(10):
+        while midpoint != old_midpoint and count < 10:
             await asyncio.sleep(0.05)
+            old_midpoint = midpoint
+            midpoint = get_midpoint()
 
-            new_midpoint = get_midpoint()
-
-            if midpoint == new_midpoint:
-                break
-            midpoint = new_midpoint
+        if midpoint != old_midpoint:
+            raise ValueError("System icon overflow tray never stabilized.")
 
         return midpoint
 
@@ -463,12 +454,7 @@ class AppProbe(BaseProbe):
         index = self.status_menu_items(status_icon).index(title)
 
         # Make sure that the menu item is selected before sending select command.
-        for _ in range(100):
-            items[index].Focus(FocusState.Programmatic)
-            if items[index].FocusState != 0:
-                break
-            await asyncio.sleep(0.01)
-
+        await self._wait_for_focus(items[index])
         await self._keyboard_select()
 
         # Close the overflow tray
