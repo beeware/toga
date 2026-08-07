@@ -159,8 +159,12 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(
-        self, toolbar, identifier, insert: bool
+        self,
+        toolbar,
+        identifier,
+        insert: bool,
     ):
+        """Create the requested toolbar button."""
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
             item = self.impl._toolbar_items[str(identifier)]
@@ -175,19 +179,29 @@ class TogaWindow(NSWindow):
 
             native.setTarget_(self)
             native.setAction_(SEL("onToolbarButtonPress:"))
-        except KeyError:
+        except KeyError:  # Separator items
             pass
         return native
 
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
+        """Confirm if the toolbar item should be enabled."""
         try:
             return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
-        except KeyError:
+        except KeyError:  # pragma: nocover
+            # This branch *shouldn't* ever happen; but there's an edge
+            # case where a toolbar redraw happens in the middle of deleting
+            # a toolbar item that can't be reliably reproduced, so it sometimes
+            # happens in testing.
             return False
+
+    ######################################################################
+    # Toolbar button press delegate methods
+    ######################################################################
 
     @objc_method
     def onToolbarButtonPress_(self, obj) -> None:
+        """Invoke the action tied to the toolbar button."""
         item = self.impl._toolbar_items[str(obj.itemIdentifier)]
         item.action()
 
