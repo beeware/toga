@@ -8,22 +8,30 @@ from rubicon.objc import (
     objc_property,
 )
 
+from toga import Command
 from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
 from toga_cocoa.libs import (
     NSBackingStoreBuffered,
     NSImage,
+    NSMutableArray,
     NSMutableDictionary,
     NSNumber,
     NSScreen,
     NSTitleBinding,
+    NSToolbar,
+    NSToolbarItem,
     NSWindow,
     NSWindowStyleMask,
     core_graphics,
 )
 
 from .screens import Screen as ScreenImpl
+
+
+def toolbar_identifier(cmd):
+    return f"Toolbar-{type(cmd).__name__}-{id(cmd)}"
 
 
 class TogaWindow(NSWindow):
@@ -114,6 +122,58 @@ class TogaWindow(NSWindow):
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
         self.impl._apply_state(self.impl._pending_state_transition)
+
+    ######################################################################
+    # Toolbar delegate methods handled by the native window
+    ######################################################################
+
+    @objc_method
+    def toolbarAllowedItemIdentifiers_(self, toolbar):  # pragma: no cover
+        allowed = NSMutableArray.alloc().init()
+        for item in self.interface.toolbar:
+            allowed.addObject_(toolbar_identifier(item))
+        return allowed
+
+    @objc_method
+    def toolbarDefaultItemIdentifiers_(self, toolbar):
+        default = NSMutableArray.alloc().init()
+        for item in self.interface.toolbar:
+            default.addObject_(toolbar_identifier(item))
+        return default
+
+    @objc_method
+    def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(
+        self, toolbar, identifier, insert: bool
+    ):
+        native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
+        try:
+            item = self.impl._toolbar_items[str(identifier)]
+            native.setLabel(item.text)
+            native.setPaletteLabel(item.text)
+            if item.tooltip:
+                native.setToolTip(item.tooltip)
+            if item.icon:
+                native.setImage(item.icon._impl.native)
+
+            item._impl.native.add(native)
+
+            native.setTarget_(self)
+            native.setAction_(SEL("onToolbarButtonPress:"))
+        except KeyError:
+            pass
+        return native
+
+    @objc_method
+    def validateToolbarItem_(self, item) -> bool:
+        try:
+            return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
+        except KeyError:
+            return False
+
+    @objc_method
+    def onToolbarButtonPress_(self, obj) -> None:
+        item = self.impl._toolbar_items[str(obj.itemIdentifier)]
+        item.action()
 
 
 class Window:
@@ -207,14 +267,9 @@ class Window:
         # Set the content of the window's container
         self.native.contentViewController = scaffold.root_controller
         scaffold.title = self._title
-        self.update_toolbar()
         self.native.setFrame(frame, display=True, animate=False)
         if restore_presentation:
             self.set_window_state(WindowState.PRESENTATION)
-
-    def update_toolbar(self):
-        self._scaffold.create_toolbar()
-        self.native.setToolbar(self._scaffold.native_toolbar)
 
     ######################################################################
     # Window size
@@ -458,10 +513,55 @@ class Window:
 class MainWindow(Window):
     def __init__(self, interface, position, size):
         super().__init__(interface, position, size)
+        # By default, no toolbar
+        self._toolbar_items = {}
+        self.native_toolbar = None
 
     def create_menus(self):
         # macOS doesn't have window-level menus
         pass
 
     def create_toolbar(self):
-        self.update_toolbar()
+        # Purge any existing toolbar items
+        self.purge_toolbar()
+
+        # Create the new toolbar items.
+        if self.interface.toolbar:
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Command):
+                    self._toolbar_items[toolbar_identifier(cmd)] = cmd
+
+            self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
+                f"Toolbar-{id(self)}"
+            )
+            self.native_toolbar.setDelegate(self.native)
+        else:
+            self.native_toolbar = None
+
+        self.native.setToolbar(self.native_toolbar)
+
+        # Adding/removing a toolbar changes the size of the content window.
+        if self.interface.content:
+            self.interface.content.refresh()
+
+    def __del__(self):
+        self.purge_toolbar()
+
+    def purge_toolbar(self):
+        while self._toolbar_items:
+            dead_items = []
+            _, cmd = self._toolbar_items.popitem()
+            # The command might have toolbar representations on multiple window
+            # toolbars, and may have other representations (at the very least, a menu
+            # item). Only clean up the representation pointing at *this* window. Do this
+            # in 2 passes so that we're not modifying the set of native objects while
+            # iterating over it.
+            for item_native in cmd._impl.native:
+                if (
+                    isinstance(item_native, NSToolbarItem)
+                    and item_native.target == self.native
+                ):
+                    dead_items.append(item_native)
+
+            for item_native in dead_items:
+                cmd._impl.native.remove(item_native)
