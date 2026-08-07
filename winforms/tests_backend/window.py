@@ -138,7 +138,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def assert_is_toolbar_separator(self, index, section=False):
         assert isinstance(self._native_toolbar_item(index), ToolStripSeparator)
 
-    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+    def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
         item = self._native_toolbar_item(index)
         assert item.Text == label
         assert item.ToolTipText == tooltip
