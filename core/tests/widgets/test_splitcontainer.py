@@ -412,6 +412,23 @@ def test_set_content_invalid(splitcontainer, content, message):
         splitcontainer.content = content
 
 
+def test_set_content_invalid_keeps_previous_content(content1, content2):
+    """A failed content assignment must not orphan the widgets currently shown."""
+    app = toga.App("Test App", "org.beeware.toga.splitcontainer-test")
+    window = toga.Window()
+    splitcontainer = toga.SplitContainer(content=[content1, content2])
+    window.content = splitcontainer
+
+    assert content1.id in app.widgets
+
+    with pytest.raises(ValueError):
+        splitcontainer.content = [content1]
+
+    # The previous content is still attached and intact
+    assert content1.id in app.widgets
+    assert splitcontainer.content == [content1, content2]
+
+
 def test_direction(splitcontainer):
     """The direction of the splitcontainer can be changed."""
 
