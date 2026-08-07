@@ -67,6 +67,34 @@ AVCapturePhotoSettings = ObjCClass("AVCapturePhotoSettings")
 AVCaptureSession = ObjCClass("AVCaptureSession")
 
 ######################################################################
+# AVCaptureMetadataOutput.h
+AVCaptureMetadataOutput = ObjCClass("AVCaptureMetadataOutput")
+
+######################################################################
+# AVMetadataObject.h
+AVMetadataMachineReadableCodeObject = ObjCClass("AVMetadataMachineReadableCodeObject")
+
+######################################################################
+# AVMetadataObjectType constants
+AVMetadataObjectTypeQRCode = objc_const(av_foundation, "AVMetadataObjectTypeQRCode")
+AVMetadataObjectTypeCode128Code = objc_const(
+    av_foundation, "AVMetadataObjectTypeCode128Code"
+)
+AVMetadataObjectTypeEAN13Code = objc_const(
+    av_foundation, "AVMetadataObjectTypeEAN13Code"
+)
+AVMetadataObjectTypeEAN8Code = objc_const(av_foundation, "AVMetadataObjectTypeEAN8Code")
+AVMetadataObjectTypePDF417Code = objc_const(
+    av_foundation, "AVMetadataObjectTypePDF417Code"
+)
+AVMetadataObjectTypeAztecCode = objc_const(
+    av_foundation, "AVMetadataObjectTypeAztecCode"
+)
+AVMetadataObjectTypeDataMatrixCode = objc_const(
+    av_foundation, "AVMetadataObjectTypeDataMatrixCode"
+)
+
+######################################################################
 # AVCaptureVideoPreviewLayer.h
 
 AVCaptureVideoPreviewLayer = ObjCClass("AVCaptureVideoPreviewLayer")

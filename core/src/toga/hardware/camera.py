@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
-from toga.constants import FlashMode
-from toga.handlers import AsyncResult, PermissionResult
+from toga.constants import BarcodeFormat, FlashMode
+from toga.handlers import AsyncResult, PermissionResult, wrapped_handler
 from toga.platform import get_factory
 
 if TYPE_CHECKING:
@@ -13,6 +14,10 @@ if TYPE_CHECKING:
 
 class PhotoResult(AsyncResult):
     RESULT_TYPE = "photo"
+
+
+class ScanResult(AsyncResult):
+    RESULT_TYPE = "scan"
 
 
 class CameraDevice:
@@ -49,6 +54,7 @@ class Camera:
         self.factory = get_factory()
         self._app = app
         self._impl = self.factory.Camera(self)
+        self._on_detection = wrapped_handler(self, None)
 
     @property
     def app(self) -> App:
@@ -119,3 +125,87 @@ class Camera:
         photo = PhotoResult(None)
         self._impl.take_photo(photo, device=device, flash=flash)
         return photo
+
+    @property
+    def on_detection(self) -> Callable:
+        """A handler to invoke when a barcode is detected during scanning.
+
+        The callback receives the camera as the first argument, and the detected content
+        as a keyword argument: ``on_detection(camera, content=content)``.
+
+        If scanning was started with ``continuous=True``, the callback will be invoked
+        each time a barcode is detected. If ``continuous=False`` (the default), the
+        callback is invoked once before scanning stops automatically.
+        """
+        return self._on_detection
+
+    @on_detection.setter
+    def on_detection(self, handler: Callable | None) -> None:
+        self._on_detection = wrapped_handler(self, handler)
+
+    @property
+    def is_scanning(self) -> bool:
+        """Is the camera currently scanning for barcodes?"""
+        return self._impl.is_scanning()
+
+    def start_scanning(
+        self,
+        device: CameraDevice | None = None,
+        code_types: BarcodeFormat | list[BarcodeFormat] | None = None,
+        on_detection: Callable | None = None,
+        continuous: bool = False,
+    ) -> ScanResult:
+        """Start scanning for barcodes (including QR codes) in real-time.
+
+        Displays a live camera preview that scans for supported barcode types. When a
+        barcode is detected, the ``on_detection`` callback is invoked.
+
+        If ``continuous`` is ``False`` (the default), scanning stops automatically after
+        the first detection, and the returned ``ScanResult`` resolves with the detected
+        content string. If ``continuous`` is ``True``, scanning continues until
+        :meth:`stop_scanning` is called, and the ``ScanResult`` resolves with ``None``.
+
+        If the platform requires permission to access the camera, and the user hasn't
+        previously provided that permission, this will cause permission to be requested.
+
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will start the scanning process, but will return *immediately*.
+        The return value can be awaited in an asynchronous context, but cannot be used
+        directly.
+
+        :param device: The camera device to use for scanning. If ``None``, the default
+            camera will be used.
+        :param code_types: The types of barcodes to scan for. A single
+            :class:`~toga.constants.BarcodeFormat` value, or a ``list`` of values.
+            If ``None``, all supported types will be detected.
+        :param on_detection: A handler to invoke when a barcode is detected. This can
+            also be set via the :attr:`on_detection` property.
+        :param continuous: If ``False`` (default), scanning stops after the first
+            detection. If ``True``, scanning continues until :meth:`stop_scanning` is
+            called.
+        :returns: An asynchronous result; when awaited, returns the detected content
+            string if a barcode was found, or ``None`` if scanning was cancelled.
+        :raises PermissionError: if the app does not have permission to use the camera.
+        """
+        if on_detection is not None:
+            self.on_detection = on_detection
+
+        if code_types is None:
+            code_types = list(BarcodeFormat)
+        elif isinstance(code_types, BarcodeFormat):
+            code_types = [code_types]
+
+        result = ScanResult(None)
+        self._impl.start_scanning(
+            result, device=device, code_types=code_types, continuous=continuous
+        )
+        return result
+
+    def stop_scanning(self) -> None:
+        """Stop scanning for barcodes.
+
+        If the camera is currently scanning, the scan preview will be dismissed and the
+        pending :class:`ScanResult` from :meth:`start_scanning` will resolve with
+        ``None``.
+        """
+        self._impl.stop_scanning()
