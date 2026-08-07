@@ -377,6 +377,8 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
+        # Set scaffold will call get_window_state and back then during init there
+        # may not be any scaffold yet so we need to check the first condition
         if (
             hasattr(self, "_scaffold")
             and self._scaffold.current_container.controller.view.isInFullScreenMode()
