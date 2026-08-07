@@ -8,7 +8,7 @@ from rubicon.objc import (
     objc_property,
 )
 
-from toga import Command
+from toga import Command, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
@@ -315,7 +315,7 @@ class Window:
     def set_size(self, size):
         frame = self.native.frame
         frame.size = NSSize(size[0], size[1])
-        self.native.setFrame(frame, display=True, animate=False)
+        self.native.setFrame(frame, display=True, animate=True)
 
     ######################################################################
     # Window position
