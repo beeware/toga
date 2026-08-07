@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import PIL.Image
@@ -37,19 +38,31 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed-qt"
+        return (
+            Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+            / "testbed-qt"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed-qt"
+        return (
+            Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
+            / "testbed-qt"
+        )
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed-qt"
+        return (
+            Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
+            / "testbed-qt"
+        )
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed-qt/log"
+        return (
+            Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
+            / "testbed-qt/log"
+        )
 
     @property
     def is_cursor_visible(self):
