@@ -55,9 +55,13 @@ class LayoutApp(toga.App):
         for _ in range(3):
             self.add_label()
 
+        # This tiny window size is used to test that forcing a smaller window size than
+        # minimum size will not succeed, i.e. the window will display at minimum size.
+        # (100, 100) is used as macOS appears to have trouble when we force a tinier
+        # size.
         self.main_window = toga.MainWindow(size=(100, 100))
-        self.main_window.show()
         self.main_window.content = self.box
+        self.main_window.show()
 
     def hide_label(self, sender):
         if self.labels[0].visibility == HIDDEN:

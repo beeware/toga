@@ -8,7 +8,7 @@ from rubicon.objc import (
     objc_property,
 )
 
-from toga import Command, Separator
+from toga.command import Command, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
@@ -135,7 +135,7 @@ class TogaWindow(NSWindow):
         # can't ever be invoked - but we need to provide an implementation.
         allowed = NSMutableArray.alloc().init()
         for item in self.interface.toolbar:
-            allowed.addObject_(toolbar_identifier(item))
+            allowed.addObject(toolbar_identifier(item))
         return allowed
 
     @objc_method
@@ -151,8 +151,8 @@ class TogaWindow(NSWindow):
                 and item.group != prev_group
                 and not isinstance(item, Separator)
             ):
-                default.addObject_(toolbar_identifier(prev_group))
-            default.addObject_(toolbar_identifier(item))
+                default.addObject(toolbar_identifier(prev_group))
+            default.addObject(toolbar_identifier(item))
             prev_group = item.group
 
         return default
@@ -165,7 +165,7 @@ class TogaWindow(NSWindow):
         insert: bool,
     ):
         """Create the requested toolbar button."""
-        native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
+        native = NSToolbarItem.alloc().initWithItemIdentifier(identifier)
         try:
             item = self.impl._toolbar_items[str(identifier)]
             native.setLabel(item.text)
@@ -177,8 +177,8 @@ class TogaWindow(NSWindow):
 
             item._impl.native.add(native)
 
-            native.setTarget_(self)
-            native.setAction_(SEL("onToolbarButtonPress:"))
+            native.setTarget(self)
+            native.setAction(SEL("onToolbarButtonPress:"))
         except KeyError:  # Separator items
             pass
         return native
