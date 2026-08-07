@@ -29,7 +29,6 @@ class Window:
         self.interface._impl = self
 
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
-        self._title = ""
 
         # Set the background color of the root content.
         try:
@@ -46,13 +45,9 @@ class Window:
     ######################################################################
 
     def get_title(self):
-        # This may seem a bit less performant than using self._title, but we do it
-        # so that it's possible to test in the testbed that the title is properly set
-        # (as scaffold.title is a direct native retrieval)
         return str(self.scaffold.title)
 
     def set_title(self, title):
-        self._title = title
         self.scaffold.title = title
 
     ######################################################################
@@ -77,8 +72,9 @@ class Window:
 
     def set_scaffold(self, scaffold):
         self.scaffold = scaffold
+        # Get the current title and sync it up with the new scaffold.
+        self.scaffold.title = self.get_title()
         self.native.rootViewController = self.scaffold.nav_controller
-        self.scaffold.title = self._title
         self.scaffold.navigation_bar_hidden = self._navigation_bar_hidden
 
     ######################################################################

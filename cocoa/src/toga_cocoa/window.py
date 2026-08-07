@@ -211,8 +211,6 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
-        self._title = ""
-
         mask = NSWindowStyleMask.Titled
         if self.interface.closable:
             mask |= NSWindowStyleMask.Closable
@@ -262,7 +260,6 @@ class Window:
         return str(self._scaffold.title)
 
     def set_title(self, title):
-        self._title = title
         self._scaffold.title = title
 
     ######################################################################
@@ -290,13 +287,13 @@ class Window:
         restore_presentation = False
         if self.get_window_state() == WindowState.PRESENTATION:
             restore_presentation = True
-            # This is instaneous so yay!!!
             self.set_window_state(WindowState.NORMAL)
         frame = self.native.frame
         self._scaffold = scaffold
+        # Get the current title and sync it up with the new scaffold.
+        scaffold.title = self.get_title()
         # Set the content of the window's container
         self.native.contentViewController = scaffold.root_controller
-        scaffold.title = self._title
         self.native.setFrame(frame, display=True, animate=False)
         if restore_presentation:
             self.set_window_state(WindowState.PRESENTATION)
