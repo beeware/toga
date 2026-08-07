@@ -124,11 +124,15 @@ class TogaWindow(NSWindow):
         self.impl._apply_state(self.impl._pending_state_transition)
 
     ######################################################################
-    # Toolbar delegate methods handled by the native window
+    # Toolbar delegate methods
     ######################################################################
 
     @objc_method
     def toolbarAllowedItemIdentifiers_(self, toolbar):  # pragma: no cover
+        """Determine the list of available toolbar items."""
+        # This method is required by the Cocoa API, but it's only ever called if the
+        # toolbar allows user customization. We don't turn that option on so this method
+        # can't ever be invoked - but we need to provide an implementation.
         allowed = NSMutableArray.alloc().init()
         for item in self.interface.toolbar:
             allowed.addObject_(toolbar_identifier(item))
