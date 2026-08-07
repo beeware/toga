@@ -6,6 +6,8 @@ from .dialogs import DialogsMixin
 from .probe import BaseProbe
 from .scaffolds.base import ScaffoldProbe
 
+SCAFFOLD_PROBE_CACHE = {}
+
 
 class WindowProbe(BaseProbe, DialogsMixin):
     supports_fullscreen = False
@@ -31,7 +33,12 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     async def wait_for_window(self, message, state=None):
         await self.redraw(message)
-        await ScaffoldProbe(self.window.scaffold).wait_for_layout()
+        if self.window.scaffold not in SCAFFOLD_PROBE_CACHE:
+            SCAFFOLD_PROBE_CACHE[self.window.scaffold] = ScaffoldProbe(
+                self.window.scaffold
+            )
+        scaffold_probe = SCAFFOLD_PROBE_CACHE[self.window.scaffold]
+        await scaffold_probe.wait_for_layout()
 
         # If a specific window state has been requested, wait for that state to occur.
         if state:
