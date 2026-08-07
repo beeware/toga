@@ -196,6 +196,9 @@ class TextInput(Widget):
         else:
             self.error_label.alignment = NSTextAlignment(RIGHT)
 
+        # Refocus when we're done.
+        self.focus()
+
     def set_font(self, font):
         self.native.font = font._impl.native
         self.error_label.font = font._impl.native
