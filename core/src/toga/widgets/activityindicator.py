@@ -20,7 +20,8 @@ class ActivityIndicator(Widget):
             will be applied to the widget.
         :param running: Describes whether the indicator is running at the
             time it is created.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 
