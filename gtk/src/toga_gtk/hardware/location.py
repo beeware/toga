@@ -34,8 +34,15 @@ from toga_gtk.libs import Flatpak, Geoclue, Gio, GLib, GObject
 
 def toga_location(location):
     """Convert a ``Geoclue.Location`` into ``OnLocationChangeHandler`` kwargs."""
-    latlng = LatLng(location.props.latitude, location.props.longitude)
-    altitude = location.get_property("altitude")
+    altitude = location.props.altitude
+    latlng = LatLng(
+        location.props.latitude,
+        location.props.longitude,
+        altitude=altitude,
+        horizontal_accuracy=(
+            location.props.accuracy if location.props.accuracy > 0.0 else None
+        ),
+    )
 
     return {
         "location": latlng,
