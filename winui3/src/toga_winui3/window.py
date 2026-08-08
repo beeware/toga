@@ -66,9 +66,11 @@ class Window:
         self.is_activated = False
         self.create()
 
+        self._presenter_changing = False
+
         # From a native WinUI 3 point of view, presentation mode is indistinguishable
         # from fullscreen mode. Use this variable to distinguish between them.
-        self._in_presentation_mode = False
+        self._fullscreen_presenter = None
 
         # Keep a record of the current state to access after state changes.
         self._cached_state = WindowState.NORMAL
@@ -155,29 +157,33 @@ class Window:
             self.interface.on_gain_focus()
 
     def native_event_changed(self, sender, args):
+        """An event that fires *synchronously* when window properties change."""
 
-        if args.DidPositionChange:
-            pass
+        # DidPresenterChange fires for every window state transition except:
+        #  1. WindowState.MINIMIZED  =>  WindowState.NORMAL
+        #  2. WindowState.MAXIMIZED  =>  WindowState.NORMAL
+        #  3. WindowState.PRESENTATION  <=>  WindowState.FULLSCREEN
+        # Number 3 is programmatic only, so it is triggered in set_window_state().
+        # Numbers 1 and 2 are extracted from the DidSizeChange event.
+        if args.DidPresenterChange:
+            self._set_restrictions()
+            self._state_change_event(self.get_window_state())
 
-        if args.DidSizeChange:
+        # The self._presenter_changing boolean is needed since the presenter type is
+        # only changed after DidSizeChange fires. This would lead to get_window_state()
+        # giving incorrect values.
+        if args.DidSizeChange and not self._presenter_changing:
             old_state = self._cached_state
             new_state = self.get_window_state()
 
-            # DidSizeChange is triggered by entering and leaving a Minimized state.
-            self._cached_state = new_state
+            if new_state == WindowState.NORMAL:
+                if old_state in {WindowState.MINIMIZED, WindowState.MAXIMIZED}:
+                    self._state_change_event(new_state)
 
-            # Update the cached size.
-            self._cached_size = self._normal_size
-
-            if {old_state, new_state} != {WindowState.MINIMIZED, WindowState.NORMAL}:
-                self.interface.on_resize()
-
-            if old_state != new_state:
-                if old_state == WindowState.MINIMIZED:
-                    self.interface.on_show()
-
-                elif new_state == WindowState.MINIMIZED:
-                    self.interface.on_hide()
+                if old_state == new_state:
+                    # Update the cached normal window size.
+                    self._cached_size = self.get_size()
+                    self.interface.on_resize()
 
         if args.DidVisibilityChange:
             # Minimize is not considered visible but it also doesn't trigger this event.
@@ -189,14 +195,6 @@ class Window:
                 self._visible = False
                 print(f"\nEvent - self._visible:{self._visible} {App.app.loop.time()}")
                 self.interface.on_hide()
-
-        if args.DidPresenterChange:
-            self._set_restrictions()
-
-            # Notes:
-            # - DidSizeChange occurs before DidPresenterChange.
-            # - DidPresenterChange is not triggered by Minimized -> Normal.
-            self._cached_state = self.get_window_state()
 
     def native_event_closing(self, sender, args):
         # Note: This event is raised when clicking on the close button, but not when
@@ -348,14 +346,6 @@ class Window:
             client_min_height + frame_size_physical[1],
         )
 
-    @property
-    def _normal_size(self):
-        """The size of the window when it was last in the `Normal` state."""
-        if self._cached_state == WindowState.NORMAL:
-            return self.get_size()
-
-        return self._cached_size
-
     ####################################################################################
     # Window position (CSS pixels, see window size for terminology).
     ####################################################################################
@@ -426,17 +416,10 @@ class Window:
         :return: A WindowState constant determined by NORMAL, MAXIMIZED, MINIMIZED,
             FULLSCREEN or PRESENTATION.
         """
-        presenter, _ = self._presenter
-
-        if presenter.Kind == AppWindowPresenterKind.FullScreen:
-            # From the Microsoft documentation: 'The window does not have a border
-            # or title bar, and hides the system task bar.'
-            # learn.microsoft.com/en-us/windows/apps/develop/ui/manage-app-windows
-            if self._in_presentation_mode:
-                return WindowState.PRESENTATION
-            else:
-                return WindowState.FULLSCREEN
+        if self._fullscreen_presenter:
+            return self._fullscreen_presenter
         else:
+            presenter, _ = self._presenter
             # Assume presenter.Kind == AppWindowPresenterKind.Overlapped, since the
             # third alternative 'CompactOverlay' is not implemented by Toga.
             if presenter.State == OverlappedPresenterState.Maximized:
@@ -462,11 +445,14 @@ class Window:
         ):
             self.interface.app.exit_presentation_mode()
 
-        from_overlapped = self.get_window_state() not in {
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
-        }
+        from_overlapped = self._fullscreen_presenter is None
         to_overlapped = state not in {WindowState.FULLSCREEN, WindowState.PRESENTATION}
+
+        self._fullscreen_presenter = None if to_overlapped else state
+
+        if from_overlapped != to_overlapped:
+            # Presenter is changing. Block size_caching until the presenter has changed.
+            self._presenter_changing = True
 
         if from_overlapped and not to_overlapped:
             # Change from overlapped presenter to fullscreen presenter.
@@ -476,9 +462,10 @@ class Window:
             # Change from fullscreen presenter to overlapped presenter.
             self.native.AppWindow.SetPresenterByKind(AppWindowPresenterKind.Overlapped)
 
+        self._presenter_changing = False
+
         # The core interface filters out the case state == self.get_window_state().
         if state == WindowState.PRESENTATION:
-            self._in_presentation_mode = True
             if hasattr(self, "menu_native"):
                 self.menu_native.Visibility = Visibility.Collapsed
 
@@ -487,7 +474,6 @@ class Window:
             #    self.menu_native.Visibility = Visibility.Collapsed
 
         else:
-            self._in_presentation_mode = False
             if hasattr(self, "menu_native"):
                 self.menu_native.Visibility = Visibility.Visible
 
@@ -516,6 +502,20 @@ class Window:
             # Toga expects an on_resize event to from FULLSCREEN <-> PRESENTATION, but
             # this is not a native event so trigger it manually.
             self.interface.on_resize()
+
+    def _state_change_event(self, new_state):
+        old_state = self._cached_state
+        self._cached_state = new_state
+
+        if {old_state, new_state} != {WindowState.MINIMIZED, WindowState.NORMAL}:
+            self.interface.on_resize()
+
+        if old_state != new_state:
+            if old_state == WindowState.MINIMIZED:
+                self.interface.on_show()
+
+            elif new_state == WindowState.MINIMIZED:
+                self.interface.on_hide()
 
     ####################################################################################
     # Window capabilities
