@@ -15,5 +15,6 @@ class Label(Widget):
         self.native.update(value)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(len(self.native.renderable))
-        self.interface.intrinsic.height = 1
+        lines = str(self.native.renderable).split("\n")
+        self.interface.intrinsic.width = at_least(max(map(len, lines), default=0))
+        self.interface.intrinsic.height = max(len(lines), 1)

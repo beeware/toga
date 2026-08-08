@@ -4,6 +4,14 @@ import pytest
 
 import toga
 
+from .conftest import skip_on_backends
+
+skip_on_backends(
+    "toga_textual",
+    reason="Status icon assertions are not implemented on Textual.",
+    allow_module_level=True,
+)
+
 
 async def test_add_remove(app, app_probe):
     """Status icons and items can be added and removed."""

@@ -21,6 +21,8 @@ class AppProbe(BaseProbe):
     supports_dark_mode = True
     edit_menu_noop_enabled = True
     supports_psutil = True
+    # Qt doesn't always beep immediately.
+    beep_delay = 5
 
     def __init__(self, app):
         super().__init__()
@@ -180,3 +182,6 @@ class AppProbe(BaseProbe):
 
     def perform_edit_action(self, action):
         self._activate_menu_item(["Edit", action])
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

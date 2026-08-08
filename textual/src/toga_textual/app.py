@@ -39,7 +39,7 @@ class App:
 
     def create(self):
         self.interface._startup()
-        self.set_current_window(self.interface.main_window._impl)
+        self.set_current_window(self.interface.main_window)
 
     ######################################################################
     # Commands and menus
@@ -116,15 +116,15 @@ class App:
 
     def set_current_window(self, window):
         previous_current_window = self._current_window
-        self._current_window = window
-        self.native.switch_screen(window.native)
-        self.native.title = window.get_title()
-        if previous_current_window != window:
+        self._current_window = window._impl
+        self.native.switch_screen(window._impl.native)
+        self.native.title = window._impl.get_title()
+        if previous_current_window != window._impl:
             if previous_current_window is not None:
                 previous_current_window.interface.on_lose_focus()
                 previous_current_window.interface.on_hide()
-            window.interface.on_gain_focus()
-            window.interface.on_show()
+            window.on_gain_focus()
+            window.on_show()
 
     ######################################################################
     # Presentation mode controls

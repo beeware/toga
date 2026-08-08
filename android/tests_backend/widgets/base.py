@@ -23,6 +23,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     default_font_family = "sans-serif"
     default_font_size = 14
     invalid_size_while_hidden = False
+    supports_tab_index = False
 
     def __init__(self, widget):
         # Don't use widget.app, because the widget may not be connected to an app yet.

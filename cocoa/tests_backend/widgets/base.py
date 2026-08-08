@@ -15,6 +15,7 @@ from .properties import toga_color
 
 class SimpleProbe(BaseProbe, FontMixin):
     invalid_size_while_hidden = False
+    supports_tab_index = False
 
     def __init__(self, widget):
         super().__init__()

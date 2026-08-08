@@ -6,6 +6,11 @@ import pytest
 import toga
 
 
+async def test_event_loop(app_probe):
+    """Runs tests for the apps event loop."""
+    await app_probe.assert_event_loop()
+
+
 async def test_unsupported_widget(app):
     """If a widget isn't implemented, the factory raises NotImplementedError."""
     with pytest.raises(
@@ -236,9 +241,8 @@ async def test_beep(app, app_probe):
     # can be invoked without raising an error, but there's no way to verify that the app
     # actually made a noise.
     app.beep()
-    # Qt's CI sometimes takes unnessacarily long to run the bell command.  Ensure there
-    # are no dangling tasks with a long delay.
-    await app_probe.redraw("Application has sounded bell", delay=5)
+    # Ensure there are no dangling tasks with a long delay after sounding the beep.
+    await app_probe.redraw("Application has sounded bell", delay=app_probe.beep_delay)
 
 
 async def test_screens(app, app_probe):
