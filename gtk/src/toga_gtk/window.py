@@ -516,24 +516,32 @@ class MainWindow(Window):
         # GTK menus are handled at the app level
         pass
 
+    def purge_toolbar(self):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            for item_impl, cmd in self.toolbar_items.items():
+                self.native_toolbar.remove(item_impl)
+                cmd._impl.native.remove(item_impl)
+
+            for sep in self.toolbar_separators:
+                self.native_toolbar.remove(sep)
+
+            self.toolbar_items = {}
+            self.toolbar_separators = set()
+
+    def close(self):
+        self.purge_toolbar()
+        super().close()
+
     def create_toolbar(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # If there's an existing toolbar, hide it until we know we need it.
             self.layout.remove(self.native_toolbar)
 
             # Deregister any toolbar buttons from their commands, and remove them
-            # from the toolbar
-            for cmd, item_impl in self.toolbar_items.items():
-                self.native_toolbar.remove(item_impl)
-                cmd._impl.native.remove(item_impl)
-
-            # Remove any toolbar separators
-            for sep in self.toolbar_separators:
-                self.native_toolbar.remove(sep)
+            # from the toolbar.
+            self.purge_toolbar()
 
             # Create the new toolbar items
-            self.toolbar_items = {}
-            self.toolbar_separators = set()
             prev_group = None
             for cmd in self.interface.toolbar:
                 if isinstance(cmd, Separator):
@@ -561,8 +569,8 @@ class MainWindow(Window):
                     if cmd.tooltip:
                         item_impl.set_tooltip_text(cmd.tooltip)
                     item_impl.connect("clicked", cmd._impl.gtk_clicked)
-                    cmd._impl.native.append(item_impl)
-                    self.toolbar_items[cmd] = item_impl
+                    cmd._impl.native.add(item_impl)
+                    self.toolbar_items[item_impl] = cmd
 
                 self.native_toolbar.insert(item_impl, -1)
 

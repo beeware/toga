@@ -115,6 +115,24 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
     assert not main_window_probe.has_toolbar()
 
 
+async def test_command_rebuild_replaces_native_items(app, app_probe):
+    """Rebuilding menus must release obsolete native command items."""
+    command = app.cmd1
+    old_items = set(command._impl.native)
+    assert old_items
+
+    app.commands.add(
+        toga.Command(
+            action=None,
+            text="Rebuild command",
+            group=toga.Group.FILE,
+        )
+    )
+    await app_probe.redraw("Application menus rebuilt")
+
+    assert old_items.isdisjoint(command._impl.native)
+
+
 async def test_system_menus(app_probe):
     """System-specific menus behave as expected"""
     # Check that the system menus (which can be platform specific) exist.
