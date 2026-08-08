@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from rubicon.objc import CGSize
 
 from toga.screens import Screen as ScreenInterface
@@ -10,7 +12,7 @@ from toga_cocoa.libs import (
 
 
 class Screen:
-    _instances = {}
+    _instances: ClassVar[dict] = {}
 
     def __new__(cls, native):
         if native in cls._instances:

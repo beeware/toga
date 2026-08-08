@@ -19,16 +19,15 @@ import toga
 # and doesn't respond to mouse clicks.
 status_icon_1 = toga.SimpleStatusIcon()
 
+
 # Define a second status icon that provides explicit values for the id, icon and
 # tooltip, and responds to mouse clicks.
 def my_handler(widget, **kwargs):
     print("Second status icon pressed!")
 
+
 status_icon_2 = toga.SimpleStatusIcon(
-    id="second",
-    text="Hello!",
-    icon="icons/red",
-    on_press=my_handler
+    id="second", text="Hello!", icon="icons/red", on_press=my_handler
 )
 
 # Add both status icons to the app
@@ -58,24 +57,22 @@ The [`MenuStatusIcon`][toga.MenuStatusIcon] is a [`Group`][toga.Group] for comma
 # Create a MenuStatusIcon
 status_icon = toga.MenuStatusIcon(icon="icons/blue")
 
+
 # Create some commands that are associated with the menu status icon's group.
 def callback(sender, **kwargs):
     print("Command activated")
 
+
 cmd1 = toga.Command(
     callback,
-    text='Example command',
+    text="Example command",
     group=status_icon,
 )
 
 # Create a sub-group of the status icon. This will appear as a submenu.
-stuff_group = toga.Group('Stuff', parent=status_icon)
+stuff_group = toga.Group("Stuff", parent=status_icon)
 
-cmd2 = toga.Command(
-    callback,
-    text='Stuff sub-command',
-    group=stuff_group
-)
+cmd2 = toga.Command(callback, text="Stuff sub-command", group=stuff_group)
 
 # Add the status icon to the app
 app.status_icons.add(status_icon)

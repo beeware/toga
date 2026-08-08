@@ -6,7 +6,7 @@ from toga.constants import COLUMN, ROW
 
 class ColorsApp(toga.App):
     def change_color_foreground(self, color):
-        def _change_color_foreground(widget):
+        def _change_color_foreground(_widget):
             for widget in self.example_widgets:
                 if color is None:
                     del widget.style.color
@@ -16,7 +16,7 @@ class ColorsApp(toga.App):
         return _change_color_foreground
 
     def change_color_background(self, color):
-        def _change_color_background(widget):
+        def _change_color_background(_widget):
             for widget in self.example_widgets:
                 if color is None:
                     del widget.style.background_color

@@ -37,10 +37,12 @@ from android.net import Uri
 intent = Intent(Intent.ACTION_DIAL)
 intent.setData(Uri.parse("tel:0123456789"))
 
+
 def number_dialed(result, data):
     # result is the status code (e.g., Activity.RESULT_OK)
     # data is the value returned by the activity.
     ...
+
 
 # Assuming your toga.App app instance is called `app`
 app._impl.start_activity(intent, on_complete=number_dialed)

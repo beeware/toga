@@ -1,9 +1,11 @@
+from typing import ClassVar
+
 from .utils import LoggedObject
 
 
 class Icon(LoggedObject):
     ICON_FAILURE = None
-    EXTENSIONS = [".png", ".ico"]
+    EXTENSIONS: ClassVar[list[str]] = [".png", ".ico"]
     SIZES = None
 
     def __init__(self, interface, path):

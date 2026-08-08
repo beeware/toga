@@ -100,7 +100,7 @@ def test_function_handler_error(capsys):
     def handler(*args, **kwargs):
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
-        raise Exception("Problem in handler")
+        raise RuntimeError("Problem in handler")
 
     wrapped = wrapped_handler(obj, handler)
 
@@ -235,7 +235,7 @@ async def test_generator_handler_error(capsys):
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         yield 0.01  # A short sleep
-        raise Exception("Problem in handler")
+        raise RuntimeError("Problem in handler")
 
     wrapped = wrapped_handler(obj, handler)
 
@@ -387,7 +387,7 @@ async def test_coroutine_handler_error(capsys):
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         await asyncio.sleep(0.01)  # A short sleep
-        raise Exception("Problem in handler")
+        raise RuntimeError("Problem in handler")
 
     wrapped = wrapped_handler(obj, handler)
 
@@ -537,6 +537,14 @@ async def test_async_result_non_comparable():
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
         _ = result != 42
+
+    # Truthiness must raise the same helpful error (regression:
+    # __bool__ carried an extra parameter, so bool() raised TypeError).
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check Test result directly; use await or an on_result handler",
+    ):
+        _ = bool(result)
 
 
 async def test_async_result():

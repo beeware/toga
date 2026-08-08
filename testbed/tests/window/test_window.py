@@ -844,9 +844,7 @@ else:
                             WindowState.FULLSCREEN,
                             WindowState.PRESENTATION,
                         }:
-                            if (  # noqa: E501
-                                second_window_probe.maximize_fullscreen_presentation_equal_size
-                            ):
+                            if second_window_probe.maximize_fullscreen_presentation_equal_size:  # noqa: E501
                                 assert current_size == previous_state_window_size
                             else:
                                 assert current_size > previous_state_window_size
@@ -859,9 +857,7 @@ else:
                             else:
                                 assert current_size > previous_state_window_size
                         elif final_state == WindowState.MAXIMIZED:
-                            if (  # noqa: E501
-                                second_window_probe.maximize_fullscreen_presentation_equal_size
-                            ):
+                            if second_window_probe.maximize_fullscreen_presentation_equal_size:  # noqa: E501
                                 assert current_size == previous_state_window_size
                             else:
                                 assert current_size < previous_state_window_size
@@ -874,9 +870,7 @@ else:
                             else:
                                 assert current_size < previous_state_window_size
                         elif final_state == WindowState.MAXIMIZED:
-                            if (  # noqa: E501
-                                second_window_probe.maximize_fullscreen_presentation_equal_size
-                            ):
+                            if second_window_probe.maximize_fullscreen_presentation_equal_size:  # noqa: E501
                                 assert current_size == previous_state_window_size
                             else:
                                 assert current_size < previous_state_window_size
@@ -950,9 +944,10 @@ else:
         # Check for resize event notification
         # State change between NORMAL <-> MINIMIZED doesn't
         # constitute a window resize operation.
-        resize_expected = (initial_state != final_state) and not (
-            {initial_state, final_state} == {WindowState.NORMAL, WindowState.MINIMIZED}
-        )
+        resize_expected = (initial_state != final_state) and {
+            initial_state,
+            final_state,
+        } != {WindowState.NORMAL, WindowState.MINIMIZED}
         if resize_expected:
             # on_resize() event may be triggered multiple times, depending
             # upon the backend. For example: for a state change between:

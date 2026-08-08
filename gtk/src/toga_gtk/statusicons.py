@@ -12,7 +12,7 @@ class StatusIcon:
     def set_icon(self, icon):
         if self.native:
             path = str(
-                icon._impl.paths[32] if icon else toga.App.app.icon._impl.paths[32]
+                icon._impl.path[32] if icon else toga.App.app.icon._impl.path[32]
             )
             self.native.set_icon_name(path)
 

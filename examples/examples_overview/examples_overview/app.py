@@ -21,7 +21,7 @@ class ExamplesOverviewApp(toga.App):
         env = os.environ.copy()
         env["PYTHONPATH"] = row.path
 
-        subprocess.run([sys.executable, "-m", row.name], env=env)
+        subprocess.run([sys.executable, "-m", row.name], env=env, check=True)
 
     def open(self, widget, **kwargs):
         row = self.table.selection
@@ -30,9 +30,9 @@ class ExamplesOverviewApp(toga.App):
             case "Windows":
                 os.startfile(row.path)
             case "Darwin":
-                subprocess.run(["open", row.path])
+                subprocess.run(["open", row.path], check=True)
             case _:
-                subprocess.run(["xdg-open", row.path])
+                subprocess.run(["xdg-open", row.path], check=True)
 
     def on_example_selected(self, widget):
         readme_path = widget.selection.path / "README.md"

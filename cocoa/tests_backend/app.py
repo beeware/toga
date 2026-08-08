@@ -120,7 +120,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 if menu is None:
                     raise AssertionError(
                         f"Menu {' > '.join(orig_path)} not found; "
-                        f"{str(item.title)} does not have a submenu"
+                        f"{item.title!s} does not have a submenu"
                     )
             else:
                 # No more path segments; we've found the full path.
@@ -348,3 +348,8 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     async def assert_event_loop(self):
         pytest.skip("Test not implemented for this platform")
+
+    def trigger_lifecycle_notification(self, selector, *args):
+        """Directly invoke a method on the app's native delegate, simulating the
+        native lifecycle notification that would normally trigger it."""
+        return getattr(self.app._impl.native.delegate, selector)(*args)

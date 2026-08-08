@@ -37,23 +37,23 @@ class TogaTextFieldProxy:
     # TogaTextField and TogaSecureTextField implementations using the proxy.
 
     @staticmethod
-    def textDidChange_(cls, self, notification) -> None:
+    def textDidChange_(klass, self, notification) -> None:
         self.interface.on_change()
         self.interface._validate()
 
     @staticmethod
-    def becomeFirstResponder(cls, self) -> bool:
+    def becomeFirstResponder(klass, self) -> bool:
         self.interface.on_gain_focus()
-        return send_super(cls, self, "becomeFirstResponder")
+        return send_super(klass, self, "becomeFirstResponder")
 
     @staticmethod
-    def textDidEndEditing_(cls, self, textObject) -> None:
+    def textDidEndEditing_(klass, self, textObject) -> None:
         self.interface.on_lose_focus()
-        send_super(cls, self, "textDidEndEditing:", textObject, argtypes=[c_void_p])
+        send_super(klass, self, "textDidEndEditing:", textObject, argtypes=[c_void_p])
 
     @staticmethod
     def control_textView_doCommandBySelector_(
-        cls,
+        klass,
         self,
         control,
         textView,

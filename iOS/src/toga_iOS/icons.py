@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from rubicon.objc import Block, NSMakeRect, NSSize, objc_id
 
 from toga_iOS.libs import (
@@ -8,7 +10,7 @@ from toga_iOS.libs import (
 
 
 class Icon:
-    EXTENSIONS = [".icns", ".png", ".bmp", ".ico"]
+    EXTENSIONS: ClassVar[list[str]] = [".icns", ".png", ".bmp", ".ico"]
     SIZES = None
 
     def __init__(self, interface, path):

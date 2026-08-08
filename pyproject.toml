@@ -57,7 +57,6 @@ extend-select = [
     "F",      # pyflakes
     "UP",     # pyupgrade
     "B",      # flake8-bugbear
-    "YTT",    # flake8-2020
     "ASYNC",  # flake8-async
     "C4",     # flake8-comprehensions
     "I",      # isort
@@ -66,13 +65,48 @@ extend-select = [
     # use improvement.
     # "SIM",    # flake8-simplify
 ]
+# Ignores needed to pass the Ruff 0.16 update.
+ignore = [
+    "BLE001",
+    "DTZ001",
+    "DTZ005",
+    "DTZ006",
+    "DTZ011",
+    "DTZ012",
+    "RUF009",
+    # The SIM rules are *very* opinionated, and don't necessarily make for better code.
+    "SIM102",  # collapsible-if makes code (and testing paths) harder to verify.
+]
+
+[tool.ruff.lint.per-file-ignores]
+# PEP8 module naming conventions aren't appropriate
+"examples/customwidget/helloworld/src/hello_world_widget/iOS_hello_world.py" = ["N999"]
+"iOS/src/toga_iOS/__init__.py" = ["N999"]
+"iOS/src/toga_iOS/hardware/__init__.py" = ["N999"]
+"iOS/src/toga_iOS/resources/__init__.py" = ["N999"]
+"iOS/src/toga_iOS/widgets/__init__.py" = ["N999"]
+# Ignores needed to pass the Ruff 0.16 update.
+"core/src/toga/sources/base.py" = ["PLC0105"]
+"core/src/toga/window.py" = ["PLC0105"]
+"core/tests/command/test_command.py" = ["PLR0124"]
+"core/tests/command/test_group.py" = ["PLR0124"]
+"core/tests/style/pack/test_aliases.py" = ["PT010"]
+"core/tests/style/pack/test_deprecated_properties.py" = ["PT031"]
+"core/src/toga/widgets/dateinput.py" = ["PLR1730"]
+"core/src/toga/widgets/timeinput.py" = ["PLR1730"]
+"core/tests/test_platform.py" = ["PT031"]
+"cocoa/src/toga_cocoa/widgets/internal/refresh.py" = ["PLW0642"]
+"examples/*" = ["RUF012"]
+"iOS/tests_backend/widgets/scrollcontainer.py" = ["RUF018"]
+"testbed/tests/widgets/test_optioncontainer.py" = ["PT031"]
+"winforms/src/toga_winforms/libs/win32structures.py" = ["RUF012"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
 known-third-party = [
     "android",  # isort defaults to making this first-party because it can't be imported.
     "textual",  # We don't ever import textual, so Ruff doesn't know about it.
-    "travertino", # In this repo, but still a separate package
+    "travertino",  # In this repo, but still a separate package
 ]
 known-first-party = [
     "testbed",
@@ -147,11 +181,11 @@ type = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 pre-commit = [
-    "pre-commit == 4.6.0",
+    "pre-commit == 4.6.1",
 ]
 
 setuptools-scm = [
-    "setuptools_scm == 10.2.0",
+    "setuptools_scm == 10.2.1",
 ]
 
 towncrier = [
@@ -159,7 +193,7 @@ towncrier = [
 ]
 
 tox-uv = [
-    "tox-uv == 1.35.2",
+    "tox-uv == 1.36.0",
 ]
 
 dev = [
