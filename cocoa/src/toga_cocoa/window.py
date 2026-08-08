@@ -290,7 +290,10 @@ class Window:
             self.set_window_state(WindowState.NORMAL)
         frame = self.native.frame
         # Get the current title and sync it up with the new scaffold.
-        scaffold.title = self.get_title()
+        # This check is required as the initial scaffold set will not have
+        # a previous scaffold to grab title from.
+        if hasattr(self, "_scaffold"):
+            scaffold.title = self.get_title()
         self._scaffold = scaffold
         # Set the content of the window's container
         self.native.contentViewController = scaffold.root_controller
