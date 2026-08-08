@@ -44,8 +44,9 @@ async def container_probe(widget):
 
 
 # Override as widget causes new scaffold to be set
+# Must include unused parameter probe so that the window setup will be finished
 @pytest.fixture
-async def scaffold_probe(widget):
+async def scaffold_probe(widget, probe):
     # This needs to be late to avoid circular imports
     from tests_backend.scaffolds.base import ScaffoldProbe
 
