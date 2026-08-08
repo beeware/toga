@@ -185,7 +185,7 @@ class TextInput(Widget):
         self.native.cell.placeholderString = value
 
     def set_text_align(self, value):
-        if self.interface.window and self.has_focus:
+        if self.has_focus:
             # Drop focus if we're currently focussed, or else alignment setting
             # will not work properly with Cocoa
             self.interface.window._impl.native.makeFirstResponder(None)
@@ -195,9 +195,6 @@ class TextInput(Widget):
             self.error_label.alignment = NSTextAlignment(LEFT)
         else:
             self.error_label.alignment = NSTextAlignment(RIGHT)
-
-        # Refocus when we're done.
-        self.focus()
 
     def set_font(self, font):
         self.native.font = font._impl.native

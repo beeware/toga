@@ -190,16 +190,19 @@ class NumberInput(Widget):
             self.native_input.bezeled = True
             self.native_input.backgroundColor = native_color(color)
 
+    @property
     def has_focus(self):
         # When the NSTextField gets focus, a field editor is created, and that editor
         # has the original widget as the delegate. The first responder is the
         # Field Editor.
-        return isinstance(self.native.window.firstResponder, NSTextView) and (
-            self.native.window.firstResponder.delegate == self.native_input
+        return (
+            self.native.window is not None
+            and isinstance(self.native.window.firstResponder, NSTextView)
+            and (self.native.window.firstResponder.delegate == self.native_input)
         )
 
     def focus(self):
-        if not self.has_focus():
+        if not self.has_focus:
             self.interface.window._impl.native.makeFirstResponder(self.native_input)
 
     def get_readonly(self):
@@ -224,7 +227,7 @@ class NumberInput(Widget):
             self.native_stepper.maxValue = float(value)
 
     def set_text_align(self, value):
-        if self.interface.window and self.has_focus():
+        if self.has_focus:
             # Drop focus if we're currently focussed, or else alignment setting
             # will not work properly with Cocoa
             self.interface.window._impl.native.makeFirstResponder(None)
