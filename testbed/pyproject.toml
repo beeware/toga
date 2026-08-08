@@ -16,7 +16,7 @@ test = [
     "pytest==9.1.1",
     "pytest-asyncio==1.4.0",
     "pytest-retry==1.7.0",
-    # This enables people to debug intermittent hard crash erros in CI by enabling --instafail in the test options.
+    # This enables people to debug intermittent hard crash errors in CI by enabling --instafail in the test options.
     "pytest-instafail==0.5.0",
 ]
 
