@@ -641,21 +641,22 @@ class App:
                 )
 
     def _startup(self) -> None:
+        print("app._startup() - start")
         # Wrap the platform's event loop's task factory for task tracking
         self._install_task_factory_wrapper()
-
+        print("app._startup() - factory wrapper installed")
         # Install the standard commands. This is done *before* startup so the user's
         # code has the opportunity to remove/change the default commands.
         self._create_standard_commands()
         self._impl.create_standard_commands()
-
+        print("app._startup() - standard commands created (app)")
         # Install the standard status icon commands. Again, this is done *before*
         # startup so that the user's code can remove/change the defaults.
         self.status_icons._create_standard_commands()
-
+        print("app._startup() - standard commands created (status icons)")
         # Invoke the user's startup method (or the default implementation)
         self.startup()
-
+        print("app._startup() - app.startup() finished")
         # Validate that the startup requirements have been met.
         # Accessing the main window attribute will raise an exception if the app hasn't
         # defined a main window.
@@ -663,18 +664,18 @@ class App:
 
         # Create any initial windows
         self._create_initial_windows()
-
+        print("app._startup() - initial windows created")
         # Manifest the initial state of the menus. This will cascade down to all
         # open windows if the platform has window-based menus. Then install the
         # on-change handler for menus to respond to any future changes.
         self._impl.create_menus()
         self.commands.on_change = self._impl.create_menus
-
+        print("app._startup() - menus created")
         # Manifest the initial state of the status icons, then install an on-change
         # handler so that any future changes will be reflected in the GUI.
         self.status_icons._impl.create()
         self.status_icons.commands.on_change = self.status_icons._impl.create
-
+        print("app._startup() - status icons created")
         # Manifest the initial state of toolbars (on the windows that have
         # them), then install a change listener so that any future changes to
         # the toolbar cause a change in toolbar items.
@@ -682,7 +683,7 @@ class App:
             if hasattr(window, "toolbar"):
                 window._impl.create_toolbar()
                 window.toolbar.on_change = window._impl.create_toolbar
-
+        print("app._startup() - toolbars created")
         # Queue a task to run as soon as the event loop starts.
         self.loop.call_soon_threadsafe(wrapped_handler(self, self.on_running))
 

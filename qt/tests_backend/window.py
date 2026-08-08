@@ -67,7 +67,7 @@ class WindowProbe(BaseProbe):
         self.window.close()
         await self.redraw("Closing window", delay=0.5)
 
-    def close(self):
+    async def close(self):
         if self.is_closable:
             self.native.close()
 
@@ -91,7 +91,7 @@ class WindowProbe(BaseProbe):
     def is_minimized(self):
         return self.native.isMinimized()
 
-    def minimize(self):
+    async def minimize(self):
         self.native.showMinimized()
 
     def unminimize(self):

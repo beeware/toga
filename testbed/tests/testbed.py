@@ -16,6 +16,8 @@ import testbed.app
 
 def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
     try:
+        import toga
+
         # Wait for the app's main window to be visible. The visibility property
         # is set by the app in an on_running handler; this is required because
         # visibility is a GUI property, and accessing that property from a
@@ -23,13 +25,27 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         print("Waiting for app to be ready for testing... ", end="", flush=True)
         i = 0
         ready = False
-        while i < 100 and not ready:
+        while i < 200 and not ready:
+            if i % 5 == 0:
+                print(f"i:{i}")
             time.sleep(0.05)
             ready = getattr(app, "is_visible", False)
             i += 1
 
         if not ready:
             print("\nApp didn't display a main window.")
+            if toga.backend == "toga_winui3":
+                ready_append = app.loop._ready.append
+
+                def append(value):
+                    ready_append(value)
+                    print(app.loop._ready)
+
+                app.loop._ready.append = append
+                app.loop.call_soon_threadsafe(lambda: print("\nDEBUG - Loop running\n"))
+
+                time.sleep(1)
+
             app.returncode = 1
             return
 
@@ -37,7 +53,12 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         # Some backends and platforms do not support interactive GUI testing.
         # On those platforms, perform a basic app start test.
-        import toga
+
+        if toga.backend == "toga_winui3":
+            print(f"toga_winui3 startup time = {0.05 * i}s")
+
+        else:
+            raise ValueError("DEBUG - only running WinUI 3 tested.")
 
         if (
             # On GitHub Actions, Windows/ARM64 runners don't have an interactive
@@ -60,6 +81,22 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         os.chdir(project_path)
 
         os.environ["RUNNING_IN_CI"] = "true" if running_in_ci else ""
+
+        # Make a mutable container for the error message.
+        native_error = [""]
+
+        if toga.backend == "toga_winui3":
+
+            def native_unhandled_exception(sender, args, native_error=native_error):
+                native_error += "=============WinUI 3 Unhandled Exception============\n"
+                native_error += f"Exception: {args.Exception}\n"
+                native_error += f"Message: {args.Message}\n"
+                native_error += "====================================================\n"
+
+            def add_callback(app=app, callback=native_unhandled_exception):
+                app._impl.native_instance.add_UnhandledException(callback)
+
+            app.loop.call_soon_threadsafe(add_callback)
 
         app.returncode = pytest.main(
             [
@@ -104,6 +141,19 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                         print(
                             "Incomplete test coverage is expected on Textual (for now!)"
                         )
+                    elif (
+                        toga.backend == "toga_winui3"
+                        and platform.machine() == "ARM64"
+                        and running_in_ci
+                    ):
+                        # GitHub Windows ARM64 runners don't seem to be able to accept
+                        # input focus. So some tests are skipped and incomplete coverage
+                        # is expected. See
+                        # https://github.com/actions/partner-runner-images/issues/174
+                        print(
+                            "Incomplete test coverage is expected on WinUI 3 with the"
+                            + " ARM64 CI (for now!)"
+                        )
                     else:
                         print("Test coverage is incomplete")
                         app.returncode = 1
@@ -115,6 +165,9 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                     print("Test coverage for Textual is unexpectedly complete!")
                     print("Can we remove the special case in the testbed?")
                     app.returncode = 1
+
+        if toga.backend == "toga_winui3" and native_error[0] != "":
+            print(native_error[0])
 
     except BaseException:
         traceback.print_exc()

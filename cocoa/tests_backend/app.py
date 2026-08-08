@@ -150,7 +150,7 @@ class AppProbe(BaseProbe, DialogsMixin):
             argtypes=[objc_id],
         )
 
-    def activate_menu_exit(self):
+    async def activate_menu_exit(self):
         self._activate_menu_item(["*", "Quit Toga Testbed"])
 
     def activate_menu_about(self):
@@ -161,37 +161,37 @@ class AppProbe(BaseProbe, DialogsMixin):
         if isinstance(about_dialog, NSPanel):
             about_dialog.close()
 
-    def activate_menu_visit_homepage(self):
+    async def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])
 
-    def assert_system_menus(self):
-        self.assert_menu_item(["*", "About Toga Testbed"], enabled=True)
-        self.assert_menu_item(["*", "Hide Toga Testbed"], enabled=True)
-        self.assert_menu_item(["*", "Hide Others"], enabled=True)
-        self.assert_menu_item(["*", "Show All"], enabled=True)
-        self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
+    async def assert_system_menus(self):
+        await self.assert_menu_item(["*", "About Toga Testbed"], enabled=True)
+        await self.assert_menu_item(["*", "Hide Toga Testbed"], enabled=True)
+        await self.assert_menu_item(["*", "Hide Others"], enabled=True)
+        await self.assert_menu_item(["*", "Show All"], enabled=True)
+        await self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
 
-        self.assert_menu_item(["File", "New Example Document"], enabled=True)
-        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
-        self.assert_menu_item(["File", "Open\u2026"], enabled=True)
-        self.assert_menu_item(["File", "Save"], enabled=True)
-        self.assert_menu_item(["File", "Save As\u2026"], enabled=True)
-        self.assert_menu_item(["File", "Save All"], enabled=True)
-        self.assert_menu_item(["File", "Close"], enabled=True)
-        self.assert_menu_item(["File", "Close All"], enabled=True)
+        await self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        await self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        await self.assert_menu_item(["File", "Open\u2026"], enabled=True)
+        await self.assert_menu_item(["File", "Save"], enabled=True)
+        await self.assert_menu_item(["File", "Save As\u2026"], enabled=True)
+        await self.assert_menu_item(["File", "Save All"], enabled=True)
+        await self.assert_menu_item(["File", "Close"], enabled=True)
+        await self.assert_menu_item(["File", "Close All"], enabled=True)
 
-        self.assert_menu_item(["Edit", "Undo"], enabled=True)
-        self.assert_menu_item(["Edit", "Redo"], enabled=True)
-        self.assert_menu_item(["Edit", "Cut"], enabled=True)
-        self.assert_menu_item(["Edit", "Copy"], enabled=True)
-        self.assert_menu_item(["Edit", "Paste"], enabled=True)
-        self.assert_menu_item(["Edit", "Paste and Match Style"], enabled=True)
-        self.assert_menu_item(["Edit", "Delete"], enabled=True)
-        self.assert_menu_item(["Edit", "Select All"], enabled=True)
+        await self.assert_menu_item(["Edit", "Undo"], enabled=True)
+        await self.assert_menu_item(["Edit", "Redo"], enabled=True)
+        await self.assert_menu_item(["Edit", "Cut"], enabled=True)
+        await self.assert_menu_item(["Edit", "Copy"], enabled=True)
+        await self.assert_menu_item(["Edit", "Paste"], enabled=True)
+        await self.assert_menu_item(["Edit", "Paste and Match Style"], enabled=True)
+        await self.assert_menu_item(["Edit", "Delete"], enabled=True)
+        await self.assert_menu_item(["Edit", "Select All"], enabled=True)
 
-        self.assert_menu_item(["Window", "Minimize"], enabled=True)
+        await self.assert_menu_item(["Window", "Minimize"], enabled=True)
 
-        self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
+        await self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
 
     def _activate_menu_window_item(self, path):
         item = self._menu_item(path)
@@ -223,11 +223,11 @@ class AppProbe(BaseProbe, DialogsMixin):
             "The dialog is not in focus"
         )
 
-    def assert_menu_item(self, path, enabled):
+    async def assert_menu_item(self, path, enabled):
         item = self._menu_item(path)
         assert item.isEnabled() == enabled
 
-    def assert_menu_order(self, path, expected):
+    async def assert_menu_order(self, path, expected):
         menu = self._menu_item(path).submenu
 
         assert menu.numberOfItems == len(expected)
@@ -333,10 +333,10 @@ class AppProbe(BaseProbe, DialogsMixin):
             # It's a button status item
             return None
 
-    def activate_status_icon_button(self, item_id):
+    async def activate_status_icon_button(self, item_id):
         self.app.status_icons[item_id]._impl.native.button.performClick(None)
 
-    def activate_status_menu_item(self, item_id, title):
+    async def activate_status_menu_item(self, item_id, title):
         item = self.app.status_icons[item_id]._impl.native.menu.itemWithTitle(title)
         send_message(
             self.app._impl.native.delegate,

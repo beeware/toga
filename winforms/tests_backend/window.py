@@ -39,11 +39,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         super().__init__(window._impl.native)
         assert isinstance(self.native, Form)
 
-    async def wait_for_window(
-        self,
-        message,
-        state=None,
-    ):
+    async def wait_for_window(self, message, state=None):
         await self.redraw(message)
 
         if state:
@@ -66,7 +62,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.window.close()
         await self.redraw("Closing window")
 
-    def close(self):
+    async def close(self):
         self.native.Close()
 
     @property
@@ -96,7 +92,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def is_minimized(self):
         return self.native.WindowState == FormWindowState.Minimized
 
-    def minimize(self):
+    async def minimize(self):
         if self.native.MinimizeBox:
             self.native.WindowState = FormWindowState.Minimized
 

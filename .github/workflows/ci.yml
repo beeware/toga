@@ -265,6 +265,8 @@ jobs:
         - "windows-netfx-x86_64"
         - "windows-netcore-x86_64"
         - "windows-netcore-arm64"
+        - "windows-winui3-x86_64"
+        - "windows-winui3-arm64"
         - "linux-x11-gtk3"
         - "linux-wayland-gtk3"
         - "linux-wayland-gtk4"
@@ -519,6 +521,32 @@ jobs:
           runs-on: "windows-11-arm"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
+        - backend: "windows-winui3-x86_64"
+          platform: "windows"
+          runs-on: "windows-latest"
+          testbed-app: "testbed-winui3"
+          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (WinUI 3)\Data'
+          pre-command-pwsh: |
+            Invoke-WebRequest `
+            -Uri "https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-x64.exe" `
+            -OutFile "windows_app_sdk_installer.exe"
+            Start-Process `
+            -FilePath ".\windows_app_sdk_installer.exe" `
+            -Wait
+
+        - backend: "windows-winui3-arm64"
+          platform: "windows"
+          runs-on: "windows-11-arm"
+          testbed-app: "testbed-winui3"
+          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (WinUI 3)\Data'
+          pre-command-pwsh: |
+            Invoke-WebRequest `
+            -Uri "https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-arm64.exe" `
+            -OutFile "windows_app_sdk_installer.exe"
+            Start-Process `
+            -FilePath ".\windows_app_sdk_installer.exe" `
+            -Wait
+
         - backend: "iOS"
           platform: "iOS"
           runs-on: "macos-15"
@@ -561,7 +589,12 @@ jobs:
       with:
         python-version: "3.12"
 
-    - name: Install Dependencies
+    - name: Install Dependencies (pwsh)
+      if: matrix.platform == 'windows'
+      shell: pwsh
+      run: ${{ matrix.pre-command-pwsh }}
+
+    - name: Install Dependencies (bash)
       env:
         PIP_BREAK_SYSTEM_PACKAGES: "1"
       run: |

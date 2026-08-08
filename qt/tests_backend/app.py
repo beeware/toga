@@ -81,7 +81,7 @@ class AppProbe(BaseProbe):
     def activate_menu_hide(self):
         pytest.xfail("KDE apps do not include a Hide in the menu bar")
 
-    def activate_menu_exit(self):
+    async def activate_menu_exit(self):
         self._activate_menu_item(["File", "Quit"])
 
     def activate_menu_about(self):
@@ -90,18 +90,18 @@ class AppProbe(BaseProbe):
     async def close_about_dialog(self):
         self.impl._about_dialog.done(QDialog.DialogCode.Accepted)
 
-    def activate_menu_visit_homepage(self):
+    async def activate_menu_visit_homepage(self):
         raise pytest.xfail("Qt apps do not have a Visit Homepage menu action")
 
     def assert_dialog_in_focus(self, dialog):
         active_window = QApplication.activeWindow()
         assert active_window.windowTitle() == dialog._impl.native.windowTitle()
 
-    def assert_menu_item(self, path, *, enabled=True):
+    async def assert_menu_item(self, path, *, enabled=True):
         item = self._menu_item(path)
         assert item.isEnabled() == enabled
 
-    def assert_menu_order(self, path, expected):
+    async def assert_menu_order(self, path, expected):
         menu = self._menu_item(path)
         actual_titles = [
             action.text() if action.isSeparator() is False else "---"
@@ -109,27 +109,27 @@ class AppProbe(BaseProbe):
         ]
         assert actual_titles == expected
 
-    def assert_system_menus(self):
-        self.assert_menu_item(
+    async def assert_system_menus(self):
+        await self.assert_menu_item(
             ["Settings", "Configure Toga Testbed (Qt)"],
             enabled=False,
         )
-        self.assert_menu_item(["File", "Quit"], enabled=True)
+        await self.assert_menu_item(["File", "Quit"], enabled=True)
 
-        self.assert_menu_item(["File", "New Example Document"], enabled=True)
-        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
-        self.assert_menu_item(["File", "Open..."], enabled=True)
-        self.assert_menu_item(["File", "Save"], enabled=True)
-        self.assert_menu_item(["File", "Save As..."], enabled=True)
-        self.assert_menu_item(["File", "Save All"], enabled=True)
+        await self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        await self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        await self.assert_menu_item(["File", "Open..."], enabled=True)
+        await self.assert_menu_item(["File", "Save"], enabled=True)
+        await self.assert_menu_item(["File", "Save As..."], enabled=True)
+        await self.assert_menu_item(["File", "Save All"], enabled=True)
 
-        self.assert_menu_item(["Help", "About Toga Testbed (Qt)"], enabled=True)
+        await self.assert_menu_item(["Help", "About Toga Testbed (Qt)"], enabled=True)
 
-        self.assert_menu_item(["Edit", "Undo"])
-        self.assert_menu_item(["Edit", "Redo"])
-        self.assert_menu_item(["Edit", "Cut"])
-        self.assert_menu_item(["Edit", "Copy"])
-        self.assert_menu_item(["Edit", "Paste"])
+        await self.assert_menu_item(["Edit", "Undo"])
+        await self.assert_menu_item(["Edit", "Redo"])
+        await self.assert_menu_item(["Edit", "Cut"])
+        await self.assert_menu_item(["Edit", "Copy"])
+        await self.assert_menu_item(["Edit", "Paste"])
 
     def activate_menu_close_window(self):
         pytest.xfail("KDE apps do not include Close in the menu bar")
@@ -170,12 +170,12 @@ class AppProbe(BaseProbe):
                 for action in menu.actions()
             ]
 
-    def activate_status_icon_button(self, item_id):
+    async def activate_status_icon_button(self, item_id):
         self.app.status_icons[item_id]._impl.native.activated.emit(
             QSystemTrayIcon.ActivationReason.Trigger
         )
 
-    def activate_status_menu_item(self, item_id, title):
+    async def activate_status_menu_item(self, item_id, title):
         menu = self.app.status_icons[item_id]._impl.native.contextMenu()
         item = {action.text(): action for action in menu.actions()}[title]
         item.triggered.emit()
