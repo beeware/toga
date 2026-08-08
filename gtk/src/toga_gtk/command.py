@@ -4,7 +4,7 @@ from toga import Command as StandardCommand, Group, Key
 
 
 class Command:
-    """Command `native` property is a list of native widgets associated with the
+    """Command `native` property is a set of native widgets associated with the
     command.
 
     Native widgets can be both Gtk.ToolButton and Gio.SimpleAction.
@@ -12,7 +12,7 @@ class Command:
 
     def __init__(self, interface):
         self.interface = interface
-        self.native = []
+        self.native = set()
 
     @classmethod
     def standard(self, app, id):

@@ -10,7 +10,7 @@ from toga_winforms.keys import toga_to_winforms_key, toga_to_winforms_shortcut
 class Command:
     def __init__(self, interface):
         self.interface = interface
-        self.native = []
+        self.native = set()
 
     @classmethod
     def standard(self, app, id):
@@ -117,6 +117,6 @@ class Command:
 
         item.Enabled = self.interface.enabled
 
-        self.native.append(item)
+        self.native.add(item)
 
         return item
