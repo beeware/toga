@@ -202,7 +202,7 @@ class NumberInput(Widget):
         )
 
     def focus(self):
-        if not self.has_focus:
+        if self.interface.window and not self.has_focus:
             self.interface.window._impl.native.makeFirstResponder(self.native_input)
 
     def get_readonly(self):
