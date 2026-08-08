@@ -197,6 +197,7 @@ class OptionItem:
 
         self._content.app = interface.app
         self._content.window = interface.window
+        self._content.scaffold = interface.scaffold
 
         self._index = index
         self._interface = interface
@@ -242,7 +243,7 @@ class OptionList:
         deleted_item._preserve_option()
         deleted_item._content.window = None
         deleted_item._content.app = None
-
+        deleted_item._content.scaffold = None
         self.interface._impl.remove_option(index)
         del self._options[index]
         # Update the index for each of the options
@@ -511,6 +512,15 @@ class OptionContainer(Widget):
         # Also assign the window to the content in the container
         for item in self._content:
             item._content.window = window
+
+    @Widget.scaffold.setter
+    def scaffold(self, scaffold) -> None:
+        # Invoke the superclass property setter
+        Widget.scaffold.fset(self, scaffold)
+
+        # Also assign the scaffold to the content in the container
+        for item in self._content:
+            item._content.scaffold = scaffold
 
     @property
     def on_select(self) -> OnSelectHandler:

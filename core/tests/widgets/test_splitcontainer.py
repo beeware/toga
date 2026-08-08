@@ -14,6 +14,11 @@ def window():
 
 
 @pytest.fixture
+def scaffold():
+    return toga.Scaffold()
+
+
+@pytest.fixture
 def content1():
     return toga.Box()
 
@@ -82,19 +87,22 @@ def test_widget_created_with_values(content1, content2):
     ],
 )
 def test_assign_unassign_window_app_on_content(
-    app, window, content1, content2, include_left, include_right
+    app, window, scaffold, content1, content2, include_left, include_right
 ):
     splitcontainer = toga.SplitContainer()
 
     # Assign the split container to the app and window
     splitcontainer.app = app
     splitcontainer.window = window
+    splitcontainer.scaffold = scaffold
 
     # Initially, content should have no app or window
     assert content1.app is None
     assert content1.window is None
+    assert content1.scaffold is None
     assert content2.app is None
     assert content2.window is None
+    assert content2.scaffold is None
 
     # Assign content to the split container
     splitcontainer.content = [
@@ -108,12 +116,14 @@ def test_assign_unassign_window_app_on_content(
         assert window.widgets[content1.id] is content1
         assert content1.app == app
         assert content1.window == window
+        assert content1.scaffold == scaffold
 
     if include_right:
         assert app.widgets[content2.id] is content2
         assert window.widgets[content2.id] is content2
         assert content2.app == app
         assert content2.window == window
+        assert content2.scaffold == scaffold
 
     # Unassign content from the split container
     splitcontainer.content = [None, None]
@@ -125,6 +135,7 @@ def test_assign_unassign_window_app_on_content(
         window.widgets[content1.id]
     assert content1.app is None
     assert content1.window is None
+    assert content1.scaffold is None
 
     with pytest.raises(KeyError):
         app.widgets[content2.id]
@@ -132,6 +143,7 @@ def test_assign_unassign_window_app_on_content(
         window.widgets[content2.id]
     assert content2.app is None
     assert content2.window is None
+    assert content2.scaffold is None
 
 
 @pytest.mark.parametrize(
@@ -232,6 +244,56 @@ def test_assign_to_window_no_content(window):
 
     # Scroll container is on the window
     assert splitcontainer.window == window
+
+
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_assign_to_scaffold(scaffold, content1, content2, include_left, include_right):
+    """If the widget is assigned to a scaffold, the content is also assigned."""
+    splitcontainer = toga.SplitContainer(
+        content=[
+            content1 if include_left else None,
+            content2 if include_right else None,
+        ]
+    )
+
+    # Split container is initially unassigned
+    assert splitcontainer.scaffold is None
+
+    # Assign the split container to the scaffold
+    splitcontainer.scaffold = scaffold
+
+    # Split container is on the scaffold
+    assert splitcontainer.scaffold == scaffold
+
+    # Content is also on the scaffold
+    if include_left:
+        assert content1.scaffold == scaffold
+
+    if include_right:
+        assert content2.scaffold == scaffold
+
+
+def test_assign_to_scaffold_no_content(scaffold):
+    """If the widget is assigned to a scaffold, and there is no content, there's no
+    error."""
+    splitcontainer = toga.SplitContainer()
+
+    # Split container is initially unassigned
+    assert splitcontainer.scaffold is None
+
+    # Assign the scroll container to the scaffold
+    splitcontainer.scaffold = scaffold
+
+    # Scroll container is on the scaffold
+    assert splitcontainer.scaffold == scaffold
 
 
 def test_disable_no_op(splitcontainer):

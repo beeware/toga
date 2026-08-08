@@ -77,6 +77,15 @@ class ScrollContainer(Widget):
         if self._content:
             self._content.window = window
 
+    @Widget.scaffold.setter
+    def scaffold(self, scaffold) -> None:
+        # Invoke the superclass property setter
+        Widget.scaffold.fset(self, scaffold)
+
+        # Also assign the scaffold to the content in the container
+        if self._content:
+            self._content.scaffold = scaffold
+
     @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
@@ -105,10 +114,12 @@ class ScrollContainer(Widget):
             # Clear the window before the app so that registry entries can be cleared
             self._content.window = None
             self._content.app = None
+            self._content.scaffold = None
 
         if widget:
             widget.app = self.app
             widget.window = self.window
+            widget.scaffold = self.scaffold
             self._impl.set_content(widget._impl)
         else:
             self._impl.set_content(None)
