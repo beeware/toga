@@ -50,7 +50,7 @@ class Scaffold:
         # shown on screen so we can ignore that safely.
         # Else, If the minimum layout is bigger than the current window, log a
         # warning
-        if not (container.width, container.height) == (0, 0) and (
+        if (container.width, container.height) != (0, 0) and (
             container.width < min_width or container.height < min_height
         ):
             print(
