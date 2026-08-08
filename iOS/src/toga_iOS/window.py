@@ -8,7 +8,6 @@ from rubicon.objc import (
 
 from toga.constants import WindowState
 from toga.types import Position, Size
-from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
     NSData,
@@ -25,21 +24,11 @@ from .screens import Screen as ScreenImpl
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, position, size):
         self.interface = interface
         self.interface._impl = self
 
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
-
-        # Set up a container for the window's content
-        self.create_container()
-        self.last_refreshed_size = (0, 0)
-
-        # Set the size of the content to the size of the window
-        self.container.native.frame = self.native.bounds
-
-        # Set the window's root controller to be the container's controller
-        self.native.rootViewController = self.container.controller
 
         # Set the background color of the root content.
         try:
@@ -49,24 +38,17 @@ class Window:
         except AttributeError:  # pragma: no cover
             self.native.backgroundColor = UIColor.whiteColor
 
-        self.set_title(title)
-
-    def create_container(self):
-        # RootContainer provides a titlebar for the window.
-        self.container = RootContainer(
-            on_refresh=self.content_refreshed,
-            on_native_layout=self.content_native_layout,
-        )
+        self._navigation_bar_hidden = True
 
     ######################################################################
     # Window properties
     ######################################################################
 
     def get_title(self):
-        return str(self.container.title)
+        return str(self.scaffold.title)
 
     def set_title(self, title):
-        self.container.title = title
+        self.scaffold.title = title
 
     ######################################################################
     # Window lifecycle
@@ -88,46 +70,15 @@ class Window:
     # Window content and resources
     ######################################################################
 
-    def content_refreshed(self, container):
-        min_width = self.interface.content.layout.min_width
-        min_height = self.interface.content.layout.min_height
-
-        # If the minimum layout is bigger than the current window, log a warning
-        if self.container.width < min_width or self.container.height < min_height:
-            print(
-                f"Warning: Window content {(min_width, min_height)} "
-                f"exceeds available space "
-                f"{(self.container.width, self.container.height)}"
-            )
-
-    def notify_resize(self, container):
-        if (container.width, container.height) != self.last_refreshed_size:
-            self.last_refreshed_size = (container.width, container.height)
-            self.interface.on_resize()
-            self.interface.content.refresh()
-
-    # The testbed won't instantiate a simple app, so we can't test this
-    # handler
-    def content_native_layout(self, container):  # pragma: no cover
-        # When status bar heights change, a relayout of the window will
-        # be triggered by the native layer, which is how we can catch this
-        # and use this value correctly here.
-        status_bar_height = (
-            self.native.windowScene.statusBarManager.statusBarFrame.size.height
-        )
-        # On iPadOS, the status bar height may not always be in the
-        # window of the application.  This can be detected by seeing if
-        # the status bar height is influencing the safe area insets of
-        # the container, as iPadOS window corners are smaller than the
-        # top status bar.
-        if container.native.safeAreaInsets.top >= status_bar_height:
-            container.top_inset = status_bar_height
-        else:
-            container.top_inset = 0
-        self.notify_resize(container)
-
-    def set_content(self, widget):
-        self.container.content = widget
+    def set_scaffold(self, scaffold):
+        # Get the current title and sync it up with the new scaffold.
+        # This check is required as the initial scaffold set will not have
+        # a previous scaffold to grab title from.
+        if hasattr(self, "scaffold"):
+            scaffold.title = self.get_title()
+        self.scaffold = scaffold
+        self.native.rootViewController = self.scaffold.nav_controller
+        self.scaffold.navigation_bar_hidden = self._navigation_bar_hidden
 
     ######################################################################
     # Window size
@@ -221,14 +172,15 @@ class Window:
         # along the way.
         #
         # I need a drink.
+        container = self.scaffold.current_container
 
         renderer = UIGraphicsImageRenderer.alloc().initWithSize(
-            self.container.native.bounds.size
+            container.native.bounds.size
         )
 
         def render(context):
-            self.container.native.drawViewHierarchyInRect(
-                self.container.native.bounds, afterScreenUpdates=True
+            container.native.drawViewHierarchyInRect(
+                container.native.bounds, afterScreenUpdates=True
             )
 
         # Render the full image
@@ -238,11 +190,11 @@ class Window:
 
         # Get the size of the actual content (offsetting for the header)
         # in raw coordinates.
-        container_bounds = self.container.content.native.bounds
+        container_bounds = container.content.native.bounds
         image_bounds = NSRect(
             NSPoint(
-                self.container.left_inset * UIScreen.mainScreen.scale,
-                self.container.top_inset * UIScreen.mainScreen.scale,
+                container.left_inset * UIScreen.mainScreen.scale,
+                container.top_inset * UIScreen.mainScreen.scale,
             ),
             NSSize(
                 container_bounds.size.width * UIScreen.mainScreen.scale,
@@ -261,26 +213,10 @@ class Window:
 
 
 class MainWindow(Window):
-    def create_container(self):
-        # NavigationContainer provides a titlebar for the window.
-        self.container = NavigationContainer(
-            on_refresh=self.content_refreshed,
-            on_native_layout=self.content_native_layout,
-        )
-
-    def content_native_layout(self, container):
-        # Instead of manually computing the geometry at the top,
-        # this check is used because iOS's algorithms to place the
-        # navigation bar at an appropriate height appears to be
-        # a mystery... also, when the navigation bar metrics change,
-        # a layout appears to be triggered in the innner subview,
-        # and that's how we can catch it.
-        container.top_inset = (
-            container.controller.navigationBar.frame.origin.y
-            + container.controller.navigationBar.frame.size.height
-        )
-        self.notify_resize(container)
-
     def create_toolbar(self):
         # No toolbar handling at present
         pass
+
+    def __init__(self, interface, position, size):
+        super().__init__(interface, position, size)
+        self._navigation_bar_hidden = False

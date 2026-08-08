@@ -6,9 +6,10 @@ from unittest.mock import Mock
 
 import pytest
 from pytest import approx
+from tests_backend.scaffolds.base import ScaffoldProbe
 
 import toga
-from toga.colors import CORNFLOWERBLUE, GOLDENROD, LIGHTBLUE, REBECCAPURPLE
+from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
@@ -17,6 +18,13 @@ from ..assertions import (
     assert_window_lose_focus,
     assert_window_on_hide,
     assert_window_on_show,
+)
+from ..conftest import skip_on_backends
+
+skip_on_backends(
+    "toga_textual",
+    reason="Full window management assertions are not implemented on Textual.",
+    allow_module_level=True,
 )
 
 
@@ -36,6 +44,11 @@ async def second_window_probe(app, app_probe, second_window):
     probe = window_probe(app, second_window)
     await probe.wait_for_window(f"Window ({second_window.title}) has been created")
     return probe
+
+
+@pytest.fixture
+async def second_scaffold_probe(second_window):
+    return ScaffoldProbe(second_window.scaffold)
 
 
 def assert_size(window, expected):
@@ -89,10 +102,12 @@ if toga.platform.current_platform in {"iOS", "android"}:
         ):
             toga.Window()
 
-    async def test_move_and_resize(main_window, main_window_probe, capsys):
+    async def test_move_and_resize(
+        main_window, main_window_probe, capsys, scaffold_probe
+    ):
         """Move and resize are no-ops on mobile."""
+        content_size = scaffold_probe.content_size
         initial_size = main_window.size
-        content_size = main_window_probe.content_size
         assert initial_size[0] > 300
         assert initial_size[1] > 500
 
@@ -119,9 +134,11 @@ if toga.platform.current_platform in {"iOS", "android"}:
                 children=[box1, box2],
                 style=Pack(direction=COLUMN, background_color=CORNFLOWERBLUE),
             )
+            # Changed content so new scaffold is created
+            new_scaffold_probe = ScaffoldProbe(main_window.scaffold)
             await main_window_probe.wait_for_window("Main window content has been set")
             assert_size(main_window, initial_size)
-            assert main_window_probe.content_size == content_size
+            assert new_scaffold_probe.content_size == content_size
 
             # Alter the content width to exceed window width
             box1.style.width = 1000
@@ -129,7 +146,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
                 "Content is too wide for the window"
             )
             assert_size(main_window, initial_size)
-            assert main_window_probe.content_size == content_size
+            assert new_scaffold_probe.content_size == content_size
 
             space_warning = (
                 r"Warning: Window content \([\d.]+, [\d.]+\) "
@@ -141,7 +158,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             box1.style.width = 100
             await main_window_probe.wait_for_window("Content fits in window")
             assert_size(main_window, initial_size)
-            assert main_window_probe.content_size == content_size
+            assert new_scaffold_probe.content_size == content_size
             assert not re.search(space_warning, capsys.readouterr().out)
 
             # Alter the content width to exceed window height
@@ -150,7 +167,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
                 "Content is too tall for the window"
             )
             assert_size(main_window, initial_size)
-            assert main_window_probe.content_size == content_size
+            assert new_scaffold_probe.content_size == content_size
             assert re.search(space_warning, capsys.readouterr().out)
 
         finally:
@@ -249,7 +266,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         ],
     )
     async def test_window_state_content_size_increase(
-        app, app_probe, main_window, main_window_probe, state
+        app, app_probe, main_window, main_window_probe, state, scaffold_probe
     ):
         """The size of the window content should increase when the window state is set
         to maximized, fullscreen or presentation."""
@@ -269,7 +286,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         await main_window_probe.wait_for_window("Main window is shown")
 
         assert main_window_probe.instantaneous_state == WindowState.NORMAL
-        initial_content_size = main_window_probe.content_size
+        initial_content_size = scaffold_probe.content_size
 
         main_window.state = state
         # Add delay to ensure windows are visible after animation.
@@ -279,8 +296,8 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window_probe.instantaneous_state == state
         # At least one of the dimension should have increased.
         assert (
-            main_window_probe.content_size[0] > initial_content_size[0]
-            or main_window_probe.content_size[1] > initial_content_size[1]
+            scaffold_probe.content_size[0] > initial_content_size[0]
+            or scaffold_probe.content_size[1] > initial_content_size[1]
         )
 
         main_window.state = state
@@ -291,8 +308,8 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window_probe.instantaneous_state == state
         # At least one of the dimension should have increased.
         assert (
-            main_window_probe.content_size[0] > initial_content_size[0]
-            or main_window_probe.content_size[1] > initial_content_size[1]
+            scaffold_probe.content_size[0] > initial_content_size[0]
+            or scaffold_probe.content_size[1] > initial_content_size[1]
         )
 
         main_window.state = WindowState.NORMAL
@@ -301,7 +318,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             f"Main window is not in {state}", state=WindowState.NORMAL
         )
         assert main_window_probe.instantaneous_state == WindowState.NORMAL
-        assert main_window_probe.content_size == initial_content_size
+        assert scaffold_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
         "state",
@@ -663,13 +680,15 @@ else:
             )
         ],
     )
-    async def test_move_and_resize(second_window, second_window_probe):
+    async def test_move_and_resize(
+        second_window, second_window_probe, second_scaffold_probe
+    ):
         """A window can be moved and resized."""
 
         # Determine the extra width consumed by window chrome
         # (e.g., title bars, borders etc)
-        extra_width = second_window.size[0] - second_window_probe.content_size[0]
-        extra_height = second_window.size[1] - second_window_probe.content_size[1]
+        extra_width = second_window.size[0] - second_scaffold_probe.content_size[0]
+        extra_height = second_window.size[1] - second_scaffold_probe.content_size[1]
 
         second_window.position = (150, 50)
         await second_window_probe.wait_for_window("Secondary window has been moved")
@@ -680,7 +699,7 @@ else:
         await second_window_probe.wait_for_window("Secondary window has been resized")
         # Qt rendering can result in a small change in window size
         assert_size(second_window, approx((200, 150), abs=2))
-        assert second_window_probe.content_size == approx(
+        assert second_scaffold_probe.content_size == approx(
             (
                 200 - extra_width,
                 150 - extra_height,
@@ -697,8 +716,10 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window has had height adjusted due to content"
         )
+        # Recreate scaffold probe as content has changed
+        second_scaffold_probe = ScaffoldProbe(second_window.scaffold)
         assert_size(second_window, approx((200, 210 + extra_height), abs=2))
-        assert second_window_probe.content_size == approx(
+        assert second_scaffold_probe.content_size == approx(
             (200 - extra_width, 210), abs=2
         )
 
@@ -713,8 +734,9 @@ else:
         )
 
         # Alter both height and width to exceed window size at once
-        box3 = toga.Box(style=Pack(background_color=LIGHTBLUE, width=300, height=90))
-        second_window.content.add(box3)
+        with box1.style.batch_apply():
+            box1.style.width = 300
+            box2.style.height = 290
         await second_window_probe.wait_for_window(
             "Secondary window has had width and height adjusted due to content"
         )
@@ -722,7 +744,7 @@ else:
             second_window,
             approx((300 + extra_width, 300 + extra_height), abs=2),
         )
-        assert second_window_probe.content_size == approx((300, 300), abs=2)
+        assert second_scaffold_probe.content_size == approx((300, 300), abs=2)
 
         # Try to resize to a size less than the content size
         second_window.size = (200, 150)
@@ -733,7 +755,7 @@ else:
             second_window,
             approx((300 + extra_width, 300 + extra_height), abs=2),
         )
-        assert second_window_probe.content_size == approx((300, 300), abs=2)
+        assert second_scaffold_probe.content_size == approx((300, 300), abs=2)
 
     # FULLSCREEN->MAXIMIZED known to be flaky on x86_64 - see #3897
     @pytest.mark.flaky(retries=5, delay=1)
@@ -822,9 +844,7 @@ else:
                             WindowState.FULLSCREEN,
                             WindowState.PRESENTATION,
                         }:
-                            if (  # noqa: E501
-                                second_window_probe.maximize_fullscreen_presentation_equal_size
-                            ):
+                            if second_window_probe.maximize_fullscreen_presentation_equal_size:  # noqa: E501
                                 assert current_size == previous_state_window_size
                             else:
                                 assert current_size > previous_state_window_size
@@ -837,9 +857,7 @@ else:
                             else:
                                 assert current_size > previous_state_window_size
                         elif final_state == WindowState.MAXIMIZED:
-                            if (  # noqa: E501
-                                second_window_probe.maximize_fullscreen_presentation_equal_size
-                            ):
+                            if second_window_probe.maximize_fullscreen_presentation_equal_size:  # noqa: E501
                                 assert current_size == previous_state_window_size
                             else:
                                 assert current_size < previous_state_window_size
@@ -852,9 +870,7 @@ else:
                             else:
                                 assert current_size < previous_state_window_size
                         elif final_state == WindowState.MAXIMIZED:
-                            if (  # noqa: E501
-                                second_window_probe.maximize_fullscreen_presentation_equal_size
-                            ):
+                            if second_window_probe.maximize_fullscreen_presentation_equal_size:  # noqa: E501
                                 assert current_size == previous_state_window_size
                             else:
                                 assert current_size < previous_state_window_size
@@ -928,9 +944,10 @@ else:
         # Check for resize event notification
         # State change between NORMAL <-> MINIMIZED doesn't
         # constitute a window resize operation.
-        resize_expected = (initial_state != final_state) and not (
-            {initial_state, final_state} == {WindowState.NORMAL, WindowState.MINIMIZED}
-        )
+        resize_expected = (initial_state != final_state) and {
+            initial_state,
+            final_state,
+        } != {WindowState.NORMAL, WindowState.MINIMIZED}
         if resize_expected:
             # on_resize() event may be triggered multiple times, depending
             # upon the backend. For example: for a state change between:
@@ -1102,9 +1119,12 @@ else:
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window("Secondary window is shown")
 
+        # Do this here as content is reassigned
+        second_scaffold_probe = ScaffoldProbe(second_window.scaffold)
+
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
         assert second_window_probe.is_resizable
-        initial_content_size = second_window_probe.content_size
+        initial_content_size = second_scaffold_probe.content_size
 
         second_window.state = state
         # Wait for window animation before assertion.
@@ -1112,16 +1132,16 @@ else:
             f"Secondary window is in {state}", state=state
         )
         assert second_window_probe.instantaneous_state == state
-        assert second_window_probe.content_size[0] > initial_content_size[0]
-        assert second_window_probe.content_size[1] > initial_content_size[1]
+        assert second_scaffold_probe.content_size[0] > initial_content_size[0]
+        assert second_scaffold_probe.content_size[1] > initial_content_size[1]
 
         second_window.state = state
         await second_window_probe.wait_for_window(
             f"Secondary window is still in {state}", state=state
         )
         assert second_window_probe.instantaneous_state == state
-        assert second_window_probe.content_size[0] > initial_content_size[0]
-        assert second_window_probe.content_size[1] > initial_content_size[1]
+        assert second_scaffold_probe.content_size[0] > initial_content_size[0]
+        assert second_scaffold_probe.content_size[1] > initial_content_size[1]
 
         second_window.state = WindowState.NORMAL
         # Wait for window animation before assertion.
@@ -1130,7 +1150,7 @@ else:
         )
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
         assert second_window_probe.is_resizable
-        assert second_window_probe.content_size == initial_content_size
+        assert second_scaffold_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
         "state",
@@ -1331,14 +1351,14 @@ else:
             assert all(isinstance(val, int) for val in second_window.screen_position)
 
 
-async def test_as_image(main_window, main_window_probe):
+async def test_as_image(main_window, main_window_probe, scaffold_probe):
     """The window can be captured as a screenshot"""
 
     if main_window_probe.supports_as_image:
         screenshot = main_window.as_image()
         main_window_probe.assert_image_size(
             screenshot.size,
-            main_window_probe.content_size,
+            scaffold_probe.content_size,
             screen=main_window.screen,
             window=main_window,
         )

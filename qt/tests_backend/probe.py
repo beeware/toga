@@ -28,6 +28,12 @@ MODIFIER_MAP = {
 
 
 class BaseProbe(DialogsMixin):
+    def approx_width(self, width):
+        return approx(width, rel=0.01)
+
+    def approx_height(self, height):
+        return approx(height, rel=0.01)
+
     async def redraw(self, message=None, delay=0, wait_for=None):
         # If we're running slow, or we have a wait condition,
         # wait for at least a second

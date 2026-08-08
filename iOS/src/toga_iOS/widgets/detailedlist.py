@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from rubicon.objc import (
     SEL,
     ObjCBlock,
@@ -126,7 +128,7 @@ class TogaTableViewController(UITableViewController):
 
 
 class DetailedList(Widget):
-    DESTRUCTIVE_NAMES = {"Delete", "Remove"}
+    DESTRUCTIVE_NAMES: ClassVar[set[str]] = {"Delete", "Remove"}
 
     def create(self):
         self.native_controller = TogaTableViewController.alloc().init()

@@ -26,7 +26,6 @@ from toga.widgets.base import DEBUG_BACKGROUND_PALETTE
         (toga.Switch, False, ("Switch",)),
         (toga.TextInput, False, ()),
         (toga.Table, False, (("Name", "Age"),)),
-        (toga.TextInput, False, ()),
         (toga.TimeInput, False, ()),
         (toga.Tree, False, (("Name", "Age"),)),
         (toga.WebView, False, ()),

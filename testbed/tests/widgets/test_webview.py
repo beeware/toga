@@ -10,10 +10,17 @@ import pytest
 import toga
 from toga.style import Pack
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test, safe_create
 from .properties import (  # noqa: F401
     test_flex_widget_size,
     test_focus,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="WebView is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 # These timeouts are loose because CI can be very slow, especially on mobile.

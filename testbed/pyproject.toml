@@ -4,7 +4,7 @@ version = "0.0.1"
 
 [project.optional-dependencies]
 test = [
-    "coverage==7.14.3",
+    "coverage==7.15.2",
     "coverage-conditional-plugin == 0.9.0",
     # fonttools is only needed by Android, but we need to use sys.platform == 'linux'
     # for < 3.13 there's no dependency identifier that can target Android exclusively
@@ -16,6 +16,8 @@ test = [
     "pytest==9.1.1",
     "pytest-asyncio==1.4.0",
     "pytest-retry==1.7.0",
+    # This enables people to debug intermittent hard crash errors in CI by enabling --instafail in the test options.
+    "pytest-instafail==0.5.0",
 ]
 
 [tool.briefcase]
@@ -175,5 +177,5 @@ sources = [
 ]
 
 test_sources = [
-    # "../textual/tests_backend",
+    "../textual/tests_backend",
 ]

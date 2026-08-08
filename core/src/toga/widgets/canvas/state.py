@@ -37,7 +37,6 @@ if TYPE_CHECKING:
     from toga.colors import ColorT
 
     from .canvas import Canvas
-    from .drawingaction import DrawingAction
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)

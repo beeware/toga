@@ -2,9 +2,10 @@ import asyncio
 from ctypes import byref, c_void_p, windll, wintypes
 
 from pytest import approx
-from System.Windows.Forms import Screen, SendKeys
+from System.Windows.Forms import SendKeys
 
 import toga
+from toga_winforms.libs.user32 import GetDpiForWindow
 
 from .fonts import FontMixin
 
@@ -24,6 +25,12 @@ class BaseProbe(FontMixin):
 
     def __init__(self, native=None):
         self.native = native
+
+    def approx_width(self, width):
+        return approx(width, rel=0.01)
+
+    def approx_height(self, height):
+        return approx(height, rel=0.01)
 
     async def redraw(self, message=None, delay=0, wait_for=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
@@ -76,15 +83,9 @@ class BaseProbe(FontMixin):
 
     @property
     def scale_factor(self):
-        # For ScrollContainer
-        if hasattr(self, "native_content"):
-            return self.get_scale_factor(
-                native_screen=Screen.FromControl(self.native_content)
-            )
-        # For Windows and others
-        else:
-            return self.get_scale_factor(native_screen=Screen.FromControl(self.native))
+        return GetDpiForWindow(int(self.native.Handle.ToString())) / 96
 
+    # This is based on screen, which is used for screenshots, etc.
     def get_scale_factor(self, native_screen):
         screen_rect = wintypes.RECT(
             native_screen.Bounds.Left,

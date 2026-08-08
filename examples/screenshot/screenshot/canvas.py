@@ -16,14 +16,13 @@ def fill_head(canvas):
 
 
 def stroke_head(canvas):
-    with canvas.stroke(line_width=4.0):
-        with canvas.close_path():
-            canvas.move_to(112, 103)
-            canvas.line_to(112, 113)
-            canvas.ellipse(73, 114, 39, 47, 0, 0, math.pi)
-            canvas.line_to(35, 84)
-            canvas.arc(65, 84, 30, math.pi, 3 * math.pi / 2)
-            canvas.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
+    with canvas.stroke(line_width=4.0), canvas.close_path():
+        canvas.move_to(112, 103)
+        canvas.line_to(112, 113)
+        canvas.ellipse(73, 114, 39, 47, 0, 0, math.pi)
+        canvas.line_to(35, 84)
+        canvas.arc(65, 84, 30, math.pi, 3 * math.pi / 2)
+        canvas.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
 
 
 def draw_eyes(canvas):
@@ -43,15 +42,14 @@ def draw_eyes(canvas):
 
 
 def draw_horns(canvas):
-    with canvas.stroke(line_width=4.0):
-        with canvas.fill(color=rgb(212, 212, 212)):
-            canvas.move_to(112, 99)
-            canvas.quadratic_curve_to(145, 65, 139, 36)
-            canvas.quadratic_curve_to(130, 60, 109, 75)
+    with canvas.stroke(line_width=4.0), canvas.fill(color=rgb(212, 212, 212)):
+        canvas.move_to(112, 99)
+        canvas.quadratic_curve_to(145, 65, 139, 36)
+        canvas.quadratic_curve_to(130, 60, 109, 75)
 
-            canvas.move_to(35, 99)
-            canvas.quadratic_curve_to(2, 65, 6, 36)
-            canvas.quadratic_curve_to(17, 60, 37, 75)
+        canvas.move_to(35, 99)
+        canvas.quadratic_curve_to(2, 65, 6, 36)
+        canvas.quadratic_curve_to(17, 60, 37, 75)
 
 
 def draw_nostrils(canvas):

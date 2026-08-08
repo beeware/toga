@@ -6,7 +6,15 @@ import pytest
 
 import toga
 
+from ..conftest import skip_on_backends
+
 TESTS_DIR = Path(__file__).parent.parent
+
+skip_on_backends(
+    "toga_textual",
+    reason="Dialogs are not implemented on Textual.",
+    allow_module_level=True,
+)
 
 
 async def test_info_dialog(app, app_probe):

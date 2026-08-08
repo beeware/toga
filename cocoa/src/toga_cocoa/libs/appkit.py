@@ -574,6 +574,11 @@ NSApplicationActivationPolicyRegular = 0
 NSApplicationActivationPolicyAccessory = 1
 NSApplicationActivationPolicyProhibited = 2
 
+# NSApplicationTerminateReply
+NSTerminateCancel = 0
+NSTerminateNow = 1
+NSTerminateLater = 2
+
 ######################################################################
 # NSSavePanel.h
 NSSavePanel = ObjCClass("NSSavePanel")
@@ -746,6 +751,10 @@ NSBezelBorder = 2
 NSGrooveBorder = 3
 
 ######################################################################
+# NSViewController.h
+NSViewController = ObjCClass("NSViewController")
+
+######################################################################
 # NSWindow.h
 NSWindow = ObjCClass("NSWindow")
 NSWindow.declare_property("frame")
@@ -834,3 +843,8 @@ class NSDatePickerStyle(IntEnum):
 # NSDatePicker.h
 
 NSDatePicker = ObjCClass("NSDatePicker")
+
+######################################################################
+# NSKeyValueBinding.h
+
+NSTitleBinding = objc_const(appkit, "NSTitleBinding")

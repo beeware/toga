@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from unittest.mock import Mock
 
 import pytest
+from tests_backend.probe import BaseProbe
 
 import toga
 from toga.style.pack import TOP
@@ -40,6 +41,16 @@ async def probe(main_window, widget):
 @pytest.fixture
 async def container_probe(widget):
     return get_probe(widget.parent)
+
+
+# Override as widget causes new scaffold to be set
+# Must include unused parameter probe so that the window setup will be finished
+@pytest.fixture
+async def scaffold_probe(widget, probe):
+    # This needs to be late to avoid circular imports
+    from tests_backend.scaffolds.base import ScaffoldProbe
+
+    return ScaffoldProbe(widget.scaffold)
 
 
 @pytest.fixture
@@ -147,6 +158,10 @@ def build_cleanup_test(
         if ref():
             print(gc.get_referrers(ref()))
 
+        # Sometimes async things are used to make sure cleanup is called from
+        # UI thread, so... wait_for is needed.
+        probe = BaseProbe()
+        await probe.redraw(delay=2, wait_for=lambda: ref() is None)
         assert ref() is None
 
     return test_cleanup

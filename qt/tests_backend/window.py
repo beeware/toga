@@ -80,7 +80,7 @@ class WindowProbe(BaseProbe):
     def is_resizable(self):
         min_size = self.native.minimumSize()
         max_size = self.native.maximumSize()
-        return not (min_size == max_size)
+        return min_size != max_size
 
     @property
     def is_closable(self):
@@ -107,13 +107,13 @@ class WindowProbe(BaseProbe):
     def assert_is_toolbar_separator(self, index, section=False):
         assert self.window._impl.toolbar_native.actions()[index].isSeparator()
 
-    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+    def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
         action = self.window._impl.toolbar_native.actions()[index]
         assert action.text() == label
         if tooltip is None:
             tooltip = "No Tooltip"
         assert action.toolTip() == tooltip
-        assert not action.icon().isNull() == has_icon
+        assert action.icon().isNull() != has_icon
         assert action.isEnabled() == enabled
 
     def press_toolbar_button(self, index):

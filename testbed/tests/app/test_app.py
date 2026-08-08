@@ -6,6 +6,11 @@ import pytest
 import toga
 
 
+async def test_event_loop(app_probe):
+    """Runs tests for the apps event loop."""
+    await app_probe.assert_event_loop()
+
+
 async def test_unsupported_widget(app):
     """If a widget isn't implemented, the factory raises NotImplementedError."""
     with pytest.raises(
@@ -32,14 +37,18 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
     # Ordering is lexicographical for cmd 2 and 3.
     main_window_probe.assert_toolbar_item(
         0,
+        separators=0,
         label="Full command",
         tooltip="A full command definition",
         has_icon=True,
         enabled=True,
     )
+
     main_window_probe.assert_is_toolbar_separator(1)
+
     main_window_probe.assert_toolbar_item(
         2,
+        separators=1,
         label="No Icon",
         tooltip="A command with no icon",
         has_icon=False,
@@ -47,14 +56,18 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
     )
     main_window_probe.assert_toolbar_item(
         3,
+        separators=1,
         label="No Tooltip",
         tooltip=None,
         has_icon=True,
         enabled=True,
     )
+
     main_window_probe.assert_is_toolbar_separator(4, section=True)
+
     main_window_probe.assert_toolbar_item(
         5,
+        separators=2,
         label="Sectioned",
         tooltip="I'm in another section",
         has_icon=True,
@@ -72,6 +85,7 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
     await main_window_probe.redraw("Command 1 disabled")
     main_window_probe.assert_toolbar_item(
         0,
+        separators=0,
         label="Full command",
         tooltip="A full command definition",
         has_icon=True,
@@ -83,6 +97,7 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
     await main_window_probe.redraw("Command 1 re-enabled")
     main_window_probe.assert_toolbar_item(
         0,
+        separators=0,
         label="Full command",
         tooltip="A full command definition",
         has_icon=True,
@@ -236,9 +251,8 @@ async def test_beep(app, app_probe):
     # can be invoked without raising an error, but there's no way to verify that the app
     # actually made a noise.
     app.beep()
-    # Qt's CI sometimes takes unnessacarily long to run the bell command.  Ensure there
-    # are no dangling tasks with a long delay.
-    await app_probe.redraw("Application has sounded bell", delay=5)
+    # Ensure there are no dangling tasks with a long delay after sounding the beep.
+    await app_probe.redraw("Application has sounded bell", delay=app_probe.beep_delay)
 
 
 async def test_screens(app, app_probe):

@@ -18,8 +18,10 @@ You can populate an app's main window by passing a callable as the `startup` arg
 ```python
 import toga
 
+
 def create_content(app):
     return toga.Box(children=[toga.Label("Hello!")])
+
 
 app = toga.App("Simple App", "com.example.simple", startup=create_content)
 app.main_loop()

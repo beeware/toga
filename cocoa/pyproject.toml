@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==82.0.1",
-    "setuptools_scm==10.2.0",
+    "setuptools==83.0.0",
+    "setuptools_scm==10.2.1",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -103,6 +103,9 @@ TextInput = "toga_cocoa.widgets.textinput:TextInput"
 TimeInput = "toga_cocoa.widgets.timeinput:TimeInput"
 Tree = "toga_cocoa.widgets.tree:Tree"
 WebView = "toga_cocoa.widgets.webview:WebView"
+
+# Scaffolds
+Scaffold = "toga_cocoa.scaffolds.base:Scaffold"
 
 # Windows
 MainWindow = "toga_cocoa.window:MainWindow"

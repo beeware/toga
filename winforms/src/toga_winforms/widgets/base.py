@@ -8,7 +8,7 @@ from System.Drawing import (
 )
 from travertino.size import at_least
 
-import toga.colors as colors
+from toga import colors
 from toga.colors import rgb
 from toga_winforms.colors import (
     native_color,
@@ -71,7 +71,7 @@ class Widget(Scalable, ABC):
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):  # noqa B027
+    def set_app(self, app):
         # No special handling required
         pass
 
@@ -131,7 +131,7 @@ class Widget(Scalable, ABC):
         self.native.Size = Size(*map(self.scale_in, (width, height)))
         self.native.Location = Point(*map(self.scale_in, (x, y)))
 
-    def set_text_align(self, alignment):  # noqa B027
+    def set_text_align(self, alignment):
         # By default, text alignment can't be changed
         pass
 
@@ -204,5 +204,5 @@ class Widget(Scalable, ABC):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
 
-    def rehint(self):  # noqa B027
+    def rehint(self):
         pass

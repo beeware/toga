@@ -21,7 +21,6 @@ from .geometry import CornerRadiusT
 
 if TYPE_CHECKING:
     from toga.colors import ColorT
-    from toga.constants import Baseline
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)

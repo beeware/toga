@@ -21,6 +21,7 @@ Previously, the drawing methods ([`line_to()`][toga.Canvas.fill], [`rect()`][tog
 
 ```python
 import toga
+
 canvas = toga.Canvas()
 context = canvas.context
 
@@ -31,13 +32,13 @@ context.stroke()
 
 with context.Context() as subcontext:
     subcontext.line_to(160, 20)
-
 ```
 
 would now be written like this:
 
 ```python
 import toga
+
 canvas = toga.Canvas()
 
 canvas.begin_path()
@@ -47,7 +48,6 @@ canvas.stroke()
 
 with canvas.context.state():
     canvas.line_to(160, 20)
-
 ```
 
 Context managers (like [`state`][toga.Canvas.state] in the above example) still [return the state object in case you need it][accessing-specific-drawing-actions], but for most usage you don't have to pay attention to that. The canvas will automatically apply the drawing action to the appropriate state, handling what to do when in or out of a context manager.
