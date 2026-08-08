@@ -80,6 +80,11 @@ def no_dangling_tasks():
         assert not tasks, f"the app has dangling tasks: {tasks}"
 
 
+@fixture(autouse=True)
+async def wait_for_layout(scaffold_probe):
+    await scaffold_probe.wait_for_layout()
+
+
 @fixture(scope="session")
 def app():
     return toga.App.app

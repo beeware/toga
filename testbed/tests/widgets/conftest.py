@@ -43,6 +43,15 @@ async def container_probe(widget):
     return get_probe(widget.parent)
 
 
+# Override as widget causes new scaffold to be set
+@pytest.fixture
+async def scaffold_probe(widget):
+    # This needs to be late to avoid circular imports
+    from tests_backend.scaffolds.base import ScaffoldProbe
+
+    return ScaffoldProbe(widget.scaffold)
+
+
 @pytest.fixture
 async def other(widget):
     """A separate widget that can take focus"""
