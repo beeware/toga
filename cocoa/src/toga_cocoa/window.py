@@ -289,9 +289,9 @@ class Window:
             restore_presentation = True
             self.set_window_state(WindowState.NORMAL)
         frame = self.native.frame
-        self._scaffold = scaffold
         # Get the current title and sync it up with the new scaffold.
         scaffold.title = self.get_title()
+        self._scaffold = scaffold
         # Set the content of the window's container
         self.native.contentViewController = scaffold.root_controller
         self.native.setFrame(frame, display=True, animate=False)

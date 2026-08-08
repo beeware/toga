@@ -71,9 +71,9 @@ class Window:
     ######################################################################
 
     def set_scaffold(self, scaffold):
-        self.scaffold = scaffold
         # Get the current title and sync it up with the new scaffold.
         self.scaffold.title = self.get_title()
+        self.scaffold = scaffold
         self.native.rootViewController = self.scaffold.nav_controller
         self.scaffold.navigation_bar_hidden = self._navigation_bar_hidden
 
