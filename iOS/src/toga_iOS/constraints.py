@@ -1,3 +1,4 @@
+import contextlib
 from functools import partial
 from weakref import ref
 
@@ -50,7 +51,7 @@ class Constraints:
         # If this gets called on the other threads than hilarity ensues.
         # So we delegate cleanup to another non-self-bound function and
         # use Weakrefs for everything.
-        try:
+        with contextlib.suppress(Exception):
             self.widget.interface.app.loop.call_soon_threadsafe(
                 partial(
                     _remove_constraints,
@@ -64,8 +65,6 @@ class Constraints:
                     ],
                 )
             )
-        except Exception:
-            pass
 
     def _remove_constraints(self):
         if self.container:
