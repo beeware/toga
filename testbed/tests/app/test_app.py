@@ -117,6 +117,9 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
 
 async def test_command_rebuild_replaces_native_items(app, app_probe):
     """Rebuilding menus must release obsolete native command items."""
+    if not app_probe.supports_application_menu_command_native_items:
+        pytest.skip("Application menu commands don't expose native items.")
+
     command = app.cmd1
     old_items = set(command._impl.native)
     assert old_items

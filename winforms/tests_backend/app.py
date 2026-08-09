@@ -21,6 +21,8 @@ from .probe import BaseProbe
 
 
 class AppProbe(BaseProbe, DialogsMixin):
+    supports_application_menu_command_native_items = True
+    supports_status_icon_command_native_items = True
     supports_key = True
     supports_key_mod3 = False
     supports_current_window_assignment = True
