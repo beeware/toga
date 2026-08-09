@@ -517,7 +517,7 @@ class MainWindow(Window):
         pass
 
     def purge_toolbar(self):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4  # pragma: no branch
             for item_impl, cmd in self.toolbar_items.items():
                 self.native_toolbar.remove(item_impl)
                 cmd._impl.native.remove(item_impl)
