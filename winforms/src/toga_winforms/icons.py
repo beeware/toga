@@ -1,11 +1,12 @@
 import sys
+from typing import ClassVar
 
 from System import ArgumentException
 from System.Drawing import Bitmap, Icon as WinIcon
 
 
 class Icon:
-    EXTENSIONS = [".ico", ".png", ".bmp"]
+    EXTENSIONS: ClassVar[list[str]] = [".ico", ".png", ".bmp"]
     SIZES = None
 
     def __init__(self, interface, path):

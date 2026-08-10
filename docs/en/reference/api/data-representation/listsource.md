@@ -15,7 +15,7 @@ source = ListSource(
         {"name": "Platypus", "weight": 2.4},
         {"name": "Numbat", "weight": 0.597},
         {"name": "Thylacine", "weight": 30.0},
-    ]
+    ],
 )
 
 # Get the first item in the source

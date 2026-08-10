@@ -17,11 +17,13 @@ In `dial.py` we create a subclass of [`Slider`][toga.Slider] with a `_create` me
 ```python
 from toga import Slider
 
+
 class Dial(Slider):
     """The Dial interface."""
 
     def _create(self):
         from .qt_dial import Dial
+
         return Dial(interface=self)
 ```
 
@@ -30,6 +32,7 @@ Then in `qt_dial.py` we create a subclass of `toga_qt.widgets.slider.Slider` tha
 ```python
 from PySide6.QtWidgets import QDial
 from toga_qt.widgets.slider import Slider
+
 
 class Dial(Slider):
     """The Dial implementation."""
@@ -42,8 +45,7 @@ class Dial(Slider):
         self.native.sliderPressed.connect(self.qt_on_press)
         self.native.sliderReleased.connect(self.qt_on_release)
 
-    def rehint(self):
-        ...
+    def rehint(self): ...
 ```
 
 More complex widgets will obviously have a lot more to them, but this will often be sufficient for a one-off custom widget for an application.
@@ -67,7 +69,6 @@ The factory object is a property on the widget which calls out to [`toga.platfor
 
 ```python
 class Slider(Widget):
-
     def _create(self):
         return self.factory.Slider(interface=self)
 ```
@@ -82,6 +83,7 @@ For example, at the time of writing, the `toga_textual` backend doesn't implemen
 from textual.widgets import Checkbox as TextualCheckbox
 from travertino.size import at_least
 from toga_textual.widgets.base import Widget
+
 
 class TogaCheckbox(TextualCheckbox):
     def __init__(self, impl):
@@ -167,8 +169,8 @@ from travertino.size import at_least
 
 from toga_qt.widgets.switch import Switch
 
-class Toggle(Switch):
 
+class Toggle(Switch):
     def create(self):
         self.native = QPushButton()
         self.native.setCheckable(True)
@@ -224,10 +226,10 @@ For example, an accelerometer hardware interface as part of a `togax_sensors` li
 ```python
 from toga.platform import get_factory
 
-class Accelerometer:
 
+class Accelerometer:
     def __init__(self, app: App):
-        self.factory = get_factory('togax_sensors')
+        self.factory = get_factory("togax_sensors")
         self._app = app
         self._impl = self.factory.Accelerometer(interface=self)
 
@@ -241,8 +243,8 @@ with the corresponding backend for Qt looking something like:
 ```python
 from PySide6.QtSensors import QAccelerometer
 
-class Accelerometer:
 
+class Accelerometer:
     def __init__(self, interface):
         self.interface = interface
         self.native = QAccelerometer(interface._app._impl.native)

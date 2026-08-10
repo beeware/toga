@@ -9,8 +9,10 @@ The Camera API is *asynchronous*. This means the methods that have long-running 
 ```python
 import toga
 
+
 class MyApp(toga.App):
     ...
+
     async def time_for_a_selfie(self, widget, **kwargs):
         photo = await self.camera.take_photo()
 ```

@@ -9,8 +9,10 @@ A slider can either be continuous (allowing any value within the range), or disc
 ```python
 import toga
 
+
 def my_callback(slider):
     print(slider.value)
+
 
 # Continuous slider, with an event handler.
 toga.Slider(min=-5, max=10, value=7, on_change=my_callback)

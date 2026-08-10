@@ -5,6 +5,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -34,6 +35,12 @@ from .test_textinput import (  # noqa: F401
     test_quote_dash_substitution_disabled,
     test_undo_redo,
     test_value_not_hidden,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="MultilineTextInput is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 

@@ -6,6 +6,7 @@ import toga
 from toga.constants import CENTER
 from toga.sources import ListListener, ListSource
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -18,6 +19,12 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_text_align,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="Selection is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 # FIXME: 2023-05-31 GTK's focus APIs are completely broken for GTK.ComboBox. The

@@ -24,7 +24,7 @@ class Command:
             StandardCommand.VISIT_HOMEPAGE,
         }:
             # These commands are valid, but don't exist on textual.
-            return None
+            return
 
         raise ValueError(f"Unknown standard command {id!r}")
 

@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from copy import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import cached_property
 from math import ceil
 
@@ -48,10 +48,10 @@ from toga_iOS.widgets.base import Widget
 class State:
     # Core graphics holds onto its own state, which works great, except we need to hold
     # onto these values in order to fill or stroke text.
-    fill_style: Color = Color.parse(BLACK)
+    fill_style: Color = field(default_factory=lambda: Color.parse(BLACK))
     line_dash: Sequence[float] = ()
     line_width: float = 1.0
-    stroke_style: Color = Color.parse(BLACK)
+    stroke_style: Color = field(default_factory=lambda: Color.parse(BLACK))
 
 
 class Context:

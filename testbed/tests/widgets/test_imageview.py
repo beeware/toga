@@ -3,6 +3,7 @@ import pytest
 import toga
 from toga.style.pack import COLUMN, ROW
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -10,6 +11,12 @@ from .properties import (  # noqa: F401
     test_background_color_transparent,
     test_enable_noop,
     test_focus_noop,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="ImageView is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 

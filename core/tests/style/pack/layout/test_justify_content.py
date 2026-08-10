@@ -35,11 +35,9 @@ def root():
         ("row", "ltr", "start", (10, 10), (140, 0)),
         ("row", "ltr", "center", (210, 10), (340, 0)),
         ("row", "ltr", "end", (410, 10), (540, 0)),
-        #
         ("row", "rtl", "start", (530, 10), (400, 0)),
         ("row", "rtl", "center", (330, 10), (200, 0)),
         ("row", "rtl", "end", (130, 10), (0, 0)),
-        #
         ("column", None, "start", (10, 10), (0, 140)),
         ("column", None, "center", (10, 130), (0, 260)),
         ("column", None, "end", (10, 250), (0, 380)),

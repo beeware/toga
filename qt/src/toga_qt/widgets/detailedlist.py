@@ -384,9 +384,7 @@ class ButtonListView(QListView):
         self._pressed_button = self.delegate.button_at(index, pos)
 
         self.viewport().update()
-        if not self._pressed_button:
-            return False
-        return True
+        return self._pressed_button
 
     def mousePressEvent(self, event):
         if not self._handle_click(event):

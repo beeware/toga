@@ -99,6 +99,7 @@ KDE
 KWin
 libadwaita
 libhelium
+lifecycle
 linters
 ListSource
 macOS
@@ -239,7 +240,6 @@ WebViews
 WGS
 whitespace
 widget's
-Winforms
 WinForms
 WinUI
 WxPython

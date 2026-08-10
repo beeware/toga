@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 from pathlib import Path
+from typing import ClassVar
 
 import System.Windows.Forms as WinForms
 from PIL import Image, ImageSequence
@@ -51,7 +52,7 @@ def composite_gif_on_color(
 
 class ActivityIndicator(Widget):
     SPINNER_SIZE = 32
-    SPINNER_CACHE: dict[tuple[tuple[int, int, int], int], WinImage] = {}
+    SPINNER_CACHE: ClassVar[dict[tuple[tuple[int, int, int], int], WinImage]] = {}
 
     def create(self):
         self.native = WinForms.PictureBox()

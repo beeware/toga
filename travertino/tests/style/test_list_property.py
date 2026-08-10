@@ -47,20 +47,26 @@ def test_list_property(value, expected):
         (
             [VALUE3, VALUE1, "bogus"],
             ValueError,
-            r"Invalid item value 'bogus' for list property list_prop; "
-            r"Valid values are: none, value1, value2, value3, <integer>",
+            (
+                r"Invalid item value 'bogus' for list property list_prop; "
+                r"Valid values are: none, value1, value2, value3, <integer>"
+            ),
         ),
         (
             (),
             ValueError,
-            r"List properties cannot be set to an empty sequence; "
-            r"to reset a property, use del `style.list_prop`\.",
+            (
+                r"List properties cannot be set to an empty sequence; "
+                r"to reset a property, use del `style.list_prop`\."
+            ),
         ),
         (
             [],
             ValueError,
-            r"List properties cannot be set to an empty sequence; "
-            r"to reset a property, use del `style.list_prop`\.",
+            (
+                r"List properties cannot be set to an empty sequence; "
+                r"to reset a property, use del `style.list_prop`\."
+            ),
         ),
     ],
 )

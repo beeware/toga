@@ -32,6 +32,11 @@ class DetailedListProbe(SimpleProbe):
         super().__init__(*args, **kwargs)
         self._click_shift = 0
 
+        # https://learn.microsoft.com/en-us/windows/win32/controls/lvm-setview
+        # If the following assertion is failing, there is a high chance comctl32.dll
+        # version 6 has not been loaded correctly.
+        assert 1 == SendMessageW(self.impl._hwnd, wc.LVM_SETVIEW, wc.LV_VIEW_TILE, 0)
+
     @property
     def row_count(self):
         return SendMessageW(self.impl._hwnd, wc.LVM_GETITEMCOUNT, 0, 0)
@@ -231,7 +236,7 @@ class DetailedListProbe(SimpleProbe):
 
             return_value = SendInput(1, modifier_inputs, sizeof(ws.INPUT))
             if return_value != 1:
-                raise Exception(
+                raise ValueError(
                     "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (down)."
                 )
             await asyncio.sleep(0.05)
@@ -246,7 +251,7 @@ class DetailedListProbe(SimpleProbe):
                 mouse_inputs[0]._.mi.dwFlags = message
                 return_value = SendInput(1, mouse_inputs, sizeof(ws.INPUT))
                 if return_value != 1:
-                    raise Exception(
+                    raise ValueError(
                         f"SendInput failed. Type: Mouse, right button: {right}."
                     )
 
@@ -268,7 +273,7 @@ class DetailedListProbe(SimpleProbe):
 
             return_value = SendInput(1, modifier_inputs, sizeof(ws.INPUT))
             if return_value != 1:
-                raise Exception(
+                raise ValueError(
                     "SendInput failed. Type: Keyboard, Keys: VK_CONTROL (up)."
                 )
             await asyncio.sleep(0.05)

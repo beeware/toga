@@ -77,7 +77,6 @@ class SplitContainer(Widget):
 
     def focus(self) -> None:
         """No-op; SplitContainer cannot accept input focus."""
-        pass
 
     @property
     def content(self) -> list[SplitContainerContentT]:
