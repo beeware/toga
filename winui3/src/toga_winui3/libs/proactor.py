@@ -101,10 +101,7 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
             # app.native is exited.
 
             def exit_native():  # pragma: no cover
-                # Make sure that the Win32-based StatusIcons are closed correctly.
-                for status_icon in app.interface.status_icons:
-                    status_icon._impl.remove()
-
+                app._exiting()
                 app.native.Exit(app.native_instance)
 
             task_enqueuer(exit_native)  # pragma: no cover
@@ -120,58 +117,64 @@ class TwoThreadIocpProactor(asyncio.IocpProactor):
         self._iocp_thread.start()
 
     def _iocp_action(self, status):
-        # The following codeblock is the part of asyncio.IocpProactor._poll(timeout)
-        # that processes the received IOCP messages.
-        #
-        # Use no cover for the KeyError and OSError codeblocks since these should not be
-        # accessed under normal operations.
-        #
-        # Use no cover obj in self._stopped_serving since this list is only populated
-        # by the self._stop_serving method, which is only called in the loop.close
-        # method. The loop.close method is part of the shutdown procedure, so no cover.
-        #
-        # Use no branch for f.done() since it is not consistently hit during normal
-        # operations.
-        #
-        # fmt: off
-        # ruff: disable[UP031]
-        # =================================== BEGIN ===================================
-        err, transferred, key, address = status
-        try:
-            f, ov, obj, callback = self._cache.pop(address)
-        except KeyError: # pragma: no cover
-            if self._loop.get_debug():
-                self._loop.call_exception_handler({
-                    'message': ('GetQueuedCompletionStatus() returned an '
-                                'unexpected event'),
-                    'status': ('err=%s transferred=%s key=%#x address=%#x'
-                                % (err, transferred, key, address)),
-                })
-
-            # key is either zero, or it is used to return a pipe
-            # handle which should be closed to avoid a leak.
-            if key not in (0, _overlapped.INVALID_HANDLE_VALUE):
-                _winapi.CloseHandle(key)
-            return
-
-        if obj in self._stopped_serving: # pragma: no cover
-            f.cancel()
-        # Don't call the callback if _register() already read the result or
-        # if the overlapped has been cancelled
-        elif not f.done(): # pragma: no branch
+        # The testbed runs on Python 3.12.
+        if sys.version_info >= (3, 16):  # pragma: no cover
+            self._process_completion_status(status)
+        else:
+            # The following codeblock is the part of asyncio.IocpProactor._poll(timeout)
+            # that processes the received IOCP messages. Since Python 3.16 it has been
+            # refactored into `_process_completion_status()`.
+            #
+            # Use no cover for the KeyError and OSError codeblocks since these should
+            # not be accessed under normal operations.
+            #
+            # Use no cover obj in self._stopped_serving since this list is only
+            # populated by the self._stop_serving method, which is only called in the
+            # loop.close method. The loop.close method is part of the shutdown
+            # procedure, so no cover.
+            #
+            # Use no branch for f.done() since it is not consistently hit during normal
+            # operations.
+            #
+            # fmt: off
+            # ruff: disable[UP031]
+            # =================================== BEGIN ================================
+            err, transferred, key, address = status
             try:
-                value = callback(transferred, key, ov)
-            except OSError as e: # pragma: no cover
-                f.set_exception(e)
-                self._results.append(f)
-            else:
-                f.set_result(value)
-                self._results.append(f)
-            finally:
-                f = None
-        # ==================================== END ====================================
-        # ruff: enable[UP031]
-        # fmt: on
+                f, ov, obj, callback = self._cache.pop(address)
+            except KeyError: # pragma: no cover
+                if self._loop.get_debug():
+                    self._loop.call_exception_handler({
+                        'message': ('GetQueuedCompletionStatus() returned an '
+                                    'unexpected event'),
+                        'status': ('err=%s transferred=%s key=%#x address=%#x'
+                                    % (err, transferred, key, address)),
+                    })
+
+                # key is either zero, or it is used to return a pipe
+                # handle which should be closed to avoid a leak.
+                if key not in (0, _overlapped.INVALID_HANDLE_VALUE):
+                    _winapi.CloseHandle(key)
+                return
+
+            if obj in self._stopped_serving: # pragma: no cover
+                f.cancel()
+            # Don't call the callback if _register() already read the result or
+            # if the overlapped has been cancelled
+            elif not f.done(): # pragma: no branch
+                try:
+                    value = callback(transferred, key, ov)
+                except OSError as e: # pragma: no cover
+                    f.set_exception(e)
+                    self._results.append(f)
+                else:
+                    f.set_result(value)
+                    self._results.append(f)
+                finally:
+                    f = None
+            # ==================================== END =================================
+            # ruff: enable[UP031]
+            # fmt: on
 
     def _remove_unregistered_futures(self):
         # Remove unregistered futures
@@ -238,6 +241,9 @@ class WinUI3ProactorEventLoop(asyncio.ProactorEventLoop):
         # Start the native event loop.
         app.native.Start()
 
+        # Cleanup tasks. Use no cover since this is part of the shutdown procedure.
+        self._on_exit()  # pragma: no cover
+
     def time(self):
         """A timer that is accurate to 100 nanoseconds.
 
@@ -250,7 +256,7 @@ class WinUI3ProactorEventLoop(asyncio.ProactorEventLoop):
         return precise_time.value / 10000000
 
     # Can't get coverage for app shutdown, so this handler must be no-cover.
-    def app_exiting(loop, winui3_app):  # pragma: no cover
+    def _on_exit(self):  # pragma: no cover
         """Perform cleanup that needs to occur when the app exits.
 
         This largely duplicates the "finally" behavior of the default Proactor
@@ -260,17 +266,18 @@ class WinUI3ProactorEventLoop(asyncio.ProactorEventLoop):
             # If we're stopping, we can do the "finally" handling from
             # the BaseEventLoop run_forever(). In Python 3.13.0a2, this
             # was refactored into the `_run_forever_cleanup()` helper.
-            # We run testbed on Py3.12, so the else branch is marked
-            # nocover.
             # === START BaseEventLoop.run_forever() finally handling ===
-            loop._stopping = False
-            loop._thread_id = None
+            self._stopping = False
+            self._thread_id = None
             events._set_running_loop(None)
-            loop._set_coroutine_origin_tracking(False)
-            sys.set_asyncgen_hooks(*loop._old_agen_hooks)
+            self._set_coroutine_origin_tracking(False)
+            sys.set_asyncgen_hooks(*self._old_agen_hooks)
             # === END BaseEventLoop.run_forever() finally handling ===
-        else:  # pragma: no cover
-            loop._run_forever_cleanup()
+        else:
+            self._run_forever_cleanup()
+
+        # Ensure the event loop is fully closed.
+        self.close()
 
     def native_app_launched(self, winui3_app, args):
         """A function to be used as an override of the OnLauched method of NativeApp."""
@@ -311,16 +318,11 @@ class WinUI3ProactorEventLoop(asyncio.ProactorEventLoop):
             return
 
         try:
-            # If the app is exiting, stop the asyncio event loop.
-            # Otherwise, perform one more tick of the event loop.
-            # We can't get coverage of app shutdown, so that branch
-            # is marked no cover
-            if self.app._is_exiting:
-                self.stop()  # pragma: no cover
-            else:
-                self._idle = False
-                self._run_once()
-                self._idle = True
+            # Run one iteration of the event loop. The `_idle` flag stops the `_ready`
+            # deque from enqueuing tasks until the iteration is complete.
+            self._idle = False
+            self._run_once()
+            self._idle = True
 
             # Enqueue the next tick. Determine the delay of the tick by checking if
             # there are events in the ready list, otherwise then calculating a delay

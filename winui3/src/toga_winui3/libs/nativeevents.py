@@ -72,17 +72,24 @@ class NativeEvent:
 
     @classmethod
     def _clear_callback(cls, callback):
+        loop = App.app.loop
         # There is potentially still a call to the callback in the message queue
         # after the event has been deregistered. So the task to clear the callback
         # is placed at the back of the queue, and only deletes the
         # reference to the callback after any calls have been made.
-        callback_id = id(callback)
-        cls._cleared_callbacks[callback_id] = callback
+        if not loop.is_closed():
+            callback_id = id(callback)
+            cls._cleared_callbacks[callback_id] = callback
 
-        def clear_callback_task(cls=cls, callback_id=callback_id):
-            del cls._cleared_callbacks[callback_id]
+            def clear_callback_task(cls=cls, callback_id=callback_id):
+                del cls._cleared_callbacks[callback_id]
 
-        App.app.loop.call_soon_threadsafe(clear_callback_task)
+            App.app.loop.call_soon_threadsafe(clear_callback_task)
+        # If the loop is closed then there is no need to wait for the event to be
+        # deregistered. This branch is part of the shutdown procedure so it is marked
+        # as no cover.
+        else:  # pragma: no cover
+            callback = None
 
 
 class NativeEventsHandler:
