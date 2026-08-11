@@ -10,6 +10,13 @@ To assist with finding an appropriate location to store application files, every
 
 Each location provided by the [`Paths`][toga.paths.Paths] object is a [`pathlib.Path`][] that can be used to construct a full file path. If required, additional subdirectories can be created under these locations. Toga will guarantee that the path provided *by Toga* will exist, but it is up you to create any desired subdirectory - if you want to create a `credentials/user.toml` configuration file, Toga will guarantee that the `apps.path.config` will exist, but you must take responsibility for creating the `credentials` subdirectory before saving `user.toml`.
 
+### Environment Overrides
+
+On some platforms, the base paths for application storage can be overridden using environment variables. Any override must be an absolute path; relative paths will be ignored as invalid.
+
+* **Linux:** Toga respects the [XDG Base Directory specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html). The base path for each storage type can be overridden using the `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, `XDG_CACHE_HOME`, and `XDG_STATE_HOME` environment variables, respectively.
+* **Windows:** The base path for all application storage types can be overridden using the `LOCALAPPDATA` environment variable.
+
 ## Reference
 
 ::: toga.paths.Paths

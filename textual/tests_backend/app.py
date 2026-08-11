@@ -36,12 +36,23 @@ class AppProbe(BaseProbe):
         self.app = app
         assert isinstance(self.app._impl.native, TextualApp)
 
+    def _xdg_path(self, env_var, default_path):
+        value = os.environ.get(env_var)
+        if value:
+            path = Path(value)
+            if path.is_absolute():
+                return path
+        return Path.home() / default_path
+
     @property
     def _win32_app_dir(self):
         local_app_data = os.environ.get("LOCALAPPDATA")
-        base_dir = (
-            Path(local_app_data) if local_app_data else (Path.home() / "AppData/Local")
-        )
+        if local_app_data:
+            base_dir = Path(local_app_data)
+            if not base_dir.is_absolute():
+                base_dir = Path.home() / "AppData/Local"
+        else:
+            base_dir = Path.home() / "AppData/Local"
         return base_dir / AUTHOR / FORMAL_NAME
 
     @property
@@ -51,10 +62,7 @@ class AppProbe(BaseProbe):
         elif sys.platform == "win32":
             return self._win32_app_dir / "Config"
         else:
-            return (
-                Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
-                / APP_NAME
-            )
+            return self._xdg_path("XDG_CONFIG_HOME", ".config") / APP_NAME
 
     @property
     def data_path(self):
@@ -63,10 +71,7 @@ class AppProbe(BaseProbe):
         elif sys.platform == "win32":
             return self._win32_app_dir / "Data"
         else:
-            return (
-                Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
-                / APP_NAME
-            )
+            return self._xdg_path("XDG_DATA_HOME", ".local/share") / APP_NAME
 
     @property
     def cache_path(self):
@@ -75,10 +80,7 @@ class AppProbe(BaseProbe):
         elif sys.platform == "win32":
             return self._win32_app_dir / "Cache"
         else:
-            return (
-                Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
-                / APP_NAME
-            )
+            return self._xdg_path("XDG_CACHE_HOME", ".cache") / APP_NAME
 
     @property
     def logs_path(self):
@@ -87,11 +89,7 @@ class AppProbe(BaseProbe):
         elif sys.platform == "win32":
             return self._win32_app_dir / "Logs"
         else:
-            return (
-                Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
-                / APP_NAME
-                / "log"
-            )
+            return self._xdg_path("XDG_STATE_HOME", ".local/state") / APP_NAME / "log"
 
     async def assert_event_loop(self):
         pytest.skip("Event loop assertions are not implemented on Textual.")

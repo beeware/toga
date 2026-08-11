@@ -15,9 +15,12 @@ class Paths:
         # the app to have no author.
         author = "Unknown" if App.app.author is None else App.app.author
         local_app_data = os.environ.get("LOCALAPPDATA")
-        base_dir = (
-            Path(local_app_data) if local_app_data else (Path.home() / "AppData/Local")
-        )
+        if local_app_data:
+            base_dir = Path(local_app_data)
+            if not base_dir.is_absolute():
+                base_dir = Path.home() / "AppData/Local"
+        else:
+            base_dir = Path.home() / "AppData/Local"
         return base_dir / author / App.app.formal_name
 
     # The rest are cached at the interface level:

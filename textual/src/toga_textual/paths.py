@@ -35,11 +35,12 @@ elif sys.platform == "win32":
             # the app to have no author.
             author = "Unknown" if App.app.author is None else App.app.author
             local_app_data = os.environ.get("LOCALAPPDATA")
-            base_dir = (
-                Path(local_app_data)
-                if local_app_data
-                else (Path.home() / "AppData/Local")
-            )
+            if local_app_data:
+                base_dir = Path(local_app_data)
+                if not base_dir.is_absolute():
+                    base_dir = Path.home() / "AppData/Local"
+            else:
+                base_dir = Path.home() / "AppData/Local"
             return base_dir / author / App.app.formal_name
 
         # The rest are cached at the interface level:
@@ -58,31 +59,28 @@ elif sys.platform == "win32":
 
 else:
 
+    def _xdg_path(env_var, default_path):
+        value = os.environ.get(env_var)
+        if value:
+            path = Path(value)
+            if path.is_absolute():
+                return path
+        return Path.home() / default_path
+
     class Paths:
         def __init__(self, interface):
             self.interface = interface
 
         def get_config_path(self):
-            return (
-                Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
-                / App.app.app_name
-            )
+            return _xdg_path("XDG_CONFIG_HOME", ".config") / App.app.app_name
 
         def get_data_path(self):
-            return (
-                Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
-                / App.app.app_name
-            )
+            return _xdg_path("XDG_DATA_HOME", ".local/share") / App.app.app_name
 
         def get_cache_path(self):
-            return (
-                Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
-                / App.app.app_name
-            )
+            return _xdg_path("XDG_CACHE_HOME", ".cache") / App.app.app_name
 
         def get_logs_path(self):
             return (
-                Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
-                / App.app.app_name
-                / "log"
+                _xdg_path("XDG_STATE_HOME", ".local/state") / App.app.app_name / "log"
             )
