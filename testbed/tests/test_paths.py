@@ -45,6 +45,9 @@ async def test_invalid_env_vars(app, monkeypatch):
     monkeypatch.setenv("XDG_CONFIG_HOME", "relative/config")
     monkeypatch.setenv("LOCALAPPDATA", "relative/localappdata")
 
+    # Ensure paths attribute is initialized
+    _ = app.paths  # Force initialization of the paths property
+    
     # Clear cached _app_dir if it exists (win32 and textual-windows)
     app._impl.paths.__dict__.pop("_app_dir", None)
 
