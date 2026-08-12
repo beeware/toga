@@ -55,7 +55,7 @@ class Box(Widget):
 
 def Row(*args, **kwargs):
     """Shorthand for [`Box`][toga.Box] with its
-    [text-direction][toga.style.pack.Pack.text_direction] set to "row".
+    [direction][toga.style.pack.Pack.direction] set to "row".
     """
     return Box(*args, direction="row", **kwargs)
 
