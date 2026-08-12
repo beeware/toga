@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 from rubicon.objc import objc_id, send_message
 
 from toga.constants import WindowState
@@ -172,3 +173,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def _setup_file_dialog_result(self, dialog, result):
         # Closing a window modal file dialog is the same as alerts.
         self._setup_alert_dialog_result(dialog, result)
+
+    async def assert_system_dpi_change(self, get_probe, mock_scale):
+        pytest.skip("Test not implemented for this platform")

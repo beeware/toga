@@ -1,8 +1,9 @@
 import asyncio
 from ctypes import byref, sizeof, windll
 from typing import Literal
+from unittest.mock import Mock
 
-from pytest import skip
+from pytest import approx, skip
 from win32more.Microsoft.UI.Interop import GetWindowFromWindowId
 from win32more.Microsoft.UI.Windowing import (
     AppWindowPresenterKind,
@@ -16,6 +17,7 @@ from win32more.Windows.Win32.UI.WindowsAndMessaging import (
 )
 
 from toga import Size
+from toga.constants import WindowState
 
 from .probe import BaseProbe
 
@@ -133,3 +135,78 @@ class WindowProbe(BaseProbe):
 
     def has_toolbar(self):
         skip("Toolbars are not implemented on on toga_winui3 yet.")
+
+    async def assert_system_dpi_change_for_state(self, mock_scale):
+        # WinUI 3 uses CSS pixels for measurements for the layout within a window, but
+        # physical pixels for measurements external to the window. From a Toga point of
+        # view, DPI scaling is all handled internally except for minimum size
+        # constraints. So this test only deals with the window size.
+        #   There are no Microsoft supported ways to programmatically change monitor
+        # DPIs. The method here is to monkeypatch the window's DPI and then manually
+        # fire the DPI changed event.
+        mock_dpi = int(mock_scale * 96)
+        if mock_dpi == self.impl._dpi:
+            return
+
+        # Store the original values
+        dpi_ratio = mock_dpi / self.impl._dpi
+        original_size = self.window.size
+        original_dpi_property = type(self.impl)._dpi
+
+        # Monkeypatch the DPI property.
+        type(self.impl)._dpi = int(mock_scale * 96)
+
+        # Add a `on_resize` handler.
+        on_resize_handler = Mock()
+        self.window.on_resize_handler = on_resize_handler
+
+        # Manually trigger the DPI changed event.
+        self.impl.native_event_xaml_root_changed(None, None)
+        await self.redraw(
+            f"Simulated DPI change: Window should be {dpi_ratio}x its original size",
+            delay=0.1,
+        )
+
+        # Save the scaled size. There is an adjustment for the normal state, since the
+        # DPI has not actually been changed.
+        if self.window.state == WindowState.NORMAL:
+            scaled_size = self.window.size * float(1 / dpi_ratio)
+        elif self.window.state == WindowState.MAXIMIZED:
+            scaled_size = self.window.size
+
+        # Restore the DPI property.
+        type(self.impl)._dpi = original_dpi_property
+
+        # Manually trigger the DPI changed event.
+        self.impl.native_event_xaml_root_changed(None, None)
+
+        await self.redraw(
+            "Simulated DPI change: Window should be its original size",
+            delay=0.1,
+        )
+
+        # There are difference in decor, etc. for the different scales which isn't
+        # tested here. Accept within 10% of the size.
+        assert scaled_size == approx(original_size, rel=0.1)
+
+        # The original size should be restored.
+        assert original_size == self.window.size
+
+        # A DPI event should not trigger a on_resize event since the Toga size never
+        # changes.
+        on_resize_handler.assert_not_called()
+
+    async def assert_system_dpi_change(self, get_probe, mock_scale):
+        # Test DPI change for the normal window state.
+        await self.assert_system_dpi_change_for_state(mock_scale)
+
+        # Test DPI change while maximized.
+        self.window.state = WindowState.MAXIMIZED
+        await self.wait_for_window(
+            "Maximizing window before simulating another DPI change."
+        )
+
+        await self.assert_system_dpi_change_for_state(mock_scale)
+
+        self.window.state = WindowState.NORMAL
+        await self.wait_for_window("Returning window to the normal state.")

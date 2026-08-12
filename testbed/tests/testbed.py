@@ -57,9 +57,6 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         if toga.backend == "toga_winui3":
             print(f"toga_winui3 startup time = {0.05 * i}s")
 
-        else:
-            raise ValueError("DEBUG - only running WinUI 3 tested.")
-
         if (
             # On GitHub Actions, Windows/ARM64 runners don't have an interactive
             # logon session, so you can't run most of the GUI tests. For details,

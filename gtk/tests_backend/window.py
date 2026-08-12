@@ -160,3 +160,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def press_toolbar_button(self, index):
         item = self.impl.native_toolbar.get_nth_item(index)
         item.emit("clicked")
+
+    async def assert_system_dpi_change(self, get_probe, mock_scale):
+        pytest.skip("Test not implemented for this platform")

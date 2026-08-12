@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 from PySide6.QtCore import Qt
 from toga_qt.libs import IS_WAYLAND
 
@@ -118,3 +119,6 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self.window._impl.toolbar_native.actions()[index].trigger()
+
+    async def assert_system_dpi_change(self, get_probe, mock_scale):
+        pytest.skip("Test not implemented for this platform")
