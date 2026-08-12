@@ -448,7 +448,7 @@ async def test_retrieve_cookies(widget, probe, on_load):
             delay = 0.5 if attempt < 3 else 1.0
             await probe.redraw("Cookie wasn't set; wait and try again", delay=delay)
             continue
-            
+
         break
 
     assert cookie is not None, "Test cookie not found in CookieJar"
