@@ -47,10 +47,11 @@ def test_invalid_env_vars(app, monkeypatch):
 
     # Clear cached _app_dir if it exists (win32 and textual-windows)
     app._impl.paths.__dict__.pop("_app_dir", None)
-    
-    # We call the backend implementation directly to avoid the cached property on the core object
+
+    # We call the backend implementation directly to avoid the cached
+    # property on the core object
     config_path = app._impl.paths.get_config_path()
-    
+
     # Assert it falls back to the default (absolute path within home dir)
     assert "relative" not in str(config_path)
     assert config_path.is_absolute()
