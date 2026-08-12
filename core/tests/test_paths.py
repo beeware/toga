@@ -8,7 +8,7 @@ import pytest
 import toga
 
 
-def run_app(args, cwd, env_overrides=None):
+def run_app(args, cwd):
     """Run a Toga app as a subprocess with coverage enabled and the Toga Dummy
     backend."""
     # We need to do a full copy of the environment, then add our extra bits;
@@ -23,8 +23,6 @@ def run_app(args, cwd, env_overrides=None):
             "TOGA_BACKEND": "toga_dummy",
         }
     )
-    if env_overrides:
-        env.update(env_overrides)
     output = subprocess.check_output(
         [sys.executable] + args,
         cwd=cwd,

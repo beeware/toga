@@ -35,29 +35,33 @@ class AppProbe(BaseProbe, DialogsMixin):
             assert isinstance(self.app._impl.native, Adw.Application)
         assert IS_WAYLAND is (os.environ.get("WAYLAND_DISPLAY", "") != "")
 
-    def _xdg_path(self, env_var, default_path):
-        value = os.environ.get(env_var)
-        if value:
-            path = Path(value)
-            if path.is_absolute():
-                return path
-        return Path.home() / default_path
-
     @property
     def config_path(self):
-        return self._xdg_path("XDG_CONFIG_HOME", ".config") / "testbed"
+        return (
+            Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+            / "testbed"
+        )
 
     @property
     def data_path(self):
-        return self._xdg_path("XDG_DATA_HOME", ".local/share") / "testbed"
+        return (
+            Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
+            / "testbed"
+        )
 
     @property
     def cache_path(self):
-        return self._xdg_path("XDG_CACHE_HOME", ".cache") / "testbed"
+        return (
+            Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
+            / "testbed"
+        )
 
     @property
     def logs_path(self):
-        return self._xdg_path("XDG_STATE_HOME", ".local/state") / "testbed/log"
+        return (
+            Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
+            / "testbed/log"
+        )
 
     @property
     def is_cursor_visible(self):

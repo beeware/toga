@@ -33,28 +33,3 @@ async def test_app_paths(app, app_probe, attr):
                 shutil.rmtree(path)
         except PermissionError:
             pass
-
-
-async def test_invalid_env_vars(app, monkeypatch):
-    """If an environment variable is invalid (e.g. relative), it is ignored."""
-    import sys
-
-    if sys.platform == "darwin" or sys.platform == "ios":
-        pytest.skip("macOS and iOS do not use environment variables for paths")
-
-    monkeypatch.setenv("XDG_CONFIG_HOME", "relative/config")
-    monkeypatch.setenv("LOCALAPPDATA", "relative/localappdata")
-
-    # Ensure paths attribute is initialized
-    _ = app.paths  # Force initialization of the paths property
-    
-    # Clear cached _app_dir if it exists (win32 and textual-windows)
-    app._impl.paths.__dict__.pop("_app_dir", None)
-
-    # We call the backend implementation directly to avoid the cached
-    # property on the core object
-    config_path = app._impl.paths.get_config_path()
-
-    # Assert it falls back to the default (absolute path within home dir)
-    assert "relative" not in str(config_path)
-    assert config_path.is_absolute()

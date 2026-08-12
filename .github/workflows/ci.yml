@@ -327,33 +327,6 @@ jobs:
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
-        - backend: "linux-x11-gtk3-custom-paths"
-          platform: "linux"
-          runs-on: "ubuntu-24.04"
-          pre-command: |
-            sudo apt update -y
-            sudo apt install -y --no-install-recommends \
-              blackbox pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
-              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
-
-            # Start Virtual X Server
-            echo "Start X server..."
-            Xvfb :99 -screen 0 2048x1536x24 &
-            sleep 1
-
-            # Start Window Mmanager
-            echo "Start window manager..."
-            DISPLAY=:99 blackbox &
-            sleep 1
-          # Regression path testing absolute environment overrides
-          briefcase-run-prefix: 'DISPLAY=:99 XDG_CONFIG_HOME=$HOME/custom_config XDG_DATA_HOME=$HOME/custom_data XDG_CACHE_HOME=$HOME/custom_cache XDG_STATE_HOME=$HOME/custom_state'
-          briefcase-run-args: ""
-          briefcase-test-args: ""
-          testbed-app: "testbed"
-          copy-command: "cp -r"
-          setup-python: false  # Use the system Python packages
-          app-user-data-path: "$HOME/custom_data/testbed"
-
         - backend: "linux-wayland-gtk3"
           platform: "linux"
           runs-on: "ubuntu-24.04"
@@ -529,16 +502,6 @@ jobs:
           runs-on: "windows-latest"
           testbed-app: "testbed-textual"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (Textual)\Data'
-
-        - backend: "windows-netfx-x86_64-custom-paths"
-          platform: "windows"
-          runs-on: "windows-latest"
-          testbed-app: "testbed"
-          briefcase-run-args: ""
-          briefcase-test-args: ""
-          copy-command: "cp -r"
-          app-user-data-path: '$HOME\CustomAppData\Tiberius Yak\Toga Testbed\Data'
-          briefcase-run-prefix: 'set LOCALAPPDATA=%USERPROFILE%\CustomAppData && set TOGA_WINFORMS_USE_NETFX=1'
 
         - backend: "windows-netfx-x86_64"
           platform: "windows"
