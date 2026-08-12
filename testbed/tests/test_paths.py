@@ -35,7 +35,7 @@ async def test_app_paths(app, app_probe, attr):
             pass
 
 
-def test_invalid_env_vars(app, monkeypatch):
+async def test_invalid_env_vars(app, monkeypatch):
     """If an environment variable is invalid (e.g. relative), it is ignored."""
     import sys
 
