@@ -78,6 +78,9 @@ class Window:
         # Keep a record of the window size in the NORMAL state.
         self._cached_size = size
 
+        # Keep a record of the window DPI to be able to detect changes.
+        self._cached_dpi = self._dpi
+
         # In WinUI 3 a minimized window is not considered visible. This variable keeps
         # track of this property.
         self._visible = self.native.Visible
@@ -93,6 +96,7 @@ class Window:
 
         # Create the window content and attach it.
         self.create_content()
+        self.container_native.event_handler.Loaded += self.native_event_loaded
 
     def create(self):
         self.native = App.app._impl.native_instance.CreateWindow()
@@ -157,7 +161,11 @@ class Window:
             self.interface.on_gain_focus()
 
     def native_event_changed(self, sender, args):
-        """An event that fires *synchronously* when window properties change."""
+        """An event that fires when window properties change.
+
+        Note that this fires *synchronously* when the presenter changes, but not when
+        a normal size change event occurs.
+        """
 
         # DidPresenterChange fires for every window state transition except:
         #  1. WindowState.MINIMIZED  =>  WindowState.NORMAL
@@ -181,9 +189,11 @@ class Window:
                     self._state_change_event(new_state)
 
                 if old_state == new_state:
-                    # Update the cached normal window size.
-                    self._cached_size = self.get_size()
-                    self.interface.on_resize()
+                    # Update the cached normal window size. Only update this value if
+                    # the DidSizeChange event wasn't triggered by a DPI-change event.
+                    if self._cached_dpi == self._dpi:
+                        self._cached_size = self.get_size()
+                        self.interface.on_resize()
 
         if args.DidVisibilityChange:
             # Minimize is not considered visible but it also doesn't trigger this event.
@@ -213,6 +223,34 @@ class Window:
             # triggered in test conditions, so it is as marked no-cover.
             pass
 
+    def native_event_loaded(self, sender, args):
+        # Only add the `XamlRoot.Changed` event if the window is not already closed. The
+        # branch where the window is closed is not reliably hit during testing, so use
+        # no branch.
+        if not self.interface.closed:  # pragma: no branch
+            self.container_native.event_handler.XamlRoot_Changed += (
+                self.native_event_xaml_root_changed
+            )
+
+    def native_event_xaml_root_changed(self, sender, args):
+        """Update the window minimum size after a DPI change."""
+        dpi = self._dpi
+
+        if self._cached_dpi != dpi:
+            # The minimum size of the window is set in physical pixels, so needs to be
+            # updated after the DPI changes.
+            self.content_refreshed()
+
+            # Ensure that the window is the correct size.
+            if self._cached_state == WindowState.NORMAL:
+                self.set_size(self._cached_size)
+
+            # Update the cached DPI. Note that the window `Changed` event with
+            # `DidSizeChange == True` is called synchronously after the `set_size` call.
+            # Since the cached DPI value is updated after this call the `on_resize` call
+            # is not triggered in this case (as desired).
+            self._cached_dpi = self._dpi
+
     ####################################################################################
     # Window properties
     ####################################################################################
@@ -230,6 +268,14 @@ class Window:
     ####################################################################################
 
     def close(self):
+        # The XamlRoot event needs to be manually cleared to avoid memory access issues.
+        try:
+            self.container_native.event_handler.XamlRoot_Changed.clear()
+        except AttributeError:
+            # If the window is closed before the `Loaded` event, then XamlRoot will be
+            # None, and consequently will not have the `Changed` property.
+            del self.container_native.event_handler._event_registry["XamlRoot_Changed"]
+
         # The native event `Closing` is not called when the Close() method is called
         # programmatically.
         self.native.Close()
@@ -504,18 +550,18 @@ class Window:
             self.interface.on_resize()
 
     def _state_change_event(self, new_state):
+        # Note that this method should only be called when the window state has changed.
         old_state = self._cached_state
         self._cached_state = new_state
 
         if {old_state, new_state} != {WindowState.MINIMIZED, WindowState.NORMAL}:
             self.interface.on_resize()
 
-        if old_state != new_state:
-            if old_state == WindowState.MINIMIZED:
-                self.interface.on_show()
+        if old_state == WindowState.MINIMIZED:
+            self.interface.on_show()
 
-            elif new_state == WindowState.MINIMIZED:
-                self.interface.on_hide()
+        elif new_state == WindowState.MINIMIZED:
+            self.interface.on_hide()
 
     ####################################################################################
     # Window capabilities
