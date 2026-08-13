@@ -34,12 +34,7 @@ elif sys.platform == "win32":
             # No coverage testing of this because we can't easily configure
             # the app to have no author.
             author = "Unknown" if App.app.author is None else App.app.author
-            local_app_data = os.environ.get("LOCALAPPDATA")
-            base_dir = (
-                Path(local_app_data)
-                if local_app_data
-                else (Path.home() / "AppData/Local")
-            )
+            local_app_data = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData/Local"))
             return base_dir / author / App.app.formal_name
 
         # The rest are cached at the interface level:
