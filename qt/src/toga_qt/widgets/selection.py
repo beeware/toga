@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 
 from PySide6.QtGui import QPalette
-from PySide6.QtWidgets import QComboBox
+from PySide6.QtWidgets import QComboBox, QSizePolicy
 from travertino.size import at_least
 
 from .base import Widget
@@ -11,6 +11,9 @@ class Selection(Widget):
     def create(self):
         self.native = QComboBox()
         self.native.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.native.setSizePolicy(
+            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed
+        )
 
         self.native.currentIndexChanged.connect(self.qt_on_current_index_changed)
         self._item_id_count = 0
