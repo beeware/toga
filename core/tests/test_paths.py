@@ -136,5 +136,6 @@ def test_subclassed_as_deep_module():
 )
 def test_cant_reassign(app, path_name):
     """App path attributes are read-only."""
+    # Theoretically, this could leak out of this test... but only if it fails!
     with pytest.raises(AttributeError):
         setattr(app.paths, path_name, "")

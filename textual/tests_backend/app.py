@@ -38,9 +38,8 @@ class AppProbe(BaseProbe):
 
     @property
     def _win32_app_dir(self):
-        local_app_data = os.environ.get("LOCALAPPDATA")
-        base_dir = (
-            Path(local_app_data) if local_app_data else (Path.home() / "AppData/Local")
+        base_dir = Path(
+            os.environ.get("LOCALAPPDATA", Path.home() / "AppData/Local")
         )
         return base_dir / AUTHOR / FORMAL_NAME
 

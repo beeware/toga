@@ -374,9 +374,6 @@ async def test_dom_storage_enabled(widget, probe, on_load):
         LOAD_TIMEOUT,
     )
 
-    # Add initial delay to ensure page is fully loaded
-    await probe.redraw("Waiting for page to be fully ready", delay=1)
-
     for _ in range(10):
         expected_value = "Hello World"
         expression = f"""\
@@ -396,7 +393,7 @@ async def test_dom_storage_enabled(widget, probe, on_load):
             # Success!
             return
 
-        await probe.redraw("Wait for DOM to be ready", delay=0.5)
+        await probe.redraw("Wait for DOM to be ready", delay=0.2)
 
     pytest.fail(
         f"Didn't receive expected result ({expected_value!r}) after multiple tries; "
@@ -424,7 +421,7 @@ async def test_retrieve_cookies(widget, probe, on_load):
 
     # On iOS and macOS, setting a cookie can fail if it's done too soon after page load.
     # Try a couple of times to make sure the cookie is actually set.
-    for attempt in range(10):
+    for _ in range(5):
         # JavaScript expression to set a cookie and return the current cookies
         expression = """
         (function setCookie() {
@@ -445,11 +442,7 @@ async def test_retrieve_cookies(widget, probe, on_load):
 
         if cookie is None:
             # Cookie wasn't set; wait a little bit before trying again.
-            delay = 0.5 if attempt < 3 else 1.0
-            await probe.redraw("Cookie wasn't set; wait and try again", delay=delay)
-            continue
-
-        break
+            await probe.redraw("Cookie wasn't set; wait and try again", delay=0.2)
 
     assert cookie is not None, "Test cookie not found in CookieJar"
 
