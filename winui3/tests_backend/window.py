@@ -150,7 +150,8 @@ class WindowProbe(BaseProbe):
 
         # Store the original values
         dpi_ratio = mock_dpi / self.impl._dpi
-        original_size = self.window.size
+        original_width = self.impl.native.AppWindow.Size.Width
+        original_height = self.impl.native.AppWindow.Size.Height
         original_dpi_property = type(self.impl)._dpi
 
         # Monkeypatch the DPI property.
@@ -169,10 +170,13 @@ class WindowProbe(BaseProbe):
 
         # Save the scaled size. There is an adjustment for the normal state, since the
         # DPI has not actually been changed.
+        scaled_size = self.impl.native.AppWindow.Size
         if self.window.state == WindowState.NORMAL:
-            scaled_size = self.window.size * float(1 / dpi_ratio)
+            scaled_width = scaled_size.Width * float(1 / dpi_ratio)
+            scaled_height = scaled_size.Height * float(1 / dpi_ratio)
         elif self.window.state == WindowState.MAXIMIZED:
-            scaled_size = self.window.size
+            scaled_width = scaled_size.Width
+            scaled_height = scaled_size.Height
 
         # Restore the DPI property.
         type(self.impl)._dpi = original_dpi_property
@@ -185,12 +189,13 @@ class WindowProbe(BaseProbe):
             delay=0.1,
         )
 
-        # There are difference in decor, etc. for the different scales which isn't
-        # tested here. Accept within 10% of the size.
-        assert scaled_size == approx(original_size, rel=0.1)
+        # Accept within 1% of the size due to rounding.
+        assert scaled_width == approx(original_width, rel=0.01)
+        assert scaled_height == approx(original_height, rel=0.01)
 
         # The original size should be restored.
-        assert original_size == self.window.size
+        assert self.impl.native.AppWindow.Size.Width == original_width
+        assert self.impl.native.AppWindow.Size.Height == original_height
 
         # A DPI event should not trigger a on_resize event since the Toga size never
         # changes.
