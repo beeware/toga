@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 
 from PySide6.QtGui import QPalette
-from PySide6.QtWidgets import QComboBox, QSizePolicy
+from PySide6.QtWidgets import QComboBox
 from travertino.size import at_least
 
 from .base import Widget
