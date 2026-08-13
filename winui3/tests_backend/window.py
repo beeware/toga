@@ -189,9 +189,9 @@ class WindowProbe(BaseProbe):
             delay=0.1,
         )
 
-        # Accept within 1% of the size due to rounding.
-        assert scaled_width == approx(original_width, rel=0.01)
-        assert scaled_height == approx(original_height, rel=0.01)
+        # Accept within 2% of the size due to rounding, and differences in decor.
+        assert scaled_width == approx(original_width, rel=0.02)
+        assert scaled_height == approx(original_height, rel=0.02)
 
         # The original size should be restored.
         assert self.impl.native.AppWindow.Size.Width == original_width
@@ -202,6 +202,9 @@ class WindowProbe(BaseProbe):
         on_resize_handler.assert_not_called()
 
     async def assert_system_dpi_change(self, get_probe, mock_scale):
+        # The GitHub runner has a resolution of 1024x768. So reduce the window size.
+        self.window.size = Size(400, 300)
+
         # Test DPI change for the normal window state.
         await self.assert_system_dpi_change_for_state(mock_scale)
 
