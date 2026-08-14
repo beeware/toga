@@ -132,10 +132,54 @@ def test_subclassed_as_deep_module():
 
 @pytest.mark.parametrize(
     "path_name",
-    ["toga", "app", "config", "data", "cache", "logs"],
+    [
+        "toga",
+        "app",
+        "config",
+        "data",
+        "cache",
+        "logs",
+        "desktop",
+        "documents",
+        "downloads",
+        "pictures",
+    ],
 )
 def test_cant_reassign(app, path_name):
     """App path attributes are read-only."""
     # Theoretically, this could leak out of this test... but only if it fails!
     with pytest.raises(AttributeError):
         setattr(app.paths, path_name, "")
+
+
+@pytest.mark.parametrize("name", ["desktop", "documents", "downloads", "pictures"])
+def test_user_dir(app, name, tmp_path, monkeypatch):
+    """User-space paths return the location provided by the backend."""
+    monkeypatch.setenv("TOGA_DUMMY_USER_DIRS", str(tmp_path))
+    (tmp_path / name).mkdir()
+
+    assert getattr(app.paths, name) == tmp_path / name
+
+
+@pytest.mark.parametrize("name", ["desktop", "documents", "downloads", "pictures"])
+def test_user_dir_doesnt_exist(app, name, tmp_path, monkeypatch):
+    """If a user-space folder doesn't exist, accessing its path raises an error."""
+    monkeypatch.setenv("TOGA_DUMMY_USER_DIRS", str(tmp_path))
+
+    # The folder is *not* created by Toga.
+    with pytest.raises(
+        RuntimeError,
+        match=rf"The {name.title()} folder .* does not exist on this device\.",
+    ):
+        getattr(app.paths, name)
+    assert not (tmp_path / name).exists()
+
+
+@pytest.mark.parametrize("name", ["desktop", "documents", "downloads", "pictures"])
+def test_user_dir_default_location(app, name, monkeypatch):
+    """Without the test override, the dummy backend puts user-space folders in a
+    clearly dummy location."""
+    monkeypatch.delenv("TOGA_DUMMY_USER_DIRS", raising=False)
+
+    impl_path = getattr(app.paths._impl, f"get_{name}_path")()
+    assert impl_path == Path.home() / "toga-dummy" / name

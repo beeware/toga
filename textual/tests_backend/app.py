@@ -71,6 +71,24 @@ class AppProbe(BaseProbe):
         else:
             return Path.home() / f".local/state/{APP_NAME}/log"
 
+    # On every desktop platform, the CI environment resolves the user-space
+    # folders to the default names in the home folder.
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def downloads_path(self):
+        return Path.home() / "Downloads"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
+
     async def assert_event_loop(self):
         pytest.skip("Event loop assertions are not implemented on Textual.")
 

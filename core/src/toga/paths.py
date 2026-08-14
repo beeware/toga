@@ -83,3 +83,67 @@ class Paths:
         path = self._impl.get_logs_path()
         path.mkdir(parents=True, exist_ok=True)
         return path
+
+    @property
+    @functools.cache  # noqa: B019
+    def desktop(self) -> Path:
+        """The location of the user's Desktop folder on this device.
+
+        This is a user-space folder, not specific to this app; Toga will not
+        create it. A ``RuntimeError`` is raised if the folder doesn't exist on
+        this device, or the platform doesn't provide a Desktop folder.
+        """
+        path = self._impl.get_desktop_path()
+        if not path.exists():
+            raise RuntimeError(
+                f"The Desktop folder ({path}) does not exist on this device."
+            )
+        return path
+
+    @property
+    @functools.cache  # noqa: B019
+    def documents(self) -> Path:
+        """The location of the user's Documents folder on this device.
+
+        This is a user-space folder, not specific to this app; Toga will not
+        create it. A ``RuntimeError`` is raised if the folder doesn't exist on
+        this device, or the platform doesn't provide a Documents folder.
+        """
+        path = self._impl.get_documents_path()
+        if not path.exists():
+            raise RuntimeError(
+                f"The Documents folder ({path}) does not exist on this device."
+            )
+        return path
+
+    @property
+    @functools.cache  # noqa: B019
+    def downloads(self) -> Path:
+        """The location of the user's Downloads folder on this device.
+
+        This is a user-space folder, not specific to this app; Toga will not
+        create it. A ``RuntimeError`` is raised if the folder doesn't exist on
+        this device, or the platform doesn't provide a Downloads folder.
+        """
+        path = self._impl.get_downloads_path()
+        if not path.exists():
+            raise RuntimeError(
+                f"The Downloads folder ({path}) does not exist on this device."
+            )
+        return path
+
+    @property
+    @functools.cache  # noqa: B019
+    def pictures(self) -> Path:
+        """The location of the user's Pictures folder on this device.
+
+        This is a user-space folder, not specific to this app; Toga will not
+        create it. A ``RuntimeError`` is raised if the folder doesn't exist on
+        this device, or the platform doesn't provide a Pictures folder.
+        """
+        path = self._impl.get_pictures_path()
+        if not path.exists():
+            raise RuntimeError(
+                f"The Pictures folder ({path}) does not exist on this device."
+            )
+        return path

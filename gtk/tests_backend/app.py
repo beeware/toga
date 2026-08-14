@@ -51,6 +51,24 @@ class AppProbe(BaseProbe, DialogsMixin):
     def logs_path(self):
         return Path.home() / ".local/state/testbed/log"
 
+    # The CI environment doesn't have an xdg-user-dirs configuration, so the
+    # user-space folders resolve to the default names in the home folder.
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def downloads_path(self):
+        return Path.home() / "Downloads"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
+
     @property
     def is_cursor_visible(self):
         pytest.skip("Cursor visibility not implemented on GTK")

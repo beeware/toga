@@ -25,3 +25,17 @@ class Paths:
 
     def get_logs_path(self):
         return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Logs"
+
+    # iOS doesn't have user-space folders that an app can access directly.
+
+    def get_desktop_path(self):
+        raise RuntimeError("iOS does not have a Desktop folder")
+
+    def get_documents_path(self):
+        raise RuntimeError("iOS does not have a user-accessible Documents folder")
+
+    def get_downloads_path(self):
+        raise RuntimeError("iOS does not have a user-accessible Downloads folder")
+
+    def get_pictures_path(self):
+        raise RuntimeError("iOS does not have a user-accessible Pictures folder")
