@@ -6,7 +6,7 @@ import PIL.Image
 import pytest
 import toga_winui3
 from toga_winui3.libs.gdiplus import icon_pixels
-from win32more import UInt32
+from win32more import ComError, UInt32
 from win32more.Microsoft.UI import IconId
 from win32more.Microsoft.UI.Interop import GetWindowFromWindowId
 from win32more.Microsoft.UI.Xaml.Controls import Button, ImageIcon
@@ -39,17 +39,40 @@ class IconProbe(BaseProbe):
         assert isinstance(image_icon, ImageIcon)
         assert isinstance(self.icon._impl.id, IconId)
 
-    def __del__(self):
-        index = UInt32()
-        self.container_native.Children.IndexOf(self.button, byref(index))
-        self.container_native.Children.RemoveAt(index)
+        # Create a future to track when the icon has been loaded.
+        self._loaded = app.loop.create_future()
+        if self.icon._impl._bitmap_image.PixelWidth > 0:
+            self._loaded.set_result(self.icon._impl._bitmap_image.PixelWidth > 0)
+        else:
+            self.icon._impl._bitmap_image.event_handler.ImageOpened += (
+                self.native_event_image_opened
+            )
+
+    def _cleanup(self):
+        try:
+            index = UInt32()
+            self.container_native.Children.IndexOf(self.button, byref(index))
+            self.container_native.Children.RemoveAt(index)
+        except ComError:
+            # This error occurs when the actual WinUI 3 object has been removed, for
+            # example when its parent is destroyed, but the python win32more object
+            # remains. Since the actual WinUI 3 object has been removed, and hence
+            # will not raise any events, this error is ignored.
+            pass
+
+    def native_event_image_opened(self, sender, args):
+        self._loaded.set_result(True)
 
     async def _assert_source(self, path: Path):
-        assert self.icon._impl.path == path
+        if not self._loaded.done():
+            async with asyncio.timeout(5):
+                await self._loaded
 
-        await asyncio.sleep(0.1)
         uri = f"file:///{self.icon._impl.path.as_posix()}"
+        assert self.icon._impl.path == path
         assert self.icon._impl._bitmap_image.UriSource.ToString() == uri
+
+        self._cleanup()
 
     async def assert_icon_content(self, path):
         if path == "resources/icons/green":
@@ -92,3 +115,5 @@ class IconProbe(BaseProbe):
 
             # There are some difference in how alpha is treated. Accept 97% match
             assert count / (width_pil * height_pil) > 0.97
+
+        self._cleanup()
