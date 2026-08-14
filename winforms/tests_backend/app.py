@@ -106,6 +106,8 @@ class AppProbe(BaseProbe, DialogsMixin):
     def logs_path(self):
         return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Logs"
 
+    supports_xdg_user_dirs = False
+
     # The CI environment doesn't redirect any of the known folders, so the
     # user-space folders resolve to the default names in the home folder.
     @property

@@ -7,6 +7,7 @@ from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QApplication, QDialog, QSystemTrayIcon
 from toga_qt.keys import qt_to_toga_key, toga_to_qt_key
 from toga_qt.libs import IS_WAYLAND
+from toga_qt.paths import _xdg_user_dir
 
 import toga
 
@@ -50,6 +51,11 @@ class AppProbe(BaseProbe):
     @property
     def logs_path(self):
         return Path.home() / ".local/state/testbed-qt/log"
+
+    supports_xdg_user_dirs = True
+
+    def resolve_xdg_user_dir(self, name, fallback):
+        return _xdg_user_dir(name, fallback)
 
     # The CI environment doesn't have an xdg-user-dirs configuration, so the
     # user-space folders resolve to the default names in the home folder.

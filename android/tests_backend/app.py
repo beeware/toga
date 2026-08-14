@@ -23,6 +23,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     documents_path = None
     downloads_path = None
     pictures_path = None
+    supports_xdg_user_dirs = False
 
     def __init__(self, app):
         super().__init__(app)

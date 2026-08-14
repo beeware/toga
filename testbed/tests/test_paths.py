@@ -1,5 +1,6 @@
 import os
 import shutil
+from pathlib import Path
 
 import pytest
 
@@ -61,3 +62,36 @@ async def test_user_space_paths(app, app_probe, attr):
     finally:
         if created:
             expected.rmdir()
+
+
+async def test_xdg_user_dir_resolution(app_probe, tmp_path, monkeypatch):
+    """User-space folder locations honor the xdg-user-dirs configuration."""
+    if not app_probe.supports_xdg_user_dirs:
+        pytest.skip("This backend doesn't resolve folders using xdg-user-dirs")
+
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+
+    # With no configuration file, an explicitly set environment variable is used.
+    monkeypatch.setenv("XDG_DOCUMENTS_DIR", str(tmp_path / "env-documents"))
+    assert app_probe.resolve_xdg_user_dir("XDG_DOCUMENTS_DIR", "Documents") == (
+        tmp_path / "env-documents"
+    )
+
+    # With no configuration file and no environment variable, the default
+    # folder name in the user's home folder is used.
+    monkeypatch.delenv("XDG_DESKTOP_DIR", raising=False)
+    assert app_probe.resolve_xdg_user_dir("XDG_DESKTOP_DIR", "Desktop") == (
+        Path.home() / "Desktop"
+    )
+
+    # Entries in the configuration file are used, with $HOME expanded.
+    (tmp_path / "user-dirs.dirs").write_text('XDG_PICTURES_DIR="$HOME/My Pictures"\n')
+    assert app_probe.resolve_xdg_user_dir("XDG_PICTURES_DIR", "Pictures") == (
+        Path.home() / "My Pictures"
+    )
+
+    # Keys missing from the configuration file fall back.
+    monkeypatch.delenv("XDG_DOWNLOAD_DIR", raising=False)
+    assert app_probe.resolve_xdg_user_dir("XDG_DOWNLOAD_DIR", "Downloads") == (
+        Path.home() / "Downloads"
+    )

@@ -71,6 +71,14 @@ class AppProbe(BaseProbe):
         else:
             return Path.home() / f".local/state/{APP_NAME}/log"
 
+    supports_xdg_user_dirs = sys.platform not in {"darwin", "win32"}
+
+    def resolve_xdg_user_dir(self, name, fallback):
+        # Only defined on Linux; guarded by supports_xdg_user_dirs.
+        from toga_textual.paths import _xdg_user_dir
+
+        return _xdg_user_dir(name, fallback)
+
     # On every desktop platform, the CI environment resolves the user-space
     # folders to the default names in the home folder.
     @property

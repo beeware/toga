@@ -52,6 +52,8 @@ class AppProbe(BaseProbe, DialogsMixin):
     def logs_path(self):
         return Path.home() / "Library/Logs/org.beeware.toga.testbed"
 
+    supports_xdg_user_dirs = False
+
     @property
     def desktop_path(self):
         return Path.home() / "Desktop"

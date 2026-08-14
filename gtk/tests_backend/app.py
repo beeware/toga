@@ -7,6 +7,7 @@ import pytest
 import toga
 from toga_gtk.keys import gtk_accel, toga_key
 from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, Gtk
+from toga_gtk.paths import _xdg_user_dir
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -50,6 +51,11 @@ class AppProbe(BaseProbe, DialogsMixin):
     @property
     def logs_path(self):
         return Path.home() / ".local/state/testbed/log"
+
+    supports_xdg_user_dirs = True
+
+    def resolve_xdg_user_dir(self, name, fallback):
+        return _xdg_user_dir(name, fallback)
 
     # The CI environment doesn't have an xdg-user-dirs configuration, so the
     # user-space folders resolve to the default names in the home folder.
