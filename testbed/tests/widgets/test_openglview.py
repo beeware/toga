@@ -99,9 +99,11 @@ async def test_buttons(probe, widget, renderer):
         assert isinstance(renderer.on_render.call_args[1]["buttons"], frozenset)
         assert renderer.on_render.call_args[1]["buttons"] == buttons
 
-        assert "pointer" in renderer.on_render.call_args[1]
-        assert isinstance(renderer.on_render.call_args[1]["pointer"], tuple)
-        assert len(renderer.on_render.call_args[1]["pointer"]) == 2
+        if buttons or toga.backend not in {"toga_iOS", "toga_android"}:
+            # pointer location should exist on all platforms except mobile
+            assert "pointer" in renderer.on_render.call_args[1]
+            assert isinstance(renderer.on_render.call_args[1]["pointer"], tuple)
+            assert len(renderer.on_render.call_args[1]["pointer"]) == 2
 
 
 async def test_pointer(probe, widget, renderer):

@@ -16,7 +16,7 @@ class ClearRenderer:
         # set the clear color to blue
         GL.glClearColor(0.0, 0.0, 1.0, 1.0)
 
-    def on_render(self, widget, size, **kwargs):
+    def on_render(self, widget, size, position, buttons, **kwargs):
         # clear the OpenGL view
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 ```
@@ -28,7 +28,7 @@ renderer = ClearRenderer()
 openglview = OpenGLView(renderer)
 ```
 
-If the renderer changes state and a re-rendering is required, the `redraw` method will schedule the backend to refresh the OpenGLView and trigger `on_render` via the application's event loop.
+If the renderer changes state and a re-rendering is required, the `redraw` method on the `OpenGLView` will schedule the backend to refresh the OpenGLView and trigger `on_render` via the application's event loop.
 
 ## Notes
 
@@ -39,11 +39,7 @@ If the renderer changes state and a re-rendering is required, the `redraw` metho
 - There are currently no Python OpenGL wrappers for iOS, but `ctypes` can be used to wrap the iOS `opengles` DLL and call out to OpenGL.
 - Linux relies on the appropriate OpenGL driver libraries being installed on the system with the system's package manager.
 
-The version of OpenGL that is available on each platform depends heavily on the platform: mobile and web platforms provide OpenGL ES, while desktop platforms generally provide full OpenGL support. The OpenGLView tries to provide an OpenGL context with the highest OpenGL version available. This is currently:
-
-- Android: OpenGL ES 3.0
-- MacOS: OpenGL 4.1
-- Qt: OpenGL 4.1
+The version of OpenGL that is available on each platform depends heavily on the platform: mobile and web platforms provide OpenGL ES, while desktop platforms generally provide full OpenGL support. The OpenGLView tries to provide an OpenGL context with the highest OpenGL version available. For desktop platforms this is likely to be at least OpenGL 4.1, and for mobile platforms this likely to be OpenGL ES 3.0, but in both cases it may depend upon the capabilities of the system it is being run on. If it is important for your code, the OpenGL version that is available can be queried in the `on_init` handler by using the `glGetString` function.
 
 ## Reference
 

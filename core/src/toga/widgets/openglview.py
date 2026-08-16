@@ -35,7 +35,8 @@ class RendererT(Protocol):
         :param widget: The view that is being rendered.
         :param size: The size of the current OpenGL viewport in OpenGL pixels.
         :param pointer: The location of the pointer (mouse or touch) in OpenGL
-            coordinates, or None if not known (eg. when no touch on mobile)
+            coordinates, or None if not known (eg. before the first touch on mobile
+            devices).
         :param buttons: The set of mouse buttons that is currently down,
             or `{TOUCH}` if currently being touched.
         :param kwargs: Ensures compatibility with arguments added in future versions.

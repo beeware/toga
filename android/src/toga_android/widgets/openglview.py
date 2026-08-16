@@ -28,17 +28,10 @@ class TogaGLRenderer(dynamic_proxy(GLSurfaceView.Renderer)):
         native = self.impl.native
         width = native.getWidth()
         height = native.getHeight()
-        # Pointer coordinates are in device-independent, top-left origin coords
-        # We need drawing pixel, bottom-left origin coordinates
-        scale = native.getContext().getResources().getDisplayMetrics().densityDpi / 160
-        pointer = self.impl.pointer
-        if pointer:
-            x, y = pointer
-            pointer = (scale * x, height - (scale * y))
         self.interface.renderer.on_render(
             self.interface,
             size=(width, height),
-            pointer=pointer,
+            pointer=self.impl.pointer,
             buttons=self.impl.buttons,
         )
 
