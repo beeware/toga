@@ -5,6 +5,7 @@ materials, but not texture maps.
 """
 
 from dataclasses import dataclass, field
+from itertools import pairwise
 from pathlib import Path
 
 
@@ -65,7 +66,7 @@ def parse_mtl_file(path: Path):
     with open(path) as f:
         for line in f:
             # discard comments
-            line, *comments = line.split("#")
+            line, *_ = line.split("#")
             line = line.strip()
             if not line:
                 continue
@@ -138,7 +139,7 @@ def parse_obj_file(path: Path):
     with open(path) as f:
         for line in f:
             # discard comments
-            line, *comments = line.split("#")
+            line, *_ = line.split("#")
             line = line.strip()
             if not line:
                 # blank line, skip
@@ -191,7 +192,7 @@ def parse_obj_file(path: Path):
                     # so fan triangulations should work. If it doesn't it's a
                     # bad file.
                     i = indices[0]
-                    for j, k in zip(indices[1:-1], indices[2:], strict=True):
+                    for j, k in pairwise(indices[1:]):
                         geometry.vertices.extend(vertices[i["vertex"]])
                         geometry.vertices.extend(vertices[j["vertex"]])
                         geometry.vertices.extend(vertices[k["vertex"]])

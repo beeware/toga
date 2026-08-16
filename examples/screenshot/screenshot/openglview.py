@@ -48,7 +48,7 @@ if toga.backend in {"toga_cocoa", "toga_gtk", "toga_qt"}:
         glUseProgram,
         glVertexAttribPointer,
         glViewport,
-    )  # noqa: E402
+    )
 
     SHADER_HEADER = "#version 330 core"
 

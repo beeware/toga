@@ -86,7 +86,6 @@ class OpenGLView(Widget):
 
     def focus(self) -> None:
         """OpenGLWidgets cannot accept input focus."""
-        pass
 
     def redraw(self) -> None:
         """Flag that the widget needs to be re-rendered."""

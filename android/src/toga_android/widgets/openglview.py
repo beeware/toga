@@ -53,9 +53,9 @@ class TouchListener(dynamic_proxy(GLSurfaceView.OnTouchListener)):
         with suppress_reference_error():
             x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
             self.impl.pointer = (x, y)
-            if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
-                self.impl.buttons = frozenset([TOUCH])
-            elif action == MotionEvent.ACTION_MOVE:
+            if (
+                action := event.getAction()
+            ) == MotionEvent.ACTION_DOWN or action == MotionEvent.ACTION_MOVE:
                 self.impl.buttons = frozenset([TOUCH])
             elif action == MotionEvent.ACTION_UP:
                 self.impl.buttons = frozenset()
