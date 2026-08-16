@@ -105,6 +105,8 @@ async def test_buttons(probe, widget, renderer):
 
 
 async def test_pointer(probe, widget, renderer):
+    skip_on_platforms("macOS", reason="Can't change mouse pointer position on macOS")
+
     if not probe.buttons:
         pytest.skip("Backend does not support buttons.")
 

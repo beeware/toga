@@ -30,10 +30,8 @@ class OpenGLViewProbe(SimpleProbe):
         await self.redraw("Buttons cleared")
 
     async def position_change(self, x=0, y=0):
-        await self.mouse_event(
-            NSEventType.LeftMouseDragged,
-            self.native.convertPoint(NSPoint(x, y), toView=None),
-        )
+        # Cocoa uses current cursor position, can't change in tests
+        raise NotImplementedError()
 
     async def left_mouse_down(self, x=0, y=0):
         event = self._button_event(NSEventType.LeftMouseDown)

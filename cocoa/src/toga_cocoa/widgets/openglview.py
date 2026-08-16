@@ -7,9 +7,7 @@ from toga.widgets.openglview import LEFT, MIDDLE, RIGHT
 from toga_cocoa.libs import (
     NSOpenGLPFADepthSize,
     NSOpenGLPFADoubleBuffer,
-    NSOpenGLPFAOpenGLProfile,
     NSOpenGLPixelFormat,
-    NSOpenGLProfileVersion4_1Core,
     NSOpenGLView,
     NSRect,
 )
@@ -59,8 +57,6 @@ class TogaOpenGLView(NSOpenGLView):
             NSOpenGLPFADepthSize,
             24,
             NSOpenGLPFADoubleBuffer,
-            NSOpenGLPFAOpenGLProfile,
-            NSOpenGLProfileVersion4_1Core,
         )
         attributes = (ctypes.c_uint32 * len(a))(*a)
         pixel_format = NSOpenGLPixelFormat.alloc().initWithAttributes_(attributes)

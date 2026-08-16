@@ -34,10 +34,10 @@ class TogaOpenGLWidget(QOpenGLWidget):
         size = self.impl.native.size()
         width = size.width() * pixel_ratio
         height = size.height() * pixel_ratio
-        mouse_postion = self.mapFromGlobal(self.cursor().pos())
+        mouse_position = self.mapFromGlobal(self.cursor().pos())
         pointer = (
-            mouse_postion.x() * pixel_ratio,
-            height - mouse_postion.y() * pixel_ratio,
+            mouse_position.x() * pixel_ratio,
+            height - mouse_position.y() * pixel_ratio,
         )
         qt_buttons = QApplication.mouseButtons()
         buttons = frozenset(
