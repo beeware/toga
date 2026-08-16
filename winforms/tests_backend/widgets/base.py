@@ -12,6 +12,7 @@ from .properties import toga_color
 
 class SimpleProbe(BaseProbe):
     invalid_size_while_hidden = False
+    supports_tab_index = True
 
     def __init__(self, widget):
         self.app = widget.app

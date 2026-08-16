@@ -2,6 +2,7 @@ import pytest
 
 import toga
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -31,6 +32,12 @@ from .test_textinput import (  # noqa: F401
     test_validation,
     verify_focus_handlers,
     verify_vertical_text_align,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="PasswordInput is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 

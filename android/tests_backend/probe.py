@@ -36,6 +36,12 @@ class BaseProbe:
         self.dpi = activity.getResources().getDisplayMetrics().densityDpi
         self.scale_factor = self.dpi / 160
 
+    def approx_width(self, width):
+        return approx(width, rel=0.01)
+
+    def approx_height(self, height):
+        return approx(height, rel=0.01)
+
     def __del__(self):
         # Save `self` attributes in local variables, because they may be cleared after
         # __del__ returns.
@@ -55,12 +61,13 @@ class BaseProbe:
             for name in self.window_manager.getViewRootNames()
             if name not in self.original_window_names
         ]
-        if len(new_windows) == 0:
-            return None
-        elif len(new_windows) == 1:
-            return self.window_manager.getRootView(new_windows[0])
-        else:
-            raise RuntimeError(f"More than one new window: {new_windows}")
+        match len(new_windows):
+            case 0:
+                return None
+            case 1:
+                return self.window_manager.getRootView(new_windows[0])
+            case _:
+                raise RuntimeError(f"More than one new window: {new_windows}")
 
     def get_dialog_buttons(self, dialog_view):
         button_panel = dialog_view.findViewById(R.id.button1).getParent()

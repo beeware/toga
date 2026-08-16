@@ -368,7 +368,7 @@ class Window:
             triggered `on_exit` handling.
         """
         close_window = True
-        if self.app.main_window == self:
+        if self.app.main_window is self:
             # Closing the window marked as the main window is a request to exit.
             self.app.request_exit()
             close_window = False

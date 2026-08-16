@@ -7,9 +7,11 @@ A button has a text label, or an icon (but not both). If an icon is specified, i
 ```python
 import toga
 
+
 def my_callback(button):
     # handle event
     pass
+
 
 button = toga.Button("Click me", on_press=my_callback)
 

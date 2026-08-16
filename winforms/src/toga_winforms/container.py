@@ -5,10 +5,11 @@ from .widgets.base import Scalable
 
 
 class Container(Scalable):
-    def __init__(self, native_parent):
+    def __init__(self, native_parent, on_refresh=None):
         self.native_parent = native_parent
         self.native_width = self.native_height = 0
         self.content = None
+        self.on_refresh = on_refresh
 
         self.native_content = WinForms.Panel()
         native_parent.Controls.Add(self.native_content)
@@ -54,6 +55,8 @@ class Container(Scalable):
     def refreshed(self):
         layout = self.content.interface.layout
         self.apply_layout(layout.width, layout.height)
+        if self.on_refresh:
+            self.on_refresh(self)
 
     def apply_layout(self, layout_width, layout_height):
         self.native_content.Size = Size(

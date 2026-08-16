@@ -6,9 +6,13 @@ Most applications require a little more than a button on a page. Lets build a sl
 
 Here's the source code:
 
+<!-- fmt:off -->
+
 ```python
 -8<- "tutorial1/tutorial/app.py"
 ```
+
+<!-- fmt:on -->
 
 This example shows off some more features of Toga's Pack style engine. In this example app, we've set up an outer box that stacks vertically; inside that box, we've put 2 horizontal boxes and a button.
 

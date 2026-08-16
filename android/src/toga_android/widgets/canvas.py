@@ -54,7 +54,7 @@ class Context:
         stroke = Paint()
         stroke.setAntiAlias(True)
         stroke.setStyle(Paint.Style.STROKE)
-        stroke.setStrokeWidth(2.0)
+        stroke.setStrokeWidth(1.0)
         stroke.setColor(BLACK)
         stroke.setStrokeMiter(10.0)
 
@@ -225,8 +225,8 @@ class Context:
     def reset_transform(self):
         self.native.setMatrix(None)
 
-        # current matrix needs to unwind all previous states
-        # can't just ask for current total transform as `getMatrix` is deprecated
+        # current matrix needs to unwind all previous states can't just ask for current
+        # total transform as `getMatrix` is deprecated
         for state in reversed(self.states):
             self.path.transform(state.transform)
             inverse = Matrix()
@@ -239,42 +239,53 @@ class Context:
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
-    def write_text(self, text, x, y, font, baseline, line_height):
+    def fill_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            self.state.fill,
+        )
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            self.state.stroke,
+        )
+
+    def _fill_or_stroke_text(self, text, x, y, font, baseline, line_height, paint):
         lines = text.splitlines()
-        paint = self.impl._text_paint(font)
-        scaled_line_height = self.impl._line_height(paint, line_height)
+        text_paint = self.impl._text_paint(font)
+        scaled_line_height = self.impl._line_height(text_paint, line_height)
         total_height = scaled_line_height * len(lines)
 
         # paint.ascent returns a negative number.
-        if baseline == Baseline.TOP:
-            top = y - paint.ascent()
-        elif baseline == Baseline.MIDDLE:
-            top = y - paint.ascent() - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y - paint.ascent() - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y
+        match baseline:
+            case Baseline.TOP:
+                top = y - text_paint.ascent()
+            case Baseline.MIDDLE:
+                top = y - text_paint.ascent() - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y - text_paint.ascent() - total_height
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y
 
-        # Avoid mutating state
-        if self.in_fill:
-            fill = Paint(self.state.fill)
-            fill.setTypeface(font.typeface())
-            fill.setTextSize(self.impl.scale_out(font.size()))
+        # Avoid mutating state.
+        paint = Paint(paint)
+        paint.setTypeface(font.typeface())
+        paint.setTextSize(self.impl.scale_out(font.size()))
 
-        if self.in_stroke:
-            stroke = Paint(self.state.stroke)
-            stroke.setTypeface(font.typeface())
-            stroke.setTextSize(self.impl.scale_out(font.size()))
-
-        for line_num, line in enumerate(text.splitlines()):
-            # FILL_AND_STROKE doesn't allow separate colors, so we have to draw twice.
-            draw_args = (line, x, top + (scaled_line_height * line_num))
-
-            if self.in_fill:
-                self.native.drawText(*draw_args, fill)
-            if self.in_stroke:
-                self.native.drawText(*draw_args, stroke)
+        for line_num, line in enumerate(lines):
+            self.native.drawText(line, x, top + (scaled_line_height * line_num), paint)
 
     # Bitmaps
     def draw_image(self, image, x, y, width, height):
@@ -311,14 +322,15 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
     def onTouch(self, canvas, event):
         with suppress_reference_error():
             x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
-            if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
-                self.interface.on_press(x, y)
-            elif action == MotionEvent.ACTION_MOVE:
-                self.interface.on_drag(x, y)
-            elif action == MotionEvent.ACTION_UP:
-                self.interface.on_release(x, y)
-            else:  # pragma: no cover
-                return False
+            match event.getAction():
+                case MotionEvent.ACTION_DOWN:
+                    self.interface.on_press(x, y)
+                case MotionEvent.ACTION_MOVE:
+                    self.interface.on_drag(x, y)
+                case MotionEvent.ACTION_UP:
+                    self.interface.on_release(x, y)
+                case _:  # pragma: no cover
+                    return False
         return True
 
 
@@ -350,8 +362,8 @@ class Canvas(Widget):
             return paint.getTextSize() * line_height
 
     def _text_paint(self, font):
-        # font.size applies the scale factor, and the canvas transformation matrix
-        # will apply it again, so we need to cancel one of those with a scale_out.
+        # font.size applies the scale factor, and the canvas transformation matrix will
+        # apply it again, so we need to cancel one of those with a scale_out.
         paint = Paint()
         paint.setTypeface(font.typeface())
         paint.setTextSize(self.scale_out(font.size()))

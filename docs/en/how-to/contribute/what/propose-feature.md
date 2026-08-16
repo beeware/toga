@@ -1,3 +1,3 @@
 # Proposing a new feature
 
-{% extends "contribute/what/propose-feature.md" %}
+{% extends "_shared/contribute/what/propose-feature.md" %}

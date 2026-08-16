@@ -117,16 +117,20 @@ def get_round_rect_radii(
         radii = [radii]
     else:
         radii = list(radii)
-    if len(radii) == 1:
-        radii *= 4
-    elif len(radii) == 2:
-        radii = [radii[0], radii[1], radii[1], radii[0]]
-    elif len(radii) == 3:
-        radii = [radii[0], radii[1], radii[1], radii[2]]
-    elif len(radii) != 4:
-        raise ValueError(
-            f"Invalid radii: {radii!r}, expected length between 1 and 4 items"
-        )
+
+    match len(radii):
+        case 1:
+            radii *= 4
+        case 2:
+            radii = [radii[0], radii[1], radii[1], radii[0]]
+        case 3:
+            radii = [radii[0], radii[1], radii[1], radii[2]]
+        case 4:
+            pass
+        case _:
+            raise ValueError(
+                f"Invalid radii: {radii!r}, expected length between 1 and 4 items"
+            )
     # get corners
     corners = [(r, r) if isinstance(r, (int, float)) else (r.x, r.y) for r in radii]
     ul, ur, ll, lr = corners

@@ -1,3 +1,3 @@
 <!-- rumdl-disable-file MD041 -->
 
-{% extends "contribute/policies/ai-policy.md" %}
+{% extends "_shared/contribute/policies/ai-policy.md" %}

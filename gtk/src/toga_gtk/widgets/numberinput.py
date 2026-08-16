@@ -60,7 +60,7 @@ class NumberInput(Widget):
             self.native.set_value(value)
 
     def set_text_align(self, value):
-        xalign, justify = gtk_text_align(value)
+        xalign, _justify = gtk_text_align(value)
         self.native.set_alignment(xalign)
 
     def rehint(self):

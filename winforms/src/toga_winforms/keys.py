@@ -114,7 +114,7 @@ def toga_to_winforms_shortcut(key):
     try:
         key = key.value
     except AttributeError:
-        key = key
+        pass
 
     # Replace modifiers with the Winforms text
     display = []
@@ -146,17 +146,17 @@ def winforms_to_toga_key(code):
     modifiers = set()
 
     code_names = str(code).split(", ")
-    for toga_mod, code in WINFORMS_MODIFIERS.items():
+    for toga_mod, win_code in WINFORMS_MODIFIERS.items():
         try:
-            code_names.remove(str(code))
+            code_names.remove(str(win_code))
         except ValueError:
             pass
         else:
             modifiers.add(toga_mod)
 
     assert len(code_names) == 1
-    for value, code in WINFORMS_KEYS.items():
-        if str(code) == code_names[0]:
+    for value, win_key in WINFORMS_KEYS.items():
+        if str(win_key) == code_names[0]:
             toga_value = value
             break
     else:

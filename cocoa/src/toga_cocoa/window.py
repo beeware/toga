@@ -145,7 +145,7 @@ class TogaWindow(NSWindow):
         prev_group = None
         for item in self.interface.toolbar:
             # If there's been a group change, and this item isn't a separator,
-            # add a separator between groups.
+            # add an item to act as a separator between groups.
             if (
                 prev_group is not None
                 and item.group != prev_group
@@ -165,22 +165,22 @@ class TogaWindow(NSWindow):
         insert: bool,
     ):
         """Create the requested toolbar button."""
-        native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
             item = self.impl._toolbar_items[str(identifier)]
+            native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
             native.setLabel(item.text)
             native.setPaletteLabel(item.text)
             if item.tooltip:
                 native.setToolTip(item.tooltip)
             if item.icon:
-                native.setImage(item.icon._impl.native)
+                native.setImage(item.icon._impl._as_size(32))
 
             item._impl.native.add(native)
 
             native.setTarget_(self)
             native.setAction_(SEL("onToolbarButtonPress:"))
-        except KeyError:  # Separator items
-            pass
+        except KeyError:  # No toolbar item for the identifier
+            native = None
 
         return native
 
@@ -317,7 +317,7 @@ class Window:
             native_frame = self.container.native.frame
         else:
             native_frame = self.native.frame
-        return Size(native_frame.size.width, native_frame.size.height)
+        return Size(int(native_frame.size.width), int(native_frame.size.height))
 
     def set_size(self, size):
         frame = self.native.frame

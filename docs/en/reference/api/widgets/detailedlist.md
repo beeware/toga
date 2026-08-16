@@ -10,19 +10,19 @@ import toga
 table = toga.DetailedList(
     data=[
         {
-           "icon": toga.Icon("icons/arthur"),
-           "title": "Arthur Dent",
-           "subtitle": "Where's the tea?"
+            "icon": toga.Icon("icons/arthur"),
+            "title": "Arthur Dent",
+            "subtitle": "Where's the tea?",
         },
         {
-           "icon": toga.Icon("icons/ford"),
-           "title": "Ford Prefect",
-           "subtitle": "Do you know where my towel is?"
+            "icon": toga.Icon("icons/ford"),
+            "title": "Ford Prefect",
+            "subtitle": "Do you know where my towel is?",
         },
         {
-           "icon": toga.Icon("icons/tricia"),
-           "title": "Tricia McMillan",
-           "subtitle": "What planet are you from?"
+            "icon": toga.Icon("icons/tricia"),
+            "title": "Tricia McMillan",
+            "subtitle": "What planet are you from?",
         },
     ]
 )
@@ -37,21 +37,21 @@ table = toga.DetailedList(
     accessors=("picture", "name", "quote"),
     data=[
         {
-           "picture": toga.Icon("icons/arthur"),
-           "name": "Arthur Dent",
-           "quote": "Where's the tea?"
+            "picture": toga.Icon("icons/arthur"),
+            "name": "Arthur Dent",
+            "quote": "Where's the tea?",
         },
         {
-           "picture": toga.Icon("icons/ford"),
-           "name": "Ford Prefect",
-           "quote": "Do you know where my towel is?"
+            "picture": toga.Icon("icons/ford"),
+            "name": "Ford Prefect",
+            "quote": "Do you know where my towel is?",
         },
         {
-           "picture": toga.Icon("icons/tricia"),
-           "name": "Tricia McMillan",
-           "quote": "What planet are you from?"
+            "picture": toga.Icon("icons/tricia"),
+            "name": "Tricia McMillan",
+            "quote": "What planet are you from?",
         },
-    ]
+    ],
 )
 ```
 

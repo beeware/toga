@@ -6,6 +6,7 @@ import toga
 from toga.constants import CENTER
 from toga.sources import ListListener, ListSource
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -18,6 +19,12 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_text_align,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="Selection is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 # FIXME: 2023-05-31 GTK's focus APIs are completely broken for GTK.ComboBox. The
@@ -329,7 +336,7 @@ async def test_resize_on_content_change(widget, probe):
         assert probe.width == original_width
 
 
-def test_list_listener(widget):
+async def test_list_listener(widget):
     """Does the widget implement the ListListener API"""
     assert isinstance(widget._impl, ListListener)
 
@@ -343,7 +350,7 @@ def test_list_listener(widget):
         ("remove", {"index": 0, "item": "item"}),
     ],
 )
-def test_deprecated_methods(widget, method_name, args):
+async def test_deprecated_methods(widget, method_name, args):
     """Does the widget warn about the old ListListener API"""
     impl = widget._impl
     mock_method = Mock()

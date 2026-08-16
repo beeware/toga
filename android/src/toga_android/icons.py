@@ -1,9 +1,11 @@
+from typing import ClassVar
+
 from android.graphics import Bitmap, BitmapFactory, Rect
 from android.graphics.drawable import BitmapDrawable
 
 
 class Icon:
-    EXTENSIONS = [".png"]
+    EXTENSIONS: ClassVar[list[str]] = [".png"]
     SIZES = None
 
     def __init__(self, interface, path):

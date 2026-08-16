@@ -33,19 +33,27 @@ def _find_item(
     if accessors is None and not isinstance(data, Mapping):
         raise ValueError(f"find() requires accessors for non-mapping {value_type} data")
 
-    for item in candidates[start_index:]:
+    if start_index:
+        search_candidates: Iterable[T] = (
+            candidates[index] for index in range(start_index, len(candidates))
+        )
+    else:
+        search_candidates = candidates
+
+    for item in search_candidates:
         try:
-            if isinstance(data, Mapping):
-                found = all(
-                    getattr(item, attr) == value for attr, value in data.items()
-                )
-            elif hasattr(data, "__iter__") and not isinstance(data, str):
-                found = all(
-                    getattr(item, attr) == value
-                    for value, attr in zip(data, accessors, strict=False)
-                )
-            else:
-                found = getattr(item, accessors[0]) == data
+            match data:
+                case Mapping():
+                    found = all(
+                        getattr(item, attr) == value for attr, value in data.items()
+                    )
+                case Iterable() if not isinstance(data, str):
+                    found = all(
+                        getattr(item, attr) == value
+                        for value, attr in zip(data, accessors, strict=False)
+                    )
+                case _:
+                    found = getattr(item, accessors[0]) == data
 
             if found:
                 return item
@@ -122,13 +130,14 @@ class ListSource(Source):
             shown [above][listsource-item].
         """
         super().__init__()
-        if accessors is None:
-            self._accessors = None
-        elif isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
-            raise ValueError("accessors should be a list of attribute names")
-        else:
-            # Copy the list of accessors
-            self._accessors = list(accessors)
+        match accessors:
+            case None:
+                self._accessors = None
+            case Iterable() if not isinstance(accessors, str):
+                # Copy the list of accessors
+                self._accessors = list(accessors)
+            case _:
+                raise ValueError("accessors should be a list of attribute names")
 
         # Convert the data into row objects
         if data is not None:

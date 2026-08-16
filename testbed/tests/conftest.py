@@ -4,7 +4,8 @@ import inspect
 from dataclasses import dataclass
 from importlib import import_module
 
-from pytest import fixture, register_assert_rewrite, skip
+from _pytest.python_api import ApproxScalar
+from pytest import fixture, register_assert_rewrite, skip, xfail
 
 import toga
 from toga.colors import GOLDENROD
@@ -45,7 +46,7 @@ def skip_on_backends(*backends, reason=None, allow_module_level=False):
 def xfail_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(reason or f"not applicable on {current_platform}")
+        xfail(reason or f"not applicable on {current_platform}")
 
 
 # Use this for widgets or tests which are not supported on some backends,
@@ -53,7 +54,7 @@ def xfail_on_platforms(*platforms, reason=None):
 def xfail_on_backends(*backends, reason=None):
     current_backend = toga.backend
     if current_backend in backends:
-        skip(reason or f"not applicable on {current_backend}")
+        xfail(reason or f"not applicable on {current_backend}")
 
 
 # Use this for widgets or tests which trip up macOS privacy controls, and requires
@@ -70,12 +71,30 @@ def skip_if_unbundled_app(reason=None, allow_module_level=False):
         )
 
 
+def is_persistent_task(task):
+    """Does the task belong to framework machinery that persists for app lifetime?"""
+    try:
+        module = task.get_coro().cr_frame.f_globals["__name__"]
+    except AttributeError:
+        return False
+
+    return module.startswith("textual.")
+
+
 @fixture(autouse=True)
 def no_dangling_tasks():
     """Ensure any tasks for the test were removed when the test finished."""
     yield
     if toga.App.app:
         tasks = toga.App.app._running_tasks
+        if toga.backend == "toga_textual":
+            # Textual runs framework tasks for the lifetime of the app. Ignore those,
+            # while still failing on unfinished tasks created by Toga test code.
+            tasks = {
+                task
+                for task in tasks
+                if not task.done() and not is_persistent_task(task)
+            }
         assert not tasks, f"the app has dangling tasks: {tasks}"
 
 
@@ -157,27 +176,16 @@ async def main_window_probe(app, main_window):
     main_window.content = old_content
 
 
-# Controls the event loop used by pytest-asyncio.
-@fixture(scope="session")
-def event_loop_policy(app):
-    yield ProxyEventLoopPolicy(ProxyEventLoop(app._impl.loop))
-
-
-# Loop policy that ensures proxy loop is always used.
-class ProxyEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
-    def __init__(self, proxy_loop: "ProxyEventLoop"):
-        super().__init__()
-        self._proxy_loop = proxy_loop
-
-    def new_event_loop(self):
-        return self._proxy_loop
+def pytest_asyncio_loop_factories(config, item):
+    return {
+        "proxy": ProxyEventLoop,
+    }
 
 
 # Proxy which forwards all tasks to another event loop in a thread-safe manner.
 # It implements only the methods used by pytest-asyncio.
 @dataclass
 class ProxyEventLoop(asyncio.AbstractEventLoop):
-    loop: object
     closed: bool = False
 
     # Used by ensure_future.
@@ -191,7 +199,24 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
             coro = future.coro
         else:
             raise TypeError(f"Future type {type(future)} is not currently supported")
-        return asyncio.run_coroutine_threadsafe(coro, self.loop).result()
+
+        # A backend may need to establish a context on the app's event loop
+        # before test code runs. If the probe defines a `test_context`
+        # classmethod, the test is run in that context.
+        backend_module = import_module("tests_backend.app")
+        try:
+            test_context = backend_module.AppProbe.test_context
+
+            async def coro_in_context():
+                with test_context():
+                    return await coro
+
+            test_coro = coro_in_context()
+        except AttributeError:
+            test_coro = coro
+
+        loop = toga.App.app._impl.loop
+        return asyncio.run_coroutine_threadsafe(test_coro, loop).result()
 
     async def shutdown_asyncgens(self):
         # The proxy event loop doesn't need to shut anything down; the
@@ -225,3 +250,13 @@ class ProxyTask:
 
     def done(self):
         return False
+
+
+# pytest.approx doesn't support <= / >=
+# See https://github.com/pytest-dev/pytest/issues/2003
+class approx(ApproxScalar):
+    def __ge__(self, other):
+        return self.expected > other or self == other
+
+    def __le__(self, other):
+        return self.expected < other or self == other

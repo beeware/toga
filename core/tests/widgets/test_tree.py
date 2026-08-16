@@ -1010,9 +1010,9 @@ def test_insert_column_unknown_accessor(tree):
             DeprecationWarning,
             match=r"Using accessors is deprecated; use columns instead.",
         ),
+        pytest.raises(ValueError, match=r"not in list"),
     ):
-        with pytest.raises(ValueError, match=r"not in list"):
-            tree.insert_column("unknown", "New Column", accessor="extra")
+        tree.insert_column("unknown", "New Column", accessor="extra")
 
 
 def test_insert_column_heading_column_object_index(tree):
@@ -1327,15 +1327,17 @@ def test_insert_column_deprecated_implementation(tree):
     def insert_column(self, index, heading, accessor):
         self._action("insert column", index=index, heading=heading, accessor=accessor)
 
-    with patch.object(tree._impl.__class__, "insert_column", insert_column):
-        with pytest.warns(
+    with (
+        patch.object(tree._impl.__class__, "insert_column", insert_column),
+        pytest.warns(
             DeprecationWarning,
             match=(
                 "Tree implementations of insert_column should expect a column object "
                 "not heading and accessor."
             ),
-        ):
-            tree.insert_column(1, AccessorColumn("New Column", "extra"))
+        ),
+    ):
+        tree.insert_column(1, AccessorColumn("New Column", "extra"))
 
     # The column was added
     assert_action_performed_with(
@@ -1507,12 +1509,14 @@ def test_remove_column_accessor(tree):
 def test_remove_column_unknown_accessor(tree):
     """If the column named for removal doesn't exist, an error is raised."""
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Using accessors is deprecated; use columns instead.",
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Using accessors is deprecated; use columns instead.",
+        ),
+        pytest.raises(ValueError, match=r"not in list"),
     ):
-        with pytest.raises(ValueError, match=r"not in list"):
-            tree.remove_column("unknown")
+        tree.remove_column("unknown")
 
 
 def test_remove_column_invalid_index(tree):

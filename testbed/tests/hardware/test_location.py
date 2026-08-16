@@ -5,7 +5,14 @@ import pytest
 import toga
 from toga import LatLng
 
+from ..conftest import skip_on_backends
 from .probe import list_probes
+
+skip_on_backends(
+    "toga_textual",
+    reason="Location probes are not implemented on Textual.",
+    allow_module_level=True,
+)
 
 
 @pytest.fixture(params=list_probes("location", skip_platforms=("windows",)))
@@ -29,7 +36,7 @@ async def test_grant_permission(app, location_probe):
     assert app.location.has_background_permission == (
         # If background permission isn't supported at all, it will return the same as
         # has_permission (True in this case).
-        False if location_probe.supports_background_permission else True
+        not location_probe.supports_background_permission
     )
 
     # A second request to grant permissions is a no-op
@@ -40,7 +47,7 @@ async def test_grant_permission(app, location_probe):
     assert app.location.has_background_permission == (
         # If background permission isn't supported at all, it will return the same as
         # has_permission (True in this case).
-        False if location_probe.supports_background_permission else True
+        not location_probe.supports_background_permission
     )
 
 

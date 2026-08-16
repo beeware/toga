@@ -29,6 +29,7 @@ gtk/cairo
 pip-selfcheck.json
 pyvenv.cfg
 .vscode
+.zed
 .envrc
 bin/
 lib/

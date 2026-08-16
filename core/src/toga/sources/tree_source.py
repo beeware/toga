@@ -213,13 +213,14 @@ class TreeSource(Source):
         data: object | None = None,
     ):
         super().__init__()
-        if accessors is None:
-            self._accessors = None
-        elif isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
-            raise ValueError("accessors should be a list of attribute names")
-        else:
-            # Copy the list of accessors.
-            self._accessors = list(accessors)
+        match accessors:
+            case None:
+                self._accessors = None
+            case Iterable() if not isinstance(accessors, str):
+                # Copy the list of accessors
+                self._accessors = list(accessors)
+            case _:
+                raise ValueError("accessors should be a list of attribute names")
 
         if data is not None:
             self._roots = self._create_nodes(parent=None, value=data)
@@ -278,18 +279,19 @@ class TreeSource(Source):
         return node
 
     def _create_nodes(self, parent: Node | None, value: object) -> list[Node]:
-        if isinstance(value, Mapping):
-            return [
-                self._create_node(parent=parent, data=data, children=children)
-                for data, children in value.items()
-            ]
-        elif hasattr(value, "__iter__") and not isinstance(value, str):
-            return [
-                self._create_node(parent=parent, data=item[0], children=item[1])
-                for item in value
-            ]
-        else:
-            return [self._create_node(parent=parent, data=value)]
+        match value:
+            case Mapping():
+                return [
+                    self._create_node(parent=parent, data=data, children=children)
+                    for data, children in value.items()
+                ]
+            case Iterable() if not isinstance(value, str):
+                return [
+                    self._create_node(parent=parent, data=item[0], children=item[1])
+                    for item in value
+                ]
+            case _:
+                return [self._create_node(parent=parent, data=value)]
 
     ######################################################################
     # Utility methods to make TreeSources more list-like
