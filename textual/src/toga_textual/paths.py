@@ -35,7 +35,7 @@ elif sys.platform == "win32":
             # the app to have no author.
             author = "Unknown" if App.app.author is None else App.app.author
             base_dir = Path(
-                os.environ.get("LOCALAPPDATA", Path.home() / "AppData/Local")
+                os.environ.get("LOCALAPPDATA") or (Path.home() / "AppData/Local")
             )
             return base_dir / author / App.app.formal_name
 

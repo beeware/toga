@@ -11,7 +11,6 @@ class Selection(Widget):
     def create(self):
         self.native = QComboBox()
         self.native.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
-
         self.native.currentIndexChanged.connect(self.qt_on_current_index_changed)
         self._item_id_count = 0
         self._last_selected_item_id = 0
