@@ -5,11 +5,17 @@ import pytest
 
 import toga
 
-from ..conftest import skip_on_platforms
+from ..conftest import skip_on_backends, skip_on_platforms
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_widget_size,
     test_focus_noop,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="OpenGLView is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 
