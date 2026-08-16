@@ -10,21 +10,24 @@ from .base import Widget, suppress_reference_error
 
 
 class TogaGLRenderer(dynamic_proxy(GLSurfaceView.Renderer)):
+    # Note: the test suite doesn't currently exercise the renderer because we
+    # don't have a generic OpenGL backend to write actual rendering tests.
+
     def __init__(self, impl):
         super().__init__()
         self.impl = weakref.proxy(impl)
         self.interface = weakref.proxy(impl.interface)
 
-    def onSurfaceCreated(self, gl_api, config):
+    def onSurfaceCreated(self, gl_api, config):  # pragma: no cover
         self.interface.renderer.on_init(self.interface)
 
-    def onDrawFrame(self, gl_api):
+    def onDrawFrame(self, gl_api):  # pragma: no cover
         self._redraw()
 
-    def onSurfaceChanged(self, gl_api, width, height):
+    def onSurfaceChanged(self, gl_api, width, height):  # pragma: no cover
         self._redraw()
 
-    def _redraw(self):
+    def _redraw(self):  # pragma: no cover
         native = self.impl.native
         width = native.getWidth()
         height = native.getHeight()
