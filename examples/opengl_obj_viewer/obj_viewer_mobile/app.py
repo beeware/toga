@@ -4,7 +4,6 @@ from obj_viewer.obj_file import parse_obj_file
 from obj_viewer.obj_file_renderer import ObjFileRenderer
 
 import toga
-import toga.sources
 
 
 class OpenGLApp(toga.App):

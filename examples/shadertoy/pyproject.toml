@@ -13,8 +13,8 @@ license-files = [
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
-formal_name = "An OpenGL Shadertoy Demo"
-description = "A testing app"
+formal_name = "Shadertoy"
+description = "An OpenGL Shadertoy Demo"
 requires = [
     "../../travertino",
     "../../core",
@@ -24,6 +24,7 @@ requires = [
 sources = ["shadertoy"]
 
 [tool.briefcase.app.shadertoy-qt]
+formal_name = "Shadertoy (Qt)"
 sources = ["shadertoy", "shadertoy_qt"]
 
 [tool.briefcase.app.shadertoy.macOS]
@@ -31,18 +32,24 @@ requires = [
     "../../cocoa",
     "std-nslog>=1.0.0",
     "PyOpenGL",
+    "pyopengl-accelerate",
+    "numpy",
 ]
 
 [tool.briefcase.app.shadertoy.linux]
 requires = [
     "../../gtk",
     "PyOpenGL",
+    "pyopengl-accelerate",
+    "numpy",
 ]
 
 [tool.briefcase.app.shadertoy-qt.linux]
 requires = [
     "../../qt",
     "PyOpenGL",
+    "pyopengl-accelerate",
+    "numpy",
 ]
 
 #[tool.briefcase.app.shadertoy.windows]
@@ -51,11 +58,11 @@ requires = [
 #]
 
 # Mobile deployments
-[tool.briefcase.app.shadertoy.iOS]
-requires = [
-    "../../iOS",
-    "std-nslog>=1.0.0",
-]
+# [tool.briefcase.app.shadertoy.iOS]
+# requires = [
+#     "../../iOS",
+#     "std-nslog>=1.0.0",
+# ]
 
 [tool.briefcase.app.shadertoy.android]
 requires = [

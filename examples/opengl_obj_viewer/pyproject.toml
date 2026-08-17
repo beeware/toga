@@ -13,8 +13,8 @@ license-files = [
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
-formal_name = "An OpenGL Demo"
-description = "A testing app"
+formal_name = "OBJ Viewer"
+description = "An app for viewing simple .obj format files."
 requires = [
     "../../travertino",
     "../../core",
@@ -24,9 +24,11 @@ requires = [
 sources = ["obj_viewer"]
 
 [tool.briefcase.app.obj-viewer-mobile]
+formal_name = "OBJ Viewer (Mobile)"
 sources = ["obj_viewer", "obj_viewer_mobile"]
 
 [tool.briefcase.app.obj-viewer-qt]
+formal_name = "OBJ Viewer (Qt)"
 sources = ["obj_viewer", "obj_viewer_qt"]
 
 [tool.briefcase.app.obj-viewer.macOS]
@@ -34,18 +36,24 @@ requires = [
     "../../cocoa",
     "std-nslog>=1.0.0",
     "PyOpenGL",
+    "pyopengl-accelerate",
+    "numpy",
 ]
 
 [tool.briefcase.app.obj-viewer.linux]
 requires = [
     "../../gtk",
     "PyOpenGL",
+    "pyopengl-accelerate",
+    "numpy",
 ]
 
 [tool.briefcase.app.obj-viewer-qt.linux]
 requires = [
     "../../qt",
     "PyOpenGL",
+    "pyopengl-accelerate",
+    "numpy",
 ]
 
 #[tool.briefcase.app.obj-viewer.windows]
@@ -54,11 +62,11 @@ requires = [
 #]
 
 # Mobile deployments
-[tool.briefcase.app.obj-viewer-mobile.iOS]
-requires = [
-    "../../iOS",
-    "std-nslog>=1.0.0",
-]
+# [tool.briefcase.app.obj-viewer-mobile.iOS]
+# requires = [
+#     "../../iOS",
+#     "std-nslog>=1.0.0",
+# ]
 
 [tool.briefcase.app.obj-viewer-mobile.android]
 requires = [

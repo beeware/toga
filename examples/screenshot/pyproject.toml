@@ -35,12 +35,14 @@ requires = [
     "../../cocoa",
     "std-nslog>=1.0.0",
     "pyopengl",
+    "numpy",
 ]
 
 [tool.briefcase.app.screenshot.linux]
 requires = [
     "../../gtk",
     "pyopengl",
+    "numpy",
 ]
 
 [tool.briefcase.app.screenshot-qt.linux]
@@ -48,6 +50,7 @@ requires = [
     "../../qt",
     "PySide6",
     "pyopengl",
+    "numpy",
 ]
 
 [tool.briefcase.app.screenshot.windows]

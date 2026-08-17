@@ -16,8 +16,6 @@ if toga.backend in {"toga_cocoa", "toga_gtk", "toga_qt"}:
         from . import utils_pyopengl as GL
 elif toga.backend == "toga_android":
     from . import utils_android as GL
-elif toga.backend == "toga_iOS":
-    from . import utils_ios as GL
 else:
     raise RuntimeError("No OpenGL for backend.")
 

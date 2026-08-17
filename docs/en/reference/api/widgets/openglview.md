@@ -36,7 +36,7 @@ If the renderer changes state and a re-rendering is required, the `redraw` metho
 - The renderer object used by the OpenGLView can't be changed after the view is created, but it can hold state and change the way that it renders based on that.
 - The OpenGLView is currently only available on the Android, Cocoa, GTK, iOS and Qt backends.
 - OpenGL is deprecated on macOS and iOS, but it is likely to be available for the foreseeable future.
-- There are currently no Python OpenGL wrappers for iOS, but `ctypes` can be used to wrap the iOS `opengles` DLL and call out to OpenGL.
+- There are currently no Python OpenGL wrappers for iOS, but `ctypes` can be used to wrap the iOS `opengles` DLL and call out to OpenGL. A minimal stub is available as `toga_iOS.libs.opengles`.
 - Linux relies on the appropriate OpenGL driver libraries being installed on the system with the system's package manager.
 
 The version of OpenGL that is available on each platform depends heavily on the platform: mobile and web platforms provide OpenGL ES, while desktop platforms generally provide full OpenGL support. The OpenGLView tries to provide an OpenGL context with the highest OpenGL version available. For desktop platforms this is likely to be at least OpenGL 4.1, and for mobile platforms this likely to be OpenGL ES 3.0, but in both cases it may depend upon the capabilities of the system it is being run on. If it is important for your code, the OpenGL version that is available can be queried in the `on_init` handler by using the `glGetString` function.

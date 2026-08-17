@@ -9,8 +9,6 @@ from toga_dummy.utils import assert_action_not_performed, assert_action_performe
 @pytest.fixture
 def renderer():
     renderer = Mock()
-    # renderer.on_init = Mock()
-    # renderer.on_render = Mock()
     return renderer
 
 
@@ -51,4 +49,4 @@ def test_redraw(widget, renderer):
     widget.redraw()
 
     assert_action_performed(widget, "redraw")
-    renderer.on_render.assert_called_once_with(widget, (37, 42))
+    renderer.on_render.assert_called_once_with(widget, (37, 42), None, frozenset())

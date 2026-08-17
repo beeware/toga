@@ -14,3 +14,10 @@ To run this example:
 $ python -m pip install toga pyopengl pyopengl-accelerate
 $ python -m obj_viewer
 ```
+
+Alternatively, you can use Pyglet
+
+```text
+$ python -m pip install toga pyglet
+$ TOGA_OPENGL=pyglet python -m shadertoy
+```
