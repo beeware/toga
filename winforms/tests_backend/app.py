@@ -1,6 +1,7 @@
 import _overlapped
 import asyncio
 import ctypes
+import os
 from pathlib import Path
 from time import sleep
 from unittest.mock import Mock
@@ -91,20 +92,25 @@ class AppProbe(BaseProbe, DialogsMixin):
         await self.assert_event_loop_scheduling(loop)
 
     @property
+    def _app_dir(self):
+        base_dir = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData/Local"))
+        return base_dir / "Tiberius Yak/Toga Testbed"
+
+    @property
     def config_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/testbed"
+        return self._app_dir / "Config"
 
     @property
     def data_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/testbed"
+        return self._app_dir / "Data"
 
     @property
     def cache_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/testbed/Cache"
+        return self._app_dir / "Cache"
 
     @property
     def logs_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/testbed/Logs"
+        return self._app_dir / "Logs"
 
     # The CI environment resolves user-space folders to the default names.
     @property

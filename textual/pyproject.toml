@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==83.0.0",
+    "setuptools==84.0.0",
     "setuptools_scm==10.2.1",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -68,6 +68,7 @@ Command = "toga_textual.command:Command"
 Font = "toga_textual.fonts:Font"
 Icon = "toga_textual.icons:Icon"
 # Image = "toga_textual.images:Image"
+Paths = "toga_textual.paths:Paths"
 dialogs = "toga_textual.dialogs"
 resources = "toga_textual.resources"
 

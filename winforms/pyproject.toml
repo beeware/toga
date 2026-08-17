@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==83.0.0",
+    "setuptools==84.0.0",
     "setuptools_scm==10.2.1",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -66,6 +66,7 @@ Command = "toga_winforms.command:Command"
 Font = "toga_winforms.fonts:Font"
 Icon = "toga_winforms.icons:Icon"
 Image = "toga_winforms.images:Image"
+Paths = "toga_winforms.paths:Paths"
 dialogs = "toga_winforms.dialogs"
 resources = "toga_winforms.resources"
 
