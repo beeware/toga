@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -36,40 +37,58 @@ class AppProbe(BaseProbe):
         assert isinstance(self.app._impl.native, TextualApp)
 
     @property
+    def _win32_app_dir(self):
+        base_dir = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData/Local"))
+        return base_dir / AUTHOR / FORMAL_NAME
+
+    @property
     def config_path(self):
         if sys.platform == "darwin":
             return Path.home() / f"Library/Preferences/{APP_ID}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Config"
+            return self._win32_app_dir / "Config"
         else:
-            return Path.home() / f".config/{APP_NAME}"
+            return (
+                Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+                / APP_NAME
+            )
 
     @property
     def data_path(self):
         if sys.platform == "darwin":
             return Path.home() / f"Library/Application Support/{APP_ID}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Data"
+            return self._win32_app_dir / "Data"
         else:
-            return Path.home() / f".local/share/{APP_NAME}"
+            return (
+                Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
+                / APP_NAME
+            )
 
     @property
     def cache_path(self):
         if sys.platform == "darwin":
             return Path.home() / f"Library/Caches/{APP_ID}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Cache"
+            return self._win32_app_dir / "Cache"
         else:
-            return Path.home() / f".cache/{APP_NAME}"
+            return (
+                Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
+                / APP_NAME
+            )
 
     @property
     def logs_path(self):
         if sys.platform == "darwin":
             return Path.home() / f"Library/Logs/{APP_ID}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Logs"
+            return self._win32_app_dir / "Logs"
         else:
-            return Path.home() / f".local/state/{APP_NAME}/log"
+            return (
+                Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
+                / APP_NAME
+                / "log"
+            )
 
     async def assert_event_loop(self):
         pytest.skip("Event loop assertions are not implemented on Textual.")

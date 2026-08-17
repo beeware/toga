@@ -1,3 +1,4 @@
+import os
 from functools import cached_property
 from pathlib import Path
 
@@ -13,7 +14,8 @@ class Paths:
         # No coverage testing of this because we can't easily configure
         # the app to have no author.
         author = "Unknown" if App.app.author is None else App.app.author
-        return Path.home() / f"AppData/Local/{author}/{App.app.formal_name}"
+        base_dir = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData/Local"))
+        return base_dir / author / App.app.formal_name
 
     # The rest are cached at the interface level:
 
