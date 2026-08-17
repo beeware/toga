@@ -138,7 +138,7 @@ class Paths:
     def desktop(self) -> Path:
         """The location of the user's Desktop folder.
 
-        Raises `RuntimeError` if the folder doesn't exist, or the platform
+        :raises RuntimeError: if the folder doesn't exist, or the platform
         doesn't provide one; Toga will not create it.
         """
         path = self._impl.get_desktop_path()
@@ -153,7 +153,7 @@ class Paths:
     def documents(self) -> Path:
         """The location of the user's Documents folder.
 
-        Raises `RuntimeError` if the folder doesn't exist, or the platform
+        :raises RuntimeError: if the folder doesn't exist, or the platform
         doesn't provide one; Toga will not create it.
         """
         path = self._impl.get_documents_path()
@@ -168,7 +168,7 @@ class Paths:
     def downloads(self) -> Path:
         """The location of the user's Downloads folder.
 
-        Raises `RuntimeError` if the folder doesn't exist, or the platform
+        :raises RuntimeError: if the folder doesn't exist, or the platform
         doesn't provide one; Toga will not create it.
         """
         path = self._impl.get_downloads_path()
@@ -183,7 +183,7 @@ class Paths:
     def pictures(self) -> Path:
         """The location of the user's Pictures folder.
 
-        Raises `RuntimeError` if the folder doesn't exist, or the platform
+        :raises RuntimeError: if the folder doesn't exist, or the platform
         doesn't provide one; Toga will not create it.
         """
         path = self._impl.get_pictures_path()
