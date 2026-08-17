@@ -15,8 +15,10 @@ class OpenGLViewProbe(SimpleProbe):
     buttons = frozenset({TOUCH})
 
     async def button_state(self, buttons: frozenset, x=0, y=0):
-        if TOUCH in buttons:
+        if TOUCH in buttons and TOUCH not in self.native.buttons:
             await self.touch_down(x, y)
+        elif TOUCH not in buttons and TOUCH in self.native.buttons:
+            await self.touch_up(x, y)
 
     async def reset_buttons(self, x=0, y=0):
         if TOUCH in self.native.buttons:
