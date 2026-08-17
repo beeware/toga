@@ -105,6 +105,8 @@ async def test_buttons(probe, widget, renderer):
             assert isinstance(renderer.on_render.call_args[1]["pointer"], tuple)
             assert len(renderer.on_render.call_args[1]["pointer"]) == 2
 
+    await probe.reset_buttons()
+
 
 async def test_pointer(probe, widget, renderer):
     skip_on_platforms("macOS", reason="Can't change mouse pointer position on macOS")
