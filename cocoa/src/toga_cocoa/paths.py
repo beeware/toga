@@ -19,9 +19,6 @@ class Paths:
     def get_logs_path(self):
         return Path.home() / f"Library/Logs/{App.app.app_id}"
 
-    # User-space folder names are fixed on macOS (localization is only
-    # applied when the folder names are *displayed*).
-
     def get_desktop_path(self):
         return Path.home() / "Desktop"
 

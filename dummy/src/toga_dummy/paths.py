@@ -8,37 +8,34 @@ class Paths:
     def __init__(self, interface):
         self.interface = interface
 
+    @property
+    def _root(self):
+        # Test suites can redirect all generated paths with TOGA_DUMMY_HOME.
+        try:
+            return Path(os.environ["TOGA_DUMMY_HOME"])
+        except KeyError:
+            return Path.home() / "toga-dummy"
+
     def get_config_path(self):
-        return Path.home() / f"config/{App.app.app_id}"
+        return self._root / f"config/{App.app.app_id}"
 
     def get_data_path(self):
-        return Path.home() / f"user_data/{App.app.app_id}"
+        return self._root / f"user_data/{App.app.app_id}"
 
     def get_cache_path(self):
-        return Path.home() / f"cache/{App.app.app_id}"
+        return self._root / f"cache/{App.app.app_id}"
 
     def get_logs_path(self):
-        return Path.home() / f"logs/{App.app.app_id}"
-
-    def _user_dir(self, name):
-        # User-space folders are returned as clearly dummy locations in the
-        # user's home folder. A test suite can redirect them to a temporary
-        # location by setting the TOGA_DUMMY_USER_DIRS environment variable,
-        # ensuring tests can't accidentally touch a real permanent location.
-        try:
-            root = Path(os.environ["TOGA_DUMMY_USER_DIRS"])
-        except KeyError:
-            root = Path.home() / "toga-dummy"
-        return root / name
+        return self._root / f"logs/{App.app.app_id}"
 
     def get_desktop_path(self):
-        return self._user_dir("desktop")
+        return self._root / "desktop"
 
     def get_documents_path(self):
-        return self._user_dir("documents")
+        return self._root / "documents"
 
     def get_downloads_path(self):
-        return self._user_dir("downloads")
+        return self._root / "downloads"
 
     def get_pictures_path(self):
-        return self._user_dir("pictures")
+        return self._root / "pictures"

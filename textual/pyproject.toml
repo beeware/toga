@@ -68,7 +68,6 @@ Command = "toga_textual.command:Command"
 Font = "toga_textual.fonts:Font"
 Icon = "toga_textual.icons:Icon"
 # Image = "toga_textual.images:Image"
-Paths = "toga_textual.paths:Paths"
 dialogs = "toga_textual.dialogs"
 resources = "toga_textual.resources"
 
@@ -117,6 +116,7 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    "platformdirs >= 4.1",
     "textual >= 3.2.0, < 4.0.0",
     "toga-core == {version}",
 ]

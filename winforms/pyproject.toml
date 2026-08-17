@@ -66,7 +66,6 @@ Command = "toga_winforms.command:Command"
 Font = "toga_winforms.fonts:Font"
 Icon = "toga_winforms.icons:Icon"
 Image = "toga_winforms.images:Image"
-Paths = "toga_winforms.paths:Paths"
 dialogs = "toga_winforms.dialogs"
 resources = "toga_winforms.resources"
 
@@ -115,6 +114,7 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    "platformdirs >= 4.1",
     "pythonnet >= 3.0.0",
     "toga-core == {version}",
     "pillow >= 10.0.0",

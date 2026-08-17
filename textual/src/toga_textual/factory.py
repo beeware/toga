@@ -9,7 +9,6 @@ from .fonts import Font
 from .icons import Icon
 
 # from .images import Image
-from .paths import Paths
 from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 
 # from .widgets.activityindicator import ActivityIndicator
@@ -74,7 +73,6 @@ __all__ = [
     # "NumberInput",
     # "OptionContainer",
     # "PasswordInput",
-    "Paths",
     # "ProgressBar",
     # "ScrollContainer",
     # "Selection",

@@ -92,24 +92,21 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Config"
+        return Path.home() / "AppData/Local/Tiberius Yak/testbed"
 
     @property
     def data_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Data"
+        return Path.home() / "AppData/Local/Tiberius Yak/testbed"
 
     @property
     def cache_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Cache"
+        return Path.home() / "AppData/Local/Tiberius Yak/testbed/Cache"
 
     @property
     def logs_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Logs"
+        return Path.home() / "AppData/Local/Tiberius Yak/testbed/Logs"
 
-    supports_xdg_user_dirs = False
-
-    # The CI environment doesn't redirect any of the known folders, so the
-    # user-space folders resolve to the default names in the home folder.
+    # The CI environment resolves user-space folders to the default names.
     @property
     def desktop_path(self):
         return Path.home() / "Desktop"

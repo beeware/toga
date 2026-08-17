@@ -38,49 +38,40 @@ class AppProbe(BaseProbe):
     @property
     def config_path(self):
         if sys.platform == "darwin":
-            return Path.home() / f"Library/Preferences/{APP_ID}"
+            return Path.home() / f"Library/Application Support/{APP_NAME}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Config"
+            return Path.home() / f"AppData/Local/{AUTHOR}/{APP_NAME}"
         else:
             return Path.home() / f".config/{APP_NAME}"
 
     @property
     def data_path(self):
         if sys.platform == "darwin":
-            return Path.home() / f"Library/Application Support/{APP_ID}"
+            return Path.home() / f"Library/Application Support/{APP_NAME}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Data"
+            return Path.home() / f"AppData/Local/{AUTHOR}/{APP_NAME}"
         else:
             return Path.home() / f".local/share/{APP_NAME}"
 
     @property
     def cache_path(self):
         if sys.platform == "darwin":
-            return Path.home() / f"Library/Caches/{APP_ID}"
+            return Path.home() / f"Library/Caches/{APP_NAME}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Cache"
+            return Path.home() / f"AppData/Local/{AUTHOR}/{APP_NAME}/Cache"
         else:
             return Path.home() / f".cache/{APP_NAME}"
 
     @property
     def logs_path(self):
         if sys.platform == "darwin":
-            return Path.home() / f"Library/Logs/{APP_ID}"
+            return Path.home() / f"Library/Logs/{APP_NAME}"
         elif sys.platform == "win32":
-            return Path.home() / f"AppData/Local/{AUTHOR}/{FORMAL_NAME}/Logs"
+            return Path.home() / f"AppData/Local/{AUTHOR}/{APP_NAME}/Logs"
         else:
             return Path.home() / f".local/state/{APP_NAME}/log"
 
-    supports_xdg_user_dirs = sys.platform not in {"darwin", "win32"}
-
-    def resolve_xdg_user_dir(self, name, fallback):
-        # Only defined on Linux; guarded by supports_xdg_user_dirs.
-        from toga_textual.paths import _xdg_user_dir
-
-        return _xdg_user_dir(name, fallback)
-
-    # On every desktop platform, the CI environment resolves the user-space
-    # folders to the default names in the home folder.
+    # The CI environment resolves user-space folders to the default names.
     @property
     def desktop_path(self):
         return Path.home() / "Desktop"

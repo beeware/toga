@@ -26,10 +26,8 @@ class Paths:
     def get_logs_path(self):
         return Path(self._context.getFilesDir().getPath()) / "log"
 
-    # Android doesn't have user-space folders that an app can access directly.
-
     def get_desktop_path(self):
-        raise RuntimeError("Android does not have a Desktop folder")
+        raise RuntimeError("Android does not have a user-accessible Desktop folder")
 
     def get_documents_path(self):
         raise RuntimeError("Android does not have a user-accessible Documents folder")

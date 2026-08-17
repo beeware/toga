@@ -6,10 +6,59 @@ import toga
 from toga.platform import get_factory
 
 
+class PlatformDirsPaths:
+    """Fallback Paths implementation, backed by platformdirs."""
+
+    def __init__(self, interface):
+        self.interface = interface
+
+    @functools.cached_property
+    def _dirs(self):
+        # platformdirs is a dependency of the backends that need it, not of
+        # toga-core; it can only be imported if this implementation is used.
+        import platformdirs
+
+        return platformdirs.PlatformDirs(
+            appname=toga.App.app.app_name,
+            appauthor=(
+                "Unknown" if toga.App.app.author is None else toga.App.app.author
+            ),
+        )
+
+    def get_config_path(self):
+        return self._dirs.user_config_path
+
+    def get_data_path(self):
+        return self._dirs.user_data_path
+
+    def get_cache_path(self):
+        return self._dirs.user_cache_path
+
+    def get_logs_path(self):
+        return self._dirs.user_log_path
+
+    def get_desktop_path(self):
+        return self._dirs.user_desktop_path
+
+    def get_documents_path(self):
+        return self._dirs.user_documents_path
+
+    def get_downloads_path(self):
+        return self._dirs.user_downloads_path
+
+    def get_pictures_path(self):
+        return self._dirs.user_pictures_path
+
+
 class Paths:
     def __init__(self):
         self.factory = get_factory()
-        self._impl = self.factory.Paths(self)
+        try:
+            impl = self.factory.Paths
+        except (AttributeError, NotImplementedError):
+            # The backend doesn't provide a Paths implementation.
+            impl = PlatformDirsPaths
+        self._impl = impl(self)
 
     # cached_property isn't read-only; this alternative is. With multiple instances,
     # this would cause a memory leak because it would hold onto all the "self"s in the
@@ -87,11 +136,10 @@ class Paths:
     @property
     @functools.cache  # noqa: B019
     def desktop(self) -> Path:
-        """The location of the user's Desktop folder on this device.
+        """The location of the user's Desktop folder.
 
-        This is a user-space folder, not specific to this app; Toga will not
-        create it. A ``RuntimeError`` is raised if the folder doesn't exist on
-        this device, or the platform doesn't provide a Desktop folder.
+        Raises `RuntimeError` if the folder doesn't exist, or the platform
+        doesn't provide one; Toga will not create it.
         """
         path = self._impl.get_desktop_path()
         if not path.exists():
@@ -103,11 +151,10 @@ class Paths:
     @property
     @functools.cache  # noqa: B019
     def documents(self) -> Path:
-        """The location of the user's Documents folder on this device.
+        """The location of the user's Documents folder.
 
-        This is a user-space folder, not specific to this app; Toga will not
-        create it. A ``RuntimeError`` is raised if the folder doesn't exist on
-        this device, or the platform doesn't provide a Documents folder.
+        Raises `RuntimeError` if the folder doesn't exist, or the platform
+        doesn't provide one; Toga will not create it.
         """
         path = self._impl.get_documents_path()
         if not path.exists():
@@ -119,11 +166,10 @@ class Paths:
     @property
     @functools.cache  # noqa: B019
     def downloads(self) -> Path:
-        """The location of the user's Downloads folder on this device.
+        """The location of the user's Downloads folder.
 
-        This is a user-space folder, not specific to this app; Toga will not
-        create it. A ``RuntimeError`` is raised if the folder doesn't exist on
-        this device, or the platform doesn't provide a Downloads folder.
+        Raises `RuntimeError` if the folder doesn't exist, or the platform
+        doesn't provide one; Toga will not create it.
         """
         path = self._impl.get_downloads_path()
         if not path.exists():
@@ -135,11 +181,10 @@ class Paths:
     @property
     @functools.cache  # noqa: B019
     def pictures(self) -> Path:
-        """The location of the user's Pictures folder on this device.
+        """The location of the user's Pictures folder.
 
-        This is a user-space folder, not specific to this app; Toga will not
-        create it. A ``RuntimeError`` is raised if the folder doesn't exist on
-        this device, or the platform doesn't provide a Pictures folder.
+        Raises `RuntimeError` if the folder doesn't exist, or the platform
+        doesn't provide one; Toga will not create it.
         """
         path = self._impl.get_pictures_path()
         if not path.exists():
