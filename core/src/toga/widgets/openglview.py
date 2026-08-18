@@ -24,6 +24,7 @@ class RendererT(Protocol):
         self,
         widget: OpenGLView,
         size: tuple[int, int],
+        *,
         pointer: tuple[int, int] | None = None,
         buttons: frozenset[int] = frozenset(),
         **kwargs: Any,

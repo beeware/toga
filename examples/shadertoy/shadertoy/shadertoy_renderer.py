@@ -185,6 +185,7 @@ class ShadertoyRenderer:
         self,
         widget,
         size,
+        *,
         pointer=(-1, -1),
         buttons=frozenset(),
         **kwargs,

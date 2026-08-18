@@ -16,7 +16,7 @@ class ClearRenderer:
         # set the clear color to blue
         GL.glClearColor(0.0, 0.0, 1.0, 1.0)
 
-    def on_render(self, widget, size, position, buttons, **kwargs):
+    def on_render(self, widget, size, *, position, buttons, **kwargs):
         # clear the OpenGL view
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 ```

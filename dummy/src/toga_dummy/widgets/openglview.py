@@ -11,10 +11,10 @@ class OpenGLView(Widget):
     def redraw(self):
         self._action("redraw")
         self.interface.renderer.on_render(
-            self.interface, self.get_size(), None, frozenset()
+            self.interface, self.get_size(), pointer=None, buttons=frozenset()
         )
 
     def simulate_resize(self):
         self.interface.renderer.on_render(
-            self.interface, self.get_size(), None, frozenset()
+            self.interface, self.get_size(), pointer=None, buttons=frozenset()
         )

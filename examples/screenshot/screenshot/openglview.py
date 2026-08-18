@@ -248,7 +248,9 @@ class CubeRenderer:
         self.init_program()
         self.init_vertex_array()
 
-    def on_render(self, widget, size, **kwargs):
+    def on_render(
+        self, widget, size, *, pointer=(-1, -1), buttons=frozenset(), **kwargs
+    ):
         aspect = size[0] / size[1]
         glViewport(0, 0, int(size[0]), int(size[1]))
         glClearColor(0.5, 0.5, 1.0, 1.0)
