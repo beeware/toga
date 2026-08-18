@@ -63,6 +63,23 @@ class AppProbe(BaseProbe, DialogsMixin):
             / "testbed/log"
         )
 
+    # The CI environment resolves user-space folders to the default names.
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def downloads_path(self):
+        return Path.home() / "Downloads"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
+
     @property
     def is_cursor_visible(self):
         pytest.skip("Cursor visibility not implemented on GTK")

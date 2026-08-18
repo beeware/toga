@@ -115,6 +115,7 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    "platformdirs >= 4.1",
     "pythonnet >= 3.0.0",
     "toga-core == {version}",
     "pillow >= 10.0.0",

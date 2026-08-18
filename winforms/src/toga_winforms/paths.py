@@ -2,6 +2,8 @@ import os
 from functools import cached_property
 from pathlib import Path
 
+import platformdirs
+
 from toga import App
 
 
@@ -30,3 +32,15 @@ class Paths:
 
     def get_logs_path(self):
         return self._app_dir / "Logs"
+
+    def get_desktop_path(self):
+        return platformdirs.user_desktop_path()
+
+    def get_documents_path(self):
+        return platformdirs.user_documents_path()
+
+    def get_downloads_path(self):
+        return platformdirs.user_downloads_path()
+
+    def get_pictures_path(self):
+        return platformdirs.user_pictures_path()

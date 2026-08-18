@@ -3,11 +3,29 @@ import sys
 from functools import cached_property
 from pathlib import Path
 
+import platformdirs
+
 from toga import App
+from toga.paths import PlatformDirsPaths
+
+
+class UserSpacePaths:
+    def get_desktop_path(self):
+        return platformdirs.user_desktop_path()
+
+    def get_documents_path(self):
+        return platformdirs.user_documents_path()
+
+    def get_downloads_path(self):
+        return platformdirs.user_downloads_path()
+
+    def get_pictures_path(self):
+        return platformdirs.user_pictures_path()
+
 
 if sys.platform == "darwin":
 
-    class Paths:
+    class Paths(UserSpacePaths):
         def __init__(self, interface):
             self.interface = interface
 
@@ -25,7 +43,7 @@ if sys.platform == "darwin":
 
 elif sys.platform == "win32":
 
-    class Paths:
+    class Paths(UserSpacePaths):
         def __init__(self, interface):
             self.interface = interface
 
@@ -54,32 +72,5 @@ elif sys.platform == "win32":
             return self._app_dir / "Logs"
 
 else:
-
-    class Paths:
-        def __init__(self, interface):
-            self.interface = interface
-
-        def get_config_path(self):
-            return (
-                Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
-                / App.app.app_name
-            )
-
-        def get_data_path(self):
-            return (
-                Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
-                / App.app.app_name
-            )
-
-        def get_cache_path(self):
-            return (
-                Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
-                / App.app.app_name
-            )
-
-        def get_logs_path(self):
-            return (
-                Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
-                / App.app.app_name
-                / "log"
-            )
+    # Fall back to the full platformdirs-based implementation
+    Paths = PlatformDirsPaths
