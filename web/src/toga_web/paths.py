@@ -16,3 +16,15 @@ class Paths:
 
     def get_logs_path(self):
         return Path.home() / "log"
+
+    def get_desktop_path(self):
+        raise RuntimeError("Web apps cannot access the user's Desktop folder")
+
+    def get_documents_path(self):
+        raise RuntimeError("Web apps cannot access the user's Documents folder")
+
+    def get_downloads_path(self):
+        raise RuntimeError("Web apps cannot access the user's Downloads folder")
+
+    def get_pictures_path(self):
+        raise RuntimeError("Web apps cannot access the user's Pictures folder")

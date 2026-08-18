@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==83.0.0",
+    "setuptools==84.0.0",
     "setuptools_scm==10.2.1",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -57,7 +57,6 @@ Command = "toga_qt.command:Command"
 Font = "toga_qt.fonts:Font"
 Icon = "toga_qt.icons:Icon"
 Image = "toga_qt.images:Image"
-Paths = "toga_qt.paths:Paths"
 dialogs = "toga_qt.dialogs"
 resources = "toga_qt.resources"
 
@@ -107,6 +106,7 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    "platformdirs >= 4.1",
     "qasync == 0.28.0",
     "toga-core == {version}",
 ]

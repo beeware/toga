@@ -1,12 +1,31 @@
+import os
 import sys
 from functools import cached_property
 from pathlib import Path
 
+import platformdirs
+
 from toga import App
+from toga.paths import PlatformDirsPaths
+
+
+class UserSpacePaths:
+    def get_desktop_path(self):
+        return platformdirs.user_desktop_path()
+
+    def get_documents_path(self):
+        return platformdirs.user_documents_path()
+
+    def get_downloads_path(self):
+        return platformdirs.user_downloads_path()
+
+    def get_pictures_path(self):
+        return platformdirs.user_pictures_path()
+
 
 if sys.platform == "darwin":
 
-    class Paths:
+    class Paths(UserSpacePaths):
         def __init__(self, interface):
             self.interface = interface
 
@@ -24,7 +43,7 @@ if sys.platform == "darwin":
 
 elif sys.platform == "win32":
 
-    class Paths:
+    class Paths(UserSpacePaths):
         def __init__(self, interface):
             self.interface = interface
 
@@ -33,7 +52,10 @@ elif sys.platform == "win32":
             # No coverage testing of this because we can't easily configure
             # the app to have no author.
             author = "Unknown" if App.app.author is None else App.app.author
-            return Path.home() / f"AppData/Local/{author}/{App.app.formal_name}"
+            base_dir = Path(
+                os.environ.get("LOCALAPPDATA") or (Path.home() / "AppData/Local")
+            )
+            return base_dir / author / App.app.formal_name
 
         # The rest are cached at the interface level:
 
@@ -50,19 +72,5 @@ elif sys.platform == "win32":
             return self._app_dir / "Logs"
 
 else:
-
-    class Paths:
-        def __init__(self, interface):
-            self.interface = interface
-
-        def get_config_path(self):
-            return Path.home() / f".config/{App.app.app_name}"
-
-        def get_data_path(self):
-            return Path.home() / f".local/share/{App.app.app_name}"
-
-        def get_cache_path(self):
-            return Path.home() / f".cache/{App.app.app_name}"
-
-        def get_logs_path(self):
-            return Path.home() / f".local/state/{App.app.app_name}/log"
+    # Fall back to the full platformdirs-based implementation
+    Paths = PlatformDirsPaths

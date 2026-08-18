@@ -50,7 +50,10 @@ class TestApp(toga.App):
 
 
 @pytest.fixture
-async def app():
+async def app(tmp_path, monkeypatch):
+    # Contain all dummy-generated paths in the test's temporary directory.
+    monkeypatch.setenv("TOGA_DUMMY_HOME", str(tmp_path / "toga-dummy"))
+
     # The app icon is cached; purge the app icon cache if it exists
     try:
         del toga.Icon.__APP_ICON
