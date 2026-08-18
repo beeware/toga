@@ -256,7 +256,7 @@ class CubeRenderer:
 
         if not hasattr(self, "program"):
             # Didn't initialize correctly.
-            print("Failed!")
+            print("Failed to render cube!")
             return
 
         glUseProgram(self.program)
@@ -307,7 +307,6 @@ class CubeRenderer:
 
         # draw!
         glDrawArrays(GL_TRIANGLES, 0, self.n_vertices)
-        print("Drawing done!")
 
     def init_buffers(self):
         # Initialize buffers

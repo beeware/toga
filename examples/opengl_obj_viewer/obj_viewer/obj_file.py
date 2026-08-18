@@ -61,7 +61,6 @@ def parse_mtl_file(path: Path):
     :returns: A dictionary mapping material names to Material objects.
     """
     materials = {}
-    print(path)
 
     with open(path) as f:
         for line in f:
@@ -94,7 +93,6 @@ def parse_mtl_file(path: Path):
                     # unhandled
                     print(f"Unhandled keyword: {keyword}", " ".join(rest))
 
-    print(materials.keys())
     return materials
 
 
@@ -162,7 +160,6 @@ def parse_obj_file(path: Path):
                         geometry = Geometry(material=material)
                 case ["mtllib", file]:
                     file = file.strip()
-                    print(path.parent, file)
                     materials.update(parse_mtl_file(path.parent / file))
                 case ["usemtl", name]:
                     material = materials.get(name, Material(name=name))

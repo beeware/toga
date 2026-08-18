@@ -228,7 +228,6 @@ class ObjFileRenderer:
 
         t = time.time()
         aspect = size[0] / size[1]
-        print(size, aspect, self.radius, self.bbox)
 
         try:
             # Set the uniform values into a dictionary to be applied later
@@ -244,7 +243,6 @@ class ObjFileRenderer:
                 "light_direction": (3 / 5, 0, 3 / 5),
                 "ambient_light": (0.0, 0.0, 0.0),
             }
-            print(uniforms["projection"])
 
             # draw!
             with self.program.use():
@@ -269,10 +267,8 @@ class ObjFileRenderer:
                             "opacity": (1.0,),
                         }
                     self.program.set_uniforms(material)
-                    print("uniforms set")
                     with vao:
                         GL.glDrawArrays(GL.GL_TRIANGLES, 0, n_vertices)
-            print("drawing done")
 
             # Update frame and time delta information
             # self.frame += 1

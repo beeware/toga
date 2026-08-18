@@ -91,7 +91,6 @@ def glGenVertexArrays(n):
 
 
 def glUniformMatrix4fv(loc, size, transpose, value):
-    print(len(value))
     buffer = (c_float * (16 * size))(*value)
     GL.glUniformMatrix4fv(loc, size, transpose, buffer)
 
