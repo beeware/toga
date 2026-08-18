@@ -6,6 +6,7 @@ from pathlib import Path
 import platformdirs
 
 from toga import App
+from toga.paths import PlatformDirsPaths
 
 
 class UserSpacePaths:
@@ -71,32 +72,5 @@ elif sys.platform == "win32":
             return self._app_dir / "Logs"
 
 else:
-
-    class Paths(UserSpacePaths):
-        def __init__(self, interface):
-            self.interface = interface
-
-        def get_config_path(self):
-            return (
-                Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
-                / App.app.app_name
-            )
-
-        def get_data_path(self):
-            return (
-                Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
-                / App.app.app_name
-            )
-
-        def get_cache_path(self):
-            return (
-                Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
-                / App.app.app_name
-            )
-
-        def get_logs_path(self):
-            return (
-                Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
-                / App.app.app_name
-                / "log"
-            )
+    # Fall back to the full platformdirs-based implementation
+    Paths = PlatformDirsPaths
