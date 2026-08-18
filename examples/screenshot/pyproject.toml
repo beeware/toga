@@ -35,6 +35,7 @@ requires = [
     "../../cocoa",
     "std-nslog>=1.0.0",
     "pyopengl",
+    "pyopengl-accelerate",
     "numpy",
 ]
 
@@ -42,6 +43,7 @@ requires = [
 requires = [
     "../../gtk",
     "pyopengl",
+    "pyopengl-accelerate",
     "numpy",
 ]
 
@@ -50,6 +52,7 @@ requires = [
     "../../qt",
     "PySide6",
     "pyopengl",
+    "pyopengl-accelerate",
     "numpy",
 ]
 

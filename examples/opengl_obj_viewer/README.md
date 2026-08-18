@@ -11,7 +11,7 @@ The following OpenGLView features are present in this example:
 To run this example:
 
 ```text
-$ python -m pip install toga pyopengl pyopengl-accelerate
+$ python -m pip install toga pyopengl pyopengl-accelerate numpy
 $ python -m obj_viewer
 ```
 
