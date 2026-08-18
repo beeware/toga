@@ -49,4 +49,6 @@ def test_redraw(widget, renderer):
     widget.redraw()
 
     assert_action_performed(widget, "redraw")
-    renderer.on_render.assert_called_once_with(widget, (37, 42), None, frozenset())
+    renderer.on_render.assert_called_once_with(
+        widget, (37, 42), pointer=None, buttons=frozenset()
+    )
