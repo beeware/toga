@@ -10,11 +10,19 @@ from toga_cocoa.libs import (
     NSOpenGLPFAOpenGLProfile,
     NSOpenGLPixelFormat,
     NSOpenGLProfileVersion3_2Core,
+    NSOpenGLProfileVersion4_1Core,
+    NSOpenGLProfileVersionLegacy,
     NSOpenGLView,
     NSRect,
 )
 
 from .base import Widget
+
+PROFILES = (
+    NSOpenGLProfileVersion4_1Core,
+    NSOpenGLProfileVersion3_2Core,
+    NSOpenGLProfileVersionLegacy,
+)
 
 
 class TogaOpenGLView(NSOpenGLView):
@@ -55,18 +63,22 @@ class TogaOpenGLView(NSOpenGLView):
 
     @objc_method
     def initWithFrame_(self, frame: NSRect):
-        a = (
-            NSOpenGLPFADepthSize,
-            24,
-            NSOpenGLPFADoubleBuffer,
-            NSOpenGLPFAOpenGLProfile,
-            NSOpenGLProfileVersion3_2Core,
-        )
-        attributes = (ctypes.c_uint32 * len(a))(*a)
-        pixel_format = NSOpenGLPixelFormat.alloc().initWithAttributes_(attributes)
-        # try help pinpoint the failure if we can't set things up correctly
-        # can't test, as this would only occur on an older machine/macOS version
-        if pixel_format is None:  # pragma: no cover
+        for profile in PROFILES:
+            a = (
+                NSOpenGLPFADepthSize,
+                24,
+                NSOpenGLPFADoubleBuffer,
+                NSOpenGLPFAOpenGLProfile,
+                profile,
+            )
+            attributes = (ctypes.c_uint32 * len(a))(*a)
+            pixel_format = NSOpenGLPixelFormat.alloc().initWithAttributes_(attributes)
+            # try help pinpoint the failure if we can't set things up correctly
+            # can't test, as this would only occur on an older machine/macOS version
+            if pixel_format is not None:
+                # Successfully created pixel format
+                break
+        else:  # pragma: no cover
             # warnings cause segfault here, so just print
             print("Can't create NSOpenGLPixelFormat with required properties.")
             return None
