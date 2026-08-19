@@ -1,7 +1,6 @@
 import asyncio
 
 import toga
-import toga.sources
 
 from .obj_file import parse_obj_file
 from .obj_file_renderer import ObjFileRenderer
