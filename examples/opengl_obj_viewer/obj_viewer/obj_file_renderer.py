@@ -1,11 +1,11 @@
 """
-Generic Shadertoy Renderer
-==========================
+Generic Obj File Renderer
+=========================
 
-This renderer allows the use of basic Shadertoy-style fragment
-rendering. It provides a single image shader, pointer state and time
-data, but doesn't provide additional shaders, textures, channels,
-video or sound support.
+This renderer allows the use of basic 3D object rendering with a simple
+material model. It provides a vertex shader that handles basic position
+to view transformation and a fragment shader that handles Phong rendering
+with a single light source at infinity.
 
 Differences between OpenGL APIs are handled in the appropriate
 utils object: which one is selected depends on the toga backend.
@@ -20,7 +20,7 @@ import traceback
 from math import pi
 
 from .matrix import Matrix
-from .obj_file import bbox
+from .obj_file import Geometry, bbox
 from .utils import (
     GL,
     VERSION_HEADER,
@@ -106,41 +106,24 @@ void main() {
 
         output_color.rgb += specular * pow(specular_light, shininess);
     }
-    //output_color = vec4(vec3(gl_FragCoord.z), 1.0);
 }
 """
 )
 
-#: Message to display in side-panel giving info about
-#: values of uniforms.
-UNIFORM_VALUES = """Frame: {iFrame[0]}
-Frame rate: {iFrameRate[0]:.3f} fps
-
-Resolution: {iResolution}
-Mouse: ({iMouse[0]:.1f}, {iMouse[1]:.1f}) ({iMouse[2]:.1f}, {iMouse[3]:.1f})
-
-Time: {iTime[0]:.3f} s
-Time delta: {iTimeDelta[0]:.3f} s
-Date: {iDate[0]}-{iDate[1]}-{iDate[2]} {iDate[3]:.3f}
-"""
-
 
 class ObjFileRenderer:
-    """Renderer for Shadertoy fragment renderers.
+    """Renderer for .obj renderer.
 
-    This renderer expects to be provided with GLSL code that implements the
-    mainImage function in the fragment shader. This code is provided via the
-    `source` property.  The message attribute is set to information about the
-    state of the renderer, either:
-    - the data provided to the uniforms; or
-    - status/error messages
+    This renderer expects to be provided with a list of Geometry objects
+    parsed from a .obj and .mtl file.  The message attribute is set to
+    information about the state of the renderer.
     """
 
     #: A message containing information about the renderer's state.
     message: str
 
     #: The source for the mainImage function.
-    _data: list
+    _data: list[Geometry]
 
     data_updated = False
 
@@ -271,10 +254,6 @@ class ObjFileRenderer:
                     with vao:
                         GL.glDrawArrays(GL.GL_TRIANGLES, 0, n_vertices)
 
-            # Update frame and time delta information
-            # self.frame += 1
-            # if len(self.deltas) > 100:
-            #     del self.deltas[0]
         except Exception:
             # Display error messages
             self.message += traceback.format_exc()
