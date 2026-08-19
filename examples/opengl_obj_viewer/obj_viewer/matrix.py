@@ -1,21 +1,36 @@
+from collections.abc import Sequence
 from math import cos, pi, sin, tan
 
 
 # try to avoid a NumPy dependency in an example
 class Matrix:
-    data: list[list[int]]
+    """Basic matrix class
+
+    This is a pure-Python implementation of a matrix object that provides
+    scalar and matrix multiplication operations along with factory
+    methods for a variety of standard array types used for 3D transformations
+    """
+
+    data: list[float | complex]
     shape: tuple[int, int]
     strides: tuple[int, int]
 
-    def __init__(self, data=None, shape=None, strides=None):
+    def __init__(
+        self,
+        data: Sequence[Sequence[float | complex]] | None = None,
+        shape: tuple[int, int] | None = None,
+        strides: tuple[int, int] | None = None,
+    ):
         if shape is None:
+            if data is None:
+                raise ValueError("Must provide either data or shape.")
             rows = len(data)
             cols = max(len(row) for row in data)
             shape = (rows, cols)
-        self.shape = tuple(shape)
+        self.shape = shape
         if strides is None:
-            strides = (shape[1], 1)
-        self.strides = tuple(strides)
+            strides = (self.shape[1], 1)
+        self.strides = strides
         self.data = [0.0] * (
             (shape[0] - 1) * strides[0] + (shape[1] - 1) * strides[1] + 1
         )
@@ -78,12 +93,14 @@ class Matrix:
         )
 
     def transpose(self):
+        """Transpose the matrix."""
         result = Matrix(shape=self.shape[::-1], strides=self.strides[::-1])
         result.data = self.data.copy()
         return result
 
     @classmethod
     def identity(cls, n):
+        """Create a square identity matrix of size n."""
         result = cls(shape=(n, n))
         for i in range(n):
             result[i, i] = 1.0
@@ -91,6 +108,7 @@ class Matrix:
 
     @classmethod
     def translation(cls, *v):
+        """Create a matrix which translates by a vector v."""
         n = len(v)
         result = cls.identity(n + 1)
         for i in range(n):
@@ -99,6 +117,7 @@ class Matrix:
 
     @classmethod
     def skewing(cls, *v):
+        """Create a matrix which skews by a vector v."""
         n = len(v)
         result = cls.identity(n + 1)
         for i in range(n):
@@ -107,6 +126,7 @@ class Matrix:
 
     @classmethod
     def scaling(cls, *v):
+        """Create a matrix which scales by a vector v."""
         n = len(v)
         result = cls.identity(n + 1)
         for i in range(n):
@@ -115,6 +135,7 @@ class Matrix:
 
     @classmethod
     def rotation(cls, angle, d0=0, d1=1, n=4):
+        """Create a matrix which rotates by an angle in a coordinate plane."""
         c = cos(angle)
         s = sin(angle)
         result = cls.identity(n)
@@ -126,21 +147,25 @@ class Matrix:
 
     @classmethod
     def rotation_x(cls, angle):
+        """Rotation matrix around the x-axis."""
         return cls.rotation(angle, 1, 2)
 
     @classmethod
     def rotation_y(cls, angle):
+        """Rotation matrix around the y-axis."""
         return cls.rotation(angle, 0, 2)
 
     @classmethod
     def rotation_z(cls, angle):
+        """Rotation matrix around the z-axis."""
         return cls.rotation(angle, 0, 1)
 
     @classmethod
-    def perspective(self, fov, aspect, near_clip, far_clip):
+    def perspective(cls, fov, aspect, near_clip, far_clip):
+        """A 3D perspective transformation matrix."""
         f = tan((pi - fov) / 2)
         scale = 1 / (near_clip - far_clip)
-        return Matrix(
+        return cls(
             [
                 [f / aspect, 0.0, 0.0],
                 [0.0, f, 0.0, 0.0],
@@ -151,8 +176,9 @@ class Matrix:
         )
 
     @classmethod
-    def projection(self, width, height, depth):
-        return Matrix(
+    def projection(cls, width, height, depth):
+        """A 3D projection matrix."""
+        return cls(
             [
                 [2 / width, 0.0, 0.0],
                 [0.0, 2 / height, 0.0, 0.0],
