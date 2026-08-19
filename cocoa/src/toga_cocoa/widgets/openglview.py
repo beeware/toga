@@ -75,7 +75,7 @@ class TogaOpenGLView(NSOpenGLView):
             pixel_format = NSOpenGLPixelFormat.alloc().initWithAttributes_(attributes)
             # try help pinpoint the failure if we can't set things up correctly
             # can't test, as this would only occur on an older machine/macOS version
-            if pixel_format is not None:
+            if pixel_format is not None:  # pragma: no branch
                 # Successfully created pixel format
                 break
         else:  # pragma: no cover
