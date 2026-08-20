@@ -44,6 +44,20 @@ DEBUG_BACKGROUND_PALETTE = [
 
 
 class Widget(Node, PackMixin, ABC):
+    """An abstract base class for all Toga widgets.
+
+    A widget is a graphical element that can be added to a window or a
+    container. This class exists only for other widgets to inherit from;
+    it should never be instantiated directly.
+
+    Because [PackMixin][toga.widgets.base.PackMixin] is a base of this
+    class, every widget exposes the [Pack][pack-style] style properties
+    (such as `color`, `font_size` and `padding`) directly as attributes -
+    for example, `widget.color` is equivalent to
+    `widget.style.color`. See the [Pack reference][pack-style] for the
+    full list of available properties.
+    """
+
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
 
