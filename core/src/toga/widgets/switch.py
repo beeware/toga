@@ -1,3 +1,4 @@
+from .toggle import *  # noqa
 from .toggle import Toggle
 
 
