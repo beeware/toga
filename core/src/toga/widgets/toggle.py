@@ -5,6 +5,7 @@ from typing import Any, Protocol
 import toga
 from toga.handlers import wrapped_handler
 
+from ..constants import ToggleType
 from .base import StyleT, Widget
 
 
@@ -23,6 +24,7 @@ class Toggle(Widget):
         text: str,
         id: str | None = None,
         style: StyleT | None = None,
+        type: ToggleType = ToggleType.AUTOMATIC,
         on_change: toga.widgets.toggle.OnChangeHandler | None = None,
         value: bool = False,
         enabled: bool = True,
@@ -34,6 +36,7 @@ class Toggle(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
+        :param type: The type of Toggle to use.
         :param value: The initial value for the switch.
         :param on_change: A handler that will be invoked when the switch changes
             value.
@@ -41,6 +44,7 @@ class Toggle(Widget):
             Optional; by default, switches are created in an enabled state.
         :param kwargs: Initial style properties.
         """
+        self._type = type
 
         super().__init__(id, style, **kwargs)
 

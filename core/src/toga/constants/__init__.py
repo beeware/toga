@@ -107,3 +107,14 @@ class WindowState(Enum):
     A good example is a slideshow app in presentation mode - the only visible content
     is the slide.
     """
+
+
+class ToggleType(Enum):
+    AUTOMATIC = auto()
+    """Choose a toggle type automatically based on platform defaults."""
+
+    SWITCH = auto()
+    """Display as a switch with a thumb."""
+
+    CHECKBOX = auto()
+    """Display as a checkbox."""
