@@ -55,6 +55,7 @@ from toga.widgets.selection import Selection as Selection
 from toga.widgets.slider import Slider as Slider
 from toga.widgets.splitcontainer import SplitContainer as SplitContainer
 from toga.widgets.switch import Switch as Switch
+from toga.widgets.toggle import Toggle as Toggle
 from toga.widgets.table import Table as Table
 from toga.widgets.textinput import TextInput as TextInput
 from toga.widgets.timeinput import TimeInput as TimeInput
