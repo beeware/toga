@@ -55,9 +55,11 @@ class Toggle(Widget):
     @property
     def role(self):
         role: ToggleRole = self.interface._role
-        if role == ToggleRole.AUTOMATIC:
+        if role == ToggleRole.AUTOMATIC or role == ToggleRole.MINOR:
             # Use a checkbox by default on macOS.
             return ToggleRole.CHECKBOX
+        if role == ToggleRole.MAJOR:
+            return ToggleRole.SWITCH
         return role
 
     def create(self):

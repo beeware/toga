@@ -118,3 +118,9 @@ class ToggleRole(Enum):
 
     CHECKBOX = auto()
     """Display as a checkbox."""
+
+    MAJOR = auto()
+    """Display as a major element, as defined by your platform."""
+
+    MINOR = auto()
+    """Display as a minor element, as defined by your platform."""
