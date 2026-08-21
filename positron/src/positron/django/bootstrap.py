@@ -15,17 +15,8 @@ class DjangoPositronBootstrap(BasePositronBootstrap):
             initial_path=self.initial_path,
         )
 
-    def pyproject_table_briefcase_app_extra_content(self):
-        return """
-requires = [
-    "django~=6.0",
-]
-test_requires = [
-{% if cookiecutter.test_framework == "pytest" %}
-    "pytest",
-{% endif %}
-]
-"""
+    def positron_requires(self):
+        return ["django ~= 6.0"]
 
     def pyproject_table_web(self):
         return """\
