@@ -86,28 +86,11 @@ class TogaList(NSTableView):
             data = TogaData.alloc().init()
             value._impl = data
 
-        try:
-            title = getattr(value, self.interface.accessors[0])
-            if title is not None:
-                title = str(title)
-            else:
-                title = self.interface.missing_value
-        except AttributeError:
-            title = self.interface.missing_value
+        title = self.interface._title(value)
+        subtitle = self.interface._subtitle(value)
 
-        try:
-            subtitle = getattr(value, self.interface.accessors[1])
-            if subtitle is not None:
-                subtitle = str(subtitle)
-            else:
-                subtitle = self.interface.missing_value
-        except AttributeError:
-            subtitle = self.interface.missing_value
-
-        try:
-            icon = getattr(value, self.interface.accessors[2])._impl.native
-        except AttributeError:
-            icon = None
+        icon_obj = self.interface._icon(value)
+        icon = None if icon_obj is None else icon_obj._impl.native
 
         data.attrs = {
             "title": title,
