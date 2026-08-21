@@ -100,6 +100,7 @@ ignore = [
 "iOS/tests_backend/widgets/scrollcontainer.py" = ["RUF018"]
 "testbed/tests/widgets/test_optioncontainer.py" = ["PT031"]
 "winforms/src/toga_winforms/libs/win32structures.py" = ["RUF012"]
+"winui3/src/toga_winui3/libs/win32structures.py" = ["RUF012"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true

@@ -3,6 +3,7 @@ from importlib import import_module
 import pytest
 
 import toga
+from toga.colors import AQUAMARINE
 from toga.fonts import (
     BOLD,
     FONT_STYLES,
@@ -30,7 +31,10 @@ skip_on_backends(
 # Fully testing fonts requires a manifested widget.
 @pytest.fixture
 async def widget():
-    return toga.Label("This is a font test")
+    label = toga.Label("This is a font test")
+    # Add a background color to see if the label is resized correctly.
+    label.style.background_color = AQUAMARINE
+    return label
 
 
 @pytest.fixture
@@ -83,10 +87,19 @@ async def test_use_first_valid_font(
 ):
     """The widget should get the first valid font."""
     if custom:
-        if not font_probe.supports_custom_fonts:
-            pytest.skip("Platform doesn't support registering and loading custom fonts")
+        custom_name = "Endor"
+        Font.register(custom_name, path=app.paths.app / "resources/fonts/ENDOR___.ttf")
 
-        Font.register("Endor", path=app.paths.app / "resources/fonts/ENDOR___.ttf")
+        # If user registered fonts are not implement and the expected font is a custom
+        # font, then a ValueError is raised.
+        if not font_probe.supports_custom_fonts and result == custom_name:
+            with pytest.raises(
+                ValueError,
+                match=r"Couldn't load .*. User registered fonts are not implemented.",
+            ):
+                widget.style.font_family = family
+
+            pytest.skip("Platform doesn't support registering and loading custom fonts")
 
     widget.style.font_family = family
     await font_probe.redraw(f"Font family should be {result}")

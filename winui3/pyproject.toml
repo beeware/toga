@@ -1,0 +1,135 @@
+[build-system]
+requires = [
+    "setuptools==82.0.1",
+    "setuptools_scm==10.0.5",
+    "setuptools_dynamic_dependencies==1.0.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version", "dependencies"]
+name = "toga-winui3"
+description = "A Windows backend for the Toga widget toolkit using the WinUI 3 API."
+readme = "README.md"
+requires-python = ">= 3.10"
+license = "BSD-3-Clause"
+license-files = [
+    "LICENSE",
+]
+authors = [
+    {name="Russell Keith-Magee", email="russell@keith-magee.com"},
+]
+maintainers = [
+    {name="BeeWare Team", email="team@beeware.org"},
+]
+keywords = [
+    "gui",
+    "widget",
+    "windows",
+    "winui 3",
+    "toga",
+    "desktop",
+    "winrt",
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Software Development :: Widget Sets",
+]
+
+[project.urls]
+Homepage = "https://beeware.org/project/projects/libraries/toga/"
+Funding = "https://beeware.org/contributing/membership/"
+Documentation = "https://toga.beeware.org/"
+Tracker = "https://github.com/beeware/toga/issues"
+Source = "https://github.com/beeware/toga"
+Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
+
+[project.entry-points."toga.backends"]
+windows = "toga_winui3"
+
+[project.entry-points."toga_core.backend.toga_winui3"]
+App = "toga_winui3.app:App"
+Command = "toga_winui3.command:Command"
+Font = "toga_winui3.fonts:Font"
+Icon = "toga_winui3.icons:Icon"
+# Image = "toga_winui3.images:Image"
+Paths = "toga_winui3.paths:Paths"
+# dialogs = "toga_winui3.dialogs"
+resources = "toga_winui3.resources"
+
+# Hardware
+# Camera = "toga_winui3.hardware.camera:Camera"
+# Location = "toga_winui3.hardware.location:Location"
+
+# Status Icons
+MenuStatusIcon = "toga_winui3.statusicons:MenuStatusIcon"
+SimpleStatusIcon = "toga_winui3.statusicons:SimpleStatusIcon"
+StatusIconSet = "toga_winui3.statusicons:StatusIconSet"
+
+# Widgets
+# ActivityIndicator = "toga_winui3.widgets.activityindicator:ActivityIndicator"
+Box = "toga_winui3.widgets.box:Box"
+Button = "toga_winui3.widgets.button:Button"
+# Canvas = "toga_winui3.widgets.canvas:Canvas"
+# DateInput = "toga_winui3.widgets.dateinput:DateInput"
+# DetailedList = "toga_winui3.widgets.detailedlist:DetailedList"
+# Divider = "toga_winui3.widgets.divider:Divider"
+# ImageView = "toga_winui3.widgets.imageview:ImageView"
+Label = "toga_winui3.widgets.label:Label"
+# MapView = "toga_winui3.widgets.mapview:MapView"
+# MultilineTextInput = "toga_winui3.widgets.multilinetextinput:MultilineTextInput"
+# NumberInput = "toga_winui3.widgets.numberinput:NumberInput"
+# OptionContainer = "toga_winui3.widgets.optioncontainer:OptionContainer"
+# PasswordInput = "toga_winui3.widgets.passwordinput:PasswordInput"
+# ProgressBar = "toga_winui3.widgets.progressbar:ProgressBar"
+# ScrollContainer = "toga_winui3.widgets.scrollcontainer:ScrollContainer"
+# Selection = "toga_winui3.widgets.selection:Selection"
+# Slider = "toga_winui3.widgets.slider:Slider"
+# SplitContainer = "toga_winui3.widgets.splitcontainer:SplitContainer"
+# Switch = "toga_winui3.widgets.switch:Switch"
+# Table = "toga_winui3.widgets.table:Table"
+# TextInput = "toga_winui3.widgets.textinput:TextInput"
+# TimeInput = "toga_winui3.widgets.timeinput:TimeInput"
+# Tree = "toga_winui3.widgets.tree:Tree"
+# WebView = "toga_winui3.widgets.webview:WebView"
+
+# Windows
+MainWindow = "toga_winui3.window:MainWindow"
+Window = "toga_winui3.window:Window"
+
+[tool.setuptools_scm]
+root = ".."
+
+[tool.setuptools_dynamic_dependencies]
+dependencies = [
+    "toga-core == {version}",
+    # Specify the version of the Windows App SDK to be used.
+    "win32more-Microsoft.WindowsAppSDK == 0.8.2.3.1",
+    "win32more >= 0.8.1",
+]
+
+[tool.coverage.run]
+parallel = true
+branch = true
+relative_files = true
+
+# See notes in the root pyproject.toml file.
+source = ["src"]
+source_pkgs = ["toga_winui3"]
+
+[tool.coverage.paths]
+source = [
+    "src/toga_winui3",
+    "**/toga_winui3",
+]

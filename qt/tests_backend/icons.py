@@ -12,13 +12,14 @@ from .probe import BaseProbe
 
 class IconProbe(BaseProbe):
     alternate_resource = "resources/icons/orange"
+    alternate_bad = "resources/icons/bad_ico"
 
     def __init__(self, app, icon):
         self.icon = icon
         self.app = app
         assert isinstance(self.icon._impl.native, QIcon)
 
-    def assert_icon_content(self, path):
+    async def assert_icon_content(self, path):
         if path == "resources/icons/green":
             assert (
                 self.icon._impl.path == self.app.paths.app / "resources/icons/green.png"
@@ -35,12 +36,12 @@ class IconProbe(BaseProbe):
         else:
             pytest.fail("Unknown icon resource")
 
-    def assert_default_icon_content(self):
+    async def assert_default_icon_content(self):
         assert (
             self.icon._impl.path == Path(toga_qt.__file__).parent / "resources/toga.png"
         )
 
-    def assert_platform_icon_content(self):
+    async def assert_platform_icon_content(self):
         pytest.xfail("Qt does not use sized icons")
 
     def assert_app_icon_content(self):

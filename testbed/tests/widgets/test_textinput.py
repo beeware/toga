@@ -7,6 +7,7 @@ from toga.constants import CENTER
 from toga.style import Pack
 from toga.style.pack import RIGHT, SERIF
 
+from ..conftest import skip_on_backends
 from ..data import TEXTS
 from .conftest import build_cleanup_test
 from .probe import get_probe
@@ -26,6 +27,12 @@ from .properties import (  # noqa: F401
     test_placeholder_focus,
     test_readonly,
     test_text_align,
+)
+
+skip_on_backends(
+    "toga_winui3",
+    reason="TextInput is not implemented on this backend.",
+    allow_module_level=True,
 )
 
 

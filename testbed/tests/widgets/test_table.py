@@ -7,7 +7,7 @@ import toga
 from toga.sources import AccessorColumn, ListListener, ListSource
 from toga.style.pack import Pack
 
-from ..conftest import skip_on_backends, skip_on_platforms
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
@@ -19,8 +19,10 @@ from .properties import (  # noqa: F401
 )
 
 skip_on_backends(
+    "toga_iOS",
     "toga_textual",
-    reason="Table is not implemented on Textual.",
+    "toga_winui3",
+    reason="Table is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -60,7 +62,6 @@ def source():
 
 @pytest.fixture
 async def widget(source, on_select_handler, on_activate_handler):
-    skip_on_platforms("iOS")
     return toga.Table(
         ["A", "B", "C"],
         data=source,
@@ -73,7 +74,6 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 @pytest.fixture
 async def headerless_widget(source, on_select_handler):
-    skip_on_platforms("iOS")
     return toga.Table(
         columns=[
             AccessorColumn(None, "a"),
@@ -104,7 +104,6 @@ async def headerless_probe(main_window, headerless_widget):
 
 @pytest.fixture
 async def multiselect_widget(source, on_select_handler):
-    skip_on_platforms("iOS")
     return toga.Table(
         ["A", "B", "C"],
         data=source,
@@ -131,7 +130,6 @@ async def multiselect_probe(main_window, multiselect_widget):
 test_cleanup = build_cleanup_test(
     toga.Table,
     kwargs={"columns": ["A", "B", "C"]},
-    skip_platforms=("iOS",),
 )
 
 

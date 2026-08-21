@@ -11,7 +11,8 @@ from .test_canvas import assert_reference
 
 skip_on_backends(
     "toga_textual",
-    reason="Canvas is not implemented on Textual.",
+    "toga_winui3",
+    reason="Canvas is not implemented on this backend.",
     allow_module_level=True,
 )
 
