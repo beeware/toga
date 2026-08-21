@@ -1,7 +1,7 @@
 from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
-from toga.constants import ToggleType
+from toga.constants import ToggleRole
 from toga_cocoa.libs import (
     SEL,
     NSBezelStyle,
@@ -53,15 +53,15 @@ class Toggle(Widget):
     label_native: NSTextField | None
 
     @property
-    def toggle_type(self):
-        toggle_type: ToggleType = self.interface._type
-        if toggle_type == ToggleType.AUTOMATIC:
+    def role(self):
+        role: ToggleRole = self.interface._role
+        if role == ToggleRole.AUTOMATIC:
             # Use a checkbox by default on macOS.
-            return ToggleType.CHECKBOX
-        return toggle_type
+            return ToggleRole.CHECKBOX
+        return role
 
     def create(self):
-        if self.toggle_type == ToggleType.CHECKBOX:
+        if self.role == ToggleRole.CHECKBOX:
             self.native = TogaCheckbox.alloc().init()
             self.native.interface = self.interface
             self.native.impl = self
@@ -69,7 +69,7 @@ class Toggle(Widget):
             self.native.setButtonType(NSSwitchButton)
             self.switch_native = self.native
             self.label_native = None
-        elif self.toggle_type == ToggleType.SWITCH:
+        elif self.role == ToggleRole.SWITCH:
             self.native = TogaView.alloc().init()
 
             self.switch_native = TogaSwitch.alloc().init()
@@ -124,19 +124,19 @@ class Toggle(Widget):
         self.add_constraints()
 
     def get_text(self):
-        if self.toggle_type == ToggleType.SWITCH:
+        if self.role == ToggleRole.SWITCH:
             return str(self.label_native.stringValue)
         else:
             return str(self.native.title)
 
     def set_text(self, text):
-        if self.toggle_type == ToggleType.SWITCH:
+        if self.role == ToggleRole.SWITCH:
             self.label_native.stringValue = text
         else:
             self.native.title = text
 
     def set_font(self, font):
-        if self.toggle_type == ToggleType.SWITCH:
+        if self.role == ToggleRole.SWITCH:
             self.label_native.font = font._impl.native
         else:
             self.native.font = font._impl.native
@@ -151,7 +151,7 @@ class Toggle(Widget):
             self.interface.on_change()
 
     def rehint(self):
-        if self.toggle_type == ToggleType.SWITCH:
+        if self.role == ToggleRole.SWITCH:
             label_size = self.label_native.intrinsicContentSize()
             switch_size = self.switch_native.intrinsicContentSize()
             width, height = (

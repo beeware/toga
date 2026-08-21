@@ -109,9 +109,9 @@ class WindowState(Enum):
     """
 
 
-class ToggleType(Enum):
+class ToggleRole(Enum):
     AUTOMATIC = auto()
-    """Choose a toggle type automatically based on platform defaults."""
+    """Choose a role automatically based on platform defaults."""
 
     SWITCH = auto()
     """Display as a switch with a thumb."""
