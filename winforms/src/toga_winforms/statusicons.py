@@ -76,6 +76,9 @@ class StatusIconSet:
         return submenu
 
     def create(self):
+        for menu_item, cmd in self._menu_items.items():
+            cmd._impl.native.remove(menu_item)
+
         # Menu status icons are the only icons that have extra construction needs.
         # Clear existing menus
         for item in self.interface._menu_status_icons:
@@ -114,6 +117,7 @@ class StatusIconSet:
                     menu_item = "-"
                 else:
                     menu_item = cmd._impl.create_menu_item(ToolStripMenuItem)
+                    self._menu_items[menu_item] = cmd
 
                 attr = MENU_ATTR if cmd.group.parent is None else SUBMENU_ATTR
                 getattr(submenu, attr).Add(menu_item)

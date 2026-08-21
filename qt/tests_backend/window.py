@@ -9,6 +9,7 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe):
+    supports_command_items = True
     # There *is* a close button hint but it doesn't seem to work
     # under KDE so we take similar handling as winforms here: disable
     # the action of the close button.
@@ -103,6 +104,14 @@ class WindowProbe(BaseProbe):
 
     def has_toolbar(self):
         return self.window._impl.toolbar_native is not None
+
+    def command_items(self, command):
+        return {
+            item
+            for items in (self.window._impl.menu_items, self.window._impl.toolbar_items)
+            for item, item_command in items.items()
+            if item_command is command
+        }
 
     def assert_is_toolbar_separator(self, index, section=False):
         assert self.window._impl.toolbar_native.actions()[index].isSeparator()

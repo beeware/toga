@@ -16,6 +16,8 @@ FORMAL_NAME = "Toga Testbed (Textual)"
 
 
 class AppProbe(BaseProbe):
+    supports_application_menu_command_native_items = False
+    supports_status_icon_command_native_items = False
     supports_key = False
     supports_key_mod3 = False
     supports_current_window_assignment = True

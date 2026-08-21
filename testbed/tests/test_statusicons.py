@@ -62,6 +62,9 @@ async def test_add_remove(app, app_probe):
     assert app_probe.status_menu_items(new_status_icon) == [
         "New Action 1",
     ]
+    if app_probe.supports_status_icon_command_native_items:
+        first_native_items = set(new_cmd1._impl.native)
+        assert first_native_items
 
     # A second command
     new_cmd2 = toga.Command(
@@ -78,6 +81,9 @@ async def test_add_remove(app, app_probe):
         "New Action 2",
         "New Action 1",
     ]
+    if app_probe.supports_status_icon_command_native_items:
+        assert first_native_items.isdisjoint(new_cmd1._impl.native)
+        assert new_cmd1._impl.native
 
     # Remove the first command
     app.status_icons.commands.remove(new_cmd1)
@@ -86,6 +92,8 @@ async def test_add_remove(app, app_probe):
     assert app_probe.status_menu_items(new_status_icon) == [
         "New Action 2",
     ]
+    if app_probe.supports_status_icon_command_native_items:
+        assert not new_cmd1._impl.native
 
     # Remove the second command
     app.status_icons.commands.remove(new_cmd2)
