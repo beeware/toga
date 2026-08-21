@@ -419,7 +419,8 @@ class OptionContainer(Widget):
             [OptionContainer content][toga.widgets.optioncontainer.OptionContainerContentT]
             to display in the OptionContainer.
         :param on_select: Initial [`on_select`][toga.OptionContainer.on_select] handler.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """  # noqa: E501
         self._content = OptionList(self)
         self.on_select = None

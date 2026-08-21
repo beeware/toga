@@ -42,7 +42,8 @@ class ScrollContainer(Widget):
         :param vertical: Should vertical scrolling be permitted?
         :param on_scroll: Initial [`on_scroll`][toga.ScrollContainer.on_scroll] handler.
         :param content: The content to display in the scroll window.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
 
         self._content: Widget | None = None
