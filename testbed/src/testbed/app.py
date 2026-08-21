@@ -228,7 +228,7 @@ class Testbed(toga.App):
         # The NoQA is warning about using sleep in a loop, which would be good advice
         # if there was an underlying Event that we could await - but there isn't.
         try:
-            print("\napp.on_running()\n")
+            print("\napp.on_running()\n")  ## Winui3 debug ##
             async with asyncio.timeout(10):
                 while not self.main_window.visible:  # noqa: ASYNC110
                     await asyncio.sleep(0.05)

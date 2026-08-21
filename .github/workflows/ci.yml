@@ -526,26 +526,30 @@ jobs:
           runs-on: "windows-latest"
           testbed-app: "testbed-winui3"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (WinUI 3)\Data'
-          pre-command-pwsh: |
-            Invoke-WebRequest `
-            -Uri "https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-x64.exe" `
-            -OutFile "windows_app_sdk_installer.exe"
-            Start-Process `
-            -FilePath ".\windows_app_sdk_installer.exe" `
-            -Wait
+          pre-command: |
+            powershell -Command '
+              Invoke-WebRequest `
+              -Uri "https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-x64.exe" `
+              -OutFile "windows_app_sdk_installer.exe";
+              Start-Process `
+              -FilePath ".\windows_app_sdk_installer.exe" `
+              -Wait;
+            '
 
         - backend: "windows-winui3-arm64"
           platform: "windows"
           runs-on: "windows-11-arm"
           testbed-app: "testbed-winui3"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (WinUI 3)\Data'
-          pre-command-pwsh: |
-            Invoke-WebRequest `
-            -Uri "https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-arm64.exe" `
-            -OutFile "windows_app_sdk_installer.exe"
-            Start-Process `
-            -FilePath ".\windows_app_sdk_installer.exe" `
-            -Wait
+          pre-command: |
+            powershell -Command '
+              Invoke-WebRequest `
+              -Uri "https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-arm64.exe" `
+              -OutFile "windows_app_sdk_installer.exe";
+              Start-Process `
+              -FilePath ".\windows_app_sdk_installer.exe" `
+              -Wait;
+            '
 
         - backend: "iOS"
           platform: "iOS"
@@ -589,12 +593,7 @@ jobs:
       with:
         python-version: "3.12"
 
-    - name: Install Dependencies (pwsh)
-      if: matrix.platform == 'windows'
-      shell: pwsh
-      run: ${{ matrix.pre-command-pwsh }}
-
-    - name: Install Dependencies (bash)
+    - name: Install Dependencies
       env:
         PIP_BREAK_SYSTEM_PACKAGES: "1"
       run: |

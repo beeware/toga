@@ -11,8 +11,14 @@ from win32more.Microsoft.UI.Windowing import (
 )
 from win32more.Microsoft.UI.Xaml import Window as NativeWindow
 from win32more.Windows.Win32.UI.WindowsAndMessaging import (
+    MENUITEMINFOW,
+    MFS_DISABLED,
+    MIIM_STATE,
+    SC_CLOSE,
     TITLEBARINFOEX,
     WM_GETTITLEBARINFOEX,
+    GetMenuItemInfo,
+    GetSystemMenu,
     SetForegroundWindow,
 )
 
@@ -23,13 +29,13 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe):
-    supports_closable = False  # FIXME: Use Win32
+    supports_closable = True
     supports_minimizable = True
     supports_move_while_hidden = True
     supports_unminimize = True
     supports_minimize = True
     supports_placement = True
-    supports_as_image = True
+    supports_as_image = False
     supports_focus = True
     fullscreen_presentation_equal_size = True
     maximize_fullscreen_presentation_equal_size = False
@@ -218,3 +224,13 @@ class WindowProbe(BaseProbe):
 
         self.window.state = WindowState.NORMAL
         await self.wait_for_window("Returning window to the normal state.")
+
+    @property
+    def is_closable(self):
+        hmenu = GetSystemMenu(self._hwnd, False)
+        menu_item_info = MENUITEMINFOW()
+        menu_item_info.cbSize = sizeof(MENUITEMINFOW)
+        menu_item_info.fMask = MIIM_STATE
+
+        GetMenuItemInfo(hmenu, SC_CLOSE, False, byref(menu_item_info))
+        return menu_item_info.fState & MFS_DISABLED == 0

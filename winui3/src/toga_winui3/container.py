@@ -70,7 +70,7 @@ class Container:
     ####################################################################################
     # Container geometry
     #
-    # Note: WinUI 3 sizes are given in CSS pixels and can be factional valued. However,
+    # Note: WinUI 3 sizes are given in CSS pixels and can be fractional valued. However,
     #       the Toga core interface uses whole CSS pixels for layouts. When the native
     #       values are rounded down noticeable bars appear at the right side and bottom
     #       of the container during resize. Rounding up causing the content to overlap

@@ -35,6 +35,9 @@ class NativeFont:
     ):
         """The Toga font attributes that can be set in WinUI 3.
 
+        The font attributes are stored as 'value creator' callables. The reason for this
+        is explained in the staged property module.
+
         :param family: The font to use. A None value means that the system default
             will be used.
         :param font_size: The size (line height) of a font given in CSS pixels. A None
@@ -61,12 +64,14 @@ class Font:
         """A Toga WinUI 3 font object created from the core interface.
 
         Notes about default settings:
-        - The WinUI 3 implementation doesn't assume that system defaults for size and
+          - The WinUI 3 implementation doesn't assume that system defaults for size and
             family are consistent across the UI. In the native classes, these properties
             are 'dependency properties' which means that they can be reset to default by
             clearing the set value.
-        - Italics goes against the Windows design prinicpals, so it is safe to set the
-            Normal font style by default. See:
+          - For font style, the Toga default value is `FontStyle.Normal`, which could
+            conceivably override the native default value. However, italics goes against
+            the Windows design prinicpals, so it is safe to set the normal font style by
+            default. See:
             learn.microsoft.com/windows/apps/design/signature-experiences/typography
 
         """

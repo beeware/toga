@@ -264,27 +264,27 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         window_widget = toga.Box(style=Pack(flex=1, background_color=next(color_cycle)))
         window.content = window_widget
         window.show()
+
         window_information = {}
         window_information["window"] = window
         window_information["window_probe"] = window_probe(app, window)
+        await window_information["window_probe"].wait_for_window(
+            f"{window.title} and its probe have been created."
+        )
         window_information["initial_screen"] = window_information["window"].screen
         window_information["paired_screen"] = app.screens[i]
-        window_information["widget_probe"] = get_probe(window_widget)
-        window_information_list.append(window_information)
-        screen_window_dict[window_information["paired_screen"]] = window_information[
-            "window"
-        ]
-
-        # The size properties for WinUI 3 are not immediately available
-        await asyncio.sleep(0.1)
         window_information["initial_content_size"] = window_information[
             "window_probe"
         ].content_size
+        window_information["widget_probe"] = get_probe(window_widget)
         window_information["initial_widget_size"] = (
             window_information["widget_probe"].width,
             window_information["widget_probe"].height,
         )
-
+        window_information_list.append(window_information)
+        screen_window_dict[window_information["paired_screen"]] = window_information[
+            "window"
+        ]
     # Wait for window animation before assertion.
     await main_window_probe.wait_for_window("All Test Windows are visible")
 

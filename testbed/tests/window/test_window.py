@@ -1335,7 +1335,6 @@ else:
 
 async def test_as_image(main_window, main_window_probe):
     """The window can be captured as a screenshot"""
-    skip_on_backends("toga_winui3")
 
     if main_window_probe.supports_as_image:
         screenshot = main_window.as_image()
@@ -1345,3 +1344,5 @@ async def test_as_image(main_window, main_window_probe):
             screen=main_window.screen,
             window=main_window,
         )
+    else:
+        pytest.skip("Window screenshots are not implemented on this backend.")

@@ -31,7 +31,7 @@ class Icon:
 
     The WinUI 3 backend needs two type of icon:
         - Native WinUI 3 - to be used with most native WinUI 3 classes such as button.
-        - Win32 - to be used with StatusIcons the title bar.
+        - Win32 - to be used on the title bar and for StatusIcons.
 
     To avoid loading unnecessary resources, the needed icon resources are lazy loaded.
     """
