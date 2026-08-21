@@ -120,3 +120,12 @@ class Camera:
             self.interface.app._impl.start_activity(intent, on_complete=photo_taken)
         else:
             raise PermissionError("App does not have permission to take photos")
+
+    def is_scanning(self):
+        raise NotImplementedError("Barcode scanning is not yet implemented on Android")
+
+    def start_scanning(self, future, device, code_types, continuous):
+        raise NotImplementedError("Barcode scanning is not yet implemented on Android")
+
+    def stop_scanning(self):
+        raise NotImplementedError("Barcode scanning is not yet implemented on Android")
