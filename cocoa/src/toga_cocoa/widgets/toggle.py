@@ -1,3 +1,6 @@
+from abc import ABC, abstractmethod
+from typing import Literal
+
 from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
@@ -48,100 +51,21 @@ SWITCH_LABEL_GAP = 6
 """Gap, in pixels, between the switch and the label for SWITCH-type Toggles."""
 
 
-class Toggle(Widget):
+def determine_actual_toggle_role(
+    role: ToggleRole,
+) -> Literal[ToggleRole.CHECKBOX, ToggleRole.SWITCH]:
+    if role == ToggleRole.AUTOMATIC or role == ToggleRole.MINOR:
+        # Use a checkbox by default on macOS.
+        return ToggleRole.CHECKBOX
+    if role == ToggleRole.MAJOR:
+        return ToggleRole.SWITCH
+    return role
+
+
+class _BaseToggle(Widget, ABC):
+    native: TogaCheckbox | TogaView
     switch_native: TogaSwitch | TogaCheckbox
     label_native: NSTextField | None
-
-    @property
-    def role(self):
-        role: ToggleRole = self.interface._role
-        if role == ToggleRole.AUTOMATIC or role == ToggleRole.MINOR:
-            # Use a checkbox by default on macOS.
-            return ToggleRole.CHECKBOX
-        if role == ToggleRole.MAJOR:
-            return ToggleRole.SWITCH
-        return role
-
-    def create(self):
-        if self.role == ToggleRole.CHECKBOX:
-            self.native = TogaCheckbox.alloc().init()
-            self.native.interface = self.interface
-            self.native.impl = self
-            self.native.bezelStyle = NSBezelStyle.Rounded
-            self.native.setButtonType(NSSwitchButton)
-            self.switch_native = self.native
-            self.label_native = None
-        elif self.role == ToggleRole.SWITCH:
-            self.native = TogaView.alloc().init()
-
-            self.switch_native = TogaSwitch.alloc().init()
-            self.switch_native.interface = self.interface
-            self.switch_native.impl = self
-            self.switch_native.translatesAutoresizingMaskIntoConstraints = False
-            for attribute in (NSLayoutAttributeLeft, NSLayoutAttributeCenterY):
-                # Vertically center and left-align the switch
-                self.native.addConstraint(
-                    NSLayoutConstraint.constraintWithItem(
-                        self.native,
-                        attribute__1=attribute,
-                        relatedBy=NSLayoutRelationEqual,
-                        toItem=self.switch_native,
-                        attribute__2=attribute,
-                    )
-                )
-            self.native.addSubview(self.switch_native)
-
-            self.label_native = NSTextField.alloc().init()
-            self.label_native.drawsBackground = False
-            self.label_native.editable = False
-            self.label_native.bezeled = False
-            self.label_native.translatesAutoresizingMaskIntoConstraints = False
-            # Put the label to the right of the switch by SWITCH_LABEL_GAP pixels
-            self.native.addConstraint(
-                NSLayoutConstraint.constraintWithItem(
-                    self.label_native,
-                    attribute__1=NSLayoutAttributeLeft,
-                    relatedBy=NSLayoutRelationEqual,
-                    toItem=self.switch_native,
-                    attribute__2=NSLayoutAttributeRight,
-                    multiplier=1.0,
-                    constant=SWITCH_LABEL_GAP,
-                )
-            )
-            self.native.addConstraint(
-                NSLayoutConstraint.constraintWithItem(
-                    self.native,
-                    attribute__1=NSLayoutAttributeCenterY,
-                    relatedBy=NSLayoutRelationEqual,
-                    toItem=self.label_native,
-                    attribute__2=NSLayoutAttributeCenterY,
-                )
-            )
-            self.native.addSubview(self.label_native)
-
-        self.switch_native.target = self.switch_native
-        self.switch_native.action = SEL("onPress:")
-
-        # Add the layout constraints
-        self.add_constraints()
-
-    def get_text(self):
-        if self.role == ToggleRole.SWITCH:
-            return str(self.label_native.stringValue)
-        else:
-            return str(self.native.title)
-
-    def set_text(self, text):
-        if self.role == ToggleRole.SWITCH:
-            self.label_native.stringValue = text
-        else:
-            self.native.title = text
-
-    def set_font(self, font):
-        if self.role == ToggleRole.SWITCH:
-            self.label_native.font = font._impl.native
-        else:
-            self.native.font = font._impl.native
 
     def get_value(self):
         return self.switch_native.state == NSOnState
@@ -152,19 +76,11 @@ class Toggle(Widget):
         if self.interface.on_change and value != old_value:
             self.interface.on_change()
 
-    def rehint(self):
-        if self.role == ToggleRole.SWITCH:
-            label_size = self.label_native.intrinsicContentSize()
-            switch_size = self.switch_native.intrinsicContentSize()
-            width, height = (
-                switch_size.width + SWITCH_LABEL_GAP + label_size.width,
-                max(switch_size.height, label_size.height),
-            )
-        else:
-            content_size = self.native.intrinsicContentSize()
-            width, height = content_size.width, content_size.height
-        self.interface.intrinsic.width = at_least(width)
-        self.interface.intrinsic.height = height
+    @abstractmethod
+    def get_text(self) -> str: ...
+
+    @abstractmethod
+    def set_text(self, text: str): ...
 
     def set_background_color(self, color):
         if color == TRANSPARENT:
@@ -176,3 +92,114 @@ class Toggle(Widget):
         else:
             self.native.backgroundColor = native_color(color)
             self.native.drawsBackground = True
+
+
+class SwitchToggle(_BaseToggle):
+    def create(self):
+        self.native = TogaView.alloc().init()
+
+        self.switch_native = TogaSwitch.alloc().init()
+        self.switch_native.interface = self.interface
+        self.switch_native.impl = self
+        self.switch_native.translatesAutoresizingMaskIntoConstraints = False
+        for attribute in (NSLayoutAttributeLeft, NSLayoutAttributeCenterY):
+            # Vertically center and left-align the switch
+            self.native.addConstraint(
+                NSLayoutConstraint.constraintWithItem(
+                    self.native,
+                    attribute__1=attribute,
+                    relatedBy=NSLayoutRelationEqual,
+                    toItem=self.switch_native,
+                    attribute__2=attribute,
+                )
+            )
+        self.native.addSubview(self.switch_native)
+
+        self.label_native = NSTextField.alloc().init()
+        self.label_native.drawsBackground = False
+        self.label_native.editable = False
+        self.label_native.bezeled = False
+        self.label_native.translatesAutoresizingMaskIntoConstraints = False
+        # Put the label to the right of the switch by SWITCH_LABEL_GAP pixels
+        self.native.addConstraint(
+            NSLayoutConstraint.constraintWithItem(
+                self.label_native,
+                attribute__1=NSLayoutAttributeLeft,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.switch_native,
+                attribute__2=NSLayoutAttributeRight,
+                multiplier=1.0,
+                constant=SWITCH_LABEL_GAP,
+            )
+        )
+        self.native.addConstraint(
+            NSLayoutConstraint.constraintWithItem(
+                self.native,
+                attribute__1=NSLayoutAttributeCenterY,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.label_native,
+                attribute__2=NSLayoutAttributeCenterY,
+            )
+        )
+        self.native.addSubview(self.label_native)
+        self.switch_native.target = self.switch_native
+        self.switch_native.action = SEL("onPress:")
+
+        self.add_constraints()
+
+    def get_text(self):
+        return str(self.label_native.stringValue)
+
+    def set_text(self, text):
+        self.label_native.stringValue = text
+
+    def set_font(self, font):
+        self.label_native.font = font._impl.native
+
+    def rehint(self):
+        label_size = self.label_native.intrinsicContentSize()
+        switch_size = self.switch_native.intrinsicContentSize()
+        width, height = (
+            switch_size.width + SWITCH_LABEL_GAP + label_size.width,
+            max(switch_size.height, label_size.height),
+        )
+        self.interface.intrinsic.width = at_least(width)
+        self.interface.intrinsic.height = height
+
+
+class CheckboxToggle(_BaseToggle):
+    def create(self):
+        self.native = TogaCheckbox.alloc().init()
+        self.native.interface = self.interface
+        self.native.impl = self
+        self.native.target = self.native
+        self.native.action = SEL("onPress:")
+        self.native.bezelStyle = NSBezelStyle.Rounded
+        self.native.setButtonType(NSSwitchButton)
+
+        self.label_native = None
+        self.switch_native = self.native
+
+        self.add_constraints()
+
+    def get_text(self):
+        return str(self.native.title)
+
+    def set_text(self, text):
+        self.native.title = text
+
+    def set_font(self, font):
+        self.native.font = font._impl.native
+
+    def rehint(self):
+        content_size = self.native.intrinsicContentSize()
+        width, height = content_size.width, content_size.height
+        self.interface.intrinsic.width = at_least(width)
+        self.interface.intrinsic.height = height
+
+
+def Toggle(interface):
+    actual_role = determine_actual_toggle_role(interface._role)
+    if actual_role == ToggleRole.SWITCH:
+        return SwitchToggle(interface)
+    return CheckboxToggle(interface)
