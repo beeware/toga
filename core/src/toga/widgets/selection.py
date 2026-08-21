@@ -45,7 +45,8 @@ class Selection(Widget):
             `items` will be selected.
         :param on_change: Initial [`on_change`][toga.Selection.on_change] handler.
         :param enabled: Whether the user can interact with the widget.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
 
         self._items: ListSourceT | ListSource
