@@ -156,6 +156,15 @@ class SwitchToggle(_BaseToggle):
     def set_font(self, font):
         self.label_native.font = font._impl.native
 
+    def get_enabled(self):
+        return self.switch_native.isEnabled
+
+    def set_enabled(self, value):
+        self.switch_native.enabled = value
+        self.label_native.textColor = (
+            NSColor.controlTextColor if value else NSColor.disabledControlTextColor
+        )
+
     def rehint(self):
         label_size = self.label_native.intrinsicContentSize()
         switch_size = self.switch_native.intrinsicContentSize()
