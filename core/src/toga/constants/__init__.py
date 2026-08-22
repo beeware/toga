@@ -109,7 +109,7 @@ class WindowState(Enum):
     """
 
 
-class ToggleRole(Enum):
+class SwitchRole(Enum):
     AUTOMATIC = auto()
     """Choose a role automatically based on platform defaults."""
 

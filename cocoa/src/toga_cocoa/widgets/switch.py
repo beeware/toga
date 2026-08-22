@@ -4,7 +4,7 @@ from typing import Literal
 from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
-from toga.constants import ToggleRole
+from toga.constants import SwitchRole
 from toga_cocoa.libs import (
     SEL,
     NSBezelStyle,
@@ -48,17 +48,17 @@ class TogaSwitch(NSSwitch):
 
 
 SWITCH_LABEL_GAP = 6
-"""Gap, in pixels, between the switch and the label for SWITCH-type Toggles."""
+"""Gap, in pixels, between the switch and the label for SWITCH-type toggles."""
 
 
 def determine_actual_toggle_role(
-    role: ToggleRole,
-) -> Literal[ToggleRole.CHECKBOX, ToggleRole.SWITCH]:
-    if role == ToggleRole.AUTOMATIC or role == ToggleRole.MINOR:
+    role: SwitchRole,
+) -> Literal[SwitchRole.CHECKBOX, SwitchRole.SWITCH]:
+    if role == SwitchRole.AUTOMATIC or role == SwitchRole.MINOR:
         # Use a checkbox by default on macOS.
-        return ToggleRole.CHECKBOX
-    if role == ToggleRole.MAJOR:
-        return ToggleRole.SWITCH
+        return SwitchRole.CHECKBOX
+    if role == SwitchRole.MAJOR:
+        return SwitchRole.SWITCH
     return role
 
 
@@ -198,8 +198,8 @@ class CheckboxToggle(_BaseToggle):
         self.interface.intrinsic.height = height
 
 
-def Toggle(interface):
+def Switch(interface):
     actual_role = determine_actual_toggle_role(interface._role)
-    if actual_role == ToggleRole.SWITCH:
+    if actual_role == SwitchRole.SWITCH:
         return SwitchToggle(interface)
     return CheckboxToggle(interface)

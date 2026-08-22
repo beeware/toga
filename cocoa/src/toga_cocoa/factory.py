@@ -33,10 +33,10 @@ from .widgets.scrollcontainer import ScrollContainer
 from .widgets.selection import Selection
 from .widgets.slider import Slider
 from .widgets.splitcontainer import SplitContainer
+from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput
-from .widgets.toggle import Toggle
 from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import MainWindow, Window
@@ -84,10 +84,10 @@ __all__ = [
     "Slider",
     "SplitContainer",
     "StatusIconSet",
+    "Switch",
     "Table",
     "TextInput",
     "TimeInput",
-    "Toggle",
     "Tree",
     "WebView",
     "Window",
