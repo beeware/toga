@@ -6,9 +6,10 @@ import pytest
 import toga
 from toga.widgets.numberinput import _clean_decimal, _clean_decimal_str
 from toga_dummy.utils import (
-    EventLog,
     assert_action_performed,
     attribute_value,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -87,16 +88,17 @@ def test_create_with_values():
         (None, None),
     ],
 )
-def test_value(widget, value, expected):
+def test_value(app, widget, value, expected):
     """The value of the widget can be set."""
-    # Clear the event log and validator mock
-    EventLog.reset()
+    window = put_in_window(widget)
 
     # Define and set a new change callback
     on_change_handler = Mock()
     widget.on_change = on_change_handler
 
     widget.value = value
+    simulate_event_loop_refresh(window)
+
     assert widget.value == expected
 
     # test backend has the right value

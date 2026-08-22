@@ -2,10 +2,11 @@ import pytest
 
 import toga
 from toga_dummy.utils import (
-    EventLog,
     assert_action_not_performed,
     assert_action_performed,
     attribute_value,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -48,13 +49,14 @@ def test_label_create_with_values():
         ("Contains\nsome\nnewlines", "Contains\nsome\nnewlines"),
     ],
 )
-def test_update_label_text(label, value, expected):
+def test_update_label_text(app, label, value, expected):
     assert label.text == "Test Label"
 
-    # Clear the event log
-    EventLog.reset()
+    window = put_in_window(label)
 
     label.text = value
+    simulate_event_loop_refresh(window)
+
     assert label.text == expected
 
     # test backend has the right value

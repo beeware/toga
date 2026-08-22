@@ -4,9 +4,10 @@ import pytest
 
 import toga
 from toga_dummy.utils import (
-    EventLog,
     assert_action_performed,
     attribute_value,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -61,18 +62,19 @@ def test_widget_created_explicit(switch):
         ("Contains\nnewline", "Contains"),
     ],
 )
-def test_label_text(switch, value, expected):
+def test_label_text(app, switch, value, expected):
     """The switch's label can be modified."""
     assert switch.text == "Test Switch"
 
-    # Clear the event log
-    EventLog.reset()
+    window = put_in_window(switch)
 
     switch.text = value
     assert switch.text == expected
 
     # test backend has the right value
     assert attribute_value(switch, "text") == expected
+
+    simulate_event_loop_refresh(window)
 
     # A refresh was performed
     assert_action_performed(switch, "refresh")

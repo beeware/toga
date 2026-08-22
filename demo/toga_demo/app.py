@@ -101,6 +101,10 @@ class TogaDemo(toga.App):
                 "Shucks...", "Well aren't you a spoilsport... :-("
             )
 
+    def on_running(self):
+        print("On running called")
+        self.main_window.size = (1000, 1000)
+
 
 def main():
     return TogaDemo("Toga Demo", "org.beeware.toga-demo")

@@ -9,6 +9,8 @@ from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -44,7 +46,7 @@ def test_widget_created():
     assert scroll_container.on_scroll._raw is None
 
 
-def test_widget_created_with_values(content, on_scroll_handler):
+def test_widget_created_with_values(app, content, on_scroll_handler):
     """A scroll container can be created with arguments."""
     scroll_container = toga.ScrollContainer(
         id="foobar",
@@ -55,6 +57,9 @@ def test_widget_created_with_values(content, on_scroll_handler):
         # A style property
         width=256,
     )
+    # Put in a window and *don't* clear the resulting log; assigning it as content
+    # should trigger a refresh.
+    put_in_window(scroll_container, clear_log=False)
     assert scroll_container._impl.interface == scroll_container
     assert_action_performed(scroll_container, "create ScrollContainer")
 
@@ -159,19 +164,13 @@ def test_focus_noop(scroll_container):
 def test_set_content(app, window, scroll_container, content):
     """The content of the scroll container can be changed."""
     # Assign the scroll container to an app and window
-    scroll_container.app = app
-    scroll_container.window = window
-
-    # The content is also assigned
-    assert content.app == app
-    assert content.window == window
-
-    # Reset the event log
-    EventLog.reset()
+    window = put_in_window(scroll_container)
+    print(f"{scroll_container.window = }")
 
     # Create new content, and assign it to the scroll container
     new_content = toga.Box()
     scroll_container.content = new_content
+    print(f"{new_content.window = }")
 
     # The content has been assigned to the widget
     assert_action_performed_with(
@@ -179,6 +178,8 @@ def test_set_content(app, window, scroll_container, content):
         "set content",
         widget=new_content._impl,
     )
+
+    simulate_event_loop_refresh(window)
 
     # The content has been refreshed
     assert_action_performed(new_content, "refresh")
@@ -235,8 +236,9 @@ def test_clear_content(app, window, scroll_container, content):
         (object(), True),
     ],
 )
-def test_horizontal(scroll_container, on_scroll_handler, content, value, expected):
+def test_horizontal(app, scroll_container, on_scroll_handler, content, value, expected):
     """Horizontal scrolling can be enabled/disabled."""
+    window = put_in_window(scroll_container)
     scroll_container.horizontal = value
     assert scroll_container.horizontal == expected
 
@@ -244,6 +246,8 @@ def test_horizontal(scroll_container, on_scroll_handler, content, value, expecte
         on_scroll_handler.assert_called_with(scroll_container)
     else:
         on_scroll_handler.assert_not_called()
+
+    simulate_event_loop_refresh(window)
 
     # Content is refreshed as a result of the change
     assert_action_performed(content, "refresh")
@@ -262,8 +266,9 @@ def test_horizontal(scroll_container, on_scroll_handler, content, value, expecte
         (object(), True),
     ],
 )
-def test_vertical(scroll_container, on_scroll_handler, content, value, expected):
+def test_vertical(app, scroll_container, on_scroll_handler, content, value, expected):
     """Vertical scrolling can be enabled/disabled."""
+    window = put_in_window(scroll_container)
     scroll_container.vertical = value
     assert scroll_container.vertical == expected
 
@@ -271,6 +276,8 @@ def test_vertical(scroll_container, on_scroll_handler, content, value, expected)
         on_scroll_handler.assert_called_with(scroll_container)
     else:
         on_scroll_handler.assert_not_called()
+
+    simulate_event_loop_refresh(window)
 
     # Content is refreshed as a result of the change
     assert_action_performed(content, "refresh")
