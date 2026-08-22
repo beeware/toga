@@ -33,7 +33,7 @@ def role(request):
 
 
 @fixture
-async def widget(role: SwitchRole):
+async def widget(role):
     return toga.Switch("Hello", role=role)
 
 
