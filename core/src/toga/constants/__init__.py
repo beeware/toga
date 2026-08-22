@@ -110,6 +110,8 @@ class WindowState(Enum):
 
 
 class SwitchRole(Enum):
+    """The possible roles of a Switch."""
+
     AUTOMATIC = auto()
     """Choose a role automatically based on platform defaults."""
 
