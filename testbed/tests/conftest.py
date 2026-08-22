@@ -98,6 +98,11 @@ def no_dangling_tasks():
         assert not tasks, f"the app has dangling tasks: {tasks}"
 
 
+@fixture(autouse=True)
+async def wait_for_layout(scaffold_probe):
+    await scaffold_probe.wait_for_layout()
+
+
 @fixture(scope="session")
 def app():
     return toga.App.app
@@ -128,6 +133,7 @@ def main_window(app):
 @fixture(autouse=True)
 async def window_cleanup(app, app_probe, main_window, main_window_probe):
     original_size = main_window.size
+    original_title = main_window.title
 
     # Ensure that at the beginning of every test, all windows that aren't
     # the main window have been closed and deleted. This needs to be done in
@@ -159,6 +165,7 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Reset the window state and size.
     main_window.state = WindowState.NORMAL
     main_window.size = original_size
+    main_window.title = original_title
 
 
 @fixture(scope="session")
@@ -174,6 +181,14 @@ async def main_window_probe(app, main_window):
     yield module.WindowProbe(app, main_window)
 
     main_window.content = old_content
+
+
+@fixture
+async def scaffold_probe(main_window):
+    # This needs to be late to avoid circular imports
+    from tests_backend.scaffolds.base import ScaffoldProbe
+
+    return ScaffoldProbe(main_window.scaffold)
 
 
 def pytest_asyncio_loop_factories(config, item):

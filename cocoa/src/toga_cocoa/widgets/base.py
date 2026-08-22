@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
 
 from toga.colors import TRANSPARENT
 from toga_cocoa.colors import native_color
@@ -88,6 +89,21 @@ class Widget(ABC):
     def focus(self):
         if not self.has_focus and self.interface.window:
             self.interface.window._impl.native.makeFirstResponder(self.native)
+
+    @contextmanager
+    def sans_focus(self):
+        has_gained_focus = False
+        if self.has_focus:
+            # Some operations in Cocoa like changing text alignment does not work
+            # if we have focus.  So we drop it.
+            self.interface.window._impl.native.makeFirstResponder(None)
+            has_gained_focus = True
+
+        yield
+
+        if has_gained_focus:
+            # Refocus when finished.
+            self.focus()
 
     def get_tab_index(self):
         self.interface.factory.not_implemented("Widget.get_tab_index()")

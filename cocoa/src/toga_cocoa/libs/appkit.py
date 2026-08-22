@@ -751,6 +751,10 @@ NSBezelBorder = 2
 NSGrooveBorder = 3
 
 ######################################################################
+# NSViewController.h
+NSViewController = ObjCClass("NSViewController")
+
+######################################################################
 # NSWindow.h
 NSWindow = ObjCClass("NSWindow")
 NSWindow.declare_property("frame")
@@ -839,3 +843,8 @@ class NSDatePickerStyle(IntEnum):
 # NSDatePicker.h
 
 NSDatePicker = ObjCClass("NSDatePicker")
+
+######################################################################
+# NSKeyValueBinding.h
+
+NSTitleBinding = objc_const(appkit, "NSTitleBinding")

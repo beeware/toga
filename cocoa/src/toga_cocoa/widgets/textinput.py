@@ -185,12 +185,13 @@ class TextInput(Widget):
         self.native.cell.placeholderString = value
 
     def set_text_align(self, value):
-        self.native.alignment = NSTextAlignment(value)
-        # The alert label should be on the trailing edge
-        if value == RIGHT:
-            self.error_label.alignment = NSTextAlignment(LEFT)
-        else:
-            self.error_label.alignment = NSTextAlignment(RIGHT)
+        with self.sans_focus():
+            self.native.alignment = NSTextAlignment(value)
+            # The alert label should be on the trailing edge
+            if value == RIGHT:
+                self.error_label.alignment = NSTextAlignment(LEFT)
+            else:
+                self.error_label.alignment = NSTextAlignment(RIGHT)
 
     def set_font(self, font):
         self.native.font = font._impl.native

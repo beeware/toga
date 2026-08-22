@@ -12,7 +12,6 @@ from toga.command import Command, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
-from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     NSBackingStoreBuffered,
     NSImage,
@@ -20,6 +19,7 @@ from toga_cocoa.libs import (
     NSMutableDictionary,
     NSNumber,
     NSScreen,
+    NSTitleBinding,
     NSToolbar,
     NSToolbarItem,
     NSWindow,
@@ -68,9 +68,7 @@ class TogaWindow(NSWindow):
         # incorrect window size. Hence, exclude it for fullscreen.
         if self.interface.state != WindowState.FULLSCREEN:
             self.impl.interface.on_resize()
-        if self.interface.content:
-            # Set the window to the new size
-            self.interface.content.refresh()
+        self.impl._scaffold.refresh()
 
     @objc_method
     def windowDidBecomeMain_(self, notification):
@@ -135,7 +133,7 @@ class TogaWindow(NSWindow):
         # can't ever be invoked - but we need to provide an implementation.
         allowed = NSMutableArray.alloc().init()
         for item in self.interface.toolbar:
-            allowed.addObject_(toolbar_identifier(item))
+            allowed.addObject(toolbar_identifier(item))
         return allowed
 
     @objc_method
@@ -151,8 +149,8 @@ class TogaWindow(NSWindow):
                 and item.group != prev_group
                 and not isinstance(item, Separator)
             ):
-                default.addObject_(toolbar_identifier(prev_group))
-            default.addObject_(toolbar_identifier(item))
+                default.addObject(toolbar_identifier(prev_group))
+            default.addObject(toolbar_identifier(item))
             prev_group = item.group
 
         return default
@@ -167,7 +165,7 @@ class TogaWindow(NSWindow):
         """Create the requested toolbar button."""
         try:
             item = self.impl._toolbar_items[str(identifier)]
-            native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
+            native = NSToolbarItem.alloc().initWithItemIdentifier(identifier)
             native.setLabel(item.text)
             native.setPaletteLabel(item.text)
             if item.tooltip:
@@ -208,7 +206,7 @@ class TogaWindow(NSWindow):
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, position, size):
         self.interface = interface
         self.interface._impl = self
 
@@ -230,8 +228,16 @@ class Window:
             backing=NSBackingStoreBuffered,
             defer=False,
         )
+        self.native.bind(
+            NSTitleBinding,
+            toObject=self.native,
+            withKeyPath="contentViewController.title",
+            options=None,
+        )
         self.native.interface = self.interface
         self.native.impl = self
+
+        self._scaffold = None
 
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
@@ -242,29 +248,20 @@ class Window:
         # Pending Window state transition variable:
         self._pending_state_transition = None
 
-        self.set_title(title)
         self.set_size(size)
         self.set_position(position if position is not None else _initial_position())
 
         self.native.delegate = self.native
-
-        self.container = Container(on_refresh=self.content_refreshed)
-        self.native.contentView = self.container.native
-
-        # Ensure that the container renders it's background in the same color as the
-        # window.
-        self.native.wantsLayer = True
-        self.container.native.backgroundColor = self.native.backgroundColor
 
     ######################################################################
     # Window properties
     ######################################################################
 
     def get_title(self):
-        return str(self.native.title)
+        return str(self._scaffold.title)
 
     def set_title(self, title):
-        self.native.title = title
+        self._scaffold.title = title
 
     ######################################################################
     # Window lifecycle
@@ -287,26 +284,26 @@ class Window:
     # Window content and resources
     ######################################################################
 
-    def content_refreshed(self, container):
-        min_width = self.interface.content.layout.min_width
-        min_height = self.interface.content.layout.min_height
+    def set_scaffold(self, scaffold):
+        restore_presentation = False
+        if self._scaffold is not None:
+            # Get the current title and sync it up with the new scaffold.
+            # This check is required as the initial scaffold set will not have
+            # a previous scaffold to grab title from.
+            scaffold.title = self.get_title()
+            # Scaffold changes in PRESENTATION mode causes bookkeeping glitches.
+            # So, if there was a previous scaffold, we exit PRESENTATION first.
+            if self.get_window_state() == WindowState.PRESENTATION:
+                restore_presentation = True
+                self.set_window_state(WindowState.NORMAL)
 
-        # If the minimum layout is bigger than the current window,
-        # increase the size of the window.
         frame = self.native.frame
-        if frame.size.width < min_width and frame.size.height < min_height:
-            self.set_size((min_width, min_height))
-        elif frame.size.width < min_width:
-            self.set_size((min_width, frame.size.height))
-        elif frame.size.height < min_height:
-            self.set_size((frame.size.width, min_height))
-
-        self.container.min_width = min_width
-        self.container.min_height = min_height
-
-    def set_content(self, widget):
-        # Set the content of the window's container
-        self.container.content = widget
+        self._scaffold = scaffold
+        # Hook up the scaffold's content view controller
+        self.native.contentViewController = scaffold.root_controller
+        self.native.setFrame(frame, display=True, animate=True)
+        if restore_presentation:
+            self.set_window_state(WindowState.PRESENTATION)
 
     ######################################################################
     # Window size
@@ -314,7 +311,7 @@ class Window:
 
     def get_size(self) -> Size:
         if self.interface.state == WindowState.PRESENTATION:
-            native_frame = self.container.native.frame
+            native_frame = self._scaffold.current_container.controller.view.frame
         else:
             native_frame = self.native.frame
         return Size(int(native_frame.size.width), int(native_frame.size.height))
@@ -384,7 +381,9 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
-        if self.container.native.isInFullScreenMode():
+        # Set scaffold will call get_window_state and back then during init there
+        # may not be any scaffold yet so we need to check the first condition
+        if self._scaffold.current_container.controller.view.isInFullScreenMode():
             return WindowState.PRESENTATION
         elif self.native.styleMask & NSWindowStyleMask.FullScreen:
             return WindowState.FULLSCREEN
@@ -443,6 +442,7 @@ class Window:
         if target_state == current_state:
             self._pending_state_transition = None
             return
+        current_controller_view = self._scaffold.current_container.controller.view
 
         match current_state, target_state:
             case _, WindowState.MAXIMIZED:
@@ -469,22 +469,23 @@ class Window:
                 # window._impl.native.contentView is window._impl.container.native.
                 # Hence, we need to go fullscreen on window._impl.container.native
                 # instead.
-                self.container.native.enterFullScreenMode(
+                current_controller_view.enterFullScreenMode(
                     self.interface.screen._impl.native, withOptions=opts
                 )
 
-                # Going presentation mode causes the window content to be re-homed in a
-                # NSFullScreenWindow; Teach the new parent window about its Toga
+                # Going presentation mode causes the window content to be re-homed in
+                # a NSFullScreenWindow; Teach the new parent window about its Toga
                 # representations.
-                self.container.native.window._impl = self
-                self.container.native.window.interface = self.interface
+                current_controller_view.window._impl = self
+                current_controller_view.window.interface = self.interface
                 # Manually trigger the resize event as the original NSWindow's size
                 # remains unchanged, hence the windowDidResize_ would not be notified
                 # when the window goes into presentation mode.
                 self.interface.on_resize()
-                self.interface.content.refresh()
+                self._scaffold.refresh()
 
-                # No need to check for other pending states, since this is fully applied
+                # No need to check for other pending states, since this is fully
+                # applied
                 # at this point.
                 self._pending_state_transition = None
 
@@ -503,12 +504,12 @@ class Window:
                 opts.setObject(
                     NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
                 )
-                self.container.native.exitFullScreenModeWithOptions(opts)
+                current_controller_view.exitFullScreenModeWithOptions(opts)
                 # Manually trigger the resize event as the original NSWindow's size
                 # remains unchanged, hence the windowDidResize_ would not be notified
                 # when the window goes out of the presentation mode.
                 self.interface.on_resize()
-                self.interface.content.refresh()
+                self._scaffold.refresh()
 
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
@@ -520,11 +521,12 @@ class Window:
     ######################################################################
 
     def get_image_data(self):
-        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
-            self.container.native.bounds
+        container = self._scaffold.current_container
+        bitmap = container.native.bitmapImageRepForCachingDisplayInRect(
+            container.native.bounds
         )
-        self.container.native.cacheDisplayInRect(
-            self.container.native.bounds, toBitmapImageRep=bitmap
+        container.native.cacheDisplayInRect(
+            container.native.bounds, toBitmapImageRep=bitmap
         )
 
         # Get a reference to the CGImage from the bitmap
@@ -539,8 +541,8 @@ class Window:
 
 
 class MainWindow(Window):
-    def __init__(self, interface, title, position, size):
-        super().__init__(interface, title, position, size)
+    def __init__(self, interface, position, size):
+        super().__init__(interface, position, size)
 
         # By default, no toolbar
         self._toolbar_items = {}
@@ -573,8 +575,7 @@ class MainWindow(Window):
         self.native.setToolbar(self.native_toolbar)
 
         # Adding/removing a toolbar changes the size of the content window.
-        if self.interface.content:
-            self.interface.content.refresh()
+        self._scaffold.refresh()
 
     def purge_toolbar(self):
         while self._toolbar_items:
