@@ -1,5 +1,6 @@
 from pytest import xfail
 
+from toga.constants import SwitchRole
 from toga_cocoa.libs import NSButton, NSView
 
 from .base import SimpleProbe
@@ -38,6 +39,6 @@ class SwitchSwitchProbe(CheckboxSwitchProbe):
 
 # noinspection PyPep8Naming
 def SwitchProbe(widget):
-    if not isinstance(widget._impl.native, NSButton):
+    if widget._role in {SwitchRole.SWITCH, SwitchRole.MAJOR}:
         return SwitchSwitchProbe(widget)
     return CheckboxSwitchProbe(widget)
