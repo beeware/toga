@@ -18,7 +18,7 @@ async def test_content_size(app, main_window, main_window_probe, scaffold_probe)
     """The content size doesn't spill outsize the viewable area."""
 
     box = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-    main_window.content = box
+    main_window.scaffold.content = box
 
     await main_window_probe.redraw("Content is a box")
 
