@@ -35,8 +35,11 @@ class ScaffoldProbe(BaseProbe):
         assert self.container.content.native.frame.origin.y >= approx(
             self.top_bar_height
         )
+        # Content should be fully laid out and expanded
         assert self.container.content.native.frame.size.width > 0
         assert self.container.content.native.frame.size.height > 0
+        assert self.container.content.interface.layout.width > 0
+        assert self.container.content.interface.layout.height > 0
 
     @property
     def top_bar_height(self):
