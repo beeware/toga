@@ -3,6 +3,7 @@ from unittest.mock import Mock, call
 from pytest import fixture
 
 import toga
+from toga.constants import SwitchRole
 
 from ..data import TEXTS
 from .conftest import build_cleanup_test
@@ -26,9 +27,14 @@ else:
     from .properties import test_focus  # noqa: F401
 
 
+@fixture(params=[*SwitchRole])
+def role(request):
+    yield request.param
+
+
 @fixture
-async def widget():
-    return toga.Switch("Hello")
+async def widget(role: SwitchRole):
+    return toga.Switch("Hello", role=role)
 
 
 test_cleanup = build_cleanup_test(
