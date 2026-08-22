@@ -9,7 +9,7 @@ from pytest import approx
 from tests_backend.scaffolds.base import ScaffoldProbe
 
 import toga
-from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
+from toga.colors import CORNFLOWERBLUE, GOLDENROD, LIGHTBLUE, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
@@ -734,9 +734,8 @@ else:
         )
 
         # Alter both height and width to exceed window size at once
-        with box1.style.batch_apply():
-            box1.style.width = 300
-            box2.style.height = 290
+        box3 = toga.Box(style=Pack(background_color=LIGHTBLUE, width=300, height=90))
+        second_window.content.add(box3)
         await second_window_probe.wait_for_window(
             "Secondary window has had width and height adjusted due to content"
         )

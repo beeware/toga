@@ -29,6 +29,7 @@ class Window:
         self.interface._impl = self
 
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
+        self.scaffold = None
 
         # Set the background color of the root content.
         try:
@@ -74,7 +75,7 @@ class Window:
         # Get the current title and sync it up with the new scaffold.
         # This check is required as the initial scaffold set will not have
         # a previous scaffold to grab title from.
-        if hasattr(self, "scaffold"):
+        if self.scaffold is not None:
             scaffold.title = self.get_title()
         self.scaffold = scaffold
         self.native.rootViewController = self.scaffold.nav_controller
