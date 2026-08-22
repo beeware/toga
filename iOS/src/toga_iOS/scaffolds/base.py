@@ -46,13 +46,11 @@ class Scaffold:
         min_width = self.interface.content.layout.min_width
         min_height = self.interface.content.layout.min_height
 
-        # An initial layout uses (0, 0); in this case nothing is even being
-        # shown on screen so we can ignore that safely.
-        # Else, If the minimum layout is bigger than the current window, log a
-        # warning
-        if (container.width, container.height) != (0, 0) and (
-            container.width < min_width or container.height < min_height
-        ):
+        # An initial layout uses (0, 0) or negative values (from insets);
+        # in this case nothing is even being shown on screen so we can ignore
+        # that safely. Else, If the minimum layout is bigger than the current
+        # window, log a warning
+        if 0 < container.width < min_width or 0 < container.height < min_height:
             print(
                 f"Warning: Window content {(min_width, min_height)} "
                 f"exceeds available space "

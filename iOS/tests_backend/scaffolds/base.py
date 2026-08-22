@@ -69,12 +69,12 @@ class ScaffoldProbe(BaseProbe):
             ),
         )
 
-    async def test_simple_app(self):
+    async def verify_simple_app(self):
         # Layout remains consistent when navigation bar is hide or shown
         # (this simulates a simple app)
-        self.impl.navigation_bar_hiddeen = True
-        await self.wait_for_layout()
+        self.impl.navigation_bar_hidden = True
+        await self.redraw("Navigation bar hidden")
         self.assert_container_layout()
         self.impl.navigation_bar_hidden = False
-        await self.wait_for_layout()
+        await self.redraw("Navigation bar shown")
         self.assert_container_layout()
