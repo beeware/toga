@@ -40,10 +40,16 @@ class ScaffoldProbe(BaseProbe):
 
     @property
     def top_bar_height(self):
-        return (
-            self.nav_controller.navigationBar.frame.origin.y
-            + self.nav_controller.navigationBar.frame.size.height
-        )
+        # On iPadOS multiwindow this can be different, but that can't be tested
+        # in testbed unelss we make user drag the window while test is running
+        if self.impl.navigation_bar_hidden:
+            status_bar_manager = self.window._impl.native.windowScene.statusBarManager
+            return status_bar_manager.statusBarFrame.size.height
+        else:
+            return (
+                self.nav_controller.navigationBar.frame.origin.y
+                + self.nav_controller.navigationBar.frame.size.height
+            )
 
     @property
     def content_size(self):
@@ -59,3 +65,13 @@ class ScaffoldProbe(BaseProbe):
                 + self.nav_controller.navigationBar.frame.size.height
             ),
         )
+
+    async def test_simple_app(self):
+        # Layout remains consistent when navigation bar is hide or shown
+        # (this simulates a simple app)
+        self.impl.navigation_bar_hiddeen = True
+        await self.wait_for_layout()
+        self.assert_container_layout()
+        self.impl.navigation_bar_hidden = False
+        await self.wait_for_layout()
+        self.assert_container_layout()

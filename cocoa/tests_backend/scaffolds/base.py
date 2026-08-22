@@ -1,3 +1,5 @@
+import pytest
+
 from ..probe import BaseProbe
 
 
@@ -22,3 +24,6 @@ class ScaffoldProbe(BaseProbe):
             self.container.native.frame.size.width,
             self.container.native.frame.size.height,
         )
+
+    async def test_simple_app(self):
+        pytest.xfail("Simple apps do not change layout on macOS")

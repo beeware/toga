@@ -74,7 +74,7 @@ class Scaffold:
         # of the status bar to use as our inset.
         # The testbed will not instantiate a simple app so no-cover the first
         # branch
-        if self.navigation_bar_hidden:  # pragma: no cover
+        if self.navigation_bar_hidden:
             # When status bar heights change, a relayout of the window will
             # be triggered by the native layer, which is how we can catch this
             # and use this value correctly here.
@@ -89,7 +89,9 @@ class Scaffold:
                 # top status bar.
                 if container.native.safeAreaInsets.top >= status_bar_height:
                     container.top_inset = status_bar_height
-                else:
+                # No testing done on iPadOS (and even if we tested, no way to
+                # programmatically move app window to make this true), so no-covered
+                else:  # pragma: no cover
                     container.top_inset = 0
             else:
                 container.top_inset = 0
