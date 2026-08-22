@@ -91,7 +91,9 @@ class Scaffold:
                 # programmatically move app window to make this true), so no-covered
                 else:  # pragma: no cover
                     container.top_inset = 0
-            else:
+            # Usually, native layout will not happen unless we have a window
+            # already; since this is already so edge-case, no-cover!
+            else:  # pragma: no cover
                 container.top_inset = 0
         else:
             # Instead of manually computing the geometry at the top,
