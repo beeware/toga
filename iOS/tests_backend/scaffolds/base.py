@@ -30,10 +30,10 @@ class ScaffoldProbe(BaseProbe):
         await self._wait_for_assertion(self.assert_container_layout)
 
     def assert_container_layout(self):
-        # If the window has been laid out, the origin should be at least at the
-        # position of the top bar height.
-        assert self.container.content.native.frame.origin.y >= approx(
-            self.top_bar_height
+        # If the window has been laid out, the origin should be the position of the top
+        # bar plus the margin.
+        assert self.container.content.native.frame.origin.y == approx(
+            self.top_bar_height + self.container.content.margin_top
         )
         # Content should be fully laid out and expanded
         assert self.container.content.native.frame.size.width > 0
