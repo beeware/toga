@@ -33,7 +33,7 @@ class ScaffoldProbe(BaseProbe):
         # If the window has been laid out, the origin should be the position of the top
         # bar plus the margin.
         assert self.container.content.native.frame.origin.y == approx(
-            self.top_bar_height + self.container.content.margin_top
+            self.top_bar_height + self.container.content.interface.margin_top
         )
         # Content should be fully laid out and expanded
         assert self.container.content.native.frame.size.width > 0
