@@ -62,6 +62,10 @@ class Switch(Widget):
 
         self.enabled = enabled
 
+    @property
+    def role(self) -> SwitchRole:
+        return self._role
+
     def _create(self) -> Any:
         return self.factory.Switch(interface=self)
 
