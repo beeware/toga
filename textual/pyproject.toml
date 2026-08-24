@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==83.0.0",
+    "setuptools==84.0.0",
     "setuptools_scm==10.2.1",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -117,6 +117,7 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    "platformdirs >= 4.1",
     "textual >= 3.2.0, < 4.0.0",
     "toga-core == {version}",
 ]

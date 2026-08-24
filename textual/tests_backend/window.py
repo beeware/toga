@@ -73,7 +73,7 @@ class WindowProbe(BaseProbe):
     def assert_is_toolbar_separator(self, index, section=False):
         pytest.skip("Toolbars are not implemented on Textual.")
 
-    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+    def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
         pytest.skip("Toolbars are not implemented on Textual.")
 
     def press_toolbar_button(self, index):

@@ -39,7 +39,8 @@ class MultilineTextInput(Widget):
             there is no user content to display.
         :param on_change: A handler that will be invoked when the value of
             the widget changes.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 

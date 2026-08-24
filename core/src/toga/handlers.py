@@ -247,18 +247,21 @@ class AsyncResult(ABC):
         return self.future.__await__()
 
     # All the comparison dunder methods are disabled
-    def __bool__(self, other: object) -> NoReturn:
+    def _raise_unwrapable(self, *args: object) -> NoReturn:
         raise RuntimeError(
             f"Can't check {self.RESULT_TYPE} result directly; "
             "use await or an on_result handler"
         )
 
-    __lt__ = __bool__
-    __le__ = __bool__
-    __eq__ = __bool__
-    __ne__ = __bool__
-    __gt__ = __bool__
-    __ge__ = __bool__
+    def __bool__(self) -> NoReturn:
+        return self._raise_unwrapable()
+
+    __lt__ = _raise_unwrapable
+    __le__ = _raise_unwrapable
+    __eq__ = _raise_unwrapable
+    __ne__ = _raise_unwrapable
+    __gt__ = _raise_unwrapable
+    __ge__ = _raise_unwrapable
 
 
 class PermissionResult(AsyncResult):

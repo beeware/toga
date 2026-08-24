@@ -69,7 +69,8 @@ class Slider(Widget):
         :param on_press: Initial [`on_press`][toga.Slider.on_press] handler.
         :param on_release: Initial [`on_release`][toga.Slider.on_release] handler.
         :param enabled: Whether the user can interact with the widget.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 

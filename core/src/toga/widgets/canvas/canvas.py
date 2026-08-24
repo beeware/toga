@@ -164,7 +164,8 @@ class Canvas(Widget, DrawingActionDispatch):
         :param on_alt_release: Initial [`on_alt_release`][toga.Canvas.on_alt_release]
             handler.
         :param on_alt_drag: Initial [`on_alt_drag`][toga.Canvas.on_alt_drag] handler.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         self._root_state = State()
 

@@ -1,5 +1,8 @@
+import os
 from functools import cached_property
 from pathlib import Path
+
+import platformdirs
 
 from toga import App
 
@@ -13,7 +16,8 @@ class Paths:
         # No coverage testing of this because we can't easily configure
         # the app to have no author.
         author = "Unknown" if App.app.author is None else App.app.author
-        return Path.home() / f"AppData/Local/{author}/{App.app.formal_name}"
+        base_dir = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData/Local"))
+        return base_dir / author / App.app.formal_name
 
     # The rest are cached at the interface level:
 
@@ -28,3 +32,15 @@ class Paths:
 
     def get_logs_path(self):
         return self._app_dir / "Logs"
+
+    def get_desktop_path(self):
+        return platformdirs.user_desktop_path()
+
+    def get_documents_path(self):
+        return platformdirs.user_documents_path()
+
+    def get_downloads_path(self):
+        return platformdirs.user_downloads_path()
+
+    def get_pictures_path(self):
+        return platformdirs.user_pictures_path()
