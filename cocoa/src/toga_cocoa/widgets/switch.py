@@ -207,8 +207,7 @@ class CheckboxToggle(Toggle):
         self.interface.intrinsic.height = height
 
 
-def Switch(interface):
-    actual_role = determine_actual_toggle_role(interface._role)
-    if actual_role == SwitchRole.SWITCH:
-        return SwitchToggle(interface)
-    return CheckboxToggle(interface)
+def switch_for_role(role: SwitchRole) -> type[Toggle]:
+    if determine_actual_toggle_role(role) == SwitchRole.SWITCH:
+        return SwitchToggle
+    return CheckboxToggle

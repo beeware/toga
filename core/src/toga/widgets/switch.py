@@ -67,7 +67,11 @@ class Switch(Widget):
         return self._role
 
     def _create(self) -> Any:
-        return self.factory.Switch(interface=self)
+        try:
+            switch_class = self.factory.switch_for_role(role=self.role)
+            return switch_class(interface=self)
+        except NotImplementedError:
+            return self.factory.Switch(interface=self)
 
     @property
     def text(self) -> str:
