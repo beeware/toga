@@ -45,12 +45,7 @@ async def container_probe(widget):
 @pytest.fixture
 async def other(widget):
     """A separate widget that can take focus"""
-    if toga.backend in {"toga_winui3"}:
-        # FIXME: Remove this block when TextInput is implemented on WinUI 3.
-        other = toga.Button()
-    else:
-        other = toga.TextInput()
-
+    other = toga.TextInput()
     widget.parent.add(other)
     return other
 

@@ -7,7 +7,6 @@ from toga.constants import CENTER
 from toga.style import Pack
 from toga.style.pack import RIGHT, SERIF
 
-from ..conftest import skip_on_backends
 from ..data import TEXTS
 from .conftest import build_cleanup_test
 from .probe import get_probe
@@ -27,12 +26,6 @@ from .properties import (  # noqa: F401
     test_placeholder_focus,
     test_readonly,
     test_text_align,
-)
-
-skip_on_backends(
-    "toga_winui3",
-    reason="TextInput is not implemented on this backend.",
-    allow_module_level=True,
 )
 
 
@@ -232,8 +225,20 @@ async def test_on_confirm(widget, probe):
     handler.assert_called_once_with(widget)
 
 
-async def test_validation(widget, probe):
+@pytest.mark.parametrize(
+    "has_focus",
+    [True, False],
+)
+async def test_validation(widget, probe, other, other_probe, has_focus):
     "Input is continuously validated"
+
+    # Test validation with and without focus.
+    if has_focus:
+        add_character = probe.type_character
+    else:
+
+        async def add_character(char):
+            widget.value = widget.value + char
 
     def even_sum_of_digits(text):
         total = 0
@@ -248,7 +253,11 @@ async def test_validation(widget, probe):
 
     widget.validators = [even_sum_of_digits]
     widget.value = "Test 1"
-    widget.focus()
+
+    if has_focus:
+        widget.focus()
+    else:
+        other.focus()
 
     await probe.redraw("Text is initially invalid (1)")
     assert not widget.is_valid
@@ -257,21 +266,26 @@ async def test_validation(widget, probe):
     await probe.redraw("Cleared content; now valid (0)")
     assert widget.is_valid
 
-    await probe.type_character("3")
+    await add_character("3")
     await probe.redraw("Typed a 3; now invalid (3)")
     assert not widget.is_valid
 
-    await probe.type_character("1")
+    await add_character("1")
     await probe.redraw("Typed a 1; now valid (4)")
     assert widget.is_valid
 
-    await probe.type_character("4")
+    await add_character("4")
     await probe.redraw("Typed a 4; still valid (8)")
     assert widget.is_valid
 
-    await probe.type_character("3")
+    await add_character("3")
     await probe.redraw("Typed a 3; now invalid (11)")
     assert not widget.is_valid
+
+    if has_focus:
+        assert probe.has_focus
+    else:
+        assert other_probe.has_focus
 
 
 async def test_text_value(widget, probe):

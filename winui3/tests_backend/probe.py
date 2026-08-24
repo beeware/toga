@@ -17,7 +17,9 @@ from win32more.Windows.Win32.UI.Input.KeyboardAndMouse import (
     MOUSEINPUT,
     VK_ESCAPE,
     VK_RETURN,
+    VK_SHIFT,
     SendInput,
+    VkKeyScan,
 )
 from win32more.Windows.Win32.UI.WindowsAndMessaging import (
     GetCursorPos,
@@ -25,6 +27,8 @@ from win32more.Windows.Win32.UI.WindowsAndMessaging import (
 )
 
 import toga
+
+KEY_CODES = {"<esc>": VK_ESCAPE}
 
 
 class BaseProbe:
@@ -100,6 +104,10 @@ class BaseProbe:
             if toga.App.app.run_slow or wait_for is None:
                 await asyncio.sleep(delay)
             else:
+                # Add a default delay for wait_for, since WinUI 3 as asynchronous events
+                # that need to be awaited.
+                delay = max(1, delay)
+
                 delta = 0.1
                 interval = 0.0
                 while not wait_for() and interval < delay:
@@ -173,6 +181,25 @@ class BaseProbe:
 
     async def _keyboard_escape(self):
         await self._send_key(VK_ESCAPE)
+
+    async def type_character(self, char):
+        try:
+            key_code = KEY_CODES[char]
+            shift_pressed = False
+        except KeyError:
+            assert len(char) == 1, char
+            # learn.microsoft.com/windows/win32/api/winuser/nf-winuser-vkkeyscanw
+            short = VkKeyScan(char)
+            key_code = short & 0b11111111
+            shift_pressed = ((short >> 8) & 0b11111111) == 1
+
+        if shift_pressed:
+            await self._send_key(key_code=VK_SHIFT, up=False)
+
+        await self._send_key(key_code=key_code)
+
+        if shift_pressed:
+            await self._send_key(key_code=VK_SHIFT, down=False)
 
     async def _wait_for_focus(self, native_object):
         """Attempts to set the input focus on a WinUI 3 object for 2 seconds."""
