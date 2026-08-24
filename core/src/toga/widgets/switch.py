@@ -69,7 +69,7 @@ class Switch(Widget):
     def _create(self) -> Any:
         try:
             switch_class = self.factory.switch_for_role(role=self.role)
-            return switch_class(interface=self)
+            return switch_class(interface=self)  # pragma: no cover
         except NotImplementedError:
             return self.factory.Switch(interface=self)
 
