@@ -62,7 +62,7 @@ def determine_actual_toggle_role(
     return role
 
 
-class BaseToggle(Widget, ABC):
+class Toggle(Widget, ABC):
     native: TogaCheckbox | TogaView
     switch_native: TogaSwitch | TogaCheckbox
     label_native: NSTextField | None
@@ -94,7 +94,7 @@ class BaseToggle(Widget, ABC):
             self.native.drawsBackground = True
 
 
-class SwitchToggle(BaseToggle):
+class SwitchToggle(Toggle):
     def create(self):
         self.native = TogaView.alloc().init()
 
@@ -176,7 +176,7 @@ class SwitchToggle(BaseToggle):
         self.interface.intrinsic.height = height
 
 
-class CheckboxToggle(BaseToggle):
+class CheckboxToggle(Toggle):
     def create(self):
         self.native = TogaCheckbox.alloc().init()
         self.native.interface = self.interface
