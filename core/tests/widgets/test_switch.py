@@ -25,6 +25,7 @@ def test_widget_created(switch):
     assert not switch.value
     assert switch.on_change._raw is None
     assert switch.enabled
+    assert switch.role
 
 
 def test_widget_created_explicit(switch):

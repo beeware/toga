@@ -39,6 +39,6 @@ class _SwitchProbe(_CheckboxProbe):
 
 # noinspection PyPep8Naming
 def SwitchProbe(widget):
-    if widget._role in {SwitchRole.SWITCH, SwitchRole.MAJOR}:
+    if widget.role in {SwitchRole.SWITCH, SwitchRole.MAJOR}:
         return _SwitchProbe(widget)
     return _CheckboxProbe(widget)
