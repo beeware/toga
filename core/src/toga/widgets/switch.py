@@ -36,8 +36,9 @@ class Switch(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
-        :param role: The role of this switch.
-            On supported platforms, this determines the appearance of the switch.
+        :param role: The role this switch will play in the user interface.
+            The role will be used to determine the appropriate visual
+            appearance for the widget, following platform UI guidelines.
         :param value: The initial value for the switch.
         :param on_change: A handler that will be invoked when the switch changes
             value.
