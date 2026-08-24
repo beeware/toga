@@ -6,7 +6,7 @@ from toga_cocoa.libs import NSButton, NSView
 from .base import SimpleProbe
 
 
-class CheckboxSwitchProbe(SimpleProbe):
+class _CheckboxProbe(SimpleProbe):
     native_class = NSButton
 
     @property
@@ -18,7 +18,7 @@ class CheckboxSwitchProbe(SimpleProbe):
         xfail("Can't get/set the text color of a switch on macOS")
 
 
-class SwitchSwitchProbe(CheckboxSwitchProbe):
+class _SwitchProbe(_CheckboxProbe):
     native_class = NSView
 
     async def press(self):
@@ -40,5 +40,5 @@ class SwitchSwitchProbe(CheckboxSwitchProbe):
 # noinspection PyPep8Naming
 def SwitchProbe(widget):
     if widget._role in {SwitchRole.SWITCH, SwitchRole.MAJOR}:
-        return SwitchSwitchProbe(widget)
-    return CheckboxSwitchProbe(widget)
+        return _SwitchProbe(widget)
+    return _CheckboxProbe(widget)
