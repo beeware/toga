@@ -70,19 +70,35 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed (WinUI 3)/Config"
+        return Path.home() / "AppData/Local/Tiberius Yak/testbed-winui3/Config"
 
     @property
     def data_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed (WinUI 3)/Data"
+        return Path.home() / "AppData/Local/Tiberius Yak/testbed-winui3/Data"
 
     @property
     def cache_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed (WinUI 3)/Cache"
+        return Path.home() / "AppData/Local/Tiberius Yak/testbed-winui3/Cache"
 
     @property
     def logs_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed (WinUI 3)/Logs"
+        return Path.home() / "AppData/Local/Tiberius Yak/testbed-winui3/Logs"
+
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def downloads_path(self):
+        return Path.home() / "Downloads"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
 
     ####################################################################################
     # Menu tests

@@ -113,6 +113,7 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    "platformdirs >= 4.1",
     "toga-core == {version}",
     # Specify the version of the Windows App SDK to be used.
     "win32more-Microsoft.WindowsAppSDK == 0.8.2.3.1",
