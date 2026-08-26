@@ -1,14 +1,11 @@
 from travertino.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from travertino.size import at_least
 from win32more.Microsoft.UI.Xaml import (
-    HorizontalAlignment,
     TextAlignment,
-    VerticalAlignment,
 )
-from win32more.Microsoft.UI.Xaml.Controls import Grid, TextBlock
+from win32more.Microsoft.UI.Xaml.Controls import StackPanel, TextBlock
 
 from ..colors import native_brush
-from ..libs.misc import column_definition_star, row_definition_auto
 from ..libs.nativeevents import EventsHandledMixin
 from .base import Widget
 from .properties.native import NativeProperties
@@ -38,12 +35,7 @@ class LabelText(EventsHandledMixin):
         self._min_width = 0
         self._min_height = 0
 
-        Grid.SetRow(self.native, 0)
-        Grid.SetColumn(self.native, 0)
         label.native.Children.Append(self.native)
-
-        self.native.HorizontalAlignment = HorizontalAlignment.Stretch
-        self.native.VerticalAlignment = VerticalAlignment.Stretch
 
     @property
     def container(self):
@@ -63,15 +55,12 @@ class Label(Widget):
     def create(self):
         # Setting native_cls defines self.native and means that events are managed by
         # the nativeevents module.
-        self.native_cls = Grid
+        self.native_cls = StackPanel
 
         # Label cannot receive input focus, so remove it from the tab sequence.
         self.native.IsTabStop = False
 
         self._background_properties = self._native_properties
-
-        self.native.ColumnDefinitions.Append(column_definition_star(1))
-        self.native.RowDefinitions.Append(row_definition_auto())
 
         self.label_text = LabelText(self)
         self._native_properties = self.label_text._native_properties

@@ -1,11 +1,11 @@
-from win32more.Microsoft.UI.Xaml.Controls import Grid, TextBlock
+from win32more.Microsoft.UI.Xaml.Controls import StackPanel, TextBlock
 
 from .base import SimpleProbe
 from .properties import brush_to_color, toga_x_text_align
 
 
 class LabelProbe(SimpleProbe):
-    native_class = Grid
+    native_class = StackPanel
 
     def __init__(self, widget):
         super().__init__(widget)
