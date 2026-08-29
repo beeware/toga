@@ -123,5 +123,7 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    "pillow >= 10.0.0",
+    "pytest",
     "toga-core == {version}",
 ]
