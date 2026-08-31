@@ -64,12 +64,6 @@ class ScrollContainer(Widget):
                 partial(self.container.make_dirty, self)
             )
 
-    def set_app(self, app):
-        self.interface.content.app = app
-
-    def set_window(self, window):
-        self.interface.content.window = window
-
     def rehint(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             min_width = self.interface._MIN_WIDTH

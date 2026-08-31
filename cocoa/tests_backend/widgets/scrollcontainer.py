@@ -44,6 +44,9 @@ class ScrollContainerProbe(SimpleProbe):
             NSScrollViewDidEndLiveScrollNotification, object=self.native
         )
 
+    async def scroller_style_changed(self):
+        self.native.scrollerStyleChanged_(None)
+
     async def wait_for_scroll_completion(self):
         # No animation associated with scroll, so this is a no-op
         pass
