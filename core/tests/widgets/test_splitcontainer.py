@@ -412,7 +412,9 @@ def test_set_content_invalid(splitcontainer, content, message):
         splitcontainer.content = content
 
 
-def test_set_content_invalid_keeps_previous_content(app, window, splitcontainer, content1, content2):
+def test_set_content_invalid_keeps_previous_content(
+    app, window, splitcontainer, content1, content2
+):
     """A failed content assignment must not orphan the widgets currently shown."""
     # Lifecycle: the split container (and its content) must be attached to an
     # app and a window for the content to be considered "in" the app.
