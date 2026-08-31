@@ -597,6 +597,10 @@ NSScrollElasticityAutomatic = 0
 NSScrollElasticityNone = 1
 NSScrollElasticityAllowed = 2
 
+NSPreferredScrollerStyleDidChangeNotification = objc_const(
+    appkit, "NSPreferredScrollerStyleDidChangeNotification"
+)
+
 NSScrollViewDidLiveScrollNotification = objc_const(
     appkit, "NSScrollViewDidLiveScrollNotification"
 )

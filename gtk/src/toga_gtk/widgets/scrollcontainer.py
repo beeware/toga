@@ -1,3 +1,6 @@
+import asyncio
+from functools import partial
+
 from travertino.size import at_least
 
 from toga.handlers import WeakrefCallable
@@ -27,6 +30,7 @@ class ScrollContainer(Widget):
         self.native.set_overlay_scrolling(True)
 
         self.document_container = TogaContainer()
+        self.document_container.on_recompute = WeakrefCallable(self.on_recompute)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.add(self.document_container)
         else:  # pragma: no-cover-if-gtk3
@@ -44,6 +48,10 @@ class ScrollContainer(Widget):
         else:  # pragma: no-cover-if-gtk3
             pass
 
+    def on_recompute(self, container):
+        # If the content recomputes, rehint this parent widget next.
+        asyncio.get_running_loop().call_soon(partial(self.container.make_dirty, self))
+
     def set_app(self, app):
         self.interface.content.app = app
 
@@ -52,8 +60,16 @@ class ScrollContainer(Widget):
 
     def rehint(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+            min_width = self.interface._MIN_WIDTH
+            min_height = self.interface._MIN_HEIGHT
+            if self.interface.content:
+                if not self.interface.horizontal:
+                    min_width = max(min_width, self.document_container.min_width)
+                if not self.interface.vertical:
+                    min_height = max(min_height, self.document_container.min_height)
+
+            self.interface.intrinsic.width = at_least(min_width)
+            self.interface.intrinsic.height = at_least(min_height)
         else:  # pragma: no-cover-if-gtk3
             pass
 

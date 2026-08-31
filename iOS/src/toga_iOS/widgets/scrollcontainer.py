@@ -1,3 +1,5 @@
+import asyncio
+
 from rubicon.objc import (
     SEL,
     CGRectMake,
@@ -81,20 +83,34 @@ class ScrollContainer(Widget):
         # bounds
         self.document_container.native.frame = CGRectMake(0, 0, width, height)
 
+        previous_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        self.rehint()
+        if previous_intrinsic_size != (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        ):
+            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
+
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        min_width = self.interface._MIN_WIDTH
+        min_height = self.interface._MIN_HEIGHT
+        if self.interface.content:
+            if not self.interface.horizontal:
+                min_width = max(min_width, self.interface.content.layout.min_width)
+            if not self.interface.vertical:
+                min_height = max(min_height, self.interface.content.layout.min_height)
+
+        self.interface.intrinsic.width = at_least(min_width)
+        self.interface.intrinsic.height = at_least(min_height)
 
     def get_vertical(self):
         return self._allow_vertical
 
     def set_vertical(self, value):
         self._allow_vertical = value
-        # If the scroll container has content, we need to force a refresh
-        # to let the scroll container know how large its content is.
-        if self.interface.content:
-            self.interface.refresh()
-
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.interface.on_scroll()
@@ -104,11 +120,6 @@ class ScrollContainer(Widget):
 
     def set_horizontal(self, value):
         self._allow_horizontal = value
-        # If the scroll container has content, we need to force a refresh
-        # to let the scroll container know how large its content is.
-        if self.interface.content:
-            self.interface.refresh()
-
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.interface.on_scroll()

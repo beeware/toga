@@ -1,8 +1,10 @@
+import asyncio
 from decimal import ROUND_DOWN
 
 from System.Drawing import Point
 from System.Windows.Forms import Panel, SystemInformation
 from travertino.node import Node
+from travertino.size import at_least
 
 from toga.handlers import WeakrefCallable
 from toga_winforms.container import Container
@@ -32,6 +34,8 @@ class ScrollContainer(Widget, Container):
         self.native = Panel()
         self.native.AutoScroll = True
         Container.__init__(self, self.native)
+        self._horizontal_scrollbar_visible = False
+        self._vertical_scrollbar_visible = False
 
         # The Scroll event only fires on direct interaction with the scroll bar. It
         # doesn't fire when using the mouse wheel, and it doesn't fire when setting
@@ -58,22 +62,29 @@ class ScrollContainer(Widget, Container):
         # Temporarily reduce container size to account for scroll bars (see explanation
         # at the top of this file).
         def apply_insets():
-            need_scrollbar = False
-            if self.vertical and (layout.height > self.height):
-                need_scrollbar = True
+            vertical_scrollbar_visible = self.vertical and (layout.height > self.height)
+            horizontal_scrollbar_visible = self.horizontal and (
+                layout.width > self.width
+            )
+            if vertical_scrollbar_visible:
                 self.native_width = inset_width
-            if self.horizontal and (layout.width > self.width):
-                need_scrollbar = True
+            if horizontal_scrollbar_visible:
                 self.native_height = inset_height
-            return need_scrollbar
+            return horizontal_scrollbar_visible, vertical_scrollbar_visible
 
-        if apply_insets():
+        scrollbars_visible = apply_insets()
+        if any(scrollbars_visible):
             # Bypass Widget.refresh to avoid a recursive call to `refreshed`.
             Node.refresh(self.interface.content, self)
 
             # In borderline cases, adding one scroll bar may cause the other one to be
             # needed as well.
-            apply_insets()
+            scrollbars_visible = apply_insets()
+
+        (
+            self._horizontal_scrollbar_visible,
+            self._vertical_scrollbar_visible,
+        ) = scrollbars_visible
 
         # Crop any non-scrollable dimensions to the available size.
         self.apply_layout(
@@ -89,6 +100,40 @@ class ScrollContainer(Widget, Container):
         # on dpi scaling changes.
         self.native.AutoScroll = False
         self.native.AutoScroll = True
+
+        previous_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        self.rehint()
+        if previous_intrinsic_size != (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        ):
+            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
+
+    def rehint(self):
+        min_width = self.interface._MIN_WIDTH
+        min_height = self.interface._MIN_HEIGHT
+        if self.interface.content:
+            if not self.interface.horizontal:
+                min_width = self.interface.content.layout.min_width
+                if self._vertical_scrollbar_visible:
+                    min_width += self.scale_out(
+                        SystemInformation.VerticalScrollBarWidth
+                    )
+                min_width = max(min_width, self.interface._MIN_WIDTH)
+
+            if not self.interface.vertical:
+                min_height = self.interface.content.layout.min_height
+                if self._horizontal_scrollbar_visible:
+                    min_height += self.scale_out(
+                        SystemInformation.HorizontalScrollBarHeight
+                    )
+                min_height = max(min_height, self.interface._MIN_HEIGHT)
+
+        self.interface.intrinsic.width = at_least(min_width)
+        self.interface.intrinsic.height = at_least(min_height)
 
     def get_horizontal(self):
         return self.horizontal
