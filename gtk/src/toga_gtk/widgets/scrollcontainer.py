@@ -15,10 +15,10 @@ class ScrollContainer(Widget):
         self.native = Gtk.ScrolledWindow()
 
         self.native.get_hadjustment().connect(
-            "changed", WeakrefCallable(self.gtk_on_changed)
+            "value-changed", WeakrefCallable(self.gtk_on_value_changed)
         )
         self.native.get_vadjustment().connect(
-            "changed", WeakrefCallable(self.gtk_on_changed)
+            "value-changed", WeakrefCallable(self.gtk_on_value_changed)
         )
 
         # Set this minimum size of scroll windows because we must reserve space for
@@ -36,7 +36,7 @@ class ScrollContainer(Widget):
         else:  # pragma: no-cover-if-gtk3
             pass
 
-    def gtk_on_changed(self, *args):
+    def gtk_on_value_changed(self, *args):
         self.interface.on_scroll()
 
     def set_content(self, widget):

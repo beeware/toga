@@ -92,8 +92,9 @@ async def test_content_size_rehint(widget, probe, main_window):
     fixed_size_window = toga.platform.current_platform in {"android", "iOS"}
     original_window_size = main_window.size
     content_width = probe.width + 200
-    content_height = probe.height + 200
-    widget.content = toga.Box(style=Pack(width=content_width, height=content_height))
+    widget.content = toga.Box(
+        style=Pack(width=content_width, height=widget._MIN_HEIGHT)
+    )
     widget.horizontal = False
     widget.vertical = True
 
@@ -105,12 +106,23 @@ async def test_content_size_rehint(widget, probe, main_window):
         ),
     )
 
-    assert widget.intrinsic.width.value >= content_width
+    assert widget.intrinsic.width.value == approx(
+        content_width + probe.frame_inset, abs=1
+    )
     assert widget.intrinsic.height.value == widget._MIN_HEIGHT
     if not fixed_size_window:
         assert probe.width >= content_width
-        assert probe.height < content_height
         assert probe.document_width >= content_width
+
+    content_height = probe.height + 200
+    widget.content.style.height = content_height
+    await probe.redraw(
+        "Content is tall enough to show the vertical scrollbar",
+        wait_for=lambda: (
+            probe.document_height >= content_height
+            and widget.intrinsic.width.value >= content_width + probe.scrollbar_inset
+        ),
+    )
 
     widget.horizontal = True
     widget.vertical = False
