@@ -12,6 +12,8 @@ from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -20,9 +22,10 @@ def widget(app):
     return toga.ImageView()
 
 
-def test_create_empty(widget):
+def test_create_empty(app, widget):
     """An empty ImageView can be created."""
     # interface/impl round trips
+    put_in_window(widget, clear_log=False)
     assert widget._impl.interface is widget
     assert_action_performed(widget, "create ImageView")
     assert_action_performed_with(widget, "set image", image=None)
@@ -43,6 +46,7 @@ def test_create_from_toga_image(app):
         # A style property
         width=256,
     )
+    put_in_window(widget, clear_log=False)
 
     # Interface/impl round trips
     assert widget._impl.interface is widget
@@ -85,9 +89,11 @@ def test_focus_noop(widget):
     assert_action_not_performed(widget, "focus")
 
 
-def test_set_image_str(widget):
+def test_set_image_str(app, widget):
     """The image can be set with a string."""
+    window = put_in_window(widget)
     widget.image = ABSOLUTE_FILE_PATH
+    simulate_event_loop_refresh(window)
 
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
@@ -96,9 +102,11 @@ def test_set_image_str(widget):
     assert widget.image.path == ABSOLUTE_FILE_PATH
 
 
-def test_set_image_path(widget):
+def test_set_image_path(app, widget):
     """The image can be set with a Path."""
+    window = put_in_window(widget)
     widget.image = Path(ABSOLUTE_FILE_PATH)
+    simulate_event_loop_refresh(window)
 
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
@@ -107,10 +115,13 @@ def test_set_image_path(widget):
     assert widget.image.path == ABSOLUTE_FILE_PATH
 
 
-def test_set_image(widget):
+def test_set_image(app, widget):
     """The image can be set with an Image instance."""
+    window = put_in_window(widget)
     image = toga.Image(Path(ABSOLUTE_FILE_PATH))
     widget.image = image
+    simulate_event_loop_refresh(window)
+
     assert_action_performed_with(widget, "set image", image=image)
     assert_action_performed(widget, "refresh")
 
@@ -122,7 +133,10 @@ def test_set_image_none(app):
     widget = toga.ImageView(image=ABSOLUTE_FILE_PATH)
     assert widget.image is not None
 
+    window = put_in_window(widget)
     widget.image = None
+    simulate_event_loop_refresh(window)
+
     assert_action_performed_with(widget, "set image", image=None)
     assert_action_performed(widget, "refresh")
 
