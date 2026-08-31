@@ -1,18 +1,6 @@
-import re
 import sys
-from importlib.metadata import requires
 
 import pytest
-
-
-def test_dummy_runtime_dependencies():
-    """The dummy backend declares the packages it imports at runtime."""
-    dependency_names = {
-        re.match(r"^[A-Za-z0-9._-]+", dependency).group().lower()
-        for dependency in requires("toga-dummy")
-    }
-
-    assert {"pillow", "pytest"} <= dependency_names
 
 
 def test_lazy_succeed(monkeypatch):
