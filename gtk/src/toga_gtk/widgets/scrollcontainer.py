@@ -49,8 +49,20 @@ class ScrollContainer(Widget):
             pass
 
     def on_recompute(self, container):
-        # If the content recomputes, rehint this parent widget next.
-        asyncio.get_running_loop().call_soon(partial(self.container.make_dirty, self))
+        # If the content recomputes, rehint this widget immediately so that an
+        # unchanged minimum doesn't trigger another parent layout.
+        previous_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        self.rehint()
+        if self.container and previous_intrinsic_size != (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        ):
+            asyncio.get_running_loop().call_soon(
+                partial(self.container.make_dirty, self)
+            )
 
     def set_app(self, app):
         self.interface.content.app = app
