@@ -55,6 +55,7 @@ class MenuStatusIcon(StatusIcon):
 class StatusIconSet:
     def __init__(self, interface):
         self.interface = interface
+        self._menu_items = {}
 
     def _submenu(self, group, group_cache):
         try:
@@ -74,6 +75,9 @@ class StatusIconSet:
         This gets called on App creation, and then on any changes to the status icon
         command set.
         """
+        for menu_item, cmd in self._menu_items.items():
+            cmd._impl.native.remove(menu_item)
+
         # Menu status icons are the only icons that have extra construction needs.
         # Clear existing menu items
         for item in self.interface._menu_status_icons:
@@ -93,6 +97,7 @@ class StatusIconSet:
         }
         # Map the COMMANDS group to the primary status icon's menu.
         group_cache[Group.COMMANDS] = primary_group._impl.native.contextMenu()
+        self._menu_items = {}
 
         for cmd in self.interface.commands:
             try:
@@ -106,4 +111,6 @@ class StatusIconSet:
                 if isinstance(cmd, Separator):
                     submenu.addSeparator()
                 else:
-                    submenu.addAction(cmd._impl.create_menu_item())
+                    menu_item = cmd._impl.create_menu_item()
+                    submenu.addAction(menu_item)
+                    self._menu_items[menu_item] = cmd

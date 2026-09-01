@@ -18,6 +18,7 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
+    supports_command_items = True
     # Disabling the close button requires overriding a protected method
     # (https://stackoverflow.com/a/7301828), which Python.NET doesn't support
     # (https://github.com/pythonnet/pythonnet/issues/2192).
@@ -131,6 +132,14 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     def has_toolbar(self):
         return self._native_toolbar() is not None
+
+    def command_items(self, command):
+        return {
+            item
+            for items in (self.impl.menu_items, self.impl.toolbar_items)
+            for item, item_command in items.items()
+            if item_command is command
+        }
 
     def _native_toolbar_item(self, index):
         return self._native_toolbar().Items[index]

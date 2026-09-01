@@ -176,6 +176,7 @@ class TogaWindow(NSWindow):
                 native.setImage(item.icon._impl._as_size(32))
 
             item._impl.native.add(native)
+            self.impl.toolbar_items[native] = item
 
             native.setTarget_(self)
             native.setAction_(SEL("onToolbarButtonPress:"))
@@ -544,10 +545,15 @@ class MainWindow(Window):
 
         # By default, no toolbar
         self._toolbar_items = {}
+        self.toolbar_items = {}
         self.native_toolbar = None
 
     def __del__(self):
         self.purge_toolbar()
+
+    def close(self):
+        self.purge_toolbar()
+        super().close()
 
     def create_menus(self):
         # macOS doesn't have window-level menus
@@ -577,20 +583,7 @@ class MainWindow(Window):
             self.interface.content.refresh()
 
     def purge_toolbar(self):
-        while self._toolbar_items:
-            dead_items = []
-            _, cmd = self._toolbar_items.popitem()
-            # The command might have toolbar representations on multiple window
-            # toolbars, and may have other representations (at the very least, a menu
-            # item). Only clean up the representation pointing at *this* window. Do this
-            # in 2 passes so that we're not modifying the set of native objects while
-            # iterating over it.
-            for item_native in cmd._impl.native:
-                if (
-                    isinstance(item_native, NSToolbarItem)
-                    and item_native.target == self.native
-                ):
-                    dead_items.append(item_native)
-
-            for item_native in dead_items:
-                cmd._impl.native.remove(item_native)
+        for item_native, cmd in self.toolbar_items.items():
+            cmd._impl.native.remove(item_native)
+        self.toolbar_items = {}
+        self._toolbar_items = {}

@@ -11,6 +11,7 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
+    supports_command_items = GTK_VERSION < (4, 0)
     # GTK defers a lot of window behavior to the window manager, which means some
     # features either don't exist, or we can't guarantee they behave the way Toga would
     # like.
@@ -143,6 +144,13 @@ class WindowProbe(BaseProbe, DialogsMixin):
         if GTK_VERSION < (4, 0, 0):
             return self.impl.native_toolbar.get_n_items() > 0
         pytest.skip("Toolbars not implemented on GTK4")
+
+    def command_items(self, command):
+        return {
+            item
+            for item, item_command in self.impl.toolbar_items.items()
+            if item_command is command
+        }
 
     def assert_is_toolbar_separator(self, index, section=False):
         item = self.impl.native_toolbar.get_nth_item(index)

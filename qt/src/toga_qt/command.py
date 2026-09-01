@@ -36,14 +36,14 @@ class EditOperation:
 
 class Command:
     """
-    Command `native` property is a list of native widgets associated with the command.
+    Command `native` property is a set of native widgets associated with the command.
 
     Native widgets is of type QAction
     """
 
     def __init__(self, interface):
         self.interface = interface
-        self.native = []
+        self.native = set()
 
     @classmethod
     def standard(self, app, id):
@@ -138,6 +138,6 @@ class Command:
 
         item.setEnabled(self.interface.enabled)
 
-        self.native.append(item)
+        self.native.add(item)
 
         return item
