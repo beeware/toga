@@ -54,6 +54,8 @@ class LocationProbe(HardwareProbe):
         native_location = Location(LocationManager.FUSED_PROVIDER)
         native_location.setLatitude(location.lat)
         native_location.setLongitude(location.lng)
+        native_location.setAccuracy(10.0)  # Set horizontal accuracy
+        native_location.setVerticalAccuracyMeters(5.0)
         if altitude:
             native_location.setAltitude(altitude)
 
