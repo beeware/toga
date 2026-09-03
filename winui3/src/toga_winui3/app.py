@@ -64,11 +64,19 @@ class App:
 
     def _exiting(self):  # pragma: no cover
         """Final cleanup task to be called right before app exits."""
-        # Make sure that the Win32-based StatusIcons are closed correctly. This needs to
-        # be the final task in the `_exiting()` method since this may trigger the native
-        # application to exit.
+        # These last two tasks need to be the final tasks in the `_exiting()` method
+        # since they may trigger the native application to exit.
+
+        # Ensure that the Win32-based StatusIcons are closed correctly.
         for status_icon in self.interface.status_icons:
             status_icon._impl.remove()
+
+        # It can happen that not all of the native windows close on exit. So ensure that
+        # all the windows are closed.
+        for window in self.interface.windows:
+            window._impl.close()
+
+        print("_exiting - end")
 
     def main_loop(self):
         self.create()

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ctypes import byref
+from ctypes import POINTER, byref, cast, wintypes as wt
 from typing import TYPE_CHECKING
 
 from win32more.Microsoft.UI.Interop import GetWindowFromWindowId
@@ -31,6 +31,7 @@ from win32more.Microsoft.UI.Xaml.Controls import (
 from win32more.Microsoft.UI.Xaml.Media import MicaBackdrop
 from win32more.Windows.Graphics import PointInt32, SizeInt32
 from win32more.Windows.Win32.Foundation import RECT
+from win32more.Windows.Win32.System.WindowsProgramming import MulDiv
 from win32more.Windows.Win32.UI.HiDpi import AdjustWindowRectExForDpi, GetDpiForWindow
 from win32more.Windows.Win32.UI.WindowsAndMessaging import (
     GWL_EXSTYLE,
@@ -40,9 +41,12 @@ from win32more.Windows.Win32.UI.WindowsAndMessaging import (
     MF_ENABLED,
     MF_GRAYED,
     SC_CLOSE,
+    WM_DPICHANGED,
+    WM_NCDESTROY,
     EnableMenuItem,
     GetSystemMenu,
     GetWindowLongW,
+    SetWindowPos,
 )
 
 from toga import App
@@ -51,12 +55,39 @@ from toga.constants import WindowState
 from toga.types import Position, Size
 
 from .container import Container
+from .libs import win32constants as wc, win32structures as ws
+from .libs.comctl32 import (
+    DefSubclassProc,
+    RemoveWindowSubclass,
+    SetWindowSubclass,
+)
 from .libs.misc import column_definition_star, row_definition_auto, row_definition_star
 from .libs.nativeevents import events_handled
-from .screens import Screen as ScreenImpl, round_pixels
+from .screens import Screen as ScreenImpl
 
 if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
+
+
+"""
+A Note on DPI Changes
+
+The DPI change event on WinUI 3 has some issue that need to be worked around:
+ 1. The minimum size is set in phyisical pixels and are not automatically adjusted on
+    DPI change. These values need to be manually updated.
+ 2. WinUI 3 has a code layer that can't be overridden by Win32 subclassing. The WinUI 3
+    DPI change event will fire, even if the event is already handled by subclassing.
+    (This is true for both the WM_DPICHANGED and WM_GETDPISCALEDSIZE messages.)
+ 3. The default DPI change handling changes the CSS-pixel size of a window's client
+    area. That is, the client area is not scaled linearly. This arises because the
+    overall size of the window is scaled linearly, but the window border and tilebar
+    sizes are not.
+
+Fixing the client-area size after the WinUI 3 DPI handling proved to be unreliable due
+to conflicting message timing. So the approach here is to accept the size change and
+work from there. As a result the window will have different minimum sizes for different
+DPI values.
+"""
 
 
 class Window:
@@ -84,13 +115,7 @@ class Window:
         # In WinUI 3 a minimized window is not considered visible. This variable keeps
         # track of this property.
         self._visible = self.native.Visible
-        ########## Winui 3 startup debug ##########
         print(f"\ninitial - self._visible:{self._visible} {App.app.loop.time()}")
-        ###########################################
-
-        self._set_restrictions()
-        self.set_title(title)
-        self.set_size(size)
 
         # Use default behavior for position, rather than Toga's re-implementation.
         if position:
@@ -98,7 +123,13 @@ class Window:
 
         # Create the window content and attach it.
         self.create_content()
-        self.container_native.event_handler.Loaded += self.native_event_loaded
+
+        self._set_restrictions()
+        self.set_title(title)
+        self.set_size(size)
+
+        self._enable_win32_events()
+        self.win32_event_callbacks[WM_DPICHANGED] = self.win32_event_dpi_changed
 
     def create(self):
         self.native = App.app._impl.native_instance.CreateWindow()
@@ -117,10 +148,6 @@ class Window:
         self.container = Container(self.container_native, self.content_refreshed)
         self.native.Content = self.container_native
 
-    @property
-    def _hwnd(self):
-        return GetWindowFromWindowId(self.native.AppWindow.Id)
-
     def _set_restrictions(self):
         """Sets the window properties of being minimizable and resizable."""
         presenter, _ = self._presenter
@@ -137,19 +164,17 @@ class Window:
         else:
             self._disable_close_button()
 
-    def _disable_close_button(self):
-        # The close button is controlled by the system menu and not the title bar. For
-        # an explanation see:
-        # https://devblogs.microsoft.com/oldnewthing/20100604-00/?p=13803
-        hmenu = GetSystemMenu(self._hwnd, False)
-        EnableMenuItem(hmenu, SC_CLOSE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED)
+            presenter, _ = self._presenter
 
-    def _enable_close_button(self):
-        hmenu = GetSystemMenu(self._hwnd, False)
-        EnableMenuItem(hmenu, SC_CLOSE, MF_BYCOMMAND | MF_ENABLED)
+    def _set_minimum_size(self, min_size):
+        presenter, _ = self._presenter
+
+        if presenter.Kind == AppWindowPresenterKind.Overlapped:
+            presenter.PreferredMinimumWidth = min_size[0]
+            presenter.PreferredMinimumHeight = min_size[1]
 
     ####################################################################################
-    # Native event handlers.
+    # Native event callbacks.
     ####################################################################################
 
     def native_event_activated(self, sender, args):
@@ -191,25 +216,19 @@ class Window:
                     self._state_change_event(new_state)
 
                 if old_state == new_state:
-                    # Update the cached normal window size. Only update this value if
-                    # the DidSizeChange event wasn't triggered by a DPI-change event.
-                    if self._cached_dpi == self._dpi:
-                        self._cached_size = self.get_size()
-                        self.interface.on_resize()
+                    # Update the cached normal window size.
+                    self._cached_size = self.get_size()
+                    self.interface.on_resize()
 
         if args.DidVisibilityChange:
             # Minimize is not considered visible but it also doesn't trigger this event.
             if self.native.AppWindow.IsVisible:
                 self._visible = True
-                ########## Winui 3 startup debug ##########
                 print(f"\nEvent - self._visible:{self._visible} {App.app.loop.time()}")
-                ###########################################
                 self.interface.on_show()
             else:
                 self._visible = False
-                ########## Winui 3 startup debug ##########
                 print(f"\nEvent - self._visible:{self._visible} {App.app.loop.time()}")
-                ###########################################
                 self.interface.on_hide()
 
     def native_event_closing(self, sender, args):
@@ -229,33 +248,92 @@ class Window:
             # triggered in test conditions, so it is as marked no-cover.
             pass
 
-    def native_event_loaded(self, sender, args):
-        # Only add the `XamlRoot.Changed` event if the window is not already closed. The
-        # branch where the window is closed is not reliably hit during testing, so use
-        # no branch.
-        if not self.interface.closed:  # pragma: no branch
-            self.container_native.event_handler.XamlRoot_Changed += (
-                self.native_event_xaml_root_changed
-            )
+    ####################################################################################
+    # Win32 based methods
+    ####################################################################################
 
-    def native_event_xaml_root_changed(self, sender, args):
-        """Update the window minimum size after a DPI change."""
-        dpi = self._dpi
+    @property
+    def _hwnd(self):
+        return GetWindowFromWindowId(self.native.AppWindow.Id)
 
-        if self._cached_dpi != dpi:
-            # The minimum size of the window is set in physical pixels, so needs to be
-            # updated after the DPI changes.
-            self.content_refreshed()
+    @property
+    def _dpi(self):
+        """DPI is returned as 96 multiplied by the scale factor."""
+        return GetDpiForWindow(self._hwnd)
 
-            # Ensure that the window is the correct size.
-            if self._cached_state == WindowState.NORMAL:
-                self.set_size(self._cached_size)
+    def _decor_size(self, dpi):
+        """The height and width added by the title bar and the resize borders.
 
-            # Update the cached DPI. Note that the window `Changed` event with
-            # `DidSizeChange == True` is called synchronously after the `set_size` call.
-            # Since the cached DPI value is updated after this call the `on_resize` call
-            # is not triggered in this case (as desired).
-            self._cached_dpi = self._dpi
+        Note that the menu bar and the tile bar are included in the client area.
+        """
+        rect = RECT()
+        style = GetWindowLongW(self._hwnd, GWL_STYLE)
+        ex_style = GetWindowLongW(self._hwnd, GWL_EXSTYLE)
+
+        AdjustWindowRectExForDpi(byref(rect), style, False, ex_style, dpi)
+
+        return (rect.right - rect.left, rect.bottom - rect.top)
+
+    def _subclass_proc(
+        self,
+        hWnd: int,
+        uMsg: int,
+        wParam: int,
+        lParam: int,
+        uIdSubclass: int,
+        dwRefData: int,
+    ):
+        if uMsg in self.win32_event_callbacks:
+            result = self.win32_event_callbacks[uMsg](hWnd, wParam, lParam)
+
+            if result is not None:
+                return result
+
+        # Call the original window procedure
+        return DefSubclassProc(
+            wt.HWND(hWnd),
+            wt.UINT(uMsg),
+            wt.WPARAM(wParam),
+            wt.LPARAM(lParam),
+        )
+
+    def _enable_win32_events(self):
+        # Initialize the Win32 callbacks and handle WM_NCDESTROY by default. This is
+        # recommended by Raymond Chen here:
+        # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
+        self.win32_event_callbacks = {WM_NCDESTROY: self.win32_event_nc_destroy}
+
+        self._subclass_proc_native = ws.SUBCLASSPROC(self._subclass_proc)
+        SetWindowSubclass(self._hwnd, self._subclass_proc_native, 0, 0)
+
+    def win32_event_nc_destroy(self, hWnd, wParam, lParam):
+        RemoveWindowSubclass(hWnd, self._subclass_proc_native, 0)
+
+    def win32_event_dpi_changed(self, hWnd, wParam, lParam):
+        # This DPI-change event handling is essential the same as default, except that
+        # the minimum size is disabled before the window is resized, and the re-enabled
+        # afterwards. Since the new size matches the default handling, the WinUI 3 event
+        # won't conflict with the minimum size.
+        rect = cast(lParam, POINTER(wt.RECT)).contents
+
+        self._set_minimum_size((None, None))
+
+        width = rect.right - rect.left
+        height = rect.bottom - rect.top
+        SetWindowPos(self._hwnd, None, rect.left, rect.top, width, height, wc.SWP_DPI)
+
+        self._set_minimum_size(self._min_size)
+
+    def _disable_close_button(self):
+        # The close button is controlled by the system menu and not the title bar. For
+        # an explanation see:
+        # https://devblogs.microsoft.com/oldnewthing/20100604-00/?p=13803
+        hmenu = GetSystemMenu(self._hwnd, False)
+        EnableMenuItem(hmenu, SC_CLOSE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED)
+
+    def _enable_close_button(self):
+        hmenu = GetSystemMenu(self._hwnd, False)
+        EnableMenuItem(hmenu, SC_CLOSE, MF_BYCOMMAND | MF_ENABLED)
 
     ####################################################################################
     # Window properties
@@ -274,13 +352,8 @@ class Window:
     ####################################################################################
 
     def close(self):
-        # The XamlRoot event needs to be manually cleared to avoid memory access issues.
-        try:
-            self.container_native.event_handler.XamlRoot_Changed.clear()
-        except AttributeError:
-            # If the window is closed before the `Loaded` event, then XamlRoot will be
-            # None, and consequently will not have the `Changed` property.
-            del self.container_native.event_handler._event_registry["XamlRoot_Changed"]
+        # Remove the Win32 subclass to ensure that there are no dangling pointers.
+        self.win32_event_nc_destroy(self._hwnd, None, None)
 
         # The native event `Closing` is not called when the Close() method is called
         # programmatically.
@@ -302,14 +375,7 @@ class Window:
     ####################################################################################
 
     def content_refreshed(self):
-        presenter, _ = self._presenter
-
-        if presenter.Kind != AppWindowPresenterKind.Overlapped:
-            return
-
-        min_size = self.min_size
-        presenter.PreferredMinimumWidth = min_size.width
-        presenter.PreferredMinimumHeight = min_size.height
+        self._set_minimum_size(self._min_size)
 
     def set_content(self, widget):
         """Sets the content of the window's container to be the given Toga widget."""
@@ -328,20 +394,28 @@ class Window:
     # Example: For a 200% scale factor 1 css pixel is a 2x2 block of physical pixels.
     ####################################################################################
 
-    def _window_frame_size(self, dpi):
-        """The difference between `Bounds` and `AppWindow.Size` in physical pixels."""
-        rect = RECT()
-        style = GetWindowLongW(self._hwnd, GWL_STYLE)
-        ex_style = GetWindowLongW(self._hwnd, GWL_EXSTYLE)
-
-        AdjustWindowRectExForDpi(byref(rect), style, False, ex_style, dpi)
-
-        return (rect.right - rect.left, rect.bottom - rect.top)
-
     @property
-    def _dpi(self):
-        """DPI is returned as 96 multiplied by the scale factor."""
-        return GetDpiForWindow(self._hwnd)
+    def _min_size(self):
+        """The minimum size of the window in physical pixels (device pixels)."""
+        dpi = self._dpi
+        layout = self.interface.content.layout
+        decor_base = self._decor_size(96)
+
+        # Menu, toolbar and layout values are in CSS pixels. They are returned as floats
+        # but are actually integer valued.
+        menu_native = getattr(self, "menu_native", None)
+        menu_height = round(menu_native.ActualSize.Y) if menu_native else 0
+
+        toolbar_native = getattr(self, "toolbar_native", None)
+        toolbar_height = round(toolbar_native.ActualSize.Y) if toolbar_native else 0
+
+        # Compute the minimum values for the client area in physical pixels.
+        base_min_width = layout.min_width + decor_base[0]
+        base_min_height = (
+            layout.min_height + menu_height + toolbar_height + decor_base[1]
+        )
+
+        return Size(MulDiv(base_min_width, dpi, 96), MulDiv(base_min_height, dpi, 96))
 
     def get_size(self) -> Size:
         """Gets the size of the window in CSS pixels (effective pixels)."""
@@ -350,53 +424,19 @@ class Window:
         if self._cached_state == WindowState.MINIMIZED:
             return self._cached_size
 
-        # self.native.Bounds returns values in effective pixels, but they are not always
-        # integer values.
         return Size(
-            round_pixels(self.native.Bounds.Width),
-            round_pixels(self.native.Bounds.Height),
+            MulDiv(self.native.AppWindow.ClientSize.Width, 96, self._dpi),
+            MulDiv(self.native.AppWindow.ClientSize.Height, 96, self._dpi),
         )
 
     def set_size(self, size: SizeT):
         """Sets the size of the window in CSS pixels (effective pixels)."""
-        dpi = self._dpi
-
-        frame_size_physical = self._window_frame_size(dpi)
-        width_physical = round_pixels(size[0] * dpi / 96)
-        height_physical = round_pixels(size[1] * dpi / 96)
-
-        self.native.AppWindow.Resize(
-            SizeInt32(
-                width_physical + frame_size_physical[0],
-                height_physical + frame_size_physical[1],
-            )
+        size_physical = SizeInt32(
+            MulDiv(size[0], self._dpi, 96),
+            MulDiv(size[1], self._dpi, 96),
         )
 
-    @property
-    def min_size(self):
-        """The minimum size of the window in physical pixels (device pixels)."""
-        dpi = self._dpi
-        frame_size_physical = self._window_frame_size(dpi)
-
-        # Menu, toolbar and layout values are in CSS pixels.
-        menu_native = getattr(self, "menu_native", None)
-        menu_height = menu_native.ActualSize.Y if menu_native else 0
-
-        toolbar_native = getattr(self, "toolbar_native", None)
-        toolbar_height = toolbar_native.ActualSize.Y if toolbar_native else 0
-
-        layout = self.interface.content.layout
-
-        # Compute the minimum values for the client area in physical pixels.
-        client_min_width = round_pixels(layout.min_width * dpi / 96)
-        client_min_height = round_pixels(
-            (layout.min_height + menu_height + toolbar_height) * dpi / 96
-        )
-
-        return Size(
-            client_min_width + frame_size_physical[0],
-            client_min_height + frame_size_physical[1],
-        )
+        self.native.AppWindow.ResizeClient(size_physical)
 
     ####################################################################################
     # Window position (CSS pixels, see window size for terminology).
