@@ -121,6 +121,18 @@ class ScrollContainer(Widget):
 
         self.native.documentView.frame = NSMakeRect(0, 0, width, height)
 
+        # Setting the document frame determines which non-overlay scrollers are
+        # visible. Use the resulting viewport so a visible scroller doesn't create
+        # overflow in the other axis.
+        viewport_size = self.native.contentSize
+        width = viewport_size.width
+        height = viewport_size.height
+        if self.interface.horizontal:
+            width = max(self.interface.content.layout.width, width)
+        if self.interface.vertical:
+            height = max(self.interface.content.layout.height, height)
+        self.native.documentView.frame = NSMakeRect(0, 0, width, height)
+
         previous_intrinsic_size = (
             self.interface.intrinsic.width,
             self.interface.intrinsic.height,
@@ -195,21 +207,16 @@ class ScrollContainer(Widget):
                 control_size = vertical_scroller.controlSize
             else:
                 control_size = 0
-            frame_size_selector = (
-                "frameSizeForContentSize_horizontalScrollerClass_"
-                "verticalScrollerClass_borderType_controlSize_scrollerStyle_"
-            )
-            frame_size_for_content_size = getattr(NSScrollView, frame_size_selector)
-            frame_size = frame_size_for_content_size(
+            frame_size = NSScrollView.frameSizeForContentSize(
                 NSSize(
                     self.interface.content.layout.min_width,
                     self.interface.content.layout.min_height,
                 ),
-                horizontal_scroller_class,
-                vertical_scroller_class,
-                self.native.borderType,
-                control_size,
-                self.native.scrollerStyle,
+                horizontalScrollerClass=horizontal_scroller_class,
+                verticalScrollerClass=vertical_scroller_class,
+                borderType=self.native.borderType,
+                controlSize=control_size,
+                scrollerStyle=self.native.scrollerStyle,
             )
 
             if not self.interface.horizontal:
@@ -225,7 +232,7 @@ class ScrollContainer(Widget):
             0,
             int(
                 self.native.documentView.bounds.size.height
-                - self.native.frame.size.height
+                - self.native.contentSize.height
             ),
         )
 
@@ -239,7 +246,7 @@ class ScrollContainer(Widget):
             0,
             int(
                 self.native.documentView.bounds.size.width
-                - self.native.frame.size.width
+                - self.native.contentSize.width
             ),
         )
 

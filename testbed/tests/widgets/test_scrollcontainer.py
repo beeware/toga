@@ -169,6 +169,23 @@ async def test_content_size_rehint(widget, probe, main_window):
     main_window.size = original_window_size
 
 
+async def test_legacy_scroller_geometry(widget, probe):
+    if not hasattr(probe, "use_legacy_scrollers"):
+        pytest.skip("requires Cocoa legacy scrollers")
+
+    await probe.use_legacy_scrollers()
+    widget.horizontal = False
+    await probe.redraw("Legacy horizontal scroller is disabled")
+    widget.horizontal = True
+    await probe.redraw("Legacy horizontal scroller is re-enabled")
+    assert probe.document_width == approx(probe.width - probe.scrollbar_inset, abs=1)
+
+    widget.vertical = False
+    widget.content = toga.Box(style=Pack(width=probe.width + 200))
+    await probe.redraw("Legacy vertical scroller is disabled")
+    assert probe.document_height == approx(probe.height - probe.scrollbar_inset, abs=1)
+
+
 async def test_clear_content(widget, probe, small_content):
     "Widget content can be cleared and reset"
     assert probe.document_width == approx(
