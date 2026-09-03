@@ -106,8 +106,9 @@ class ScrollContainer(Widget):
         self.native.refreshContent()
 
     def content_refreshed(self, container):
-        width = self.native.frame.size.width
-        height = self.native.frame.size.height
+        viewport_size = self.native.contentSize
+        width = viewport_size.width
+        height = viewport_size.height
 
         # If scrolling is enabled in a given axis, the document container
         # has a minimum size equal to the layout width in that axis.
@@ -121,17 +122,15 @@ class ScrollContainer(Widget):
 
         self.native.documentView.frame = NSMakeRect(0, 0, width, height)
 
-        # Setting the document frame determines which non-overlay scrollers are
-        # visible. Use the resulting viewport so a visible scroller doesn't create
-        # overflow in the other axis.
-        viewport_size = self.native.contentSize
-        width = viewport_size.width
-        height = viewport_size.height
-        if self.interface.horizontal:
-            width = max(self.interface.content.layout.width, width)
-        if self.interface.vertical:
-            height = max(self.interface.content.layout.height, height)
-        self.native.documentView.frame = NSMakeRect(0, 0, width, height)
+        # A non-overlay scroller changes the viewport used to lay out the content.
+        # Refresh once against that resolved viewport before finalizing the geometry.
+        resolved_viewport_size = self.native.contentSize
+        if (
+            viewport_size.width != resolved_viewport_size.width
+            or viewport_size.height != resolved_viewport_size.height
+        ):
+            self.native.refreshContent()
+            return
 
         previous_intrinsic_size = (
             self.interface.intrinsic.width,

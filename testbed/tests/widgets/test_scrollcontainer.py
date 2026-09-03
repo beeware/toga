@@ -457,6 +457,9 @@ async def test_vertical_scroll_small_content(widget, probe, small_content):
 
 async def test_horizontal_scroll(widget, probe, content, on_scroll):
     "The widget can be scrolled horizontally."
+    if hasattr(probe, "use_legacy_scrollers"):
+        await probe.use_legacy_scrollers()
+
     content.style.direction = ROW
     await probe.redraw("Content has been switched for a wide document")
 
