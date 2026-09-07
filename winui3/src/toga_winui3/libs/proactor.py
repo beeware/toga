@@ -301,7 +301,7 @@ class WinUI3ProactorEventLoop(asyncio.ProactorEventLoop):
         self.tick_scheduler.Interval = TimeSpan(delay)
         self.tick_scheduler.Start()
 
-    def tick(self, *args, **kwargs):  # pragma: no cover
+    def tick(self, *args, **kwargs):
         """Cause a single iteration of the event loop to run on the main GUI thread."""
         # FIXME: For some reason the queue timer doesn't work properly when the
         # following line is removed.
@@ -313,8 +313,9 @@ class WinUI3ProactorEventLoop(asyncio.ProactorEventLoop):
         not stopping).
         """
         # run_once_recurring is called asynchronously by the native WinForms loop. The
-        # tasks that triggered the call may have already been processed.
-        if len(self._ready) < 1 and len(self._scheduled) < 1:
+        # tasks that triggered the call may have already been processed. This is not hit
+        # consistently during testing, so use no cover.
+        if len(self._ready) < 1 and len(self._scheduled) < 1:  # pragma: no cover
             return
 
         try:
