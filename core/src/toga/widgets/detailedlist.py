@@ -187,6 +187,44 @@ class DetailedList(Widget):
         """
         return self._missing_value
 
+    def _as_text(self, value: object) -> str:
+        """Convert a raw value to a single-line display string (internal helper).
+
+        If the value is None, the widget's missing_value is used instead.
+        Only the first line of the string representation is returned, so
+        that titles and subtitles containing newline characters are not
+        rendered as multiple lines.
+        """
+        if value is None:
+            value = self.missing_value
+        text = str(value)
+        lines = text.splitlines()
+        return lines[0] if lines else ""
+
+    def _title(self, row: object) -> str:
+        """Retrieve the title for a row as a single-line display string.
+
+        Reads the title attribute (first accessor), substitutes missing_value
+        for None, and truncates at the first newline character.
+        """
+        return self._as_text(getattr(row, self._accessors[0], None))
+
+    def _subtitle(self, row: object) -> str:
+        """Retrieve the subtitle for a row as a single-line display string.
+
+        Reads the subtitle attribute (second accessor), substitutes missing_value
+        for None, and truncates at the first newline character.
+        """
+        return self._as_text(getattr(row, self._accessors[1], None))
+
+    def _icon(self, row: object) -> object:
+        """Retrieve the icon for a row.
+
+        Returns the icon object (third accessor), or None if the attribute
+        is absent or not set.
+        """
+        return getattr(row, self._accessors[2], None)
+
     @property
     def selection(self) -> Row | None:
         """The current selection of the table.

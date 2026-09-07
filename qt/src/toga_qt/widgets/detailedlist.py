@@ -459,8 +459,15 @@ class DetailedList(Widget):
         self.native_model = ListSourceModel(
             self.interface.data,
             {
-                Qt.ItemDataRole.UserRole: user_formatter,
-                Qt.ItemDataRole.DecorationRole: icon_formatter,
+                Qt.ItemDataRole.UserRole: lambda row, _: (
+                    self.interface._title(row),
+                    self.interface._subtitle(row),
+                ),
+                Qt.ItemDataRole.DecorationRole: lambda row, _: (
+                    icon._impl.native
+                    if (icon := self.interface._icon(row)) is not None
+                    else QIcon()
+                ),
             },
             parent=self.native,
         )

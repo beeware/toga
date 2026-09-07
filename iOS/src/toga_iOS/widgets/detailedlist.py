@@ -47,30 +47,11 @@ class TogaTableViewController(UITableViewController):
 
         value = self.interface.data[indexPath.item]
 
-        try:
-            label = getattr(value, self.interface.accessors[0])
-            if label is None:
-                cell.textLabel.text = self.interface.missing_value
-            else:
-                cell.textLabel.text = str(label)
-        except AttributeError:
-            cell.textLabel.text = self.interface.missing_value
+        cell.textLabel.text = self.interface._title(value)
+        cell.detailTextLabel.text = self.interface._subtitle(value)
 
-        try:
-            label = getattr(value, self.interface.accessors[1])
-            if label is None:
-                cell.detailTextLabel.text = self.interface.missing_value
-            else:
-                cell.detailTextLabel.text = str(label)
-        except AttributeError:
-            cell.detailTextLabel.text = self.interface.missing_value
-
-        try:
-            cell.imageView.image = getattr(
-                value, self.interface.accessors[2]
-            )._impl.native
-        except AttributeError:
-            cell.imageView.image = None
+        icon = self.interface._icon(value)
+        cell.imageView.image = None if icon is None else icon._impl.native
 
         return cell
 
