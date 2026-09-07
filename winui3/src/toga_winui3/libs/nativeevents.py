@@ -1,9 +1,18 @@
+from ctypes import wintypes as wt
 from typing import ClassVar
 
 from win32more import ComError
+from win32more.Windows.Win32.UI.WindowsAndMessaging import WM_NCDESTROY
 
 from toga import App
 from toga.handlers import WeakrefCallable
+
+from . import win32structures as ws
+from .comctl32 import (
+    DefSubclassProc,
+    RemoveWindowSubclass,
+    SetWindowSubclass,
+)
 
 """A handler to be used with WinUI 3 native events.
 
@@ -170,3 +179,51 @@ class EventsHandledMixin:
     def native_cls(self, cls):
         self._native_cls = cls
         self.native = events_handled(cls)
+
+
+########################################################################################
+# Win32 event handling
+########################################################################################
+
+
+class Win32EventHandler:
+    def __init__(self, hwnd):
+        self._hwnd = hwnd
+        self._subclass_proc_native = ws.SUBCLASSPROC(self._subclass_proc)
+
+        # Initialize the Win32 callbacks and handle WM_NCDESTROY by default. This is
+        # recommended by Raymond Chen here:
+        # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
+        self.callbacks = {WM_NCDESTROY: self.win32_event_nc_destroy}
+
+    def _subclass_proc(
+        self,
+        hWnd: int,
+        uMsg: int,
+        wParam: int,
+        lParam: int,
+        uIdSubclass: int,
+        dwRefData: int,
+    ):
+        if uMsg in self.callbacks:
+            result = self.callbacks[uMsg](hWnd, wParam, lParam)
+
+            if result is not None:
+                return result
+
+        # Call the original window procedure
+        return DefSubclassProc(
+            wt.HWND(hWnd),
+            wt.UINT(uMsg),
+            wt.WPARAM(wParam),
+            wt.LPARAM(lParam),
+        )
+
+    def enable(self):
+        SetWindowSubclass(self._hwnd, self._subclass_proc_native, 0, 0)
+
+    def disable(self):
+        self.win32_event_nc_destroy(self._hwnd, None, None)
+
+    def win32_event_nc_destroy(self, hWnd, wParam, lParam):
+        RemoveWindowSubclass(hWnd, self._subclass_proc_native, 0)

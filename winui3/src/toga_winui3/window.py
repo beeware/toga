@@ -42,7 +42,6 @@ from win32more.Windows.Win32.UI.WindowsAndMessaging import (
     MF_GRAYED,
     SC_CLOSE,
     WM_DPICHANGED,
-    WM_NCDESTROY,
     EnableMenuItem,
     GetSystemMenu,
     GetWindowLongW,
@@ -55,14 +54,9 @@ from toga.constants import WindowState
 from toga.types import Position, Size
 
 from .container import Container
-from .libs import win32constants as wc, win32structures as ws
-from .libs.comctl32 import (
-    DefSubclassProc,
-    RemoveWindowSubclass,
-    SetWindowSubclass,
-)
+from .libs import win32constants as wc
 from .libs.misc import column_definition_star, row_definition_auto, row_definition_star
-from .libs.nativeevents import events_handled
+from .libs.nativeevents import Win32EventHandler, events_handled
 from .screens import Screen as ScreenImpl
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -128,8 +122,9 @@ class Window:
         self.set_title(title)
         self.set_size(size)
 
-        self._enable_win32_events()
-        self.win32_event_callbacks[WM_DPICHANGED] = self.win32_event_dpi_changed
+        self.win32_events = Win32EventHandler(self._hwnd)
+        self.win32_events.enable()
+        self.win32_events.callbacks[WM_DPICHANGED] = self.win32_event_dpi_changed
 
     def create(self):
         self.native = App.app._impl.native_instance.CreateWindow()
@@ -274,41 +269,6 @@ class Window:
 
         return (rect.right - rect.left, rect.bottom - rect.top)
 
-    def _subclass_proc(
-        self,
-        hWnd: int,
-        uMsg: int,
-        wParam: int,
-        lParam: int,
-        uIdSubclass: int,
-        dwRefData: int,
-    ):
-        if uMsg in self.win32_event_callbacks:
-            result = self.win32_event_callbacks[uMsg](hWnd, wParam, lParam)
-
-            if result is not None:
-                return result
-
-        # Call the original window procedure
-        return DefSubclassProc(
-            wt.HWND(hWnd),
-            wt.UINT(uMsg),
-            wt.WPARAM(wParam),
-            wt.LPARAM(lParam),
-        )
-
-    def _enable_win32_events(self):
-        # Initialize the Win32 callbacks and handle WM_NCDESTROY by default. This is
-        # recommended by Raymond Chen here:
-        # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
-        self.win32_event_callbacks = {WM_NCDESTROY: self.win32_event_nc_destroy}
-
-        self._subclass_proc_native = ws.SUBCLASSPROC(self._subclass_proc)
-        SetWindowSubclass(self._hwnd, self._subclass_proc_native, 0, 0)
-
-    def win32_event_nc_destroy(self, hWnd, wParam, lParam):
-        RemoveWindowSubclass(hWnd, self._subclass_proc_native, 0)
-
     def win32_event_dpi_changed(self, hWnd, wParam, lParam):
         # This DPI-change event handling is essential the same as default, except that
         # the minimum size is disabled before the window is resized, and the re-enabled
@@ -323,6 +283,9 @@ class Window:
         SetWindowPos(self._hwnd, None, rect.left, rect.top, width, height, wc.SWP_DPI)
 
         self._set_minimum_size(self._min_size)
+
+        # Return 0 to mark this event as "processed".
+        return 0
 
     def _disable_close_button(self):
         # The close button is controlled by the system menu and not the title bar. For
@@ -353,7 +316,7 @@ class Window:
 
     def close(self):
         # Remove the Win32 subclass to ensure that there are no dangling pointers.
-        self.win32_event_nc_destroy(self._hwnd, None, None)
+        self.win32_events.disable()
 
         # The native event `Closing` is not called when the Close() method is called
         # programmatically.

@@ -1,4 +1,4 @@
-from ctypes import byref, sizeof, wintypes as wt
+from ctypes import byref, sizeof
 
 from win32more.Microsoft.UI.Interop import GetWindowFromWindowId
 from win32more.Microsoft.UI.Windowing import OverlappedPresenter
@@ -16,7 +16,6 @@ from win32more.Windows.Win32.Graphics.Gdi import ScreenToClient
 from win32more.Windows.Win32.UI.WindowsAndMessaging import (
     IDC_ARROW,
     WM_APP,
-    WM_NCDESTROY,
     LoadCursorW,
     SetCursor,
     SetForegroundWindow,
@@ -26,13 +25,8 @@ from toga import App, Icon
 from toga.command import Group, Separator
 
 from .libs import win32constants as wc, win32structures as ws
-from .libs.comctl32 import (
-    DefSubclassProc,
-    RemoveWindowSubclass,
-    SetWindowSubclass,
-)
 from .libs.misc import get_x_lparam, get_y_lparam, loword
-from .libs.nativeevents import events_handled
+from .libs.nativeevents import Win32EventHandler, events_handled
 from .libs.shell import Shell_NotifyIconW
 
 
@@ -69,12 +63,12 @@ class StatusIcon:
         overlapped_presenter = OverlappedPresenter(value=presenter.value)
         overlapped_presenter.SetBorderAndTitleBar(False, False)
 
-        # Setting "always on top" is needed for any menus will appear at the top.
+        # Setting "always on top" is needed so that any menus will appear at the top.
         overlapped_presenter.IsAlwaysOnTop = True
 
-        # Subclass the native_window to receive the WM_COMMAND messages.
-        self._pfn_subclass = ws.SUBCLASSPROC(self._subclass_proc)
-        SetWindowSubclass(self._hwnd, self._pfn_subclass, 0, 0)
+        self.win32_events = Win32EventHandler(self._hwnd)
+        self.win32_events.enable()
+        self.win32_events.callbacks[WM_APP + 1] = self.win32_event_app_1
 
         # Set the icon.
         icon_handle = self._icon_handle(self.interface.icon)
@@ -102,6 +96,7 @@ class StatusIcon:
     def remove(self):
         notify_icon_data = self._notify_icon_data(None)
         Shell_NotifyIconW(wc.NIM_DELETE, byref(notify_icon_data))
+        self.win32_events.disable()
         self.native_window.Close()
         self.native_window = None
 
@@ -109,32 +104,10 @@ class StatusIcon:
     def _hwnd(self):
         return GetWindowFromWindowId(self.native_window.AppWindow.Id)
 
-    def _subclass_proc(
-        self,
-        hWnd: int,
-        uMsg: int,
-        wParam: int,
-        lParam: int,
-        uIdSubclass: int,
-        dwRefData: int,
-    ):
-        # Remove the window subclass in the way recommended by Raymond Chen here:
-        # https://devblogs.microsoft.com/oldnewthing/20031111-00/?p=41883
-        if uMsg == WM_NCDESTROY:
-            RemoveWindowSubclass(hWnd, self._pfn_subclass, uIdSubclass)
-
-        elif uMsg == WM_APP + 1:
-            message = loword(lParam)
-            if message == wc.NIN_SELECT:
-                self.native_event_click(get_x_lparam(wParam), get_y_lparam(wParam))
-
-        # Call the original window procedure
-        return DefSubclassProc(
-            wt.HWND(hWnd),
-            wt.UINT(uMsg),
-            wt.WPARAM(wParam),
-            wt.LPARAM(lParam),
-        )
+    def win32_event_app_1(self, hWnd, wParam, lParam):
+        message = loword(lParam)
+        if message == wc.NIN_SELECT:
+            self.native_event_click(get_x_lparam(wParam), get_y_lparam(wParam))
 
     def native_event_click(self, x, y): ...
 
