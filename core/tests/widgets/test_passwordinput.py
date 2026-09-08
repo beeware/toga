@@ -62,3 +62,11 @@ def test_create_with_values():
 
     # Change handler hasn't been invoked
     on_change.assert_not_called()
+
+
+def test_spell_checking():
+    """Spell checking cannot be enabled for passwords."""
+    widget = toga.PasswordInput(spell_checking=True)
+    assert widget.spell_checking is False
+    widget.spell_checking = True
+    assert widget.spell_checking is False

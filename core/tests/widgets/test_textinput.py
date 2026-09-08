@@ -30,6 +30,7 @@ def test_widget_created():
     assert_action_performed(widget, "create TextInput")
 
     assert not widget.readonly
+    assert widget.spell_checking is True
     assert widget.placeholder == ""
     assert widget.value == ""
     assert widget._on_change._raw is None
@@ -53,6 +54,7 @@ def test_create_with_values():
         value="Some text",
         placeholder="A placeholder",
         readonly=True,
+        spell_checking=False,
         on_change=on_change,
         on_confirm=on_confirm,
         on_gain_focus=on_gain_focus,
@@ -66,6 +68,7 @@ def test_create_with_values():
 
     assert widget.id == "foobar"
     assert widget.readonly
+    assert widget.spell_checking is False
     assert widget.placeholder == "A placeholder"
     assert widget.value == "Some text"
     assert widget._on_change._raw == on_change
@@ -355,3 +358,22 @@ def test_is_valid(widget):
     assert widget.is_valid
     assert_action_not_performed(widget, "set_error")
     assert_action_performed_with(widget, "clear_error")
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [(False, False), (True, True), (None, False), (0, False), ("false", True)],
+)
+def test_spell_checking(widget, value, expected):
+    """Spell checking updates the backend without changing the text."""
+    original_value = widget.value
+    on_change = Mock()
+    widget.on_change = on_change
+    widget.spell_checking = value
+    assert widget.spell_checking is expected
+    assert attribute_value(widget, "spell_checking") is expected
+    widget.readonly = True
+    widget.readonly = False
+    assert widget.spell_checking is expected
+    assert widget.value == original_value
+    on_change.assert_not_called()

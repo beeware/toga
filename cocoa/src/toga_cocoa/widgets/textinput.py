@@ -44,7 +44,9 @@ class TogaTextFieldProxy:
     @staticmethod
     def becomeFirstResponder(klass, self) -> bool:
         self.interface.on_gain_focus()
-        return send_super(klass, self, "becomeFirstResponder")
+        result = send_super(klass, self, "becomeFirstResponder")
+        self.impl.set_spell_checking(self.interface.spell_checking)
+        return result
 
     @staticmethod
     def textDidEndEditing_(klass, self, textObject) -> None:
@@ -238,3 +240,9 @@ class TextInput(Widget):
 
     def is_valid(self):
         return self.error_label.isHidden()
+
+    def set_spell_checking(self, value):
+        # NSTextField uses a shared field editor; only update our active editor.
+        editor = self.native.currentEditor()
+        if editor is not None:
+            editor.setContinuousSpellCheckingEnabled(value)
