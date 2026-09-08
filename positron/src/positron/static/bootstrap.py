@@ -31,6 +31,7 @@ class StaticPositronBootstrap(BasePositronBootstrap):
             self.install_static_content(resource_path)
         else:
             # Write default content
+            resource_path.mkdir(exist_ok=True)
             for template_name in ["index.html", "positron.css"]:
                 self.templated_file(
                     TEMPLATE_PATH / template_name,
