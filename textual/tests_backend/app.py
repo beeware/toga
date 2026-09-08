@@ -44,9 +44,9 @@ class AppProbe(BaseProbe):
     @property
     def config_path(self):
         if sys.platform == "darwin":
-            return Path.home() / f"Library/Application Support/{APP_ID}"
+            return Path.home() / f"Library/Application Support/{APP_ID}/Config"
         elif sys.platform == "win32":
-            return self._win32_app_dir
+            return self._win32_app_dir / "Config"
         else:
             return (
                 Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
@@ -56,9 +56,9 @@ class AppProbe(BaseProbe):
     @property
     def data_path(self):
         if sys.platform == "darwin":
-            return Path.home() / f"Library/Application Support/{APP_ID}"
+            return Path.home() / f"Library/Application Support/{APP_ID}/Data"
         elif sys.platform == "win32":
-            return self._win32_app_dir
+            return self._win32_app_dir / "Data"
         else:
             return (
                 Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
