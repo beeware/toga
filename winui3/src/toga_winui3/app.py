@@ -76,8 +76,6 @@ class App:
         for window in self.interface.windows:
             window._impl.close()
 
-        print("_exiting - end")
-
     def main_loop(self):
         self.create()
         self.loop.run_forever(self)
