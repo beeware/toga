@@ -28,6 +28,10 @@ class Camera(LoggedObject):
         # 1: permission has been granted
         # 0: permission has been denied, or can't be granted
         self._has_permission = -1
+        self._is_scanning = False
+        self._scan_future = None
+        self._scan_continuous = False
+        self._pending_scan_content = None
 
     def has_permission(self, allow_unknown=False):
         self._action("has permission")
@@ -54,8 +58,6 @@ class Camera(LoggedObject):
                 flash=flash,
             )
 
-            # Requires that the user has first called `simulate_photo()` with the
-            # photo to be captured.
             future.set_result(self._photo)
             del self._photo
         else:
@@ -63,3 +65,51 @@ class Camera(LoggedObject):
 
     def simulate_photo(self, image):
         self._photo = image
+
+    def is_scanning(self):
+        self._action("is scanning")
+        return self._is_scanning
+
+    def start_scanning(self, future, device, code_types, continuous):
+        if self.has_permission(allow_unknown=True):
+            self._action(
+                "start scanning",
+                permission_requested=self._has_permission < 0,
+                device=device,
+                code_types=code_types,
+                continuous=continuous,
+            )
+            self._scan_future = future
+            self._scan_continuous = continuous
+
+            if self._pending_scan_content is not None:
+                content = self._pending_scan_content
+                self._pending_scan_content = None
+                self._resolve_scan(content)
+            else:
+                self._is_scanning = True
+        else:
+            raise PermissionError("App does not have permission to take photos")
+
+    def stop_scanning(self):
+        self._action("stop scanning")
+        self._is_scanning = False
+        if self._scan_future is not None:
+            self._scan_future.set_result(None)
+            self._scan_future = None
+
+    def simulate_scan(self, content):
+        if self._is_scanning:
+            self._resolve_scan(content)
+        else:
+            self._pending_scan_content = content
+
+    def _resolve_scan(self, content):
+        self.interface.on_detection(content=content)
+        if self._scan_continuous:
+            self._is_scanning = True
+        else:
+            self._is_scanning = False
+            if self._scan_future is not None:
+                self._scan_future.set_result(content)
+                self._scan_future = None

@@ -16,6 +16,10 @@ asyncio
 awaitable
 backend
 backends
+Barcode
+Barcodes
+barcode
+barcodes
 Beancount
 Beanquick
 beeware
