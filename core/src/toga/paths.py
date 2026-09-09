@@ -7,10 +7,22 @@ from toga.platform import get_factory
 
 
 class PlatformDirsPaths:
-    """Fallback Paths implementation, backed by platformdirs."""
+    """Paths implementation backed by platformdirs."""
 
     def __init__(self, interface):
         self.interface = interface
+
+    def platformdirs_args(self):
+        """The arguments used to configure platformdirs for this platform.
+
+        Backends can override this to alter how paths are keyed.
+        """
+        return {
+            "appname": toga.App.app.app_name,
+            "appauthor": (
+                "Unknown" if toga.App.app.author is None else toga.App.app.author
+            ),
+        }
 
     @functools.cached_property
     def _dirs(self):
@@ -18,12 +30,7 @@ class PlatformDirsPaths:
         # toga-core; it can only be imported if this implementation is used.
         import platformdirs
 
-        return platformdirs.PlatformDirs(
-            appname=toga.App.app.app_name,
-            appauthor=(
-                "Unknown" if toga.App.app.author is None else toga.App.app.author
-            ),
-        )
+        return platformdirs.PlatformDirs(**self.platformdirs_args())
 
     def get_config_path(self):
         return self._dirs.user_config_path
