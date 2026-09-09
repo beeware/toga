@@ -107,7 +107,7 @@ class WindowProbe(BaseProbe):
     def assert_is_toolbar_separator(self, index, section=False):
         assert self.window._impl.toolbar_native.actions()[index].isSeparator()
 
-    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+    def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
         action = self.window._impl.toolbar_native.actions()[index]
         assert action.text() == label
         if tooltip is None:

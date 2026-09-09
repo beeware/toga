@@ -39,7 +39,8 @@ class TimeInput(Widget):
         :param min: The earliest time (inclusive) that can be selected.
         :param max: The latest time (inclusive) that can be selected.
         :param on_change: A handler that will be invoked when the value changes.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 

@@ -127,13 +127,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
         return self.native.toolbar is not None
 
     def assert_is_toolbar_separator(self, index, section=False):
-        item = self.native.toolbar.items[index]
-        assert str(item.itemIdentifier).startswith(
-            f"Toolbar-{'Separator' if section else 'Group'}"
-        )
+        # macOS doesn't display separators, so there's nothing to assert.
+        pass
 
-    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
-        item = self.native.toolbar.items[index]
+    def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
+        item = self.native.toolbar.items[index - separators]
 
         assert str(item.label) == label
         assert (None if item.toolTip is None else str(item.toolTip)) == tooltip

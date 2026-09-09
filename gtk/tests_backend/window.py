@@ -149,7 +149,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         assert isinstance(item, Gtk.SeparatorToolItem)
         assert item.get_draw() == (not section)
 
-    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+    def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
         item = self.impl.native_toolbar.get_nth_item(index)
         assert item.get_label() == label
         # FIXME: get_tooltip_text() doesn't work. The tooltip can be set, but the

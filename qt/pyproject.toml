@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==83.0.0",
+    "setuptools==84.0.0",
     "setuptools_scm==10.2.1",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -11,7 +11,7 @@ dynamic = ["version", "dependencies"]
 name = "toga-qt"
 description = "An Qt (KDE) backend for the Toga widget toolkit."
 readme = "README.md"
-requires-python = ">= 3.10"
+requires-python = ">= 3.11"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE",
@@ -35,11 +35,11 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development",
     "Topic :: Software Development :: User Interfaces",
@@ -57,7 +57,6 @@ Command = "toga_qt.command:Command"
 Font = "toga_qt.fonts:Font"
 Icon = "toga_qt.icons:Icon"
 Image = "toga_qt.images:Image"
-Paths = "toga_qt.paths:Paths"
 dialogs = "toga_qt.dialogs"
 resources = "toga_qt.resources"
 
@@ -106,16 +105,17 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    "platformdirs >= 4.1",
     "qasync == 0.28.0",
     "toga-core == {version}",
 ]
 
 [project.optional-dependencies]
 pyside6-essentials = [
-    "PySide6-Essentials == 6.11.1",
+    "PySide6-Essentials == 6.11.2",
 ]
 pyside6 = [
-    "PySide6 == 6.11.1",
+    "PySide6 == 6.11.2",
 ]
 system = [
     "system-pyside6 == 0.1.1",

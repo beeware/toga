@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     # keep versions in sync with ../pyproject.toml
-    "setuptools==83.0.0",
+    "setuptools==84.0.0",
     "setuptools_scm==10.2.1",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
@@ -11,6 +11,7 @@ build-backend = "setuptools.build_meta"
 name = "toga-positron"
 description = "A Briefcase plugin for generating Positron apps."
 readme = "README.md"
+requires-python = ">= 3.11"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE",
