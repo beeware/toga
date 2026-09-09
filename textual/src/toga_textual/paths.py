@@ -31,4 +31,5 @@ elif sys.platform == "win32":
             }
 
 else:
+    # Fall back to the full platformdirs-based implementation
     Paths = PlatformDirsPaths
