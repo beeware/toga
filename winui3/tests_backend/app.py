@@ -411,10 +411,10 @@ class AppProbe(BaseProbe):
         pytest.xfail("This platform doesn't have an app level unhide.")
 
     async def open_initial_document(self, monkeypatch, document_path):
-        pytest.xfail("Winforms doesn't require initial document support")
+        pytest.xfail("This platform doesn't require initial document support")
 
     def open_document_by_drag(self, document_path):
-        pytest.xfail("Winforms doesn't support opening documents by drag")
+        pytest.xfail("This platform doesn't support opening documents by drag")
 
     ####################################################################################
     # Methods relating to StatusIcon
