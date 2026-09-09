@@ -26,7 +26,7 @@ class StaticPositronBootstrap(BasePositronBootstrap):
 
     def post_generate(self, base_path: Path):
         resource_path = base_path / "src" / self.context["module_name"] / "resources"
-        # Briefcase 0.4.5 no longer generates an empty resources folder.
+        # Ensure the target folder exists.
         resource_path.mkdir(parents=True, exist_ok=True)
 
         if self.content_path:
