@@ -82,7 +82,12 @@ def test_widget_created_with_values(content1, content2):
     ],
 )
 def test_assign_unassign_window_app_on_content(
-    app, window, content1, content2, include_left, include_right
+    app,
+    window,
+    content1,
+    content2,
+    include_left,
+    include_right,
 ):
     splitcontainer = toga.SplitContainer()
 
@@ -413,21 +418,28 @@ def test_set_content_invalid(splitcontainer, content, message):
 
 
 def test_set_content_invalid_keeps_previous_content(
-    app, window, splitcontainer, content1, content2
+    app,
+    window,
+    splitcontainer,
+    content1,
+    content2,
 ):
     """A failed content assignment must not orphan the widgets currently shown."""
-    # Lifecycle: the split container (and its content) must be attached to an
-    # app and a window for the content to be considered "in" the app.
+    # Assign the split container to the app and window
     splitcontainer.app = app
     splitcontainer.window = window
 
+    # Content is attached to the app
     assert content1.id in app.widgets
+    assert content2.id in app.widgets
 
+    # Make an invalid assignment of new content
     with pytest.raises(ValueError):
         splitcontainer.content = [content1]
 
     # The previous content is still attached and intact
     assert content1.id in app.widgets
+    assert content2.id in app.widgets
     assert splitcontainer.content == [content1, content2]
 
 
