@@ -1,3 +1,5 @@
+import asyncio
+
 from rubicon.objc import (
     SEL,
     CGRectMake,
@@ -64,37 +66,51 @@ class ScrollContainer(Widget):
         )
 
     def content_refreshed(self, container):
-        width = self.native.frame.size.width
-        height = self.native.frame.size.height
+        viewport_width = self.native.frame.size.width
+        viewport_height = self.native.frame.size.height
+        document_width = max(self.interface.content.layout.width, viewport_width)
+        document_height = max(self.interface.content.layout.height, viewport_height)
 
-        if self.interface.horizontal:
-            width = max(self.interface.content.layout.width, width)
-
-        if self.interface.vertical:
-            height = max(self.interface.content.layout.height, height)
+        width = document_width if self.interface.horizontal else viewport_width
+        height = document_height if self.interface.vertical else viewport_height
 
         self.native.contentSize = NSMakeSize(width, height)
 
-        # Update the document container frame to match the content size so that
-        # buttons outside the original scroll view frame can receive touch events.
-        # Without this, hit testing fails for views outside the original container
-        # bounds
-        self.document_container.native.frame = CGRectMake(0, 0, width, height)
+        # Keep the document large enough for hit testing throughout its content. If
+        # scrolling is disabled and a fixed-size screen can't satisfy the content
+        # minimum, contentSize remains limited to the viewport to prevent scrolling.
+        self.document_container.native.frame = CGRectMake(
+            0, 0, document_width, document_height
+        )
+
+        previous_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        self.rehint()
+        if previous_intrinsic_size != (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        ):
+            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        min_width = self.interface._MIN_WIDTH
+        min_height = self.interface._MIN_HEIGHT
+        if self.interface.content:
+            if not self.interface.horizontal:
+                min_width = max(min_width, self.interface.content.layout.min_width)
+            if not self.interface.vertical:
+                min_height = max(min_height, self.interface.content.layout.min_height)
+
+        self.interface.intrinsic.width = at_least(min_width)
+        self.interface.intrinsic.height = at_least(min_height)
 
     def get_vertical(self):
         return self._allow_vertical
 
     def set_vertical(self, value):
         self._allow_vertical = value
-        # If the scroll container has content, we need to force a refresh
-        # to let the scroll container know how large its content is.
-        if self.interface.content:
-            self.interface.refresh()
-
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.interface.on_scroll()
@@ -104,11 +120,6 @@ class ScrollContainer(Widget):
 
     def set_horizontal(self, value):
         self._allow_horizontal = value
-        # If the scroll container has content, we need to force a refresh
-        # to let the scroll container know how large its content is.
-        if self.interface.content:
-            self.interface.refresh()
-
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.interface.on_scroll()

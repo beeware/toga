@@ -1,3 +1,6 @@
+import asyncio
+from functools import partial
+
 from travertino.size import at_least
 
 from toga.handlers import WeakrefCallable
@@ -12,10 +15,10 @@ class ScrollContainer(Widget):
         self.native = Gtk.ScrolledWindow()
 
         self.native.get_hadjustment().connect(
-            "changed", WeakrefCallable(self.gtk_on_changed)
+            "value-changed", WeakrefCallable(self.gtk_on_value_changed)
         )
         self.native.get_vadjustment().connect(
-            "changed", WeakrefCallable(self.gtk_on_changed)
+            "value-changed", WeakrefCallable(self.gtk_on_value_changed)
         )
 
         # Set this minimum size of scroll windows because we must reserve space for
@@ -27,12 +30,13 @@ class ScrollContainer(Widget):
         self.native.set_overlay_scrolling(True)
 
         self.document_container = TogaContainer()
+        self.document_container.on_recompute = WeakrefCallable(self.on_recompute)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.add(self.document_container)
         else:  # pragma: no-cover-if-gtk3
             pass
 
-    def gtk_on_changed(self, *args):
+    def gtk_on_value_changed(self, *args):
         self.interface.on_scroll()
 
     def set_content(self, widget):
@@ -44,16 +48,34 @@ class ScrollContainer(Widget):
         else:  # pragma: no-cover-if-gtk3
             pass
 
-    def set_app(self, app):
-        self.interface.content.app = app
-
-    def set_window(self, window):
-        self.interface.content.window = window
+    def on_recompute(self, container):
+        # If the content recomputes, rehint this widget immediately so that an
+        # unchanged minimum doesn't trigger another parent layout.
+        previous_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        self.rehint()
+        if self.container and previous_intrinsic_size != (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        ):
+            asyncio.get_running_loop().call_soon(
+                partial(self.container.make_dirty, self)
+            )
 
     def rehint(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+            min_width = self.interface._MIN_WIDTH
+            min_height = self.interface._MIN_HEIGHT
+            if self.interface.content:
+                if not self.interface.horizontal:
+                    min_width = max(min_width, self.document_container.min_width)
+                if not self.interface.vertical:
+                    min_height = max(min_height, self.document_container.min_height)
+
+            self.interface.intrinsic.width = at_least(min_width)
+            self.interface.intrinsic.height = at_least(min_height)
         else:  # pragma: no-cover-if-gtk3
             pass
 

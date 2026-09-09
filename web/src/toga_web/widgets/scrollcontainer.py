@@ -23,6 +23,10 @@ class ScrollContainer(Widget):
         self.native.appendChild(self._content_div)
         self._update_overflow()
 
+    def _reapply_style(self):
+        super()._reapply_style()
+        self._update_overflow()
+
     def set_content(self, content_impl):
         while self._content_div.firstChild:
             self._content_div.removeChild(self._content_div.firstChild)
@@ -33,6 +37,18 @@ class ScrollContainer(Widget):
     def _update_overflow(self):
         self.native.style.overflowX = "auto" if self._horizontal_enabled else "hidden"
         self.native.style.overflowY = "auto" if self._vertical_enabled else "hidden"
+        self.native.style.minWidth = (
+            f"{self.interface._MIN_WIDTH}px"
+            if self._horizontal_enabled
+            else "min-content"
+        )
+        self.native.style.minHeight = (
+            f"{self.interface._MIN_HEIGHT}px"
+            if self._vertical_enabled
+            else "min-content"
+        )
+        self._content_div.style.minWidth = f"{self.interface._MIN_WIDTH}px"
+        self._content_div.style.minHeight = f"{self.interface._MIN_HEIGHT}px"
 
     def get_horizontal(self):
         return self._horizontal_enabled

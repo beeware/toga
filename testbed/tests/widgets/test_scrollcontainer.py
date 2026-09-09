@@ -87,6 +87,105 @@ test_cleanup = build_cleanup_test(
 )
 
 
+async def test_content_size_rehint(widget, probe, main_window):
+    "The non-scrolling axis should adopt the content's minimum size"
+    fixed_size_window = toga.platform.current_platform in {"android", "iOS"}
+    original_window_size = main_window.size
+    content_width = probe.width + 200
+    widget.content = toga.Box(
+        style=Pack(width=content_width, height=widget._MIN_HEIGHT)
+    )
+    widget.horizontal = False
+    widget.vertical = True
+
+    await probe.redraw(
+        "Horizontal scrolling is disabled",
+        wait_for=lambda: (
+            widget.intrinsic.width.value >= content_width
+            and (fixed_size_window or probe.width >= content_width)
+        ),
+    )
+
+    assert widget.intrinsic.width.value == approx(
+        content_width + probe.frame_inset, abs=1
+    )
+    assert widget.intrinsic.height.value == widget._MIN_HEIGHT
+    if not fixed_size_window:
+        assert probe.width >= content_width
+        assert probe.document_width >= content_width
+
+    content_height = probe.height + 200
+    widget.content.style.height = content_height
+    await probe.redraw(
+        "Content is tall enough to show the vertical scrollbar",
+        wait_for=lambda: (
+            probe.document_height >= content_height
+            and widget.intrinsic.width.value >= content_width + probe.scrollbar_inset
+        ),
+    )
+
+    widget.horizontal = True
+    widget.vertical = False
+    await probe.redraw("Scrolling axes have been exchanged")
+
+    await probe.redraw(
+        "Vertical scrolling is disabled",
+        wait_for=lambda: (
+            widget.intrinsic.height.value >= content_height
+            and (fixed_size_window or probe.height >= content_height)
+        ),
+    )
+
+    assert widget.intrinsic.width.value == widget._MIN_WIDTH
+    assert widget.intrinsic.height.value >= content_height
+    if not fixed_size_window:
+        assert probe.height >= content_height
+        assert probe.document_height >= content_height
+
+    if hasattr(probe, "scroller_style_changed"):
+        original_refresh = widget.content.refresh
+        content_refresh = Mock(wraps=original_refresh)
+        widget.content.refresh = content_refresh
+        try:
+            await probe.scroller_style_changed()
+            await probe.redraw(
+                "The system scroller style has changed",
+                wait_for=lambda: content_refresh.called,
+            )
+            assert content_refresh.called
+        finally:
+            widget.content.refresh = original_refresh
+
+    widget.content = None
+    await probe.redraw(
+        "Content has been cleared",
+        wait_for=lambda: (
+            widget.intrinsic.width.value == widget._MIN_WIDTH
+            and widget.intrinsic.height.value == widget._MIN_HEIGHT
+        ),
+    )
+    assert widget.intrinsic.width.value == widget._MIN_WIDTH
+    assert widget.intrinsic.height.value == widget._MIN_HEIGHT
+    main_window.size = original_window_size
+
+
+async def test_legacy_scroller_geometry(widget, probe):
+    if not hasattr(probe, "use_legacy_scrollers"):
+        pytest.skip("requires Cocoa legacy scrollers")
+
+    await probe.use_legacy_scrollers()
+    widget.horizontal = False
+    await probe.redraw("Legacy horizontal scroller is disabled")
+    widget.horizontal = True
+    await probe.redraw("Legacy horizontal scroller is re-enabled")
+    assert probe.document_width == approx(probe.width - probe.scrollbar_inset, abs=1)
+
+    widget.vertical = False
+    widget.content = toga.Box(style=Pack(width=probe.width + 200))
+    await probe.redraw("Legacy vertical scroller is disabled")
+    assert probe.document_height == approx(probe.height - probe.scrollbar_inset, abs=1)
+
+
 async def test_clear_content(widget, probe, small_content):
     "Widget content can be cleared and reset"
     assert probe.document_width == approx(
@@ -137,21 +236,13 @@ async def test_margin(widget, probe, content):
     assert probe.document_height == original_document_height
 
 
-async def test_enable_horizontal_scrolling(widget, probe, content, on_scroll):
+async def test_enable_horizontal_scrolling(widget, probe, main_window, on_scroll):
     "Horizontal scrolling can be disabled"
-    # Add some wide content
-    content.insert(
-        0,
-        toga.Label(
-            "This is a long label",
-            style=Pack(
-                width=2000,
-                background_color=CORNFLOWERBLUE,
-                margin=20,
-                height=20,
-            ),
-        ),
+    original_window_size = main_window.size
+    widget.content = toga.Box(
+        style=Pack(width=probe.width + 200, height=probe.height + 200)
     )
+    await probe.redraw("Use moderately oversized content")
 
     # clear any scroll events caused by setup
     on_scroll.reset_mock()
@@ -188,7 +279,22 @@ async def test_enable_horizontal_scrolling(widget, probe, content, on_scroll):
     on_scroll.reset_mock()
 
     widget.horizontal = True
-    await probe.redraw("Horizontal scrolling is enabled")
+    await probe.redraw(
+        "Horizontal scrolling is enabled",
+        wait_for=lambda: widget.intrinsic.width.value == widget._MIN_WIDTH,
+    )
+    main_window.size = original_window_size
+    await probe.redraw("Restore the original window size")
+    if widget.max_horizontal_position < 120:
+        widget.content = toga.Box(
+            style=Pack(width=probe.width + 200, height=probe.height + 200)
+        )
+        await probe.redraw(
+            "Use oversized content after re-enabling horizontal scrolling",
+            wait_for=lambda: widget.max_horizontal_position >= 120,
+        )
+    assert widget.max_horizontal_position >= 120
+    on_scroll.reset_mock()
 
     widget.horizontal_position = 120
     await probe.wait_for_scroll_completion()
@@ -205,21 +311,14 @@ async def test_enable_horizontal_scrolling(widget, probe, content, on_scroll):
     on_scroll.assert_called_with(widget)
 
 
-async def test_enable_vertical_scrolling(widget, probe, content, on_scroll):
+async def test_enable_vertical_scrolling(widget, probe, main_window, on_scroll):
     "Vertical scrolling can be disabled"
-    # Add some wide content
-    content.insert(
-        0,
-        toga.Label(
-            "This is a long label",
-            style=Pack(
-                width=2000,
-                background_color=CORNFLOWERBLUE,
-                margin=20,
-                height=20,
-            ),
-        ),
+    original_window_size = main_window.size
+    widget.horizontal = True
+    widget.content = toga.Box(
+        style=Pack(width=probe.width + 200, height=probe.height + 200)
     )
+    await probe.redraw("Use moderately oversized content")
 
     # clear any scroll events caused by setup
     on_scroll.reset_mock()
@@ -255,7 +354,22 @@ async def test_enable_vertical_scrolling(widget, probe, content, on_scroll):
     on_scroll.reset_mock()
 
     widget.vertical = True
-    await probe.redraw("Vertical scrolling is enabled")
+    await probe.redraw(
+        "Vertical scrolling is enabled",
+        wait_for=lambda: widget.intrinsic.height.value == widget._MIN_HEIGHT,
+    )
+    main_window.size = original_window_size
+    await probe.redraw("Restore the original window size")
+    if widget.max_vertical_position < 120:
+        widget.content = toga.Box(
+            style=Pack(width=probe.width + 200, height=probe.height + 200)
+        )
+        await probe.redraw(
+            "Use oversized content after re-enabling vertical scrolling",
+            wait_for=lambda: widget.max_vertical_position >= 120,
+        )
+    assert widget.max_vertical_position >= 120
+    on_scroll.reset_mock()
 
     widget.vertical_position = 120
     await probe.wait_for_scroll_completion()
@@ -343,6 +457,9 @@ async def test_vertical_scroll_small_content(widget, probe, small_content):
 
 async def test_horizontal_scroll(widget, probe, content, on_scroll):
     "The widget can be scrolled horizontally."
+    if hasattr(probe, "use_legacy_scrollers"):
+        await probe.use_legacy_scrollers()
+
     content.style.direction = ROW
     await probe.redraw("Content has been switched for a wide document")
 
@@ -472,8 +589,12 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     on_scroll.reset_mock()
 
 
-async def test_manual_scroll(widget, probe, content, on_scroll):
+async def test_manual_scroll(widget, probe, on_scroll):
     "The widget can be scrolled manually."
+    widget.content = toga.Box(style=Pack(height=probe.height + 200))
+    await probe.redraw("Use moderately oversized content")
+    on_scroll.reset_mock()
+
     await probe.scroll()
     await probe.wait_for_scroll_completion()
     await probe.redraw("Widget has been scrolled manually")

@@ -116,6 +116,8 @@ class ScrollContainer(Widget):
         self._content = widget
         if widget:
             widget.refresh()
+        else:
+            self.refresh()
 
     @property
     def vertical(self) -> bool:

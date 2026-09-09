@@ -1,3 +1,5 @@
+import asyncio
+
 from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
@@ -8,12 +10,14 @@ from toga_cocoa.libs import (
     NSMakeRect,
     NSNoBorder,
     NSNotificationCenter,
+    NSPreferredScrollerStyleDidChangeNotification,
     NSScrollElasticityAllowed,
     NSScrollElasticityAutomatic,
     NSScrollElasticityNone,
     NSScrollView,
     NSScrollViewDidEndLiveScrollNotification,
     NSScrollViewDidLiveScrollNotification,
+    NSSize,
 )
 
 from .base import Widget
@@ -33,6 +37,12 @@ class TogaScrollView(NSScrollView):
         # the size of the document content (assuming there is a document)
         if self.interface._content:
             self.interface._content.refresh()
+
+    @objc_method
+    def scrollerStyleChanged_(self, notification) -> None:
+        # NSScrollView updates its scroller style from the system preference at runtime.
+        # Wait until that update has completed before recomputing the content minimum.
+        self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
 
     # This cannot be covered in CI because the function used to emit
     # a scrolling event is unreliable.
@@ -68,6 +78,12 @@ class ScrollContainer(Widget):
         )
         NSNotificationCenter.defaultCenter.addObserver(
             self.native,
+            selector=SEL("scrollerStyleChanged:"),
+            name=NSPreferredScrollerStyleDidChangeNotification,
+            object=None,
+        )
+        NSNotificationCenter.defaultCenter.addObserver(
+            self.native,
             selector=SEL("didScroll:"),
             name=NSScrollViewDidEndLiveScrollNotification,
             object=self.native,
@@ -90,8 +106,9 @@ class ScrollContainer(Widget):
         self.native.refreshContent()
 
     def content_refreshed(self, container):
-        width = self.native.frame.size.width
-        height = self.native.frame.size.height
+        viewport_size = self.native.contentSize
+        width = viewport_size.width
+        height = viewport_size.height
 
         # If scrolling is enabled in a given axis, the document container
         # has a minimum size equal to the layout width in that axis.
@@ -104,6 +121,27 @@ class ScrollContainer(Widget):
             height = max(self.interface.content.layout.height, height)
 
         self.native.documentView.frame = NSMakeRect(0, 0, width, height)
+
+        # A non-overlay scroller changes the viewport used to lay out the content.
+        # Refresh once against that resolved viewport before finalizing the geometry.
+        resolved_viewport_size = self.native.contentSize
+        if (
+            viewport_size.width != resolved_viewport_size.width
+            or viewport_size.height != resolved_viewport_size.height
+        ):
+            self.native.refreshContent()
+            return
+
+        previous_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        self.rehint()
+        if previous_intrinsic_size != (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        ):
+            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
 
     def update_scroll_elasticity(self):
         # If both horizontal and vertical scrolling
@@ -130,11 +168,6 @@ class ScrollContainer(Widget):
 
     def set_vertical(self, value):
         self.native.hasVerticalScroller = value
-        # If the scroll container has content, we need to force a refresh
-        # to let the scroll container know how large its content is.
-        if self.interface.content:
-            self.interface.refresh()
-
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.interface.on_scroll()
@@ -145,26 +178,60 @@ class ScrollContainer(Widget):
 
     def set_horizontal(self, value):
         self.native.hasHorizontalScroller = value
-        # If the scroll container has content, we need to force a refresh
-        # to let the scroll container know how large its content is.
-        if self.interface.content:
-            self.interface.refresh()
-
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.interface.on_scroll()
         self.update_scroll_elasticity()
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        min_width = self.interface._MIN_WIDTH
+        min_height = self.interface._MIN_HEIGHT
+
+        if self.interface.content:
+            horizontal_scroller = self.native.horizontalScroller
+            vertical_scroller = self.native.verticalScroller
+            horizontal_scroller_class = (
+                horizontal_scroller.objc_class
+                if self.interface.horizontal and not horizontal_scroller.isHidden()
+                else None
+            )
+            vertical_scroller_class = (
+                vertical_scroller.objc_class
+                if self.interface.vertical and not vertical_scroller.isHidden()
+                else None
+            )
+            if horizontal_scroller_class:
+                control_size = horizontal_scroller.controlSize
+            elif vertical_scroller_class:
+                control_size = vertical_scroller.controlSize
+            else:
+                control_size = 0
+            frame_size = NSScrollView.frameSizeForContentSize(
+                NSSize(
+                    self.interface.content.layout.min_width,
+                    self.interface.content.layout.min_height,
+                ),
+                horizontalScrollerClass=horizontal_scroller_class,
+                verticalScrollerClass=vertical_scroller_class,
+                borderType=self.native.borderType,
+                controlSize=control_size,
+                scrollerStyle=self.native.scrollerStyle,
+            )
+
+            if not self.interface.horizontal:
+                min_width = max(min_width, frame_size.width)
+            if not self.interface.vertical:
+                min_height = max(min_height, frame_size.height)
+
+        self.interface.intrinsic.width = at_least(min_width)
+        self.interface.intrinsic.height = at_least(min_height)
 
     def get_max_vertical_position(self):
         return max(
             0,
             int(
                 self.native.documentView.bounds.size.height
-                - self.native.frame.size.height
+                - self.native.contentSize.height
             ),
         )
 
@@ -178,7 +245,7 @@ class ScrollContainer(Widget):
             0,
             int(
                 self.native.documentView.bounds.size.width
-                - self.native.frame.size.width
+                - self.native.contentSize.width
             ),
         )
 

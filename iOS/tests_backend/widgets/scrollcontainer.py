@@ -18,21 +18,31 @@ class ScrollContainerProbe(SimpleProbe):
 
     @property
     def document_height(self):
-        # Assert that the document container and the document itself have the same size.
-        # This is necessary to ensure that events propagate; see #2411.
-        assert self.impl.document_container.native.frame.size.height == (
-            content_height := self.native.contentSize.height
-        )
+        document_height = self.impl.document_container.native.frame.size.height
+        content_height = self.native.contentSize.height
+        if self.widget.vertical:
+            # A scrollable document must cover its entire scroll range so that events
+            # propagate outside the original viewport; see #2411.
+            assert document_height == content_height
+        else:
+            # On a fixed-size screen, non-scrollable content may have a minimum larger
+            # than the viewport. Its native document still holds the content, while
+            # contentSize remains limited to the viewport to prevent scrolling.
+            assert document_height >= content_height
 
         return content_height
 
     @property
     def document_width(self):
-        # Assert that the document container and the document itself have the same size.
-        # This is necessary to ensure that events propagate; see #2411.
-        assert self.impl.document_container.native.frame.size.width == (
-            content_width := self.native.contentSize.width
-        )
+        document_width = self.impl.document_container.native.frame.size.width
+        content_width = self.native.contentSize.width
+        if self.widget.horizontal:
+            # A scrollable document must cover its entire scroll range so that events
+            # propagate outside the original viewport; see #2411.
+            assert document_width == content_width
+        else:
+            # See the corresponding fixed-screen case in document_height.
+            assert document_width >= content_width
 
         return content_width
 
