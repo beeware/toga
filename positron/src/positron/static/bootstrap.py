@@ -26,12 +26,13 @@ class StaticPositronBootstrap(BasePositronBootstrap):
 
     def post_generate(self, base_path: Path):
         resource_path = base_path / "src" / self.context["module_name"] / "resources"
+        # Ensure the target folder exists.
+        resource_path.mkdir(parents=True, exist_ok=True)
 
         if self.content_path:
             self.install_static_content(resource_path)
         else:
             # Write default content
-            resource_path.mkdir(exist_ok=True)
             for template_name in ["index.html", "positron.css"]:
                 self.templated_file(
                     TEMPLATE_PATH / template_name,

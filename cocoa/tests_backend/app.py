@@ -38,11 +38,13 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / "Library/Preferences/org.beeware.toga.testbed"
+        return (
+            Path.home() / "Library/Application Support/org.beeware.toga.testbed/Config"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / "Library/Application Support/org.beeware.toga.testbed"
+        return Path.home() / "Library/Application Support/org.beeware.toga.testbed/Data"
 
     @property
     def cache_path(self):

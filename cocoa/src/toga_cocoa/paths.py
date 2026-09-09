@@ -1,32 +1,16 @@
-from pathlib import Path
-
 from toga import App
+from toga.paths import PlatformDirsPaths
 
 
-class Paths:
-    def __init__(self, interface):
-        self.interface = interface
+class Paths(PlatformDirsPaths):
+    def platformdirs_args(self):
+        # macOS keys app-specific folders by bundle identifier.
+        return {"appname": App.app.app_id}
 
+    # platformdirs uses the same location for config and data on macOS;
+    # subfolders keep every app path distinct.
     def get_config_path(self):
-        return Path.home() / f"Library/Preferences/{App.app.app_id}"
+        return super().get_config_path() / "Config"
 
     def get_data_path(self):
-        return Path.home() / f"Library/Application Support/{App.app.app_id}"
-
-    def get_cache_path(self):
-        return Path.home() / f"Library/Caches/{App.app.app_id}"
-
-    def get_logs_path(self):
-        return Path.home() / f"Library/Logs/{App.app.app_id}"
-
-    def get_desktop_path(self):
-        return Path.home() / "Desktop"
-
-    def get_documents_path(self):
-        return Path.home() / "Documents"
-
-    def get_downloads_path(self):
-        return Path.home() / "Downloads"
-
-    def get_pictures_path(self):
-        return Path.home() / "Pictures"
+        return super().get_data_path() / "Data"
