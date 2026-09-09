@@ -46,7 +46,7 @@ Any PR failing one of these is rejected, not waived.
 
 ## Toolchain
 
-- **Python**: 3.10–3.14 (see `core/pyproject.toml` classifiers).
+- **Python**: 3.11–3.15 (see `core/pyproject.toml` classifiers).
 - **Task runner**: `tox` (with `tox-uv`). Install the dev tooling via `uv pip install --group dev` at the repo root, or let `tox` bootstrap.
 - **Lint/format**: `ruff` (check + format), `codespell`, `rumdl` (Markdown), configured in root `pyproject.toml`.
 - **Pre-commit**: `pre-commit run --all-files` — MUST pass before PR.

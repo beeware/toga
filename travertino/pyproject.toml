@@ -10,7 +10,7 @@ dynamic = ["version"]
 name = "travertino"
 description = "A set of constants and base classes for describing user interface layouts."
 readme = "README.md"
-requires-python = ">= 3.10"
+requires-python = ">= 3.11"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE",
@@ -31,11 +31,11 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development",
     "Topic :: Software Development :: User Interfaces",
@@ -45,7 +45,7 @@ classifiers = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 test = [
-    "coverage[toml] == 7.15.4",
+    "coverage[toml] == 7.16.0",
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 12.3.0",
     "pytest == 9.1.1",

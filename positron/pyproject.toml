@@ -11,6 +11,7 @@ build-backend = "setuptools.build_meta"
 name = "toga-positron"
 description = "A Briefcase plugin for generating Positron apps."
 readme = "README.md"
+requires-python = ">= 3.11"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE",
