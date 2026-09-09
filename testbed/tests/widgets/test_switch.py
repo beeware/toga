@@ -4,6 +4,7 @@ from pytest import fixture
 
 import toga
 
+from ..conftest import skip_on_backends
 from ..data import TEXTS
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
@@ -24,6 +25,12 @@ if toga.backend in {"toga_gtk", "toga_android", "toga_iOS"}:
     from .properties import test_focus_noop  # noqa: F401
 else:
     from .properties import test_focus  # noqa: F401
+
+skip_on_backends(
+    "toga_winui3",
+    reason="Switch is not implemented on this backend.",
+    allow_module_level=True,
+)
 
 
 @fixture

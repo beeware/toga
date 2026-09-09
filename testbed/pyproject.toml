@@ -159,6 +159,24 @@ requires = [
     "psutil==7.2.2 ; python_version < '3.13'",
 ]
 
+[tool.briefcase.app.testbed-winui3]
+formal_name = "Toga Testbed (WinUI 3)"
+sources = [
+    "src/testbed_winui3",
+    "src/testbed",
+]
+test_sources = [
+    "../winui3/tests_backend",
+]
+
+[tool.briefcase.app.testbed-winui3.windows]
+requires = [
+    "../winui3",
+    # psutil would ideally be top-level test dependency. However, for Python < 3.13,
+    # Android identifies as Linux, and psutil isn't available for Android.
+    "psutil==7.2.2 ; python_version < '3.13'",
+]
+
 [tool.briefcase.app.testbed-textual]
 formal_name = "Toga Testbed (Textual)"
 console_app = true

@@ -222,7 +222,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     def activate_menu_hide(self):
         pytest.xfail("This platform doesn't present a app level hide option in menu.")
 
-    def activate_menu_exit(self):
+    async def activate_menu_exit(self):
         self._activate_menu_item(["File", "Exit"])
 
     def activate_menu_about(self):
@@ -231,7 +231,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     async def close_about_dialog(self):
         await self.type_character("\n")
 
-    def activate_menu_visit_homepage(self):
+    async def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])
 
     def assert_dialog_in_focus(self, dialog):
@@ -245,7 +245,7 @@ class AppProbe(BaseProbe, DialogsMixin):
             "The dialog is not in focus"
         )
 
-    def assert_menu_item(self, path, *, enabled=True):
+    async def assert_menu_item(self, path, *, enabled=True):
         item = self._menu_item(path)
         assert item.Enabled == enabled
 
@@ -262,7 +262,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         else:
             assert item.ShortcutKeyDisplayString == shortcut
 
-    def assert_menu_order(self, path, expected):
+    async def assert_menu_order(self, path, expected):
         menu = self._menu_item(path)
 
         assert len(menu.DropDownItems) == len(expected)
@@ -272,18 +272,18 @@ class AppProbe(BaseProbe, DialogsMixin):
             else:
                 assert item.Text == title
 
-    def assert_system_menus(self):
-        self.assert_menu_item(["File", "New Example Document"], enabled=True)
-        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
-        self.assert_menu_item(["File", "Open..."], enabled=True)
-        self.assert_menu_item(["File", "Save"], enabled=True)
-        self.assert_menu_item(["File", "Save As..."], enabled=True)
-        self.assert_menu_item(["File", "Save All"], enabled=True)
-        self.assert_menu_item(["File", "Preferences"], enabled=False)
-        self.assert_menu_item(["File", "Exit"])
+    async def assert_system_menus(self):
+        await self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        await self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        await self.assert_menu_item(["File", "Open..."], enabled=True)
+        await self.assert_menu_item(["File", "Save"], enabled=True)
+        await self.assert_menu_item(["File", "Save As..."], enabled=True)
+        await self.assert_menu_item(["File", "Save All"], enabled=True)
+        await self.assert_menu_item(["File", "Preferences"], enabled=False)
+        await self.assert_menu_item(["File", "Exit"])
 
-        self.assert_menu_item(["Help", "Visit homepage"])
-        self.assert_menu_item(["Help", "About Toga Testbed"])
+        await self.assert_menu_item(["Help", "Visit homepage"])
+        await self.assert_menu_item(["Help", "About Toga Testbed"])
 
     def activate_menu_close_window(self):
         pytest.xfail("This platform doesn't have a window management menu")
@@ -326,7 +326,7 @@ class AppProbe(BaseProbe, DialogsMixin):
             # It's a button status item
             return None
 
-    def activate_status_icon_button(self, item_id):
+    async def activate_status_icon_button(self, item_id):
         # Winforms doesn't provide an OnClick to trigger clicks, so we have to fake it
         # at the level of the impl.
         self.app.status_icons[item_id]._impl.winforms_click(
@@ -334,7 +334,7 @@ class AppProbe(BaseProbe, DialogsMixin):
             EventArgs.Empty,
         )
 
-    def activate_status_menu_item(self, item_id, title):
+    async def activate_status_menu_item(self, item_id, title):
         menu = getattr(self.app.status_icons[item_id]._impl.native, CONTEXT_MENU_ATTR)
         item = {item.Text: item for item in getattr(menu, MENU_ATTR)}[title]
         item.OnClick(EventArgs.Empty)

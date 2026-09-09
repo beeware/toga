@@ -69,7 +69,8 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     assert other_probe.has_focus
 
     widget.focus()
-    await probe.redraw("Widget should be given focus")
+    wait_for = None if not verify_focus_handlers else lambda: on_gain_handler.called
+    await probe.redraw("Widget should be given focus", wait_for=wait_for)
     assert probe.has_focus
     assert not other_probe.has_focus
 
@@ -80,7 +81,7 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         on_gain_handler.reset_mock()
 
     widget.focus()
-    await probe.redraw("Widget already has focus")
+    await probe.redraw("Widget already has focus", wait_for=wait_for)
     assert probe.has_focus
     assert not other_probe.has_focus
 
@@ -91,7 +92,8 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         on_lose_handler.reset_mock()
 
     other.focus()
-    await probe.redraw("Focus has been lost")
+    wait_for = None if not verify_focus_handlers else lambda: on_lose_handler.called
+    await probe.redraw("Focus has been lost", wait_for=wait_for)
     assert not probe.has_focus
     assert other_probe.has_focus
 

@@ -167,13 +167,11 @@ async def test_parenting(widget, probe):
 
 async def test_tab_index(widget, probe, other):
     if probe.supports_tab_index:
-        assert widget.tab_index == 1
-        assert other.tab_index == 2
-
-        widget.tab_index = 4
-        other.tab_index = 2
-        assert widget.tab_index == 4
-        assert other.tab_index == 2
+        probe.assert_tab_index(widget, other)
     else:
         assert widget.tab_index is None
         assert other.tab_index is None
+
+
+async def test_backend_specific_properties(widget, probe):
+    await probe.assert_backend_specific_properties()

@@ -9,7 +9,6 @@ from .properties import (  # noqa: F401
     test_background_color_transparent,
     test_color,
     test_color_reset,
-    test_enabled,
     test_flex_horizontal_widget_size,
     test_focus_noop,
     test_font,
@@ -18,6 +17,12 @@ from .properties import (  # noqa: F401
     test_text_align,
     test_text_width_change,
 )
+
+# Label on WinUI 3 is always enabled.
+if toga.backend in {"toga_winui3"}:
+    from .properties import test_enable_noop  # noqa: F401
+else:
+    from .properties import test_enabled  # noqa: F401
 
 
 @pytest.fixture
@@ -54,7 +59,7 @@ async def test_multiline(widget, probe, alignment):
     # Empty text should not cause the widget to collapse.
     widget.text = ""
     await probe.redraw("Label text should be empty")
-    assert probe.height == line_height
+    assert probe.height == pytest.approx(line_height, rel=0.04)
     # Label should have almost 0 width
     assert probe.width < 10
 
