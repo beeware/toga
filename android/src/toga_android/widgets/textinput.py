@@ -82,19 +82,23 @@ class TextInput(ContainedWidget, TextViewWidget):
         if readonly:
             # Implicitly calls setFocusableInTouchMode(False)
             self.native.setFocusable(False)
-            # Add TYPE_TEXT_FLAG_NO_SUGGESTIONS to the input type to disable suggestions
-            input_type = (
-                self.native.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-            )
-            self.native.setInputType(input_type)
         else:
             # Implicitly calls setFocusable(True)
             self.native.setFocusableInTouchMode(True)
-            # Remove TYPE_TEXT_FLAG_NO_SUGGESTIONS to enable suggestions
-            input_type = (
-                self.native.getInputType() & ~InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-            )
+        # NumberInput also inherits this backend, but has no spelling preference.
+        self.set_spell_checking(getattr(self.interface, "spell_checking", True))
+
+    def set_spell_checking(self, value):
+        input_type = self.native.getInputType()
+        if self.get_readonly() or not value:
+            input_type |= InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+        else:
+            input_type &= ~InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+        if input_type != self.native.getInputType():
+            # setInputType can reset the font, especially for password inputs.
+            typeface = self.native.getTypeface()
             self.native.setInputType(input_type)
+            self.native.setTypeface(typeface)
 
     def get_placeholder(self):
         return str(self.native.getHint())

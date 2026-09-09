@@ -380,3 +380,58 @@ async def test_edit_readonly_noop(widget, probe, app_probe, action, select, undo
 
     # Non-readonly performs an action.
     assert widget.value != initial_text
+
+
+@pytest.mark.parametrize("initial", [False, True])
+async def test_spell_checking_initial(main_window, widget, initial):
+    """The constructor applies spell checking before a widget is focused."""
+    old_content = main_window.content
+    field = type(widget)(value="Hello", spell_checking=initial)
+    try:
+        main_window.content = toga.Box(children=[field])
+        probe = get_probe(field)
+        field.focus()
+        await probe.redraw("Spell checking configured at construction")
+        expected = initial and not probe.value_hidden
+        assert field.spell_checking is expected
+        probe.assert_spell_checking(expected)
+        assert field.value == "Hello"
+    finally:
+        main_window.content = old_content
+
+
+async def test_spell_checking(widget, probe, other, other_probe, on_change):
+    """Spell checking survives focus and readonly changes without changing content."""
+    original_value = widget.value
+    for value in [False, True, False]:
+        expected = value and not probe.value_hidden
+        other.focus()
+        widget.spell_checking = value
+        widget.focus()
+        await probe.redraw("Spell checking applied when focus is gained")
+        assert widget.spell_checking is expected
+        probe.assert_spell_checking(expected)
+
+        # Changing the focused field applies the setting immediately.
+        widget.spell_checking = not value
+        probe.assert_spell_checking(not value and not probe.value_hidden)
+        widget.spell_checking = value
+
+        # An unfocused field must not change the current field editor.
+        other.focus()
+        await other_probe.redraw("Another input has focus")
+        widget.spell_checking = value
+        other_probe.assert_spell_checking(True)
+        widget.focus()
+        await probe.redraw("Original input regains focus")
+        probe.assert_spell_checking(expected)
+
+        widget.readonly = True
+        assert probe.readonly
+        widget.readonly = False
+        widget.focus()
+        await probe.redraw("Spell checking survives readonly toggle")
+        probe.assert_spell_checking(expected)
+        assert widget.spell_checking is expected
+        assert widget.value == original_value
+        on_change.assert_not_called()

@@ -444,6 +444,12 @@ UITabBarItem = ObjCClass("UITabBarItem")
 UITextField = ObjCClass("UITextField")
 
 
+class UITextSpellCheckingType(Enum):
+    Default = 0
+    No = 1
+    Yes = 2
+
+
 class UITextBorderStyle(Enum):
     NoBorder = 0
     Line = 1

@@ -1,4 +1,4 @@
-from ctypes import c_void_p
+from ctypes import c_long, c_void_p
 
 from rubicon.objc import (
     SEL,
@@ -6,6 +6,7 @@ from rubicon.objc import (
     CGSize,
     objc_method,
     objc_property,
+    send_message,
     send_super,
 )
 from travertino.size import at_least
@@ -24,6 +25,7 @@ from toga_iOS.libs import (
     UILabel,
     UITextBorderStyle,
     UITextField,
+    UITextSpellCheckingType,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -189,3 +191,14 @@ class TextInput(Widget):
 
     def is_valid(self):
         return self.error_label.isHidden()
+
+    def set_spell_checking(self, value):
+        # UIKit input-trait properties are not exposed to Rubicon (see #96).
+        spelling = UITextSpellCheckingType.Yes if value else UITextSpellCheckingType.No
+        send_message(
+            self.native,
+            "setSpellCheckingType:",
+            spelling.value,
+            restype=None,
+            argtypes=[c_long],
+        )

@@ -50,3 +50,6 @@ class TextInputProbe(SimpleProbe):
 
     def end_undo_block(self):
         self.native.editingFinished.emit()
+
+    def assert_spell_checking(self, value):
+        pass  # Qt has no built-in spell checker.

@@ -14,6 +14,7 @@ password = toga.PasswordInput()
 
 ## Notes
 
+- Spell checking is always disabled for password inputs. The inherited `spell_checking` argument and property cannot enable it.
 - WinForms does not support the use of partially or fully transparent colors for the PasswordInput background. If a color with an alpha value is provided (including `TRANSPARENT`), the alpha channel will be ignored. A `TRANSPARENT` background will be rendered as white.
 - On WinForms, if a PasswordInput is given an explicit height, the rendered widget will not expand to fill that space. The widget will have the fixed height determined by the font used on the widget. In general, you should avoid setting a `height` style property on PasswordInput widgets.
 

@@ -26,6 +26,7 @@ class MultilineTextInput(Widget):
         readonly: bool = False,
         placeholder: str | None = None,
         on_change: toga.widgets.multilinetextinput.OnChangeHandler | None = None,
+        spell_checking: bool = True,
         **kwargs,
     ):
         """Create a new multi-line text input widget.
@@ -39,6 +40,8 @@ class MultilineTextInput(Widget):
             there is no user content to display.
         :param on_change: A handler that will be invoked when the value of
             the widget changes.
+        :param spell_checking: Whether to enable spell checking, if supported by the
+            platform.
         :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
             These override matching properties on the `style` argument.
         """
@@ -50,6 +53,7 @@ class MultilineTextInput(Widget):
         self.value = value
 
         # Set all the properties
+        self.spell_checking = spell_checking
         self.readonly = readonly
         self.placeholder = placeholder
         self.on_change = on_change
@@ -70,6 +74,20 @@ class MultilineTextInput(Widget):
     def placeholder(self, value: object) -> None:
         self._impl.set_placeholder("" if value is None else str(value))
         self.refresh()
+
+    @property
+    def spell_checking(self) -> bool:
+        """Whether spell checking is requested (`True` by default).
+
+        This has no effect on platforms without spell checking. Other text input
+        assistance, such as automatic correction, is controlled by the platform.
+        """
+        return self._spell_checking
+
+    @spell_checking.setter
+    def spell_checking(self, value: object) -> None:
+        self._spell_checking = bool(value)
+        self._impl.set_spell_checking(self._spell_checking)
 
     @property
     def readonly(self) -> bool:

@@ -40,21 +40,12 @@ class TextInputProbe(LabelProbe):
         if focusable != focusable_in_touch_mode:
             raise ValueError(f"invalid state: {focusable=}, {focusable_in_touch_mode=}")
 
-        # Check if TYPE_TEXT_FLAG_NO_SUGGESTIONS is set in the input type
-        input_type = self.native.getInputType()
-        if input_type & InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS:
-            # TYPE_TEXT_FLAG_NO_SUGGESTIONS is set
-            if focusable:
-                raise ValueError(
-                    "TYPE_TEXT_FLAG_NO_SUGGESTIONS is not set on the input."
-                )
-        else:
-            # TYPE_TEXT_FLAG_NO_SUGGESTIONS is not set
-            if not focusable:
-                raise ValueError(
-                    "TYPE_TEXT_FLAG_NO_SUGGESTIONS "
-                    "has been set when the input is readonly."
-                )
+        no_suggestions = bool(
+            self.native.getInputType() & InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+        )
+        assert no_suggestions is (
+            not focusable or not getattr(self.widget, "spell_checking", True)
+        )
 
         return not focusable
 
@@ -85,3 +76,8 @@ class TextInputProbe(LabelProbe):
 
     def set_cursor_at_end(self):
         pytest.skip("Cursor positioning not supported on this platform")
+
+    def assert_spell_checking(self, value):
+        assert bool(
+            self.native.getInputType() & InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+        ) is (self.readonly or not value)
