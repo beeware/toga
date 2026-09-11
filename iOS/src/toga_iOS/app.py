@@ -21,13 +21,14 @@ class PythonSceneDelegate(UIResponder, protocols=(UIWindowSceneDelegate,)):
 
     @objc_method
     def scene_willConnectToSession_options_(self, scene, session, options) -> None:
-        if isinstance(scene, UIWindowScene):
-            # Associate pre-created single main window with the scene
-            window = App.app.interface.current_window._impl.native
-            window.windowScene = scene
+        assert isinstance(scene, UIWindowScene), "iOS should provide UIWindowScene"
 
-            self.window = window
-            window.makeKeyAndVisible()
+        # Associate pre-created single main window with the scene
+        window = App.app.interface.current_window._impl.native
+        window.windowScene = scene
+
+        self.window = window
+        window.makeKeyAndVisible()
 
     @objc_method
     def sceneDidBecomeActive_(self, scene) -> None:
