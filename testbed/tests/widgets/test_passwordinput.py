@@ -27,6 +27,8 @@ from .test_textinput import (  # noqa: F401
     test_on_change_programmatic,
     test_on_change_user,
     test_on_confirm,
+    test_spell_checking,
+    test_spell_checking_initial,
     test_text_value,
     test_undo_redo,
     test_validation,

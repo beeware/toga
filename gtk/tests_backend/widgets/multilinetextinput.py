@@ -123,3 +123,8 @@ class MultilineTextInputProbe(SimpleProbe):
 
     def set_cursor_at_end(self):
         pytest.skip("Cursor positioning not supported on this platform")
+
+    def assert_spell_checking(self, value):
+        hints = self.native_textview.get_input_hints()
+        assert bool(hints & Gtk.InputHints.SPELLCHECK) is value
+        assert bool(hints & Gtk.InputHints.NO_SPELLCHECK) is not value

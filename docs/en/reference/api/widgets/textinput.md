@@ -13,8 +13,14 @@ The input can be provided a placeholder value - this is a value that will be dis
 
 The input can also be provided a list of [validators](../data-representation/validators.md). A validator is a function that will be invoked whenever the content of the input changes. The function should return `None` if the current value of the input is valid; if the current value is invalid, it should return an error message. When `on_change` is invoked, the field will automatically be validated based on specified validators.
 
+Spell checking is enabled by default where the platform supports it. Use `toga.TextInput(spell_checking=False)` to disable it, or change the `spell_checking` property after construction.
+
 ## Notes
 
+- On Android, disabling spell checking also disables keyboard suggestions. A read-only input always disables suggestions; making it editable again restores the requested spelling setting.
+- On GTK, spell checking is a hint to the input method; support depends on the input method in use.
+- Qt, WinForms, and Textual do not provide built-in spell checking. The setting is accepted but has no effect.
+- Other text assistance, such as automatic correction and automatic capitalization, retains its platform behavior.
 - Although an error message is provided when validation fails, Toga does not guarantee that this error message will be displayed to the user.
 - WinForms does not support the use of partially or fully transparent colors for the TextInput background. If a color with an alpha value is provided (including `TRANSPARENT`), the alpha channel will be ignored. A `TRANSPARENT` background will be rendered as white.
 - On WinForms, if a TextInput is given an explicit height, the rendered widget will not expand to fill that space. The widget will have the fixed height determined by the font used on the widget. In general, you should avoid setting a `height` style property on TextInput widgets.

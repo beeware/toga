@@ -53,3 +53,6 @@ class TextInputProbe(SimpleProbe):
 
     def select_range(self, start, length):
         pytest.skip("Text selection is not implemented on Textual.")
+
+    def assert_spell_checking(self, value):
+        pass  # Textual has no built-in spell checker.
