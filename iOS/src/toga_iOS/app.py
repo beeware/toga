@@ -1,15 +1,61 @@
-from rubicon.objc import objc_method
+from rubicon.objc import objc_method, objc_property
 from rubicon.objc.eventloop import RubiconEventLoop, iOSLifecycle
 
 import toga
-from toga_iOS.libs import UIResponder, UIScreen, av_foundation
+from toga_iOS.libs import (
+    UIResponder,
+    UISceneConfiguration,
+    UIScreen,
+    UIWindowScene,
+    UIWindowSceneDelegate,
+    UIWindowSceneSessionRoleApplication,
+    av_foundation,
+)
 
 from .screens import Screen as ScreenImpl
 
 
+class PythonSceneDelegate(UIResponder, protocols=(UIWindowSceneDelegate,)):
+    # UIWindowSceneDelegate requires a 'window' property
+    window = objc_property()
+
+    @objc_method
+    def scene_willConnectToSession_options_(self, scene, session, options) -> None:
+        assert isinstance(scene, UIWindowScene), "iOS should provide UIWindowScene"
+
+        # Associate pre-created single main window with the scene
+        window = App.app.interface.current_window._impl.native
+        window.windowScene = scene
+
+        self.window = window
+        window.makeKeyAndVisible()
+
+    @objc_method
+    def sceneDidBecomeActive_(self, scene) -> None:
+        print("Scene became active.")
+        App.app.interface.current_window.on_gain_focus()
+
+    @objc_method
+    def sceneWillResignActive_(self, scene) -> None:  # pragma: no cover
+        print("Scene about to leave foreground.", flush=True)
+        App.app.interface.current_window.on_lose_focus()
+
+    @objc_method
+    def sceneDidEnterBackground_(self, scene) -> None:  # pragma: no cover
+        print("Scene entered background.")
+        App.app.interface.current_window.on_hide()
+
+    @objc_method
+    def sceneWillEnterForeground_(self, scene) -> None:
+        print("Scene about to enter foreground.")
+        App.app.interface.current_window.on_show()
+
+
 class PythonAppDelegate(UIResponder):
     @objc_method
-    def applicationDidBecomeActive_(self, application) -> None:
+    def applicationDidBecomeActive_(self, application) -> None:  # pragma: no cover
+        # Legacy iOS triggered this but now PythonSceneDelegate.sceneDidBecomeActive_
+        # is called instead.
         print("App became active.")
         App.app.interface.current_window.on_gain_focus()
 
@@ -27,6 +73,16 @@ class PythonAppDelegate(UIResponder):
     def applicationWillEnterForeground_(self, application) -> None:
         print("App about to enter foreground.")
         App.app.interface.current_window.on_show()
+
+    @objc_method
+    def application_configurationForConnectingSceneSession_options_(
+        self, application, connectingSceneSession, options
+    ):
+        configuration = UISceneConfiguration.alloc().initWithName_sessionRole_(
+            "Default Configuration", UIWindowSceneSessionRoleApplication
+        )
+        configuration.delegateClass = PythonSceneDelegate
+        return configuration
 
     @objc_method
     def application_didFinishLaunchingWithOptions_(
