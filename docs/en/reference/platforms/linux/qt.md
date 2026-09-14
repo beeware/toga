@@ -1,5 +1,11 @@
 # Linux/Unix (Qt)
 
+![Toga Demo running on Linux using Qt.](/images/toga-demo-qt.png){ width="450" }
+
+/// caption
+
+///
+
 The Toga backend for Linux (and other Unix-like operating systems) running KDE is [`toga-qt`](https://github.com/beeware/toga/tree/main/qt).
 
 `toga-qt` requires Python {{ min_python_version }}++, and Qt 6.8 or newer.
