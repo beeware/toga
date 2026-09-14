@@ -183,7 +183,7 @@ pre-commit = [
 ]
 
 setuptools-scm = [
-    "setuptools_scm == 10.2.1",
+    "setuptools_scm == 10.2.3",
 ]
 
 towncrier = [
