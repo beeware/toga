@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   ci:
-    uses: ./.github/workflows/ci.yml
+    uses: $/.github/workflows/ci.yml
     permissions:
       id-token: write
       contents: read
