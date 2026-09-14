@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 from PySide6.QtCore import Qt
 from toga_qt.libs import IS_WAYLAND
 
@@ -67,7 +68,7 @@ class WindowProbe(BaseProbe):
         self.window.close()
         await self.redraw("Closing window", delay=0.5)
 
-    def close(self):
+    async def close(self):
         if self.is_closable:
             self.native.close()
 
@@ -91,7 +92,7 @@ class WindowProbe(BaseProbe):
     def is_minimized(self):
         return self.native.isMinimized()
 
-    def minimize(self):
+    async def minimize(self):
         self.native.showMinimized()
 
     def unminimize(self):
@@ -118,3 +119,6 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self.window._impl.toolbar_native.actions()[index].trigger()
+
+    async def assert_system_dpi_change(self, get_probe, mock_scale):
+        pytest.skip("Test not implemented for this platform")

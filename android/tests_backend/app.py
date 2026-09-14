@@ -91,13 +91,13 @@ class AppProbe(BaseProbe, DialogsMixin):
         assert about_dialog is not None, "No about dialog displayed"
         await self.press_dialog_button(about_dialog, "OK")
 
-    def activate_menu_visit_homepage(self):
+    async def activate_menu_visit_homepage(self):
         pytest.xfail("This backend doesn't have a visit homepage command")
 
-    def assert_menu_item(self, path, *, enabled=True):
+    async def assert_menu_item(self, path, *, enabled=True):
         assert self._menu_item(path).isEnabled() == enabled
 
-    def assert_menu_order(self, path, expected):
+    async def assert_menu_order(self, path, expected):
         item = self._menu_item(path)
         menu = item.getSubMenu()
 
@@ -111,8 +111,8 @@ class AppProbe(BaseProbe, DialogsMixin):
             else:
                 assert menu.getItem(i - separator_offset).getTitle() == title
 
-    def assert_system_menus(self):
-        self.assert_menu_item(["About Toga Testbed"])
+    async def assert_system_menus(self):
+        await self.assert_menu_item(["About Toga Testbed"])
 
     def activate_menu_close_window(self):
         pytest.xfail("This backend doesn't have a window management menu")
@@ -146,10 +146,10 @@ class AppProbe(BaseProbe, DialogsMixin):
     def status_menu_items(self, status_icon):
         pytest.xfail("Status icons not implemented on Android")
 
-    def activate_status_icon_button(self, item_id):
+    async def activate_status_icon_button(self, item_id):
         pytest.xfail("Status icons not implemented on Android")
 
-    def activate_status_menu_item(self, item_id, title):
+    async def activate_status_menu_item(self, item_id, title):
         pytest.xfail("Status icons not implemented on Android")
 
     async def assert_event_loop(self):

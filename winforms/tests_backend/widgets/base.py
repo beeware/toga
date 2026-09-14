@@ -104,3 +104,15 @@ class SimpleProbe(BaseProbe):
 
     async def redo(self):
         pytest.skip("Redo not supported on this platform")
+
+    async def assert_backend_specific_properties(self):
+        pytest.skip("Test not implemented for this platform")
+
+    def assert_tab_index(self, widget, other):
+        assert widget.tab_index == 1
+        assert other.tab_index == 2
+
+        widget.tab_index = 4
+        other.tab_index = 2
+        assert widget.tab_index == 4
+        assert other.tab_index == 2
