@@ -2,22 +2,15 @@ from io import BytesIO
 
 import pytest
 from PIL import Image
-from rubicon.objc import NSObject, NSPoint, ObjCClass, objc_method
+from rubicon.objc import NSPoint, ObjCClass
 
 from toga_iOS.libs import UIView
 
 from .base import SimpleProbe
+from .utils import MockTouch
 
 # Touch events generate a Set of 1 event.
 NSSet = ObjCClass("NSSet")
-
-
-# UITouch objects can't be instantiated; but we only care about 1 method, so
-# create a mock that satisfies our needs.
-class MockTouch(NSObject):
-    @objc_method
-    def locationInView(self, view) -> NSPoint:
-        return self.position
 
 
 class CanvasProbe(SimpleProbe):
