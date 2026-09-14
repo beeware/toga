@@ -213,6 +213,7 @@ def test_clear_content(app, window, scroll_container, content):
 
     # The content has been assigned to the widget
     assert_action_performed_with(scroll_container, "set content", widget=None)
+    assert_action_performed(scroll_container, "refresh")
 
     # The content has been cleared
     assert scroll_container.content is None

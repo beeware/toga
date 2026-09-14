@@ -31,7 +31,6 @@ class ScrollContainerProbe(SimpleProbe):
 
         # Fake a vertical scroll
         self.native.get_vadjustment().set_value(200)
-        self.native.get_vadjustment().emit("changed")
 
     async def wait_for_scroll_completion(self):
         # Scroll isn't animated, so this is a no-op.

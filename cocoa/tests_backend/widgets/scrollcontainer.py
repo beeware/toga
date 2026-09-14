@@ -11,8 +11,14 @@ from .base import SimpleProbe
 
 class ScrollContainerProbe(SimpleProbe):
     native_class = NSScrollView
-    scrollbar_inset = 0
     frame_inset = 0
+
+    @property
+    def scrollbar_inset(self):
+        return max(
+            self.native.frame.size.width - self.native.contentSize.width,
+            self.native.frame.size.height - self.native.contentSize.height,
+        )
 
     @property
     def has_content(self):
@@ -43,6 +49,12 @@ class ScrollContainerProbe(SimpleProbe):
         NSNotificationCenter.defaultCenter.postNotificationName(
             NSScrollViewDidEndLiveScrollNotification, object=self.native
         )
+
+    async def scroller_style_changed(self):
+        self.native.scrollerStyleChanged(None)
+
+    async def use_legacy_scrollers(self):
+        self.native.scrollerStyle = 0  # NSScrollerStyleLegacy
 
     async def wait_for_scroll_completion(self):
         # No animation associated with scroll, so this is a no-op

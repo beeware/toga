@@ -10,6 +10,8 @@ content = toga.Box(children=[...])
 container = toga.ScrollContainer(content=content)
 ```
 
+On each axis where scrolling is disabled, the minimum size of a `ScrollContainer` includes the minimum size of its content. Content size does not affect the container's minimum on an axis where scrolling is enabled.
+
 ## Reference
 
 ::: toga.ScrollContainer

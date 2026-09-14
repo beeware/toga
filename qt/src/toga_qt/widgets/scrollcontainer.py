@@ -1,3 +1,5 @@
+import asyncio
+
 from PySide6.QtCore import QEvent, QObject, Qt
 from PySide6.QtWidgets import QScrollArea
 from travertino.constants import TRANSPARENT
@@ -97,8 +99,27 @@ class ScrollContainer(Widget):
         self.native.verticalScrollBar().setValue(vertical_position)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        min_width = self.interface._MIN_WIDTH
+        min_height = self.interface._MIN_HEIGHT
+
+        if self.interface.content:
+            if not self.interface.horizontal:
+                min_width = max(
+                    min_width,
+                    self.interface.content.layout.min_width
+                    + self.native.width()
+                    - self.native.viewport().width(),
+                )
+            if not self.interface.vertical:
+                min_height = max(
+                    min_height,
+                    self.interface.content.layout.min_height
+                    + self.native.height()
+                    - self.native.viewport().height(),
+                )
+
+        self.interface.intrinsic.width = at_least(min_width)
+        self.interface.intrinsic.height = at_least(min_height)
 
     def content_refreshed(self, container):
         width = self.native.viewport().width()
@@ -111,3 +132,14 @@ class ScrollContainer(Widget):
             height = max(self.interface.content.layout.height, height)
 
         self.document_container.native.setFixedSize(width, height)
+
+        previous_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        self.rehint()
+        if previous_intrinsic_size != (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        ):
+            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
