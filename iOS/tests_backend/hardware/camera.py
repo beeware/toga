@@ -103,6 +103,12 @@ class CameraProbe(AppProbe):
                 picker.delegate.imagePickerControllerDidCancel(picker)
         except AttributeError:
             pass
+        # Clean up any active scanner
+        try:
+            if self.app.camera._impl.is_scanning():
+                self.app.camera._impl.stop_scanning()
+        except (NotImplementedError, AttributeError):
+            pass
 
     def known_cameras(self):
         return {
@@ -190,3 +196,19 @@ class CameraProbe(AppProbe):
                 UIImagePickerControllerCameraFlashMode.Off: FlashMode.OFF,
             }[actual]
         )
+
+    async def simulate_scan_detection(self, content="scanned_content"):
+        """Simulate a barcode being detected during scanning."""
+        impl = self.app.camera._impl
+        impl._handle_detection(content)
+        await self.redraw("Scan detected", delay=0.1)
+
+    async def cancel_scan(self):
+        """Simulate the user cancelling scanning."""
+        impl = self.app.camera._impl
+        impl.stop_scanning()
+        await self.redraw("Scan cancelled", delay=0.1)
+
+    async def wait_for_scan_start(self):
+        """Wait for the scanner to be initialized."""
+        await self.redraw("Scanner started", delay=0.3)
