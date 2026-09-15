@@ -37,7 +37,6 @@ class _SwitchProbe(_CheckboxProbe):
         return self.impl.label_native.font
 
 
-# noinspection PyPep8Naming
 def SwitchProbe(widget):
     if widget.role in {SwitchRole.SWITCH, SwitchRole.MAJOR}:
         return _SwitchProbe(widget)
