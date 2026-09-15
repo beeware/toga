@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Literal
 
 from travertino.constants import TRANSPARENT
 from travertino.size import at_least
@@ -49,17 +48,6 @@ class TogaSwitch(NSSwitch):
 
 SWITCH_LABEL_GAP = 6
 """Gap, in pixels, between the switch and the label for SWITCH-type toggles."""
-
-
-def determine_actual_toggle_role(
-    role: SwitchRole,
-) -> Literal[SwitchRole.CHECKBOX, SwitchRole.SWITCH]:
-    if role == SwitchRole.AUTOMATIC or role == SwitchRole.MINOR:
-        # Use a checkbox by default on macOS.
-        return SwitchRole.CHECKBOX
-    if role == SwitchRole.MAJOR:
-        return SwitchRole.SWITCH
-    return role
 
 
 class Toggle(Widget, ABC):
@@ -208,6 +196,9 @@ class CheckboxToggle(Toggle):
 
 
 def switch_for_role(role: SwitchRole) -> type[Toggle]:
-    if determine_actual_toggle_role(role) == SwitchRole.SWITCH:
+    if role in {SwitchRole.AUTOMATIC, SwitchRole.MINOR, SwitchRole.CHECKBOX}:
+        # Use a checkbox by default on macOS.
+        return CheckboxToggle
+    elif role in {SwitchRole.MAJOR, SwitchRole.SWITCH}:
         return SwitchToggle
-    return CheckboxToggle
+    raise NotImplementedError
