@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import shutil
 from pathlib import Path
+from urllib.parse import urlparse
 
+import offliner
 from briefcase.bootstraps import TogaGuiBootstrap
 
 
@@ -18,10 +20,15 @@ class BasePositronBootstrap(TogaGuiBootstrap):
     def validate_content_path(self, value: str) -> bool:
         """Validate that the value is a directory."""
         if value:
-            if value.startswith("https://"):
-                raise ValueError("Positron can't scrape existing web sites (...yet!)")
-            elif not Path(value).resolve().is_dir():
-                raise ValueError(f"Path {Path(value).resolve()} does not exist")
+            result = urlparse(value)
+            if result.scheme == "":
+                if not Path(value).resolve().is_dir():
+                    raise ValueError(f"Path {Path(value).resolve()} does not exist")
+            elif result.scheme not in {"http", "https"}:
+                raise ValueError(
+                    f"Positron can't scrape content of type {result.scheme}"
+                )
+
         return True
 
     def templated_content(self, template_path, **context):
@@ -66,7 +73,9 @@ class BasePositronBootstrap(TogaGuiBootstrap):
 
     def install_static_content(self, web_root_path):
         if self.content_path.startswith(("http://", "https://")):
-            raise RuntimeError("Can't clone web content (...yet!)")
+            self.console.info(f"Retrieve web content from {self.content_path}")
+            with self.console.wait_bar("Retrieving web content..."):
+                offliner.retrieve(self.content_path, web_root_path, verbose=True)
         elif self.content_path:
             # Copy an existing content path
             with self.console.wait_bar("Copying web content..."):
@@ -75,6 +84,21 @@ class BasePositronBootstrap(TogaGuiBootstrap):
                     web_root_path,
                     dirs_exist_ok=True,
                 )
+
+    def positron_requires(self):
+        return []
+
+    def pyproject_table_briefcase_app_extra_content(self):
+        requires = "".join(f'\n    "{req}",' for req in self.positron_requires())
+        return f"""
+requires = [{requires}
+]
+test_requires = [
+{{% if cookiecutter.test_framework == "pytest" %}}
+    "pytest",
+{{% endif %}}
+]
+"""
 
     def pyproject_table_web(self):
         return """\
