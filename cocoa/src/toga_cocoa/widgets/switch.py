@@ -51,6 +51,7 @@ SWITCH_LABEL_GAP = 6
 
 
 class Toggle(Widget, ABC):
+    roles: set[SwitchRole]
     native: TogaCheckbox | TogaView
     switch_native: TogaSwitch | TogaCheckbox
     label_native: NSTextField | None
@@ -82,7 +83,9 @@ class Toggle(Widget, ABC):
             self.native.drawsBackground = True
 
 
-class SwitchToggle(Toggle):
+class Switch(Toggle):
+    roles = {SwitchRole.MAJOR, SwitchRole.SWITCH}  # noqa: RUF012
+
     def create(self):
         self.native = TogaView.alloc().init()
 
@@ -164,7 +167,9 @@ class SwitchToggle(Toggle):
         self.interface.intrinsic.height = height
 
 
-class CheckboxToggle(Toggle):
+class Checkbox(Toggle):
+    roles = {SwitchRole.AUTOMATIC, SwitchRole.MINOR, SwitchRole.CHECKBOX}  # noqa: RUF012
+
     def create(self):
         self.native = TogaCheckbox.alloc().init()
         self.native.interface = self.interface
@@ -193,12 +198,3 @@ class CheckboxToggle(Toggle):
         width, height = content_size.width, content_size.height
         self.interface.intrinsic.width = at_least(width)
         self.interface.intrinsic.height = height
-
-
-def switch_for_role(role: SwitchRole) -> type[Toggle]:
-    if role in {SwitchRole.AUTOMATIC, SwitchRole.MINOR, SwitchRole.CHECKBOX}:
-        # Use a checkbox by default on macOS.
-        return CheckboxToggle
-    elif role in {SwitchRole.MAJOR, SwitchRole.SWITCH}:
-        return SwitchToggle
-    raise NotImplementedError

@@ -66,12 +66,27 @@ class Switch(Widget):
     def role(self) -> SwitchRole:
         return self._role
 
-    def _create(self) -> Any:
+    def _switch_class(self):
+        classes = [self.factory.Switch]
         try:
-            switch_class = self.factory.switch_for_role(role=self.role)
-            return switch_class(interface=self)  # pragma: no cover
+            classes.append(self.factory.Checkbox)
         except NotImplementedError:
-            return self.factory.Switch(interface=self)
+            pass
+
+        for switch_class in classes:
+            try:
+                if self.role in switch_class.roles:
+                    return switch_class
+            except AttributeError:
+                # the backend doesn't implement `.roles`, ignore it and return a Switch.
+                continue
+
+        # for backends that don't implement separate Switch and Checkbox classes,
+        # fall back to Switch
+        return classes[0]
+
+    def _create(self) -> Any:
+        return self._switch_class()(interface=self)
 
     @property
     def text(self) -> str:

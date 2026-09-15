@@ -33,7 +33,7 @@ from .widgets.scrollcontainer import ScrollContainer
 from .widgets.selection import Selection
 from .widgets.slider import Slider
 from .widgets.splitcontainer import SplitContainer
-from .widgets.switch import switch_for_role
+from .widgets.switch import Checkbox, Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput
@@ -59,6 +59,7 @@ __all__ = [
     "Button",
     "Camera",
     "Canvas",
+    "Checkbox",
     "Command",
     "DateInput",
     "DetailedList",
@@ -84,6 +85,7 @@ __all__ = [
     "Slider",
     "SplitContainer",
     "StatusIconSet",
+    "Switch",
     "Table",
     "TextInput",
     "TimeInput",
@@ -92,7 +94,6 @@ __all__ = [
     "Window",
     "dialogs",
     "not_implemented",
-    "switch_for_role",
 ]
 
 
