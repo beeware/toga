@@ -1,12 +1,10 @@
 # Linux/Unix (GTK)
 
-![image](../../images/gtk.png){ width="300px" }
+![Toga Demo running on Linux using GTK.](/images/toga-demo-gtk.png){ width="450" }
 
 /// caption
 
 ///
-
-<!-- TODO: Update alt text -->
 
 The Toga backend for Linux (and other Unix-like operating systems) running the GNOME desktop environment is [`toga-gtk`](https://github.com/beeware/toga/tree/main/gtk).
 
