@@ -120,3 +120,6 @@ class MultilineTextInput(Widget):
 
     def scroll_to_top(self):
         self.native_text.scrollToBeginningOfDocument(None)
+
+    def set_spell_checking(self, value):
+        self.native_text.setContinuousSpellCheckingEnabled(value)

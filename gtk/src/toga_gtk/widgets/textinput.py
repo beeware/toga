@@ -125,3 +125,9 @@ class TextInput(Widget):
 
     def is_valid(self):
         return self.native.get_icon_name(Gtk.EntryIconPosition.SECONDARY) is None
+
+    def set_spell_checking(self, value):
+        hints = self.native.get_input_hints()
+        hints &= ~(Gtk.InputHints.SPELLCHECK | Gtk.InputHints.NO_SPELLCHECK)
+        hints |= Gtk.InputHints.SPELLCHECK if value else Gtk.InputHints.NO_SPELLCHECK
+        self.native.set_input_hints(hints)

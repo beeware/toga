@@ -57,3 +57,6 @@ class TextInput(Widget):
     def is_valid(self):
         self.interface.factory.not_implemented("TextInput.is_valid()")
         return True
+
+    def set_spell_checking(self, value):
+        self.native.spellcheck = value
