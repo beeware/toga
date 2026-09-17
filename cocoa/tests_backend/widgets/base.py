@@ -1,3 +1,4 @@
+from pytest import skip
 from rubicon.objc import NSPoint
 
 from toga.colors import TRANSPARENT
@@ -224,3 +225,6 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     async def redo(self):
         await self.type_character("z", alt=True, shift=True)
+
+    async def assert_backend_specific_properties(self):
+        skip("Test not implemented for this platform")
