@@ -8,11 +8,11 @@ If you'd like to contribute to Toga, our [contribution guide](https://toga.beewa
 
 ### Code of Conduct
 
-BeeWare operates under a [Code of Conduct](https://beeware.org/community/code-of-conduct/). All participation the BeeWare community is governed by this code.
+BeeWare operates under a [Code of Conduct](https://beeware.org/community/code-of-conduct/). All participation in the BeeWare community is governed by this code.
 
 ### AI contributions
 
-We neither encourage nor prohibit the use of autonomous coding tools when contributing to BeeWare projects. However, if you have used an autonomous coding tool to support your work processes, all contributions are you make are ultimately **your** responsibility.
+We neither encourage nor prohibit the use of autonomous coding tools when contributing to BeeWare projects. However, if you have used an autonomous coding tool to support your work processes, all contributions you make are ultimately **your** responsibility.
 
 Our [AI Policy](https://toga.beeware.org/en/latest/how-to/contribute/policies/ai-policy/) has the full details of your obligations if you choose to use an AI tool when contributing to BeeWare.
 
