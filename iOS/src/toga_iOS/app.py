@@ -36,12 +36,12 @@ class PythonSceneDelegate(UIResponder, protocols=(UIWindowSceneDelegate,)):
         App.app.interface.current_window.on_gain_focus()
 
     @objc_method
-    def sceneWillResignActive_(self, scene) -> None:  # pragma: no cover
+    def sceneWillResignActive_(self, scene) -> None:
         print("Scene about to leave foreground.", flush=True)
         App.app.interface.current_window.on_lose_focus()
 
     @objc_method
-    def sceneDidEnterBackground_(self, scene) -> None:  # pragma: no cover
+    def sceneDidEnterBackground_(self, scene) -> None:
         print("Scene entered background.")
         App.app.interface.current_window.on_hide()
 
@@ -52,28 +52,6 @@ class PythonSceneDelegate(UIResponder, protocols=(UIWindowSceneDelegate,)):
 
 
 class PythonAppDelegate(UIResponder):
-    @objc_method
-    def applicationDidBecomeActive_(self, application) -> None:  # pragma: no cover
-        # Legacy iOS triggered this but now PythonSceneDelegate.sceneDidBecomeActive_
-        # is called instead.
-        print("App became active.")
-        App.app.interface.current_window.on_gain_focus()
-
-    @objc_method
-    def applicationWillResignActive_(self, application) -> None:
-        print("App about to leave foreground.", flush=True)
-        App.app.interface.current_window.on_lose_focus()
-
-    @objc_method
-    def applicationDidEnterBackground_(self, application) -> None:
-        print("App entered background.")
-        App.app.interface.current_window.on_hide()
-
-    @objc_method
-    def applicationWillEnterForeground_(self, application) -> None:
-        print("App about to enter foreground.")
-        App.app.interface.current_window.on_show()
-
     @objc_method
     def application_configurationForConnectingSceneSession_options_(
         self, application, connectingSceneSession, options
