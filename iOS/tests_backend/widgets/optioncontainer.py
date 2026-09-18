@@ -12,6 +12,10 @@ class OptionContainerProbe(SimpleProbe):
     max_tabs = None
     more_option_is_stateful = True
 
+    def __init__(self, widget):
+        super().__init__(widget)
+        self.has_more = not self._is_ipad()
+
     @property
     def width(self):
         return self.native.frame.size.width
@@ -19,6 +23,10 @@ class OptionContainerProbe(SimpleProbe):
     @property
     def height(self):
         return self.native.frame.size.height
+
+    def _is_ipad(self):
+        UIUserInterfaceIdiomPad = 1
+        return self.native.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad
 
     def assert_supports_content_based_rehint(self):
         pytest.skip("Content-based rehinting not yet supported on this platform")
@@ -42,15 +50,19 @@ class OptionContainerProbe(SimpleProbe):
                 )
 
     def select_more(self):
-        more = self.impl.native_controller.moreNavigationController
-        self.impl.native_controller.selectedViewController = more
+        # iPhones use the More mechanism, iPads scroll
+        if self.has_more:
+            more = self.impl.native_controller.moreNavigationController
+            self.impl.native_controller.selectedViewController = more
 
     async def wait_for_tab(self, message):
         await self.redraw(message, delay=0.1)
 
     def reset_more(self):
-        more = self.impl.native_controller.moreNavigationController
-        more.popToRootViewControllerAnimated(False)
+        # iPhones use the More mechanism, iPads scroll
+        if self.has_more:
+            more = self.impl.native_controller.moreNavigationController
+            more.popToRootViewControllerAnimated(False)
 
     def tab_enabled(self, index):
         return self.impl.sub_containers[index].enabled

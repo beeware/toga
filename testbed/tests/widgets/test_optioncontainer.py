@@ -221,15 +221,13 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         # Ensure mock call count is clean
         on_select_handler.reset_mock()
 
-        # Some platforms (iOS) have a "more" option for tabs beyond a display limit. If
-        # `select_more()` doesn't exist, that feature doesn't exist on the platform.
-        try:
+        # Some platforms' (iOS) devices (iPhone) have a "more" option
+        # for tabs beyond a display limit.
+        if probe.has_more:
             probe.select_more()
             await probe.wait_for_tab("More option should be displayed")
             # When the "more" menu is visible, the current tab is None.
             assert widget.current_tab.index is None
-        except AttributeError:
-            pass
 
         # on_select has been not been invoked
         on_select_handler.assert_not_called()
@@ -267,7 +265,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the "more" option again. If the more option is stateful,
         # this will result is displaying the last "more" option selected
-        try:
+        if probe.has_more:
             probe.select_more()
             if probe.more_option_is_stateful:
                 await probe.wait_for_tab("Previous more option should be displayed")
@@ -283,8 +281,6 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
                 await probe.wait_for_tab("More option should be displayed")
 
             assert widget.current_tab.index is None
-        except AttributeError:
-            pass
 
         on_select_handler.assert_not_called()
 
