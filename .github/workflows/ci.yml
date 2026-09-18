@@ -522,18 +522,14 @@ jobs:
 
         - backend: "iOS-iPhone"
           platform: "iOS"
-          runs-on: "macos-15"
-          env:
-            DEVELOPER_DIR: "/Applications/Xcode_26.3.app/Contents/Developer"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
+          runs-on: "macos-26"
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "iOS-iPad"
           platform: "iOS"
-          runs-on: "macos-15"
-          env:
-            DEVELOPER_DIR: "/Applications/Xcode_26.3.app/Contents/Developer"
-          briefcase-run-args: "--device 'iPad (A16)::iOS 18.5'"
+          runs-on: "macos-26"
+          briefcase-run-args: "--device 'iPad (A16)'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
