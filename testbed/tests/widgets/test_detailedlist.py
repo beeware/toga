@@ -170,9 +170,7 @@ async def test_scroll(widget, probe):
     # Row 50 should be visible. It could be at the top of the screen, or the bottom of
     # the screen; we don't really care which - as long as it's roughly in the middle of
     # the scroll range, call it a win.
-    assert probe.scroll_position == pytest.approx(
-        probe.max_scroll_position / 2, abs=400
-    )
+    assert probe.scroll_position == pytest.approx(probe.scroll_limit / 2, abs=400)
 
     # Scroll to the top of the detailedList
     widget.scroll_to_top()
