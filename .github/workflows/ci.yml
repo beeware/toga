@@ -272,7 +272,8 @@ jobs:
         - "linux-wayland-qt"
         - "linux-x11-qt"
         - "android"
-        - "iOS"
+        - "iOS-iPhone"
+        - "iOS-iPad"
         - "textual-linux"
         - "textual-macOS"
         - "textual-windows"
@@ -519,10 +520,16 @@ jobs:
           runs-on: "windows-11-arm"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
-        - backend: "iOS"
+        - backend: "iOS-iPhone"
           platform: "iOS"
           runs-on: "macos-15"
           briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
+          app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
+
+        - backend: "iOS-iPad"
+          platform: "iOS"
+          runs-on: "macos-15"
+          briefcase-run-args: "--device 'iPad (A16)::iOS 18.5'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
