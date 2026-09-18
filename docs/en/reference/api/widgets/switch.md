@@ -20,10 +20,12 @@ Some platforms encourage one appearance for "major" toggles, such as a switch th
 ```python
 from toga.constants import SwitchRole
 
-toga.Box(children=[
-    toga.Switch("A major switch", role=SwitchRole.MAJOR),
-    toga.Switch("A minor switch", role=SwitchRole.MINOR)
-])
+toga.Box(
+    children=[
+        toga.Switch("A major switch", role=SwitchRole.MAJOR),
+        toga.Switch("A minor switch", role=SwitchRole.MINOR),
+    ]
+)
 ```
 
 If you want to force the appearance of a `Switch` as a checkbox or toggle switch, you may use `SwitchRole.CHECKBOX` or `SwitchRole.SWITCH`. However, this is not a guarantee, as some platforms only support one appearance and will not respect this choice.
