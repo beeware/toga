@@ -41,8 +41,8 @@ class SwitchProbe(SimpleProbe):
         label_width = self.native_label.frame.size.width
         switch_width = self.native_switch.frame.size.width
 
-        # The switch should be ~51px wide.
-        MAX_SWITCH_WIDTH = 60
+        # The switch should be ~51px wide until <= iOS 18, <64px wide > iOS 18
+        MAX_SWITCH_WIDTH = 65
 
         assert (
             (min_width - MAX_SWITCH_WIDTH)
