@@ -1,3 +1,5 @@
+import platform
+
 import pytest
 
 from toga_iOS.libs import UITabBarController
@@ -10,11 +12,8 @@ class OptionContainerProbe(SimpleProbe):
     native_class = UITabBarController
     disabled_tab_selectable = False
     max_tabs = None
+    uses_more = platform.system() not in ["iPadOS"]
     more_option_is_stateful = True
-
-    def __init__(self, widget):
-        super().__init__(widget)
-        self.has_more = not self._is_ipad()
 
     @property
     def width(self):
@@ -23,10 +22,6 @@ class OptionContainerProbe(SimpleProbe):
     @property
     def height(self):
         return self.native.frame.size.height
-
-    def _is_ipad(self):
-        UIUserInterfaceIdiomPad = 1
-        return self.native.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad
 
     def assert_supports_content_based_rehint(self):
         pytest.skip("Content-based rehinting not yet supported on this platform")
@@ -51,7 +46,7 @@ class OptionContainerProbe(SimpleProbe):
 
     def select_more(self):
         # iPhones use the More mechanism, iPads scroll
-        if self.has_more:
+        if self.uses_more:
             more = self.impl.native_controller.moreNavigationController
             self.impl.native_controller.selectedViewController = more
 
@@ -60,7 +55,7 @@ class OptionContainerProbe(SimpleProbe):
 
     def reset_more(self):
         # iPhones use the More mechanism, iPads scroll
-        if self.has_more:
+        if self.uses_more:
             more = self.impl.native_controller.moreNavigationController
             more.popToRootViewControllerAnimated(False)
 

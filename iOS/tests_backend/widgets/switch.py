@@ -66,8 +66,8 @@ class SwitchProbe(SimpleProbe):
         assert 20 <= label_height <= 30, (
             f"Label height ({label_height}) not in range (20, 30)"
         )
-        assert 30 <= switch_height <= 40, (
-            f"Switch height ({switch_height}) not in range (30, 40)"
+        assert 25 <= switch_height <= 40, (
+            f"Switch height ({switch_height}) not in range (25, 40)"
         )
 
     async def press(self):

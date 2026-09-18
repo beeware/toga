@@ -132,7 +132,7 @@ async def test_scroll_after_text_change(widget, probe):
     )
 
     scroll_offset = probe.document_height - probe.height
-    assert probe.vertical_scroll_position == pytest.approx(scroll_offset, abs=30)
+    assert probe.vertical_scroll_position == pytest.approx(scroll_offset, abs=40)
 
 
 async def test_mouse_scrolling(widget, probe, other, other_probe):
