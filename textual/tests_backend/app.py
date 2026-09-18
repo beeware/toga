@@ -44,7 +44,7 @@ class AppProbe(BaseProbe):
     @property
     def config_path(self):
         if sys.platform == "darwin":
-            return Path.home() / f"Library/Preferences/{APP_ID}"
+            return Path.home() / f"Library/Application Support/{APP_ID}/Config"
         elif sys.platform == "win32":
             return self._win32_app_dir / "Config"
         else:
@@ -56,7 +56,7 @@ class AppProbe(BaseProbe):
     @property
     def data_path(self):
         if sys.platform == "darwin":
-            return Path.home() / f"Library/Application Support/{APP_ID}"
+            return Path.home() / f"Library/Application Support/{APP_ID}/Data"
         elif sys.platform == "win32":
             return self._win32_app_dir / "Data"
         else:
