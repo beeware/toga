@@ -101,8 +101,8 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
     async def test_move_and_resize(main_window, main_window_probe, capsys):
         """Move and resize are no-ops on mobile."""
-        content_size = main_window_probe.content_size
         initial_size = main_window.size
+        content_size = main_window_probe.content_size
         assert initial_size[0] > 300
         assert initial_size[1] > 500
 
@@ -129,7 +129,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
                 children=[box1, box2],
                 style=Pack(direction=COLUMN, background_color=CORNFLOWERBLUE),
             )
-            # Changed content so new scaffold is created
             await main_window_probe.wait_for_window("Main window content has been set")
             assert_size(main_window, initial_size)
             assert main_window_probe.content_size == content_size
@@ -708,7 +707,6 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window has had height adjusted due to content"
         )
-        # Recreate scaffold probe as content has changed
         assert_size(second_window, approx((200, 210 + extra_height), abs=2))
         assert second_window_probe.content_size == approx(
             (200 - extra_width, 210), abs=2
@@ -1109,7 +1107,6 @@ else:
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window("Secondary window is shown")
 
-        # Do this here as content is reassigned
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
