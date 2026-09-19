@@ -7,7 +7,7 @@ class OptionContainerProbe(SimpleProbe):
     native_class = QTabWidget
     max_tabs = None
     disabled_tab_selectable = True
-    has_more = False
+    uses_more = False
 
     def assert_supports_content_based_rehint(self):
         pass

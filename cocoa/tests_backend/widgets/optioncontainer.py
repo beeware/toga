@@ -9,7 +9,7 @@ class OptionContainerProbe(SimpleProbe):
     native_class = NSTabView
     max_tabs = None
     disabled_tab_selectable = False
-    has_more = False
+    uses_more = False
 
     def assert_supports_content_based_rehint(self):
         pass
