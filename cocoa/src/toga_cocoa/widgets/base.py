@@ -91,7 +91,7 @@ class Widget(ABC):
             self.interface.window._impl.native.makeFirstResponder(self.native)
 
     @contextmanager
-    def sans_focus(self):
+    def focus_safe(self):
         has_gained_focus = False
         if self.has_focus:
             # Some operations in Cocoa like changing text alignment does not work

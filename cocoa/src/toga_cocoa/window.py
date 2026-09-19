@@ -285,25 +285,17 @@ class Window:
     ######################################################################
 
     def set_scaffold(self, scaffold):
-        restore_presentation = False
         if self._scaffold is not None:
             # Get the current title and sync it up with the new scaffold.
             # This check is required as the initial scaffold set will not have
             # a previous scaffold to grab title from.
             scaffold.title = self.get_title()
-            # Scaffold changes in PRESENTATION mode causes bookkeeping glitches.
-            # So, if there was a previous scaffold, we exit PRESENTATION first.
-            if self.get_window_state() == WindowState.PRESENTATION:
-                restore_presentation = True
-                self.set_window_state(WindowState.NORMAL)
 
         frame = self.native.frame
         self._scaffold = scaffold
         # Hook up the scaffold's content view controller
         self.native.contentViewController = scaffold.root_controller
         self.native.setFrame(frame, display=True, animate=True)
-        if restore_presentation:
-            self.set_window_state(WindowState.PRESENTATION)
 
     ######################################################################
     # Window size
@@ -381,8 +373,6 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
-        # Set scaffold will call get_window_state and back then during init there
-        # may not be any scaffold yet so we need to check the first condition
         if self._scaffold.current_container.controller.view.isInFullScreenMode():
             return WindowState.PRESENTATION
         elif self.native.styleMask & NSWindowStyleMask.FullScreen:

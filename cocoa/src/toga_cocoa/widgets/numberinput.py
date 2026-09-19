@@ -227,7 +227,7 @@ class NumberInput(Widget):
             self.native_stepper.maxValue = float(value)
 
     def set_text_align(self, value):
-        with self.sans_focus():
+        with self.focus_safe():
             self.native_input.alignment = NSTextAlignment(value)
 
     def set_font(self, font):
