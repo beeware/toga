@@ -452,11 +452,7 @@ class Window:
         else:
             scaffold = content
 
-        if (
-            self._scaffold is not None
-            and scaffold is not self._scaffold
-            and self.state == WindowState.PRESENTATION
-        ):
+        if scaffold is not self._scaffold and self.state == WindowState.PRESENTATION:
             raise ValueError("Window scaffold cannot be changed in presentation mode")
 
         # Set window of old scaffold to None
