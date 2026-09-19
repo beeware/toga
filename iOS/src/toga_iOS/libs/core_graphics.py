@@ -15,7 +15,7 @@ from ctypes import (
 )
 
 from rubicon.objc import CGFloat, CGPoint, CGRect, CGSize
-from rubicon.objc.types import register_preferred_encoding
+from rubicon.objc.types import register_preferred_encoding, with_preferred_encoding
 
 ######################################################################
 core_graphics = cdll.LoadLibrary(util.find_library("CoreGraphics"))
@@ -25,6 +25,7 @@ core_graphics = cdll.LoadLibrary(util.find_library("CoreGraphics"))
 # CGAffineTransform.h
 
 
+@with_preferred_encoding(b"{CGAffineTransform=dddddd}")
 class CGAffineTransform(Structure):
     _fields_ = [
         ("a", CGFloat),

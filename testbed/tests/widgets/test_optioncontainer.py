@@ -157,7 +157,7 @@ async def test_select_tab(
     # on_select hasn't been invoked.
     on_select_handler.assert_not_called()
 
-    # Select item 1 programmatically
+    # Select item 2 programmatically
     widget.current_tab = "Tab 2"
     await probe.wait_for_tab("Tab 2 should be selected")
 
@@ -257,7 +257,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the first tab in the GUI
         probe.select_tab(0)
-        await probe.wait_for_tab("Tab 0 should be selected")
+        await probe.wait_for_tab("Tab 1 should be selected")
         assert widget.current_tab.index == 0
         # on_select has been invoked
         on_select_handler.assert_called_once_with(widget)
@@ -298,7 +298,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the first tab in the GUI
         probe.select_tab(0)
-        await probe.wait_for_tab("Tab 0 should be selected")
+        await probe.wait_for_tab("Tab 1 should be selected")
         assert widget.current_tab.index == 0
         # on_select has been invoked
         on_select_handler.assert_called_once_with(widget)

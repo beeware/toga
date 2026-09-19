@@ -52,13 +52,13 @@ class TogaTabBarController(UITabBarController):
 
 class OptionContainer(Widget):
     uses_icons = True
+    uses_more = platform.system() not in ["iPadOS"]
 
     def create(self):
         self.native_controller = TogaTabBarController.alloc().init()
         self.native_controller.interface = self.interface
         self.native_controller.impl = self
         self.native_controller.delegate = self.native_controller
-        self.uses_more = platform.system() not in ["iPadOS"]
 
         # Make the tab bar non-translucent, so you can actually see it.
         self.native_controller.tabBar.setTranslucent(False)
@@ -169,7 +169,7 @@ class OptionContainer(Widget):
                 self.native_controller.selectedViewController = controller
                 # Setting the view controller doesn't trigger the didSelect event
                 # for regular (non-"more") tabs.
-                if self.uses_more and self.native_controller.selectedIndex <= 4:
+                if (not self.uses_more) or (self.native_controller.selectedIndex <= 4):
                     self.native_controller.tabBar_didSelectItem_(
                         self.native_controller.tabBar,
                         current_tab_index,

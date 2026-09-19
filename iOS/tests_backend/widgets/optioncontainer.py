@@ -36,7 +36,7 @@ class OptionContainerProbe(SimpleProbe):
             )
 
             self.impl.native_controller.selectedIndex = index - n_disabled
-            if self.impl.native_controller.selectedIndex <= 4:
+            if (not self.uses_more) or (self.impl.native_controller.selectedIndex <= 4):
                 # Programmatically selecting a tab doesn't trigger the didSelectItem
                 # event.
                 self.impl.native_controller.tabBar_didSelectItem_(
