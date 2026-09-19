@@ -17,11 +17,11 @@ class OptionContainerProbe(SimpleProbe):
 
     @property
     def width(self):
-        return self.native.frame.size.width
+        return self.native.bounds.size.width
 
     @property
     def height(self):
-        return self.native.frame.size.height
+        return self.native.bounds.size.height
 
     def assert_supports_content_based_rehint(self):
         pytest.skip("Content-based rehinting not yet supported on this platform")

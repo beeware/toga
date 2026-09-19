@@ -38,8 +38,8 @@ class SwitchProbe(SimpleProbe):
         super().assert_width(min_width, max_width)
 
         # Also check the width of the two inner components
-        label_width = self.native_label.frame.size.width
-        switch_width = self.native_switch.frame.size.width
+        label_width = self.native_label.bounds.size.width
+        switch_width = self.native_switch.bounds.size.width
 
         # The switch should be ~51px wide until <= iOS 18, <64px wide > iOS 18
         MAX_SWITCH_WIDTH = 65
@@ -59,8 +59,8 @@ class SwitchProbe(SimpleProbe):
     def assert_height(self, min_height, max_height):
         super().assert_height(min_height, max_height)
 
-        label_height = self.native_label.frame.size.height
-        switch_height = self.native_switch.frame.size.height
+        label_height = self.native_label.bounds.size.height
+        switch_height = self.native_switch.bounds.size.height
 
         # label and switch height isn't affected by widget sizing
         assert 20 <= label_height <= 30, (

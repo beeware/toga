@@ -56,6 +56,8 @@ core_graphics.CGAffineTransformConcat.argtypes = [CGAffineTransform, CGAffineTra
 core_graphics.CGAffineTransformConcat.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.restype = CGAffineTransform
 core_graphics.CGAffineTransformInvert.argtypes = [CGAffineTransform]
+core_graphics.CGAffineTransformIsIdentity.argtypes = [CGAffineTransform]
+core_graphics.CGAffineTransformIsIdentity.restype = c_bool
 core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform
 core_graphics.CGAffineTransformMakeScale.argtypes = [CGFloat, CGFloat]
 
