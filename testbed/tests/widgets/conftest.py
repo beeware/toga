@@ -29,7 +29,8 @@ async def probe(main_window, widget):
     old_content = main_window.content
 
     box = toga.Box(children=[widget])
-    main_window.content = box
+    # Re-use existing scaffold as an optimization.
+    main_window.scaffold.content = box
     probe = get_probe(widget)
     await probe.redraw(f"\nConstructing {widget.__class__.__name__} probe")
     probe.assert_container(box)
@@ -41,16 +42,6 @@ async def probe(main_window, widget):
 @pytest.fixture
 async def container_probe(widget):
     return get_probe(widget.parent)
-
-
-# Override as widget causes new scaffold to be set
-# Must include unused parameter probe so that the window setup will be finished
-@pytest.fixture
-async def scaffold_probe(widget, probe):
-    # This needs to be late to avoid circular imports
-    from tests_backend.scaffolds.base import ScaffoldProbe
-
-    return ScaffoldProbe(widget.scaffold)
 
 
 @pytest.fixture
