@@ -1,3 +1,5 @@
+import contextlib
+
 from toga_iOS.libs import (
     NSLayoutAttributeBottom,
     NSLayoutAttributeLeft,
@@ -31,7 +33,8 @@ class Constraints:
     # Deletion isn't an event we can programmatically invoke; deletion
     # of constraints can take several iterations before it occurs.
     def __del__(self):  # pragma: nocover
-        self._remove_constraints()
+        with contextlib.suppress(Exception):
+            self._remove_constraints()
 
     def _remove_constraints(self):
         if self.container:

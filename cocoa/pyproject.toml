@@ -104,6 +104,9 @@ TimeInput = "toga_cocoa.widgets.timeinput:TimeInput"
 Tree = "toga_cocoa.widgets.tree:Tree"
 WebView = "toga_cocoa.widgets.webview:WebView"
 
+# Scaffolds
+Scaffold = "toga_cocoa.scaffolds.base:Scaffold"
+
 # Windows
 MainWindow = "toga_cocoa.window:MainWindow"
 Window = "toga_cocoa.window:Window"

@@ -28,7 +28,8 @@ async def probe(main_window, widget):
     old_content = main_window.content
 
     box = toga.Box(children=[widget])
-    main_window.content = box
+    # Reuse existing scaffold as an optimization.
+    main_window.scaffold.content = box
     probe = get_probe(widget)
     await probe.redraw(f"\nConstructing {widget.__class__.__name__} probe")
     probe.assert_container(box)

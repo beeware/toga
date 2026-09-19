@@ -270,7 +270,6 @@ class Window:
         self.factory = get_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
-            title=title if title else self._default_title,
             position=None if position is None else Position(*position),
             size=Size(*size),
         )
@@ -279,6 +278,10 @@ class Window:
         App.app.windows.add(self)
 
         self.content = content
+        # On some backends, title is managed by scaffolds; to simplify code in backends,
+        # scaffolds are assumed to exist, so we need to make sure a scaffold is created
+        # before title is set.
+        self.title = title
 
         # Set up the event handlers on the interface (overrides the no-op defaults
         # installed above with the user-supplied handlers).
@@ -444,15 +447,18 @@ class Window:
 
     @content.setter
     def content(self, content: Widget | BaseScaffold) -> None:
-        # Set window of old scaffold to None
-        if self._scaffold:
-            self._scaffold.window = None
-            self._scaffold.app = None
-
         if not isinstance(content, BaseScaffold):
             scaffold = Scaffold(content=content)
         else:
             scaffold = content
+
+        if scaffold is not self._scaffold and self.state == WindowState.PRESENTATION:
+            raise ValueError("Window scaffold cannot be changed in presentation mode")
+
+        # Set window of old scaffold to None
+        if self._scaffold:
+            self._scaffold.window = None
+            self._scaffold.app = None
 
         # Assign the scaffold to the same app as the window.
         scaffold.app = self.app

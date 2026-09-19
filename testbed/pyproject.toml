@@ -99,6 +99,18 @@ requires = [
 
 # Mobile deployments
 [tool.briefcase.app.testbed.iOS]
+
+# 2026-09-19  Xcode 27 has decided to reject any minimum version below
+# iOS 15 with this message:
+# /Users/johnzhou/toga/testbed/build/testbed/ios/xcode/Toga Testbed.xcodeproj:
+# error: The iOS Simulator deployment target 'IPHONEOS_DEPLOYMENT_TARGET' is
+# set to 13.0, but the range of supported deployment target versions is 15.0
+# to 27.0.x. (in target 'Toga Testbed' from project 'Toga Testbed')
+# Before the default is changed in Briefcase, we work around it here so Toga
+# development is not disrupted.
+
+min_os_version = "15.0"
+
 test_sources = [
     "../iOS/tests_backend",
 ]

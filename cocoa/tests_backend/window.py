@@ -93,8 +93,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     @property
     def content_size(self):
         return (
-            self.impl.container.native.frame.size.width,
-            self.impl.container.native.frame.size.height,
+            self.impl._scaffold.current_container.native.frame.size.width,
+            self.impl._scaffold.current_container.native.frame.size.height,
         )
 
     @property

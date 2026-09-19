@@ -1,7 +1,6 @@
 from rubicon.objc import objc_method, objc_property, send_super
 
 from .libs import (
-    UINavigationController,
     UIView,
     UIViewAutoresizing,
     UIViewController,
@@ -163,98 +162,3 @@ class ControlledContainer(Container):
 
         # Set the controller's view to be the root content widget
         self.controller.view = self.native
-
-
-class RootContainer(Container):
-    def __init__(
-        self,
-        content=None,
-        layout_native=None,
-        on_refresh=None,
-        on_native_layout=None,
-    ):
-        """A bare content container.
-
-        This is a container that *doesn't* include a navigation/title bar at the top.
-
-        :param content: The widget impl that is the container's initial content.
-        :param layout_native: The native widget that should be used to provide
-            size hints to the layout. This will usually be the container widget
-            itself; however, for widgets like ScrollContainer where the layout
-            needs to be computed based on a different size to what will be
-            rendered, the source of the size can be different.
-        :param on_refresh: The callback to be notified when this container's layout is
-            refreshed.
-        :param on_native_layout: The callback to be notified when the container's native
-            widget has finished laying out, i.e. when native values such as size
-            *may* have changed.
-        """
-        super().__init__(
-            content=content,
-            layout_native=layout_native,
-            on_refresh=on_refresh,
-            on_native_layout=on_native_layout,
-        )
-
-        # Construct a UIViewController to hold the root content
-        self.controller = UIViewController.alloc().init()
-
-        # Set the controller's view to be the root content widget
-        self.controller.view = self.native
-
-    @property
-    def title(self):  # pragma: no cover
-        return self._title
-
-    @title.setter
-    def title(self, value):
-        self._title = value
-
-
-class NavigationContainer(Container):
-    def __init__(
-        self,
-        content=None,
-        layout_native=None,
-        on_refresh=None,
-        on_native_layout=None,
-    ):
-        """A top level container that provides a navigation/title bar.
-
-        :param content: The widget impl that is the container's initial content.
-        :param layout_native: The native widget that should be used to provide
-            size hints to the layout. This will usually be the container widget
-            itself; however, for widgets like ScrollContainer where the layout
-            needs to be computed based on a different size to what will be
-            rendered, the source of the size can be different.
-        :param on_refresh: The callback to be notified when this container's layout is
-            refreshed.
-        :param on_native_layout: The callback to be notified when the container's native
-            widget has finished laying out, i.e. when native values such as size
-            *may* have changed.
-        """
-        super().__init__(
-            content=content,
-            layout_native=layout_native,
-            on_refresh=on_refresh,
-            on_native_layout=on_native_layout,
-        )
-
-        # Construct a NavigationController that provides a navigation bar, and
-        # is able to maintain a stack of navigable content. This is initialized
-        # with a root UIViewController that is the actual content
-        self.content_controller = UIViewController.alloc().init()
-        self.controller = UINavigationController.alloc().initWithRootViewController(
-            self.content_controller
-        )
-
-        # Set the controller's view to be the root content widget
-        self.content_controller.view = self.native
-
-    @property
-    def title(self):
-        return self.controller.topViewController.title
-
-    @title.setter
-    def title(self, value):
-        self.controller.topViewController.title = value
