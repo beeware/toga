@@ -18,6 +18,13 @@ class ScaffoldProbe(BaseProbe):
         # No assertion here by default
         await self.redraw(message="Waiting for scaffold layout to complete")
 
+    async def redraw(self, message=None, delay=0, wait_for=None):
+        """Request a redraw of the app, waiting until that redraw has completed."""
+        # Force a scaffold container repaint
+        self.impl.container.native.displayIfNeeded()
+
+        await super().redraw(message=message, delay=delay, wait_for=wait_for)
+
     @property
     def content_size(self):
         return (
