@@ -31,14 +31,21 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
         return _state_assertion
 
-    async def wait_for_window(self, message, state=None):
-        await self.redraw(message)
+    @property
+    def scaffold_probe(self):
         if self.window.scaffold not in SCAFFOLD_PROBE_CACHE:
             SCAFFOLD_PROBE_CACHE[self.window.scaffold] = ScaffoldProbe(
                 self.window.scaffold
             )
-        scaffold_probe = SCAFFOLD_PROBE_CACHE[self.window.scaffold]
-        await scaffold_probe.wait_for_layout()
+        return SCAFFOLD_PROBE_CACHE[self.window.scaffold]
+
+    @property
+    def content_size(self):
+        return self.scaffold_probe.content_size
+
+    async def wait_for_window(self, message, state=None):
+        await self.redraw(message)
+        await self.scaffold_probe.wait_for_layout()
 
         # If a specific window state has been requested, wait for that state to occur.
         if state:
