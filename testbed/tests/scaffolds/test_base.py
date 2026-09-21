@@ -23,8 +23,8 @@ async def test_no_change_in_title(app, main_window, main_window_probe):
     # Should not impact other properties
     assert main_window.title == "Scaffold testing!"
 
-    # Scaffold layout is correct
-    await main_window_probe.wait_for_window()
+    # Window layout is correct
+    await main_window_probe.wait_for_window("Waiting for window layout")
 
     # Now add a toolbar.  If the backend does not implement toolbar then
     # the rest of the test would be SKIP but failures would occur before here.
