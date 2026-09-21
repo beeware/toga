@@ -28,7 +28,15 @@ class CanvasProbe(SimpleProbe):
         # System fonts and sizes are platform specific
         if reference in {
             "attributes",
+            "ellipse",
             "multiline_text",
+            "nested_stroke_and_fill_state",
+            "rect",
+            "round_rect",
+            "singular_transforms",
+            "stroke_and_fill",
+            "transforms",
+            "transparency",
             "write_text",
             "write_text_and_path",
             "deprecated_tutorial",
