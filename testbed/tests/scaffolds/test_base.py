@@ -1,5 +1,3 @@
-from tests_backend.scaffolds.base import ScaffoldProbe
-
 import toga
 
 
@@ -19,7 +17,6 @@ async def test_no_change_in_title(app, main_window, main_window_probe):
     await main_window_probe.redraw("Setting initial window title")
 
     scaffold = toga.Scaffold(content=toga.Box())
-    scaffold_probe = ScaffoldProbe(scaffold)
     main_window.content = scaffold
     await main_window_probe.redraw("New scaffold has been set")
 
@@ -27,7 +24,7 @@ async def test_no_change_in_title(app, main_window, main_window_probe):
     assert main_window.title == "Scaffold testing!"
 
     # Scaffold layout is correct
-    await scaffold_probe.wait_for_layout()
+    await main_window_probe.wait_for_window()
 
     # Now add a toolbar.  If the backend does not implement toolbar then
     # the rest of the test would be SKIP but failures would occur before here.
@@ -36,7 +33,6 @@ async def test_no_change_in_title(app, main_window, main_window_probe):
     assert main_window_probe.has_toolbar()
 
     scaffold = toga.Scaffold(content=toga.Box())
-    scaffold_probe = ScaffoldProbe(scaffold)
     main_window.content = scaffold
     await main_window_probe.redraw("New scaffold has been set")
 

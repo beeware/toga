@@ -14,10 +14,6 @@ class ScaffoldProbe(BaseProbe):
     def assert_container_layout(self):
         pass
 
-    async def wait_for_layout(self):
-        # No assertion here by default
-        await self.redraw(message="Waiting for scaffold layout to complete")
-
     async def redraw(self, message=None, delay=0, wait_for=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a scaffold container repaint
