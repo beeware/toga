@@ -53,11 +53,9 @@ class DetailedListProbe(SimpleProbe):
         max_value = self.scroll_limit - int(
             self.native.bounds.size.height - self.native.safeAreaInsets.bottom
         )
-        # The max value is dependent on the device:
-        # Devices have a safe area and the UITableView has
-        # logic upon scrolling to dodge the conflicting regions
-        # which include the app switching bar and the rounded corners
-        # We used to baseline on an older iPhone SE which had neither.
+        # The max value is dependent on the device. Devices have a safe area and
+        # the UITableView has logic upon scrolling to dodge the conflicting
+        # regions which include the app switching bar and the rounded corners.
         return max(0, max_value)
 
     @property
