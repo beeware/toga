@@ -121,9 +121,14 @@ async def app_probe(app):
 
 
 def pytest_unconfigure(config):
-    """Final GC for the app after tests."""
+    """Final GC for the app after tests.  This is required explicitly
+    as an async because the pytest_unconfigure hook from the built-in
+    unraisable exception plugin calls gc.collect() on the test thread
+    synchronously, which we want to avoid."""
 
     async def final_gc():
+        # Force a GC pass on the main thread. This isn't perfect, but it helps
+        # minimize garbage collection on the test thread.
         gc.collect()
         gc.collect()
         gc.collect()
