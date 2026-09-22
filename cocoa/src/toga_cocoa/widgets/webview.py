@@ -88,7 +88,9 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     ) -> None:
         _decision_handler = ObjCBlock(decisionHandler, None, NSInteger)
         if (
-            str(navigationAction.request.URL) == self.impl._allowed_url
+            self.impl is None
+            or self.impl.interface is None
+            or str(navigationAction.request.URL) == self.impl._allowed_url
             or self.impl.interface.on_navigation_starting._raw is None
         ):
             # If URL is pre-approved, or there's no navigation handler,
