@@ -1,7 +1,7 @@
 from rubicon.objc import ObjCClass
 from tests.conftest import approx
 
-from toga_cocoa.libs import core_graphics
+from toga_iOS.libs import core_graphics
 
 from ..probe import BaseProbe
 
@@ -59,8 +59,18 @@ class ScaffoldProbe(BaseProbe):
 
     @property
     def top_bar_height(self):
-        # As a test, assert that our layout is correct.
-        self.assert_container_layout()
+        # Widgets are not transformed
+        assert (
+            core_graphics.CGAffineTransformIsIdentity(
+                self.impl.container.content.native.transform
+            )
+            and core_graphics.CGAffineTransformIsIdentity(
+                self.impl.nav_controller.navigationBar.transform
+            )
+            and core_graphics.CGAffineTransformIsIdentity(
+                self.impl.nav_controller.view.transform
+            )
+        )
 
         # On iPadOS multiwindow this can be different, but that can't be tested
         # in testbed unelss we make user drag the window while test is running
