@@ -1,6 +1,8 @@
 from rubicon.objc import ObjCClass
 from tests.conftest import approx
 
+from toga_cocoa.libs import core_graphics
+
 from ..probe import BaseProbe
 
 CATransaction = ObjCClass("CATransaction")
@@ -31,6 +33,19 @@ class ScaffoldProbe(BaseProbe):
         await self._wait_for_assertion(self.assert_container_layout)
 
     def assert_container_layout(self):
+        # Widgets are not transformed
+        assert (
+            core_graphics.CGAffineTransformIsIdentity(
+                self.impl.container.content.native.transform
+            )
+            and core_graphics.CGAffineTransformIsIdentity(
+                self.impl.nav_controller.navigationBar.transform
+            )
+            and core_graphics.CGAffineTransformIsIdentity(
+                self.impl.nav_controller.view.transform
+            )
+        )
+
         # If the window has been laid out, the origin should be the position of the top
         # bar plus the margin.
         assert self.container.content.native.frame.origin.y == approx(
@@ -44,6 +59,9 @@ class ScaffoldProbe(BaseProbe):
 
     @property
     def top_bar_height(self):
+        # As a test, assert that our layout is correct.
+        self.assert_container_layout()
+
         # On iPadOS multiwindow this can be different, but that can't be tested
         # in testbed unelss we make user drag the window while test is running
         if self.impl.navigation_bar_hidden:
@@ -57,7 +75,7 @@ class ScaffoldProbe(BaseProbe):
 
     @property
     def content_size(self):
-        # As a test, assert that our content is not overlapping the top bar.
+        # As a test, assert that our layout is correct.
         self.assert_container_layout()
 
         # Size does not include bars.

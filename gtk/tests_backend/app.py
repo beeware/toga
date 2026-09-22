@@ -37,19 +37,48 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed"
+        return (
+            Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+            / "testbed"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed"
+        return (
+            Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
+            / "testbed"
+        )
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed"
+        return (
+            Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
+            / "testbed"
+        )
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed/log"
+        return (
+            Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
+            / "testbed/log"
+        )
+
+    # The CI environment resolves user-space folders to the default names.
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def downloads_path(self):
+        return Path.home() / "Downloads"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
 
     @property
     def is_cursor_visible(self):

@@ -115,7 +115,8 @@ class Table(Widget, Generic[Value]):
             For backwards compatibility, this is set to False if no columns or headings
             are provided.
         :param headings: **DEPRECATED** A list of heading strings for columns.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         self._data: ListSourceT | ListSource
 

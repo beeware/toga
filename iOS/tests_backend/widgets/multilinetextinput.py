@@ -31,11 +31,16 @@ class MultilineTextInputProbe(TextInputProbe):
 
     @property
     def document_height(self):
-        return max(self.native.contentSize.height, self.native.frame.size.height)
+        # When scrolling there's an extra bit of height that is
+        # added to avoid having the scrolled-to text obscured
+        return max(
+            self.native.contentSize.height + self.native.safeAreaInsets.bottom,
+            self.native.bounds.size.height,
+        )
 
     @property
     def document_width(self):
-        return max(self.native.contentSize.width, self.native.frame.size.width)
+        return max(self.native.contentSize.width, self.native.bounds.size.width)
 
     @property
     def vertical_scroll_position(self):

@@ -2,7 +2,7 @@
 
 The Toga backend for Linux (and other Unix-like operating systems) running KDE is [`toga-qt`](https://github.com/beeware/toga/tree/main/qt).
 
-`toga-qt` requires Python 3.10+, and Qt 6.8 or newer.
+`toga-qt` requires Python {{ min_python_version }}++, and Qt 6.8 or newer.
 
 /// admonition | Qt on Windows and macOS
 

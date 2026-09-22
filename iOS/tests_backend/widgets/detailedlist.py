@@ -1,5 +1,4 @@
 import asyncio
-import os
 
 from rubicon.objc.api import Block, ObjCClass
 
@@ -51,19 +50,17 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def max_scroll_position(self):
-        max_value = int(self.native.contentSize.height - self.native.frame.size.height)
-        # The max value is a dependent on the device; devices that don't have a physical
-        # button report as being a little larger. A physical device will give you the
-        # model identifier as part of UIDevice.currentDevice.model; however, simulators
-        # return "iPhone" as the model, so we need to check the environment as well to
-        # reliably get the device identifier. "iPhone14,6" is an iPhone SE 3rd edition.
-        # As of Feb 2023, it's the only device currently sold that has a physical
-        # button.
-        model = os.getenv("SIMULATOR_MODEL_IDENTIFIER", UIDevice.currentDevice.model)
-        if model != "iPhone14,6":
-            max_value += 34
-
+        max_value = self.scroll_limit - int(
+            self.native.bounds.size.height - self.native.safeAreaInsets.bottom
+        )
+        # The max value is dependent on the device. Devices have a safe area and
+        # the UITableView has logic upon scrolling to dodge the conflicting
+        # regions which include the app switching bar and the rounded corners.
         return max(0, max_value)
+
+    @property
+    def scroll_limit(self):
+        return int(self.native.contentSize.height)
 
     @property
     def scroll_position(self):
@@ -116,7 +113,7 @@ class DetailedListProbe(SimpleProbe):
                 UIControlEventValueChanged
             )
             self.native.setContentOffset(
-                NSPoint(0, -self.native_controller.refreshControl.frame.size.height)
+                NSPoint(0, -self.native_controller.refreshControl.bounds.size.height)
             )
 
             # Wait for the scroll to relax after reload completion
