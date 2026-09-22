@@ -96,7 +96,9 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
             # If URL is pre-approved, or there's no navigation handler,
             # allow the navigation.
             _decision_handler(WKNavigationResponsePolicy.Allow)
-            self.impl._allowed_url = None
+            # Else can't be reliably hit under test conditions
+            if self.impl is not None:  # pragma: no branch
+                self.impl._allowed_url = None
         else:
             url = str(navigationAction.request.URL)
             allow = self.impl.interface.on_navigation_starting(url=url)
