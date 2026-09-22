@@ -26,6 +26,10 @@ class ScaffoldProbe(BaseProbe):
 
         await super().redraw(message=message, delay=delay, wait_for=wait_for)
 
+    async def wait_for_layout(self):
+        # Wait for the layout to be completed.
+        await self._wait_for_assertion(self.assert_container_layout)
+
     def assert_container_layout(self):
         # If the window has been laid out, the origin should be the position of the top
         # bar plus the margin.

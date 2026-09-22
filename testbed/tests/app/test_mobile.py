@@ -14,13 +14,15 @@ if toga.platform.current_platform not in {"iOS", "android"}:
     pytest.skip("Test is specific to desktop platforms", allow_module_level=True)
 
 
-async def test_content_size(app, main_window, main_window_probe, scaffold_probe):
+async def test_content_size(app, main_window, main_window_probe):
     """The content size doesn't spill outsize the viewable area."""
 
     box = toga.Box(style=Pack(background_color=REBECCAPURPLE))
     main_window.scaffold.content = box
 
     await main_window_probe.redraw("Content is a box")
+
+    scaffold_probe = main_window_probe.scaffold_probe
 
     # The overall layout has both the box, plus the top bar.
     assert main_window.screen.size.height >= (

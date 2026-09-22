@@ -75,9 +75,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
     ####################################################################################
     # Mobile platform tests
     ####################################################################################
-    async def test_simple_app(main_window, scaffold_probe):
+    async def test_simple_app(main_window_probe):
         """Simple app layout is correct with top navigation bar on mobile."""
-        await scaffold_probe.verify_simple_app()
+        await main_window_probe.scaffold_probe.verify_simple_app()
 
     async def test_visibility(main_window, main_window_probe):
         """Hide and close are no-ops on mobile"""

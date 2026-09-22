@@ -168,7 +168,9 @@ async def main_window_probe(app, main_window):
     old_content = main_window.content
 
     # Put something in the content window so that we know it's an app test
-    main_window.content = toga.Box(style=Pack(background_color=GOLDENROD))
+    main_window.content = toga.Scaffold(
+        toga.Box(style=Pack(background_color=GOLDENROD))
+    )
 
     module = import_module("tests_backend.window")
     if app.run_slow:
