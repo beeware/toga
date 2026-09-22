@@ -120,6 +120,18 @@ async def app_probe(app):
     app.cmd_action.reset_mock()
 
 
+def pytest_unconfigure(config):
+    """Final GC for the app after tests."""
+
+    async def final_gc():
+        gc.collect()
+        gc.collect()
+        gc.collect()
+
+    loop = toga.App.app._impl.loop
+    asyncio.run_coroutine_threadsafe(final_gc(), loop).result()
+
+
 @fixture(scope="session")
 def main_window(app):
     return app.main_window
