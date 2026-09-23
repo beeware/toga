@@ -20,7 +20,7 @@ class ScrollContainerProbe(SimpleProbe):
     def document_height(self):
         # Assert that the document container and the document itself have the same size.
         # This is necessary to ensure that events propagate; see #2411.
-        assert self.impl.document_container.native.frame.size.height == (
+        assert self.impl.document_container.native.bounds.size.height == (
             content_height := self.native.contentSize.height
         )
 
@@ -30,7 +30,7 @@ class ScrollContainerProbe(SimpleProbe):
     def document_width(self):
         # Assert that the document container and the document itself have the same size.
         # This is necessary to ensure that events propagate; see #2411.
-        assert self.impl.document_container.native.frame.size.width == (
+        assert self.impl.document_container.native.bounds.size.width == (
             content_width := self.native.contentSize.width
         )
 

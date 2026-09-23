@@ -7,6 +7,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.scaffolds.base import Scaffold
 from toga.style.pack import TOP
 
 from ..conftest import (
@@ -28,7 +29,8 @@ async def probe(main_window, widget):
     old_content = main_window.content
 
     box = toga.Box(children=[widget])
-    main_window.content = box
+    # Test an explicit scaffold
+    main_window.content = Scaffold(box)
     probe = get_probe(widget)
     await probe.redraw(f"\nConstructing {widget.__class__.__name__} probe")
     probe.assert_container(box)

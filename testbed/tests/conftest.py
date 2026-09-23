@@ -120,6 +120,23 @@ async def app_probe(app):
     app.cmd_action.reset_mock()
 
 
+def pytest_unconfigure(config):
+    """Final GC for the app after tests.  This is required explicitly
+    as an async because the pytest_unconfigure hook from the built-in
+    unraisable exception plugin calls gc.collect() on the test thread
+    synchronously, which we want to avoid."""
+
+    async def final_gc():
+        # Force a GC pass on the main thread. This isn't perfect, but it helps
+        # minimize garbage collection on the test thread.
+        gc.collect()
+        gc.collect()
+        gc.collect()
+
+    loop = toga.App.app._impl.loop
+    asyncio.run_coroutine_threadsafe(final_gc(), loop).result()
+
+
 @fixture(scope="session")
 def main_window(app):
     return app.main_window
@@ -128,6 +145,7 @@ def main_window(app):
 @fixture(autouse=True)
 async def window_cleanup(app, app_probe, main_window, main_window_probe):
     original_size = main_window.size
+    original_title = main_window.title
 
     # Ensure that at the beginning of every test, all windows that aren't
     # the main window have been closed and deleted. This needs to be done in
@@ -159,6 +177,7 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Reset the window state and size.
     main_window.state = WindowState.NORMAL
     main_window.size = original_size
+    main_window.title = original_title
 
 
 @fixture(scope="session")
@@ -166,7 +185,9 @@ async def main_window_probe(app, main_window):
     old_content = main_window.content
 
     # Put something in the content window so that we know it's an app test
-    main_window.content = toga.Box(style=Pack(background_color=GOLDENROD))
+    main_window.content = toga.Scaffold(
+        toga.Box(style=Pack(background_color=GOLDENROD))
+    )
 
     module = import_module("tests_backend.window")
     if app.run_slow:

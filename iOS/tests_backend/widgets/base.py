@@ -1,7 +1,7 @@
 import pytest
 from rubicon.objc import ObjCClass
 
-from toga_iOS.libs import UIApplication
+from toga_iOS.libs import UIApplication, core_graphics
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
@@ -71,7 +71,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     async def redraw(self, message=None, delay=0, wait_for=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a widget repaint
-        self.widget.window.content._impl.native.layer.displayIfNeeded()
+        self.impl.container.native.layer.displayIfNeeded()
 
         # Flush CoreAnimation; this ensures all animations are complete
         # and all constraints have been evaluated.
@@ -89,16 +89,11 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def width(self):
-        return self.native.frame.size.width
+        return self.native.bounds.size.width
 
     @property
     def height(self):
-        height = self.native.frame.size.height
-        # If the widget is the top level container, the frame height will
-        # include the allocation for the app titlebar.
-        if self.impl.container is None:
-            height = height - self.impl.viewport.top_offset
-        return height
+        return self.native.bounds.size.height
 
     @property
     def shrink_on_resize(self):
@@ -108,6 +103,9 @@ class SimpleProbe(BaseProbe, FontMixin):
         # Widget is contained and in a window.
         assert self.widget._impl.container is not None
         assert self.native.superview() is not None
+
+        # Widget is not transformed
+        assert core_graphics.CGAffineTransformIsIdentity(self.native.transform)
 
         # size and position is as expected.
         assert (self.native.frame.size.width, self.native.frame.size.height) == size
