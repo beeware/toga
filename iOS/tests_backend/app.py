@@ -20,6 +20,12 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_psutil = False
     beep_delay = 0.1
 
+    # iOS doesn't have user-space folders.
+    desktop_path = None
+    documents_path = None
+    downloads_path = None
+    pictures_path = None
+
     def __init__(self, app):
         super().__init__()
         self.app = app
@@ -74,11 +80,13 @@ class AppProbe(BaseProbe, DialogsMixin):
         pytest.skip("Menus not implemented on iOS")
 
     def enter_background(self):
-        self.native.delegate.applicationWillResignActive(self.native)
-        self.native.delegate.applicationDidEnterBackground(self.native)
+        scene = self.app.current_window._impl.native.windowScene
+        scene.delegate.sceneWillResignActive(scene)
+        scene.delegate.sceneDidEnterBackground(scene)
 
     def enter_foreground(self):
-        self.native.delegate.applicationWillEnterForeground(self.native)
+        scene = self.app.current_window._impl.native.windowScene
+        scene.delegate.sceneWillEnterForeground(scene)
 
     def terminate(self):
         self.native.delegate.applicationWillTerminate(self.native)

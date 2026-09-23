@@ -38,11 +38,13 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / "Library/Preferences/org.beeware.toga.testbed"
+        return (
+            Path.home() / "Library/Application Support/org.beeware.toga.testbed/Config"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / "Library/Application Support/org.beeware.toga.testbed"
+        return Path.home() / "Library/Application Support/org.beeware.toga.testbed/Data"
 
     @property
     def cache_path(self):
@@ -51,6 +53,22 @@ class AppProbe(BaseProbe, DialogsMixin):
     @property
     def logs_path(self):
         return Path.home() / "Library/Logs/org.beeware.toga.testbed"
+
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def downloads_path(self):
+        return Path.home() / "Downloads"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
 
     @property
     def is_cursor_visible(self):

@@ -30,7 +30,8 @@ class ProgressBar(Widget):
             clipped. Defaults to 0.0.
         :param running: Describes whether the indicator is running at the time
             it is created. Default is False.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 

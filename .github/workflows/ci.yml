@@ -16,7 +16,7 @@ on:
         value: ${{ jobs.package.outputs.artifact-basename }}
 
 env:
-  min_python_version: "3.10"
+  min_python_version: "3.11"
   FORCE_COLOR: "1"
 
 defaults:
@@ -79,7 +79,7 @@ jobs:
   docs-lint:
     name: Documentation linting
     needs: [ pre-commit ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -118,14 +118,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ "macos-15", "ubuntu-latest", "windows-latest" ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
+        platform: [ "macos-26", "ubuntu-24.04", "windows-2025" ]
+        python-version: [ "3.11", "3.12", "3.13", "3.14", "3.15" ]
         package: ["core", "travertino"]
         exclude:
         - package: travertino
-          platform: macos-15
+          platform: macos-26
         - package: travertino
-          platform: windows-latest
+          platform: windows-2025
         include:
         - experimental: false
         - package: "core"
@@ -177,7 +177,7 @@ jobs:
   core-and-travertino-coverage:
     name: "Coverage: ${{ matrix.package }}"
     needs: core-and-travertino
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         package: ["core", "travertino"]
@@ -222,7 +222,7 @@ jobs:
 
   travertino-backwards-compatibility:
     name: Test Travertino backwards compatibility with Toga 0.4.8
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-24.04"
     needs: [ pre-commit, towncrier, package ]
 
     steps:
@@ -484,7 +484,7 @@ jobs:
 
         - backend: "textual-linux"
           platform: "linux"
-          runs-on: "ubuntu-latest"
+          runs-on: "ubuntu-24.04"
           setup-python: false  # Use the system Python packages
           testbed-app: "testbed-textual"
           app-user-data-path: "$HOME/.local/share/testbed-textual"
@@ -499,19 +499,19 @@ jobs:
 
         - backend: "textual-windows"
           platform: "windows"
-          runs-on: "windows-latest"
+          runs-on: "windows-2025"
           testbed-app: "testbed-textual"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed (Textual)\Data'
 
         - backend: "windows-netfx-x86_64"
           platform: "windows"
-          runs-on: "windows-latest"
+          runs-on: "windows-2025"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
           briefcase-run-prefix: TOGA_WINFORMS_USE_NETFX=1
 
         - backend: "windows-netcore-x86_64"
           platform: "windows"
-          runs-on: "windows-latest"
+          runs-on: "windows-2025"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
         - backend: "windows-netcore-arm64"
@@ -527,7 +527,7 @@ jobs:
 
         - backend: "android"
           platform: "android"
-          runs-on: "ubuntu-latest"
+          runs-on: "ubuntu-24.04"
           briefcase-run-prefix: JAVA_HOME=${JAVA_HOME_17_X64}
           briefcase-run-args: >-
             --device '{"avd":"beePhone","device_type":"pixel"}'

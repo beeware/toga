@@ -103,8 +103,6 @@ class drawing_context_property:
                     if (value := getattr(action, self.name)) is not None:
                         # This is a state we're currently in, and it sets the attribute.
                         return value
-                    else:  # no-cover-if-lt-py311
-                        pass
                 case self.ActionClass() if restores <= 0:
                     return getattr(action, self.name)
 
@@ -164,7 +162,8 @@ class Canvas(Widget, DrawingActionDispatch):
         :param on_alt_release: Initial [`on_alt_release`][toga.Canvas.on_alt_release]
             handler.
         :param on_alt_drag: Initial [`on_alt_drag`][toga.Canvas.on_alt_drag] handler.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         self._root_state = State()
 
