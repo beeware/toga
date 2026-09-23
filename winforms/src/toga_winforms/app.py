@@ -12,6 +12,7 @@ from System.Windows.Threading import Dispatcher
 from toga.dialogs import InfoDialog
 from toga.handlers import WeakrefCallable
 
+from . import _use_dotnet_core
 from .libs.proactor import WinformsProactorEventLoop
 from .screens import Screen as ScreenImpl
 
@@ -190,17 +191,20 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        from Microsoft.Win32 import Registry
+        if _use_dotnet_core:  # pragma: no-cover-if-netfx
+            return bool(WinForms.Application.IsDarkModeEnabled)
+        else:  # pragma: no-cover-if-netcore
+            from Microsoft.Win32 import Registry
 
-        key = Registry.CurrentUser.OpenSubKey(
-            "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
-        )
-        if key is None:  # pragma: no cover
-            return False
-        try:
-            return key.GetValue("AppsUseLightTheme", 1) == 0
-        finally:
-            key.Close()
+            key = Registry.CurrentUser.OpenSubKey(
+                "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+            )
+            if key is None:  # pragma: no cover
+                return False
+            try:
+                return key.GetValue("AppsUseLightTheme", 1) == 0
+            finally:
+                key.Close()
 
     ######################################################################
     # App capabilities
