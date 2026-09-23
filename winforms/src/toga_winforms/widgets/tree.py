@@ -5,12 +5,14 @@ from functools import partial
 from warnings import warn
 
 import System.Windows.Forms as WinForms
+from System.Drawing import ColorTranslator
 
 from toga.handlers import WeakrefCallable
 from toga.sources.tree_source import Node, TreeSourceT
 
 from ..libs import win32constants as wc, win32structures as ws
 from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass
+from ..libs.gdi32 import SetTextColor
 from ..libs.user32 import DrawTextW
 from .table import Table
 
@@ -826,7 +828,14 @@ class Tree(Table):
         text_format = (
             wc.DT_SINGLELINE | wc.DT_VCENTER | wc.DT_WORD_ELLIPSIS | wc.DT_HCENTER
         )
+        color = (
+            WinForms.SystemColors.HighlightText
+            if self.native.SelectedIndices.Contains(index) and self.native.Focused
+            else self.native.ForeColor
+        )
+        prev_color = SetTextColor(hdc, ColorTranslator.ToWin32(color))
         DrawTextW(hdc, c_wchar_p(arrow), -1, byref(rect), text_format)
+        SetTextColor(hdc, prev_color)
 
     def _lvn_item_changed(self, nmlv):
         """Processes List-View item changes to listen for a change of focused item."""
