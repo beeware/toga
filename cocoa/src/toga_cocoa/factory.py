@@ -33,7 +33,7 @@ from .widgets.scrollcontainer import ScrollContainer
 from .widgets.selection import Selection
 from .widgets.slider import Slider
 from .widgets.splitcontainer import SplitContainer
-from .widgets.switch import Switch
+from .widgets.switch import Checkbox, Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput
@@ -59,6 +59,7 @@ __all__ = [
     "Button",
     "Camera",
     "Canvas",
+    "Checkbox",
     "Command",
     "DateInput",
     "DetailedList",
