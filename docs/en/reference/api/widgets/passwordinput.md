@@ -4,7 +4,7 @@
 
 Any value typed by the user will be obscured, allowing the user to see the number of characters they have typed, but not the actual characters.
 
-The `PasswordInput` is functionally identical to a [`TextInput`][toga.TextInput], except for how the text is displayed. All features supported by [`TextInput`][toga.TextInput] are also supported by PasswordInput.
+The `PasswordInput` supports the same validation and event handlers as a [`TextInput`][toga.TextInput].
 
 ```python
 import toga

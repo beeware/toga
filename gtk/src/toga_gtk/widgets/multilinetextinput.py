@@ -178,3 +178,9 @@ class MultilineTextInput(Widget):
         self.native_textview.scroll_to_mark(
             self.buffer.get_insert(), 0.0, True, 0.0, 0.0
         )
+
+    def set_spell_checking(self, value):
+        hints = self.native_textview.get_input_hints()
+        hints &= ~(Gtk.InputHints.SPELLCHECK | Gtk.InputHints.NO_SPELLCHECK)
+        hints |= Gtk.InputHints.SPELLCHECK if value else Gtk.InputHints.NO_SPELLCHECK
+        self.native_textview.set_input_hints(hints)

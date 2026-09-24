@@ -33,6 +33,8 @@ from .test_textinput import (  # noqa: F401
     test_on_change_programmatic,
     test_on_change_user,
     test_quote_dash_substitution_disabled,
+    test_spell_checking,
+    test_spell_checking_initial,
     test_undo_redo,
     test_value_not_hidden,
 )
@@ -45,8 +47,10 @@ skip_on_backends(
 
 
 @pytest.fixture
-async def widget():
-    return toga.MultilineTextInput(value="Hello", style=Pack(flex=1))
+async def widget(initial_spell_checking):
+    return toga.MultilineTextInput(
+        value="Hello", spell_checking=initial_spell_checking, style=Pack(flex=1)
+    )
 
 
 @pytest.fixture

@@ -19,6 +19,11 @@ from .probe import get_probe
 
 
 @pytest.fixture
+def initial_spell_checking():
+    return True
+
+
+@pytest.fixture
 async def widget():
     raise NotImplementedError("test modules must define a `widget` fixture")
 
