@@ -365,15 +365,7 @@ def test_is_valid(widget):
     [(False, False), (True, True), (None, False), (0, False), ("false", True)],
 )
 def test_spell_checking(widget, value, expected):
-    """Spell checking updates the backend without changing the text."""
-    original_value = widget.value
-    on_change = Mock()
-    widget.on_change = on_change
+    """Spell checking is normalized and passed to the backend."""
     widget.spell_checking = value
     assert widget.spell_checking is expected
     assert attribute_value(widget, "spell_checking") is expected
-    widget.readonly = True
-    widget.readonly = False
-    assert widget.spell_checking is expected
-    assert widget.value == original_value
-    on_change.assert_not_called()

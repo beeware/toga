@@ -47,8 +47,10 @@ skip_on_backends(
 
 
 @pytest.fixture
-async def widget():
-    return toga.MultilineTextInput(value="Hello", style=Pack(flex=1))
+async def widget(initial_spell_checking):
+    return toga.MultilineTextInput(
+        value="Hello", spell_checking=initial_spell_checking, style=Pack(flex=1)
+    )
 
 
 @pytest.fixture
