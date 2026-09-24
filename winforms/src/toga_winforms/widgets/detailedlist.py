@@ -436,23 +436,36 @@ class DetailedList(Widget):
             y = rect.top + divmod(self._tile_height - rect.bottom + rect.top, 2)[0]
 
             if is_selected:
-                # Unfocused colors are undocumented.
-                select_back = wc.COLOR_HIGHLIGHT if has_focus else wc.COLOR_BTNFACE
-                select_text = wc.COLOR_HIGHLIGHTTEXT if has_focus else wc.COLOR_BTNTEXT
-                gdi32.SetTextColor(hdc, u32.GetSysColor(select_text))
+                back_color = (
+                    SystemColors.Highlight if has_focus else SystemColors.Control
+                )
+                text_color = (
+                    SystemColors.HighlightText
+                    if has_focus
+                    else SystemColors.ControlText
+                )
+                prev_color = gdi32.SetTextColor(
+                    hdc, ColorTranslator.ToWin32(text_color)
+                )
 
-                # See documentation for "+1".
-                rect = self._drawing_select_rect(x=0, y=y)
-                u32.FillRect(hdc, byref(rect), select_back + 1)
+                brush = gdi32.CreateSolidBrush(ColorTranslator.ToWin32(back_color))
+                try:
+                    rect = self._drawing_select_rect(x=0, y=y)
+                    u32.FillRect(hdc, byref(rect), brush)
+                finally:
+                    gdi32.DeleteObject(brush)
             else:
-                gdi32.SetTextColor(hdc, self._fore_color)
+                prev_color = gdi32.SetTextColor(hdc, self._fore_color)
 
-            with FontDeviceContext(hdc, hfont):
-                rect = self._drawing_title_rect(x=0, y=y)
-                u32.DrawTextW(hdc, item[0], -1, byref(rect), text_format)
+            try:
+                with FontDeviceContext(hdc, hfont):
+                    rect = self._drawing_title_rect(x=0, y=y)
+                    u32.DrawTextW(hdc, item[0], -1, byref(rect), text_format)
 
-                rect = self._drawing_subtitle_rect(x=0, y=y)
-                u32.DrawTextW(hdc, item[1], -1, byref(rect), text_format)
+                    rect = self._drawing_subtitle_rect(x=0, y=y)
+                    u32.DrawTextW(hdc, item[1], -1, byref(rect), text_format)
+            finally:
+                gdi32.SetTextColor(hdc, prev_color)
 
             icon_xy = self._drawing_icon_xy(x=0, y=y)
             ImageList_Draw(
