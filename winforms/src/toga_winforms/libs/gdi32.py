@@ -1,7 +1,13 @@
 from ctypes import windll
-from ctypes.wintypes import BOOL, COLORREF, HDC, HGDIOBJ
+from ctypes.wintypes import BOOL, COLORREF, HBRUSH, HDC, HGDIOBJ
 
 gdi32 = windll.GDI32
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-createsolidbrush
+CreateSolidBrush = gdi32.CreateSolidBrush
+CreateSolidBrush.restype = HBRUSH
+CreateSolidBrush.argtypes = [COLORREF]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-deleteobject
