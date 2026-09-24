@@ -14,8 +14,6 @@ from toga import LatLng
 
 def toga_location(location):
     """Convert an Android location into a Toga LatLng and altitude."""
-    latlng = LatLng(location.getLatitude(), location.getLongitude())
-
     # MSL altitude was added in API 34. We can't test this at runtime
     if Build.VERSION.SDK_INT >= 34 and location.hasMslAltitude():  # pragma: no cover
         altitude = location.getMslAltitudeMeters()
@@ -23,6 +21,20 @@ def toga_location(location):
         altitude = location.getAltitude()
     else:
         altitude = None
+
+    latlng = LatLng(
+        location.getLatitude(),
+        location.getLongitude(),
+        altitude=altitude,
+        horizontal_accuracy=(
+            location.getAccuracy() if location.hasAccuracy() else None
+        ),
+        vertical_accuracy=(
+            location.getVerticalAccuracyMeters()
+            if location.hasVerticalAccuracy()
+            else None
+        ),
+    )
 
     return {
         "location": latlng,
