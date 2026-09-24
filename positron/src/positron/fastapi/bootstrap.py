@@ -33,20 +33,14 @@ class FastAPIPositronBootstrap(BasePositronBootstrap):
             initial_path=self.initial_path,
         )
 
-    def pyproject_table_briefcase_app_extra_content(self):
-        return """
-requires = [
-    # 0.125.0 is the last version of FastAPI that supports Pydantic < 2.0
-    # This is a blocker on iOS/Android until wheels for pydantic-core are available.
-    "fastAPI == 0.125.0",
-    "uvicorn == 0.40.0",
-]
-test_requires = [
-{% if cookiecutter.test_framework == "pytest" %}
-    "pytest",
-{% endif %}
-]
-"""
+    def positron_requires(self):
+        return [
+            # 0.119.0 is the last version of FastAPI that supports Pydantic < 2.0.
+            # This is a blocker on iOS/Android until wheels for pydantic-core
+            # are available.
+            "fastAPI == 0.119.0",
+            "uvicorn == 0.40.0",
+        ]
 
     def pyproject_table_iOS(self):
         iOS_table = tomllib.loads(super().pyproject_table_iOS())
@@ -72,6 +66,14 @@ base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 build_gradle_dependencies = [
     "com.google.android.material:material:1.13.0",
 ]
+
+build_gradle_extra_content = \"\"\"
+android.defaultConfig.python {{
+    // Extract microdriver and app package so .py assets are servable
+    extractPackages("microdriver", "{self.context["module_name"]}")
+}}
+\"\"\"
+
 """
 
     def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:
