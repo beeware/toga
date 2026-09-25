@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 from rubicon.objc import objc_id, send_message
 
 from toga.constants import WindowState
@@ -29,11 +30,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.native = window._impl.native
         assert isinstance(self.native, NSWindow)
 
-    async def wait_for_window(
-        self,
-        message,
-        state=None,
-    ):
+    async def wait_for_window(self, message, state=None):
         await self.redraw(message, delay=0.1)
 
         if state:
@@ -87,7 +84,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 delay = 0.1
         await self.redraw("Closing window", delay=delay)
 
-    def close(self):
+    async def close(self):
         self.native.performClose(None)
 
     @property
@@ -113,7 +110,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def is_minimized(self):
         return bool(self.native.isMiniaturized)
 
-    def minimize(self):
+    async def minimize(self):
         self.native.performMiniaturize(None)
 
     def unminimize(self):
@@ -174,3 +171,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def _setup_file_dialog_result(self, dialog, result):
         # Closing a window modal file dialog is the same as alerts.
         self._setup_alert_dialog_result(dialog, result)
+
+    async def assert_system_dpi_change(self, get_probe, mock_scale):
+        pytest.skip("Test not implemented for this platform")
