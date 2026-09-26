@@ -110,6 +110,7 @@ MapView
 MDN
 misconfigured
 MkDocs
+ModernGL
 Monetization
 MultilineTextInput
 MultilineTextInputs
@@ -118,6 +119,8 @@ NumberInput
 NumberInput's
 NumLock
 OneDrive
+OpenGL
+OpenGLView
 OpenStreetMap
 OpenSUSE
 OptionContainer
@@ -144,6 +147,7 @@ Pygame
 PyGObject
 PyGObject's
 PyInstaller
+PyOpenGL
 PyPI
 pyPlayground
 PyScript
@@ -162,6 +166,7 @@ rehints
 rehinted
 RemoteCommand
 Ren
+renderer
 resizable
 reStructuredText
 RGB
