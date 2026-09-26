@@ -32,6 +32,7 @@ formal_name = "OBJ Viewer (Qt)"
 sources = ["obj_viewer", "obj_viewer_qt"]
 
 [tool.briefcase.app.obj-viewer.macOS]
+universal_build = false
 requires = [
     "../../cocoa",
     "std-nslog>=1.0.0",

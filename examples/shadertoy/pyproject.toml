@@ -28,6 +28,7 @@ formal_name = "Shadertoy (Qt)"
 sources = ["shadertoy", "shadertoy_qt"]
 
 [tool.briefcase.app.shadertoy.macOS]
+universal_build = false
 requires = [
     "../../cocoa",
     "std-nslog>=1.0.0",
