@@ -11,6 +11,7 @@ For example, a renderer that just clears the view using PyOpenGL could be writte
 ``` python
 from OpenGL import GL
 
+
 class ClearRenderer:
     def on_init(self, widget, **kwargs):
         # set the clear color to blue
