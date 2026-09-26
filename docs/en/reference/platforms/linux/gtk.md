@@ -1,12 +1,10 @@
 # Linux/Unix (GTK)
 
-![image](../../images/gtk.png){ width="300px" }
+![Toga Demo running on Linux using GTK.](/images/toga-demo-gtk.png){ width="450" }
 
 /// caption
 
 ///
-
-<!-- TODO: Update alt text -->
 
 The Toga backend for Linux (and other Unix-like operating systems) running the GNOME desktop environment is [`toga-gtk`](https://github.com/beeware/toga/tree/main/gtk).
 
@@ -22,7 +20,7 @@ Although GTK *can* be installed on Windows and macOS, and the `toga-gtk` backend
 
 ## Prerequisites { #gtk-prerequisites }
 
-`toga-gtk` requires Python 3.10+, and GTK 3.22 or newer. It also requires `libgirepository 2.0`; older Linux distributions (including Debian 12 and Ubuntu 22.04) do not provide this library.
+`toga-gtk` requires Python {{ min_python_version }}+, and GTK 3.22 or newer. It also requires `libgirepository 2.0`; older Linux distributions (including Debian 12 and Ubuntu 22.04) do not provide this library.
 
 Most testing occurs with GTK 3.24 as this is the version that has shipped with Ubuntu 24.04.
 

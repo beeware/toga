@@ -359,6 +359,10 @@ UIRefreshControl = ObjCClass("UIRefreshControl")
 UIResponder = ObjCClass("UIResponder")
 
 ######################################################################
+# UISceneConfiguration.h
+UISceneConfiguration = ObjCClass("UISceneConfiguration")
+
+######################################################################
 # UIScreen.h
 UIScreen = ObjCClass("UIScreen")
 UIScreen.declare_class_property("mainScreen")
@@ -530,6 +534,16 @@ UIKeyboardWillChangeFrameNotification = objc_const(
 )
 UIKeyboardDidChangeFrameNotification = objc_const(
     uikit, "UIKeyboardDidChangeFrameNotification"
+)
+
+######################################################################
+# UIWindowScene.h
+UIWindowScene = ObjCClass("UIWindowScene")
+
+UIWindowSceneDelegate = ObjCProtocol("UIWindowSceneDelegate")
+
+UIWindowSceneSessionRoleApplication = objc_const(
+    uikit, "UIWindowSceneSessionRoleApplication"
 )
 
 ######################################################################

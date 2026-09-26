@@ -39,7 +39,8 @@ class Switch(Widget):
             value.
         :param enabled: Is the switch enabled (i.e., can it be pressed?).
             Optional; by default, switches are created in an enabled state.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 

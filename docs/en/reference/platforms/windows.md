@@ -1,6 +1,10 @@
 # Windows
 
-![image](../images/winforms.png){ width="300px" } <!-- TODO: Update alt text -->
+![Toga Demo running on Windows.](/images/toga-demo-winforms.png){ width="450" }
+
+/// caption
+
+///
 
 The Toga backend for Windows is [`toga-winforms`](https://github.com/beeware/toga/tree/main/winforms).
 

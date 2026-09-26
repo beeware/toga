@@ -78,7 +78,8 @@ class TextInput(Widget):
         :param on_lose_focus: A handler that will be invoked when the widget loses
             input focus.
         :param validators: A list of validators to run on the value of the input.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 
