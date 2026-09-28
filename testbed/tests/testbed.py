@@ -35,11 +35,12 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         print("ready.")
 
-        # Platformdirs is imported by toga-core as a part of starting the testbed
+        # Platformdirs is imported by toga-textual as a part of starting the testbed
         # app. This causes confusion when the pytest suite starts, because it can't
         # rewrite the module after it has been imported.  This became an issue with
         # platformdirs 4.12.0.
-        del sys.modules["platformdirs"]
+        if "platformdirs" in sys.modules:
+            del sys.modules["platformdirs"]
 
         # Some backends and platforms do not support interactive GUI testing.
         # On those platforms, perform a basic app start test.
