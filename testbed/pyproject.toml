@@ -16,6 +16,8 @@ test = [
     "pytest==9.1.1",
     "pytest-asyncio==1.4.0",
     "pytest-retry==1.7.0",
+    # platformdirs 4.12.0 breaks pytest; see tox-dev/platformdirs#601
+    "platformdirs != 4.12.0"
 ]
 
 [tool.briefcase]
