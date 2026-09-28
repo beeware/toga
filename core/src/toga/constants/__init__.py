@@ -107,3 +107,22 @@ class WindowState(Enum):
     A good example is a slideshow app in presentation mode - the only visible content
     is the slide.
     """
+
+
+class SwitchRole(Enum):
+    """The possible roles of a Switch."""
+
+    AUTOMATIC = auto()
+    """Choose a role automatically based on platform defaults."""
+
+    SWITCH = auto()
+    """Display as a switch with a thumb."""
+
+    CHECKBOX = auto()
+    """Display as a checkbox."""
+
+    MAJOR = auto()
+    """Display as a major element, as defined by your platform."""
+
+    MINOR = auto()
+    """Display as a minor element, as defined by your platform."""

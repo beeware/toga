@@ -5,6 +5,7 @@ from typing import Any, Protocol
 import toga
 from toga.handlers import wrapped_handler
 
+from ..constants import SwitchRole
 from .base import StyleT, Widget
 
 
@@ -23,6 +24,7 @@ class Switch(Widget):
         text: str,
         id: str | None = None,
         style: StyleT | None = None,
+        role: SwitchRole = SwitchRole.AUTOMATIC,
         on_change: toga.widgets.switch.OnChangeHandler | None = None,
         value: bool = False,
         enabled: bool = True,
@@ -34,6 +36,9 @@ class Switch(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
+        :param role: The role this switch will play in the user interface.
+            The role will be used to determine the appropriate visual
+            appearance for the widget, following platform UI guidelines.
         :param value: The initial value for the switch.
         :param on_change: A handler that will be invoked when the switch changes
             value.
@@ -42,6 +47,8 @@ class Switch(Widget):
         :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
             These override matching properties on the `style` argument.
         """
+        self._role = role
+
         super().__init__(id, style, **kwargs)
 
         self.text = text
@@ -55,8 +62,31 @@ class Switch(Widget):
 
         self.enabled = enabled
 
+    @property
+    def role(self) -> SwitchRole:
+        return self._role
+
+    def _switch_class(self):
+        classes = [self.factory.Switch]
+        try:
+            classes.append(self.factory.Checkbox)
+        except NotImplementedError:
+            pass
+
+        for switch_class in classes:
+            try:
+                if self.role in switch_class.roles:
+                    return switch_class
+            except AttributeError:
+                # the backend doesn't implement `.roles`, ignore it and return a Switch.
+                continue
+
+        # for backends that don't implement separate Switch and Checkbox classes,
+        # fall back to Switch
+        return classes[0]
+
     def _create(self) -> Any:
-        return self.factory.Switch(interface=self)
+        return self._switch_class()(interface=self)
 
     @property
     def text(self) -> str:
