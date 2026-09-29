@@ -5,6 +5,8 @@ import pytest
 
 import toga
 
+from ..conftest import skip_on_backends
+
 
 async def test_event_loop(app_probe):
     """Runs tests for the apps event loop."""
@@ -25,6 +27,7 @@ async def test_unsupported_widget(app):
 
 async def test_main_window_toolbar(app, main_window, main_window_probe):
     """A toolbar can be added to a main window"""
+    skip_on_backends("toga_winui3")
     # Add some items to show the toolbar
     assert not main_window_probe.has_toolbar()
     main_window.toolbar.add(app.cmd1, app.cmd2)
@@ -118,10 +121,11 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
 async def test_system_menus(app_probe):
     """System-specific menus behave as expected"""
     # Check that the system menus (which can be platform specific) exist.
-    app_probe.assert_system_menus()
+    await app_probe.assert_system_menus()
 
 
 async def test_menu_about(monkeypatch, app, app_probe):
+    skip_on_backends("toga_winui3", reason="Dialogs are not implemented yet.")
     """The about menu can be displayed"""
     app_probe.activate_menu_about()
     # When in CI, Cocoa needs a little time to guarantee the dialog is displayed.
@@ -155,7 +159,7 @@ async def test_menu_visit_homepage(monkeypatch, app, app_probe):
             app.commands[toga.Command.VISIT_HOMEPAGE], "_action", app.visit_homepage
         )
 
-    app_probe.activate_menu_visit_homepage()
+    await app_probe.activate_menu_visit_homepage()
 
     # Browser opened
     visit_homepage.assert_called_once_with()
@@ -164,53 +168,57 @@ async def test_menu_visit_homepage(monkeypatch, app, app_probe):
 async def test_menu_items(app, app_probe):
     """Menu items can be created, disabled and invoked"""
 
-    app_probe.assert_menu_item(
+    await app_probe.assert_menu_item(
         ["Other", "Full command"],
         enabled=True,
     )
-    app_probe.assert_menu_item(
+
+    await app_probe.assert_menu_item(
         ["Other", "Submenu1", "Disabled"],
         enabled=False,
     )
-    app_probe.assert_menu_item(
+
+    await app_probe.assert_menu_item(
         ["Other", "Submenu1", "No Action"],
         enabled=False,
     )
-    app_probe.assert_menu_item(
+
+    await app_probe.assert_menu_item(
         ["Other", "Submenu1", "Submenu1 menu1", "Deep"],
         enabled=True,
     )
-    app_probe.assert_menu_item(
+
+    await app_probe.assert_menu_item(
         ["Other", "Wiggle"],
         enabled=True,
     )
 
-    app_probe.assert_menu_order(
+    await app_probe.assert_menu_order(
         ["Other"],
         ["Full command", "---", "Submenu1", "Submenu2", "Wiggle"],
     )
-    app_probe.assert_menu_order(
+    await app_probe.assert_menu_order(
         ["Other", "Submenu1"],
         ["Disabled", "No Action", "Submenu1 menu1"],
     )
-    app_probe.assert_menu_order(
+    await app_probe.assert_menu_order(
         ["Other", "Submenu1", "Submenu1 menu1"],
         ["Deep"],
     )
-    app_probe.assert_menu_order(
+    await app_probe.assert_menu_order(
         ["Other", "Submenu2"],
         ["Jiggle"],
     )
 
-    app_probe.assert_menu_item(
+    await app_probe.assert_menu_item(
         ["Commands", "No Tooltip"],
         enabled=True,
     )
-    app_probe.assert_menu_item(
+    await app_probe.assert_menu_item(
         ["Commands", "No Icon"],
         enabled=True,
     )
-    app_probe.assert_menu_item(
+    await app_probe.assert_menu_item(
         ["Commands", "Sectioned"],
         enabled=True,
     )
@@ -220,12 +228,12 @@ async def test_menu_items(app, app_probe):
     app.no_action_cmd.enabled = True
     await app_probe.redraw("Menu items enabled")
 
-    app_probe.assert_menu_item(
+    await app_probe.assert_menu_item(
         ["Other", "Submenu1", "Disabled"],
         enabled=True,
     )
     # Item has no action - it can't be enabled
-    app_probe.assert_menu_item(
+    await app_probe.assert_menu_item(
         ["Other", "Submenu1", "No Action"],
         enabled=False,
     )
@@ -235,11 +243,11 @@ async def test_menu_items(app, app_probe):
     app.no_action_cmd.enabled = False
 
     await app_probe.redraw("Menu item disabled again")
-    app_probe.assert_menu_item(
+    await app_probe.assert_menu_item(
         ["Other", "Submenu1", "Disabled"],
         enabled=False,
     )
-    app_probe.assert_menu_item(
+    await app_probe.assert_menu_item(
         ["Other", "Submenu1", "No Action"],
         enabled=False,
     )
