@@ -71,7 +71,6 @@ from .libs.win32constants import (
 
 # Enable DPI awareness. This must be done before calling any other UI-related code
 # (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/high-dpi-support-in-windows-forms).
-# The API is in
 if not SetProcessDpiAwarenessContext(
     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 ):  # pragma: no cover
