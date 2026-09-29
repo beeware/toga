@@ -10,9 +10,10 @@ from System.Drawing import ColorTranslator, SystemColors
 from toga.handlers import WeakrefCallable
 from toga.sources.tree_source import Node, TreeSourceT
 
+from .. import _use_dotnet_core
 from ..libs import win32constants as wc, win32structures as ws
 from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass
-from ..libs.gdi32 import SetTextColor
+from ..libs.gdi32 import SetBkMode, SetTextColor
 from ..libs.user32 import DrawTextW
 from .table import Table
 
@@ -456,6 +457,12 @@ class Tree(Table):
     # The following methods override/extend methods from Table.
     #################################################################################
 
+    @property
+    def _is_dark_mode(self) -> bool:
+        return _use_dotnet_core and getattr(
+            WinForms.Application, "IsDarkModeEnabled", False
+        )
+
     def create(self):
         super().create()
         self._state_tree: StateTree
@@ -828,15 +835,19 @@ class Tree(Table):
         text_format = (
             wc.DT_SINGLELINE | wc.DT_VCENTER | wc.DT_WORD_ELLIPSIS | wc.DT_HCENTER
         )
-        color = (
-            SystemColors.HighlightText
-            if self.native.SelectedIndices.Contains(index) and self.native.Focused
-            else self.native.ForeColor
-        )
+        if self._is_dark_mode:
+            color = self.native.ForeColor
+        else:
+            if self.native.SelectedIndices.Contains(index) and self.native.Focused:
+                color = SystemColors.HighlightText
+            else:
+                color = self.native.ForeColor
         prev_color = SetTextColor(hdc, ColorTranslator.ToWin32(color))
+        prev_bk_mode = SetBkMode(hdc, wc.TRANSPARENT)
         try:
             DrawTextW(hdc, c_wchar_p(arrow), -1, byref(rect), text_format)
         finally:
+            SetBkMode(hdc, prev_bk_mode)
             SetTextColor(hdc, prev_color)
 
     def _lvn_item_changed(self, nmlv):

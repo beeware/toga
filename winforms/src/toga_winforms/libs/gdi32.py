@@ -1,4 +1,4 @@
-from ctypes import windll
+from ctypes import c_int, windll
 from ctypes.wintypes import BOOL, COLORREF, HBRUSH, HDC, HGDIOBJ
 
 gdi32 = windll.GDI32
@@ -20,6 +20,12 @@ DeleteObject.argtypes = [HGDIOBJ]
 SelectObject = gdi32.SelectObject
 SelectObject.restype = HGDIOBJ
 SelectObject.argtypes = [HDC, HGDIOBJ]
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-setbkmode
+SetBkMode = gdi32.SetBkMode
+SetBkMode.restype = c_int
+SetBkMode.argtypes = [HDC, c_int]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-settextcolor

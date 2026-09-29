@@ -207,6 +207,13 @@ async def test_select(widget, probe, source, on_select_handler):
     on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
 
+    # Test drawing when row is selected and unfocused
+    if hasattr(probe, "lose_focus"):
+        await probe.lose_focus()
+        await probe.redraw("Row is selected but DetailedList is not focused")
+        await probe.select_row(2)
+        await probe.redraw("Row is selected and DetailedList regained focus")
+
 
 async def test_deselect(widget, probe):
     """Test for deselection"""
