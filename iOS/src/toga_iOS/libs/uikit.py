@@ -478,6 +478,12 @@ class UIKeyboardType(Enum):
 # UITextView.h
 UITextView = ObjCClass("UITextView")
 
+
+######################################################################
+# UIToolbar.h
+UIToolbar = ObjCClass("UIToolbar")
+
+
 ######################################################################
 # UIView.h
 UIView = ObjCClass("UIView")
