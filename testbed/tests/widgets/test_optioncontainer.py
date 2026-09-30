@@ -190,6 +190,16 @@ async def test_select_tab(
     assert handler_current_index == 2
 
 
+async def test_content_excludes_tabs(widget, probe, content1):
+    """The content of the selected tab isn't laid out underneath the tabs."""
+    # The probe fixture adds the OptionContainer to a window that is already visible,
+    # so the tabs may not have a size when the content is first laid out (#4729).
+    # Check the layout rather than the native size, because the native content may
+    # be clipped to the visible area even if the layout extends beyond it.
+    await probe.wait_for_tab("Tab 1 should be selected")
+    assert content1.layout.content_height < probe.height
+
+
 async def test_select_tab_overflow(widget, probe, on_select_handler):
     """If there's a lot of tabs, content can still be selected"""
     # Set up 5 extra tabs
