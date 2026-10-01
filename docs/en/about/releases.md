@@ -32,6 +32,9 @@
 - The iOS 27 SDK can now be used to run Toga applications with a switch from `ApplicationDelegate` to `SceneDelegate`. ([#4695](https://github.com/beeware/toga/issues/4695))
 - The Testbed app is now able to run on iOS 26. ([#4720](https://github.com/beeware/toga/issues/4720))
 - Compatibility with Windows Server 2016 was restored. ([#4735](https://github.com/beeware/toga/issues/4735))
+- On Android, the content of an `OptionContainer` that is added to a window that is already visible is no longer hidden behind the tab bar. ([#4729](https://github.com/beeware/toga/issues/4729))
+- On Qt, the content of an `OptionContainer` tab is now laid out when the tab is selected. ([#4738](https://github.com/beeware/toga/issues/4738))
+- On Qt, the width of a flexible `Selection` widget is now applied correctly. ([#4739](https://github.com/beeware/toga/issues/4739))
 
 ### Backward Incompatible Changes
 
