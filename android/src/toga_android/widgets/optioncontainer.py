@@ -4,7 +4,7 @@ import warnings
 import weakref
 from dataclasses import dataclass
 
-from android.view import MenuItem
+from android.view import MenuItem, View
 from android.widget import LinearLayout
 
 try:
@@ -22,6 +22,7 @@ from travertino.size import at_least
 import toga
 
 from ..container import Container
+from ..libs.events import PythonRunnable
 from .base import Widget, suppress_reference_error
 
 
@@ -51,6 +52,24 @@ if NavigationBarView is not None:  # pragma: no branch
                         return True
 
             return False  # pragma: no cover
+
+
+class TogaOnLayoutChangeListener(dynamic_proxy(View.OnLayoutChangeListener)):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = weakref.proxy(impl)
+
+    def onLayoutChange(
+        self, view, left, top, right, bottom, old_left, old_top, old_right, old_bottom
+    ):
+        # The navigation view has no height until it has been laid out, which may be
+        # after the content was sized. Resize the content once this layout pass is
+        # complete, because changing the layout during a pass forces a second pass.
+        view.post(PythonRunnable(self.resize_tab_content))
+
+    def resize_tab_content(self):
+        with suppress_reference_error():
+            self.impl.resize_tab_content()
 
 
 class OptionContainer(Widget, Container):
@@ -98,10 +117,18 @@ class OptionContainer(Widget, Container):
             self.onItemSelectedListener
         )
 
+        self.onLayoutChangeListener = TogaOnLayoutChangeListener(self)
+        self.native_navigationview.addOnLayoutChangeListener(
+            self.onLayoutChangeListener
+        )
+
         self.options = []
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
+        self.resize_tab_content()
+
+    def resize_tab_content(self):
         lp = self.native.getLayoutParams()
         super().resize_content(
             lp.width, lp.height - self.native_navigationview.getHeight()
