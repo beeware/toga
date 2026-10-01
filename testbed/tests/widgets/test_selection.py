@@ -336,6 +336,16 @@ async def test_resize_on_content_change(widget, probe):
         assert probe.width == original_width
 
 
+async def test_flex_width_after_items_change(widget, probe):
+    """A flexible widget keeps its layout width after its items are replaced."""
+    widget.style.flex = 1
+    widget.items = ["first", "second", "third"]
+
+    # Allow any deferred native size adjustment to run.
+    await probe.redraw("Items have been replaced", delay=0.1)
+    assert probe.width > 350
+
+
 async def test_list_listener(widget):
     """Does the widget implement the ListListener API"""
     assert isinstance(widget._impl, ListListener)
