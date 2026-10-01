@@ -4,9 +4,6 @@ on:
   release:
     types: published
 
-permissions:
-  contents: read
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -50,5 +47,5 @@ jobs:
           mkdir dist
           mv packages/${{ matrix.package }}-[0-9]* dist
 
-      - name: Publish to PyPI
+      - name: Publish release to production PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
