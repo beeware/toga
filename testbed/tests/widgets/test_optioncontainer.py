@@ -138,8 +138,11 @@ async def test_select_tab(
     widget,
     probe,
     on_select_handler,
+    content1,
     content1_probe,
+    content2,
     content2_probe,
+    content3,
     content3_probe,
 ):
     """Tabs of content can be selected"""
@@ -153,6 +156,10 @@ async def test_select_tab(
     # size of the widget.
     assert content1_probe.width > probe.width * 0.8
     assert content1_probe.height > probe.height * 0.8
+    # The content isn't laid out underneath the tabs (#4729). Check the layout
+    # rather than the native size, because the native content may be clipped to
+    # the visible area even if the layout extends beyond it.
+    assert content1.layout.content_height < probe.height
 
     # on_select hasn't been invoked.
     on_select_handler.assert_not_called()
@@ -164,6 +171,7 @@ async def test_select_tab(
     assert widget.current_tab.index == 1
     assert content2_probe.width > probe.width * 0.8
     assert content2_probe.height > probe.height * 0.8
+    assert content2.layout.content_height < probe.height
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
@@ -183,21 +191,12 @@ async def test_select_tab(
     assert widget.current_tab.index == 2
     assert content3_probe.width > probe.width * 0.8
     assert content3_probe.height > probe.height * 0.8
+    assert content3.layout.content_height < probe.height
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
     # The current index as evaluated in the handler agrees
     assert handler_current_index == 2
-
-
-async def test_content_excludes_tabs(widget, probe, content1):
-    """The content of the selected tab isn't laid out underneath the tabs."""
-    # The probe fixture adds the OptionContainer to a window that is already visible,
-    # so the tabs may not have a size when the content is first laid out (#4729).
-    # Check the layout rather than the native size, because the native content may
-    # be clipped to the visible area even if the layout extends beyond it.
-    await probe.wait_for_tab("Tab 1 should be selected")
-    assert content1.layout.content_height < probe.height
 
 
 async def test_select_tab_overflow(widget, probe, on_select_handler):
