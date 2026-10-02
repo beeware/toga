@@ -13,6 +13,7 @@ from toga_winforms.libs import win32constants as wc
 from toga_winforms.libs.user32 import (
     ClientToScreen,
     SendMessageW,
+    SetFocus,
     SetForegroundWindow,
 )
 
@@ -197,7 +198,7 @@ class TreeProbe(TableProbe):
         )
         await asyncio.sleep(0.1)
         assert state_node.mouse_hover
-        assert self.impl._mouse_move_hit == 0
+        assert self.impl._mouse_move_hit == display_index
 
         # Move mouse away from state-change arrow, but still on the item.
         self.mouse_move_event(
@@ -286,3 +287,9 @@ class TreeProbe(TableProbe):
             await asyncio.sleep(0.1)
             SendMessageW(hwnd, wc.WM_KEYUP, wparam, 0)
             await asyncio.sleep(0.1)
+
+    async def lose_focus(self):
+        window_hwnd = HWND(int(self.widget.window._impl.native.Handle.ToString()))
+        SetForegroundWindow(window_hwnd)
+        SetFocus(window_hwnd)
+        await asyncio.sleep(0.05)
