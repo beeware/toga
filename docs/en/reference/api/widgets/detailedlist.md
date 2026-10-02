@@ -2,7 +2,7 @@
 
 ## Usage
 
-The simplest way to create a DetailedList is to pass a list of dictionaries, with each dictionary containing three keys: `icon`, `title`, and `subtitle`:
+The simplest way to create a DetailedList is to pass a list of dictionaries, with each dictionary containing three keys: `title`, `subtitle`, and `icon`:
 
 ```python
 import toga
@@ -10,46 +10,46 @@ import toga
 table = toga.DetailedList(
     data=[
         {
-            "icon": toga.Icon("icons/arthur"),
             "title": "Arthur Dent",
             "subtitle": "Where's the tea?",
+            "icon": toga.Icon("icons/arthur"),
         },
         {
-            "icon": toga.Icon("icons/ford"),
             "title": "Ford Prefect",
             "subtitle": "Do you know where my towel is?",
+            "icon": toga.Icon("icons/ford"),
         },
         {
-            "icon": toga.Icon("icons/tricia"),
             "title": "Tricia McMillan",
             "subtitle": "What planet are you from?",
+            "icon": toga.Icon("icons/tricia"),
         },
     ]
 )
 ```
 
-If you want to customize the keys used in the dictionary, you can do this by providing an `accessors` argument to the DetailedList when it is constructed. `accessors` is a tuple containing the attributes that will be used to provide the icon, title, and subtitle, respectively:
+If you want to customize the keys used in the dictionary, you can do this by providing an `accessors` argument to the DetailedList when it is constructed. `accessors` is a tuple containing the attributes that will be used to provide the title, subtitle, and icon, respectively:
 
 ```python
 import toga
 
 table = toga.DetailedList(
-    accessors=("picture", "name", "quote"),
+    accessors=("name", "quote", "picture"),
     data=[
         {
-            "picture": toga.Icon("icons/arthur"),
             "name": "Arthur Dent",
             "quote": "Where's the tea?",
+            "picture": toga.Icon("icons/arthur"),
         },
         {
-            "picture": toga.Icon("icons/ford"),
             "name": "Ford Prefect",
             "quote": "Do you know where my towel is?",
+            "picture": toga.Icon("icons/ford"),
         },
         {
-            "picture": toga.Icon("icons/tricia"),
             "name": "Tricia McMillan",
             "quote": "What planet are you from?",
+            "picture": toga.Icon("icons/tricia"),
         },
     ],
 )
