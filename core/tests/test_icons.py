@@ -234,8 +234,10 @@ def test_create_app_icon_unloadable(monkeypatch, app, capsys):
 
 def test_create_app_icon_non_script(monkeypatch, app, capsys):
     """The icon from the binary is used when running as a packaged binary"""
-    # Patch sys.executable so the test looks like it's running as a packaged binary
-    monkeypatch.setattr(sys, "executable", "/path/to/App")
+    # Patch sys.orig_argv so the test looks like it's running as a packaged binary
+    patched = sys.orig_argv.copy()
+    patched[0] = "/path/to/App"
+    monkeypatch.setattr(sys, "orig_argv", patched)
 
     # Load the app default icon
     icon = toga.Icon(_APP_ICON)
@@ -259,8 +261,10 @@ def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):
         FileNotFoundError(),
     )
 
-    # Patch sys.executable so the test looks like it's running as a packaged binary
-    monkeypatch.setattr(sys, "executable", "/path/to/App")
+    # Patch sys.orig_argv so the test looks like it's running as a packaged binary
+    patched = sys.orig_argv.copy()
+    patched[0] = "/path/to/App"
+    monkeypatch.setattr(sys, "orig_argv", patched)
 
     # Load the app default icon
     icon = toga.Icon(_APP_ICON)

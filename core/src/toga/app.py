@@ -428,7 +428,7 @@ class App:
     def is_bundled(self) -> bool:
         """Has the app been bundled as a standalone binary,
         or is it running as a Python script?"""
-        return Path(sys.executable).stem not in {
+        return Path(sys.orig_argv[0]).stem.lower() not in {
             "python",
             f"python{sys.version_info.major}",
             f"python{sys.version_info.major}.{sys.version_info.minor}",
