@@ -75,3 +75,6 @@ class TextInput(Widget):
 
     def is_valid(self):
         return not self.icon_action.isVisible()
+
+    def set_spell_checking(self, value):
+        pass  # Qt has no built-in spell checker.

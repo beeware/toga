@@ -104,3 +104,6 @@ class MultilineTextInputProbe(SimpleProbe):
 
     def set_cursor_at_end(self):
         self.native.selectedRange = NSRange(len(self.value), 0)
+
+    def assert_spell_checking(self, value):
+        assert bool(self.native_text.isContinuousSpellCheckingEnabled()) is value

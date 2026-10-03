@@ -32,3 +32,6 @@ class MultilineTextInput(Widget):
 
     def simulate_change(self):
         self.interface.on_change()
+
+    def set_spell_checking(self, value):
+        self._set_value("spell_checking", value)

@@ -92,3 +92,9 @@ class TextInputProbe(SimpleProbe):
 
     def set_cursor_at_end(self):
         self.native.currentEditor().selectedRange = NSRange(len(self.value), 0)
+
+    def assert_spell_checking(self, value):
+        assert (
+            bool(self.native.currentEditor().isContinuousSpellCheckingEnabled())
+            is value
+        )

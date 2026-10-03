@@ -86,9 +86,19 @@ class MultilineTextInputApp(toga.App):
             margin_bottom=10,
         )
         self.label = toga.Label("Nothing has been written yet")
+        no_spell_checking_input = toga.MultilineTextInput(
+            placeholder="Spell checking disabled...", spell_checking=False, flex=1
+        )
 
         outer_box = toga.Box(
-            children=[btn_box1, btn_box2, btn_box3, self.multiline_input, self.label],
+            children=[
+                btn_box1,
+                btn_box2,
+                btn_box3,
+                self.multiline_input,
+                self.label,
+                no_spell_checking_input,
+            ],
             direction=COLUMN,
             margin=10,
         )

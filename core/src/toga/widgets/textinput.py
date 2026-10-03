@@ -58,6 +58,7 @@ class TextInput(Widget):
         on_gain_focus: OnGainFocusHandler | None = None,
         on_lose_focus: OnLoseFocusHandler | None = None,
         validators: Iterable[Callable[[str], str | None]] | None = None,
+        spell_checking: bool = True,
         **kwargs,
     ):
         """Create a new single-line text input widget.
@@ -78,12 +79,15 @@ class TextInput(Widget):
         :param on_lose_focus: A handler that will be invoked when the widget loses
             input focus.
         :param validators: A list of validators to run on the value of the input.
+        :param spell_checking: Whether to enable spell checking, if supported by the
+            platform.
         :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
             These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 
         self.placeholder = placeholder
+        self.spell_checking = spell_checking
         self.readonly = readonly
 
         # Set the actual value before on_change, because we do not want
@@ -104,6 +108,20 @@ class TextInput(Widget):
 
     def _create(self) -> Any:
         return self.factory.TextInput(interface=self)
+
+    @property
+    def spell_checking(self) -> bool:
+        """Whether spell checking is requested (`True` by default).
+
+        This has no effect on platforms without spell checking. Other text input
+        assistance, such as automatic correction, is controlled by the platform.
+        """
+        return self._spell_checking
+
+    @spell_checking.setter
+    def spell_checking(self, value: object) -> None:
+        self._spell_checking = bool(value)
+        self._impl.set_spell_checking(self._spell_checking)
 
     @property
     def readonly(self) -> bool:
