@@ -252,25 +252,20 @@ class Widget(ABC):
             self.interface.intrinsic.width = at_least(min_size.width)
             self.interface.intrinsic.height = at_least(min_size.height)
 
-    #: Maximum number of main-loop iterations performed by
-    #: :meth:`flush_gtk_events`. Setting a widget value usually leaves
-    #: only a couple of pending events, so the queue drains immediately.
-    #: However, if the main context holds a source that is always pending
-    #: (e.g. a self-repeating idle callback or a busy asyncio task
-    #: installed by the app), an unbounded pump would never terminate,
-    #: hanging the app before the window appears (beeware/toga#3943).
-    #: Leftover events are picked up by the main loop as usual.
-    FLUSH_MAX_ITERATIONS = 100
-
     def flush_gtk_events(self):
+        flushed = False
+
+        # Queue a no-op sentinel event at low priority
+        def _sentinel():
+            nonlocal flushed
+            flushed = True
+            return GLib.SOURCE_REMOVE
+
+        GLib.idle_add(_sentinel, priority=GLib.PRIORITY_DEFAULT_IDLE)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            count = 0
-            while count < self.FLUSH_MAX_ITERATIONS and Gtk.events_pending():
+            while not flushed:
                 Gtk.main_iteration_do(blocking=False)
-                count += 1
         else:  # pragma: no-cover-if-gtk3
             context = GLib.main_context_default()
-            count = 0
-            while count < self.FLUSH_MAX_ITERATIONS and context.pending():
+            while not flushed:
                 context.iteration(may_block=False)
-                count += 1
