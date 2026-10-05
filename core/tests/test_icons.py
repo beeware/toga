@@ -251,6 +251,23 @@ def test_create_app_icon_non_script(monkeypatch, app, capsys):
     assert capsys.readouterr().out == ""
 
 
+def test_create_app_icon_empty_orig_argv(monkeypatch, app, capsys):
+    """If orig_argv is empty, assume we're bundled."""
+    # Patch sys.orig_argv so that it is empty - this is the behavior on Android.
+    monkeypatch.setattr(sys, "orig_argv", [])
+
+    # Load the app default icon
+    icon = toga.Icon(_APP_ICON)
+
+    assert isinstance(icon, toga.Icon)
+    # App icon path reports as `resources/<app_name>`; impl is the app icon
+    assert icon.path == Path("resources/icons")
+    assert icon._impl.path == "<APP ICON>"
+
+    # No warning was printed, as we're running as a script.
+    assert capsys.readouterr().out == ""
+
+
 def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):
     """If the icon from binary executable cannot be found, the app icon is reset to the
     default."""
