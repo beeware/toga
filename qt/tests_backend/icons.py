@@ -44,11 +44,11 @@ class IconProbe(BaseProbe):
         pytest.xfail("Qt does not use sized icons")
 
     def assert_app_icon_content(self):
-        if Path(sys.executable).stem.startswith("python"):
+        if Path(sys.orig_argv[0]).stem.lower().startswith("python"):
             assert self.icon._impl == toga.Icon.DEFAULT_ICON._impl
         else:
             assert (
                 self.icon._impl.path
-                == Path(sys.executable).parent.parent
+                == Path(sys.orig_argv[0]).parent.parent
                 / "share/icons/hicolor/512x512/apps/org.beeware.toga.testbed-qt.png"
             )
