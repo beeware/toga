@@ -118,10 +118,13 @@ class TreeProbe(SimpleProbe):
 
     def row_position(self, row_path):
         # Convert the row path in to an absolute row index
-        item = self.native_tree.child(row_path[0], ofItem=None)
-        for index in row_path[1:]:
-            item = self.native_tree.child(index, ofItem=item)
-        row = self.native_tree.rowForItem(item)
+        if row_path[0] == -1:
+            row = -1
+        else:
+            item = self.native_tree.child(row_path[0], ofItem=None)
+            for index in row_path[1:]:
+                item = self.native_tree.child(index, ofItem=item)
+            row = self.native_tree.rowForItem(item)
 
         # Pick a point half way across horizontally, and half way down the row,
         # taking into account the size of the rows and the header
