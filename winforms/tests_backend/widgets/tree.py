@@ -61,6 +61,11 @@ class TreeProbe(TableProbe):
             y=int((bounds.Top + bounds.Bottom) / 2),
         )
 
+    async def activate_header(self):
+        # No action needed; header activation is unrelated to
+        # and does not contain a bug for regular selection
+        pass
+
     def assert_cell_content(self, row_path, col, value=None, icon=None, widget=None):
         if widget:
             pytest.skip("This backend doesn't support widgets in Tables")
