@@ -89,3 +89,6 @@ class TextInput(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(len(self.native.value) + 4)
         self.interface.intrinsic.height = 3
+
+    def set_spell_checking(self, value):
+        pass  # Textual has no built-in spell checker.

@@ -54,3 +54,6 @@ class MultilineTextInput(Widget):
         self.interface.intrinsic.height = at_least(
             max(self.interface._MIN_HEIGHT, size.height())
         )
+
+    def set_spell_checking(self, value):
+        pass  # Qt has no built-in spell checker.
