@@ -185,5 +185,9 @@ class TreeProbe(SimpleProbe):
             clickCount=2,
         )
 
+    async def activate_header(self):
+        await self.activate_row([-1])
+        await self.redraw("Activating header")
+
     async def assert_item_mouse_hover(self, row_path):
         skip("Test not implemented for this platform")

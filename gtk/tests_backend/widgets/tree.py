@@ -105,5 +105,10 @@ class TreeProbe(SimpleProbe):
             self.native_tree.get_columns()[0],
         )
 
+    async def activate_header(self):
+        # No action needed; header activation is unrelated to
+        # and does not contain a bug for regular selection
+        pass
+
     async def assert_item_mouse_hover(self, row_path):
         pytest.skip("Test not implemented for this platform")

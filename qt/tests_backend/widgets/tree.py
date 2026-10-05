@@ -126,6 +126,11 @@ class TreeProbe(SimpleProbe):
         index = self._get_index_from_path(row_path)
         self.native.activated.emit(index)
 
+    async def activate_header(self):
+        # No action needed; header activation is unrelated to
+        # and does not contain a bug for regular selection
+        pass
+
     async def select_first_row_keyboard(self):
         pytest.skip("Test not implemented for this platform")
 
