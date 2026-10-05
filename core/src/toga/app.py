@@ -426,9 +426,19 @@ class App:
 
     @property
     def is_bundled(self) -> bool:
-        """Has the app been bundled as a standalone binary,
-        or is it running as a Python script?"""
-        return Path(sys.orig_argv[0]).stem.lower() not in {
+        """Has the app been bundled as a standalone binary, or is it running
+        as a Python script?
+        """
+        # sys.executable may be overwritten to point at an actual python
+        # executable so that multiprocessing et al will work. Point at
+        # sys.orig_argv[0] instead, which is the original argv used to invoke
+        # the Python interpreter. If sys.orig_argv[0] doesn't exist, then we're
+        # definitely bundled (... and almost certainly on Android).
+        try:
+            exe = sys.orig_argv[0]
+        except IndexError:
+            exe = ""
+        return Path(exe).stem.lower() not in {
             "python",
             f"python{sys.version_info.major}",
             f"python{sys.version_info.major}.{sys.version_info.minor}",
