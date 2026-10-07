@@ -15,7 +15,7 @@ class Icon:
 
         try:
             if path is None:
-                self.native = WinIcon.ExtractAssociatedIcon(sys.executable)
+                self.native = WinIcon.ExtractAssociatedIcon(sys.orig_argv[0])
                 self.bitmap = Bitmap.FromHicon(self.native.Handle)
             elif path.suffix == ".ico":
                 self.native = WinIcon(str(path))

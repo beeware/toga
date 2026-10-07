@@ -11,7 +11,7 @@ from toga.style import Pack
 # Mobile platform tests
 ####################################################################################
 if toga.platform.current_platform not in {"iOS", "android"}:
-    pytest.skip("Test is specific to desktop platforms", allow_module_level=True)
+    pytest.skip("Test is specific to mobile platforms", allow_module_level=True)
 
 
 async def test_content_size(app, main_window, main_window_probe):

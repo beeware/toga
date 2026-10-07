@@ -138,8 +138,11 @@ async def test_select_tab(
     widget,
     probe,
     on_select_handler,
+    content1,
     content1_probe,
+    content2,
     content2_probe,
+    content3,
     content3_probe,
 ):
     """Tabs of content can be selected"""
@@ -153,17 +156,22 @@ async def test_select_tab(
     # size of the widget.
     assert content1_probe.width > probe.width * 0.8
     assert content1_probe.height > probe.height * 0.8
+    # The content isn't laid out underneath the tabs (#4729). Check the layout
+    # rather than the native size, because the native content may be clipped to
+    # the visible area even if the layout extends beyond it.
+    assert content1.layout.content_height < probe.height
 
     # on_select hasn't been invoked.
     on_select_handler.assert_not_called()
 
-    # Select item 1 programmatically
+    # Select item 2 programmatically
     widget.current_tab = "Tab 2"
     await probe.wait_for_tab("Tab 2 should be selected")
 
     assert widget.current_tab.index == 1
     assert content2_probe.width > probe.width * 0.8
     assert content2_probe.height > probe.height * 0.8
+    assert content2.layout.content_height < probe.height
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
@@ -183,6 +191,7 @@ async def test_select_tab(
     assert widget.current_tab.index == 2
     assert content3_probe.width > probe.width * 0.8
     assert content3_probe.height > probe.height * 0.8
+    assert content3.layout.content_height < probe.height
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
@@ -221,15 +230,13 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         # Ensure mock call count is clean
         on_select_handler.reset_mock()
 
-        # Some platforms (iOS) have a "more" option for tabs beyond a display limit. If
-        # `select_more()` doesn't exist, that feature doesn't exist on the platform.
-        try:
+        # Some platforms' (iOS) devices (iPhone) have a "more" option
+        # for tabs beyond a display limit.
+        if probe.uses_more:
             probe.select_more()
             await probe.wait_for_tab("More option should be displayed")
             # When the "more" menu is visible, the current tab is None.
-            assert widget.current_tab.index is None
-        except AttributeError:
-            pass
+            assert widget.current_tab is None
 
         # on_select has been not been invoked
         on_select_handler.assert_not_called()
@@ -259,7 +266,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the first tab in the GUI
         probe.select_tab(0)
-        await probe.wait_for_tab("Tab 0 should be selected")
+        await probe.wait_for_tab("Tab 1 should be selected")
         assert widget.current_tab.index == 0
         # on_select has been invoked
         on_select_handler.assert_called_once_with(widget)
@@ -267,7 +274,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the "more" option again. If the more option is stateful,
         # this will result is displaying the last "more" option selected
-        try:
+        if probe.uses_more:
             probe.select_more()
             if probe.more_option_is_stateful:
                 await probe.wait_for_tab("Previous more option should be displayed")
@@ -282,9 +289,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
             else:
                 await probe.wait_for_tab("More option should be displayed")
 
-            assert widget.current_tab.index is None
-        except AttributeError:
-            pass
+            assert widget.current_tab is None
 
         on_select_handler.assert_not_called()
 
@@ -302,7 +307,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the first tab in the GUI
         probe.select_tab(0)
-        await probe.wait_for_tab("Tab 0 should be selected")
+        await probe.wait_for_tab("Tab 1 should be selected")
         assert widget.current_tab.index == 0
         # on_select has been invoked
         on_select_handler.assert_called_once_with(widget)

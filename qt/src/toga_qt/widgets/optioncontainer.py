@@ -1,5 +1,6 @@
 import asyncio
 
+from PySide6.QtCore import QEvent, QObject
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QTabWidget
 from travertino.size import at_least
@@ -7,6 +8,17 @@ from travertino.size import at_least
 from ..container import Container
 from ..icons import IMPL_DICT
 from .base import Widget
+
+
+class PageMonitor(QObject):
+    def __init__(self, impl):
+        self.impl = impl
+        super().__init__()
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Resize:
+            self.impl.qt_page_resize(obj)
+        return super().eventFilter(obj, event)
 
 
 class OptionContainer(Widget):
@@ -17,6 +29,14 @@ class OptionContainer(Widget):
         self.native.currentChanged.connect(self.qt_current_changed)
 
         self.sub_containers = []
+        self.page_monitor = PageMonitor(self)
+
+    def qt_page_resize(self, page):
+        # Qt only sizes a tab's page when it is the current tab, so lay out the
+        # content whenever its page is resized.
+        for sub_container in self.sub_containers:
+            if sub_container.native is page:
+                sub_container.content.interface.refresh()
 
     def qt_current_changed(self, *args):
         self.interface.on_select()
@@ -24,6 +44,7 @@ class OptionContainer(Widget):
     def add_option(self, index, text, widget, icon=None):
         sub_container = Container(on_refresh=self.content_refreshed)
         sub_container.content = widget
+        sub_container.native.installEventFilter(self.page_monitor)
 
         self.sub_containers.insert(index, sub_container)
         if icon is None:
@@ -75,11 +96,6 @@ class OptionContainer(Widget):
         self.interface.intrinsic.height = at_least(
             max(size.height(), self.interface._MIN_HEIGHT)
         )
-
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        for item in self.interface.content:
-            item.content.refresh()
 
     def content_refreshed(self, container):
         container.native.setMinimumSize(

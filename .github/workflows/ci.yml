@@ -273,6 +273,7 @@ jobs:
         - "linux-x11-qt"
         - "android"
         - "iOS"
+        # - "iPadOS"
         - "textual-linux"
         - "textual-macOS"
         - "textual-windows"
@@ -319,7 +320,7 @@ jobs:
             Xvfb :99 -screen 0 2048x1536x24 &
             sleep 1
 
-            # Start Window Mmanager
+            # Start Window Manager
             echo "Start window manager..."
             DISPLAY=:99 blackbox &
             sleep 1
@@ -521,9 +522,14 @@ jobs:
 
         - backend: "iOS"
           platform: "iOS"
-          runs-on: "macos-15"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
+          runs-on: "macos-26"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
+
+        # - backend: "iPadOS"
+        #   platform: "iOS"
+        #   runs-on: "macos-26"
+        #   briefcase-run-args: "--device 'iPad (A16)'"
+        #   app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
           platform: "android"

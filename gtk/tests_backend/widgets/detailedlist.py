@@ -41,7 +41,11 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def max_scroll_position(self):
-        return int(self.native_vadj.get_upper() - self.native_vadj.get_page_size())
+        return self.scroll_limit - int(self.native_vadj.get_page_size())
+
+    @property
+    def scroll_limit(self):
+        return int(self.native_vadj.get_upper())
 
     @property
     def scroll_position(self):

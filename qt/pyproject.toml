@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools==84.0.0",
-    "setuptools_scm==10.2.3",
+    "setuptools_scm==10.3.4",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -31,7 +31,7 @@ keywords = [
     "qt",
 ]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",

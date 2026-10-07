@@ -93,11 +93,14 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def max_scroll_position(self):
+        return self.scroll_limit - self.native.ClientSize.Height / self.scale_factor
+
+    @property
+    def scroll_limit(self):
         top = self._row_rect(0).top
         bottom = self._row_rect(self.row_count - 1).bottom
         document_height = bottom - top
-
-        return (document_height - self.native.ClientSize.Height) / self.scale_factor
+        return document_height / self.scale_factor
 
     @property
     def scroll_position(self):

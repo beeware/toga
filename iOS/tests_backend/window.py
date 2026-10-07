@@ -3,7 +3,7 @@ import asyncio
 import pytest
 from tests.conftest import approx
 
-from toga_iOS.libs import UIWindow
+from toga_iOS.libs import UIWindow, core_graphics
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -39,6 +39,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
         raise exception
 
     def _assert_container_layout(self):
+        # Widget is not transformed
+        assert core_graphics.CGAffineTransformIsIdentity(
+            self.impl.container.content.native.transform
+        )
+
         # If the window has been laid out, the origin should be at least at the
         # position of the top bar height.
         assert self.impl.container.content.native.frame.origin.y >= approx(
@@ -73,6 +78,13 @@ class WindowProbe(BaseProbe, DialogsMixin):
         # As a test, assert that our content is not overlapping the top bar.
         self._assert_container_layout()
 
+        # Widgets are not transformed
+        assert core_graphics.CGAffineTransformIsIdentity(
+            self.native.contentView.transform
+        ) and core_graphics.CGAffineTransformIsIdentity(
+            self.native.rootViewController.navigationBar.transform
+        )
+
         # Content height doesn't include the status bar or navigation bar.
         return (
             self.native.contentView.frame.size.width,
@@ -85,6 +97,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def top_bar_height(self):
+        # Widget is not transformed
+        assert core_graphics.CGAffineTransformIsIdentity(
+            self.native.rootViewController.navigationBar.transform
+        )
+
         return (
             self.native.rootViewController.navigationBar.frame.origin.y
             + self.native.rootViewController.navigationBar.frame.size.height
