@@ -46,7 +46,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     async def redraw(self, message=None, delay=0, wait_for=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a widget repaint
-        self.widget.window.content._impl.native.displayIfNeeded()
+        self.impl.container.native.displayIfNeeded()
 
         await super().redraw(message=message, delay=delay, wait_for=wait_for)
 

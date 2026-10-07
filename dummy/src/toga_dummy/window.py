@@ -11,7 +11,7 @@ from .utils import LoggedObject
 
 
 class Window(LoggedObject):
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, position, size):
         super().__init__()
         self._action(f"create {self.__class__.__name__}")
         self.interface = interface
@@ -19,7 +19,6 @@ class Window(LoggedObject):
         # Currently, there is not a scaffold.
         self.scaffold = None
 
-        self.set_title(title)
         self.set_position(position if position is not None else _initial_position())
 
         # We cannot store the following values on the EventLog, since they would be

@@ -8,6 +8,7 @@ from .libs import (
     NSLayoutConstraint,
     NSLayoutRelationGreaterThanOrEqual,
     NSView,
+    NSViewController,
 )
 
 #######################################################################################
@@ -131,3 +132,37 @@ class Container:
     @min_height.setter
     def min_height(self, height):
         self._min_height_constraint.constant = height
+
+
+class ControlledContainer(Container):
+    def __init__(
+        self,
+        min_width=100,
+        min_height=100,
+        layout_native=None,
+        on_refresh=None,
+    ):
+        """A container for layouts, wrapped in an NSViewController.
+
+        Creates and enforces minimum size constraints on the container widget.
+        In addition, wrapped in NSViewController to facilitate attachment to various
+        other things like an NSSplitViewItem.
+
+        :param min_width: The minimum width to enforce on the container
+        :param min_height: The minimum height to enforce on the container
+        :param layout_native: The native widget that should be used to provide size
+            hints to the layout. By default, this will usually be the container widget
+            itself; however, for widgets like ScrollContainer where the layout needs to
+            be computed based on a different size to what will be rendered, the source
+            of the size can be different.
+        :param on_refresh: The callback to be notified when this container's layout is
+            refreshed.
+        """
+        super().__init__(
+            min_width=min_width,
+            min_height=min_height,
+            layout_native=layout_native,
+            on_refresh=on_refresh,
+        )
+        self.controller = NSViewController.alloc().init()
+        self.controller.view = self.native

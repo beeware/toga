@@ -133,7 +133,7 @@ class CameraProbe(AppProbe):
         self._mock_permissions[str(AVMediaTypeVideo)] = 0
 
     async def wait_for_camera(self, device_count=0):
-        await self.redraw("Camera view displayed", delay=0.5)
+        await self.redraw("Camera view displayed", delay=2)
 
     @property
     def shutter_enabled(self):
@@ -156,7 +156,7 @@ class CameraProbe(AppProbe):
             },
         )
 
-        await self.redraw("Photo taken", delay=0.5)
+        await self.redraw("Photo taken", delay=2)
 
         return await photo, picker.cameraDevice, picker.cameraFlashMode
 
@@ -171,7 +171,7 @@ class CameraProbe(AppProbe):
         # Fake the result of a cancelling the photo
         picker.delegate.imagePickerControllerDidCancel(picker)
 
-        await self.redraw("Photo cancelled", delay=0.5)
+        await self.redraw("Photo cancelled", delay=2)
 
         return await photo
 

@@ -71,13 +71,13 @@ def test_window_handler_attrs_initialized_before_impl(app, event_name, monkeypat
     # none of them raise.
     real_init = dummy_window.Window.__init__
 
-    def fire_callbacks_during_init(self, interface, title, position, size):
+    def fire_callbacks_during_init(self, interface, position, size):
         # Mimic Cocoa / .NET Framework: dispatch every relevant handler
         # before the platform constructor returns. With the fix in place,
         # each call invokes a wrapped no-op; without it, AttributeError
         # bubbles out and __init__ aborts.
         getattr(interface, event_name)()
-        real_init(self, interface, title, position, size)
+        real_init(self, interface, position, size)
 
     monkeypatch.setattr(dummy_window.Window, "__init__", fire_callbacks_during_init)
 
