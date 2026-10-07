@@ -25,7 +25,7 @@ class Icon:
             # look for the highest size, since Qt icon sizing is handled by the
             # theme, and from Toga's perspective, they're unsized.
             SIZES = [512, 256, 128, 72, 64, 32, 16]
-            hicolor = Path(sys.executable).parent.parent / "share/icons/hicolor"
+            hicolor = Path(sys.orig_argv[0]).parent.parent / "share/icons/hicolor"
             sizes = {
                 size: hicolor / f"{size}x{size}/apps/{toga.App.app.app_id}.png"
                 for size in SIZES

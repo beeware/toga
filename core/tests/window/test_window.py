@@ -260,23 +260,69 @@ def test_change_content(window, app):
     assert scaffold3.app == app
 
 
-def test_change_content_in_presentation_mode(window):
-    """A window's content cannot be changed in presentation mode."""
-    window.content = toga.Box()
-    scaffold = window.scaffold
-    window.show()
-    window.state = WindowState.PRESENTATION
-
-    with pytest.raises(
-        ValueError,
-        match="Window scaffold cannot be changed in presentation mode",
-    ):
-        window.content = toga.Scaffold(toga.Box())
-
-    assert window.scaffold is scaffold
-
+def test_scaffold_content(window, app):
+    """An explicitly initialized scaffold may be used as content for a window."""
+    scaffold = toga.Scaffold()
     window.content = scaffold
-    assert window.scaffold is scaffold
+
+    assert window.content == scaffold
+    assert window.scaffold == scaffold
+    assert scaffold.app == app
+    assert scaffold.window == window
+    assert scaffold.content is None
+    assert_action_performed_with(window, "set scaffold", scaffold=scaffold._impl)
+    assert_action_performed_with(scaffold, "set content", widget=None)
+    assert_action_performed(scaffold, "refresh")
+
+    # Attach content
+    content1 = toga.Box()
+    scaffold.content = content1
+    assert content1.scaffold == scaffold
+    assert_action_performed(scaffold, "refresh")
+    assert_action_performed(content1, "refresh")
+    assert window.content == scaffold
+    assert scaffold.content == content1
+    assert content1.window == window
+    assert content1.app == app
+
+    # Attach new content
+    content2 = toga.Box()
+    scaffold.content = content2
+    assert content1.scaffold is None
+    assert content2.scaffold == scaffold
+    assert_action_performed(scaffold, "refresh")
+    assert_action_performed(content2, "refresh")
+    assert window.content == scaffold
+    assert scaffold.content == content2
+    assert content1.window is None
+    assert content1.app is None
+    assert content2.window == window
+    assert content2.app == app
+
+    # Detach content
+    scaffold.content = None
+    assert content1.scaffold is None
+    assert content2.scaffold is None
+    assert_action_performed(scaffold, "refresh")
+    assert window.content == scaffold
+    assert scaffold.content is None
+    assert content1.window is None
+    assert content1.app is None
+    assert content2.window is None
+    assert content2.app is None
+
+    # Attach content, detach scaffold; scaffold should preserve
+    # content
+    scaffold.content = content1
+    assert content1.scaffold is scaffold
+    window.content = None
+    assert window.content is None
+    assert scaffold.content == content1
+    assert content1.scaffold is scaffold
+    assert scaffold.window is None
+    assert scaffold.app is None
+    assert content1.window is None
+    assert content1.app is None
 
 
 def test_set_position(window):

@@ -18,7 +18,7 @@ class Icon:
         if path is None:
             # Use the executable location to find the share folder; look for icons
             # matching the app bundle in that location.
-            hicolor = Path(sys.executable).parent.parent / "share/icons/hicolor"
+            hicolor = Path(sys.orig_argv[0]).parent.parent / "share/icons/hicolor"
             path = {
                 size: hicolor / f"{size}x{size}/apps/{toga.App.app.app_id}.png"
                 for size in self.SIZES

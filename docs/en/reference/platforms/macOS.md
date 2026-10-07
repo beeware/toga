@@ -1,12 +1,10 @@
 # macOS
 
-![image](../images/cocoa.png){ width="300px" }
+![Toga Demo running on macOS.](/images/toga-demo-cocoa.png){ width="450" }
 
 /// caption
 
 ///
-
-<!-- TODO: Update alt text -->
 
 The Toga backend for macOS is [`toga-cocoa`](https://github.com/beeware/toga/tree/main/cocoa).
 

@@ -1,14 +1,16 @@
 # Windows
 
-![image](../images/winforms.png){ width="300px" } <!-- TODO: Update alt text -->
+![Toga Demo running on Windows.](/images/toga-demo-winforms.png){ width="450" }
+
+/// caption
+
+///
 
 The Toga backend for Windows is [`toga-winforms`](https://github.com/beeware/toga/tree/main/winforms).
 
 ## Prerequisites { #windows-prerequisites }
 
-`toga-winforms` requires Windows 10 (Version 1703, build 15063) or newer.
-
-Toga requires the use of either .NET Framework 4.x, or .NET Core 10.
+`toga-winforms` requires Windows 10 (Version 1703, build 15063) or newer, or Windows Server 2016 or newer, with either .NET Framework 4.x or .NET Core 10.
 
 If you're on an x86-64 machine, .NET Framework 4.x is installed by default on Windows 10 and 11. Toga will use .NET Core 10 if it is installed. If you explicitly *want* to use .NET Framework 4.x, set the `TOGA_WINFORMS_USE_NETFX` environment variable to "1".
 

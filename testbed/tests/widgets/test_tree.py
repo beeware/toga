@@ -549,6 +549,12 @@ async def test_activate(
     on_activate_handler.assert_called_once_with(widget, node=source[0][0])
     on_activate_handler.reset_mock()
 
+    # Some platforms can emit invalid row numbers when header pressed.
+    # Make sure those don't trigger anything.
+    await probe.activate_header()
+    on_activate_handler.assert_not_called()
+    on_activate_handler.reset_mock()
+
 
 async def test_multiselect(
     multiselect_widget,

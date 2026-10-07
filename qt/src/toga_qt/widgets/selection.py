@@ -10,7 +10,6 @@ from .base import Widget
 class Selection(Widget):
     def create(self):
         self.native = QComboBox()
-        self.native.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.native.currentIndexChanged.connect(self.qt_on_current_index_changed)
         self._item_id_count = 0
         self._last_selected_item_id = 0
@@ -120,6 +119,16 @@ class Selection(Widget):
         return None if index == -1 else index
 
     def rehint(self):
+        # Qt only sizes the hint to the full item list under the AdjustToContents
+        # policy. However, that policy also schedules a deferred adjustSize() 20ms
+        # after any change to the items, which would override the geometry set by
+        # Toga's layout. Use the policy only to read the hint (changing the policy
+        # forces Qt to recompute it), then revert to the default policy, under which
+        # the deferred adjustment is a no-op.
+        self.native.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         content_size = self.native.sizeHint()
+        self.native.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToContentsOnFirstShow
+        )
         self.interface.intrinsic.width = at_least(content_size.width())
         self.interface.intrinsic.height = content_size.height()

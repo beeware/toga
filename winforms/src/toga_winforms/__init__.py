@@ -63,18 +63,9 @@ and install the .NET Desktop Runtime.""") from None
 
 
 import clr
-from System import Environment
 
-_win_version = (
-    Environment.OSVersion.Version.Major,
-    Environment.OSVersion.Version.Minor,
-    Environment.OSVersion.Version.Build,
-)
-if _win_version < (10, 0, 15063):  # pragma: no cover
-    raise RuntimeError("Toga requires Windows 10, version 1703 (build 15063)")
-
-from .libs.user32 import SetProcessDpiAwarenessContext  # noqa: E402
-from .libs.win32constants import (  # noqa: E402
+from .libs.user32 import SetProcessDpiAwarenessContext
+from .libs.win32constants import (
     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,
 )
 
@@ -84,6 +75,8 @@ if not SetProcessDpiAwarenessContext(
     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 ):  # pragma: no cover
     print("WARNING: Failed to set the DPI Awareness mode for the app.")
+    print("WARNING: Toga requires Windows 10, version 1703 (build 15063),")
+    print("WARNING: or Windows Server 2016.")
 
 # Add a reference to the Winforms assembly
 clr.AddReference("System.Windows.Forms")
