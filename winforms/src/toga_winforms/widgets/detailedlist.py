@@ -7,6 +7,7 @@ from System.Drawing import ColorTranslator, Size, SystemColors
 
 from toga.handlers import WeakrefCallable
 
+from .. import _use_dotnet_core
 from ..libs import gdi32, user32 as u32, win32constants as wc, win32structures as ws
 from ..libs.comctl32 import (
     DefSubclassProc,
@@ -16,6 +17,7 @@ from ..libs.comctl32 import (
     SetWindowSubclass,
 )
 from ..libs.fonts import FontDeviceContext
+from ..libs.uxtheme import SetWindowTheme
 from ..libs.win32misc import hiword, is_submessage, loword
 from ..menus import ContextMenu
 from .base import Widget
@@ -61,6 +63,12 @@ class DetailedList(Widget):
     @property
     def _missing_value(self):
         return self.interface.missing_value
+
+    @property
+    def _is_dark_mode(self) -> bool:
+        return _use_dotnet_core and getattr(
+            WinForms.Application, "IsDarkModeEnabled", False
+        )
 
     def create(self):
         self.native = WinForms.Panel()
@@ -115,6 +123,9 @@ class DetailedList(Widget):
             None,
             None,
         )
+
+        theme = "DarkMode_Explorer" if self._is_dark_mode else "Explorer"
+        SetWindowTheme(HWND(self._hwnd), theme, None)
 
         # Change the view style to tile.
         # learn.microsoft.com/en-us/windows/win32/controls/use-tile-views
@@ -225,12 +236,20 @@ class DetailedList(Widget):
         return (x + self._tile_padding_small, y + self._tile_padding)
 
     def _drawing_select_rect(self, x: int, y: int) -> RECT:
-        return RECT(
-            x + self._tile_padding_small + self._icon + self._tile_padding,
-            y + self._tile_padding,
-            x + self._tile_width() - self._tile_padding_small,
-            y + self._tile_padding + 2 * self._font_height,
-        )
+        if self._is_dark_mode:
+            return RECT(
+                x,
+                y,
+                x + self._tile_width(),
+                y + self._tile_height,
+            )
+        else:
+            return RECT(
+                x + self._tile_padding_small + self._icon + self._tile_padding,
+                y + self._tile_padding,
+                x + self._tile_width() - self._tile_padding_small,
+                y + self._tile_padding + 2 * self._font_height,
+            )
 
     def _drawing_title_rect(self, x: int, y: int) -> RECT:
         return RECT(
@@ -256,6 +275,8 @@ class DetailedList(Widget):
         """Matches the back color of the Win32 List-View UI to the WinForms Panel."""
         color = ColorTranslator.ToWin32(self.native.BackColor)
         u32.SendMessageW(self._hwnd, wc.LVM_SETBKCOLOR, 0, color)
+        theme = "DarkMode_Explorer" if self._is_dark_mode else "Explorer"
+        SetWindowTheme(HWND(self._hwnd), theme, None)
 
         # Invalidate the whole client area.
         u32.InvalidateRect(self._hwnd, None, True)
@@ -436,23 +457,48 @@ class DetailedList(Widget):
             y = rect.top + divmod(self._tile_height - rect.bottom + rect.top, 2)[0]
 
             if is_selected:
-                # Unfocused colors are undocumented.
-                select_back = wc.COLOR_HIGHLIGHT if has_focus else wc.COLOR_BTNFACE
-                select_text = wc.COLOR_HIGHLIGHTTEXT if has_focus else wc.COLOR_BTNTEXT
-                gdi32.SetTextColor(hdc, u32.GetSysColor(select_text))
+                if self._is_dark_mode:
+                    back_color = SystemColors.Highlight
+                    text_color = self.native.ForeColor
+                else:
+                    if has_focus:
+                        back_color = SystemColors.Highlight
+                        text_color = SystemColors.HighlightText
+                    else:
+                        back_color = SystemColors.Control
+                        text_color = SystemColors.ControlText
+                prev_color = gdi32.SetTextColor(
+                    hdc, ColorTranslator.ToWin32(text_color)
+                )
 
-                # See documentation for "+1".
-                rect = self._drawing_select_rect(x=0, y=y)
-                u32.FillRect(hdc, byref(rect), select_back + 1)
+                brush = gdi32.CreateSolidBrush(ColorTranslator.ToWin32(back_color))
+                try:
+                    rect = self._drawing_select_rect(x=0, y=y)
+                    u32.FillRect(hdc, byref(rect), brush)
+                finally:
+                    gdi32.DeleteObject(brush)
             else:
-                gdi32.SetTextColor(hdc, self._fore_color)
+                prev_color = gdi32.SetTextColor(hdc, self._fore_color)
 
-            with FontDeviceContext(hdc, hfont):
-                rect = self._drawing_title_rect(x=0, y=y)
-                u32.DrawTextW(hdc, item[0], -1, byref(rect), text_format)
+            try:
+                with FontDeviceContext(hdc, hfont):
+                    rect = self._drawing_title_rect(x=0, y=y)
+                    u32.DrawTextW(hdc, item[0], -1, byref(rect), text_format)
 
-                rect = self._drawing_subtitle_rect(x=0, y=y)
-                u32.DrawTextW(hdc, item[1], -1, byref(rect), text_format)
+                    rect = self._drawing_subtitle_rect(x=0, y=y)
+                    u32.DrawTextW(hdc, item[1], -1, byref(rect), text_format)
+            finally:
+                gdi32.SetTextColor(hdc, prev_color)
+
+            if self._is_dark_mode:
+                icon_flag = wc.ILD_NORMAL
+            elif is_selected:
+                if has_focus:
+                    icon_flag = wc.ILD_SELECTED
+                else:
+                    icon_flag = wc.ILD_FOCUS
+            else:
+                icon_flag = wc.ILD_NORMAL
 
             icon_xy = self._drawing_icon_xy(x=0, y=y)
             ImageList_Draw(
@@ -461,7 +507,7 @@ class DetailedList(Widget):
                 hdc,
                 icon_xy[0],
                 icon_xy[1],
-                wc.ILD_SELECTED if is_selected else wc.ILD_NORMAL,
+                icon_flag,
             )
 
             # Returning CDRF_SKIPDEFAULT means that the control will not draw the item.
