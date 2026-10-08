@@ -1,4 +1,5 @@
 import sys
+import warnings
 from importlib.metadata import EntryPoint
 from unittest.mock import Mock
 
@@ -63,6 +64,27 @@ def patch_platforms(monkeypatch, platforms):
         "entry_points",
         mock_entry_points,
     )
+
+
+def install_interface_distribution(monkeypatch, tmp_path, interface, maintainer):
+    """Install the metadata of a package that provides implementations of an
+    interface, as importlib.metadata would see it after a pip install."""
+    dist_info = tmp_path / f"{interface}-1.0.dist-info"
+    dist_info.mkdir()
+    (dist_info / "METADATA").write_text(
+        "Metadata-Version: 2.1\n"
+        f"Name: {interface}\n"
+        "Version: 1.0\n"
+        f"Maintainer-email: {maintainer}\n",
+        encoding="utf-8",
+    )
+    # The implementation is for a backend other than the one in use; whether an
+    # interface is official is a property of the package, not of the backend.
+    (dist_info / "entry_points.txt").write_text(
+        f"[{interface}.backend.toga_other]\nWidget = {interface}:Widget\n",
+        encoding="utf-8",
+    )
+    monkeypatch.syspath_prepend(tmp_path)
 
 
 def test_get_current_platform_desktop():
@@ -389,6 +411,16 @@ def test_factory_class_interface():
     assert factory.group == "togax_dummy.backend.toga_dummy"
 
 
+def test_factory_class_explicit_core_interface():
+    """Requesting Toga's own interface by name doesn't warn."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        factory = Factory("toga_core")
+
+    assert factory.interface == "toga_core"
+    assert factory.group == "toga_core.backend.toga_dummy"
+
+
 def test_factor_class_warns_toga():
     """Test custom factory class creation with toga_* namespace."""
     with pytest.warns(
@@ -408,6 +440,36 @@ def test_factor_class_warns_togax():
         match=r"Third party interface names should start with 'togax_'",
     ):
         Factory("foo_test")
+
+
+def test_factory_class_official_interface(monkeypatch, tmp_path):
+    """A toga_* interface provided by a BeeWare-maintained package doesn't warn."""
+    install_interface_distribution(
+        monkeypatch, tmp_path, "toga_official", "BeeWare Team <team@beeware.org>"
+    )
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        factory = Factory("toga_official")
+
+    assert factory.interface == "toga_official"
+    assert factory.group == "toga_official.backend.toga_dummy"
+
+
+def test_factory_class_warns_unofficial_interface(monkeypatch, tmp_path):
+    """A toga_* interface provided by a third-party package warns."""
+    install_interface_distribution(
+        monkeypatch, tmp_path, "toga_unofficial", "Someone Else <someone@example.com>"
+    )
+
+    with pytest.warns(
+        RuntimeWarning,
+        match=(
+            r"Unrecognized official Toga interface 'toga_unofficial'\. "
+            r"Third party interface names should start with 'togax_'"
+        ),
+    ):
+        Factory("toga_unofficial")
 
 
 def test_get_platform_factory_deprecated():

@@ -159,6 +159,8 @@ All of the examples with multiple backends rely on widgets which already exist a
 
 We could implement them using the `toga_core.backend.*` groups, but this runs the risk of colliding with other libraries, or with future widgets added to Toga by the core team. The solution in this case is to create your own custom `togax_*` interface and use it instead of `toga_core`.
 
+The `toga_*` prefix is reserved for packages maintained by the BeeWare project, such as `toga_chart`. Toga recognizes these packages by their metadata: an interface is treated as official when a package that provides implementations for it declares the BeeWare Team as a maintainer. Toga warns at runtime if a `toga_*` interface is used by any other package, so use the `togax_*` prefix for your own.
+
 For example, at the time of writing the Toga core does not provide a `Toggle Button` widget (i.e. a push-button which toggles state when pressed) or a checkbox widget, relying on the similar `Switch` for this sort of UI interaction. We could write a library which provides these extra button widgets in the following way.
 
 We will call the library `togax_extra_switches` and write a collection of implementations as `extra_switches.cocoa.toggle`, `extra_switches.cocoa.checkbox`, `extra_switches.qt.toggle`, `extra_switches.qt.checkbox`, and so-on. For example `extra_switches.qt.toggle` might look something like:
