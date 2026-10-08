@@ -84,3 +84,10 @@ class MultilineTextInputProbe(SimpleProbe):
 
     def end_undo_block(self):
         self.native.editingFinished.emit()
+
+    def paste_rich_text(self, text):
+        pytest.skip("Pasting rich text not supported on this platform")
+
+    @property
+    def typing_font(self):
+        pytest.skip("Pasting rich text not supported on this platform")
