@@ -11,16 +11,19 @@ from toga_cocoa.libs import CLAuthorizationStatus
 
 def toga_location(location):
     """Convert a Cocoa location into a Toga LatLng and altitude."""
+    # A non-positive vertical accuracy indicates altitude is invalid.
+    altitude_valid = location.verticalAccuracy > 0.0
+    altitude = location.altitude if altitude_valid else None
+
     latlng = LatLng(
         location.coordinate.latitude,
         location.coordinate.longitude,
+        altitude=altitude,
+        horizontal_accuracy=(
+            location.horizontalAccuracy if location.horizontalAccuracy > 0.0 else None
+        ),
+        vertical_accuracy=location.verticalAccuracy if altitude_valid else None,
     )
-
-    # A vertical accuracy that non-positive indicates altitude is invalid.
-    if location.verticalAccuracy > 0.0:
-        altitude = location.altitude
-    else:
-        altitude = None
 
     return {
         "location": latlng,
