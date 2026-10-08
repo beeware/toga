@@ -354,6 +354,26 @@ class Window:
 
 
 class MainWindow(Window):
+    def create(self):
+        super().create()
+        self.menu_items = {}
+        self.toolbar_items = {}
+
+    def purge_menu_items(self):
+        for item, cmd in self.menu_items.items():
+            cmd._impl.native.remove(item)
+        self.menu_items = {}
+
+    def purge_toolbar_items(self):
+        for item, cmd in self.toolbar_items.items():
+            cmd._impl.native.remove(item)
+        self.toolbar_items = {}
+
+    def close(self):
+        self.purge_menu_items()
+        self.purge_toolbar_items()
+        super().close()
+
     def _submenu(self, group, group_cache):
         try:
             return group_cache[group]
@@ -366,6 +386,8 @@ class MainWindow(Window):
         return submenu
 
     def create_menus(self):
+        self.purge_menu_items()
+
         menubar = self.native.menuBar()
         menubar.clear()
 
@@ -376,9 +398,13 @@ class MainWindow(Window):
             if isinstance(cmd, Separator):
                 submenu.addSeparator()
             else:
-                submenu.addAction(cmd._impl.create_menu_item())
+                item = cmd._impl.create_menu_item()
+                submenu.addAction(item)
+                self.menu_items[item] = cmd
 
     def create_toolbar(self):
+        self.purge_toolbar_items()
+
         if self.interface.toolbar:
             if self.toolbar_native:
                 self.toolbar_native.clear()
@@ -414,7 +440,8 @@ class MainWindow(Window):
 
                 action.triggered.connect(cmd.action)
 
-                cmd._impl.native.append(action)
+                cmd._impl.native.add(action)
+                self.toolbar_items[action] = cmd
 
                 self.toolbar_native.addAction(action)
 
@@ -422,3 +449,4 @@ class MainWindow(Window):
             self.native.removeToolBar(self.toolbar_native)
             self.toolbar_native.deleteLater()
             self.toolbar_native = None
+            self.toolbar_items = {}
