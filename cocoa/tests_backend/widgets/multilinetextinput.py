@@ -5,6 +5,8 @@ from toga_cocoa.libs import (
     NSAttributedString,
     NSColor,
     NSFont,
+    NSFontAttributeName,
+    NSMutableDictionary,
     NSRange,
     NSScrollView,
     NSTextView,
@@ -118,9 +120,9 @@ class MultilineTextInputProbe(SimpleProbe):
 
     def paste_rich_text(self, text):
         "Paste bold, large text through a private pasteboard."
-        styled = NSAttributedString.alloc().initWithString(
-            text, attributes={"NSFont": NSFont.boldSystemFontOfSize(36)}
-        )
+        attributes = NSMutableDictionary.alloc().init()
+        attributes[NSFontAttributeName] = NSFont.boldSystemFontOfSize(36)
+        styled = NSAttributedString.alloc().initWithString(text, attributes=attributes)
         pasteboard = NSPasteboard.pasteboardWithUniqueName()
         pasteboard.clearContents()
         pasteboard.setData(
@@ -137,12 +139,12 @@ class MultilineTextInputProbe(SimpleProbe):
     def text_fonts(self):
         storage = self.native_text.textStorage
         fonts = [
-            storage.attribute("NSFont", atIndex=i, effectiveRange=None)
+            storage.attribute(NSFontAttributeName, atIndex=i, effectiveRange=None)
             for i in range(storage.length())
         ]
         return [(str(font.fontName), float(font.pointSize)) for font in fonts]
 
     @property
     def typing_font(self):
-        font = self.native_text.typingAttributes["NSFont"]
+        font = self.native_text.typingAttributes[NSFontAttributeName]
         return str(font.fontName), float(font.pointSize)

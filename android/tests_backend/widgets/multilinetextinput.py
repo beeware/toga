@@ -1,3 +1,5 @@
+import pytest
+
 from .textinput import TextInputProbe
 
 
@@ -18,3 +20,10 @@ class MultilineTextInputProbe(TextInputProbe):
 
     async def wait_for_scroll_completion(self):
         pass
+
+    def paste_rich_text(self, text):
+        pytest.skip("Pasting rich text not supported on this platform")
+
+    @property
+    def typing_font(self):
+        pytest.skip("Pasting rich text not supported on this platform")

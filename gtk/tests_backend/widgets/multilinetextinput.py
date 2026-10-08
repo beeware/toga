@@ -123,3 +123,10 @@ class MultilineTextInputProbe(SimpleProbe):
 
     def set_cursor_at_end(self):
         pytest.skip("Cursor positioning not supported on this platform")
+
+    def paste_rich_text(self, text):
+        pytest.skip("Pasting rich text not supported on this platform")
+
+    @property
+    def typing_font(self):
+        pytest.skip("Pasting rich text not supported on this platform")

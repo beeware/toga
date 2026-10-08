@@ -170,9 +170,6 @@ async def test_mouse_scrolling(widget, probe, other, other_probe):
 
 async def test_paste_rich_text(widget, probe):
     "Pasted text keeps the widget's font, whatever formatting it was copied with."
-    if not hasattr(probe, "paste_rich_text"):
-        pytest.skip("This backend can't simulate pasting rich text")
-
     widget.value = ""
     widget.focus()
     await probe.redraw("The widget is empty and has focus")
