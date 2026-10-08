@@ -4,6 +4,7 @@ import importlib
 import os
 import sys
 import warnings
+from email.utils import getaddresses
 from functools import cache, cached_property
 from importlib.metadata import entry_points
 from types import ModuleType
@@ -26,6 +27,31 @@ _TOGA_PLATFORMS = {
 
 # Official Toga interface entry-point groups.
 _TOGA_INTERFACES = {"toga_core"}
+
+# The maintainer contact that every official BeeWare package declares in its metadata.
+_BEEWARE_MAINTAINER = "team@beeware.org"
+
+
+def _is_official_interface(interface: str) -> bool:
+    """Determine whether an interface group is provided by an official BeeWare package.
+
+    An interface is official if it is one of Toga's own, or if any installed
+    distribution that provides implementations for it (entry points in an
+    ``<interface>.backend.*`` group) lists the BeeWare Team as a maintainer.
+    """
+    if interface in _TOGA_INTERFACES:
+        return True
+
+    installed = entry_points()
+    prefix = f"{interface}.backend."
+    for group in installed.groups:
+        if group.startswith(prefix):
+            for entry_point in installed.select(group=group):
+                maintainers = entry_point.dist.metadata.get_all("Maintainer-email", [])
+                addresses = {addr for _, addr in getaddresses(maintainers)}
+                if _BEEWARE_MAINTAINER in addresses:
+                    return True
+    return False
 
 
 def get_current_platform() -> str | None:
@@ -154,13 +180,14 @@ class Factory:
         if interface is None:
             self.interface = "toga_core"
         else:
-            if interface.startswith("toga_") and interface not in _TOGA_INTERFACES:
-                warnings.warn(
-                    f"Unrecognized official Toga interface '{interface}'. "
-                    "Third party interface names should start with 'togax_'",
-                    RuntimeWarning,
-                    stacklevel=2,
-                )
+            if interface.startswith("toga_"):
+                if not _is_official_interface(interface):
+                    warnings.warn(
+                        f"Unrecognized official Toga interface '{interface}'. "
+                        "Third party interface names should start with 'togax_'",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
             elif not interface.startswith("togax_"):
                 warnings.warn(
                     "Third party interface names should start with 'togax_'",
@@ -220,7 +247,8 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
 
     :param interface: the name of the interface group for the factory, or None
         for the default `"toga_core"` interface.  Third-party interface group
-        names should start with `"togax_"`.
+        names should start with `"togax_"`; the `"toga_"` prefix is reserved for
+        packages maintained by the BeeWare project.
     :returns: The factory namespace object.
     """
     factory = Factory(interface)
