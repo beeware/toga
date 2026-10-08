@@ -16,7 +16,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="Slider is not implemented on Textual.",
+    "toga_winui3",
+    reason="Slider is not implemented on this backend.",
     allow_module_level=True,
 )
 

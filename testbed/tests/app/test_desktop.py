@@ -1,11 +1,12 @@
+import asyncio
 import itertools
-from functools import partial
+import os
+import platform
 from unittest.mock import Mock
 
 import pytest
 
 import toga
-from toga import Position, Size
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import Pack
@@ -46,7 +47,7 @@ async def test_exit_on_close_main_window(
     monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Try to close the main window; rejected by window
-    main_window_probe.close()
+    await main_window_probe.close()
     await main_window_probe.redraw("Main window close requested; rejected by window")
 
     # on_close_handler was invoked, rejecting the close.
@@ -62,7 +63,7 @@ async def test_exit_on_close_main_window(
     on_exit_handler.reset_mock()
 
     # Close the main window; rejected by app
-    main_window_probe.close()
+    await main_window_probe.close()
     await main_window_probe.redraw("Main window close requested; rejected by app")
 
     # on_close_handler was invoked, allowing the close
@@ -78,7 +79,7 @@ async def test_exit_on_close_main_window(
     on_exit_handler.return_value = True
 
     # Close the main window; this will succeed
-    main_window_probe.close()
+    await main_window_probe.close()
     await main_window_probe.redraw("Main window close requested; accepted")
 
     # on_close_handler was invoked, allowing the close
@@ -96,7 +97,7 @@ async def test_menu_exit(monkeypatch, app, app_probe, mock_app_exit):
     monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Close the main window
-    app_probe.activate_menu_exit()
+    await app_probe.activate_menu_exit()
     await app_probe.redraw("Exit selected from menu, but rejected")
 
     # on_exit_handler was invoked, rejecting the close; so the app won't be closed
@@ -106,7 +107,7 @@ async def test_menu_exit(monkeypatch, app, app_probe, mock_app_exit):
     # Reset and try again, this time allowing the exit
     on_exit_handler.reset_mock()
     on_exit_handler.return_value = True
-    app_probe.activate_menu_exit()
+    await app_probe.activate_menu_exit()
     await app_probe.redraw("Exit selected from menu, and accepted")
 
     # on_exit_handler was invoked and accepted, so the mocked exit() was called.
@@ -267,6 +268,9 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         window_information = {}
         window_information["window"] = window
         window_information["window_probe"] = window_probe(app, window)
+        await window_information["window_probe"].wait_for_window(
+            f"{window.title} and its probe have been created."
+        )
         window_information["initial_screen"] = window_information["window"].screen
         window_information["paired_screen"] = app.screens[i]
         window_information["initial_content_size"] = window_information[
@@ -328,6 +332,9 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             "App is not in presentation mode", state=WindowState.NORMAL
         )
         assert not app.in_presentation_mode
+
+        # The size properties for WinUI 3 are not immediately available
+        await asyncio.sleep(0.1)
         assert (
             window_information["window_probe"].instantaneous_state == WindowState.NORMAL
         ), f"{window_information['window'].title}:"
@@ -547,6 +554,11 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
         main_window.show()
         await main_window_probe.wait_for_window("Showing main window")
         assert app.current_window == main_window
+    except AssertionError as e:
+        # GitHub Windows ARM64 runners don't seem to be able to accept input focus.
+        # See https://github.com/actions/partner-runner-images/issues/174
+        if platform.machine() != "ARM64" or os.environ["RUNNING_IN_CI"] != "true":
+            raise AssertionError from e
     finally:
         main_window.show()
 
@@ -576,6 +588,9 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window3
 
+    # Defer the WinUI 3 skip until here so that the above code is exercised.
+    skip_on_backends("toga_winui3", reason="Dialogs are not implemented yet.")
+
     # When a dialog is in focus, app.current_window should return the
     # previously active window.
     def test_current_window_in_presence_of_dialog(dialog):
@@ -604,242 +619,9 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
 
 
 @pytest.mark.parametrize("mock_scale", [1.0, 1.25, 1.5, 1.75, 2.0])
-async def test_system_dpi_change(main_window, main_window_probe, mock_scale):
-    if toga.platform.current_platform != "windows":
-        pytest.xfail("This test is winforms backend specific")
-
-    from ctypes import byref, c_void_p, cast
-    from ctypes.wintypes import RECT
-
-    from toga_winforms.libs import user32, win32constants as wc
-
-    real_scale = main_window_probe.scale_factor
-    if real_scale == mock_scale:
-        pytest.skip("mock scale and real scale are the same")
-    scale_change = mock_scale / real_scale
-    client_size = main_window_probe.client_size
-
-    original_content = main_window.content
-    AdjustWindowRectExForDpi_original = user32.AdjustWindowRectExForDpi
-
-    # During our testing, we mock DPICHANGED events, but the system does not actually
-    # change the DPI of the titlebar decors.  Thus, we need to be able to keep proper
-    # track of those ourselves.
-    def AdjustWindowRectExForDpi_mock(lpRect, dwStyle, bMenu, dwExStyle, dpi):
-        return AdjustWindowRectExForDpi_original(
-            lpRect, dwStyle, bMenu, dwExStyle, real_scale * 96
-        )
-
-    user32.AdjustWindowRectExForDpi = AdjustWindowRectExForDpi_mock
-
-    native_window = main_window._impl.native
-    bounds = native_window.Bounds
-    new_width, new_height = (
-        int(bounds.Width * scale_change),
-        int(bounds.Height * scale_change),
-    )
-    original_window_rect = RECT(
-        bounds.X, bounds.Y, bounds.X + bounds.Width, bounds.Y + bounds.Height
-    )
-    scaled_window_rect = RECT(
-        bounds.X,
-        bounds.Y,
-        bounds.X + new_width,
-        bounds.Y + new_height,
-    )
-
-    try:
-        main_window.toolbar.add(toga.Command(None, "Test command"))
-
-        # Include widgets which are sized in different ways, with margin and fixed
-        # sizes in both dimensions.
-        main_window.content = toga.Box(
-            style=Pack(direction="row"),
-            children=[
-                toga.Label(
-                    "fixed",
-                    id="fixed",
-                    style=Pack(background_color="yellow", margin_left=20, width=100),
-                ),
-                toga.Label(
-                    "minimal",  # Shrink to fit content
-                    id="minimal",
-                    style=Pack(background_color="cyan", font_size=16),
-                ),
-                toga.Label(
-                    "flex",
-                    id="flex",
-                    style=Pack(
-                        background_color="pink", flex=1, margin_top=15, height=50
-                    ),
-                ),
-            ],
-        )
-        await main_window_probe.redraw("main_window is ready for testing")
-
-        widget_ids = ["fixed", "minimal", "flex"]
-        probes = {id: get_probe(main_window.widgets[id]) for id in widget_ids}
-
-        decor_ids = ["menubar", "toolbar", "container"]
-        probes.update(
-            {id: getattr(main_window_probe, f"{id}_probe") for id in decor_ids}
-        )
-        ids = widget_ids + decor_ids
-
-        def get_metrics():
-            return (
-                {id: Position(probes[id].x, probes[id].y) for id in ids},
-                {id: Size(probes[id].width, probes[id].height) for id in ids},
-                {id: probes[id].font_size for id in ids},
-            )
-
-        positions, sizes, font_sizes = get_metrics()
-
-        # Because of hinting, font size changes can have non-linear effects on pixel
-        # sizes.
-        approx_fixed = partial(pytest.approx, abs=1)
-        approx_font = partial(pytest.approx, rel=0.25)
-
-        # Positions of the menubar, toolbar and top-level container are relative to the
-        # window client area.
-        assert font_sizes["menubar"] == 9
-        assert positions["menubar"] == approx_fixed((0, 0))
-        assert sizes["menubar"].width == approx_fixed(client_size.width)
-
-        assert font_sizes["toolbar"] == 9
-        assert positions["toolbar"] == approx_fixed((0, sizes["menubar"].height))
-        assert sizes["toolbar"].width == approx_fixed(client_size.width)
-
-        # Container has no text, so its font doesn't matter.
-        assert positions["container"] == approx_fixed(
-            (0, positions["toolbar"].y + sizes["toolbar"].height)
-        )
-        assert sizes["container"] == approx_fixed(
-            (client_size.width, client_size.height - positions["container"].y)
-        )
-
-        # Positions of widgets are relative to the top-level container.
-        assert font_sizes["fixed"] == 9  # Default font size on Windows
-        assert positions["fixed"] == approx_fixed((20, 0))
-        assert sizes["fixed"].width == approx_fixed(100)
-
-        assert font_sizes["minimal"] == 16
-        assert positions["minimal"] == approx_fixed((120, 0))
-        assert sizes["minimal"].height == approx_font(sizes["fixed"].height * 16 / 9)
-
-        assert font_sizes["flex"] == 9
-        assert positions["flex"] == approx_fixed((120 + sizes["minimal"].width, 15))
-        assert sizes["flex"] == approx_fixed(
-            (client_size.width - positions["flex"].x, 50)
-        )
-
-        # Trigger the DPI change
-        lParam = cast(byref(scaled_window_rect), c_void_p).value
-        mock_dpi = int(mock_scale * 96)
-        # high word = X dpi, low word = Y dpi -- should be the same
-        wParam = mock_dpi * 0x10001
-
-        handle = int(native_window.Handle.ToString())
-        # We don't actually need uIdSubclass and dwRefData here, so we pad them out
-        # with 0s.
-        main_window._impl._subclass_proc(handle, wc.WM_DPICHANGED, wParam, lParam, 0, 0)
-
-        # We cannot directly compare against new width and height here, as CI's screen
-        # size is limited and clips the window when we resize it too large.
-        if scale_change > 1:
-            assert native_window.Width > bounds.Width
-        else:
-            assert native_window.Height > bounds.Height
-
-        client_size = main_window_probe.client_size
-
-        await main_window_probe.redraw(
-            f"Triggered dpi change event with {mock_scale} dpi scale"
-        )
-
-        # Check Widget size DPI scaling
-        positions_scaled, sizes_scaled, font_sizes_scaled = get_metrics()
-        for id in ids:
-            if id != "container":
-                assert font_sizes_scaled[id] == approx_fixed(
-                    font_sizes[id] * scale_change
-                )
-
-        assert positions_scaled["menubar"] == approx_fixed((0, 0))
-        # WinForms seems to impose a minimum height on the menubar and toolbar
-        # for touchablility if the font size gets small; this limit is done relative
-        # to the current DPI, and because we have no way to mock WinForms' internals,
-        # we have to accept that if we're scaling to a very small scale our menubar
-        # height may not be preserved correctly.
-        if scale_change <= 1.5 / 1.25:
-            assert sizes_scaled["menubar"][0] == approx_fixed(client_size.width)
-        else:
-            assert sizes_scaled["menubar"] == (
-                approx_fixed(client_size.width),
-                approx_font(sizes["menubar"].height * scale_change),
-            )
-
-        assert positions_scaled["toolbar"] == approx_fixed(
-            (0, sizes_scaled["menubar"].height)
-        )
-        if scale_change <= 1.5 / 1.25:
-            assert sizes_scaled["toolbar"][0] == approx_fixed(client_size.width)
-        else:
-            assert sizes_scaled["toolbar"] == (
-                approx_fixed(client_size.width),
-                approx_font(sizes["toolbar"].height * scale_change),
-            )
-
-        assert positions_scaled["container"] == approx_fixed(
-            (0, positions_scaled["toolbar"].y + sizes_scaled["toolbar"].height)
-        )
-        assert sizes_scaled["container"] == approx_fixed(
-            (client_size.width, client_size.height - positions_scaled["container"].y)
-        )
-
-        assert positions_scaled["fixed"] == approx_fixed(Position(20, 0) * scale_change)
-        assert sizes_scaled["fixed"] == (
-            approx_fixed(100 * scale_change),
-            approx_font(sizes["fixed"].height * scale_change),
-        )
-
-        assert positions_scaled["minimal"] == approx_fixed(
-            Position(120, 0) * scale_change
-        )
-        assert sizes_scaled["minimal"] == approx_font(sizes["minimal"] * scale_change)
-
-        assert positions_scaled["flex"] == approx_fixed(
-            (
-                positions_scaled["minimal"].x + sizes_scaled["minimal"].width,
-                15 * scale_change,
-            )
-        )
-        assert sizes_scaled["flex"] == approx_fixed(
-            (
-                client_size.width - positions_scaled["flex"].x,
-                50 * scale_change,
-            )
-        )
-
-    finally:
-        user32.AdjustWindowRectExForDpi = AdjustWindowRectExForDpi_original
-        # Trigger the DPI change
-        lParam = cast(byref(original_window_rect), c_void_p).value
-        real_dpi = int(real_scale * 96)
-        # high word = X dpi, low word = Y dpi -- should be the same
-        wParam = real_dpi * 0x10001
-
-        handle = int(native_window.Handle.ToString())
-        # We don't actually need uIdSubclass and dwRefData here, so we pad them out with
-        # 0s.
-        main_window._impl._subclass_proc(handle, wc.WM_DPICHANGED, wParam, lParam, 0, 0)
-
-        client_size = main_window_probe.client_size
-        await main_window_probe.redraw("Restored original state of main_window")
-        assert get_metrics() == (positions, sizes, font_sizes)
-
-        main_window.toolbar.clear()
-        main_window.content = original_content
+async def test_system_dpi_change(main_window_probe, mock_scale):
+    """Test that backend specific DPI changes are implemented correctly."""
+    await main_window_probe.assert_system_dpi_change(get_probe, mock_scale)
 
 
 async def test_session_based_app(

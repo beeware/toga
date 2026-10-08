@@ -14,7 +14,8 @@ TESTS_DIR = Path(__file__).parent.parent
 
 skip_on_backends(
     "toga_textual",
-    reason="Dialogs are not implemented on Textual.",
+    "toga_winui3",
+    reason="Dialogs are not implemented on this backend.",
     allow_module_level=True,
 )
 

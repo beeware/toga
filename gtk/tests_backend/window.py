@@ -50,11 +50,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         else:
             assert isinstance(self.native, (Adw.Window, Adw.ApplicationWindow))
 
-    async def wait_for_window(
-        self,
-        message,
-        state=None,
-    ):
+    async def wait_for_window(self, message, state=None):
         await self.redraw(message, delay=0.1)
         if state:
             timeout = 5
@@ -93,7 +89,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             delay = 0.1
         await self.redraw("Closing window", delay=delay)
 
-    def close(self):
+    async def close(self):
         if self.is_closable:
             # Trigger the OS-level window close event.
             if GTK_VERSION < (4, 0, 0):
@@ -123,7 +119,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def is_minimized(self):
         return self.impl._window_state_flags & Gdk.WindowState.ICONIFIED
 
-    def minimize(self):
+    async def minimize(self):
         if GTK_VERSION < (4, 0, 0):
             self.native.iconify()
         else:
@@ -164,3 +160,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def press_toolbar_button(self, index):
         item = self.impl.native_toolbar.get_nth_item(index)
         item.emit("clicked")
+
+    async def assert_system_dpi_change(self, get_probe, mock_scale):
+        pytest.skip("Test not implemented for this platform")
