@@ -19,6 +19,8 @@ from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
     assert_action_performed_with,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 from ..utils import ExampleLeafWidget, ExampleWidget
@@ -50,10 +52,20 @@ def widget(child):
     return widget
 
 
-def test_refresh(widget):
+def test_refresh(app, widget):
     """Refresh requests are passed to the widget."""
     widget.applicator.refresh()
 
+    # The widget wasn't part of a window, so the refresh didn't propagate to the
+    # backend.
+    assert_action_not_performed(widget, "refresh")
+
+    # Add the widget to a window so that its refresh goes through.
+    window = put_in_window(widget)
+
+    widget.applicator.refresh()
+    assert_action_not_performed(widget, "refresh")
+    simulate_event_loop_refresh(window)
     assert_action_performed_with(widget, "refresh")
 
 
@@ -199,9 +211,12 @@ def test_widget_alias_to_node(widget):
         ("font_size", 12),
     ],
 )
-def test_layout_properties(widget, name, value):
+def test_layout_properties(app, widget, name, value):
     """Setting a property that could affect layout triggers a refresh."""
+    window = put_in_window(widget)
+
     setattr(widget.style, name, value)
+    simulate_event_loop_refresh(window)
     assert_action_performed_with(widget, "refresh")
 
 

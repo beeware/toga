@@ -2,9 +2,10 @@ import pytest
 
 import toga
 from toga_dummy.utils import (
-    EventLog,
     assert_action_not_performed,
     assert_action_performed,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -55,18 +56,18 @@ def test_disable_no_op():
     assert divider.enabled
 
 
-def test_update_direction():
+def test_update_direction(app):
     """The direction of the divider can be altered."""
     divider = toga.Divider(direction=toga.Divider.HORIZONTAL)
 
     # Initial direction is as expected
     assert divider.direction == toga.Divider.HORIZONTAL
 
-    # Reset the event log.
-    EventLog.reset()
+    window = put_in_window(divider)
 
     # Change the direction.
     divider.direction = toga.Divider.VERTICAL
+    simulate_event_loop_refresh(window)
 
     # The direction has been changed, and a refresh requested
     assert divider.direction == toga.Divider.VERTICAL

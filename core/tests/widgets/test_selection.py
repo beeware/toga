@@ -5,10 +5,11 @@ import pytest
 import toga
 from toga.sources import ListSource
 from toga_dummy.utils import (
-    EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
+    put_in_window,
+    simulate_event_loop_refresh,
 )
 
 
@@ -335,12 +336,13 @@ def test_clear_source(widget, source, on_change_handler):
     assert widget.value is None
 
 
-def test_change_source_empty(widget, on_change_handler):
+def test_change_source_empty(app, widget, on_change_handler):
     """If the source is changed to an empty source, the selection is reset."""
-    # Clear the event history
-    EventLog.reset()
+    window = put_in_window(widget)
 
     widget.items = []
+
+    simulate_event_loop_refresh(window)
 
     # The widget data has been cleared and refreshed
     assert_action_performed(widget, "clear")
@@ -352,10 +354,9 @@ def test_change_source_empty(widget, on_change_handler):
     assert widget.value is None
 
 
-def test_change_source(widget, on_change_handler):
+def test_change_source(app, widget, on_change_handler):
     """If the source is changed, the selection is set to the first item."""
-    # Clear the event history
-    EventLog.reset()
+    window = put_in_window(widget)
 
     # The implementation is a listener on the items
     old_items = widget.items
@@ -363,6 +364,8 @@ def test_change_source(widget, on_change_handler):
 
     # Change the source of the data
     widget.items = ["new 1", "new 2"]
+
+    simulate_event_loop_refresh(window)
 
     # The implementation is not a listener on the old items
     assert widget._impl not in old_items.listeners
