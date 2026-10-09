@@ -67,9 +67,16 @@ class WindowProbe(BaseProbe, DialogsMixin):
                     assert self.instantaneous_state == state
                     assert self.window._impl._pending_state_transition is None
                     if GTK_VERSION < (4, 0, 0) and IS_WAYLAND:
-                        if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+                        if state in {
+                            WindowState.MAXIMIZED,
+                            WindowState.FULLSCREEN,
+                            WindowState.PRESENTATION,
+                        }:
                             # Add a slight delay to ensure window properties like
-                            # `size` are updated according to the new state.
+                            # `size` are updated according to the new state. The
+                            # state flags change before GTK has re-laid out the
+                            # window; until that happens, the size of a maximized
+                            # window still includes the client-side shadow margins.
                             await self.redraw(delay=0.2)
                     return
                 except AssertionError as e:
