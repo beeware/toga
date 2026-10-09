@@ -203,6 +203,8 @@ class Widget(ABC):
             # show_all() is used when a widget is added to a container, and when a
             # window is shown; it would otherwise make a hidden widget visible again.
             self.native.set_no_show_all(hidden)
+        else:  # pragma: no-cover-if-gtk3
+            pass
         self.native.set_visible(not hidden)
         if self.container:
             self.container.make_dirty()
