@@ -5,7 +5,7 @@ import pytest
 import toga
 from toga.colors import BLACK, BLUE, GREEN, RED
 from toga.style import Pack
-from toga.style.pack import HIDDEN, VISIBLE
+from toga.style.pack import HIDDEN, NONE, PACK, VISIBLE
 
 from .probe import get_probe
 
@@ -106,6 +106,58 @@ async def test_visibility(widget, probe):
     assert not probe.is_hidden
     assert child_probe.is_hidden
     assert grandchild_probe.is_hidden
+
+    # A widget that is hidden before it is added to the layout stays hidden.
+    extra = toga.Box(style=Pack(width=50, height=50, visibility=HIDDEN))
+    extra_probe = get_probe(extra)
+    widget.parent.add(extra)
+    await probe.redraw("Extra widget should be hidden")
+
+    assert extra_probe.is_hidden
+
+
+async def test_display(widget, probe):
+    "A widget with display=NONE is hidden, and takes up no space in the layout"
+    child = toga.Box(style=Pack(width=75, height=100, background_color=GREEN))
+    child_probe = get_probe(child)
+    widget.add(child)
+
+    other = toga.Box(style=Pack(width=100, height=200, background_color=BLUE))
+    other_probe = get_probe(other)
+    widget.parent.add(other)
+
+    # A widget that isn't displayed when it is added to the layout stays that way.
+    extra = toga.Box(
+        style=Pack(width=50, height=50, background_color=BLACK, display=NONE)
+    )
+    extra_probe = get_probe(extra)
+    widget.parent.add(extra)
+
+    await probe.redraw("Widget should be displayed")
+
+    assert not probe.is_hidden
+    assert not child_probe.is_hidden
+    assert extra_probe.is_hidden
+    probe.assert_layout(position=(0, 0), size=(100, 200))
+    other_probe.assert_layout(position=(100, 0), size=(100, 200))
+
+    # Remove the widget from the layout.
+    widget.style.display = NONE
+    await probe.redraw("Widget should not be displayed")
+
+    # The widget and its child are hidden, and the sibling takes the widget's place.
+    assert probe.is_hidden
+    assert child_probe.is_hidden
+    other_probe.assert_layout(position=(0, 0), size=(100, 200))
+
+    # Restore the widget to the layout.
+    widget.style.display = PACK
+    await probe.redraw("Widget should be displayed again")
+
+    assert not probe.is_hidden
+    assert not child_probe.is_hidden
+    probe.assert_layout(position=(0, 0), size=(100, 200))
+    other_probe.assert_layout(position=(100, 0), size=(100, 200))
 
 
 async def test_parenting(widget, probe):

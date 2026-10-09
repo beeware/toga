@@ -199,6 +199,10 @@ class Widget(ABC):
         pass
 
     def set_hidden(self, hidden):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # show_all() is used when a widget is added to a container, and when a
+            # window is shown; it would otherwise make a hidden widget visible again.
+            self.native.set_no_show_all(hidden)
         self.native.set_visible(not hidden)
         if self.container:
             self.container.make_dirty()

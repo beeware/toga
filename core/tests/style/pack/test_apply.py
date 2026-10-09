@@ -12,6 +12,7 @@ from toga.style.pack import (
     ITALIC,
     LEFT,
     NONE,
+    PACK,
     RIGHT,
     RTL,
     SMALL_CAPS,
@@ -133,6 +134,21 @@ def test_set_multiple_layout_properties():
     root.refresh.assert_called_once_with()
 
 
+def assert_hidden_called(expected):
+    """Check the set_hidden() calls made on each node since the last check.
+
+    ``expected`` maps each node to the value set_hidden() should have been called
+    with; a value of None means set_hidden() shouldn't have been called at all.
+    """
+    for node, value in expected.items():
+        if value is None:
+            node._impl.set_hidden.assert_not_called()
+        else:
+            node._impl.set_hidden.assert_called_once_with(value)
+
+        node._impl.set_hidden.reset_mock()
+
+
 def test_set_visibility_hidden():
     root = ExampleNode("app", style=Pack(visibility=HIDDEN))
     root.style.apply()
@@ -147,38 +163,66 @@ def test_set_visibility_inherited():
     grandparent.add(parent)
     parent.add(child)
 
-    def assert_hidden_called(grandparent_value, parent_value, child_value):
-        for node, value in [
-            (grandparent, grandparent_value),
-            (parent, parent_value),
-            (child, child_value),
-        ]:
-            if value is None:
-                node._impl.set_hidden.assert_not_called()
-            else:
-                node._impl.set_hidden.assert_called_once_with(value)
-
-            node._impl.set_hidden.reset_mock()
-
     # Hiding grandparent should hide all.
     grandparent.style.visibility = HIDDEN
-    assert_hidden_called(True, True, True)
+    assert_hidden_called({grandparent: True, parent: True, child: True})
 
     # Just setting child or parent to VISIBLE won't trigger an apply, because that's
     # their default value. So first, set them to hidden.
     parent.style.visibility = HIDDEN
-    assert_hidden_called(None, True, True)
+    assert_hidden_called({grandparent: None, parent: True, child: True})
 
     child.style.visibility = HIDDEN
-    assert_hidden_called(None, None, True)
+    assert_hidden_called({grandparent: None, parent: None, child: True})
 
     # Then set them to visible. They should still not actually be shown.
     parent.style.visibility = VISIBLE
-    assert_hidden_called(None, True, True)
+    assert_hidden_called({grandparent: None, parent: True, child: True})
 
     child.style.visibility = VISIBLE
-    assert_hidden_called(None, None, True)
+    assert_hidden_called({grandparent: None, parent: None, child: True})
 
     # Show grandparent again; the other two should reappear.
     grandparent.style.visibility = VISIBLE
-    assert_hidden_called(False, False, False)
+    assert_hidden_called({grandparent: False, parent: False, child: False})
+
+
+def test_set_display_none():
+    """A node that isn't displayed is hidden."""
+    root = ExampleNode("app", style=Pack(display=NONE))
+    root.style.apply()
+    root._impl.set_hidden.assert_called_once_with(True)
+
+
+def test_display_none_inherited():
+    """Nodes should be hidden when they, or an ancestor, aren't displayed."""
+    grandparent = ExampleParentNode("grandparent", style=Pack())
+    parent = ExampleParentNode("parent", style=Pack())
+    child = ExampleNode("child", style=Pack())
+    grandparent.add(parent)
+    parent.add(child)
+
+    # Removing the parent from the layout hides it and its child.
+    parent.style.display = NONE
+    assert_hidden_called({grandparent: None, parent: True, child: True})
+
+    # Hiding and showing the grandparent doesn't reveal the parent or child.
+    grandparent.style.visibility = HIDDEN
+    assert_hidden_called({grandparent: True, parent: True, child: True})
+    grandparent.style.visibility = VISIBLE
+    assert_hidden_called({grandparent: False, parent: True, child: True})
+
+    # The child can't be shown while its parent isn't displayed.
+    child.style.visibility = HIDDEN
+    assert_hidden_called({grandparent: None, parent: None, child: True})
+    child.style.visibility = VISIBLE
+    assert_hidden_called({grandparent: None, parent: None, child: True})
+
+    # Restoring the parent to the layout shows it; but a child that is explicitly
+    # hidden stays hidden until it is made visible.
+    child.style.visibility = HIDDEN
+    assert_hidden_called({grandparent: None, parent: None, child: True})
+    parent.style.display = PACK
+    assert_hidden_called({grandparent: None, parent: False, child: True})
+    child.style.visibility = VISIBLE
+    assert_hidden_called({grandparent: None, parent: None, child: False})
