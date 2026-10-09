@@ -56,7 +56,7 @@ class PackLogic(BaseStyle):
     @property
     def _hidden(self) -> bool:
         """Does this style declaration define an object that should be hidden."""
-        return self.visibility == HIDDEN
+        return self.visibility == HIDDEN or self.display == NONE
 
     def _apply(self, names: set) -> None:
         if "text_align" in names:
@@ -75,18 +75,18 @@ class PackLogic(BaseStyle):
             self._applicator.set_color(self.color)
         if "background_color" in names:
             self._applicator.set_background_color(self.background_color)
-        if "visibility" in names:
-            value = self.visibility
-            if value == VISIBLE:
-                # If visibility is being set to VISIBLE, look up the chain to
-                # see if an ancestor is hidden.
+        if names & {"visibility", "display"}:
+            hidden = self._hidden
+            if not hidden:
+                # If this node could be visible, look up the chain to see if an
+                # ancestor is hidden.
                 widget = self._applicator.widget
                 while widget := widget.parent:
                     if widget.style._hidden:
-                        value = HIDDEN
+                        hidden = True
                         break
 
-            self._applicator.set_hidden(value == HIDDEN)
+            self._applicator.set_hidden(hidden)
 
         if names & {
             "font_family",
@@ -309,8 +309,17 @@ class PackLogic(BaseStyle):
                 # self._debug(f"AUTO {available_height=}")
                 min_height = 0
 
-        if node.children:
+        # Children that aren't displayed take no part in the layout, and have no size.
+        children = []
+        for child in node.children:
+            if child.style.display == NONE:
+                child.style._clear_layout()
+            else:
+                children.append(child)
+
+        if children:
             min_width, width, min_height, height = self._layout_children(
+                children=children,
                 available_width=available_width,
                 available_height=available_height,
                 use_all_width=use_all_width,
@@ -341,6 +350,20 @@ class PackLogic(BaseStyle):
         # self._debug("END LAYOUT", node, node.layout)
         self.__class__._depth -= 1
 
+    def _clear_layout(self) -> None:
+        """Collapse the layout of this node, and all its descendants, to nothing."""
+        node = self._applicator.node
+
+        node.layout.content_width = 0
+        node.layout.content_height = 0
+        node.layout.min_content_width = 0
+        node.layout.min_content_height = 0
+        node.layout.content_top = 0
+        node.layout.content_left = 0
+
+        for child in node.children:
+            child.style._clear_layout()
+
     def _layout_node_in_direction(
         self,
         direction: str,  # ROW | COLUMN
@@ -366,6 +389,7 @@ class PackLogic(BaseStyle):
 
     def _layout_children(
         self,
+        children: list,
         available_width: int,
         available_height: int,
         use_all_width: bool,
@@ -387,7 +411,6 @@ class PackLogic(BaseStyle):
             main_start, main_end = horizontal
             cross_start, cross_end = TOP, BOTTOM
 
-        node = self._applicator.node
         flex_total = 0
         min_flex = 0
         main = 0
@@ -403,7 +426,7 @@ class PackLogic(BaseStyle):
         # intrinsic non-flexible dimension. While iterating, collect the flex
         # total of remaining elements.
 
-        for i, child in enumerate(node.children):
+        for i, child in enumerate(children):
             # self._debug(f"PASS 1 {child}")
             if child.style[main_name] != NONE:
                 # self._debug(f"- fixed {main_name} {child.style[main_name]}")
@@ -530,7 +553,7 @@ class PackLogic(BaseStyle):
             # the flex calculation.
 
             # self._debug(f"PASS 1a; {quantum=}")
-            for child in node.children:
+            for child in children:
                 child_intrinsic_main = getattr(child.intrinsic, main_name)
                 if child.style.flex and child_intrinsic_main is not None:
                     try:
@@ -558,7 +581,7 @@ class PackLogic(BaseStyle):
 
         # Pass 2: Lay out children with an intrinsic flexible main-axis size, or no
         # main-axis size specification at all.
-        for child in node.children:
+        for child in children:
             # self._debug(f"PASS 2 {child}")
             if child.style[main_name] != NONE:
                 # self._debug(f"- already laid out (explicit {main_name})")
@@ -674,7 +697,7 @@ class PackLogic(BaseStyle):
         cross = 0
         min_cross = 0
 
-        for child in node.children:
+        for child in children:
             # self._debug(f"PASS 3: {child} AT MAIN-AXIS OFFSET {offset}")
             if main_start == RIGHT:
                 # Needs special casing, since it's still ultimately content_left that
@@ -730,7 +753,7 @@ class PackLogic(BaseStyle):
             effective_cross_start = cross_start
             effective_cross_end = cross_end
 
-        for child in node.children:
+        for child in children:
             # self._debug(f"PASS 4: {child}")
             extra = cross - (
                 getattr(child.layout, f"content_{cross_name}")
