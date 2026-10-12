@@ -489,6 +489,34 @@ else:
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
+        [(toga.MainWindow, {"title": "Temporary window"})],
+    )
+    async def test_closed_window_releases_native_command_items(
+        app, second_window, second_window_probe
+    ):
+        """Closing a window releases its native command menu and toolbar items."""
+        if not second_window_probe.supports_command_items:
+            skip_on_backends(
+                toga.backend,
+                reason="Window command items are not implemented on this backend.",
+            )
+
+        command = app.cmd1
+        second_window.toolbar.add(command)
+        second_window.show()
+        await second_window_probe.wait_for_window("Temporary window created")
+
+        window_items = second_window_probe.command_items(command)
+        assert window_items
+        assert window_items <= command._impl.native
+
+        second_window.close()
+        await second_window_probe.wait_for_window("Temporary window closed")
+
+        assert window_items.isdisjoint(command._impl.native)
+
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
         [
             (
                 toga.Window,
