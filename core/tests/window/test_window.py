@@ -11,6 +11,7 @@ from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
+    simulate_event_loop_refresh,
 )
 
 from ..utils import (
@@ -209,6 +210,7 @@ def test_change_content(window, app):
     # Set the content of the window
     content1 = toga.Box()
     window.content = content1
+    simulate_event_loop_refresh(window)
 
     # The content has been assigned and refreshed
     assert content1.app == app
@@ -219,6 +221,7 @@ def test_change_content(window, app):
     # Set the content of the window to something new
     content2 = toga.Box()
     window.content = content2
+    simulate_event_loop_refresh(window)
 
     # The content has been assigned and refreshed
     assert content2.app == app
@@ -302,6 +305,7 @@ def test_set_size_with_content(window):
 
     # Request for resizing to a new window size.
     window.size = (123, 456)
+    simulate_event_loop_refresh(window)
 
     assert window.size == toga.Size(123, 456)
     assert_action_performed(window, "set size")
@@ -310,6 +314,7 @@ def test_set_size_with_content(window):
 
     # Again request for resizing to the same window size.
     window.size = (123, 456)
+    simulate_event_loop_refresh(window)
 
     assert window.size == toga.Size(123, 456)
     assert_action_not_performed(window, "set size")
