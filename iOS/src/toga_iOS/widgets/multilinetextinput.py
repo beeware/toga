@@ -1,6 +1,14 @@
-from ctypes import c_void_p
+from ctypes import c_long, c_void_p
 
-from rubicon.objc import SEL, CGPoint, NSRange, objc_method, objc_property, send_super
+from rubicon.objc import (
+    SEL,
+    CGPoint,
+    NSRange,
+    objc_method,
+    objc_property,
+    send_message,
+    send_super,
+)
 from travertino.size import at_least
 
 from toga_iOS.colors import native_color
@@ -14,6 +22,7 @@ from toga_iOS.libs import (
     NSTextAlignment,
     UIKeyInput,
     UILabel,
+    UITextSpellCheckingType,
     UITextView,
 )
 from toga_iOS.widgets.base import Widget
@@ -164,3 +173,14 @@ class MultilineTextInput(Widget):
 
     def scroll_to_top(self):
         self.native.scrollRangeToVisible(NSRange(0, 0))
+
+    def set_spell_checking(self, value):
+        # UIKit input-trait properties are not exposed to Rubicon (see #96).
+        spelling = UITextSpellCheckingType.Yes if value else UITextSpellCheckingType.No
+        send_message(
+            self.native,
+            "setSpellCheckingType:",
+            spelling.value,
+            restype=None,
+            argtypes=[c_long],
+        )

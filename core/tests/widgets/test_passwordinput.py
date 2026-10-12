@@ -1,5 +1,7 @@
 from unittest.mock import Mock
 
+import pytest
+
 import toga
 from toga_dummy.utils import assert_action_performed
 
@@ -62,3 +64,18 @@ def test_create_with_values():
 
     # Change handler hasn't been invoked
     on_change.assert_not_called()
+
+
+def test_spell_checking():
+    """Spell checking cannot be enabled for passwords."""
+    widget = toga.PasswordInput()
+    assert widget.spell_checking is False
+    widget.spell_checking = True
+    assert widget.spell_checking is False
+
+
+@pytest.mark.parametrize("value", [False, True])
+def test_spell_checking_argument(value):
+    """PasswordInput does not accept a spell checking argument."""
+    with pytest.raises(TypeError, match="spell_checking"):
+        toga.PasswordInput(spell_checking=value)

@@ -46,3 +46,6 @@ class TextInput(Widget):
 
     def simulate_lose_focus(self):
         self.interface.on_lose_focus()
+
+    def set_spell_checking(self, value):
+        self._set_value("spell_checking", value)

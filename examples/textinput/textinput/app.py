@@ -72,7 +72,9 @@ class TextInputApp(toga.App):
             text_align=RIGHT,
         )
         self.text_input_placeholder = toga.TextInput(
-            placeholder="Type something...", margin=PADDING
+            placeholder="Spell checking disabled...",
+            spell_checking=False,
+            margin=PADDING,
         )
         self.password_input = toga.PasswordInput(
             placeholder="Password...",

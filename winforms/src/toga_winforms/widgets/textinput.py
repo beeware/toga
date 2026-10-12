@@ -99,3 +99,6 @@ class TextInput(Widget):
 
     def set_error(self, error_message):
         self.error_provider.SetError(self.native, error_message)
+
+    def set_spell_checking(self, value):
+        pass  # WinForms has no built-in spell checker.

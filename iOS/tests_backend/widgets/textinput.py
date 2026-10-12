@@ -1,3 +1,5 @@
+from ctypes import c_long
+
 import pytest
 from rubicon.objc import SEL, send_message
 
@@ -61,3 +63,8 @@ class TextInputProbe(SimpleProbe):
 
     def set_cursor_at_end(self):
         pytest.skip("Cursor positioning not supported on this platform")
+
+    def assert_spell_checking(self, value):
+        assert send_message(
+            self.native, "spellCheckingType", restype=c_long, argtypes=[]
+        ) == (2 if value else 1)

@@ -58,3 +58,6 @@ class TextInputProbe(SimpleProbe):
     def set_cursor_at_end(self):
         self.native.SelectionStart = len(self.native.Text)
         self.native.SelectionLength = 0
+
+    def assert_spell_checking(self, value):
+        pass  # WinForms has no built-in spell checker.

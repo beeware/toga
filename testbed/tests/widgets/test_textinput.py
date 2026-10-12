@@ -30,8 +30,8 @@ from .properties import (  # noqa: F401
 
 
 @pytest.fixture
-async def widget():
-    return toga.TextInput(value="Hello")
+async def widget(initial_spell_checking):
+    return toga.TextInput(value="Hello", spell_checking=initial_spell_checking)
 
 
 @pytest.fixture
@@ -380,3 +380,51 @@ async def test_edit_readonly_noop(widget, probe, app_probe, action, select, undo
 
     # Non-readonly performs an action.
     assert widget.value != initial_text
+
+
+@pytest.mark.parametrize("initial_spell_checking", [False, True])
+async def test_spell_checking_initial(widget, probe, initial_spell_checking):
+    """The constructor applies spell checking before a widget is focused."""
+    widget.focus()
+    await probe.redraw("Spell checking configured at construction")
+    assert widget.spell_checking is initial_spell_checking
+    probe.assert_spell_checking(initial_spell_checking)
+
+
+async def test_spell_checking(widget, probe, other, other_probe, on_change):
+    """Spell checking survives focus and readonly changes without changing content."""
+    original_value = widget.value
+    for value in [False, True, False]:
+        expected = value and not probe.value_hidden
+        other.focus()
+        widget.spell_checking = value
+        widget.focus()
+        await probe.redraw("Spell checking applied when focus is gained")
+        assert widget.spell_checking is expected
+        probe.assert_spell_checking(expected)
+
+        # Changing the focused field applies the setting immediately.
+        widget.spell_checking = not value
+        probe.assert_spell_checking(not value and not probe.value_hidden)
+        widget.spell_checking = value
+
+        # Cocoa shares a field editor: an unfocused field must not change it.
+        other.focus()
+        await other_probe.redraw("Another input has focus")
+        widget.spell_checking = value
+        other_probe.assert_spell_checking(True)
+        widget.focus()
+        await probe.redraw("Original input regains focus")
+        probe.assert_spell_checking(expected)
+
+        # Android's readonly setter changes the same input flags as spell checking.
+        # Making the field editable again must preserve its spelling preference.
+        widget.readonly = True
+        assert probe.readonly
+        widget.readonly = False
+        widget.focus()
+        await probe.redraw("Spell checking survives readonly toggle")
+        probe.assert_spell_checking(expected)
+        assert widget.spell_checking is expected
+        assert widget.value == original_value
+        on_change.assert_not_called()
