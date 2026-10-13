@@ -92,17 +92,17 @@ class Widget(ABC):
 
     @contextmanager
     def focus_safe(self):
-        has_gained_focus = False
         if self.has_focus:
             # Some operations in Cocoa like changing text alignment does not work
-            # if we have focus.  So we drop it.
+            # if we have focus. Drop focus, then restore once the operation is done.
             self.interface.window._impl.native.makeFirstResponder(None)
-            has_gained_focus = True
+            restore_focus = True
+        else:
+            restore_focus = False
 
         yield
 
-        if has_gained_focus:
-            # Refocus when finished.
+        if restore_focus:
             self.focus()
 
     def get_tab_index(self):
