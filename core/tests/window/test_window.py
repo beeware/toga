@@ -261,11 +261,19 @@ def test_change_content(window, app):
 
 
 def test_change_content_in_presentation_mode(window):
-    """A window's content cannot be changed in presentation mode."""
-    window.content = toga.Box()
-    scaffold = window.scaffold
+    """A window's scaffold cannot be changed in presentation mode."""
+    original_content = toga.Box()
+    window.content = original_content
+    implicit_scaffold = window.scaffold
     window.show()
     window.state = WindowState.PRESENTATION
+
+    replacement_content = toga.Box()
+    window.content = replacement_content
+
+    assert window.content is replacement_content
+    assert window.scaffold is implicit_scaffold
+    assert implicit_scaffold.content is replacement_content
 
     with pytest.raises(
         ValueError,
@@ -273,10 +281,21 @@ def test_change_content_in_presentation_mode(window):
     ):
         window.content = toga.Scaffold(toga.Box())
 
-    assert window.scaffold is scaffold
+    assert window.scaffold is implicit_scaffold
 
-    window.content = scaffold
-    assert window.scaffold is scaffold
+    window.state = WindowState.NORMAL
+    explicit_scaffold = toga.Scaffold(original_content)
+    window.content = explicit_scaffold
+    window.state = WindowState.PRESENTATION
+
+    with pytest.raises(
+        ValueError,
+        match="Window scaffold cannot be changed in presentation mode",
+    ):
+        window.content = toga.Box()
+
+    assert window.scaffold is explicit_scaffold
+    assert window.content is explicit_scaffold
 
 
 def test_set_position(window):

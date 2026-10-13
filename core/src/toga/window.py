@@ -457,6 +457,10 @@ class Window:
             and scaffold is not self._scaffold
             and self.state == WindowState.PRESENTATION
         ):
+            if isinstance(self._content, Widget) and isinstance(content, Widget):
+                self._scaffold.content = content
+                self._content = content
+                return
             raise ValueError("Window scaffold cannot be changed in presentation mode")
 
         # Set window of old scaffold to None
