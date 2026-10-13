@@ -260,6 +260,25 @@ def test_change_content(window, app):
     assert scaffold3.app == app
 
 
+def test_change_content_in_presentation_mode(window):
+    """A window's content cannot be changed in presentation mode."""
+    window.content = toga.Box()
+    scaffold = window.scaffold
+    window.show()
+    window.state = WindowState.PRESENTATION
+
+    with pytest.raises(
+        ValueError,
+        match="Window scaffold cannot be changed in presentation mode",
+    ):
+        window.content = toga.Scaffold(toga.Box())
+
+    assert window.scaffold is scaffold
+
+    window.content = scaffold
+    assert window.scaffold is scaffold
+
+
 def test_scaffold_content(window, app):
     """An explicitly initialized scaffold may be used as content for a window."""
     scaffold = toga.Scaffold()

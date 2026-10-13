@@ -447,15 +447,22 @@ class Window:
 
     @content.setter
     def content(self, content: Widget | BaseScaffold) -> None:
-        # Set window of old scaffold to None
-        if self._scaffold:
-            self._scaffold.window = None
-            self._scaffold.app = None
-
         if not isinstance(content, BaseScaffold):
             scaffold = Scaffold(content=content)
         else:
             scaffold = content
+
+        if (
+            self._scaffold is not None
+            and scaffold is not self._scaffold
+            and self.state == WindowState.PRESENTATION
+        ):
+            raise ValueError("Window scaffold cannot be changed in presentation mode")
+
+        # Set window of old scaffold to None
+        if self._scaffold:
+            self._scaffold.window = None
+            self._scaffold.app = None
 
         # Assign the scaffold to the same app as the window.
         scaffold.app = self.app
