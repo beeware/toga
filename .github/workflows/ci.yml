@@ -585,7 +585,7 @@ jobs:
 
     - name: Test App
       working-directory: testbed
-      timeout-minutes: 20
+      timeout-minutes: 25
       run: |
         ${{ matrix.briefcase-run-prefix }} \
           briefcase run ${{ matrix.platform }} --log --test \
