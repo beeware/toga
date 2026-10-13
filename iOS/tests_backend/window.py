@@ -6,8 +6,6 @@ from .dialogs import DialogsMixin
 from .probe import BaseProbe
 from .scaffolds.base import ScaffoldProbe
 
-SCAFFOLD_PROBE_CACHE = {}
-
 
 class WindowProbe(BaseProbe, DialogsMixin):
     supports_fullscreen = False
@@ -33,11 +31,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def scaffold_probe(self):
-        if self.window.scaffold not in SCAFFOLD_PROBE_CACHE:
-            SCAFFOLD_PROBE_CACHE[self.window.scaffold] = ScaffoldProbe(
-                self.window.scaffold
-            )
-        return SCAFFOLD_PROBE_CACHE[self.window.scaffold]
+        return ScaffoldProbe(self.window.scaffold)
 
     @property
     def content_size(self):
