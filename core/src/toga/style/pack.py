@@ -67,9 +67,10 @@ class Pack(PackLogic):
     **Default value:** `"pack"`
 
     A value of `"pack"` will apply the pack layout algorithm to this node and its
-    descendants. A value of `"none"` removes the widget from the layout entirely. Space
-    will be allocated for the widget as if it were there, but the widget itself will
-    not be visible.
+    descendants. A value of `"none"` removes the widget from the layout entirely: no
+    space is allocated for it, and neither the widget nor its descendants will be
+    visible. To hide a widget while still allocating space for it, use
+    [`visibility`][toga.style.pack.Pack.visibility].
     """
     visibility: str = validated_property(VISIBLE, HIDDEN, initial=VISIBLE)
     """Defines whether the widget should be drawn.
@@ -80,7 +81,8 @@ class Pack(PackLogic):
 
     A value of `"visible"` means the widget will be displayed. A value of `"hidden"`
     removes the widget from view, but allocates space for the widget as if it were
-    still in the layout.
+    still in the layout. To remove the widget from the layout entirely, use
+    [`display`][toga.style.pack.Pack.display].
 
     Any children of a hidden widget are implicitly removed from view.
 
