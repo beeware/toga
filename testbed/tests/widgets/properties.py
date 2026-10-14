@@ -421,13 +421,19 @@ async def test_background_color_transparent(widget, probe):
     assert_background_color(probe.background_color, original)
 
 
-async def test_text_align(widget, probe, verify_vertical_text_align):
+async def test_text_align(
+    widget, probe, verify_vertical_text_align, verify_focus_align, other, other_probe
+):
     """Widget honors alignment settings."""
+    if verify_focus_align:
+        # Clear widget focus.
+        other.focus()
+
     # Use column direction to ensure widget uses all available width
     widget.parent.style.direction = COLUMN
 
     # Initial text alignment is LEFT, initial direction is LTR
-    await probe.redraw("Text direction should be LTR")
+    await probe.redraw("Initial setup; unfocussed, text direction should be LTR")
     probe.assert_text_align(LEFT)
 
     for text_align in [RIGHT, CENTER, JUSTIFY]:
@@ -456,6 +462,17 @@ async def test_text_align(widget, probe, verify_vertical_text_align):
     widget.style.height = 200
     await probe.redraw(f"Text should be at the {verify_vertical_text_align}")
     probe.assert_vertical_text_align(verify_vertical_text_align)
+
+    if verify_focus_align:
+        # If the widget has focus, the text alignment can be changed.
+        widget.focus()
+        await probe.redraw("Widget has focus")
+
+        for text_align in [RIGHT, CENTER, JUSTIFY]:
+            widget.style.text_align = text_align
+            await probe.redraw(f"Text alignment should be {text_align}")
+            probe.assert_text_align(text_align)
+            probe.assert_vertical_text_align(verify_vertical_text_align)
 
 
 async def test_readonly(widget, probe):

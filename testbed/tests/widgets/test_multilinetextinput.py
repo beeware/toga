@@ -166,3 +166,20 @@ async def test_mouse_scrolling(widget, probe, other, other_probe):
     await probe.wait_for_scroll_completion()
     await asyncio.sleep(1)
     assert probe.vertical_scroll_position == pytest.approx(88, abs=5)
+
+
+async def test_paste_rich_text(widget, probe):
+    "Pasted text keeps the widget's font, whatever formatting it was copied with."
+    widget.value = ""
+    widget.focus()
+    await probe.redraw("The widget is empty and has focus")
+    font = probe.typing_font
+
+    probe.paste_rich_text("Pasted")
+    await probe.redraw("Bold, large text has been pasted")
+    assert widget.value == "Pasted"
+    assert probe.text_fonts == [font] * len("Pasted")
+
+    widget.value = ""
+    await probe.redraw("The pasted text has been cleared")
+    assert probe.typing_font == font

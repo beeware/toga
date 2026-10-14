@@ -863,6 +863,15 @@ else:
                             assert current_size < previous_state_window_size
                 except Exception as e:
                     closure_exception = e
+                else:
+                    # A resize event can be delivered after the window state has
+                    # changed, but before the native window has finished settling,
+                    # so the size it reports can be transitional. For example, GTK3
+                    # on Wayland includes the client-side shadow margins in the
+                    # window size until the next layout pass, so a maximized window
+                    # can briefly report a size larger than the screen. Only the
+                    # most recent resize event in the final state is significant.
+                    closure_exception = None
 
         # Set up event mocks after the test window has been initialized.
         # This prevents unnecessary mock triggers during setup, which could
