@@ -295,7 +295,7 @@ class Window:
         self._scaffold = scaffold
         # Hook up the scaffold's content view controller
         self.native.contentViewController = scaffold.root_controller
-        self.native.setFrame(frame, display=True, animate=True)
+        self.native.setFrame(frame, display=True, animate=False)
 
     ######################################################################
     # Window size
