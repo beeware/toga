@@ -593,20 +593,17 @@ jobs:
 
     - name: Upload Logs
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
-      if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
         path: testbed/logs/*
 
     - name: Copy App Generated User Data
-      if: failure()
       run: |
         mkdir -p testbed/app_data
         ${{ matrix.copy-command }} "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
-      if: failure()
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
         path: testbed/app_data/*
