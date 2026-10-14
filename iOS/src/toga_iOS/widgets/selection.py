@@ -88,7 +88,6 @@ class Selection(Widget):
         self.native = TogaBaseTextField.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
-        # self.native.delegate = self.native
         self.native.tintColor = UIColor.clearColor
         self.native.borderStyle = UITextBorderStyle.RoundedRect
 
