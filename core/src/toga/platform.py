@@ -37,20 +37,27 @@ def _is_official_interface(interface: str) -> bool:
 
     An interface is official if it is one of Toga's own, or if any installed
     distribution that provides implementations for it (entry points in an
-    ``<interface>.backend.*`` group) lists the BeeWare Team as a maintainer.
+    `<interface>.backend.*` group) lists the BeeWare Team as a maintainer.
     """
     if interface in _TOGA_INTERFACES:
         return True
 
-    installed = entry_points()
     prefix = f"{interface}.backend."
-    for group in installed.groups:
-        if group.startswith(prefix):
-            for entry_point in installed.select(group=group):
-                maintainers = entry_point.dist.metadata.get_all("Maintainer-email", [])
-                addresses = {addr for _, addr in getaddresses(maintainers)}
-                if _BEEWARE_MAINTAINER in addresses:
-                    return True
+    checked = set()
+    for entry_point in entry_points():
+        dist = entry_point.dist
+        if (
+            dist is None
+            or dist.name in checked
+            or not entry_point.group.startswith(prefix)
+        ):
+            continue
+        checked.add(dist.name)
+
+        maintainers = dist.metadata.get_all("Maintainer-email", [])
+        if any(addr == _BEEWARE_MAINTAINER for _, addr in getaddresses(maintainers)):
+            return True
+
     return False
 
 
