@@ -6,7 +6,7 @@ name = "customwidget"
 version = "0.0.1"
 
 [tool.briefcase]
-project_name = "Custom Widget"
+project_name = "Custom_Widget"
 bundle = "org.beeware.toga.examples.customwidget"
 version = "0.0.1"
 url = "https://beeware.org"
