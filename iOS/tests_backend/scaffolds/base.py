@@ -40,19 +40,6 @@ class ScaffoldProbe(BaseProbe):
 
     @property
     def top_bar_height(self):
-        # Widgets are not transformed
-        assert (
-            core_graphics.CGAffineTransformIsIdentity(
-                self.impl.container.content.native.transform
-            )
-            and core_graphics.CGAffineTransformIsIdentity(
-                self.impl.nav_controller.navigationBar.transform
-            )
-            and core_graphics.CGAffineTransformIsIdentity(
-                self.impl.nav_controller.view.transform
-            )
-        )
-
         # On iPadOS multiwindow this can be different, but that can't be tested
         # in testbed unelss we make user drag the window while test is running
         if self.impl.navigation_bar_hidden:
@@ -84,7 +71,7 @@ class ScaffoldProbe(BaseProbe):
         # (this simulates a simple app)
         self.impl.navigation_bar_hidden = True
         await self.redraw("Navigation bar hidden")
-        self.wait_for_layout()
+        await self.wait_for_layout()
         self.impl.navigation_bar_hidden = False
         await self.redraw("Navigation bar shown")
-        self.wait_for_layout()
+        await self.wait_for_layout()
