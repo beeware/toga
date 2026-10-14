@@ -22,6 +22,7 @@ from .properties import (  # noqa: F401
     test_text_align,
 )
 from .test_textinput import (  # noqa: F401
+    verify_focus_align,
     verify_vertical_text_align,
 )
 

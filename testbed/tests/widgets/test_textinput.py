@@ -50,6 +50,12 @@ def verify_focus_handlers():
     return True
 
 
+@pytest.fixture
+def verify_focus_align():
+    """Whether to test text alignment when the widget has focus"""
+    return True
+
+
 @pytest.fixture(params=["", "placeholder"])
 async def placeholder(request, widget):
     widget.placeholder = request.param
