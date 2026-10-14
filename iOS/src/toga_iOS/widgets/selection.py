@@ -6,13 +6,10 @@ from travertino.size import at_least
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSTextAlignment,
-    UIBarButtonItem,
-    UIBarButtonSystemItem,
     UIColor,
     UIPickerView,
     UITextBorderStyle,
     UITextField,
-    UIToolbar,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -20,11 +17,6 @@ from toga_iOS.widgets.base import Widget
 class TogaBaseTextField(UITextField):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
-
-    @objc_method
-    def onDoneTapped_(self, sender) -> None:
-        """Action handler when user taps the Done button in the accessory toolbar."""
-        self.resignFirstResponder()
 
     @objc_method
     def pointInside_withEvent_(self, point: CGPoint, event) -> bool:  # pragma: no cover
@@ -96,7 +88,7 @@ class Selection(Widget):
         self.native = TogaBaseTextField.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
-        self.native.delegate = self.native
+        # self.native.delegate = self.native
         self.native.tintColor = UIColor.clearColor
         self.native.borderStyle = UITextBorderStyle.RoundedRect
 
@@ -109,33 +101,6 @@ class Selection(Widget):
 
         self.native.inputView = self.native_picker
         self.native.delegate = self.native_picker
-
-        # Create a toolbar with standard height
-        toolbar = UIToolbar.alloc().init()
-        toolbar.sizeToFit()
-
-        # Flexible space pushes the "Done" button to the far right
-        flexible_space = UIBarButtonItem.alloc().initWithBarButtonSystemItem(
-            UIBarButtonSystemItem.FlexibleSpace,
-            target=None,
-            action=None,
-        )
-
-        # UIBarButtonSystemItem.Done uses a region-appropriate icon.
-        done_button = UIBarButtonItem.alloc().initWithBarButtonSystemItem(
-            UIBarButtonSystemItem.Done,
-            target=self.native,
-            action=SEL("onDoneTapped:"),
-        )
-
-        # Assign items to toolbar
-        toolbar.setItems(
-            [flexible_space, done_button],
-            animated=False,
-        )
-
-        # Set as inputAccessoryView so it renders docked above the picker
-        self.native.inputAccessoryView = toolbar
 
         # The iOS widget doesn't maintain a local concept of the number of items, so its
         # not possible to identify if the current visual display is empty during a
