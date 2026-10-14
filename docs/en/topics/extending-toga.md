@@ -2,6 +2,12 @@
 
 While Toga provides a rich set of features, it can't provide every widget that is available on every platform. Additionally, because widgets are implemented as time permits by contributors, some backends may lack a widget that another backend provides. This means that application authors may find themselves in a situation where they need to write a custom widget. This topic guide explains how Toga finds widget implementations, and how people can expand the available widgets for their application.
 
+/// admonition | The `toga` namespace
+
+Toga is a trademark of the BeeWare project, and the `toga_*` prefix is reserved for packages maintained by the BeeWare project (such as [`toga_chart`](https://github.com/beeware/toga-chart)). If you want to extend Toga, you should use the `togax_` prefix for any packages, backends or widgets that you write. Toga will generate warnings if you use a `toga_*` interface that isn't recognized as an official interface. This helps the community by flagging when an extension is official, and when it is a community-provided extension.
+
+///
+
 ## Writing a widget
 
 As noted in the [Internal architecture](architecture.md) topic guide, a widget is made up of three layers: interface, implementation, and native. Every interface widget has a `_create` method that is responsible for creating the implementation of the widget, and passing the interface object to the new implementation object's `__init__` method. The implementation in turn has its own `create` method that should create any native widgets or other state that is needed when the widget is added to the layout, and also should implement at least the `rehint` method to help the layout system determine the size of the widget.
@@ -52,9 +58,9 @@ More complex widgets will obviously have a lot more to them, but this will often
 
 ## Widgets with multiple backends
 
-The previous section is fine as long as you only care about one backend implementation, but as soon as you have multiple backends that you care about you are faced with the problem of how does the interface know which implementation to use?
+The approach in the previous section is fine as long as you only care about one backend implementation, but as soon as you have multiple backends that you care about you are faced with the problem of selecting the correct implementation to use at runtime.
 
-Toga solves this with "factory" objects which are name-spaces that lazily load implementations based on the [`toga.backend`][toga.backend]. The default factory object uses the Python standard library [`importlib.metadata`][importlib.metadata] "entry point" system to load backend widgets in a plugin-style system. Every backend advertises where to find the widget implementations as part of its `pyproject.toml`. So if you look at the `toga_qt`'s `pyproject.toml` you will see a section that looks like:
+Toga solves this with "factory" objects which are name-spaces that lazily load implementations based on the [`toga.backend`][toga.backend]. The default factory object uses the Python standard library [`importlib.metadata`][importlib.metadata] "entry point" system to load backend widgets in a plugin-style system. Every backend advertises where to find the widget implementations as part of its `pyproject.toml`. If you look at the `toga_qt`'s `pyproject.toml` you will see a section that looks like:
 
 ```toml
 [project.entry-points."toga_core.backend.toga_qt"]
@@ -129,9 +135,11 @@ With this set-up, you can import and use `toga.Switch` within your application t
 
 Ideally, if you have a working implementation of a missing widget, you'd make a pull-request to add it to the appropriate Toga backend.
 
-### A Note About Briefcase Applications
+/// note | Custom extensions in Briefcase applications
 
-Briefcase projects don't use Python's entry point system, so you can't just add the entry points to a Briefcase project's `pyroject.toml`. Instead any widgets you need have to be implemented as a separate Python project with it's own `pyproject.toml` that contains the entry points, and which is a dependency of your application. The `customwidget` example in the Toga examples shows how you might do this.
+Briefcase projects don't use Python's entry point system, so you can't just add the entry points to a Briefcase project's `pyproject.toml`. Any widgets you need have to be implemented as a separate Python project with it's own `pyproject.toml` that contains the entry points, and which is a dependency of your application. The `customwidget` example in the Toga examples shows how you might do this.
+
+///
 
 ### Implementing a new backend
 
@@ -158,8 +166,6 @@ and so on, and then update your development environment using `pip` if needed ev
 All of the examples with multiple backends rely on widgets which already exist as part of the `toga_core` interface. What if we want to implement our own interface widgets?
 
 We could implement them using the `toga_core.backend.*` groups, but this runs the risk of colliding with other libraries, or with future widgets added to Toga by the core team. The solution in this case is to create your own custom `togax_*` interface and use it instead of `toga_core`.
-
-The `toga_*` prefix is reserved for packages maintained by the BeeWare project, such as `toga_chart`. Toga recognizes these packages by their metadata: an interface is treated as official when a package that provides implementations for it declares the BeeWare Team as a maintainer. Toga warns at runtime if a `toga_*` interface is used by any other package, so use the `togax_*` prefix for your own.
 
 For example, at the time of writing the Toga core does not provide a `Toggle Button` widget (i.e. a push-button which toggles state when pressed) or a checkbox widget, relying on the similar `Switch` for this sort of UI interaction. We could write a library which provides these extra button widgets in the following way.
 
