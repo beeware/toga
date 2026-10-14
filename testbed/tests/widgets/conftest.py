@@ -24,19 +24,27 @@ async def widget():
     raise NotImplementedError("test modules must define a `widget` fixture")
 
 
+@pytest.fixture(scope="package")
+def scaffold_setup(main_window):
+    old_content = main_window.content
+    main_window.content = Scaffold()
+    yield
+    main_window.content = old_content
+
+
 @pytest.fixture
 async def probe(main_window, widget):
-    old_content = main_window.content
+    old_content = main_window.scaffold.content
 
     box = toga.Box(children=[widget])
     # Test an explicit scaffold
-    main_window.content = Scaffold(box)
+    main_window.scaffold.content = box
     probe = get_probe(widget)
     await probe.redraw(f"\nConstructing {widget.__class__.__name__} probe")
     probe.assert_container(box)
     yield probe
 
-    main_window.content = old_content
+    main_window.scaffold.content = old_content
 
 
 @pytest.fixture
