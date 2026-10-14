@@ -240,7 +240,8 @@ class Window:
         self._id = str(id if id else identifier(self))
         self._impl: Any = None
         self._content: Widget | BaseScaffold | None = None
-        self._scaffold: BaseScaffold | None = None
+        self._wrapper_scaffold = Scaffold()
+        self._scaffold: BaseScaffold | None = self._wrapper_scaffold
         self._closed = False
 
         self._resizable = resizable
@@ -273,15 +274,15 @@ class Window:
             position=None if position is None else Position(*position),
             size=Size(*size),
         )
+        self._impl.set_scaffold(self._wrapper_scaffold._impl)
+        self.title = title
 
         # Add the window to the app
         App.app.windows.add(self)
 
+        self._wrapper_scaffold.app = self.app
+        self._wrapper_scaffold.window = self
         self.content = content
-        # On some backends, title is managed by scaffolds; to simplify code in backends,
-        # scaffolds are assumed to exist, so we need to make sure a scaffold is created
-        # before title is set.
-        self.title = title
 
         # Set up the event handlers on the interface (overrides the no-op defaults
         # installed above with the user-supplied handlers).
@@ -447,42 +448,36 @@ class Window:
 
     @content.setter
     def content(self, content: Widget | BaseScaffold) -> None:
+        self._content = content
         if not isinstance(content, BaseScaffold):
-            scaffold = Scaffold(content=content)
+            scaffold = self._wrapper_scaffold
+            scaffold.content = content
         else:
             scaffold = content
 
-        if (
-            self._scaffold is not None
-            and scaffold is not self._scaffold
-            and self.state == WindowState.PRESENTATION
-        ):
-            if isinstance(self._content, Widget) and isinstance(content, Widget):
-                self._scaffold.content = content
-                self._content = content
-                return
-            raise ValueError("Window scaffold cannot be changed in presentation mode")
+        if scaffold is not self._scaffold:
+            if self.state == WindowState.PRESENTATION:
+                raise ValueError(
+                    "Window scaffold cannot be changed in presentation mode"
+                )
 
-        # Set window of old scaffold to None
-        if self._scaffold:
             self._scaffold.window = None
             self._scaffold.app = None
 
-        # Assign the scaffold to the same app as the window.
-        scaffold.app = self.app
+            # Assign the scaffold to the same app as the window.
+            scaffold.app = self.app
 
-        # Assign the scaffold to the window.
-        scaffold.window = self
+            # Assign the scaffold to the window.
+            scaffold.window = self
 
-        # Track our new content and scaffold
-        self._content = content
-        self._scaffold = scaffold
+            # Track our new scaffold
+            self._scaffold = scaffold
 
-        # Manifest the scaffold
-        self._impl.set_scaffold(scaffold._impl)
+            # Manifest the scaffold
+            self._impl.set_scaffold(scaffold._impl)
 
-        # Update the geometry of the scaffold
-        scaffold.refresh()
+            # Update the geometry of the scaffold
+            scaffold.refresh()
 
     @property
     def widgets(self) -> FilteredWidgetRegistry:

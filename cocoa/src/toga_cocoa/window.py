@@ -237,7 +237,9 @@ class Window:
         self.native.interface = self.interface
         self.native.impl = self
 
-        self._scaffold = None
+        # An actual set_scaffold call will come later, but we already
+        # have a placeholder scaffold we could use; this simplifies edge cases.
+        self._scaffold = self.interface._scaffold._impl
 
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
@@ -285,11 +287,8 @@ class Window:
     ######################################################################
 
     def set_scaffold(self, scaffold):
-        if self._scaffold is not None:
-            # Get the current title and sync it up with the new scaffold.
-            # This check is required as the initial scaffold set will not have
-            # a previous scaffold to grab title from.
-            scaffold.title = self.get_title()
+        # Get the current title and sync it up with the new scaffold.
+        scaffold.title = self.get_title()
 
         frame = self.native.frame
         self._scaffold = scaffold
