@@ -17,17 +17,6 @@ class ScaffoldProbe(BaseProbe):
         self.container = self.impl.container
         self.nav_controller = self.impl.nav_controller
 
-    async def redraw(self, message=None, delay=0, wait_for=None):
-        """Request a redraw of the app, waiting until that redraw has completed."""
-        # Force a widget repaint
-        self.container.native.layer.displayIfNeeded()
-
-        # Flush CoreAnimation; this ensures all animations are complete
-        # and all constraints have been evaluated.
-        CATransaction.flush()
-
-        await super().redraw(message=message, delay=delay, wait_for=wait_for)
-
     async def wait_for_layout(self):
         # Wait for the layout to be completed.
         await self._wait_for_assertion(self.assert_container_layout)
