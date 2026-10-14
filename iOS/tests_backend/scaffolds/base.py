@@ -23,10 +23,17 @@ class ScaffoldProbe(BaseProbe):
 
     def assert_container_layout(self):
         # Widgets are not transformed
-        assert core_graphics.CGAffineTransformIsIdentity(
-            self.impl.container.content.native.transform
+        assert (
+            core_graphics.CGAffineTransformIsIdentity(
+                self.impl.container.content.native.transform
+            )
+            and core_graphics.CGAffineTransformIsIdentity(
+                self.impl.nav_controller.navigationBar.transform
+            )
+            and core_graphics.CGAffineTransformIsIdentity(
+                self.impl.nav_controller.view.transform
+            )
         )
-
         # If the window has been laid out, the origin should be the position of the top
         # bar plus the margin.
         assert self.container.content.native.frame.origin.y == approx(
@@ -38,8 +45,32 @@ class ScaffoldProbe(BaseProbe):
         assert self.container.content.interface.layout.width > 0
         assert self.container.content.interface.layout.height > 0
 
+    async def redraw(self, message=None, delay=0, wait_for=None):
+        """Request a redraw of the app, waiting until that redraw has completed."""
+        # Force a widget repaint
+        self.container.native.layer.displayIfNeeded()
+
+        # Flush CoreAnimation; this ensures all animations are complete
+        # and all constraints have been evaluated.
+        CATransaction.flush()
+
+        await super().redraw(message=message, delay=delay, wait_for=wait_for)
+
     @property
     def top_bar_height(self):
+        # Widgets are not transformed
+        assert (
+            core_graphics.CGAffineTransformIsIdentity(
+                self.impl.container.content.native.transform
+            )
+            and core_graphics.CGAffineTransformIsIdentity(
+                self.impl.nav_controller.navigationBar.transform
+            )
+            and core_graphics.CGAffineTransformIsIdentity(
+                self.impl.nav_controller.view.transform
+            )
+        )
+
         # On iPadOS multiwindow this can be different, but that can't be tested
         # in testbed unelss we make user drag the window while test is running
         if self.impl.navigation_bar_hidden:
