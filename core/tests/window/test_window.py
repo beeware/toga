@@ -29,6 +29,8 @@ def test_window_created(app):
 
     assert window.app == app
     assert window.content is None
+    assert window.scaffold.window == window
+    assert window.scaffold.app == app
 
     assert window._impl.interface == window
     assert_action_performed(window, "create Window")
@@ -71,13 +73,13 @@ def test_window_handler_attrs_initialized_before_impl(app, event_name, monkeypat
     # none of them raise.
     real_init = dummy_window.Window.__init__
 
-    def fire_callbacks_during_init(self, interface, title, position, size):
+    def fire_callbacks_during_init(self, interface, position, size):
         # Mimic Cocoa / .NET Framework: dispatch every relevant handler
         # before the platform constructor returns. With the fix in place,
         # each call invokes a wrapped no-op; without it, AttributeError
         # bubbles out and __init__ aborts.
         getattr(interface, event_name)()
-        real_init(self, interface, title, position, size)
+        real_init(self, interface, position, size)
 
     monkeypatch.setattr(dummy_window.Window, "__init__", fire_callbacks_during_init)
 
@@ -197,132 +199,113 @@ def test_change_content(window, app):
     """The content of a window can be changed."""
     assert window.content is None
     assert window.app == app
+    wrapper_scaffold = window.scaffold
 
     # Set the content of the window
     content1 = toga.Box()
     window.content = content1
-    scaffold1 = window.scaffold
 
-    # The content has been assigned and refreshed
+    # The content has been assigned and refreshed; scaffold is still the same
     assert window.content == content1
-    assert window.scaffold == scaffold1
+    assert window.scaffold is wrapper_scaffold
     assert content1.app == app
     assert content1.window == window
-    assert content1.scaffold == scaffold1
-    assert scaffold1.content == content1
-    assert scaffold1.app == app
-    assert scaffold1.window == window
-    # Test that reassigning content does not reshow toolbar in simple windows
-    assert_action_performed(scaffold1, "hide toolbar")
-    assert_action_not_performed(scaffold1, "show toolbar")
-    assert_action_performed_with(window, "set scaffold", scaffold=scaffold1._impl)
-    assert_action_performed_with(scaffold1, "set content", widget=content1._impl)
-    assert_action_performed(scaffold1, "refresh")
+    assert content1.scaffold == wrapper_scaffold
+    assert wrapper_scaffold.content == content1
+    assert wrapper_scaffold.app == app
+    assert wrapper_scaffold.window == window
     assert_action_performed(content1, "refresh")
 
     # Set the content of the window to something new
     content2 = toga.Box()
     window.content = content2
-    scaffold2 = window.scaffold
 
-    # A new scaffold is created
-    assert scaffold2 is not scaffold1
+    # The same wrapper scaffold is reused.
+    assert window.scaffold is wrapper_scaffold
 
     # The content has been assigned and refreshed
     assert window.content == content2
-    assert window.scaffold == scaffold2
     assert content2.app == app
     assert content2.window == window
-    assert content2.scaffold == scaffold2
-    assert scaffold2.content == content2
-    assert scaffold2.app == app
-    assert scaffold2.window == window
-    assert_action_performed_with(window, "set scaffold", scaffold=scaffold2._impl)
-    assert_action_performed_with(scaffold2, "set content", widget=content2._impl)
-    assert_action_performed(scaffold2, "refresh")
+    assert content2.scaffold == wrapper_scaffold
+    assert wrapper_scaffold.content == content2
+    assert wrapper_scaffold.app == app
+    assert wrapper_scaffold.window == window
     assert_action_performed(content2, "refresh")
 
     # The original content has been removed
-    assert scaffold1.window is None
-    assert scaffold1.app is None
     assert content1.window is None
     assert content1.app is None
-    # Content still attached to scaffold.
-    assert content1.scaffold is scaffold1
+    assert content1.scaffold is None
 
-    # No content:  Scaffold is still implicitly created
+    # Removing content retains the same wrapper scaffold.
     window.content = None
-    scaffold3 = window.scaffold
-    assert_action_performed_with(window, "set scaffold", scaffold=scaffold3._impl)
     assert window.content is None
-    assert scaffold3.content is None
-    assert scaffold3.window == window
-    assert scaffold3.app == app
-
-
-def test_scaffold_content(window, app):
-    """An explicitly initialized scaffold may be used as content for a window."""
-    scaffold = toga.Scaffold()
-    window.content = scaffold
-
-    assert window.content == scaffold
-    assert window.scaffold == scaffold
-    assert scaffold.app == app
-    assert scaffold.window == window
-    assert scaffold.content is None
-    assert_action_performed_with(window, "set scaffold", scaffold=scaffold._impl)
-    assert_action_performed_with(scaffold, "set content", widget=None)
-    assert_action_performed(scaffold, "refresh")
-
-    # Attach content
-    content1 = toga.Box()
-    scaffold.content = content1
-    assert content1.scaffold == scaffold
-    assert_action_performed(scaffold, "refresh")
-    assert_action_performed(content1, "refresh")
-    assert window.content == scaffold
-    assert scaffold.content == content1
-    assert content1.window == window
-    assert content1.app == app
-
-    # Attach new content
-    content2 = toga.Box()
-    scaffold.content = content2
-    assert content1.scaffold is None
-    assert content2.scaffold == scaffold
-    assert_action_performed(scaffold, "refresh")
-    assert_action_performed(content2, "refresh")
-    assert window.content == scaffold
-    assert scaffold.content == content2
-    assert content1.window is None
-    assert content1.app is None
-    assert content2.window == window
-    assert content2.app == app
-
-    # Detach content
-    scaffold.content = None
-    assert content1.scaffold is None
-    assert content2.scaffold is None
-    assert_action_performed(scaffold, "refresh")
-    assert window.content == scaffold
-    assert scaffold.content is None
-    assert content1.window is None
-    assert content1.app is None
+    assert window.scaffold is wrapper_scaffold
+    assert wrapper_scaffold.content is None
+    assert wrapper_scaffold.window == window
+    assert wrapper_scaffold.app == app
     assert content2.window is None
     assert content2.app is None
+    assert content2.scaffold is None
+    assert_action_performed_with(wrapper_scaffold, "set content", widget=None)
 
-    # Attach content, detach scaffold; scaffold should preserve
-    # content
-    scaffold.content = content1
-    assert content1.scaffold is scaffold
-    window.content = None
-    assert window.content is None
-    assert scaffold.content == content1
-    assert content1.scaffold is scaffold
-    assert scaffold.window is None
-    assert scaffold.app is None
-    assert content1.window is None
-    assert content1.app is None
+    # Explicit scaffolds can replace the wrapper; assigning bare content restores it.
+    explicit_scaffold = toga.Scaffold(toga.Box())
+    window.content = explicit_scaffold
+    assert window.scaffold is explicit_scaffold
+    assert explicit_scaffold.window == window
+    assert explicit_scaffold.app == app
+    # Explicit scaffold shows/hides toolbar properly
+    assert_action_performed(explicit_scaffold, "hide toolbar")
+    assert_action_not_performed(explicit_scaffold, "show toolbar")
+
+    content3 = toga.Box()
+    window.content = content3
+    assert window.content is content3
+    assert window.scaffold is wrapper_scaffold
+    assert wrapper_scaffold.content is content3
+    assert wrapper_scaffold.window == window
+    assert wrapper_scaffold.app == app
+    assert explicit_scaffold.window is None
+    assert explicit_scaffold.app is None
+
+
+def test_change_content_in_presentation_mode(window):
+    """A window's scaffold cannot be changed in presentation mode."""
+    original_content = toga.Box()
+    window.content = original_content
+    implicit_scaffold = window.scaffold
+    window.show()
+    window.state = WindowState.PRESENTATION
+
+    replacement_content = toga.Box()
+    window.content = replacement_content
+
+    assert window.content is replacement_content
+    assert window.scaffold is implicit_scaffold
+    assert implicit_scaffold.content is replacement_content
+
+    with pytest.raises(
+        ValueError,
+        match="Window scaffold cannot be changed in presentation mode",
+    ):
+        window.content = toga.Scaffold(toga.Box())
+
+    assert window.scaffold is implicit_scaffold
+
+    window.state = WindowState.NORMAL
+    explicit_scaffold = toga.Scaffold(original_content)
+    window.content = explicit_scaffold
+    window.state = WindowState.PRESENTATION
+
+    with pytest.raises(
+        ValueError,
+        match="Window scaffold cannot be changed in presentation mode",
+    ):
+        window.content = toga.Box()
+
+    assert window.scaffold is explicit_scaffold
 
 
 def test_set_position(window):

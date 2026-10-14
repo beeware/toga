@@ -71,7 +71,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     async def redraw(self, message=None, delay=0, wait_for=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a widget repaint
-        self.widget.window.content._impl.native.layer.displayIfNeeded()
+        self.impl.container.native.layer.displayIfNeeded()
 
         # Flush CoreAnimation; this ensures all animations are complete
         # and all constraints have been evaluated.

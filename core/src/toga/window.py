@@ -240,7 +240,8 @@ class Window:
         self._id = str(id if id else identifier(self))
         self._impl: Any = None
         self._content: Widget | BaseScaffold | None = None
-        self._scaffold: BaseScaffold | None = None
+        self._wrapper_scaffold = Scaffold()
+        self._scaffold: BaseScaffold | None = self._wrapper_scaffold
         self._closed = False
 
         self._resizable = resizable
@@ -270,14 +271,17 @@ class Window:
         self.factory = get_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
-            title=title if title else self._default_title,
             position=None if position is None else Position(*position),
             size=Size(*size),
         )
+        self._impl.set_scaffold(self._wrapper_scaffold._impl)
+        self.title = title
 
         # Add the window to the app
         App.app.windows.add(self)
 
+        self._wrapper_scaffold.app = self.app
+        self._wrapper_scaffold.window = self
         self.content = content
 
         # Set up the event handlers on the interface (overrides the no-op defaults
@@ -444,31 +448,36 @@ class Window:
 
     @content.setter
     def content(self, content: Widget | BaseScaffold) -> None:
-        # Set window of old scaffold to None
-        if self._scaffold:
-            self._scaffold.window = None
-            self._scaffold.app = None
-
+        self._content = content
         if not isinstance(content, BaseScaffold):
-            scaffold = Scaffold(content=content)
+            scaffold = self._wrapper_scaffold
+            scaffold.content = content
         else:
             scaffold = content
 
-        # Assign the scaffold to the same app as the window.
-        scaffold.app = self.app
+        if scaffold is not self._scaffold:
+            if self.state == WindowState.PRESENTATION:
+                raise ValueError(
+                    "Window scaffold cannot be changed in presentation mode"
+                )
 
-        # Assign the scaffold to the window.
-        scaffold.window = self
+            self._scaffold.window = None
+            self._scaffold.app = None
 
-        # Track our new content and scaffold
-        self._content = content
-        self._scaffold = scaffold
+            # Assign the scaffold to the same app as the window.
+            scaffold.app = self.app
 
-        # Manifest the scaffold
-        self._impl.set_scaffold(scaffold._impl)
+            # Assign the scaffold to the window.
+            scaffold.window = self
 
-        # Update the geometry of the scaffold
-        scaffold.refresh()
+            # Track our new scaffold
+            self._scaffold = scaffold
+
+            # Manifest the scaffold
+            self._impl.set_scaffold(scaffold._impl)
+
+            # Update the geometry of the scaffold
+            scaffold.refresh()
 
     @property
     def widgets(self) -> FilteredWidgetRegistry:
