@@ -52,43 +52,25 @@ class TextInput(Widget):
 
         def gtk_key_press_event(self, _entry, event):
             key_pressed = toga_key(event.keyval, event.state)
-            if key_pressed:
-                if key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-                    self.interface.on_confirm()
-                elif self.get_readonly() and key_pressed["key"] == Key.TAB:
-                    direction = (
-                        Gtk.DirectionType.TAB_BACKWARD
-                        if Key.SHIFT in key_pressed["modifiers"]
-                        else Gtk.DirectionType.TAB_FORWARD
-                    )
-                    toplevel = self.native.get_toplevel()
-                    if toplevel and toplevel.is_toplevel():
-                        toplevel.child_focus(direction)
-                    return True
+            if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
+                self.interface.on_confirm()
 
     else:  # pragma: no-cover-if-gtk3
 
         def gtk_key_pressed(self, _controller, keyval, _keycode, state):
             key_pressed = toga_key(keyval, state)
-            if key_pressed:
-                if key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-                    self.interface.on_confirm()
-                elif self.get_readonly() and key_pressed["key"] == Key.TAB:
-                    direction = (
-                        Gtk.DirectionType.TAB_BACKWARD
-                        if Key.SHIFT in key_pressed["modifiers"]
-                        else Gtk.DirectionType.TAB_FORWARD
-                    )
-                    root = self.native.get_root()
-                    if root:
-                        root.child_focus(direction)
-                    return True
+            if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
+                self.interface.on_confirm()
 
     def get_readonly(self):
         return not self.native.get_property("editable")
 
     def set_readonly(self, value):
         self.native.set_property("editable", not value)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.set_can_focus(not value)
+        else:  # pragma: no-cover-if-gtk3
+            self.native.set_focusable(not value)
 
     def get_placeholder(self):
         return self.native.get_placeholder_text()
