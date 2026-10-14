@@ -23,10 +23,8 @@ class ScaffoldProbe(BaseProbe):
 
     def assert_container_layout(self):
         # Widgets are not transformed
-        assert (
-            core_graphics.CGAffineTransformIsIdentity(
-                self.impl.container.content.native.transform
-            )
+        assert core_graphics.CGAffineTransformIsIdentity(
+            self.impl.container.content.native.transform
         )
 
         # If the window has been laid out, the origin should be the position of the top
