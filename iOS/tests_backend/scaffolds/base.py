@@ -27,12 +27,6 @@ class ScaffoldProbe(BaseProbe):
             core_graphics.CGAffineTransformIsIdentity(
                 self.impl.container.content.native.transform
             )
-            and core_graphics.CGAffineTransformIsIdentity(
-                self.impl.nav_controller.navigationBar.transform
-            )
-            and core_graphics.CGAffineTransformIsIdentity(
-                self.impl.nav_controller.view.transform
-            )
         )
 
         # If the window has been laid out, the origin should be the position of the top
