@@ -92,7 +92,7 @@ class ScaffoldProbe(BaseProbe):
         # (this simulates a simple app)
         self.impl.navigation_bar_hidden = True
         await self.redraw("Navigation bar hidden")
-        self.assert_container_layout()
+        self.wait_for_layout()
         self.impl.navigation_bar_hidden = False
         await self.redraw("Navigation bar shown")
-        self.assert_container_layout()
+        self.wait_for_layout()
