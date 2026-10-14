@@ -161,16 +161,18 @@ async def test_scroll(widget, probe):
     assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=15)
 
     # Scroll to the middle of the detailedList
-    widget.scroll_to_row(50)
+    widget.scroll_to_row(len(widget.data) // 2)
     await probe.wait_for_scroll_completion()
     await probe.redraw("DetailedList scrolled to mid row")
     if probe.supports_refresh:
         assert not probe.refresh_available()
 
-    # Row 50 should be visible. It could be at the top of the screen, or the bottom of
-    # the screen; we don't really care which - as long as it's roughly in the middle of
-    # the scroll range, call it a win.
-    assert probe.scroll_position == pytest.approx(probe.scroll_limit / 2, abs=400)
+    # The middle row should be visible. It could be at the top of the screen,
+    # or the bottom of the screen; we don't really care which - as long as it's
+    # roughly in the middle of the scroll range, call it a win.
+    assert probe.scroll_position == pytest.approx(
+        probe.scroll_limit / 2, abs=max(400, probe.height)
+    )
 
     # Scroll to the top of the detailedList
     widget.scroll_to_top()
