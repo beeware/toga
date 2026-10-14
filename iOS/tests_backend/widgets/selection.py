@@ -75,5 +75,4 @@ class SelectionProbe(SimpleProbe):
         self.widget.focus()
         self.native_picker.selectRow(1, inComponent=0, animated=True)
         self.native_picker.pickerView(self.native_picker, didSelectRow=1, inComponent=0)
-        self.native.onDoneTapped(self.native_picker)
         await asyncio.sleep(0.1)
