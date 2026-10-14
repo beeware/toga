@@ -52,15 +52,37 @@ class TextInput(Widget):
 
         def gtk_key_press_event(self, _entry, event):
             key_pressed = toga_key(event.keyval, event.state)
-            if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-                self.interface.on_confirm()
+            if key_pressed:
+                if key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
+                    self.interface.on_confirm()
+                elif self.get_readonly() and key_pressed["key"] == Key.TAB:
+                    direction = (
+                        Gtk.DirectionType.TAB_BACKWARD
+                        if Key.SHIFT in key_pressed["modifiers"]
+                        else Gtk.DirectionType.TAB_FORWARD
+                    )
+                    toplevel = self.native.get_toplevel()
+                    if toplevel and toplevel.is_toplevel():
+                        toplevel.child_focus(direction)
+                    return True
 
     else:  # pragma: no-cover-if-gtk3
 
         def gtk_key_pressed(self, _controller, keyval, _keycode, state):
             key_pressed = toga_key(keyval, state)
-            if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-                self.interface.on_confirm()
+            if key_pressed:
+                if key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
+                    self.interface.on_confirm()
+                elif self.get_readonly() and key_pressed["key"] == Key.TAB:
+                    direction = (
+                        Gtk.DirectionType.TAB_BACKWARD
+                        if Key.SHIFT in key_pressed["modifiers"]
+                        else Gtk.DirectionType.TAB_FORWARD
+                    )
+                    root = self.native.get_root()
+                    if root:
+                        root.child_focus(direction)
+                    return True
 
     def get_readonly(self):
         return not self.native.get_property("editable")
