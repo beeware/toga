@@ -1,4 +1,3 @@
-import cProfile
 import os
 import platform
 import sys
@@ -62,34 +61,26 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         os.environ["RUNNING_IN_CI"] = "true" if running_in_ci else ""
 
-        profiler = cProfile.Profile()
-        profiler.enable()
-        try:
-            app.returncode = pytest.main(
-                [
-                    # Output formatting
-                    "-vv",
-                    "--no-header",
-                    "--tb=native",
-                    "--color=no",
-                    # Convert all warnings except for NotImplementedWarnings into errors
-                    "-Werror",
-                    "-Wignore::toga.NotImplementedWarning",
-                    # Run all async tests and fixtures using pytest-asyncio.
-                    "--asyncio-mode=auto",
-                    "--override-ini",
-                    "asyncio_default_fixture_loop_scope=session",
-                    # Override the cache directory to be somewhere known writable
-                    "--override-ini",
-                    f"cache_dir={tempfile.gettempdir()}/.pytest_cache",
-                ]
-                + args
-            )
-        finally:
-            profiler.disable()
-            toga.App.app.paths.data.mkdir(parents=True, exist_ok=True)
-            profiler.dump_stats(toga.App.app.paths.data / "testbed.prof")
-            print("Profile data written to", toga.App.app.paths.data / "testbed.prof")
+        app.returncode = pytest.main(
+            [
+                # Output formatting
+                "-vv",
+                "--no-header",
+                "--tb=native",
+                "--color=no",
+                # Convert all warnings except for NotImplementedWarnings into errors
+                "-Werror",
+                "-Wignore::toga.NotImplementedWarning",
+                # Run all async tests and fixtures using pytest-asyncio.
+                "--asyncio-mode=auto",
+                "--override-ini",
+                "asyncio_default_fixture_loop_scope=session",
+                # Override the cache directory to be somewhere known writable
+                "--override-ini",
+                f"cache_dir={tempfile.gettempdir()}/.pytest_cache",
+            ]
+            + args
+        )
 
         # Only print a coverage report if the test suite passed.
         if app.returncode == 0:
