@@ -1,5 +1,7 @@
 import asyncio
 
+import pytest
+
 from toga_iOS.libs import UITextView
 
 from .textinput import TextInputProbe
@@ -55,3 +57,10 @@ class MultilineTextInputProbe(TextInputProbe):
             position = current
             await asyncio.sleep(0.05)
             current = self.vertical_scroll_position
+
+    def paste_rich_text(self, text):
+        pytest.skip("Pasting rich text not supported on this platform")
+
+    @property
+    def typing_font(self):
+        pytest.skip("Pasting rich text not supported on this platform")
