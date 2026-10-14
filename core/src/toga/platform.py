@@ -6,7 +6,7 @@ import sys
 import warnings
 from email.utils import getaddresses
 from functools import cache, cached_property
-from importlib.metadata import entry_points
+from importlib.metadata import distributions, entry_points
 from types import ModuleType
 
 from . import NotImplementedWarning
@@ -43,16 +43,9 @@ def _is_official_interface(interface: str) -> bool:
         return True
 
     prefix = f"{interface}.backend."
-    checked = set()
-    for entry_point in entry_points():
-        dist = entry_point.dist
-        if (
-            dist is None
-            or dist.name in checked
-            or not entry_point.group.startswith(prefix)
-        ):
+    for dist in distributions():
+        if not any(ep.group.startswith(prefix) for ep in dist.entry_points):
             continue
-        checked.add(dist.name)
 
         maintainers = dist.metadata.get_all("Maintainer-email", [])
         if any(addr == _BEEWARE_MAINTAINER for _, addr in getaddresses(maintainers)):
