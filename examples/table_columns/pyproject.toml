@@ -24,6 +24,13 @@ requires = [
     "babel",
 ]
 
+[tool.briefcase.app.table_columns.macOS]
+universal_build = true
+requires = [
+    "../../cocoa",
+    "std-nslog~=2.0.0",
+]
+
 [tool.briefcase.app.table_columns.linux]
 requires = [
     "../../gtk",

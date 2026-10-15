@@ -24,19 +24,19 @@ requires = [
     "../../core",
 ]
 
-[tool.briefcase.app.positron_static.macOS]
+[tool.briefcase.app.positron.macOS]
 universal_build = true
 requires = [
     "../../cocoa",
     "std-nslog~=2.0.0",
 ]
 
-[tool.briefcase.app.positron_static.linux]
+[tool.briefcase.app.positron.linux]
 requires = [
     "../../gtk",
 ]
 
-[tool.briefcase.app.positron_static.linux.system.debian]
+[tool.briefcase.app.positron.linux.system.debian]
 system_requires = [
     # Needed to compile pycairo wheel
     "libcairo2-dev",
@@ -53,7 +53,7 @@ system_runtime_requires = [
     # "gir1.2-webkit2-4.1",
 ]
 
-[tool.briefcase.app.positron_static.linux.system.rhel]
+[tool.briefcase.app.positron.linux.system.rhel]
 system_requires = [
     # Needed to compile pycairo wheel
     "cairo-gobject-devel",
@@ -72,7 +72,7 @@ system_runtime_requires = [
     # "webkit2gtk4.1",
 ]
 
-[tool.briefcase.app.positron_static.linux.system.suse]
+[tool.briefcase.app.positron.linux.system.suse]
 system_requires = [
     # Needed to compile pycairo wheel
     "cairo-devel",
@@ -91,7 +91,7 @@ system_runtime_requires = [
     # "libwebkit2gtk3", "typelib(WebKit2)",
 ]
 
-[tool.briefcase.app.positron_static.linux.system.arch]
+[tool.briefcase.app.positron.linux.system.arch]
 system_requires = [
     # Needed to compile pycairo wheel
     "cairo",
@@ -118,7 +118,7 @@ system_runtime_requires = [
     # "webkit2gtk",
 ]
 
-[tool.briefcase.app.positron_static.linux.appimage]
+[tool.briefcase.app.positron.linux.appimage]
 manylinux = "manylinux_2_28"
 
 system_requires = [
@@ -139,23 +139,23 @@ linuxdeploy_plugins = [
     "DEPLOY_GTK_VERSION=3 gtk",
 ]
 
-[tool.briefcase.app.positron_static.linux.flatpak]
+[tool.briefcase.app.positron.linux.flatpak]
 flatpak_runtime = "org.gnome.Platform"
 flatpak_runtime_version = "48"
 flatpak_sdk = "org.gnome.Sdk"
 
-[tool.briefcase.app.positron_static.windows]
+[tool.briefcase.app.positron.windows]
 requires = [
     "../../winforms",
 ]
 
 # Mobile deployments
-[tool.briefcase.app.positron_static.iOS]
+[tool.briefcase.app.positron.iOS]
 requires = [
     "../../iOS",
 ]
 
-[tool.briefcase.app.positron_static.android]
+[tool.briefcase.app.positron.android]
 requires = [
     "../../android",
 ]
@@ -178,7 +178,7 @@ chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
 """
 
 # Web deployment
-[tool.briefcase.app.positron_static.web]
+[tool.briefcase.app.positron.web]
 requires = [
     "../../web",
 ]

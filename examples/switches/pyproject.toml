@@ -15,7 +15,7 @@ license-files = [
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.switch]
+[tool.briefcase.app.switches]
 formal_name = "Switches"
 description = "Switch test app"
 sources = ["switches"]
@@ -25,19 +25,19 @@ requires = [
 ]
 
 
-[tool.briefcase.app.switch.macOS]
+[tool.briefcase.app.switches.macOS]
 universal_build = true
 requires = [
     "../../cocoa",
     "std-nslog~=2.0.0",
 ]
 
-[tool.briefcase.app.switch.linux]
+[tool.briefcase.app.switches.linux]
 requires = [
     "../../gtk",
 ]
 
-[tool.briefcase.app.switch.linux.system.debian]
+[tool.briefcase.app.switches.linux.system.debian]
 system_requires = [
     # Needed to compile pycairo wheel
     "libcairo2-dev",
@@ -54,7 +54,7 @@ system_runtime_requires = [
     # "gir1.2-webkit2-4.1",
 ]
 
-[tool.briefcase.app.switch.linux.system.rhel]
+[tool.briefcase.app.switches.linux.system.rhel]
 system_requires = [
     # Needed to compile pycairo wheel
     "cairo-gobject-devel",
@@ -73,7 +73,7 @@ system_runtime_requires = [
     # "webkit2gtk4.1",
 ]
 
-[tool.briefcase.app.switch.linux.system.suse]
+[tool.briefcase.app.switches.linux.system.suse]
 system_requires = [
     # Needed to compile pycairo wheel
     "cairo-devel",
@@ -92,7 +92,7 @@ system_runtime_requires = [
     # "libwebkit2gtk3", "typelib(WebKit2)",
 ]
 
-[tool.briefcase.app.switch.linux.system.arch]
+[tool.briefcase.app.switches.linux.system.arch]
 system_requires = [
     # Needed to compile pycairo wheel
     "cairo",
@@ -119,7 +119,7 @@ system_runtime_requires = [
     # "webkit2gtk",
 ]
 
-[tool.briefcase.app.switch.linux.appimage]
+[tool.briefcase.app.switches.linux.appimage]
 manylinux = "manylinux_2_28"
 
 system_requires = [
@@ -140,23 +140,23 @@ linuxdeploy_plugins = [
     "DEPLOY_GTK_VERSION=3 gtk",
 ]
 
-[tool.briefcase.app.switch.linux.flatpak]
+[tool.briefcase.app.switches.linux.flatpak]
 flatpak_runtime = "org.gnome.Platform"
 flatpak_runtime_version = "48"
 flatpak_sdk = "org.gnome.Sdk"
 
-[tool.briefcase.app.switch.windows]
+[tool.briefcase.app.switches.windows]
 requires = [
     "../../winforms",
 ]
 
 # Mobile deployments
-[tool.briefcase.app.switch.iOS]
+[tool.briefcase.app.switches.iOS]
 requires = [
     "../../iOS",
 ]
 
-[tool.briefcase.app.switch.android]
+[tool.briefcase.app.switches.android]
 requires = [
     "../../android",
 ]
@@ -179,7 +179,7 @@ build_gradle_dependencies = [
 # """
 
 # Web deployment
-[tool.briefcase.app.switch.web]
+[tool.briefcase.app.switches.web]
 requires = [
     "../../web",
 ]

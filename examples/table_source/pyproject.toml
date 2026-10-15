@@ -23,6 +23,12 @@ requires = [
     "../../core",
 ]
 
+[tool.briefcase.app.table_source.macOS]
+universal_build = true
+requires = [
+    "../../cocoa",
+    "std-nslog~=2.0.0",
+]
 
 [tool.briefcase.app.table_source.linux]
 requires = [
