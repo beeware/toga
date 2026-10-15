@@ -180,7 +180,10 @@ class DetailedList(Widget):
 
     @property
     def _title_font_height(self) -> int:
-        return round(self._font_height * 1.2)
+        try:
+            return self._title_font.Height
+        except AttributeError:
+            return round(self._font_height * 1.2)
 
     @property
     def _icon(self) -> int:
@@ -268,7 +271,9 @@ class DetailedList(Widget):
         """Matches the font of the Win32 List-View UI to the WinForms Panel."""
         # Create a title font that is 20% larger than the default font
         font = self.native.Font
-        self._title_font = WinFont(font.FontFamily, font.Size * 1.2, font.Style)
+        self._title_font = WinFont(
+            font.FontFamily, font.Size * 1.2, font.Style, font.Unit
+        )
 
         # Update the tile size.
         tile_view_info = self._tile_view_info(self._width, self._height)
