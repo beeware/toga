@@ -236,14 +236,14 @@ class DetailedList(Widget):
         return (x + self._tile_padding_small, y + self._tile_padding)
 
     def _drawing_select_rect(self, x: int, y: int) -> RECT:
-        if self._is_dark_mode:
+        if self._is_dark_mode:  # pragma: no-cover-if-light-mode
             return RECT(
                 x,
                 y,
                 x + self._tile_width(),
                 y + self._tile_height,
             )
-        else:
+        else:  # pragma: no-cover-if-dark-mode
             return RECT(
                 x + self._tile_padding_small + self._icon + self._tile_padding,
                 y + self._tile_padding,
@@ -457,10 +457,10 @@ class DetailedList(Widget):
             y = rect.top + divmod(self._tile_height - rect.bottom + rect.top, 2)[0]
 
             if is_selected:
-                if self._is_dark_mode:
+                if self._is_dark_mode:  # pragma: no-cover-if-light-mode
                     back_color = SystemColors.Highlight
                     text_color = self.native.ForeColor
-                else:
+                else:  # pragma: no-cover-if-dark-mode
                     if has_focus:
                         back_color = SystemColors.Highlight
                         text_color = SystemColors.HighlightText
@@ -490,15 +490,9 @@ class DetailedList(Widget):
             finally:
                 gdi32.SetTextColor(hdc, prev_color)
 
-            if self._is_dark_mode:
-                icon_flag = wc.ILD_NORMAL
-            elif is_selected:
-                if has_focus:
-                    icon_flag = wc.ILD_SELECTED
-                else:
-                    icon_flag = wc.ILD_FOCUS
-            else:
-                icon_flag = wc.ILD_NORMAL
+            icon_flag = wc.ILD_NORMAL
+            if is_selected and not self._is_dark_mode:  # pragma: no-cover-if-dark-mode
+                icon_flag = wc.ILD_SELECTED if has_focus else wc.ILD_FOCUS
 
             icon_xy = self._drawing_icon_xy(x=0, y=y)
             ImageList_Draw(

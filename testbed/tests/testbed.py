@@ -191,6 +191,15 @@ def main(main_package_name, backend_override=None):
             "no-cover-if-netcore": (
                 "os_environ.get('TOGA_WINFORMS_USE_NETFX', '') != '1'"
             ),
+            # Windows dark vs light mode
+            "no-cover-if-dark-mode": (
+                "os_environ.get('TOGA_WINFORMS_COLOR_MODE', '').strip().title() "
+                "== 'Dark'"
+            ),
+            "no-cover-if-light-mode": (
+                "os_environ.get('TOGA_WINFORMS_COLOR_MODE', '').strip().title() "
+                "!= 'Dark'"
+            ),
         },
     )
     cov.start()
