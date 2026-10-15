@@ -180,10 +180,7 @@ class DetailedList(Widget):
 
     @property
     def _title_font_height(self) -> int:
-        try:
-            return self._title_font.Height
-        except AttributeError:
-            return round(self._font_height * 1.2)
+        return self._title_font.Height
 
     @property
     def _icon(self) -> int:
