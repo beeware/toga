@@ -14,7 +14,6 @@ license-files = [
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
-formal_name = "Screenshot Generator"
 description = "Screenshot Generator test app, also for documentation generation"
 requires = [
     "../../travertino",
@@ -23,10 +22,12 @@ requires = [
 ]
 
 [tool.briefcase.app.screenshot]
+formal_name = "Screenshot Generator"
 sources = ["screenshot"]
 
 
 [tool.briefcase.app.screenshot-qt]
+formal_name = "Screenshot Generator (Qt)"
 sources = ["screenshot", "screenshot_qt"]
 
 

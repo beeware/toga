@@ -3,7 +3,8 @@ requires = ["briefcase"]
 
 # This project was generated with 0.4.6 using template: https://github.com/beeware/briefcase-template @ v0.4.6
 [tool.briefcase]
-project_name = "Switch"
+# Switch is a keyword
+project_name = "Switches"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
@@ -15,9 +16,9 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.switch]
-formal_name = "Switch"
+formal_name = "Switches"
 description = "Switch test app"
-sources = ["switch"]
+sources = ["switches"]
 requires = [
     "../../travertino",
     "../../core",
