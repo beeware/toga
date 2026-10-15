@@ -40,7 +40,7 @@ class SwitchApp(toga.App):
 
 
 def main():
-    return SwitchApp("Switches", "org.beeware.toga.examples.switch_demo")
+    return SwitchApp("Switches", "org.beeware.toga.examples.switches")
 
 
 if __name__ == "__main__":
