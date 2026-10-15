@@ -1,7 +1,7 @@
 import asyncio
 import random
 
-import httpx
+import httpx2
 
 import toga
 from toga.constants import COLUMN
@@ -49,7 +49,7 @@ class HandlerApp(toga.App):
             await asyncio.sleep(1)
 
     async def do_web_get(self, widget, **kwargs):
-        async with httpx.AsyncClient() as client:
+        async with httpx2.AsyncClient() as client:
             response = await client.get(
                 f"https://jsonplaceholder.typicode.com/posts/{random.randint(0, 100)}"
             )

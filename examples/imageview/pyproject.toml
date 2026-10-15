@@ -1,8 +1,9 @@
 [build-system]
 requires = ["briefcase"]
 
+# This project was generated with 0.4.6 using template: https://github.com/beeware/briefcase-template @ v0.4.6
 [tool.briefcase]
-project_name = "ImageView_Demo"
+project_name = "ImageView"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
@@ -14,8 +15,8 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.imageview]
-formal_name = "ImageView Demo"
-description = "A testing app"
+formal_name = "ImageView"
+description = "ImageView test app"
 sources = ["imageview"]
 requires = [
     "../../travertino",
@@ -24,43 +25,157 @@ requires = [
 
 
 [tool.briefcase.app.imageview.macOS]
+universal_build = true
 requires = [
     "../../cocoa",
-    "std-nslog>=1.0.0",
-    "Pillow",
+    "std-nslog~=2.0.0",
 ]
 
 [tool.briefcase.app.imageview.linux]
 requires = [
     "../../gtk",
-    "Pillow",
 ]
+
+[tool.briefcase.app.imageview.linux.system.debian]
+system_requires = [
+    # Needed to compile pycairo wheel
+    "libcairo2-dev",
+    "libgirepository-2.0-dev",
+]
+
+system_runtime_requires = [
+    # Needed to provide GTK and its GI bindings
+    "gir1.2-gtk-3.0",
+    "libgirepository-2.0-0",
+    # Dependencies that GTK looks for at runtime
+    "libcanberra-gtk3-module",
+    # Needed to provide WebKit2 at runtime
+    # "gir1.2-webkit2-4.1",
+]
+
+[tool.briefcase.app.imageview.linux.system.rhel]
+system_requires = [
+    # Needed to compile pycairo wheel
+    "cairo-gobject-devel",
+    # Needed to compile PyGObject wheel
+    "gobject-introspection-devel",
+]
+
+system_runtime_requires = [
+    # Needed to support Python bindings to GTK
+    "gobject-introspection",
+    # Needed to provide GTK
+    "gtk3",
+    # Dependencies that GTK looks for at runtime
+    "libcanberra-gtk3",
+    # Needed to provide WebKit2 at runtime
+    # "webkit2gtk4.1",
+]
+
+[tool.briefcase.app.imageview.linux.system.suse]
+system_requires = [
+    # Needed to compile pycairo wheel
+    "cairo-devel",
+    # Needed to compile PyGObject wheel
+    "gobject-introspection-devel",
+]
+
+system_runtime_requires = [
+    # Needed to provide GTK
+    "gtk3",
+    # Needed to support Python bindings to GTK
+    "gobject-introspection", "typelib(Gtk) = 3.0",
+    # Dependencies that GTK looks for at runtime
+    "libcanberra-gtk3-module",
+    # Needed to provide WebKit2 at runtime
+    # "libwebkit2gtk3", "typelib(WebKit2)",
+]
+
+[tool.briefcase.app.imageview.linux.system.arch]
+system_requires = [
+    # Needed to compile pycairo wheel
+    "cairo",
+    # Needed to compile PyGObject wheel
+    "gobject-introspection",
+    # Runtime dependencies that need to exist so that the
+    # Arch package passes final validation.
+    # Needed to provide GTK
+    "gtk3",
+    # Dependencies that GTK looks for at runtime
+    "libcanberra",
+    # Needed to provide WebKit2
+    # "webkit2gtk",
+]
+
+system_runtime_requires = [
+    # Needed to provide GTK
+    "gtk3",
+    # Needed to provide PyGObject bindings
+    "gobject-introspection-runtime",
+    # Dependencies that GTK looks for at runtime
+    "libcanberra",
+    # Needed to provide WebKit2 at runtime
+    # "webkit2gtk",
+]
+
+[tool.briefcase.app.imageview.linux.appimage]
+manylinux = "manylinux_2_28"
+
+system_requires = [
+    # Needed to compile pycairo wheel
+    "cairo-gobject-devel",
+    # Needed to compile PyGObject wheel
+    "gobject-introspection-devel",
+    # Needed to provide GTK
+    "gtk3-devel",
+    # Dependencies that GTK looks for at runtime, that need to be
+    # in the build environment to be picked up by linuxdeploy
+    "libcanberra-gtk3",
+    "PackageKit-gtk3-module",
+    "gvfs-client",
+]
+
+linuxdeploy_plugins = [
+    "DEPLOY_GTK_VERSION=3 gtk",
+]
+
+[tool.briefcase.app.imageview.linux.flatpak]
+flatpak_runtime = "org.gnome.Platform"
+flatpak_runtime_version = "48"
+flatpak_sdk = "org.gnome.Sdk"
 
 [tool.briefcase.app.imageview.windows]
 requires = [
     "../../winforms",
-    "Pillow",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.imageview.iOS]
 requires = [
     "../../iOS",
-    "std-nslog>=1.0.0",
-    "Pillow==9.4.0",
 ]
 
 [tool.briefcase.app.imageview.android]
 requires = [
     "../../android",
-    "Pillow==9.2.0",
 ]
 
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
-    "com.google.android.material:material:1.12.0",
+    "com.google.android.material:material:1.13.0",
+    # Needed for DetailedList
+    # "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+    # Needed for MapView
+    # "org.osmdroid:osmdroid-android:6.1.20",
+    # Needed for WebView
+    # "androidx.webkit:webkit:1.15.0",
 ]
+
+# Needed for WebView
+# build_gradle_extra_content="""
+# chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
+# """
 
 # Web deployment
 [tool.briefcase.app.imageview.web]
