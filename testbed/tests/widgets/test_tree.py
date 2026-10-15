@@ -1093,16 +1093,6 @@ async def test_peripheral_events(widget, probe, on_activate_handler):
     assert probe.is_expanded(widget.data[0])
     await probe.assert_item_mouse_hover((0,))
 
-    # Test hover on state-change arrow while row is selected and focused
-    await probe.select_row((0,))
-    await probe.redraw("Row 0 is selected and awaiting hover of state-change arrow")
-    await probe.assert_item_mouse_hover((0,))
-
-    # Test drawing when row is selected and unfocused
-    if hasattr(probe, "lose_focus"):
-        await probe.lose_focus()
-        await probe.redraw("Row 0 is selected but widget is unfocused")
-
     # Simulate clicks on the state change arrow.
     widget.collapse()
     await probe.redraw("Tree is collapsed and awaiting toggle by mouse click")
@@ -1115,6 +1105,15 @@ async def test_peripheral_events(widget, probe, on_activate_handler):
     await probe.redraw("Tree is collapsed and awaiting an item selection mouse click")
     await probe.single_click((0,), toggle=False, on_item=True)
     assert widget.selection == widget.data[0]
+
+    # Test hover on state-change arrow while row is selected and focused
+    await probe.redraw("Row 0 is selected and awaiting hover of state-change arrow")
+    await probe.assert_item_mouse_hover((0,))
+
+    # Test drawing when row is selected and unfocused
+    if hasattr(probe, "lose_focus"):
+        await probe.lose_focus()
+        await probe.redraw("Row 0 is selected but widget is unfocused")
 
     # Simulate a normal item selection click on a different item.
     await probe.redraw("Tree is awaiting a different item selection mouse click")
