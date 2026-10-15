@@ -835,13 +835,14 @@ class Tree(Table):
         text_format = (
             wc.DT_SINGLELINE | wc.DT_VCENTER | wc.DT_WORD_ELLIPSIS | wc.DT_HCENTER
         )
-        if self._is_dark_mode:
-            color = self.native.ForeColor
-        else:
-            if self.native.SelectedIndices.Contains(index) and self.native.Focused:
-                color = SystemColors.HighlightText
-            else:
-                color = self.native.ForeColor
+        # In dark mode, the selection highlight is not drawn, so the arrow keeps the
+        # normal text colour.
+        highlighted = (
+            not self._is_dark_mode
+            and self.native.SelectedIndices.Contains(index)
+            and self.native.Focused
+        )
+        color = SystemColors.HighlightText if highlighted else self.native.ForeColor
         prev_color = SetTextColor(hdc, ColorTranslator.ToWin32(color))
         prev_bk_mode = SetBkMode(hdc, wc.TRANSPARENT)
         try:
