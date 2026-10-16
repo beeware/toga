@@ -45,6 +45,7 @@ from toga.widgets.mapview import MapPin as MapPin
 from toga.widgets.mapview import MapView as MapView
 from toga.widgets.multilinetextinput import MultilineTextInput as MultilineTextInput
 from toga.widgets.numberinput import NumberInput as NumberInput
+from toga.widgets.openglview import OpenGLView as OpenGLView
 from toga.widgets.optioncontainer import OptionContainer as OptionContainer
 from toga.widgets.optioncontainer import OptionItem as OptionItem
 from toga.widgets.passwordinput import PasswordInput as PasswordInput

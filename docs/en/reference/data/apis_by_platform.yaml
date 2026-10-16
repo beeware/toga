@@ -126,6 +126,19 @@ Widgets:
       - web
       - textual
 
+  OpenGLView:
+    description: Display 2D and 3D OpenGL graphics.
+    beta:
+      - android
+      - cocoa
+      - gtk
+      - iOS
+      - qt
+    unsupported:
+      - textual
+      - web
+      - winforms
+
   PasswordInput:
     description: For entering a password; obscures entered text.
     beta:
