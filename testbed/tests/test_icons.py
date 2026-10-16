@@ -21,13 +21,15 @@ async def test_icon(app):
     icon = toga.Icon("resources/icons/green")
 
     probe = icon_probe(app, icon)
-    probe.assert_icon_content("resources/icons/green")
+    await probe.redraw("Icon probe is using a green icon")
+    await probe.assert_icon_content("resources/icons/green")
 
     # Create a second icon using an alternate (non-preferred) resource format.
     icon = toga.Icon(probe.alternate_resource)
 
     probe = icon_probe(app, icon)
-    probe.assert_icon_content(probe.alternate_resource)
+    await probe.redraw("Icon probe is using an alternate resource format")
+    await probe.assert_icon_content(probe.alternate_resource)
 
 
 async def test_app_icon(app):
@@ -39,16 +41,24 @@ async def test_app_icon(app):
 async def test_system_icon(app):
     """The default icon can be obtained"""
     probe = icon_probe(app, toga.Icon.DEFAULT_ICON)
-    probe.assert_default_icon_content()
+    await probe.redraw("Icon probe is using the default icon")
+    await probe.assert_default_icon_content()
 
 
 async def test_platform_icon(app):
     """A platform-specific icon can be loaded"""
     probe = icon_probe(app, toga.Icon("resources/logo"))
-    probe.assert_platform_icon_content()
+    await probe.redraw("Icon probe is using a platform-specific icon")
+    await probe.assert_platform_icon_content()
 
 
 async def test_bad_icon_file(app):
     """If a file isn't a loadable icon, the default icon is used."""
     probe = icon_probe(app, toga.Icon("resources/icons/bad"))
-    probe.assert_default_icon_content()
+    await probe.redraw("Icon probe is using a bad icon file")
+    await probe.assert_default_icon_content()
+
+    # Attempt to create another probe with an alternate (non-preferred) resource format.
+    probe = icon_probe(app, toga.Icon(probe.alternate_bad))
+    await probe.redraw("Icon probe is using an alternate bad icon file")
+    await probe.assert_default_icon_content()

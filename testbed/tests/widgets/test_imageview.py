@@ -15,7 +15,8 @@ from .properties import (  # noqa: F401
 
 skip_on_backends(
     "toga_textual",
-    reason="ImageView is not implemented on Textual.",
+    "toga_winui3",
+    reason="ImageView is not implemented on this backend.",
     allow_module_level=True,
 )
 
@@ -26,7 +27,8 @@ async def widget():
 
 
 test_cleanup = build_cleanup_test(
-    toga.ImageView, kwargs={"image": "resources/sample.png"}
+    toga.ImageView,
+    kwargs={"image": "resources/sample.png"},
 )
 
 

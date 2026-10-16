@@ -165,7 +165,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     def activate_menu_hide(self):
         pytest.xfail("This platform doesn't present a app level hide option in menu.")
 
-    def activate_menu_exit(self):
+    async def activate_menu_exit(self):
         if GTK_VERSION >= (4, 0, 0):
             pytest.skip("GTK4 doesn't support system menus")
         self._activate_menu_item(["*", "Quit"])
@@ -180,25 +180,25 @@ class AppProbe(BaseProbe, DialogsMixin):
             pytest.skip("GTK4 doesn't support system menus")
         self.app._impl._close_about(self.app._impl.native_about_dialog)
 
-    def activate_menu_visit_homepage(self):
+    async def activate_menu_visit_homepage(self):
         # Homepage is a link on the GTK about page.
         pytest.xfail("GTK doesn't have a visit homepage menu item")
 
-    def assert_system_menus(self):
+    async def assert_system_menus(self):
         if GTK_VERSION >= (4, 0, 0):
             pytest.skip("GTK4 doesn't support system menus")
-        self.assert_menu_item(["*", "Preferences"], enabled=False)
-        self.assert_menu_item(["*", "Quit"], enabled=True)
+        await self.assert_menu_item(["*", "Preferences"], enabled=False)
+        await self.assert_menu_item(["*", "Quit"], enabled=True)
 
-        self.assert_menu_item(["File", "New Example Document"], enabled=True)
-        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
-        self.assert_menu_item(["File", "Open..."], enabled=True)
-        self.assert_menu_item(["File", "Save"], enabled=True)
-        self.assert_menu_item(["File", "Save As..."], enabled=True)
-        self.assert_menu_item(["File", "Save All"], enabled=True)
+        await self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        await self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        await self.assert_menu_item(["File", "Open..."], enabled=True)
+        await self.assert_menu_item(["File", "Save"], enabled=True)
+        await self.assert_menu_item(["File", "Save As..."], enabled=True)
+        await self.assert_menu_item(["File", "Save All"], enabled=True)
 
-        self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
-        self.assert_menu_item(["Help", "About Toga Testbed"], enabled=True)
+        await self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
+        await self.assert_menu_item(["Help", "About Toga Testbed"], enabled=True)
 
     def activate_menu_close_window(self):
         pytest.xfail("GTK doesn't have a window management menu items")
@@ -209,13 +209,13 @@ class AppProbe(BaseProbe, DialogsMixin):
     def activate_menu_minimize(self):
         pytest.xfail("GTK doesn't have a window management menu items")
 
-    def assert_menu_item(self, path, enabled):
+    async def assert_menu_item(self, path, enabled):
         if GTK_VERSION >= (4, 0, 0):
             pytest.skip("GTK4 doesn't support menu items")
         _, action = self._menu_item(path)
         assert action.get_enabled() == enabled
 
-    def assert_menu_order(self, path, expected):
+    async def assert_menu_order(self, path, expected):
         if GTK_VERSION >= (4, 0, 0):
             pytest.skip("GTK4 doesn't support menu items")
         item, _action = self._menu_item(path)
@@ -311,12 +311,12 @@ class AppProbe(BaseProbe, DialogsMixin):
             # It's a button status item
             return None
 
-    def activate_status_icon_button(self, item_id):
+    async def activate_status_icon_button(self, item_id):
         if GTK_VERSION >= (4, 0, 0):
             pytest.skip("GTK4 doesn't support status icons")
         self.app.status_icons[item_id]._impl.native.emit("activate", 0, 0)
 
-    def activate_status_menu_item(self, item_id, title):
+    async def activate_status_menu_item(self, item_id, title):
         if GTK_VERSION >= (4, 0, 0):
             pytest.skip("GTK4 doesn't support status menu items")
         menu = self.app.status_icons[item_id]._impl.native.get_primary_menu()

@@ -24,6 +24,10 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         i = 0
         ready = False
         while i < 100 and not ready:
+            ########## Winui 3 startup debug ##########
+            if i % 5 == 0:
+                print(f"i:{i}")
+            ###########################################
             time.sleep(0.05)
             ready = getattr(app, "is_visible", False)
             i += 1
@@ -38,6 +42,11 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         # Some backends and platforms do not support interactive GUI testing.
         # On those platforms, perform a basic app start test.
         import toga
+
+        ########## Winui 3 startup debug ##########
+        if toga.backend == "toga_winui3":
+            print(f"toga_winui3 startup time = {0.05 * i}s")
+        ###########################################
 
         if (
             # On GitHub Actions, Windows/ARM64 runners don't have an interactive
@@ -103,6 +112,19 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                     elif toga.backend == "toga_textual":
                         print(
                             "Incomplete test coverage is expected on Textual (for now!)"
+                        )
+                    elif (
+                        toga.backend == "toga_winui3"
+                        and platform.machine() == "ARM64"
+                        and running_in_ci
+                    ):
+                        # GitHub Windows ARM64 runners don't seem to be able to accept
+                        # input focus. So some tests are skipped and incomplete coverage
+                        # is expected. See
+                        # https://github.com/actions/partner-runner-images/issues/174
+                        print(
+                            "Incomplete test coverage is expected on WinUI 3 with the"
+                            + " ARM64 CI (for now!)"
                         )
                     else:
                         print("Test coverage is incomplete")

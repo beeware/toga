@@ -12,6 +12,7 @@ from .probe import BaseProbe
 
 class IconProbe(BaseProbe):
     alternate_resource = "resources/icons/orange"
+    alternate_bad = "resources/icons/bad_ico"
 
     def __init__(self, app, icon):
         super().__init__()
@@ -31,7 +32,7 @@ class IconProbe(BaseProbe):
 
     # The following only checks for the paths detected, which does not
     # require GTK 3/4 differentiation.
-    def assert_icon_content(self, path):
+    async def assert_icon_content(self, path):
         if path == "resources/icons/green":
             # Three icons given with size; others sizes match the generic name
             assert self.icon._impl.path == {
@@ -52,13 +53,13 @@ class IconProbe(BaseProbe):
         else:
             pytest.fail("Unknown icon resource")
 
-    def assert_default_icon_content(self):
+    async def assert_default_icon_content(self):
         assert self.icon._impl.path == {
             size: Path(toga_gtk.__file__).parent / "resources/toga.png"
             for size in [16, 32, 64, 72, 128, 256, 512]
         }
 
-    def assert_platform_icon_content(self):
+    async def assert_platform_icon_content(self):
         # Only 32 and 72 pixel forms are available
         assert self.icon._impl.path == {
             32: self.app.paths.app / "resources/logo-linux-32.png",
