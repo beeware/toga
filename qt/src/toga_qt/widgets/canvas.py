@@ -274,6 +274,7 @@ class Context:
 
         self.native.setFont(font.native)
         path = QPainterPath()
+        path.setFillRule(Qt.FillRule.WindingFill)
         for line_num, line in enumerate(text.splitlines()):
             line_offset = scaled_line_height * line_num
             path.addText(left, top + line_offset, font.native, line)

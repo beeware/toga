@@ -21,6 +21,9 @@ class CanvasProbe(SimpleProbe):
             "deprecated_tutorial",
             "attributes",
             "reset_transform",
+            "endor_font_variants",
+            "roboto_font_variants",
+            "recursive_font_variants",
         }:
             return f"{reference}-android"
         return reference

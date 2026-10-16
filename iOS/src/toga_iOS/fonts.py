@@ -90,7 +90,9 @@ class Font:
             ttfont = TTFont(font_path)
             # Preserve the Postscript font name contained in the
             # font file.
-            font_name = ttfont["name"].getBestFullName()
+            font_name = (
+                ttfont["name"].getDebugName(6) or ttfont["name"].getBestFullName()
+            )
             _CUSTOM_FONT_NAMES[font_path] = font_name
 
         self._assign_native(font_name)
