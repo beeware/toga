@@ -37,7 +37,7 @@ async def test_directions(widget, probe):
 
     # Make the container a column box so the divider will become wide.
     widget.parent.style.direction = COLUMN
-    await probe.redraw("Divider should become wide")
+    await probe.redraw("Divider should become wide", wait_for=lambda: probe.width > 100)
 
     # The divider will now be wide, but short.
     assert widget.direction == Direction.HORIZONTAL
@@ -46,7 +46,10 @@ async def test_directions(widget, probe):
 
     # Make the divider vertical
     widget.direction = Direction.VERTICAL
-    await probe.redraw("Divider should be VERTICAL")
+    await probe.redraw(
+        "Divider should be VERTICAL",
+        wait_for=lambda: probe.width < 10 and probe.height < 10,
+    )
 
     # In a column box, a vertical divider will be narrow and short.
     assert widget.direction == Direction.VERTICAL
@@ -55,7 +58,9 @@ async def test_directions(widget, probe):
 
     # Make the container a row box again so the divider will become tall.
     widget.parent.style.direction = ROW
-    await probe.redraw("Divider should become tall")
+    await probe.redraw(
+        "Divider should become tall", wait_for=lambda: probe.height > 100
+    )
 
     # In a row box, a vertical divider will be narrow and tall.
     assert widget.direction == Direction.VERTICAL
@@ -64,7 +69,10 @@ async def test_directions(widget, probe):
 
     # Make the divider horizontal
     widget.direction = Direction.HORIZONTAL
-    await probe.redraw("Divider should be HORIZONTAL")
+    await probe.redraw(
+        "Divider should be HORIZONTAL",
+        wait_for=lambda: probe.width < 10 and probe.height < 10,
+    )
 
     # In a row box, a horizontal divider will be narrow and short.
     assert widget.direction == Direction.HORIZONTAL
@@ -73,7 +81,7 @@ async def test_directions(widget, probe):
 
     # Make the container a COLUMN box again
     widget.parent.style.direction = COLUMN
-    await probe.redraw("Divider should become wide")
+    await probe.redraw("Divider should become wide", wait_for=lambda: probe.width > 100)
 
     # In a column box, a horizontal divider will be wide and short.
     assert widget.direction == Direction.HORIZONTAL
