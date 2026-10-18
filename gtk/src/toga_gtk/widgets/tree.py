@@ -7,7 +7,7 @@ from .base import Widget
 from .table import TogaRow
 
 
-class TogaTreeRow(TogaRow):
+class TogaTreeRow(TogaRow):  # pragma: no-cover-if-gtk3
     @GObject.Signal
     def updated(self):
         pass
@@ -77,7 +77,7 @@ class Tree(Widget):
             self.native.set_min_content_width(200)
             self.native.set_min_content_height(200)
 
-    def _create_gtk4_columns(self):
+    def _create_gtk4_columns(self):  # pragma: no-cover-if-gtk3
         for column in list(self.native_tree.get_columns()):
             self.native_tree.remove_column(column)
 
@@ -98,7 +98,7 @@ class Tree(Widget):
         # native header; hiding it leaves the row view and column model intact.
         self.native_tree.get_first_child().set_visible(self.interface._show_headings)
 
-    def gtk_setup_cell(self, factory, item, first_column):
+    def gtk_setup_cell(self, factory, item, first_column):  # pragma: no-cover-if-gtk3
         cell = Gtk.Box(spacing=6)
         cell.icon = Gtk.Image(pixel_size=16)
         cell.text = Gtk.Label(xalign=0, hexpand=True, ellipsize=Pango.EllipsizeMode.END)
@@ -111,7 +111,7 @@ class Tree(Widget):
         else:
             item.set_child(cell)
 
-    def gtk_bind_cell(self, factory, item, column):
+    def gtk_bind_cell(self, factory, item, column):  # pragma: no-cover-if-gtk3
         child = item.get_child()
         tree_row = item.get_item()
         if isinstance(child, Gtk.TreeExpander):
@@ -124,7 +124,7 @@ class Tree(Widget):
         )
         self.gtk_update_cell(cell.row, cell)
 
-    def gtk_update_cell(self, row, cell):
+    def gtk_update_cell(self, row, cell):  # pragma: no-cover-if-gtk3
         cell.text.set_text(row.text(cell.column, self.interface.missing_value))
         icon = cell.column.icon(row.value)
         cell.icon.set_from_paintable(
@@ -132,7 +132,7 @@ class Tree(Widget):
         )
         cell.icon.set_visible(icon is not None)
 
-    def gtk_unbind_cell(self, factory, item):
+    def gtk_unbind_cell(self, factory, item):  # pragma: no-cover-if-gtk3
         child = item.get_child()
         if isinstance(child, Gtk.TreeExpander):
             child.set_list_row(None)
@@ -140,7 +140,7 @@ class Tree(Widget):
         cell.row.disconnect(cell.handler)
         cell.row = None
 
-    def gtk_on_activate(self, view, position):
+    def gtk_on_activate(self, view, position):  # pragma: no-cover-if-gtk3
         self.interface.on_activate(node=self.tree_model[position].get_item().value)
 
     def _create_columns(self):
@@ -202,7 +202,7 @@ class Tree(Widget):
             self.store.splice(0, self.store.get_n_items(), rows)
             self.refresh()
 
-    def create_tree_row(self, node):
+    def create_tree_row(self, node):  # pragma: no-cover-if-gtk3
         row = TogaTreeRow(node)
         self._rows[node] = row
         for column in self.interface._columns:
@@ -211,7 +211,7 @@ class Tree(Widget):
             row.children.append(self.create_tree_row(child))
         return row
 
-    def gtk_on_items_changed(self, *args):
+    def gtk_on_items_changed(self, *args):  # pragma: no-cover-if-gtk3
         if self._syncing_expansion:
             return
         self._syncing_expansion = True
@@ -228,7 +228,7 @@ class Tree(Widget):
         finally:
             self._syncing_expansion = False
 
-    def gtk_on_expanded(self, row, _property):
+    def gtk_on_expanded(self, row, _property):  # pragma: no-cover-if-gtk3
         node = row.get_item().value
         if row.get_expanded():
             self._expanded.add(node)
@@ -241,18 +241,18 @@ class Tree(Widget):
         else:
             self._expanded.discard(node)
 
-    def restore_expansion(self):
+    def restore_expansion(self):  # pragma: no-cover-if-gtk3
         self._expansion_idle = None
         self.apply_expansion()
         return False
 
-    def visible_row(self, node):
+    def visible_row(self, node):  # pragma: no-cover-if-gtk3
         for row in self.tree_model:
             if row.get_item().value is node:
                 return row
         return None
 
-    def apply_expansion(self):
+    def apply_expansion(self):  # pragma: no-cover-if-gtk3
         index = 0
         while index < self.tree_model.get_n_items():
             row = self.tree_model.get_row(index)
@@ -274,7 +274,7 @@ class Tree(Widget):
         self.source_insert(index=index, item=item, parent=parent)
 
     def source_insert(self, *, index, item, parent=None):
-        if GTK_VERSION >= (4, 0, 0):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             store = self.store if parent is None else self._rows[parent].children
             store.insert(index, self.create_tree_row(item))
             if parent is not None and not self._rows[parent].expandable:
@@ -324,7 +324,7 @@ class Tree(Widget):
         self.source_change(item=item)
 
     def source_change(self, *, item):
-        if GTK_VERSION >= (4, 0, 0):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             row = self._rows[item]
             for column in self.interface._columns:
                 row.warn_widget(column)
@@ -350,15 +350,15 @@ class Tree(Widget):
         self.source_remove(index=index, item=item, parent=parent)
 
     def source_remove(self, *, index, item, parent=None):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             del self.store[item._impl]
             item._impl = None
-        else:
+        else:  # pragma: no-cover-if-gtk3
             store = self.store if parent is None else self._rows[parent].children
             store.remove(index)
             self.forget_tree_row(item)
 
-    def forget_tree_row(self, node):
+    def forget_tree_row(self, node):  # pragma: no-cover-if-gtk3
         for child in node:
             self.forget_tree_row(child)
         self._rows.pop(node, None)
@@ -378,15 +378,15 @@ class Tree(Widget):
         self.source_clear()
 
     def source_clear(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.store.clear()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.store.remove_all()
             self._rows.clear()
             self._expanded.clear()
 
     def get_selection(self):
-        if GTK_VERSION >= (4, 0, 0):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             if self.interface.multiple_select:
                 selected = self.selection.get_selection()
                 return [
@@ -405,43 +405,43 @@ class Tree(Widget):
             return store[iter][0].value
 
     def expand_node(self, node):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_tree.expand_row(
                 self.native_tree.get_model().get_path(node._impl), True
             )
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.mark_expanded(node)
             self.apply_expansion()
 
-    def mark_expanded(self, node):
+    def mark_expanded(self, node):  # pragma: no-cover-if-gtk3
         if len(node):
             self._expanded.add(node)
             for child in node:
                 self.mark_expanded(child)
 
     def expand_all(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_tree.expand_all()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             for node in self.interface.data:
                 self.mark_expanded(node)
             self.apply_expansion()
 
     def collapse_node(self, node):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_tree.collapse_row(
                 self.native_tree.get_model().get_path(node._impl)
             )
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self._expanded.discard(node)
             row = self.visible_row(node)
             if row is not None:
                 row.set_expanded(False)
 
     def collapse_all(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_tree.collapse_all()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self._expanded.clear()
             for node in self.interface.data:
                 self.collapse_node(node)
