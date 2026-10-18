@@ -32,6 +32,10 @@ class DialogsMixin:
                 if isinstance(dialog._impl.native, Gtk.AlertDialog):
                     response = dialog._impl.response_types.index(gtk_result)
                 else:
+                    # File selection is loaded asynchronously. Give the chooser
+                    # time to select its initial file before accepting it.
+                    for _ in range(5):
+                        self._wait_for_dialog("Wait for initial file selection")
                     response = (
                         Gtk.ResponseType.ACCEPT
                         if gtk_result == Gtk.ResponseType.OK
@@ -41,6 +45,9 @@ class DialogsMixin:
         else:
             dialog._impl.native.emit("response", gtk_result)
         self._wait_for_dialog("Wait for dialog to disappear")
+        assert dialog._impl.future.done(), (
+            "Dialog did not respond to the selected action"
+        )
 
     def _setup_dialog_result(
         self, dialog, gtk_result, close_handler=None, pre_close_test_method=None
