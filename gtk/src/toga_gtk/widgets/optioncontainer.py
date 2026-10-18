@@ -37,6 +37,9 @@ class OptionContainer(Widget):
             # Tabs aren't visible by default;
             # tell the notebook to show all content.
             self.native.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            # GTK4 children are visible by default.
+            pass
 
     def on_recompute(self, container):
         # If a child widget recomputes, rehint this parent
