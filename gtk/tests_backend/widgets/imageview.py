@@ -21,9 +21,9 @@ class ImageViewProbe(SimpleProbe):
             pixbuf = self.native.get_pixbuf()
             assert (pixbuf.get_width(), pixbuf.get_height()) == (width, height)
         else:
-            # Inspect the bounds of the image actually rendered by Gtk.Picture.
+            # Snapshot the picture's content directly, excluding theme backgrounds
+            # and widget clipping bounds which can exceed the rendered image.
             snapshot = Gtk.Snapshot()
-            paintable = Gtk.WidgetPaintable.new(self.native)
-            paintable.snapshot(snapshot, self.width, self.height)
+            Gtk.Picture.do_snapshot(self.native, snapshot)
             bounds = snapshot.to_node().get_bounds()
             assert (bounds.get_width(), bounds.get_height()) == (width, height)
