@@ -10,7 +10,7 @@ from .base import Widget
 
 class TogaRow(GObject.Object):
     @GObject.Signal
-    def changed(self):
+    def changed(self):  # pragma: no-cover-if-gtk3
         pass
 
     def __init__(self, value):
@@ -80,7 +80,7 @@ class Table(Widget):
             self.native.set_min_content_width(200)
             self.native.set_min_content_height(200)
 
-    def _create_gtk4_columns(self):
+    def _create_gtk4_columns(self):  # pragma: no-cover-if-gtk3
         existing = {
             column.interface: column for column in self.native_table.get_columns()
         }
@@ -109,7 +109,7 @@ class Table(Widget):
         # native header; hiding it leaves the row view and column model intact.
         self.native_table.get_first_child().set_visible(self.interface._show_headings)
 
-    def gtk_setup_cell(self, factory, item):
+    def gtk_setup_cell(self, factory, item):  # pragma: no-cover-if-gtk3
         cell = Gtk.Box(spacing=6)
         cell.icon = Gtk.Image(pixel_size=16)
         cell.text = Gtk.Label(xalign=0, hexpand=True, ellipsize=Pango.EllipsizeMode.END)
@@ -117,7 +117,7 @@ class Table(Widget):
         cell.append(cell.text)
         item.set_child(cell)
 
-    def gtk_bind_cell(self, factory, item, column):
+    def gtk_bind_cell(self, factory, item, column):  # pragma: no-cover-if-gtk3
         cell = item.get_child()
         cell.row = item.get_item()
         cell.column = column
@@ -126,7 +126,7 @@ class Table(Widget):
         )
         self.gtk_update_cell(cell.row, cell)
 
-    def gtk_update_cell(self, row, cell):
+    def gtk_update_cell(self, row, cell):  # pragma: no-cover-if-gtk3
         cell.text.set_text(row.text(cell.column, self.interface.missing_value))
         icon = cell.column.icon(row.value)
         cell.icon.set_from_paintable(
@@ -134,12 +134,12 @@ class Table(Widget):
         )
         cell.icon.set_visible(icon is not None)
 
-    def gtk_unbind_cell(self, factory, item):
+    def gtk_unbind_cell(self, factory, item):  # pragma: no-cover-if-gtk3
         cell = item.get_child()
         cell.row.disconnect(cell.handler)
         cell.row = None
 
-    def gtk_on_activate(self, view, position):
+    def gtk_on_activate(self, view, position):  # pragma: no-cover-if-gtk3
         self.interface.on_activate(row=self.store[position].value)
 
     def _create_columns(self):
@@ -172,7 +172,9 @@ class Table(Widget):
         self.native_table.grab_focus()
 
     def set_bounds(self, x, y, width, height):
-        if GTK_VERSION >= (4, 0, 0) and self.native.get_width() != width:
+        if (
+            GTK_VERSION >= (4, 0, 0) and self.native.get_width() != width
+        ):  # pragma: no-cover-if-gtk3
             columns = list(self.native_table.get_columns())
             if any(column.get_fixed_width() >= 0 for column in columns):
                 # After a user resizes a column, preserve the resulting proportions
@@ -256,7 +258,7 @@ class Table(Widget):
 
     def source_insert(self, *, index, item):
         row = TogaRow(item)
-        if GTK_VERSION >= (4, 0, 0):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             for column in self.interface._columns:
                 row.warn_widget(column)
             self.store.insert(index, row)
@@ -290,7 +292,7 @@ class Table(Widget):
     def source_change(self, *, item):
         index = self.interface.data.index(item)
         row = self.store[index]
-        if GTK_VERSION >= (4, 0, 0):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             for column in self.interface._columns:
                 row.warn_widget(column)
             row.emit("changed")
@@ -314,9 +316,9 @@ class Table(Widget):
         self.source_remove(index=index, item=item)
 
     def source_remove(self, *, index, item):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             del self.store[index]
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.store.remove(index)
 
     # Alias for backwards compatibility:
@@ -333,13 +335,13 @@ class Table(Widget):
         self.source_clear()
 
     def source_clear(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.store.clear()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.store.remove_all()
 
     def get_selection(self):
-        if GTK_VERSION >= (4, 0, 0):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             if self.interface.multiple_select:
                 selected = self.selection.get_selection()
                 return [selected.get_nth(i) for i in range(selected.get_size())]
