@@ -30,7 +30,7 @@ class ScrollContainer(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.add(self.document_container)
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.native.set_child(self.document_container)
 
     def gtk_on_changed(self, *args):
         self.interface.on_scroll()
@@ -51,11 +51,8 @@ class ScrollContainer(Widget):
         self.interface.content.window = window
 
     def rehint(self):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-        else:  # pragma: no-cover-if-gtk3
-            pass
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def get_horizontal(self):
         return self.native.get_policy()[0] == Gtk.PolicyType.AUTOMATIC
