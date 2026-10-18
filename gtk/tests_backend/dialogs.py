@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import Mock
 
+import pytest
+
 from toga_gtk.libs import GTK_VERSION, Gio, GLib, Gtk
 
 
@@ -256,6 +258,20 @@ class DialogsMixin:
     def _setup_gtk4_file_result(self, dialog, result, multiple_select):
         def close_handler(dialog, gtk_result):
             if result:
+                if dialog._impl.operation in {"open", "open_multiple"}:
+                    chooser = next(
+                        window
+                        for window in Gtk.Window.get_toplevels()
+                        if window.get_visible() and window not in dialog._test_windows
+                    )
+                    # The local GTK chooser does not reliably preselect the
+                    # initial file. Drive its deprecated selection API only in
+                    # the probe; applications still use Gtk.FileDialog.
+                    with pytest.deprecated_call(match="Gtk.FileChooser.set_file"):
+                        chooser.set_file(Gio.File.new_for_path(__file__))
+                    self._wait_for_dialog("Wait for file to be selected")
+                    with pytest.deprecated_call(match="Gtk.FileChooser.get_file"):
+                        assert chooser.get_file().get_path() == __file__
                 if multiple_select:
                     dialog._impl.selected_paths = Mock(
                         return_value=[str(path) for path in result]
