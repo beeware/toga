@@ -89,7 +89,9 @@ class DialogsMixin:
                         # isn't what as expected, so record that in the future.
                         future.set_exception(e)
 
-            asyncio.create_task(_close_dialog(), name="close-dialog")
+            dialog._test_close_task = asyncio.create_task(
+                _close_dialog(), name="close-dialog"
+            )
 
         dialog._impl.show = automated_show
 
