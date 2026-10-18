@@ -171,6 +171,26 @@ class Table(Widget):
     def focus(self):
         self.native_table.grab_focus()
 
+    def set_bounds(self, x, y, width, height):
+        if GTK_VERSION >= (4, 0, 0) and self.native.get_width() != width:
+            columns = list(self.native_table.get_columns())
+            if any(column.get_fixed_width() >= 0 for column in columns):
+                # After a user resizes a column, preserve the resulting proportions
+                # when the whole table changes size. ColumnView only exposes the
+                # requested fixed width; the header widgets have the actual widths.
+                header = self.native_table.get_first_child().get_first_child()
+                widths = []
+                while header is not None:
+                    widths.append(header.get_width())
+                    header = header.get_next_sibling()
+                total = sum(widths)
+                if total:
+                    for column, old_width in zip(columns, widths, strict=True):
+                        column.set_fixed_width(
+                            max(16, round(old_width * width / total))
+                        )
+        super().set_bounds(x, y, width, height)
+
     def gtk_on_row_activated(self, widget, path, column):
         row = self.store[path][0].value
         self.interface.on_activate(row=row)
