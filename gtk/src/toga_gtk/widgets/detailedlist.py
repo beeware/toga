@@ -48,7 +48,7 @@ class DetailedListRow(Gtk.ListBoxRow):
         self.update(dl, row)
         self.stack.add_named(self.content, "content")
 
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # Make sure the widgets have been made visible.
             self.show_all()
 
@@ -96,10 +96,10 @@ class DetailedListRow(Gtk.ListBoxRow):
             icon = None
 
         if icon is not None:
-            if GTK_VERSION < (4, 0, 0):
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
                 self.icon = Gtk.Image.new_from_pixbuf(icon.native(32))
                 self.content.pack_start(self.icon, False, False, 6)
-            else:
+            else:  # pragma: no-cover-if-gtk3
                 self.icon = Gtk.Image.new_from_paintable(icon.native().get_paintable())
                 self.icon.set_pixel_size(32)
                 self.icon.set_margin_start(6)
@@ -135,9 +135,9 @@ class DetailedList(Widget):
         scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
         scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             scrolled_window.add(self.native_detailedlist)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             scrolled_window.set_child(self.native_detailedlist)
 
         self.native_vadj = scrolled_window.get_vadjustment()
@@ -152,7 +152,7 @@ class DetailedList(Widget):
         self.native_revealer.set_margin_bottom(12)
         self.native_revealer.set_reveal_child(False)
 
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_refresh_button = Gtk.Button.new_from_icon_name(
                 "view-refresh-symbolic", Gtk.IconSize.BUTTON
             )
@@ -162,7 +162,7 @@ class DetailedList(Widget):
             style_context.add_class("toga-detailed-list-floating-buttons")
             style_context.remove_class("button")
             self.native_revealer.add(self.native_refresh_button)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.native_refresh_button = Gtk.Button.new_from_icon_name(
                 "view-refresh-symbolic"
             )
@@ -177,10 +177,10 @@ class DetailedList(Widget):
         )
 
         self.native = Gtk.Overlay()
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.add_overlay(scrolled_window)
             self.gesture = Gtk.GestureMultiPress.new(self.native_detailedlist)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.native.set_child(scrolled_window)
             self.gesture = Gtk.GestureClick()
             self.native_detailedlist.add_controller(self.gesture)
@@ -204,7 +204,7 @@ class DetailedList(Widget):
         self.native_secondary_action_button.connect(
             "clicked", WeakrefCallable(self.gtk_on_secondary_clicked)
         )
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
             action_buttons_hbox.pack_start(
                 self.native_primary_action_button, False, False, 10
@@ -215,7 +215,7 @@ class DetailedList(Widget):
             action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
             self.native_action_buttons.pack_start(action_buttons_hbox, True, False, 0)
             self.native_action_buttons.show_all()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             action_buttons_hbox.set_halign(Gtk.Align.CENTER)
             action_buttons_hbox.set_spacing(20)
             action_buttons_hbox.append(self.native_primary_action_button)
@@ -248,7 +248,7 @@ class DetailedList(Widget):
         self.hide_actions()
         item_impl = self.row_factory(item)
         self.store.insert(index, item_impl)
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_detailedlist.show_all()
         self.update_refresh_button()
 
