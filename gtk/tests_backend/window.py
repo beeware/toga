@@ -47,6 +47,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
             assert isinstance(self.native, Gtk.Window)
         else:
             assert isinstance(self.native, (Adw.Window, Adw.ApplicationWindow))
+        if GTK_VERSION >= (4, 0, 0):
+            assert self.window.screen in self.app.screens
 
     async def wait_for_window(
         self,

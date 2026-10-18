@@ -2,7 +2,7 @@
 
 ## Usage
 
-Window content can be captured as an image on GTK3, GTK4, and libadwaita. GTK4 captures the window's content directly, including on Wayland. The window's screen identifies the monitor containing its native surface; before the window is realized, GTK4 uses the first available monitor.
+Window content can be captured as an image on GTK3, GTK4, and libadwaita. GTK4 captures the window's content directly, including on Wayland. The window's screen identifies the monitor containing its native surface; before a monitor is assigned to the window, GTK4 uses the first available monitor.
 
 A window is the top-level container that the operating system uses to display widgets. On desktop platforms, an instance of [`Window`][toga.Window] will have a title bar, but will not have a menu or toolbar. On mobile, web and console platforms, [`Window`][toga.Window] is a bare container with no other decoration. Subclasses of [`Window`][toga.Window] (such as [`MainWindow`][toga.MainWindow]) add other decorations.
 

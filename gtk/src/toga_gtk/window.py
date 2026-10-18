@@ -308,10 +308,10 @@ class Window:
             display = self.native.get_display()
             surface = self.native.get_surface()
             monitor_native = (
-                display.get_monitor_at_surface(surface)
-                if surface is not None
-                else display.get_monitors().get_item(0)
+                display.get_monitor_at_surface(surface) if surface is not None else None
             )
+            if monitor_native is None:
+                monitor_native = display.get_monitors().get_item(0)
         return ScreenImpl(monitor_native)
 
     def get_position(self) -> Position:
