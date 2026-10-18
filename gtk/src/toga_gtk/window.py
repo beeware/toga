@@ -493,7 +493,14 @@ class Window:
                 # in test conditions
                 raise ValueError(f"Unable to generate screenshot of {self}")
         else:  # pragma: no-cover-if-gtk3
-            self.interface.factory.not_implemented("Window.get_image_data()")
+            snapshot = Gtk.Snapshot()
+            paintable = Gtk.WidgetPaintable.new(self.container)
+            paintable.snapshot(
+                snapshot, self.container.get_width(), self.container.get_height()
+            )
+            node = snapshot.to_node()
+            texture = self.native.get_renderer().render_texture(node, None)
+            return texture.save_to_png_bytes().get_data()
 
 
 class MainWindow(Window):
@@ -511,6 +518,8 @@ class MainWindow(Window):
                 self.native = create_toga_native(Adw.ApplicationWindow)()
             else:
                 self.native = create_toga_native(Gtk.ApplicationWindow)()
+            self.native_toolbar = None
+            self.toolbar_items = {}
 
     def create_menus(self):
         # GTK menus are handled at the app level
@@ -576,5 +585,45 @@ class MainWindow(Window):
                 )
                 self.native_toolbar.show_all()
         else:  # pragma: no-cover-if-gtk3
-            # TODO: Implement toolbar commands in HeaderBar with #1931
-            pass
+            if self.native_toolbar is not None:
+                if Adw is not None:
+                    self.toolbar_view.remove_top_bar(self.native_toolbar)
+                else:
+                    self.layout.remove(self.native_toolbar)
+            for cmd, item in self.toolbar_items.items():
+                cmd._impl.native.remove(item)
+            self.toolbar_items = {}
+            self.native_toolbar = Gtk.Box(spacing=6)
+            self.native_toolbar.add_css_class("toolbar")
+            prev_group = None
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Separator):
+                    item = Gtk.Box(width_request=12)
+                    prev_group = None
+                else:
+                    if prev_group is not None and prev_group != cmd.group:
+                        self.native_toolbar.append(
+                            Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
+                        )
+                    prev_group = cmd.group
+                    content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3)
+                    if cmd.icon:
+                        icon = Gtk.Image.new_from_paintable(
+                            cmd.icon._impl.native().get_paintable()
+                        )
+                        icon.set_pixel_size(32)
+                        content.append(icon)
+                    content.append(Gtk.Label(label=cmd.text))
+                    item = Gtk.Button(child=content)
+                    item.set_tooltip_text(cmd.tooltip)
+                    item.set_sensitive(cmd.enabled)
+                    item.connect("clicked", cmd._impl.gtk_clicked)
+                    cmd._impl.native.append(item)
+                    self.toolbar_items[cmd] = item
+                self.native_toolbar.append(item)
+
+            if Adw is not None:
+                self.toolbar_view.add_top_bar(self.native_toolbar)
+            else:
+                self.layout.prepend(self.native_toolbar)
+            self.native_toolbar.set_visible(bool(self.toolbar_items))

@@ -1,8 +1,6 @@
 import asyncio
 import os
 
-import pytest
-
 from toga.constants import WindowState
 from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, Gtk
 
@@ -26,7 +24,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         supports_placement = not IS_WAYLAND
     else:
         supports_closable = False
-        supports_as_image = False
+        supports_as_image = True
         supports_focus = False
         supports_minimize = False
         supports_placement = False
@@ -114,9 +112,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
             content_allocation = self.impl.container.get_allocation()
             return content_allocation.width, content_allocation.height
         else:
-            pytest.skip("Content size in GTK4 is not implemented")
             content = self.impl.container
-            return content.width, content.height
+            return content.get_width(), content.get_height()
 
     @property
     def is_resizable(self):
@@ -149,15 +146,33 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def has_toolbar(self):
         if GTK_VERSION < (4, 0, 0):
             return self.impl.native_toolbar.get_n_items() > 0
-        pytest.skip("Toolbars not implemented on GTK4")
+        return bool(self.impl.toolbar_items)
+
+    def toolbar_item(self, index):
+        if GTK_VERSION < (4, 0, 0):
+            return self.impl.native_toolbar.get_nth_item(index)
+        item = self.impl.native_toolbar.get_first_child()
+        for _ in range(index):
+            item = item.get_next_sibling()
+        return item
 
     def assert_is_toolbar_separator(self, index, section=False):
-        item = self.impl.native_toolbar.get_nth_item(index)
-        assert isinstance(item, Gtk.SeparatorToolItem)
-        assert item.get_draw() == (not section)
+        item = self.toolbar_item(index)
+        if GTK_VERSION < (4, 0, 0):
+            assert isinstance(item, Gtk.SeparatorToolItem)
+            assert item.get_draw() == (not section)
+        else:
+            assert isinstance(item, Gtk.Box if section else Gtk.Separator)
 
     def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
-        item = self.impl.native_toolbar.get_nth_item(index)
+        item = self.toolbar_item(index)
+        if GTK_VERSION >= (4, 0, 0):
+            content = item.get_child()
+            assert content.get_last_child().get_label() == label
+            assert isinstance(content.get_first_child(), Gtk.Image) == has_icon
+            assert item.get_tooltip_text() == tooltip
+            assert item.get_sensitive() == enabled
+            return
         assert item.get_label() == label
         # FIXME: get_tooltip_text() doesn't work. The tooltip can be set, but the
         # API to return the value just doesn't work. If it is ever fixed, this
@@ -169,5 +184,5 @@ class WindowProbe(BaseProbe, DialogsMixin):
         assert item.get_sensitive() == enabled
 
     def press_toolbar_button(self, index):
-        item = self.impl.native_toolbar.get_nth_item(index)
+        item = self.toolbar_item(index)
         item.emit("clicked")
