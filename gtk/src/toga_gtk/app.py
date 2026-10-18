@@ -84,6 +84,13 @@ class App:
             # Earlier than GTK 4.8
             css_provider.load_from_data(TOGA_DEFAULT_STYLES.encode("utf-8"))
 
+        if GTK_VERSION >= (4, 0, 0):
+            Gtk.StyleContext.add_provider_for_display(
+                Gdk.Display.get_default(),
+                css_provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+            )
+
     ######################################################################
     # Commands and menus
     ######################################################################
@@ -122,6 +129,10 @@ class App:
         # (or to the top of the screen if the GTK theme requires)
 
         # Only create the menu if the menu item index has been created.
+        for action, cmd in getattr(self, "_menu_items", {}).items():
+            self.native.remove_action(action.get_name())
+            self.native.set_accels_for_action(f"app.{action.get_name()}", [])
+            cmd._impl.native.remove(action)
         self._menu_items = {}
         self._menu_groups = {}
 
@@ -148,11 +159,17 @@ class App:
                     item.set_attribute_value(
                         "accel", GLib.Variant("s", gtk_accel(cmd.shortcut))
                     )
+                    self.native.set_accels_for_action(
+                        f"app.{cmd_id}", [gtk_accel(cmd.shortcut)]
+                    )
 
                 section.append_item(item)
 
         # Set the menu for the app.
         self.native.set_menubar(menubar)
+        if GTK_VERSION >= (4, 0, 0):
+            for window in self.interface.windows:
+                self.set_window_menu(window._impl)
 
         # Now that we have menus, make the app take responsibility for
         # showing the menubar.
@@ -161,6 +178,17 @@ class App:
         # see #872 for details.
         settings = Gtk.Settings.get_default()
         settings.set_property("gtk-shell-shows-menubar", False)
+
+    def set_window_menu(self, window):
+        if not isinstance(window.native, Gtk.ApplicationWindow):
+            return
+        if Adw is not None:
+            if not hasattr(window, "menu_button"):
+                window.menu_button = Gtk.MenuButton(icon_name="open-menu-symbolic")
+                window.headerbar.pack_end(window.menu_button)
+            window.menu_button.set_menu_model(self.native.get_menubar())
+        else:
+            window.native.set_show_menubar(True)
 
     ######################################################################
     # App lifecycle
@@ -239,13 +267,19 @@ class App:
     def _close_about(self, dialog, *args, **kwargs):
         self.native_about_dialog.destroy()
         self.native_about_dialog = None
+        return True
 
     def show_about_dialog(self):
         self.native_about_dialog = Gtk.AboutDialog()
         self.native_about_dialog.set_modal(True)
 
         icon_impl = toga_App.app.icon._impl
-        self.native_about_dialog.set_logo(icon_impl.native(72))
+        self.native_about_dialog.set_logo(
+            icon_impl.native(72)
+            if GTK_VERSION < (4, 0, 0)
+            else icon_impl.native().get_paintable()
+        )
+        self.native_about_dialog.set_transient_for(self.native.get_active_window())
 
         self.native_about_dialog.set_program_name(self.interface.formal_name)
         if self.interface.version is not None:
@@ -257,9 +291,13 @@ class App:
         if self.interface.home_page is not None:
             self.native_about_dialog.set_website(self.interface.home_page)
 
-        self.native_about_dialog.show()
-        self.native_about_dialog.connect("close", self._close_about)
-        self.native_about_dialog.connect("response", self._close_about)
+        if GTK_VERSION < (4, 0, 0):
+            self.native_about_dialog.show()
+            self.native_about_dialog.connect("close", self._close_about)
+            self.native_about_dialog.connect("response", self._close_about)
+        else:
+            self.native_about_dialog.connect("close-request", self._close_about)
+            self.native_about_dialog.present()
 
     ######################################################################
     # Cursor control

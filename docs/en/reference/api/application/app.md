@@ -96,6 +96,7 @@ For details on how to define and register document types, refer to [the document
 
 ## Notes
 
+- GTK4 supports application menus, command shortcuts, and the About dialog. With libadwaita, application menus appear in a menu button in the window header.
 - On macOS, menus are tied to the app, not the window; and a menu is mandatory. Therefore, a macOS app will *always* have a menu with the default menu items, regardless of the window being used as the main window.
 - Apps executed under Wayland on Linux environment may not show the app's formal name correctly. Wayland considers many aspects of app operation to be the domain of the windowing environment, not the app; as a result, some API requests will be ignored under a Wayland environment. Correctly displaying the app's formal name requires the use of a desktop metadata that Wayland can read. Packaging your app with [Briefcase](https://briefcase.beeware.org/en/stable) is one way to produce this metadata.
 
