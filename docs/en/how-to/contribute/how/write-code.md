@@ -189,7 +189,7 @@ For testing the GTK4 backend without libadwaita:
 ```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
-(.venv) $ TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=None briefcase dev --app testbed --test
+(.venv) $ GDK_DEBUG=no-portals TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=None briefcase dev --app testbed --test
 ```
 
 For testing the GTK4 backend with libadwaita:
@@ -197,7 +197,7 @@ For testing the GTK4 backend with libadwaita:
 ```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
-(.venv) $ TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=Adw briefcase dev --app testbed --test
+(.venv) $ GDK_DEBUG=no-portals TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=Adw briefcase dev --app testbed --test
 ```
 
 For testing the Qt backend:

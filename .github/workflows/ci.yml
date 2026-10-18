@@ -360,6 +360,8 @@ jobs:
           runs-on: "ubuntu-24.04"
           env:
             XDG_RUNTIME_DIR: "/tmp"
+            # Test probes operate on GTK dialogs in the testbed process.
+            GDK_DEBUG: "no-portals"
           # The package list should be build on the same base as unix-prerequisites.md,
           # and the BeeWare tutorial. Additional packages will be added for window
           # management, and features such as web views and geolocation that aren't part
@@ -392,6 +394,7 @@ jobs:
           runs-on: "ubuntu-24.04"
           env:
             XDG_RUNTIME_DIR: "/tmp"
+            GDK_DEBUG: "no-portals"
           # The package list should be build on the same base as unix-prerequisites.md,
           # and the BeeWare tutorial. Additional packages will be added for window
           # management, and features such as web views and geolocation that aren't part
