@@ -71,13 +71,13 @@ class Selection(Widget):
         index = self.interface._items.index(item)
         selection = self.get_selected_index()
         with self.suspend_notifications():
-            if GTK_VERSION < (4, 0, 0):
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
                 # Insert a new entry at the same index, then delete the old entry.
                 self.native.insert_text(index, self.interface._title_for_item(item))
                 self.native.remove(index + 1)
                 if selection == index:
                     self.native.set_active(index)
-            else:
+            else:  # pragma: no-cover-if-gtk3
                 self.model.splice(index, 1, [self.interface._title_for_item(item)])
                 if selection == index:
                     self.native.set_selected(index)
@@ -135,9 +135,9 @@ class Selection(Widget):
     def source_remove(self, *, index, item):
         selection = self.get_selected_index()
         with self.suspend_notifications():
-            if GTK_VERSION < (4, 0, 0):
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
                 self.native.remove(index)
-            else:
+            else:  # pragma: no-cover-if-gtk3
                 self.model.remove(index)
                 if selection == index:
                     self.native.set_selected(
@@ -147,9 +147,9 @@ class Selection(Widget):
         # If we deleted the item that is currently selected, reset the
         # selection to the first item
         if index == selection:
-            if GTK_VERSION < (4, 0, 0):
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
                 self.native.set_active(0)
-            else:
+            else:  # pragma: no-cover-if-gtk3
                 self.interface.on_change()
 
         self.interface.refresh()
@@ -169,23 +169,23 @@ class Selection(Widget):
 
     def source_clear(self):
         with self.suspend_notifications():
-            if GTK_VERSION < (4, 0, 0):
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
                 self.native.remove_all()
-            else:
+            else:  # pragma: no-cover-if-gtk3
                 self.model.splice(0, self.model.get_n_items(), [])
         self.interface.on_change()
 
     def select_item(self, index, item):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.set_active(index)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.native.set_selected(index)
 
     def get_selected_index(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             index = self.native.get_active()
             return None if index == -1 else index
-        else:
+        else:  # pragma: no-cover-if-gtk3
             index = self.native.get_selected()
             return None if index == Gtk.INVALID_LIST_POSITION else index
 
