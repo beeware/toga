@@ -7,6 +7,8 @@ from .base import SimpleProbe
 
 class TimeInputProbe(SimpleProbe):
     native_class = Gtk.Box
+    # Three native spin controls include six arrow buttons as well as the text.
+    minimum_required_width = 400
     supports_limits = True
     supports_seconds = True
 
