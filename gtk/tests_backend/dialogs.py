@@ -1,10 +1,9 @@
 import asyncio
+import warnings
 from datetime import datetime, timedelta
 from inspect import isawaitable
 from pathlib import Path
 from unittest.mock import Mock
-
-import pytest
 
 from toga_gtk.libs import GTK_VERSION, Gio, GLib, Gtk
 
@@ -272,10 +271,20 @@ class DialogsMixin:
                     # The local GTK chooser does not reliably preselect the
                     # initial file. Drive its deprecated selection API only in
                     # the probe; applications still use Gtk.FileDialog.
-                    with pytest.deprecated_call(match="Gtk.FileChooser.set_file"):
+                    with warnings.catch_warnings():
+                        warnings.filterwarnings(
+                            "ignore",
+                            message="Gtk.FileChooser.set_file is deprecated",
+                            category=DeprecationWarning,
+                        )
                         chooser.set_file(Gio.File.new_for_path(__file__))
                     await asyncio.sleep(0.1)
-                    with pytest.deprecated_call(match="Gtk.FileChooser.get_file"):
+                    with warnings.catch_warnings():
+                        warnings.filterwarnings(
+                            "ignore",
+                            message="Gtk.FileChooser.get_file is deprecated",
+                            category=DeprecationWarning,
+                        )
                         assert chooser.get_file().get_path() == __file__
                 if multiple_select:
                     dialog._impl.selected_paths = Mock(
