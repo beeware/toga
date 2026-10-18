@@ -54,7 +54,8 @@ class DialogsMixin:
         def automated_show(host_window, future):
             if GTK_VERSION >= (4, 10, 0):
                 dialog._test_windows = list(Gtk.Window.get_toplevels())
-            orig_show(host_window, future)
+            native_future = asyncio.get_running_loop().create_future()
+            orig_show(host_window, native_future)
 
             async def _close_dialog():
                 # Add a slight delay for the dialog to show up
@@ -66,27 +67,23 @@ class DialogsMixin:
                     else 0.05
                 )
                 try:
-                    if pre_close_test_method:
-                        pre_close_test_method(dialog)
-                finally:
                     try:
+                        if pre_close_test_method:
+                            pre_close_test_method(dialog)
+                    finally:
                         if close_handler:
                             result = close_handler(dialog, gtk_result)
                             if isawaitable(result):
                                 await result
                         else:
                             self._default_close_handler(dialog, gtk_result)
-                        # GTask completion callbacks need control to return to
-                        # the event loop before they can resolve the future.
-                        for _ in range(20):
-                            if future.done():
-                                break
-                            await asyncio.sleep(0.05)
-                        assert future.done(), "Dialog did not respond to the action"
-                    except Exception as e:
-                        # An error occurred closing the dialog; that means the dialog
-                        # isn't what as expected, so record that in the future.
-                        future.set_exception(e)
+                    # Wait for native completion before returning the result to the
+                    # test, so this helper cannot outlive the test that opened it.
+                    result = await asyncio.wait_for(native_future, timeout=1)
+                except Exception as e:
+                    future.set_exception(e)
+                else:
+                    future.set_result(result)
 
             dialog._test_close_task = asyncio.create_task(
                 _close_dialog(), name="close-dialog"
