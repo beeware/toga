@@ -305,7 +305,13 @@ class Window:
             display = Gdk.Display.get_default()
             monitor_native = display.get_monitor_at_window(self.native.get_window())
         else:  # pragma: no-cover-if-gtk3
-            monitor_native = self.native.props.display
+            display = self.native.get_display()
+            surface = self.native.get_surface()
+            monitor_native = (
+                display.get_monitor_at_surface(surface)
+                if surface is not None
+                else display.get_monitors().get_item(0)
+            )
         return ScreenImpl(monitor_native)
 
     def get_position(self) -> Position:
