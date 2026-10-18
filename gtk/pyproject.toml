@@ -101,7 +101,7 @@ SplitContainer = "toga_gtk.widgets.splitcontainer:SplitContainer"
 Switch = "toga_gtk.widgets.switch:Switch"
 Table = "toga_gtk.widgets.table:Table"
 TextInput = "toga_gtk.widgets.textinput:TextInput"
-# TimeInput = "toga_gtk.widgets.timeinput:TimeInput"
+TimeInput = "toga_gtk.widgets.timeinput:TimeInput"
 Tree = "toga_gtk.widgets.tree:Tree"
 WebView = "toga_gtk.widgets.webview:WebView"
 
