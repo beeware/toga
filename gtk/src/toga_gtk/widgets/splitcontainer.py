@@ -3,6 +3,8 @@ from functools import partial
 
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..container import TogaContainer
 from ..libs import GTK_VERSION, Gtk
 from .base import Widget
@@ -15,7 +17,7 @@ class SplitContainer(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("size-allocate", self.gtk_on_size_allocate)
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self._split_tick = None
 
         self.sub_containers = [TogaContainer(), TogaContainer()]
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -24,10 +26,22 @@ class SplitContainer(Widget):
         else:  # pragma: no-cover-if-gtk3
             self.native.set_start_child(self.sub_containers[0])
             self.native.set_end_child(self.sub_containers[1])
+            self.native.set_shrink_start_child(False)
+            self.native.set_shrink_end_child(False)
 
         self._split_proportion = 0.5
 
     def gtk_on_size_allocate(self, widget, allocation):
+        self.apply_split(allocation.width, allocation.height)
+
+    def gtk_on_tick(self, widget, frame_clock):
+        self.apply_split(widget.get_width(), widget.get_height())
+        if self._split_proportion is None:
+            self._split_tick = None
+            return False
+        return True
+
+    def apply_split(self, width, height):
         # If we've got a pending split to apply, set the split position.
         # However, only do this if the layout is more than the min size;
         # there are initial 0-sized layouts for which the split is meaningless.
@@ -35,14 +49,14 @@ class SplitContainer(Widget):
         # the widget's actual size may be out of sync, and thus set_position
         # breaks.
         if (
-            self._split_proportion
-            and allocation.width > self.interface._MIN_WIDTH
-            and allocation.height > self.interface._MIN_HEIGHT
+            self._split_proportion is not None
+            and width > self.interface._MIN_WIDTH
+            and height > self.interface._MIN_HEIGHT
         ):
             if self.interface.direction == self.interface.VERTICAL:
-                position = int(self._split_proportion * allocation.width)
+                position = int(self._split_proportion * width)
             else:
-                position = int(self._split_proportion * allocation.height)
+                position = int(self._split_proportion * height)
 
             asyncio.get_running_loop().call_soon_threadsafe(
                 partial(self.native.set_position, position)
@@ -62,6 +76,12 @@ class SplitContainer(Widget):
         # because GTK requires a pixel position, and the widget isn't visible yet. So -
         # store the split; and when we do our first layout, apply that proportion.
         self._split_proportion = flex[0] / sum(flex)
+        if GTK_VERSION >= (4, 0, 0) and self._split_tick is None:
+            # GTK4 has no size-allocate signal. Wait for a frame with a useful
+            # allocation, then remove the callback so user resizing stays native.
+            self._split_tick = self.native.add_tick_callback(
+                WeakrefCallable(self.gtk_on_tick)
+            )
 
     def get_direction(self):
         if self.native.get_orientation() == Gtk.Orientation.HORIZONTAL:
@@ -111,8 +131,5 @@ class SplitContainer(Widget):
 
             min_width = max(min_width, self.interface._MIN_WIDTH) + SPLITTER_WIDTH
 
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface.intrinsic.width = at_least(min_width)
-            self.interface.intrinsic.height = at_least(min_height)
-        else:  # pragma: no-cover-if-gtk3
-            pass
+        self.interface.intrinsic.width = at_least(min_width)
+        self.interface.intrinsic.height = at_least(min_height)

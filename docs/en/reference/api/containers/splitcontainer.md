@@ -39,6 +39,10 @@ split.content = [(left_container, 3), (right_container, 2)]
 
 This only specifies the initial split; the split can be modified by the user once it is displayed.
 
+## Notes
+
+SplitContainer is supported on GTK3 and GTK4, including GTK4 with libadwaita.
+
 ## Reference
 
 ::: toga.SplitContainer

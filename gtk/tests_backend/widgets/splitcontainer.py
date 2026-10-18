@@ -1,8 +1,6 @@
 import asyncio
 
-import pytest
-
-from toga_gtk.libs import GTK_VERSION, Gtk
+from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
 
@@ -11,9 +9,6 @@ class SplitContainerProbe(SimpleProbe):
     native_class = Gtk.Paned
     border_size = 0
     direction_change_preserves_position = False
-
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't split containers yet")
 
     def move_split(self, position):
         self.native.set_position(position)
