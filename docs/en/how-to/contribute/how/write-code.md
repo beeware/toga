@@ -189,7 +189,8 @@ For testing the GTK4 backend without libadwaita:
 ```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
-(.venv) $ GDK_DEBUG=no-portals TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=None briefcase dev --app testbed --test
+(.venv) $ TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=None briefcase dev --app testbed --test -- --coverage --ignore=tests/app/test_dialogs.py --ignore=tests/window/test_dialogs.py
+(.venv) $ GDK_DEBUG=no-portals TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=None briefcase dev --app testbed --test -- tests/app/test_dialogs.py tests/window/test_dialogs.py
 ```
 
 For testing the GTK4 backend with libadwaita:
@@ -197,8 +198,11 @@ For testing the GTK4 backend with libadwaita:
 ```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
-(.venv) $ GDK_DEBUG=no-portals TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=Adw briefcase dev --app testbed --test
+(.venv) $ TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=Adw briefcase dev --app testbed --test -- --coverage --ignore=tests/app/test_dialogs.py --ignore=tests/window/test_dialogs.py
+(.venv) $ GDK_DEBUG=no-portals TOGA_BACKEND=toga_gtk TOGA_GTK=4 TOGA_GTKLIB=Adw briefcase dev --app testbed --test -- tests/app/test_dialogs.py tests/window/test_dialogs.py
 ```
+
+GTK4 dialog tests run separately with `GDK_DEBUG=no-portals` so their probes can interact with dialogs inside the testbed process. Leave this setting unset for other tests, because disabling portals can prevent WebKit views from receiving their viewport size.
 
 For testing the Qt backend:
 
