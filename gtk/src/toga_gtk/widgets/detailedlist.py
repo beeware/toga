@@ -51,6 +51,9 @@ class DetailedListRow(Gtk.ListBoxRow):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # Make sure the widgets have been made visible.
             self.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            # GTK4 children are visible by default.
+            pass
 
     def update(self, dl, row):
         """Update the contents of the rendered row, using data from `row`,
@@ -250,6 +253,9 @@ class DetailedList(Widget):
         self.store.insert(index, item_impl)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_detailedlist.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            # GTK4 children are visible by default.
+            pass
         self.update_refresh_button()
 
     # Alias for backwards compatibility:
