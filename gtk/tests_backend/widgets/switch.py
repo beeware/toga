@@ -53,8 +53,16 @@ class SwitchProbe(SimpleProbe):
         super().assert_width(min_width, max_width)
 
         # Also check the width of the two inner components
-        label_width = self.native_label.get_allocation().width
-        switch_width = self.native_switch.get_allocation().width
+        if GTK_VERSION < (4, 0, 0):
+            label_width = self.native_label.get_allocation().width
+            switch_width = self.native_switch.get_allocation().width
+        else:
+            label_width = self.native_label.compute_bounds(self.native_label)[
+                1
+            ].get_width()
+            switch_width = self.native_switch.compute_bounds(self.native_switch)[
+                1
+            ].get_width()
 
         # The switch should be ~50px wide.
         MAX_SWITCH_WIDTH = 60
@@ -74,8 +82,16 @@ class SwitchProbe(SimpleProbe):
     def assert_height(self, min_height, max_height):
         super().assert_height(min_height, max_height)
 
-        label_height = self.native_label.get_allocation().height
-        switch_height = self.native_switch.get_allocation().height
+        if GTK_VERSION < (4, 0, 0):
+            label_height = self.native_label.get_allocation().height
+            switch_height = self.native_switch.get_allocation().height
+        else:
+            label_height = self.native_label.compute_bounds(self.native_label)[
+                1
+            ].get_height()
+            switch_height = self.native_switch.compute_bounds(self.native_switch)[
+                1
+            ].get_height()
         assert min_height <= label_height <= max_height, (
             f"Label height ({label_height}) not in range ({min_height}, {max_height})"
         )
