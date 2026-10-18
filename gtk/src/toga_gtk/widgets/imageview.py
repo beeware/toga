@@ -80,11 +80,11 @@ class ImageView(Widget):
         )
         self.interface.intrinsic.width = width
         self.interface.intrinsic.height = height
-        if GTK_VERSION >= (4, 8, 0):
+        if GTK_VERSION >= (4, 8, 0):  # pragma: no-cover-if-gtk3
             self.native.set_content_fit(
                 Gtk.ContentFit.CONTAIN
                 if self._aspect_ratio is not None
                 else Gtk.ContentFit.FILL
             )
-        elif GTK_VERSION >= (4, 0, 0):
+        elif GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             self.native.set_keep_aspect_ratio(self._aspect_ratio is not None)
