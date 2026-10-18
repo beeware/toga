@@ -6,7 +6,7 @@ import pytest
 
 import toga
 from toga_gtk.keys import gtk_accel, toga_key
-from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -243,38 +243,8 @@ class AppProbe(BaseProbe, DialogsMixin):
             valid, keyval, state = Gtk.accelerator_parse(accel)
             assert valid
             return toga_key(keyval, state)
-        state = 0
-
-        if "<Primary>" in accel:
-            state |= Gdk.ModifierType.CONTROL_MASK
-            accel = accel.replace("<Primary>", "")
-        if "<Alt>" in accel:
-            state |= Gdk.ModifierType.META_MASK
-            accel = accel.replace("<Alt>", "")
-        if "<Hyper>" in accel:
-            state |= Gdk.ModifierType.HYPER_MASK
-            accel = accel.replace("<Hyper>", "")
-        if "<Shift>" in accel:
-            state |= Gdk.ModifierType.SHIFT_MASK
-            accel = accel.replace("<Shift>", "")
-
-        keyval = getattr(
-            Gdk,
-            f"KEY_{accel}",
-            {
-                "!": Gdk.KEY_exclam,
-                "<home>": Gdk.KEY_Home,
-                "F5": Gdk.KEY_F5,
-            }.get(accel),
-        )
-
-        event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)
-        event.keyval = keyval
-        event.length = 1
-        event.is_modifier = state != 0
-        event.state = state
-
-        return toga_key(event.keyval, event.state)
+        keyval, state = Gtk.accelerator_parse(accel)
+        return toga_key(keyval, state)
 
     async def restore_standard_app(self):
         # No special handling needed to restore standard app.
