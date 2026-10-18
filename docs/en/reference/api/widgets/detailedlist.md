@@ -78,6 +78,7 @@ The DetailedList as a whole will also respond to a refresh UI action if an `on_r
 
 ## Notes
 
+* DetailedList is supported on GTK3 and GTK4, including GTK4 with libadwaita.
 * The iOS Human Interface Guidelines differentiate between "Normal" and "Destructive" actions on a row. Toga will interpret any action with a name of "Delete" or "Remove" as destructive, and will render the action appropriately.
 * Using DetailedList on Android requires the AndroidX SwipeRefreshLayout widget in your project's Gradle dependencies. Ensure your app declares a dependency on `androidx.swiperefreshlayout:swiperefreshlayout:1.1.0` or later.
 
