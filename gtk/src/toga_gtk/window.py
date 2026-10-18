@@ -35,6 +35,10 @@ class Window:
 
         self.create()
         self.native._impl = self
+        if Adw is not None:
+            # Toga's content determines the minimum size. libadwaita 1.6 adds
+            # a default 360x200 request which would prevent smaller windows.
+            self.native.set_size_request(0, 0)
 
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self._delete_handler = self.native.connect(
