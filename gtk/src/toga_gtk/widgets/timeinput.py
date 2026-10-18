@@ -2,6 +2,8 @@ from datetime import time
 
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..libs import GTK_VERSION, Gtk
 from .base import Widget
 
@@ -21,6 +23,8 @@ class TimeInput(Widget):
                 self.append(Gtk.Label(label=":"))
             field = Gtk.SpinButton.new_with_range(0, upper, 1)
             field.set_numeric(True)
+            field.set_width_chars(2)
+            field.set_max_width_chars(2)
             field.set_hexpand(True)
             field.set_name(f"toga-{self.interface.id}-{name.lower()}")
             field.set_tooltip_text(name)
@@ -30,8 +34,8 @@ class TimeInput(Widget):
             else:  # pragma: no-cover-if-gtk3
                 field.add_css_class("toga")
                 field.update_property([Gtk.AccessibleProperty.LABEL], [name])
-            field.connect("output", self.gtk_output)
-            field.connect("value-changed", self.gtk_on_change)
+            field.connect("output", WeakrefCallable(self.gtk_output))
+            field.connect("value-changed", WeakrefCallable(self.gtk_on_change))
             self.fields.append(field)
             self.append(field)
 
