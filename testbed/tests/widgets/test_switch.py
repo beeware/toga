@@ -55,8 +55,10 @@ async def test_text(widget, probe):
 
 async def test_press(widget, probe):
     # Press the button before installing a handler
+    assert not widget.value
     await probe.press()
     await probe.redraw("Switch should be pressed")
+    assert widget.value
 
     # Set up a mock handler, and press the button again.
     handler = Mock()
@@ -64,6 +66,7 @@ async def test_press(widget, probe):
 
     await probe.press()
     await probe.redraw("Switch should be pressed again")
+    assert not widget.value
     handler.assert_called_once_with(widget)
 
 

@@ -1,21 +1,18 @@
-import pytest
-
 from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
-from .properties import toga_color
+from .properties import toga_color, toga_font
 
 
 class SwitchProbe(SimpleProbe):
     native_class = Gtk.Box
 
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't support switches yet")
-
     def __init__(self, widget):
         super().__init__(widget)
         self.native_label = widget._impl.native_label
         self.native_switch = widget._impl.native_switch
+        assert self.native_label.get_parent() == self.native
+        assert self.native_switch.get_parent() == self.native
 
     @property
     def enabled(self):
@@ -27,13 +24,30 @@ class SwitchProbe(SimpleProbe):
 
     @property
     def color(self):
-        sc = self.native_label.get_style_context()
-        return toga_color(sc.get_property("color", sc.get_state()))
+        if GTK_VERSION < (4, 0, 0):
+            sc = self.native_label.get_style_context()
+            return toga_color(sc.get_property("color", sc.get_state()))
+        else:
+            style_provider = self.impl.style_providers.get(
+                ("color", id(self.native_label))
+            )
+            style_value = (
+                style_provider.to_string().split(": ")[1].split(";")[0]
+                if style_provider
+                else None
+            )
+            return toga_color(style_value) if style_value else None
 
     @property
     def font(self):
-        sc = self.native_label.get_style_context()
-        return sc.get_property("font", sc.get_state())
+        if GTK_VERSION < (4, 0, 0):
+            sc = self.native_label.get_style_context()
+            return sc.get_property("font", sc.get_state())
+        else:
+            style_provider = self.impl.style_providers.get(
+                ("font", id(self.native_label))
+            )
+            return toga_font(style_provider.to_string()) if style_provider else None
 
     def assert_width(self, min_width, max_width):
         super().assert_width(min_width, max_width)
