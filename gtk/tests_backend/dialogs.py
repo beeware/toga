@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
+from inspect import isawaitable
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -20,7 +21,6 @@ class DialogsMixin:
             GLib.main_context_default().iteration(may_block=False)
 
     def _default_close_handler(self, dialog, gtk_result):
-        self._wait_for_dialog("Wait for dialog to appear")
         if GTK_VERSION >= (4, 10, 0):
             if isinstance(dialog._impl.native, Gtk.Window):
                 dialog._impl.response_buttons[gtk_result].emit("clicked")
@@ -41,8 +41,9 @@ class DialogsMixin:
                     )
                 windows[0].emit("response", response)
         else:
+            self._wait_for_dialog("Wait for dialog to appear")
             dialog._impl.native.emit("response", gtk_result)
-        self._wait_for_dialog("Wait for dialog to disappear")
+            self._wait_for_dialog("Wait for dialog to disappear")
 
     def _setup_dialog_result(
         self, dialog, gtk_result, close_handler=None, pre_close_test_method=None
@@ -71,7 +72,9 @@ class DialogsMixin:
                 finally:
                     try:
                         if close_handler:
-                            close_handler(dialog, gtk_result)
+                            result = close_handler(dialog, gtk_result)
+                            if isawaitable(result):
+                                await result
                         else:
                             self._default_close_handler(dialog, gtk_result)
                         # GTask completion callbacks need control to return to
@@ -256,7 +259,7 @@ class DialogsMixin:
             )
 
     def _setup_gtk4_file_result(self, dialog, result, multiple_select):
-        def close_handler(dialog, gtk_result):
+        async def close_handler(dialog, gtk_result):
             if result:
                 if dialog._impl.operation in {"open", "open_multiple"}:
                     chooser = next(
@@ -269,7 +272,7 @@ class DialogsMixin:
                     # the probe; applications still use Gtk.FileDialog.
                     with pytest.deprecated_call(match="Gtk.FileChooser.set_file"):
                         chooser.set_file(Gio.File.new_for_path(__file__))
-                    self._wait_for_dialog("Wait for file to be selected")
+                    await asyncio.sleep(0.1)
                     with pytest.deprecated_call(match="Gtk.FileChooser.get_file"):
                         assert chooser.get_file().get_path() == __file__
                 if multiple_select:
