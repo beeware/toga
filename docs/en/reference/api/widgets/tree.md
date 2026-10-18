@@ -151,7 +151,7 @@ For more complex data you can define your own [custom data sources](/topics/data
 
 ## Notes
 
-- Tree is supported on GTK3 and GTK4, including GTK4 with libadwaita. GTK4 uses native tree expanders and column views.
+- Tree is supported on GTK3 and GTK4, including GTK4 with libadwaita. GTK4 uses native expandable rows and column views.
 - Widgets in cells is a beta API which may change in future, and is currently only supported on macOS.
 - On macOS, you cannot change the font used in a Tree.
 
