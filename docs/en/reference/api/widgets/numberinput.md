@@ -11,6 +11,10 @@ widget.value = 2.718
 
 NumberInput's properties can accept [`Decimal`][decimal], [`int`][], [`float`][], or [`str`][] containing numbers, but they always return [`Decimal`][decimal] objects to ensure precision is retained.
 
+## Notes
+
+- On Linux, NumberInput is supported with both GTK 3 and GTK 4, including GTK 4 with libadwaita.
+
 ## Reference
 
 ::: toga.NumberInput

@@ -73,4 +73,9 @@ class NumberInput(Widget):
             )
             self.interface.intrinsic.height = height[1]
         else:  # pragma: no-cover-if-gtk3
-            pass
+            _, size = self.native.get_preferred_size()
+
+            self.interface.intrinsic.width = at_least(
+                max(self.interface._MIN_WIDTH, size.width)
+            )
+            self.interface.intrinsic.height = size.height
