@@ -587,7 +587,7 @@ class MainWindow(Window):
         else:  # pragma: no-cover-if-gtk3
             if self.native_toolbar is not None:
                 if Adw is not None:
-                    self.toolbar_view.remove_top_bar(self.native_toolbar)
+                    self.toolbar_view.remove(self.native_toolbar)
                 else:
                     self.layout.remove(self.native_toolbar)
             for cmd, item in self.toolbar_items.items():
