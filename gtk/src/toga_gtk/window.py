@@ -35,7 +35,7 @@ class Window:
 
         self.create()
         self.native._impl = self
-        if Adw is not None:
+        if Adw is not None:  # pragma: no-cover-unless-libadwaita
             # Toga's content determines the minimum size. libadwaita 1.6 adds
             # a default 360x200 request which would prevent smaller windows.
             self.native.set_size_request(0, 0)
