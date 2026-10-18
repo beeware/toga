@@ -32,8 +32,8 @@ async def test_directions(widget, probe):
     # Container is initially a row box, so the divider will be
     # both narrow and short
     assert widget.direction == Direction.HORIZONTAL
-    assert probe.height < 10
-    assert probe.width < 10
+    assert 0 < probe.height < 10
+    assert 0 <= probe.width < 10
 
     # Make the container a column box so the divider will become wide.
     widget.parent.style.direction = COLUMN
@@ -41,7 +41,7 @@ async def test_directions(widget, probe):
 
     # The divider will now be wide, but short.
     assert widget.direction == Direction.HORIZONTAL
-    assert probe.height < 10
+    assert 0 < probe.height < 10
     assert probe.width > 100
 
     # Make the divider vertical
@@ -50,8 +50,8 @@ async def test_directions(widget, probe):
 
     # In a column box, a vertical divider will be narrow and short.
     assert widget.direction == Direction.VERTICAL
-    assert probe.height < 10
-    assert probe.width < 10
+    assert 0 <= probe.height < 10
+    assert 0 < probe.width < 10
 
     # Make the container a row box again so the divider will become tall.
     widget.parent.style.direction = ROW
@@ -60,7 +60,7 @@ async def test_directions(widget, probe):
     # In a row box, a vertical divider will be narrow and tall.
     assert widget.direction == Direction.VERTICAL
     assert probe.height > 100
-    assert probe.width < 10
+    assert 0 < probe.width < 10
 
     # Make the divider horizontal
     widget.direction = Direction.HORIZONTAL
@@ -68,14 +68,14 @@ async def test_directions(widget, probe):
 
     # In a row box, a horizontal divider will be narrow and short.
     assert widget.direction == Direction.HORIZONTAL
-    assert probe.height < 10
-    assert probe.width < 10
+    assert 0 < probe.height < 10
+    assert 0 <= probe.width < 10
 
     # Make the container a COLUMN box again
     widget.parent.style.direction = COLUMN
     await probe.redraw("Divider should become wide")
 
-    # In a column box, a horizontal divider will be narrow and short.
+    # In a column box, a horizontal divider will be wide and short.
     assert widget.direction == Direction.HORIZONTAL
-    assert probe.height < 10
+    assert 0 < probe.height < 10
     assert probe.width > 100

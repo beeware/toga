@@ -24,6 +24,10 @@ box = toga.Box(
 
 The direction (horizontal or vertical) can be given as an argument. If not specified, it will default to horizontal.
 
+## Notes
+
+- On Linux, Divider is supported with both GTK 3 and GTK 4, including GTK 4 with libadwaita.
+
 ## Reference
 
 ::: toga.Divider
