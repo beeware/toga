@@ -35,8 +35,6 @@ MAPVIEW_HTML_CONTENT = """<!DOCTYPE html>
     <div id="map"></div>
     <script>
         const map = L.map("map");
-        const resizeObserver = new ResizeObserver(() => map.invalidateSize());
-        resizeObserver.observe(document.getElementById("map"));
         const pins = {};
         const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 20,
