@@ -338,6 +338,9 @@ class FileDialog(BaseDialog):
         self.future.set_result(result)
         if GTK_VERSION < (4, 10, 0):  # pragma: no-cover-if-gtk4
             self.native.destroy()
+        else:  # pragma: no-cover-if-gtk3
+            # Gtk.FileDialog closes its chooser before invoking the callback.
+            pass
 
 
 class SaveFileDialog(FileDialog):
