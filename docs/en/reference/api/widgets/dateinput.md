@@ -10,6 +10,7 @@ current_date = toga.DateInput()
 
 ## Notes
 
+- Date input supports GTK3, GTK4, and libadwaita, including GTK 4.20 and newer.
 - This widget supports years from 1800 to 8999 inclusive.
 - Properties that return [`datetime.date`][] objects can also accept:
     - [`datetime.datetime`][]: The date portion will be extracted.
