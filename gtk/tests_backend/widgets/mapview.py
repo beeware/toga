@@ -67,3 +67,5 @@ class MapViewProbe(SimpleProbe):
             tick_count += 1
 
         await self.redraw(message)
+        assert self.impl._invoke("map.getSize().x;") == self.width
+        assert self.impl._invoke("map.getSize().y;") == self.height
