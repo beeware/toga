@@ -64,8 +64,9 @@ class DetailedListProbe(SimpleProbe):
         return self.impl.native_revealer.get_child_revealed()
 
     async def non_refresh_action(self):
-        # Non-refresh is ... don't press the button, so it's a no op.
-        pass
+        # A secondary click outside the rows must not refresh or open actions.
+        self.impl.gesture.emit("pressed", 1, -1, -1)
+        assert self.impl._active_row is None
 
     async def refresh_action(self, active=True):
         if active:
