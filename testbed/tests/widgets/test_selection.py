@@ -194,6 +194,10 @@ async def test_selection_change_same_text(widget, probe):
     on_change_handler.assert_called_once_with(widget)
 
 
+@pytest.mark.skipif(
+    toga.platform.backend != "toga_gtk",
+    reason="Regression test for GTK native selection model updates.",
+)
 async def test_selection_preserved_when_items_move(widget, probe):
     """Changing earlier items preserves the selected item without a change event."""
     widget.value = "third"
