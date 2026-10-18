@@ -103,4 +103,6 @@ class SwitchProbe(SimpleProbe):
         # This isn't really a "click" - it's just changing the value.
         # However, Gtk doesn't seem to have a way to send a click to a switch,
         # and the underlying event on Gtk *is* a value change event.
-        self.native_switch.set_active(not self.native_switch.get_active())
+        value = not self.native_switch.get_active()
+        self.native_switch.set_active(value)
+        assert self.widget.value == value
