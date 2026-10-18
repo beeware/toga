@@ -251,7 +251,7 @@ class Context:
 
         # draw a filled rectangle with the pixmap as the source for the fill
         self.native.rectangle(0, 0, image.width, image.height)
-        if GTK_VERSION >= (4, 20, 0):
+        if GTK_VERSION >= (4, 20, 0):  # pragma: no-cover-if-gtk3
             surface = cairo.ImageSurface.create_from_png(
                 BytesIO(image._impl.get_data())
             )
