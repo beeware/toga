@@ -32,10 +32,6 @@ class DialogsMixin:
                 if isinstance(dialog._impl.native, Gtk.AlertDialog):
                     response = dialog._impl.response_types.index(gtk_result)
                 else:
-                    # File selection is loaded asynchronously. Give the chooser
-                    # time to select its initial file before accepting it.
-                    for _ in range(5):
-                        self._wait_for_dialog("Wait for initial file selection")
                     response = (
                         Gtk.ResponseType.ACCEPT
                         if gtk_result == Gtk.ResponseType.OK
@@ -45,9 +41,6 @@ class DialogsMixin:
         else:
             dialog._impl.native.emit("response", gtk_result)
         self._wait_for_dialog("Wait for dialog to disappear")
-        assert dialog._impl.future.done(), (
-            "Dialog did not respond to the selected action"
-        )
 
     def _setup_dialog_result(
         self, dialog, gtk_result, close_handler=None, pre_close_test_method=None
@@ -63,7 +56,13 @@ class DialogsMixin:
 
             async def _close_dialog():
                 # Add a slight delay for the dialog to show up
-                await asyncio.sleep(0.05)
+                # GTK's file chooser loads its initial selection asynchronously.
+                await asyncio.sleep(
+                    0.5
+                    if GTK_VERSION >= (4, 10, 0)
+                    and isinstance(dialog._impl.native, Gtk.FileDialog)
+                    else 0.05
+                )
                 try:
                     if pre_close_test_method:
                         pre_close_test_method(dialog)
@@ -73,6 +72,13 @@ class DialogsMixin:
                             close_handler(dialog, gtk_result)
                         else:
                             self._default_close_handler(dialog, gtk_result)
+                        # GTask completion callbacks need control to return to
+                        # the event loop before they can resolve the future.
+                        for _ in range(20):
+                            if future.done():
+                                break
+                            await asyncio.sleep(0.05)
+                        assert future.done(), "Dialog did not respond to the action"
                     except Exception as e:
                         # An error occurred closing the dialog; that means the dialog
                         # isn't what as expected, so record that in the future.
