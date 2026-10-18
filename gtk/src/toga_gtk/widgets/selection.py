@@ -2,26 +2,35 @@ from contextlib import contextmanager
 
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
+
 from ..libs import GTK_VERSION, Gtk
 from .base import Widget
 
 
 class Selection(Widget):
     def create(self):
+        self._send_notifications = True
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native = Gtk.ComboBoxText.new()
             self.native.connect("changed", self.gtk_on_changed)
-            self._send_notifications = True
         else:  # pragma: no-cover-if-gtk3
-            self.native = Gtk.DropDown()
+            self.model = Gtk.StringList.new([])
+            self.native = Gtk.DropDown(model=self.model)
+            self.native.connect(
+                "notify::selected", WeakrefCallable(self.gtk_on_changed)
+            )
 
     @contextmanager
     def suspend_notifications(self):
+        previous = self._send_notifications
         self._send_notifications = False
-        yield
-        self._send_notifications = True
+        try:
+            yield
+        finally:
+            self._send_notifications = previous
 
-    def gtk_on_changed(self, widget):
+    def gtk_on_changed(self, *_args):
         if self._send_notifications:
             self.interface.on_change()
 
@@ -60,14 +69,18 @@ class Selection(Widget):
 
     def source_change(self, *, item):
         index = self.interface._items.index(item)
-        selection = self.native.get_active()
-        # Insert a new entry at the same index,
-        # then delete the old entry (at the increased index)
+        selection = self.get_selected_index()
         with self.suspend_notifications():
-            self.native.insert_text(index, self.interface._title_for_item(item))
-            self.native.remove(index + 1)
-            if selection == index:
-                self.native.set_active(index)
+            if GTK_VERSION < (4, 0, 0):
+                # Insert a new entry at the same index, then delete the old entry.
+                self.native.insert_text(index, self.interface._title_for_item(item))
+                self.native.remove(index + 1)
+                if selection == index:
+                    self.native.set_active(index)
+            else:
+                self.model.splice(index, 1, [self.interface._title_for_item(item)])
+                if selection == index:
+                    self.native.set_selected(index)
 
         # Changing the item text can change the layout size
         self.interface.refresh()
@@ -94,7 +107,17 @@ class Selection(Widget):
             if self.native.get_active() == -1:
                 self.native.set_active(0)
         else:  # pragma: no-cover-if-gtk3
-            pass
+            selection = self.get_selected_index()
+            with self.suspend_notifications():
+                self.model.splice(index, 0, [self.interface._title_for_item(item)])
+                if selection is None:
+                    self.native.set_selected(0)
+                else:
+                    self.native.set_selected(selection + (index <= selection))
+
+            if selection is None:
+                self.interface.on_change()
+            self.interface.refresh()
 
     # Alias for backwards compatibility:
     # March 2026: In 0.5.3 and earlier, notification methods
@@ -110,14 +133,26 @@ class Selection(Widget):
         self.source_remove(index=index, item=item)
 
     def source_remove(self, *, index, item):
-        selection = self.native.get_active()
+        selection = self.get_selected_index()
         with self.suspend_notifications():
-            self.native.remove(index)
+            if GTK_VERSION < (4, 0, 0):
+                self.native.remove(index)
+            else:
+                self.model.remove(index)
+                if selection == index:
+                    self.native.set_selected(
+                        0 if self.model.get_n_items() else Gtk.INVALID_LIST_POSITION
+                    )
 
         # If we deleted the item that is currently selected, reset the
         # selection to the first item
         if index == selection:
-            self.native.set_active(0)
+            if GTK_VERSION < (4, 0, 0):
+                self.native.set_active(0)
+            else:
+                self.interface.on_change()
+
+        self.interface.refresh()
 
     # Alias for backwards compatibility:
     # March 2026: In 0.5.3 and earlier, notification methods
@@ -133,21 +168,26 @@ class Selection(Widget):
         self.source_clear()
 
     def source_clear(self):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            with self.suspend_notifications():
+        with self.suspend_notifications():
+            if GTK_VERSION < (4, 0, 0):
                 self.native.remove_all()
-            self.interface.on_change()
-        else:  # pragma: no-cover-if-gtk3
-            pass
+            else:
+                self.model.splice(0, self.model.get_n_items(), [])
+        self.interface.on_change()
 
     def select_item(self, index, item):
-        self.native.set_active(index)
+        if GTK_VERSION < (4, 0, 0):
+            self.native.set_active(index)
+        else:
+            self.native.set_selected(index)
 
     def get_selected_index(self):
-        index = self.native.get_active()
-        if index == -1:
-            return None
-        return index
+        if GTK_VERSION < (4, 0, 0):
+            index = self.native.get_active()
+            return None if index == -1 else index
+        else:
+            index = self.native.get_selected()
+            return None if index == Gtk.INVALID_LIST_POSITION else index
 
     def rehint(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -166,4 +206,8 @@ class Selection(Widget):
             )
             self.interface.intrinsic.height = height[1]
         else:  # pragma: no-cover-if-gtk3
-            pass
+            _, size = self.native.get_preferred_size()
+            self.interface.intrinsic.width = at_least(
+                max(self.interface._MIN_WIDTH, size.width)
+            )
+            self.interface.intrinsic.height = size.height

@@ -194,6 +194,26 @@ async def test_selection_change_same_text(widget, probe):
     on_change_handler.assert_called_once_with(widget)
 
 
+async def test_selection_preserved_when_items_move(widget, probe):
+    """Changing earlier items preserves the selected item without a change event."""
+    widget.value = "third"
+    first_item = widget.items[0]
+    on_change_handler = Mock()
+    widget.on_change = on_change_handler
+
+    widget.items.insert(0, "new")
+    await probe.redraw("An item has been inserted before the selection")
+    assert widget.value == "third"
+    assert probe.selected_title == "third"
+    on_change_handler.assert_not_called()
+
+    widget.items.remove(first_item)
+    await probe.redraw("An item before the selection has been removed")
+    assert widget.value == "third"
+    assert probe.selected_title == "third"
+    on_change_handler.assert_not_called()
+
+
 async def test_source_changes(widget, probe):
     """The selection responds to changes in the source."""
     on_change_handler = Mock()
