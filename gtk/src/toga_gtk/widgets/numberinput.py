@@ -17,9 +17,9 @@ class NumberInput(Widget):
         self.native.set_adjustment(self.adjustment)
         self.native.set_numeric(True)
 
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("changed", self.gtk_on_change)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             # GTK4 emits `changed` for both removal and insertion when replacing
             # the text. Notify only after the complete replacement, as TextInput does.
             self.native.connect("notify::text", self.gtk_on_change)
