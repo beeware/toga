@@ -1,17 +1,12 @@
 import asyncio
 
-import pytest
-
-from toga_gtk.libs import GTK_VERSION, Gtk
+from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
 
 
 class ProgressBarProbe(SimpleProbe):
     native_class = Gtk.ProgressBar
-
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't support progress bars yet")
 
     @property
     def is_determinate(self):
