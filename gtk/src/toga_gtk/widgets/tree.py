@@ -2,7 +2,7 @@ from travertino.size import at_least
 
 from toga.handlers import WeakrefCallable
 
-from ..libs import GTK_VERSION, GdkPixbuf, Gio, GObject, Gtk, Pango
+from ..libs import GTK_VERSION, GdkPixbuf, Gio, GLib, GObject, Gtk, Pango
 from .base import Widget
 from .table import TogaRow
 
@@ -41,6 +41,7 @@ class Tree(Widget):
             self._rows = {}
             self._expanded = set()
             self._syncing_expansion = False
+            self._expansion_idle = None
             self.store = Gio.ListStore.new(TogaTreeRow)
             self.tree_model = Gtk.TreeListModel.new(
                 self.store,
@@ -223,8 +224,6 @@ class Tree(Widget):
                     row.connect(
                         "notify::expanded", WeakrefCallable(self.gtk_on_expanded)
                     )
-                    if row.get_item().value in self._expanded:
-                        row.set_expanded(True)
                 index += 1
         finally:
             self._syncing_expansion = False
@@ -233,9 +232,19 @@ class Tree(Widget):
         node = row.get_item().value
         if row.get_expanded():
             self._expanded.add(node)
+            if self._expansion_idle is None:
+                # Wait until GTK has finished notifying every observer about the
+                # inserted rows before restoring descendant expansion state.
+                self._expansion_idle = GLib.idle_add(
+                    WeakrefCallable(self.restore_expansion)
+                )
         else:
             self._expanded.discard(node)
-        self.gtk_on_items_changed()
+
+    def restore_expansion(self):
+        self._expansion_idle = None
+        self.apply_expansion()
+        return False
 
     def visible_row(self, node):
         for row in self.tree_model:
