@@ -84,7 +84,7 @@ class App:
             # Earlier than GTK 4.8
             css_provider.load_from_data(TOGA_DEFAULT_STYLES.encode("utf-8"))
 
-        if GTK_VERSION >= (4, 0, 0):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             Gtk.StyleContext.add_provider_for_display(
                 Gdk.Display.get_default(),
                 css_provider,
@@ -167,7 +167,7 @@ class App:
 
         # Set the menu for the app.
         self.native.set_menubar(menubar)
-        if GTK_VERSION >= (4, 0, 0):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             for window in self.interface.windows:
                 self.set_window_menu(window._impl)
 
@@ -179,7 +179,7 @@ class App:
         settings = Gtk.Settings.get_default()
         settings.set_property("gtk-shell-shows-menubar", False)
 
-    def set_window_menu(self, window):
+    def set_window_menu(self, window):  # pragma: no-cover-if-gtk3
         if not isinstance(window.native, Gtk.ApplicationWindow):
             return
         if Adw is not None:
@@ -291,11 +291,11 @@ class App:
         if self.interface.home_page is not None:
             self.native_about_dialog.set_website(self.interface.home_page)
 
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_about_dialog.show()
             self.native_about_dialog.connect("close", self._close_about)
             self.native_about_dialog.connect("response", self._close_about)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.native_about_dialog.connect("close-request", self._close_about)
             self.native_about_dialog.present()
 
