@@ -34,7 +34,7 @@ class SplitContainer(Widget):
     def gtk_on_size_allocate(self, widget, allocation):
         self.apply_split(allocation.width, allocation.height)
 
-    def gtk_on_tick(self, widget, frame_clock):
+    def gtk_on_tick(self, widget, frame_clock):  # pragma: no-cover-if-gtk3
         self.apply_split(widget.get_width(), widget.get_height())
         if self._split_proportion is None:
             self._split_tick = None
@@ -76,7 +76,9 @@ class SplitContainer(Widget):
         # because GTK requires a pixel position, and the widget isn't visible yet. So -
         # store the split; and when we do our first layout, apply that proportion.
         self._split_proportion = flex[0] / sum(flex)
-        if GTK_VERSION >= (4, 0, 0) and self._split_tick is None:
+        if (
+            GTK_VERSION >= (4, 0, 0) and self._split_tick is None
+        ):  # pragma: no-cover-if-gtk3
             # GTK4 has no size-allocate signal. Wait for a frame with a useful
             # allocation, then remove the callback so user resizing stays native.
             self._split_tick = self.native.add_tick_callback(
