@@ -207,7 +207,17 @@ class Selection(Widget):
             self.interface.intrinsic.height = height[1]
         else:  # pragma: no-cover-if-gtk3
             _, size = self.native.get_preferred_size()
+            # DropDown measures only its selected item. Reserve enough room for
+            # every option, while retaining the native arrow and theme padding.
+            layout = self.native.create_pango_layout("")
+            widths = []
+            for index in range(self.model.get_n_items()):
+                layout.set_text(self.model.get_string(index), -1)
+                widths.append(layout.get_pixel_size()[0])
+            selection = self.get_selected_index()
+            selected_width = widths[selection] if selection is not None else 0
+            width = size.width + max(widths, default=0) - selected_width
             self.interface.intrinsic.width = at_least(
-                max(self.interface._MIN_WIDTH, size.width)
+                max(self.interface._MIN_WIDTH, width)
             )
             self.interface.intrinsic.height = size.height
