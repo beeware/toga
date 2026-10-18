@@ -177,7 +177,7 @@ class StackTraceDialog(MessageDialog):
                 **kwargs,
             )
 
-    def gtk_close(self, window):
+    def gtk_close(self, window):  # pragma: no-cover-if-gtk3
         self.gtk_response(window, Gtk.ResponseType.CANCEL)
         return True
 
