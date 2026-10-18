@@ -4,11 +4,15 @@ from travertino.size import at_least
 
 from toga.handlers import WeakrefCallable
 
-from ..libs import GTK_VERSION, GdkPixbuf, GObject, Gtk
+from ..libs import GTK_VERSION, GdkPixbuf, Gio, GObject, Gtk, Pango
 from .base import Widget
 
 
 class TogaRow(GObject.Object):
+    @GObject.Signal
+    def changed(self):
+        pass
+
     def __init__(self, value):
         super().__init__()
         self.value = value
@@ -50,7 +54,19 @@ class Table(Widget):
 
             self._create_columns()
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.store = Gio.ListStore.new(TogaRow)
+            if self.interface.multiple_select:
+                self.selection = Gtk.MultiSelection.new(self.store)
+            else:
+                self.selection = Gtk.SingleSelection(
+                    model=self.store, autoselect=False, can_unselect=True
+                )
+            self.selection.connect(
+                "selection-changed", WeakrefCallable(self.gtk_on_select)
+            )
+            self.native_table = Gtk.ColumnView(model=self.selection)
+            self.native_table.connect("activate", WeakrefCallable(self.gtk_on_activate))
+            self._create_gtk4_columns()
 
         self.native = Gtk.ScrolledWindow()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -59,7 +75,72 @@ class Table(Widget):
             self.native.set_min_content_width(200)
             self.native.set_min_content_height(200)
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+            self.native.set_child(self.native_table)
+            self.native.set_min_content_width(200)
+            self.native.set_min_content_height(200)
+
+    def _create_gtk4_columns(self):
+        existing = {
+            column.interface: column for column in self.native_table.get_columns()
+        }
+        for column in existing.values():
+            self.native_table.remove_column(column)
+
+        for toga_column in self.interface._columns:
+            column = existing.get(toga_column)
+            if column is None:
+                factory = Gtk.SignalListItemFactory()
+                factory.connect("setup", WeakrefCallable(self.gtk_setup_cell))
+                factory.connect(
+                    "bind", WeakrefCallable(self.gtk_bind_cell), toga_column
+                )
+                factory.connect("unbind", WeakrefCallable(self.gtk_unbind_cell))
+                column = Gtk.ColumnViewColumn(
+                    title=toga_column.heading or "",
+                    factory=factory,
+                    expand=True,
+                    resizable=True,
+                )
+                column.interface = toga_column
+            self.native_table.append_column(column)
+
+        # ColumnView exposes no show-headings property. Its first child is the
+        # native header; hiding it leaves the row view and column model intact.
+        self.native_table.get_first_child().set_visible(self.interface._show_headings)
+
+    def gtk_setup_cell(self, factory, item):
+        cell = Gtk.Box(spacing=6)
+        cell.icon = Gtk.Image(pixel_size=16)
+        cell.text = Gtk.Label(xalign=0, hexpand=True, ellipsize=Pango.EllipsizeMode.END)
+        cell.append(cell.icon)
+        cell.append(cell.text)
+        item.set_child(cell)
+
+    def gtk_bind_cell(self, factory, item, column):
+        cell = item.get_child()
+        cell.row = item.get_item()
+        cell.column = column
+        cell.handler = cell.row.connect(
+            "changed", WeakrefCallable(self.gtk_update_cell), cell
+        )
+        self.gtk_update_cell(cell.row, cell)
+
+    def gtk_update_cell(self, row, cell):
+        cell.text.set_text(row.text(cell.column, self.interface.missing_value))
+        icon = cell.column.icon(row.value)
+        cell.icon.set_from_paintable(
+            icon._impl.native().get_paintable() if icon else None
+        )
+        cell.icon.set_visible(icon is not None)
+
+    def gtk_unbind_cell(self, factory, item):
+        cell = item.get_child()
+        cell.row.disconnect(cell.handler)
+        cell.row = None
+
+    def gtk_on_activate(self, view, position):
+        self.interface.on_activate(row=self.store[position].value)
 
     def _create_columns(self):
         self.native_table.set_headers_visible(self.interface._show_headings)
@@ -94,7 +175,7 @@ class Table(Widget):
         row = self.store[path][0].value
         self.interface.on_activate(row=row)
 
-    def gtk_on_select(self, selection):
+    def gtk_on_select(self, selection, *args):
         self.interface.on_select()
 
     def change_source(self, source):
@@ -132,7 +213,13 @@ class Table(Widget):
             self.native_table.set_model(self.store)
             self.refresh()
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self._create_gtk4_columns()
+            rows = [TogaRow(item) for item in source]
+            for row in rows:
+                for column in self.interface._columns:
+                    row.warn_widget(column)
+            self.store.splice(0, self.store.get_n_items(), rows)
+            self.refresh()
 
     # Alias for backwards compatibility:
     # March 2026: In 0.5.3 and earlier, notification methods
@@ -149,6 +236,11 @@ class Table(Widget):
 
     def source_insert(self, *, index, item):
         row = TogaRow(item)
+        if GTK_VERSION >= (4, 0, 0):
+            for column in self.interface._columns:
+                row.warn_widget(column)
+            self.store.insert(index, row)
+            return
         values = [row]
         for column in self.interface._columns:
             values.extend(
@@ -178,6 +270,11 @@ class Table(Widget):
     def source_change(self, *, item):
         index = self.interface.data.index(item)
         row = self.store[index]
+        if GTK_VERSION >= (4, 0, 0):
+            for column in self.interface._columns:
+                row.warn_widget(column)
+            row.emit("changed")
+            return
         for i, column in enumerate(self.interface._columns):
             row[i * 2 + 1] = row[0].icon(column)
             row[i * 2 + 2] = row[0].text(column, self.interface.missing_value)
@@ -197,7 +294,10 @@ class Table(Widget):
         self.source_remove(index=index, item=item)
 
     def source_remove(self, *, index, item):
-        del self.store[index]
+        if GTK_VERSION < (4, 0, 0):
+            del self.store[index]
+        else:
+            self.store.remove(index)
 
     # Alias for backwards compatibility:
     # March 2026: In 0.5.3 and earlier, notification methods
@@ -213,9 +313,18 @@ class Table(Widget):
         self.source_clear()
 
     def source_clear(self):
-        self.store.clear()
+        if GTK_VERSION < (4, 0, 0):
+            self.store.clear()
+        else:
+            self.store.remove_all()
 
     def get_selection(self):
+        if GTK_VERSION >= (4, 0, 0):
+            if self.interface.multiple_select:
+                selected = self.selection.get_selection()
+                return [selected.get_nth(i) for i in range(selected.get_size())]
+            index = self.selection.get_selected()
+            return None if index == Gtk.INVALID_LIST_POSITION else index
         if self.interface.multiple_select:
             store, itrs = self.selection.get_selected_rows()
             return [self.interface.data.index(store[itr][0].value) for itr in itrs]
