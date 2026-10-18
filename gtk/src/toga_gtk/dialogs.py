@@ -76,15 +76,13 @@ class MessageDialog(BaseDialog):
             if error.matches(Gtk.DialogError.quark(), Gtk.DialogError.DISMISSED):
                 response = Gtk.ResponseType.CANCEL
             else:
-                if not self.future.done():
-                    self.future.set_exception(error)
+                self.future.set_exception(error)
                 return
         self.resolve(response)
 
     def resolve(self, response):
         result = response == self.success_result if self.success_result else None
-        if not self.future.done():
-            self.future.set_result(result)
+        self.future.set_result(result)
 
     def build_dialog(self, message):
         self.native.set_property("secondary-text", message)
@@ -306,7 +304,7 @@ class FileDialog(BaseDialog):
                 Gtk.DialogError.quark(), Gtk.DialogError.DISMISSED
             ) or error.matches(Gtk.DialogError.quark(), Gtk.DialogError.CANCELLED):
                 self.gtk_response(dialog, Gtk.ResponseType.CANCEL)
-            elif not self.future.done():
+            else:
                 self.future.set_exception(error)
         else:
             self._selected_files = list(files) if self.multiple_select else [files]
@@ -337,9 +335,8 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        if not self.future.done():
-            self.future.set_result(result)
-        if GTK_VERSION < (4, 10, 0):
+        self.future.set_result(result)
+        if GTK_VERSION < (4, 10, 0):  # pragma: no-cover-if-gtk4
             self.native.destroy()
 
 
