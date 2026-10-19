@@ -14,6 +14,8 @@ from .probe import BaseProbe
 
 
 class AppProbe(BaseProbe, DialogsMixin):
+    supports_application_menu_command_native_items = False
+    supports_status_icon_command_native_items = False
     supports_key = False
     supports_dark_mode = True
     edit_menu_noop_enabled = False

@@ -53,6 +53,7 @@ class App:
                 flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
             )
         self.native_about_dialog = None
+        self._menu_items = {}
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect("startup", self.gtk_startup)
@@ -121,7 +122,10 @@ class App:
         # application level, and are automatically added to any ApplicationWindow.
         # (or to the top of the screen if the GTK theme requires)
 
-        # Only create the menu if the menu item index has been created.
+        for action, cmd in self._menu_items.items():
+            self.native.remove_action(action.get_name())
+            cmd._impl.native.remove(action)
+
         self._menu_items = {}
         self._menu_groups = {}
 
@@ -138,7 +142,7 @@ class App:
                 action = Gio.SimpleAction.new(cmd_id, None)
                 action.connect("activate", cmd._impl.gtk_activate)
 
-                cmd._impl.native.append(action)
+                cmd._impl.native.add(action)
                 cmd._impl.set_enabled(cmd.enabled)
                 self._menu_items[action] = cmd
                 self.native.add_action(action)
