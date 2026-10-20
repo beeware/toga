@@ -12,7 +12,9 @@ class Image:
 
         if data:
             try:
-                input_stream = Gio.MemoryInputStream.new_from_data(data, None)
+                input_stream = Gio.MemoryInputStream.new_from_bytes(
+                    GLib.Bytes.new(data)
+                )
                 self.native = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)
             except GLib.GError as exc:
                 raise ImageLoadError from exc
