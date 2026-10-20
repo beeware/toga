@@ -49,4 +49,27 @@ class Image:
                 f"Don't know how to save image of type {path.suffix!r}"
             ) from exc
 
-        self.native.savev(str_path, filetype)
+        native = self.native
+        if filetype == "jpeg" and native.get_has_alpha():
+            # JPEG cannot store alpha. Strip it before passing the pixels to the
+            # encoder, since newer GdkPixbuf loaders require an RGB input.
+            width, height = native.get_width(), native.get_height()
+            pixels = native.get_pixels()
+            stride = native.get_rowstride()
+            rgb = bytearray(width * height * 3)
+            for y in range(height):
+                row = pixels[y * stride : y * stride + width * 4]
+                for channel in range(3):
+                    rgb[y * width * 3 + channel : (y + 1) * width * 3 : 3] = row[
+                        channel::4
+                    ]
+            native = GdkPixbuf.Pixbuf.new_from_bytes(
+                GLib.Bytes.new(bytes(rgb)),
+                GdkPixbuf.Colorspace.RGB,
+                False,
+                8,
+                width,
+                height,
+                width * 3,
+            )
+        native.savev(str_path, filetype)

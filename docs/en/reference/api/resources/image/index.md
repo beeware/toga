@@ -40,6 +40,8 @@ You can also tell Toga how to convert from (and to) other classes that represent
 
 ## Notes
 
+- On GTK, saving an image as JPEG discards its alpha channel; the original image retains its transparency.
+
 [](){ #known-image-formats }
 
 - PNG and JPEG formats are guaranteed to be supported. Other formats are available on some platforms:
