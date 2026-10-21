@@ -1,7 +1,13 @@
-from ctypes import windll
-from ctypes.wintypes import BOOL, COLORREF, HDC, HGDIOBJ
+from ctypes import c_int, windll
+from ctypes.wintypes import BOOL, COLORREF, HBRUSH, HDC, HGDIOBJ
 
 gdi32 = windll.GDI32
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-createsolidbrush
+CreateSolidBrush = gdi32.CreateSolidBrush
+CreateSolidBrush.restype = HBRUSH
+CreateSolidBrush.argtypes = [COLORREF]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-deleteobject
@@ -14,6 +20,12 @@ DeleteObject.argtypes = [HGDIOBJ]
 SelectObject = gdi32.SelectObject
 SelectObject.restype = HGDIOBJ
 SelectObject.argtypes = [HDC, HGDIOBJ]
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-setbkmode
+SetBkMode = gdi32.SetBkMode
+SetBkMode.restype = c_int
+SetBkMode.argtypes = [HDC, c_int]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-settextcolor

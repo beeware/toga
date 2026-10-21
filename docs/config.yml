@@ -145,7 +145,8 @@ plugins:
           paths: [android/src, cocoa/src, core/src]
           inventories:
             - https://docs.python.org/3/objects.inv
-            - https://pillow.readthedocs.io/en/stable/objects.inv
+            - url: file:docs/pillow.objects.inv
+              base_url: https://pillow.readthedocs.io/en/stable/
           options:
             preload_modules:
               - travertino
