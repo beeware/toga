@@ -2,7 +2,7 @@
 
 Test app for Toga's [Document](https://toga.beeware.org/en/stable/reference/api/resources/document.html) feature.
 
-On macOS, if run without any command line arguments, it will display a file-open dialog. You can navigate to the `examples/documentapp/` directory, and open one of the two `*.exampledoc` files.
+On macOS, if run without any command line arguments, it will display a file-open dialog. You can navigate to the `examples/document/` directory, and open one of the two `*.exampledoc` files.
 
 ## Quickstart
 
@@ -10,11 +10,11 @@ To run this example:
 
 ```console
 $ python -m pip install toga
-$ python -m documentapp
+$ python -m document
 ```
 
 Or, pass in a file at the command line:
 
 ```console
-$ python -m documentapp Jabberwocky.exampledoc
+$ python -m document Jabberwocky.exampledoc
 ```
