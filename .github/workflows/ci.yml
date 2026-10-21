@@ -256,6 +256,7 @@ jobs:
     name: Testbed (${{ matrix.backend }})
     needs: [ core-and-travertino ]
     runs-on: ${{ matrix.runs-on }}
+    env: ${{ matrix.env || fromJSON('{}') }}
     strategy:
       fail-fast: false
       matrix:
@@ -384,6 +385,7 @@ jobs:
               mutter --nested --wayland --no-x11 --wayland-display toga &
             sleep 1
           briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_GTK=4"
+          briefcase-test-args: "--coverage --ignore=tests/app/test_dialogs.py --ignore=tests/window/test_dialogs.py"
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
@@ -416,6 +418,7 @@ jobs:
               mutter --nested --wayland --no-x11 --wayland-display toga &
             sleep 1
           briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_GTK=4 TOGA_GTKLIB=Adw"
+          briefcase-test-args: "--coverage --ignore=tests/app/test_dialogs.py --ignore=tests/window/test_dialogs.py"
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
@@ -590,6 +593,18 @@ jobs:
         ${{ matrix.briefcase-run-prefix }} \
           briefcase run ${{ matrix.platform }} --log --test \
           ${{ matrix.briefcase-run-args }} --app ${{ matrix.testbed-app }} -- --ci ${{ matrix.briefcase-test-args }}
+
+    - name: Test GTK4 Dialogs
+      if: startsWith(matrix.backend, 'linux-wayland-gtk4')
+      working-directory: testbed
+      timeout-minutes: 20
+      # Dialog probes require in-process GTK dialogs. Keep this setting away from
+      # WebKit tests, which require the default portal behavior.
+      run: |
+        GDK_DEBUG=no-portals ${{ matrix.briefcase-run-prefix }} \
+          briefcase run ${{ matrix.platform }} --log --test \
+          ${{ matrix.briefcase-run-args }} --app ${{ matrix.testbed-app }} -- --ci \
+          tests/app/test_dialogs.py tests/window/test_dialogs.py
 
     - name: Upload Logs
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2

@@ -108,8 +108,12 @@ class AppProbe(BaseProbe, DialogsMixin):
                 assert mid_color == (149, 119, 73, 255)
 
     def assert_dialog_in_focus(self, dialog):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support dialogs")
+        if GTK_VERSION >= (4, 10, 0):
+            assert any(
+                window.get_visible() and window not in dialog._test_windows
+                for window in Gtk.Window.get_toplevels()
+            ), "The dialog is not in focus"
+            return
         # Gtk.Dialog's methods - is_active(), has_focus() both return False, even
         # when the dialog is in focus. Hence, they cannot be used to determine focus.
         assert dialog._impl.native.is_visible(), "The dialog is not in focus"
