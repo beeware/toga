@@ -20,6 +20,9 @@ class CanvasProbe(SimpleProbe):
             "deprecated_tutorial",
             "miter_join",
             "reset_transform",
+            "endor_font_variants",
+            "roboto_font_variants",
+            "recursive_font_variants",
         }:
             return f"{reference}-qt"
         else:

@@ -19,6 +19,9 @@ class CanvasProbe(SimpleProbe):
             "miter_join",
             "attributes",
             "reset_transform",
+            "endor_font_variants",
+            "roboto_font_variants",
+            "recursive_font_variants",
         }:
             return f"{reference}-winforms"
         return reference

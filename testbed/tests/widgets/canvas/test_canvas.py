@@ -21,7 +21,7 @@ from toga.colors import (
     rgb,
 )
 from toga.constants import Baseline, FillRule
-from toga.fonts import BOLD
+from toga.fonts import BOLD, ITALIC
 from toga.images import Image as TogaImage
 from toga.style.pack import SYSTEM
 
@@ -1114,6 +1114,82 @@ async def test_write_text_and_path(canvas, probe):
 
     await probe.redraw("Text and path should be drawn independently")
     assert_reference(probe, "write_text_and_path", 0.04)
+
+
+def _draw_font_variants(canvas, family):
+    variants = [
+        (f"{family}", {}),
+        (f"{family} bold", {"weight": BOLD}),
+        (f"{family} italic", {"style": ITALIC}),
+        (f"{family} bold italic", {"weight": BOLD, "style": ITALIC}),
+    ]
+    canvas.fill_style = REBECCAPURPLE
+    y = 10
+    for text, kwargs in variants:
+        font = Font(family, 14, **kwargs)
+        canvas.fill_text(text, 10, y, font=font, baseline=Baseline.TOP)
+        y += 45
+
+
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
+)
+async def test_endor_font_variants(canvas, probe):
+    """Endor font can be rendered in normal, bold, italic, and bold-italic."""
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf")
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf", weight=BOLD)
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf", style=ITALIC)
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf", weight=BOLD, style=ITALIC)
+
+    _draw_font_variants(canvas, "Endor")
+
+    await probe.redraw("Endor font variants should be rendered")
+    assert_reference(probe, "endor_font_variants", threshold=0.04)
+
+
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
+)
+async def test_roboto_font_variants(canvas, probe):
+    """Roboto font can be rendered in normal, bold, italic, and bold-italic."""
+    Font.register("Roboto", "resources/fonts/Roboto-Regular.ttf")
+    Font.register("Roboto", "resources/fonts/Roboto-Bold.ttf", weight=BOLD)
+    Font.register("Roboto", "resources/fonts/Roboto-Italic.ttf", style=ITALIC)
+    Font.register(
+        "Roboto",
+        "resources/fonts/Roboto-BoldItalic.ttf",
+        weight=BOLD,
+        style=ITALIC,
+    )
+
+    _draw_font_variants(canvas, "Roboto")
+
+    await probe.redraw("Roboto font variants should be rendered")
+    assert_reference(probe, "roboto_font_variants", threshold=0.04)
+
+
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
+)
+async def test_recursive_font_variants(canvas, probe):
+    """Recursive font can be rendered in normal, bold, italic, and bold-italic."""
+    Font.register("Recursive", "resources/fonts/Recursive-VF.ttf")
+    Font.register("Recursive", "resources/fonts/Recursive-VF.ttf", weight=BOLD)
+    Font.register("Recursive", "resources/fonts/Recursive-VF.ttf", style=ITALIC)
+    Font.register(
+        "Recursive",
+        "resources/fonts/Recursive-VF.ttf",
+        weight=BOLD,
+        style=ITALIC,
+    )
+
+    _draw_font_variants(canvas, "Recursive")
+
+    await probe.redraw("Recursive font variants should be rendered")
+    assert_reference(probe, "recursive_font_variants", threshold=0.04)
 
 
 async def test_draw_image_at_point(canvas, probe):
