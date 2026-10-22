@@ -21,6 +21,10 @@ toga.Slider(min=-5, max=10, value=7, on_change=my_callback)
 toga.Slider(min=0, max=7.5, tick_count=6)
 ```
 
+## Notes
+
+- GTK supports Slider on GTK 3 and GTK 4, with or without libadwaita.
+
 ## Reference
 
 ::: toga.Slider
