@@ -1,4 +1,3 @@
-import pytest
 from pytest import skip, xfail
 
 from toga_gtk.libs import GTK_VERSION, Gtk
@@ -11,14 +10,13 @@ class SelectionProbe(SimpleProbe):
         native_class = Gtk.ComboBoxText
     else:
         native_class = Gtk.DropDown
-        pytest.skip("GTK4 doesn't support selection probes yet")
 
     def assert_resizes_on_content_change(self):
         pass
 
     @property
     def shrink_on_resize(self):
-        return False
+        return GTK_VERSION >= (4, 0, 0)
 
     @property
     def text_align(self):
@@ -36,6 +34,10 @@ class SelectionProbe(SimpleProbe):
 
     @property
     def titles(self):
+        if GTK_VERSION >= (4, 0, 0):
+            model = self.native.get_model()
+            return [model.get_string(index) for index in range(model.get_n_items())]
+
         titles = []
 
         def add_title(model, path, itr):
@@ -46,8 +48,15 @@ class SelectionProbe(SimpleProbe):
 
     @property
     def selected_title(self):
-        return self.native.get_active_text()
+        if GTK_VERSION < (4, 0, 0):
+            return self.native.get_active_text()
+        else:
+            item = self.native.get_selected_item()
+            return item.get_string() if item is not None else None
 
     async def select_item(self):
-        self.native.popup()
-        self.native.set_active(1)
+        if GTK_VERSION < (4, 0, 0):
+            self.native.popup()
+            self.native.set_active(1)
+        else:
+            self.native.set_selected(1)
