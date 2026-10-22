@@ -251,7 +251,13 @@ class Context:
 
         # draw a filled rectangle with the pixmap as the source for the fill
         self.native.rectangle(0, 0, image.width, image.height)
-        Gdk.cairo_set_source_pixbuf(self.native, image._impl.native, 0, 0)
+        if GTK_VERSION >= (4, 20, 0):  # pragma: no-cover-if-gtk3
+            surface = cairo.ImageSurface.create_from_png(
+                BytesIO(image._impl.get_data())
+            )
+            self.native.set_source_surface(surface, 0, 0)
+        else:
+            Gdk.cairo_set_source_pixbuf(self.native, image._impl.native, 0, 0)
         self.native.fill()
 
         # restore the old path
