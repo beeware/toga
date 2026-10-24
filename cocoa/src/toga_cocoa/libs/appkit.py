@@ -839,3 +839,9 @@ class NSDatePickerStyle(IntEnum):
 # NSDatePicker.h
 
 NSDatePicker = ObjCClass("NSDatePicker")
+
+
+######################################################################
+# NSSwitch.h
+
+NSSwitch = ObjCClass("NSSwitch")
