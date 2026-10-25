@@ -183,7 +183,7 @@ type = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 pre-commit = [
-    "pre-commit == 4.6.2",
+    "pre-commit == 4.7.0",
 ]
 
 setuptools-scm = [
