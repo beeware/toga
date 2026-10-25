@@ -2,12 +2,7 @@ from __future__ import annotations
 
 import warnings
 from itertools import chain
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Literal,
-    Protocol,
-)
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Protocol
 from weakref import WeakSet
 
 import toga
@@ -130,7 +125,7 @@ class Canvas(Widget, DrawingActionDispatch):
     _MIN_HEIGHT = 0
 
     # 2026-02: Backwards compatibility for <= 0.5.3
-    _instances: WeakSet = WeakSet()
+    _instances: ClassVar[WeakSet] = WeakSet()
 
     def __init__(
         self,
