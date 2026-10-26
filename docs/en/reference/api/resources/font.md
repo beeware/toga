@@ -62,7 +62,7 @@ When constructing your own [`Font`][toga.Font] instance, ensure that the font fa
 ## Notes
 
 - Some platforms allow the use of font weights and variants that aren't explicitly provided by altering the rendering of a normal font (e.g., using a thick pen to render a normal font to render a fake bold, or applying a skew to render a fake italic). Toga only guarantees that the font faces, variants and weights that are actually defined in a font file will be available for use.
-- Variable fonts (fonts that contain multiple axes such as weight, slant, or custom designer axes) may render differently across platforms. Each platform's text rendering engine (CoreText, FreeType, GDI+, Skia) interprets font variation axes independently, so the same font may produce visually different results for bold, italic, or other variant styles on different backends.
+- Variable fonts (fonts that contain variation axes such as weight or slant) may render differently across platforms. Each platform interprets font variation axes independently, so the same font may produce visually different results for bold, italic, or other variant styles on different platforms.
 - Android and Windows do not support the oblique font style. If an oblique font is specified, Toga will attempt to use an italic style of the same font.
 - Android and Windows do not support the small caps font variant. If a Small Caps font is specified, Toga will use the normal variant of the same font.
 
