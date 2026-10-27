@@ -88,9 +88,14 @@ class Font:
                 raise ValueError(msg) from exc
 
             ttfont = TTFont(font_path)
-            # Preserve the Postscript font name contained in the
-            # font file.
-            font_name = ttfont["name"].getBestFullName()
+            # Use the PostScript name (OpenType name ID 6) to register the
+            # font. UIKit's fontWithName: only matches fonts by their
+            # PostScript name, unlike macOS's AppKit which can also match
+            # by the full human-readable name. Fall back to the best full
+            # name if no PostScript name is available.
+            font_name = (
+                ttfont["name"].getDebugName(6) or ttfont["name"].getBestFullName()
+            )
             _CUSTOM_FONT_NAMES[font_path] = font_name
 
         self._assign_native(font_name)
