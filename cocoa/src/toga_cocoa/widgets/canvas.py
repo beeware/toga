@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from math import ceil
 
-from rubicon.objc import CGSize, objc_method, objc_property
+from rubicon.objc import CGSize, objc_method, objc_property, send_super
 from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, Color
@@ -325,6 +325,14 @@ class TogaCanvas(NSView):
         self.interface.root_state._draw(Context(self.impl))
 
     @objc_method
+    def setFrameSize_(self, new_size: NSSize) -> None:
+        # Auto Layout sets the frame size after Toga's layout has been applied.
+        # Notifying the interface here (rather than in set_bounds) means a resize
+        # handler that alters the layout doesn't re-enter the layout.
+        send_super(__class__, self, "setFrameSize:", new_size, argtypes=[NSSize])
+        self.interface._notify_resize(new_size.width, new_size.height)
+
+    @objc_method
     def isFlipped(self) -> bool:
         # Default Cocoa coordinate frame is around the wrong way.
         return True
@@ -374,10 +382,6 @@ class Canvas(Widget):
 
     def redraw(self):
         self.native.needsDisplay = True
-
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        self.interface.on_resize(width=width, height=height)
 
     def set_background_color(self, color):
         if color is TRANSPARENT or color is None:
