@@ -237,8 +237,8 @@ class Canvas(Widget):
 
     # Resize handlers
 
-    def simulate_resize(self):
-        self.interface.on_resize(None)
+    def simulate_resize(self, width, height):
+        self.interface._notify_resize(width, height)
 
     # 'Mouse' button handlers
 

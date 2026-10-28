@@ -161,6 +161,8 @@ class Canvas(Widget, DrawingActionDispatch):
             These override matching properties on the `style` argument.
         """
         self._root_state = State()
+        # The most recent size reported to the on_resize handler.
+        self._last_size = None
 
         super().__init__(id, style, **kwargs)
 
@@ -273,12 +275,31 @@ class Canvas(Widget, DrawingActionDispatch):
 
     @property
     def on_resize(self) -> OnResizeHandler:
-        """The handler to invoke when the canvas is resized."""
+        """The handler to invoke when the canvas is resized.
+
+        The handler is only invoked when the size of the canvas changes. It is not
+        invoked if the canvas is laid out again at the same size.
+        """
         return self._on_resize
 
     @on_resize.setter
     def on_resize(self, handler: OnResizeHandler) -> None:
         self._on_resize = wrapped_handler(self, handler)
+
+    def _notify_resize(self, width: float, height: float) -> None:
+        """Notify the canvas that its native size may have changed.
+
+        Backends call this from a native size-change notification. The `on_resize`
+        handler is only invoked if the size (rounded to integer CSS pixels) differs
+        from the last size that was reported.
+
+        :param width: The width of the canvas, in CSS pixels.
+        :param height: The height of the canvas, in CSS pixels.
+        """
+        size = (round(width), round(height))
+        if size != self._last_size:
+            self._last_size = size
+            self.on_resize(width=size[0], height=size[1])
 
     @property
     def on_press(self) -> OnTouchHandler:

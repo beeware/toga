@@ -82,6 +82,33 @@ def test_focus_noop(widget):
     assert_action_not_performed(widget, "focus")
 
 
+def test_notify_resize(widget, on_resize_handler):
+    """The resize handler is only invoked when the canvas size changes."""
+    # The first notification always invokes the handler.
+    widget._impl.simulate_resize(100, 200)
+    on_resize_handler.assert_called_once_with(widget, width=100, height=200)
+    on_resize_handler.reset_mock()
+
+    # Notifying the same size again doesn't invoke the handler.
+    widget._impl.simulate_resize(100, 200)
+    on_resize_handler.assert_not_called()
+
+    # Fractional sizes are rounded; a size that rounds to the current size
+    # doesn't invoke the handler.
+    widget._impl.simulate_resize(100.4, 199.6)
+    on_resize_handler.assert_not_called()
+
+    # A change in either dimension invokes the handler with integer sizes.
+    widget._impl.simulate_resize(150.2, 200.0)
+    on_resize_handler.assert_called_once_with(widget, width=150, height=200)
+    assert type(on_resize_handler.call_args.kwargs["width"]) is int
+    assert type(on_resize_handler.call_args.kwargs["height"]) is int
+    on_resize_handler.reset_mock()
+
+    widget._impl.simulate_resize(150, 250)
+    on_resize_handler.assert_called_once_with(widget, width=150, height=250)
+
+
 def test_redraw(widget):
     """The canvas can be redrawn."""
     widget.redraw()
