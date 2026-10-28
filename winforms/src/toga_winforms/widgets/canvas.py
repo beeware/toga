@@ -398,9 +398,9 @@ class Canvas(Box):
         graphics.Restore(before_state)
 
     def winforms_resize(self, *args):
-        self.interface.on_resize(
-            width=self.scale_out(self.native.Width),
-            height=self.scale_out(self.native.Height),
+        self.interface._notify_resize(
+            self.scale_out(self.native.Width),
+            self.scale_out(self.native.Height),
         )
 
     def winforms_mouse_down(self, obj, mouse_event):

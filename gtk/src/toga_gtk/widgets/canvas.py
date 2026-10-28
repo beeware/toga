@@ -351,7 +351,7 @@ class Canvas(Widget):
         def gtk_on_size_allocate(self, widget, allocation):
             """Called on widget resize, and calls the handler set on the interface, if
             any."""
-            self.interface.on_resize(width=allocation.width, height=allocation.height)
+            self.interface._notify_resize(allocation.width, allocation.height)
 
         def gtk_button_press(self, obj, event):
             match event.button:
@@ -386,7 +386,7 @@ class Canvas(Widget):
     else:  # pragma: no-cover-if-gtk3
 
         def gtk_resize(self, widget, width, height):
-            self.interface.on_resize(width=width, height=height)
+            self.interface._notify_resize(width, height)
 
         def gtk_pressed(self, obj, n_press, x, y):
             if obj == self.gesture_click[1]:
