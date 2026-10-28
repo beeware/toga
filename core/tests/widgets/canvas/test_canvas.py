@@ -82,7 +82,7 @@ def test_focus_noop(widget):
     assert_action_not_performed(widget, "focus")
 
 
-def test_notify_resize(widget, on_resize_handler):
+def test_resize_idempotent(widget, on_resize_handler):
     """The resize handler is only invoked when the canvas size changes."""
     # The first notification always invokes the handler.
     widget._impl.simulate_resize(100, 200)

@@ -345,12 +345,9 @@ class TogaCanvas(UIView):
 
     @objc_method
     def layoutSubviews(self) -> None:
-        # Auto Layout sets the view size after Toga's layout has been applied.
-        # Notifying the interface here (rather than in set_bounds) means a resize
-        # handler that alters the layout doesn't re-enter the layout.
         send_super(__class__, self, "layoutSubviews")
         size = self.bounds.size
-        self.interface._notify_resize(size.width, size.height)
+        self.interface.on_resize(width=size.width, height=size.height)
 
     @objc_method
     def touchesBegan_withEvent_(self, touches, event) -> None:

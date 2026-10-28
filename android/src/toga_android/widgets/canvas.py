@@ -344,8 +344,8 @@ class LayoutChangeListener(dynamic_proxy(View.OnLayoutChangeListener)):
     def onLayoutChange(
         self, view, left, top, right, bottom, old_left, old_top, old_right, old_bottom
     ):
-        # The resize handler may alter the layout, and changing the layout during a
-        # layout pass forces a second pass; defer the notification until the
+        # The resize handler may alter the layout, and changing the layout
+        # during a layout pass raises warnings; defer the notification until the
         # current pass is complete.
         width = right - left
         height = bottom - top
@@ -353,8 +353,9 @@ class LayoutChangeListener(dynamic_proxy(View.OnLayoutChangeListener)):
 
     def notify_resize(self, width, height):
         with suppress_reference_error():
-            self.interface._notify_resize(
-                self.impl.scale_out(width), self.impl.scale_out(height)
+            self.interface.on_resize(
+                width=self.impl.scale_out(width),
+                height=self.impl.scale_out(height),
             )
 
 

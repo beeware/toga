@@ -284,22 +284,14 @@ class Canvas(Widget, DrawingActionDispatch):
 
     @on_resize.setter
     def on_resize(self, handler: OnResizeHandler) -> None:
-        self._on_resize = wrapped_handler(self, handler)
+        def _idempotent_handler(widget, width, height):
+            """Wrap the handler so that it only fires if the size changes."""
+            size = (round(width), round(height))
+            if size != widget._last_size:
+                widget._last_size = size
+                handler(widget, width=size[0], height=size[1])
 
-    def _notify_resize(self, width: float, height: float) -> None:
-        """Notify the canvas that its native size may have changed.
-
-        Backends call this from a native size-change notification. The `on_resize`
-        handler is only invoked if the size (rounded to integer CSS pixels) differs
-        from the last size that was reported.
-
-        :param width: The width of the canvas, in CSS pixels.
-        :param height: The height of the canvas, in CSS pixels.
-        """
-        size = (round(width), round(height))
-        if size != self._last_size:
-            self._last_size = size
-            self.on_resize(width=size[0], height=size[1])
+        self._on_resize = wrapped_handler(self, _idempotent_handler)
 
     @property
     def on_press(self) -> OnTouchHandler:

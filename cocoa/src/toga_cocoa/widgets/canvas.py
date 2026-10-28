@@ -326,11 +326,8 @@ class TogaCanvas(NSView):
 
     @objc_method
     def setFrameSize_(self, new_size: NSSize) -> None:
-        # Auto Layout sets the frame size after Toga's layout has been applied.
-        # Notifying the interface here (rather than in set_bounds) means a resize
-        # handler that alters the layout doesn't re-enter the layout.
         send_super(__class__, self, "setFrameSize:", new_size, argtypes=[NSSize])
-        self.interface._notify_resize(new_size.width, new_size.height)
+        self.interface.on_resize(width=new_size.width, height=new_size.height)
 
     @objc_method
     def isFlipped(self) -> bool:

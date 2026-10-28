@@ -295,7 +295,7 @@ class TogaCanvas(QWidget):
     def resizeEvent(self, event: QResizeEvent):
         super().resizeEvent(event)
         size = event.size()
-        self.interface._notify_resize(size.width(), size.height())
+        self.interface.on_resize(width=size.width(), height=size.height())
 
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
