@@ -29,12 +29,12 @@ def test_noop_handler():
     assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
 
-def test_noop_handler_with_condition():
-    """A condition can be provided, but won't be evaluated on a no-op."""
+def test_noop_handler_with_process_args():
+    """Argument processing can be provided, but won't be evaluated on a no-op."""
     obj = Mock()
-    condition = Mock()
+    process_args = Mock()
 
-    wrapped = wrapped_handler(obj, None, condition=condition)
+    wrapped = wrapped_handler(obj, None, process_args=process_args)
 
     assert wrapped._raw is None
 
@@ -42,7 +42,7 @@ def test_noop_handler_with_condition():
     assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
     # Cleanup method was invoked
-    condition.assert_not_called()
+    process_args.assert_not_called()
 
 
 def test_noop_handler_with_cleanup():
@@ -138,10 +138,10 @@ def test_function_handler_error(capsys):
     )
 
 
-def test_function_handler_with_condition():
-    """A function handler can have a condition on activation."""
+def test_function_handler_with_process_args():
+    """A function handler can process arguments on activation."""
     obj = Mock()
-    condition = Mock(
+    process_args = Mock(
         side_effect=[
             None,
             (("arg1", "arg2"), {"kwarg1": 3, "kwarg2": 4}),
@@ -155,7 +155,7 @@ def test_function_handler_with_condition():
         handler_call["kwargs"] = kwargs
         return 42
 
-    wrapped = wrapped_handler(obj, handler, condition=condition)
+    wrapped = wrapped_handler(obj, handler, process_args=process_args)
 
     # Raw handler is the original function
     assert wrapped._raw == handler
@@ -172,7 +172,7 @@ def test_function_handler_with_condition():
     }
 
     # Condition method was invoked twice
-    assert condition.mock_calls == [
+    assert process_args.mock_calls == [
         call(obj, "arg1a", "arg2a", kwarg1=5, kwarg2=6),
         call(obj, "arg1b", "arg2b", kwarg1=7, kwarg2=8),
     ]

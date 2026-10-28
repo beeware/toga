@@ -284,8 +284,9 @@ class Canvas(Widget, DrawingActionDispatch):
 
     @on_resize.setter
     def on_resize(self, handler: OnResizeHandler) -> None:
-        def idempotent(widget, width, height):
-            """Wrap the handler so that it only fires if the size changes."""
+        def idempotent_ints(widget, width, height):
+            """Wrap the handler so that it only fires if the size changes, and
+            the values are always rounded ints."""
             size = (round(width), round(height))
             if size != widget._last_size:
                 widget._last_size = size
@@ -293,7 +294,7 @@ class Canvas(Widget, DrawingActionDispatch):
             else:
                 return None
 
-        self._on_resize = wrapped_handler(self, handler, condition=idempotent)
+        self._on_resize = wrapped_handler(self, handler, process_args=idempotent_ints)
 
     @property
     def on_press(self) -> OnTouchHandler:
