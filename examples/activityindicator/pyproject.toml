@@ -14,36 +14,41 @@ license-files = [
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 description = "Activity Indicator test app"
-
-[tool.briefcase.app.activityindicator]
-formal_name = "Activity Indicator"
 sources = ["activityindicator"]
 requires = [
     "../../travertino",
     "../../core",
 ]
 
+[tool.briefcase.app.activityindicator]
+formal_name = "Activity Indicator"
+
 [tool.briefcase.app.activityindicator-qt]
 formal_name = "Activity Indicator (Qt)"
-sources = ["activityindicator_qt"]
+sources = [
+    "activityindicator_qt",
+]
+supported = false
 
 [tool.briefcase.app.activityindicator-textual]
 formal_name = "Activity Indicator (Textual)"
-sources = ["activityindicator_textual"]
+sources = [
+    "activityindicator_textual",
+]
 requires = [
     "../../textual",
 ]
+supported = false
 
 [tool.briefcase.app.activityindicator.macOS]
 universal_build = true
 requires = [
     "../../cocoa",
-    "../../textual",
     "std-nslog~=2.0.0",
 ]
 
-[tool.briefcase.app.activityindicator-qt.macOS]
-supported = false
+[tool.briefcase.app.activityindicator-textual.macOS]
+supported = true
 
 [tool.briefcase.app.activityindicator.linux]
 formal_name = "Activity Indicator (GTK)"
@@ -164,17 +169,19 @@ requires = [
     "../../qt",
     "PySide6",
 ]
+supported = true
+
+[tool.briefcase.app.activityindicator-textual.linux]
+supported = true
 
 [tool.briefcase.app.activityindicator.windows]
 requires = [
     "../../winforms",
 ]
 
-[tool.briefcase.app.activityindicator-qt.windows]
-supported = false
-
 [tool.briefcase.app.activityindicator-textual.windows]
 console = true
+supported = true
 
 # Mobile deployments
 [tool.briefcase.app.activityindicator.iOS]
@@ -210,20 +217,8 @@ build_gradle_dependencies = [
 # chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
 # """
 
-[tool.briefcase.app.activityindicator-qt.android]
-supported = false
-
-[tool.briefcase.app.activityindicator-textual.android]
-supported = false
-
 # Web deployment
 [tool.briefcase.app.activityindicator.web]
 requires = [
     "../../web",
 ]
-
-[tool.briefcase.app.activityindicator-qt.web]
-supported = false
-
-[tool.briefcase.app.activityindicator-textual.web]
-supported = false
