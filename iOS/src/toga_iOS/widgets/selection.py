@@ -37,9 +37,9 @@ class TogaBaseTextField(UITextField):
 
     @objc_method
     def onEditingEnd_(self, sender) -> None:
-        if self.tap_recognizer is not None:
-            self.tap_recognizer.view.removeGestureRecognizer(self.tap_recognizer)
-            self.tap_recognizer = None
+        assert self.tap_recognizer is not None, "Editing ended without beginning"
+        self.tap_recognizer.view.removeGestureRecognizer(self.tap_recognizer)
+        self.tap_recognizer = None
 
     @objc_method
     def onTapOutside_(self, recognizer) -> None:  # pragma: no cover
