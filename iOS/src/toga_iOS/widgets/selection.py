@@ -33,7 +33,7 @@ class TogaBaseTextField(UITextField):
             self, action=SEL("onTapOutside:")
         )
         self.tap_recognizer.cancelsTouchesInView = False
-        self.window().addGestureRecognizer(self.tap_recognizer)
+        self.interface.window._impl.native.addGestureRecognizer(self.tap_recognizer)
 
     @objc_method
     def onEditingEnd_(self, sender) -> None:
