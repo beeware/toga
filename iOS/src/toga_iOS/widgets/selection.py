@@ -1,13 +1,14 @@
-from ctypes import c_void_p
-
-from rubicon.objc import SEL, CGPoint, CGSize, objc_method, objc_property, send_super
+from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSTextAlignment,
     UIColor,
+    UIControlEventEditingDidBegin,
+    UIControlEventEditingDidEnd,
     UIPickerView,
+    UITapGestureRecognizer,
     UITextBorderStyle,
     UITextField,
 )
@@ -18,29 +19,36 @@ class TogaBaseTextField(UITextField):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
+    tap_recognizer = objc_property(object)
+
     @objc_method
-    def pointInside_withEvent_(self, point: CGPoint, event) -> bool:  # pragma: no cover
-        # To keep consistency with non-mobile platforms, we'll resign the
-        # responder status when you tap somewhere outside this view. This can't
-        # be emulated in CI because it requires an actual touch event; however,
-        # it's entirely cosmetic, so we can live with the missing coverage.
-        point_inside = send_super(
-            __class__,
-            self,
-            "pointInside:withEvent:",
-            point,
-            event,
-            argtypes=[CGPoint, c_void_p],
+    def onEditingBegin_(self, sender) -> None:
+        # To keep consistency with non-mobile platforms, resign first responder
+        # status (dismissing the picker) when the user taps outside this view.
+        # The recognizer is only attached to the window while editing, so it
+        # can't interfere with touches the rest of the time. A tap recognizer
+        # won't fire for scrolls or drags, and doesn't cancel the tap's
+        # delivery to whatever view was actually tapped.
+        self.tap_recognizer = UITapGestureRecognizer.alloc().initWithTarget(
+            self, action=SEL("onTapOutside:")
         )
-        if not bool(point_inside):
-            # The delay is required for proper animation of keyboard dismissal
-            # for some reason.
-            self.performSelector(
-                SEL("resignFirstResponder"),
-                withObject=None,
-                afterDelay=0.0,
-            )
-        return point_inside
+        self.tap_recognizer.cancelsTouchesInView = False
+        self.window().addGestureRecognizer(self.tap_recognizer)
+
+    @objc_method
+    def onEditingEnd_(self, sender) -> None:
+        if self.tap_recognizer is not None:
+            self.tap_recognizer.view.removeGestureRecognizer(self.tap_recognizer)
+            self.tap_recognizer = None
+
+    @objc_method
+    def onTapOutside_(self, recognizer) -> None:  # pragma: no cover
+        # This can't be emulated in CI because it requires an actual touch
+        # event; however, it's entirely cosmetic, so we can live with the
+        # missing coverage.
+        point = recognizer.locationInView(self)
+        if not self.pointInside(point, withEvent=None):
+            self.resignFirstResponder()
 
 
 class TogaPickerView(UIPickerView):
@@ -90,6 +98,16 @@ class Selection(Widget):
         self.native.impl = self
         self.native.tintColor = UIColor.clearColor
         self.native.borderStyle = UITextBorderStyle.RoundedRect
+        self.native.addTarget(
+            self.native,
+            action=SEL("onEditingBegin:"),
+            forControlEvents=UIControlEventEditingDidBegin,
+        )
+        self.native.addTarget(
+            self.native,
+            action=SEL("onEditingEnd:"),
+            forControlEvents=UIControlEventEditingDidEnd,
+        )
 
         self.native_picker = TogaPickerView.alloc().init()
         self.native_picker.interface = self.interface

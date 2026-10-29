@@ -444,6 +444,10 @@ UITabBarController = ObjCClass("UITabBarController")
 UITabBarItem = ObjCClass("UITabBarItem")
 
 ######################################################################
+# UITapGestureRecognizer.h
+UITapGestureRecognizer = ObjCClass("UITapGestureRecognizer")
+
+######################################################################
 # UITextField.h
 UITextField = ObjCClass("UITextField")
 
@@ -477,7 +481,6 @@ class UIKeyboardType(Enum):
 ######################################################################
 # UITextView.h
 UITextView = ObjCClass("UITextView")
-
 
 ######################################################################
 # UIView.h
