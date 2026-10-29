@@ -180,7 +180,7 @@ requires = [
 ]
 
 [tool.briefcase.app.activityindicator-textual.windows]
-console = true
+console_app = true
 supported = true
 
 # Mobile deployments
