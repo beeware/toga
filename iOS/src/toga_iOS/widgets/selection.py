@@ -158,7 +158,7 @@ class Selection(DismissableWidget):
                 )
 
         # Get rid of focus to force the user to re-open the selection
-        self.native_picker.resignFirstResponder()
+        self.native.resignFirstResponder()
 
     # Alias for backwards compatibility:
     # March 2026: In 0.5.3 and earlier, notification methods
@@ -179,7 +179,7 @@ class Selection(DismissableWidget):
             self.native.text = self.interface._title_for_item(item)
 
         # Get rid of focus to force the user to re-open the selection
-        self.native_picker.resignFirstResponder()
+        self.native.resignFirstResponder()
 
         # Changing the item text can change the layout size
         self.interface.refresh()
@@ -201,7 +201,7 @@ class Selection(DismissableWidget):
         selection_change = self.native_picker.selectedRowInComponent(0) == index
 
         # Get rid of focus to force the user to re-open the selection
-        self.native_picker.resignFirstResponder()
+        self.native.resignFirstResponder()
 
         if selection_change:
             self._reset_selection()
@@ -222,7 +222,7 @@ class Selection(DismissableWidget):
     def source_clear(self):
         self._empty = True
         # Get rid of focus to force the user to re-open the selection
-        self.native_picker.resignFirstResponder()
+        self.native.resignFirstResponder()
         self._reset_selection()
 
     def select_item(self, index, item):

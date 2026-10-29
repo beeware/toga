@@ -305,6 +305,38 @@ async def test_source_changes(widget, probe):
     on_change_handler.reset_mock()
 
 
+async def test_source_change_while_open(widget, probe):
+    """On iOS, an open picker is closed when the source changes."""
+    if toga.platform.current_platform != "iOS":
+        pytest.skip("Only iOS closes the picker on a source change")
+
+    widget._accessor = "name"
+    source = ListSource(
+        accessors=["name", "value"],
+        data=[
+            {"name": "first", "value": 111},
+            {"name": "second", "value": 222},
+            {"name": "third", "value": 333},
+        ],
+    )
+    widget.items = source
+    await probe.redraw("Item list has been updated to use a source")
+
+    for description, change in [
+        ("inserted", lambda: source.append({"name": "new", "value": 999})),
+        ("changed", lambda: setattr(source[0], "name", "updated")),
+        ("removed", lambda: source.remove(source[1])),
+        ("cleared", source.clear),
+    ]:
+        widget.focus()
+        await probe.redraw("Selection has been given focus")
+        assert probe.has_focus
+
+        change()
+        await probe.redraw(f"Item has been {description}")
+        assert not probe.has_focus
+
+
 async def test_resize_on_content_change(widget, probe):
     """The size of the widget adapts to the longest element."""
     # This test will be an xfail on some platforms.
