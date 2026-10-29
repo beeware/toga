@@ -8,47 +8,23 @@ from toga_iOS.libs import (
     UIControlEventEditingDidBegin,
     UIControlEventEditingDidEnd,
     UIPickerView,
-    UITapGestureRecognizer,
     UITextBorderStyle,
     UITextField,
 )
-from toga_iOS.widgets.base import Widget
+from toga_iOS.widgets.base import DismissableWidget
 
 
 class TogaBaseTextField(UITextField):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
-    tap_recognizer = objc_property(object)
-
     @objc_method
     def onEditingBegin_(self, sender) -> None:
-        # To keep consistency with non-mobile platforms, resign first responder
-        # status (dismissing the picker) when the user taps outside this view.
-        # The recognizer is only attached to the window while editing, so it
-        # can't interfere with touches the rest of the time. A tap recognizer
-        # won't fire for scrolls or drags, and doesn't cancel the tap's
-        # delivery to whatever view was actually tapped.
-        self.tap_recognizer = UITapGestureRecognizer.alloc().initWithTarget(
-            self, action=SEL("onTapOutside:")
-        )
-        self.tap_recognizer.cancelsTouchesInView = False
-        self.interface.window._impl.native.addGestureRecognizer(self.tap_recognizer)
+        self.impl._start_dismiss_on_tap_outside()
 
     @objc_method
     def onEditingEnd_(self, sender) -> None:
-        assert self.tap_recognizer is not None, "Editing ended without beginning"
-        self.tap_recognizer.view.removeGestureRecognizer(self.tap_recognizer)
-        self.tap_recognizer = None
-
-    @objc_method
-    def onTapOutside_(self, recognizer) -> None:  # pragma: no cover
-        # This can't be emulated in CI because it requires an actual touch
-        # event; however, it's entirely cosmetic, so we can live with the
-        # missing coverage.
-        point = recognizer.locationInView(self)
-        if not self.pointInside(point, withEvent=None):
-            self.resignFirstResponder()
+        self.impl._stop_dismiss_on_tap_outside()
 
 
 class TogaPickerView(UIPickerView):
@@ -91,7 +67,7 @@ class TogaPickerView(UIPickerView):
         self.interface.on_change()
 
 
-class Selection(Widget):
+class Selection(DismissableWidget):
     def create(self):
         self.native = TogaBaseTextField.alloc().init()
         self.native.interface = self.interface
