@@ -23,7 +23,7 @@ from toga.colors import (
 from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD, ITALIC
 from toga.images import Image as TogaImage
-from toga.style.pack import SYSTEM
+from toga.style.pack import COLUMN, SYSTEM
 
 from ...conftest import skip_on_backends
 from ..conftest import build_cleanup_test
@@ -57,7 +57,7 @@ async def test_resize(widget, probe, on_resize_handler):
     assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] > 300
     assert on_resize_handler.call_args.kwargs["height"] > 300
-    on_resize_handler.reset()
+    on_resize_handler.reset_mock()
 
     widget.style.width = 100
     await probe.redraw("Canvas should be tall and narrow")
@@ -65,7 +65,7 @@ async def test_resize(widget, probe, on_resize_handler):
     assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] == 100
     assert on_resize_handler.call_args.kwargs["height"] > 300
-    on_resize_handler.reset()
+    on_resize_handler.reset_mock()
 
     widget.style.height = 100
     await probe.redraw("Canvas should be small")
@@ -73,7 +73,7 @@ async def test_resize(widget, probe, on_resize_handler):
     assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] == 100
     assert on_resize_handler.call_args.kwargs["height"] == 100
-    on_resize_handler.reset()
+    on_resize_handler.reset_mock()
 
     del widget.style.width
     await probe.redraw("Canvas should be width of the screen")
@@ -81,7 +81,51 @@ async def test_resize(widget, probe, on_resize_handler):
     assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] > 300
     assert on_resize_handler.call_args.kwargs["height"] == 100
-    on_resize_handler.reset()
+    on_resize_handler.reset_mock()
+
+
+async def test_resize_handler_modifies_layout(widget, probe):
+    """A resize handler can modify the layout without recursing (#4842)."""
+    label = toga.Label("Elsa")
+    calls = []
+
+    def on_resize(canvas, width, height, **kwargs):
+        calls.append((width, height))
+        label.text = "Kristoff"
+
+    widget.on_resize = on_resize
+    # Adding the label alters the size of the (flexible) canvas.
+    widget.parent.insert(0, label)
+
+    await probe.redraw(
+        "Label should read 'Kristoff'",
+        wait_for=lambda: label.text == "Kristoff",
+    )
+    assert label.text == "Kristoff"
+    # Changing the label's text may alter the size of the canvas, so the handler
+    # may be invoked more than once - but it must not recurse.
+    assert 1 <= len(calls) <= 3
+
+
+async def test_resize_not_fired_without_size_change(canvas, probe, on_resize_handler):
+    """The resize handler isn't invoked when the canvas size doesn't change."""
+    label = toga.Label("Elsa")
+    canvas.parent.style.direction = COLUMN
+    canvas.parent.insert(0, label)
+    await probe.redraw("Canvas should be 200x200, below a label")
+    assert on_resize_handler.call_args.kwargs["width"] == 200
+    assert on_resize_handler.call_args.kwargs["height"] == 200
+    on_resize_handler.reset_mock()
+
+    # Changing the label's text alters the layout, but not the canvas size.
+    label.text = "Kristoff"
+    await probe.redraw("Label should read 'Kristoff'")
+
+    # Adding a margin to the label moves the canvas without resizing it.
+    label.style.margin_top = 20
+    await probe.redraw("Canvas should have moved down")
+
+    on_resize_handler.assert_not_called()
 
 
 async def test_press(canvas, probe, on_press_handler, on_release_handler):
