@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 from toga.sources import Row
 
@@ -17,13 +17,19 @@ def test_row():
     # An existing attribute can be updated.
     row.val1 = "new value"
     assert row.val1 == "new value"
-    source.notify.assert_called_once_with("change", item=row)
+    assert source.notify.mock_calls == [
+        call("pre_change", item=row),
+        call("change", item=row),
+    ]
     source.notify.reset_mock()
 
     # Deleting an attribute causes a change notification
     del row.val1
     assert not hasattr(row, "val1")
-    source.notify.assert_called_once_with("change", item=row)
+    assert source.notify.mock_calls == [
+        call("pre_change", item=row),
+        call("change", item=row),
+    ]
     source.notify.reset_mock()
 
     # Setting an attribute with an underscore isn't a notifiable event
@@ -35,14 +41,20 @@ def test_row():
     # still causes a change notification
     row.val3 = "other value"
     assert row.val3 == "other value"
-    source.notify.assert_called_once_with("change", item=row)
+    assert source.notify.mock_calls == [
+        call("pre_change", item=row),
+        call("change", item=row),
+    ]
     source.notify.reset_mock()
 
     # Deleting an attribute that wasn't in the original attribute set
     # still causes a change notification
     del row.val3
     assert not hasattr(row, "val")
-    source.notify.assert_called_once_with("change", item=row)
+    assert source.notify.mock_calls == [
+        call("pre_change", item=row),
+        call("change", item=row),
+    ]
     source.notify.reset_mock()
 
 

@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -473,3 +473,79 @@ def test_find_with_default(source):
 
     # If the given default value is None, None will be returned if no match is found
     assert source.find({"val1": "not there", "val2": 999}, default=None) is None
+
+
+def test_pre_notifications(source):
+    """Insert, remove and clear notifications are each preceded by a "pre"
+    notification with the same arguments, sent before the source changes."""
+    lengths = []
+    listener = Mock()
+    for name in ["source_pre_insert", "source_pre_remove", "source_pre_clear"]:
+        getattr(listener, name).side_effect = lambda **kwargs: lengths.append(
+            len(source)
+        )
+    source.add_listener(listener)
+
+    row = source.insert(1, {"val1": "new"})
+    del source[1]
+    source.clear()
+
+    assert listener.mock_calls == [
+        call.source_pre_insert(index=1, item=row),
+        call.source_insert(index=1, item=row),
+        call.source_pre_remove(index=1, item=row),
+        call.source_remove(index=1, item=row),
+        call.source_pre_clear(),
+        call.source_clear(),
+    ]
+    # Each "pre" notification saw the source before it changed
+    assert lengths == [3, 4, 3]
+
+
+def test_pre_change(source):
+    """A change notification is preceded by a pre-change notification for the item
+    that is about to change, sent before it changes."""
+    seen = []
+    listener = Mock()
+    listener.source_pre_change.side_effect = lambda item: seen.append(
+        (source[1], item.val1)
+    )
+    source.add_listener(listener)
+
+    # Change an attribute of a row
+    row = source[1]
+    row.val1 = "new value"
+
+    assert listener.mock_calls == [
+        call.source_pre_change(item=row),
+        call.source_change(item=row),
+    ]
+    listener.reset_mock()
+
+    # Replace a row
+    source[1] = {"val1": "replaced"}
+
+    assert listener.mock_calls == [
+        call.source_pre_change(item=row),
+        call.source_change(item=source[1]),
+    ]
+    # Each pre-change notification saw the row before it changed
+    assert seen == [(row, "second"), (row, "new value")]
+
+
+def test_listener_without_pre_notifications(source):
+    """A listener doesn't need to implement the "pre" notifications."""
+
+    class InsertListener:
+        def __init__(self):
+            self.inserted = []
+
+        def source_insert(self, *, index, item):
+            self.inserted.append((index, item))
+
+    listener = InsertListener()
+    source.add_listener(listener)
+
+    row = source.insert(1, {"val1": "new"})
+
+    assert listener.inserted == [(1, row)]

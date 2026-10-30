@@ -4,7 +4,7 @@ import pytest
 
 import toga
 from toga.constants import CENTER
-from toga.sources import ListListener, ListSource
+from toga.sources import ListSource
 
 from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
@@ -344,11 +344,6 @@ async def test_flex_width_after_items_change(widget, probe):
     # Allow any deferred native size adjustment to run.
     await probe.redraw("Items have been replaced", delay=0.1)
     assert probe.width > 350
-
-
-async def test_list_listener(widget):
-    """Does the widget implement the ListListener API"""
-    assert isinstance(widget._impl, ListListener)
 
 
 @pytest.mark.parametrize(
