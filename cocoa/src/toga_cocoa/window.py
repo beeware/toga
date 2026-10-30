@@ -373,8 +373,7 @@ class Window:
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
         # get_window_state is called during interface-level set_scaffold to check
-        # on PRESENTATION mode, but the scaffold does not exist at that point. Hence,
-        # check for existence of scaffold before checking PRESENTATION.
+        # on PRESENTATION mode, but the scaffold does not exist at that point.
         if (
             self._scaffold
             and self._scaffold.current_container.controller.view.isInFullScreenMode()
