@@ -142,9 +142,11 @@ async def test_bad_image_data(app):
         toga.Image(b"Not an image")
 
 
-async def test_save(app):
+@pytest.mark.parametrize("mode", ["RGB", "RGBA"])
+async def test_save(app, mode):
     """An image can be saved."""
-    orig_image = toga.Image("resources/sample.png")
+    with PIL_Image.open(app.paths.app / "resources/sample.png") as source:
+        orig_image = toga.Image(source.convert(mode))
     probe = image_probe(app, orig_image)
     assert orig_image.width == 144
     assert orig_image.height == 72
