@@ -67,6 +67,10 @@ class TextInput(Widget):
 
     def set_readonly(self, value):
         self.native.set_property("editable", not value)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.set_can_focus(not value)
+        else:  # pragma: no-cover-if-gtk3
+            self.native.set_focusable(not value)
 
     def get_placeholder(self):
         return self.native.get_placeholder_text()
