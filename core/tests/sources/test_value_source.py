@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 from toga.sources.value_source import ValueSource
 
@@ -52,3 +52,21 @@ def test_listener():
     source.something = 1234
 
     listener.source_change.assert_not_called()
+
+
+def test_pre_change():
+    """A change notification is preceded by a pre-change notification with the value
+    before the change."""
+    source = ValueSource(42)
+    listener = Mock()
+    source.add_listener(listener)
+
+    source.value = 37
+    source.value = None
+
+    assert listener.mock_calls == [
+        call.source_pre_change(item=42),
+        call.source_change(item=37),
+        call.source_pre_change(item=37),
+        call.source_change(item=None),
+    ]

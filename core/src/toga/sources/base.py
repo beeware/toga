@@ -9,9 +9,20 @@ ItemT = TypeVar("ItemT", contravariant=True)
 
 @runtime_checkable
 class ValueListener(Protocol, Generic[ItemT]):
-    """The protocol that must be implemented by objects that will act as a listener on
-    a value data source.
+    """The protocol describing the methods an object can implement to act as a
+    listener on a value data source.
+
+    Every method is optional. A source only calls the methods that a listener has,
+    so a listener only needs to implement the notifications it is interested in. As a
+    result, an `isinstance()` check against this protocol isn't a useful way to
+    decide whether an object can be a listener.
     """
+
+    def source_pre_change(self, *, item: ItemT) -> None:
+        """A change is about to occur in an item.
+
+        :param item: The data object that is about to change.
+        """
 
     def source_change(self, *, item: ItemT) -> None:
         """A change has occurred in an item.
@@ -22,15 +33,31 @@ class ValueListener(Protocol, Generic[ItemT]):
 
 @runtime_checkable
 class ListListener(ValueListener[ItemT], Protocol, Generic[ItemT]):
-    """The protocol that must be implemented by objects that will act as a listener on
-    a list data source.
+    """The protocol describing the methods an object can implement to act as a
+    listener on a list data source.
+
+    Every method is optional; see [`ValueListener`][toga.sources.ValueListener].
     """
+
+    def source_pre_insert(self, *, index: int, item: ItemT) -> None:
+        """An item is about to be added to the data source.
+
+        :param index: The 0-index position in the data.
+        :param item: The data object that will be added.
+        """
 
     def source_insert(self, *, index: int, item: ItemT) -> None:
         """An item has been added to the data source.
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
+        """
+
+    def source_pre_remove(self, *, index: int, item: ItemT) -> None:
+        """An item is about to be removed from the data source.
+
+        :param index: The 0-index position in the data.
+        :param item: The data object that will be removed.
         """
 
     def source_remove(self, *, index: int, item: ItemT) -> None:
@@ -40,15 +67,35 @@ class ListListener(ValueListener[ItemT], Protocol, Generic[ItemT]):
         :param item: The data object that was added.
         """
 
+    def source_pre_clear(self) -> None:
+        """All items are about to be removed from the data source."""
+
     def source_clear(self) -> None:
         """All items have been removed from the data source."""
 
 
 @runtime_checkable
 class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
-    """The protocol that must be implemented by objects that will act as a listener on
-    a tree data source.
+    """The protocol describing the methods an object can implement to act as a
+    listener on a tree data source.
+
+    Every method is optional; see [`ValueListener`][toga.sources.ValueListener].
     """
+
+    def source_pre_insert(
+        self,
+        *,
+        index: int,
+        item: object,
+        parent: ItemT | None = None,
+    ) -> None:
+        """An item is about to be added to the data source.
+
+        :param index: The 0-index position in the data.
+        :param item: The data object that will be added.
+        :param parent: The parent of the data object that will be added, or `None`
+            if it is a root item.
+        """
 
     def source_insert(
         self,
@@ -62,6 +109,21 @@ class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
         :param parent: The parent of the data object that was added, or `None`
+            if it is a root item.
+        """
+
+    def source_pre_remove(
+        self,
+        *,
+        index: int,
+        item: object,
+        parent: ItemT | None = None,
+    ) -> None:
+        """An item is about to be removed from the data source.
+
+        :param index: The 0-index position in the data.
+        :param item: The data object that will be removed.
+        :param parent: The parent of the data object that will be removed, or `None`
             if it is a root item.
         """
 

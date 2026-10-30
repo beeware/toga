@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -689,3 +689,43 @@ def test_non_mapping_find_requires_accessors():
         match=r"find\(\) requires accessors for non-mapping node data",
     ):
         source[0].find(1)
+
+
+def test_pre_notifications(source, listener):
+    """Root insert, change, remove and clear notifications are each preceded by a
+    "pre" notification, sent before the source changes."""
+    seen = []
+    for name in [
+        "source_pre_insert",
+        "source_pre_change",
+        "source_pre_remove",
+        "source_pre_clear",
+    ]:
+        getattr(listener, name).side_effect = lambda **kwargs: seen.append(
+            [root.val1 for root in source]
+        )
+
+    new_root = source.insert(1, {"val1": "new"})
+    old_root = source[0]
+    source[0] = {"val1": "replaced"}
+    replaced_root = source[0]
+    del source[1]
+    source.clear()
+
+    assert listener.mock_calls == [
+        call.source_pre_insert(parent=None, index=1, item=new_root),
+        call.source_insert(parent=None, index=1, item=new_root),
+        call.source_pre_change(item=old_root),
+        call.source_change(item=replaced_root),
+        call.source_pre_remove(parent=None, index=1, item=new_root),
+        call.source_remove(parent=None, index=1, item=new_root),
+        call.source_pre_clear(),
+        call.source_clear(),
+    ]
+    # Each "pre" notification saw the source before it changed
+    assert seen == [
+        ["group1", "group2"],
+        ["group1", "new", "group2"],
+        ["replaced", "new", "group2"],
+        ["replaced", "group2"],
+    ]

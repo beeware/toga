@@ -66,6 +66,7 @@ class Node(Row[T]):
             raise ValueError(f"{self} is a leaf node")
 
         child = self._children[index]
+        self._source.notify("pre_remove", parent=self, index=index, item=child)
         del self._children[index]
 
         # Child isn't part of this source, or a child of this node anymore.
@@ -107,10 +108,11 @@ class Node(Row[T]):
             raise ValueError(f"{self} is a leaf node")
 
         old_node = self._children[index]
+        node = self._source._create_node(parent=self, data=data)
+        self._source.notify("pre_change", item=old_node)
+
         old_node._parent = None
         old_node._source = None
-
-        node = self._source._create_node(parent=self, data=data)
         self._children[index] = node
         self._source.notify("change", item=node)
 
@@ -132,6 +134,7 @@ class Node(Row[T]):
             index = min(len(self), index)
 
         node = self._source._create_node(parent=self, data=data, children=children)
+        self._source.notify("pre_insert", parent=self, index=index, item=node)
         self._children.insert(index, node)
         self._source.notify("insert", parent=self, index=index, item=node)
         return node
@@ -246,6 +249,7 @@ class TreeSource(Source):
 
     def __delitem__(self, index: int) -> None:
         node = self._roots[index]
+        self.notify("pre_remove", parent=None, index=index, item=node)
         del self._roots[index]
         node._source = None
         self.notify("remove", parent=None, index=index, item=node)
@@ -305,15 +309,17 @@ class TreeSource(Source):
             into a Node object.
         """
         old_root = self._roots[index]
+        root = self._create_node(parent=None, data=data)
+        self.notify("pre_change", item=old_root)
+
         old_root._parent = None
         old_root._source = None
-
-        root = self._create_node(parent=None, data=data)
         self._roots[index] = root
         self.notify("change", item=root)
 
     def clear(self) -> None:
         """Clear all data from the data source."""
+        self.notify("pre_clear")
         self._roots = []
         self.notify("clear")
 
@@ -335,6 +341,7 @@ class TreeSource(Source):
             index = min(len(self), index)
 
         node = self._create_node(parent=None, data=data, children=children)
+        self.notify("pre_insert", parent=None, index=index, item=node)
         self._roots.insert(index, node)
         node._parent = None
         self.notify("insert", parent=None, index=index, item=node)
