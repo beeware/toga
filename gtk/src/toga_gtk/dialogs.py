@@ -1,25 +1,16 @@
 from pathlib import Path
 
-import toga
-
-from .libs import GTK_VERSION, Gtk
+from .libs import GTK_VERSION, Gio, GLib, Gtk
 
 
 class BaseDialog:
     def show(self, host_window, future):
+        self.future = future
+        self.native.set_transient_for(host_window._impl.native if host_window else None)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.future = future
-
-            # If this is a modal dialog, set the window as transient to the host window.
-            if host_window:
-                self.native.set_transient_for(host_window._impl.native)
-            else:
-                self.native.set_transient_for(None)
-
-            # Show the dialog.
             self.native.show()
         else:  # pragma: no-cover-if-gtk3
-            self.interface.factory.not_implemented("BaseDialog.show()")
+            self.native.present()
 
 
 class MessageDialog(BaseDialog):
@@ -32,34 +23,72 @@ class MessageDialog(BaseDialog):
         **kwargs,
     ):
         super().__init__()
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.success_result = success_result
-
+        self.success_result = success_result
+        if GTK_VERSION >= (4, 10, 0):  # pragma: no-cover-if-gtk3
+            choices = {
+                Gtk.ButtonsType.OK: [("OK", Gtk.ResponseType.OK)],
+                Gtk.ButtonsType.CANCEL: [("Cancel", Gtk.ResponseType.CANCEL)],
+                Gtk.ButtonsType.YES_NO: [
+                    ("No", Gtk.ResponseType.NO),
+                    ("Yes", Gtk.ResponseType.YES),
+                ],
+                Gtk.ButtonsType.OK_CANCEL: [
+                    ("Cancel", Gtk.ResponseType.CANCEL),
+                    ("OK", Gtk.ResponseType.OK),
+                ],
+            }[buttons]
+            self.response_types = [response for _, response in choices]
+            self.native = Gtk.AlertDialog(
+                message=title,
+                detail=kwargs["message"],
+                modal=True,
+                buttons=[label for label, _ in choices],
+                cancel_button=0,
+                default_button=len(choices) - 1,
+            )
+        else:
             self.native = Gtk.MessageDialog(
-                flags=0,
                 message_type=message_type,
                 buttons=buttons,
                 text=title,
             )
             self.native.set_modal(True)
             self.build_dialog(**kwargs)
-
             self.native.connect("response", self.gtk_response)
 
-        else:  # pragma: no-cover-if-gtk3
-            toga.NotImplementedWarning("Dialog()")
-
-    def build_dialog(self, message):
-        self.native.format_secondary_text(message)
-
-    def gtk_response(self, dialog, response):
-        if self.success_result:
-            result = response == self.success_result
+    def show(self, host_window, future):
+        if GTK_VERSION >= (4, 10, 0) and isinstance(
+            self.native, Gtk.AlertDialog
+        ):  # pragma: no-cover-if-gtk3
+            self.future = future
+            self.native.choose(
+                host_window._impl.native if host_window else None,
+                None,
+                self.gtk_choose,
+            )
         else:
-            result = None
+            super().show(host_window, future)
 
+    def gtk_choose(self, dialog, result):  # pragma: no-cover-if-gtk3
+        try:
+            response = self.response_types[dialog.choose_finish(result)]
+        except GLib.Error as error:
+            if error.matches(Gtk.DialogError.quark(), Gtk.DialogError.DISMISSED):
+                response = Gtk.ResponseType.CANCEL
+            else:
+                self.future.set_exception(error)
+                return
+        self.resolve(response)
+
+    def resolve(self, response):
+        result = response == self.success_result if self.success_result else None
         self.future.set_result(result)
 
+    def build_dialog(self, message):
+        self.native.set_property("secondary-text", message)
+
+    def gtk_response(self, dialog, response):
+        self.resolve(response)
         self.native.destroy()
 
 
@@ -107,20 +136,55 @@ class ErrorDialog(MessageDialog):
 
 class StackTraceDialog(MessageDialog):
     def __init__(self, title, **kwargs):
-        super().__init__(
-            title=title,
-            message_type=Gtk.MessageType.ERROR,
-            buttons=(
-                Gtk.ButtonsType.CANCEL if kwargs.get("retry") else Gtk.ButtonsType.OK
-            ),
-            success_result=Gtk.ResponseType.OK if kwargs.get("retry") else None,
-            **kwargs,
-        )
+        if GTK_VERSION >= (4, 10, 0):  # pragma: no-cover-if-gtk3
+            self.success_result = Gtk.ResponseType.OK if kwargs["retry"] else None
+            self.native = Gtk.Window(title=title, modal=True)
+            container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+            for side in ("top", "bottom", "start", "end"):
+                getattr(container, f"set_margin_{side}")(12)
+            container.append(Gtk.Label(label=kwargs["message"], wrap=True, xalign=0))
+            trace = Gtk.TextView(editable=False, cursor_visible=False, monospace=True)
+            trace.get_buffer().set_text(kwargs["content"])
+            trace.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+            scroll = Gtk.ScrolledWindow(child=trace)
+            scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+            scroll.set_size_request(500, 200)
+            container.append(scroll)
+            buttons = Gtk.Box(spacing=12, halign=Gtk.Align.END)
+            self.response_buttons = {}
+            choices = (
+                [("Cancel", Gtk.ResponseType.CANCEL), ("Retry", Gtk.ResponseType.OK)]
+                if kwargs["retry"]
+                else [("OK", Gtk.ResponseType.OK)]
+            )
+            for label, response in choices:
+                button = Gtk.Button(label=label)
+                button.connect("clicked", self.gtk_response, response)
+                buttons.append(button)
+                self.response_buttons[response] = button
+            container.append(buttons)
+            self.native.set_child(container)
+            self.native.set_default_widget(button)
+            self.native.connect("close-request", self.gtk_close)
+        else:
+            super().__init__(
+                title=title,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.CANCEL
+                if kwargs["retry"]
+                else Gtk.ButtonsType.OK,
+                success_result=Gtk.ResponseType.OK if kwargs["retry"] else None,
+                **kwargs,
+            )
+
+    def gtk_close(self, window):  # pragma: no-cover-if-gtk3
+        self.gtk_response(window, Gtk.ResponseType.CANCEL)
+        return True
 
     def build_dialog(self, message, content, retry):
         container = self.native.get_message_area()
 
-        self.native.format_secondary_text(message)
+        self.native.set_property("secondary-text", message)
 
         # Create a scrolling readonly text area, in monospace font,
         # to contain the stack trace.
@@ -133,26 +197,18 @@ class StackTraceDialog(MessageDialog):
         trace.set_property("editable", False)
         trace.set_property("cursor-visible", False)
 
-        trace.get_style_context().add_class("toga")
-        trace.get_style_context().add_class("stacktrace")
-        trace.get_style_context().add_class("dialog")
-
-        style_provider = Gtk.CssProvider()
-        style_provider.load_from_data(b".toga.stacktrace {font-family: monospace;}")
-
-        trace.get_style_context().add_provider(
-            style_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
-        )
+        trace.set_monospace(True)
 
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroll.set_size_request(500, 200)
-        scroll.add(trace)
-
-        container.pack_end(scroll, False, False, 0)
-
-        container.show_all()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            scroll.add(trace)
+            container.pack_end(scroll, False, False, 0)
+            container.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            scroll.set_child(trace)
+            container.append(scroll)
 
         # If this is a retry dialog, add a retry button (which maps to OK).
         if retry:
@@ -171,56 +227,107 @@ class FileDialog(BaseDialog):
         ok_icon,
     ):
         super().__init__()
+        self.multiple_select = multiple_select
+        self.operation = {
+            Gtk.FileChooserAction.OPEN: "open",
+            Gtk.FileChooserAction.SAVE: "save",
+            Gtk.FileChooserAction.SELECT_FOLDER: "select_folder",
+        }[action]
+        if multiple_select:
+            self.operation = (
+                "open_multiple"
+                if action == Gtk.FileChooserAction.OPEN
+                else "select_multiple_folders"
+            )
+        self._selected_files = []
 
-        self.native = Gtk.FileChooserDialog(
-            title=title,
-            action=action,
-        )
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+        if GTK_VERSION >= (4, 10, 0):  # pragma: no-cover-if-gtk3
+            self.native = Gtk.FileDialog(title=title, modal=True, accept_label=ok_icon)
+            if filename:
+                self.native.set_initial_name(filename)
+            if initial_directory:
+                self.native.set_initial_folder(
+                    Gio.File.new_for_path(str(initial_directory))
+                )
+        else:
+            self.native = Gtk.FileChooserDialog(title=title, action=action)
             self.native.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-            self.native.add_button("_OK", Gtk.ResponseType.OK)
+            self.native.add_button(ok_icon, Gtk.ResponseType.OK)
             self.native.set_modal(True)
-
             if filename:
                 self.native.set_current_name(filename)
-
             if initial_directory:
-                self.native.set_current_folder(str(initial_directory))
+                self.native.set_current_folder(
+                    str(initial_directory)
+                    if GTK_VERSION < (4, 0, 0)
+                    else Gio.File.new_for_path(str(initial_directory))
+                )
+            self.native.set_select_multiple(multiple_select)
+            self.native.connect("response", self.gtk_response)
 
-            if file_types:
-                filter_filetype = Gtk.FileFilter()
-                if len(file_types) > 1:
-                    filter_filetype.set_name(
-                        " or ".join(f".{ft}" for ft in file_types) + " files"
-                    )
-                    for file_type in file_types:
-                        filter_filetype.add_pattern(f"*.{file_type}")
-                    self.native.add_filter(filter_filetype)
-
+        filters = []
+        if file_types:
+            if len(file_types) > 1:
+                combined = Gtk.FileFilter()
+                combined.set_name(" or ".join(f".{ft}" for ft in file_types) + " files")
                 for file_type in file_types:
-                    filter_filetype = Gtk.FileFilter()
-                    filter_filetype.set_name(f".{file_type} files")
-                    filter_filetype.add_pattern(f"*.{file_type}")
-                    self.native.add_filter(filter_filetype)
+                    combined.add_pattern(f"*.{file_type}")
+                filters.append(combined)
+            for file_type in file_types:
+                file_filter = Gtk.FileFilter()
+                file_filter.set_name(f".{file_type} files")
+                file_filter.add_pattern(f"*.{file_type}")
+                filters.append(file_filter)
+        if GTK_VERSION >= (4, 10, 0):  # pragma: no-cover-if-gtk3
+            model = Gio.ListStore.new(Gtk.FileFilter)
+            for file_filter in filters:
+                model.append(file_filter)
+            self.native.set_filters(model)
+        else:
+            for file_filter in filters:
+                self.native.add_filter(file_filter)
 
-            self.multiple_select = multiple_select
-            if self.multiple_select:
-                self.native.set_select_multiple(True)
-        else:  # pragma: no cover-if-gtk3
-            pass
+    def show(self, host_window, future):
+        self.future = future
+        parent = host_window._impl.native if host_window else None
+        if GTK_VERSION >= (4, 10, 0):  # pragma: no-cover-if-gtk3
+            getattr(self.native, self.operation)(parent, None, self.gtk_file_response)
+        else:
+            self.native.set_transient_for(parent)
+            self.native.show()
 
-        self.native.connect("response", self.gtk_response)
+    def gtk_file_response(self, dialog, result):  # pragma: no-cover-if-gtk3
+        try:
+            files = getattr(dialog, f"{self.operation}_finish")(result)
+        except GLib.Error as error:
+            if error.matches(
+                Gtk.DialogError.quark(), Gtk.DialogError.DISMISSED
+            ) or error.matches(Gtk.DialogError.quark(), Gtk.DialogError.CANCELLED):
+                self.gtk_response(dialog, Gtk.ResponseType.CANCEL)
+            else:
+                self.future.set_exception(error)
+        else:
+            self._selected_files = list(files) if self.multiple_select else [files]
+            self.gtk_response(dialog, Gtk.ResponseType.OK)
 
     # Provided as a stub that can be mocked in test conditions
     def selected_path(self):
+        if GTK_VERSION >= (4, 10, 0):  # pragma: no-cover-if-gtk3
+            return self._selected_files[0].get_path()
+        elif GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+            return self.native.get_file().get_path()
         return self.native.get_filename()
 
     # Provided as a stub that can be mocked in test conditions
     def selected_paths(self):
+        if GTK_VERSION >= (4, 10, 0):  # pragma: no-cover-if-gtk3
+            return [file.get_path() for file in self._selected_files]
+        elif GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+            return [file.get_path() for file in self.native.get_files()]
         return self.native.get_filenames()
 
     def gtk_response(self, dialog, response):
-        if response == Gtk.ResponseType.OK:
+        if response in (Gtk.ResponseType.OK, Gtk.ResponseType.ACCEPT):
             if self.multiple_select:
                 result = [Path(filename) for filename in self.selected_paths()]
             else:
@@ -229,8 +336,11 @@ class FileDialog(BaseDialog):
             result = None
 
         self.future.set_result(result)
-
-        self.native.destroy()
+        if GTK_VERSION < (4, 10, 0):  # pragma: no-cover-if-gtk4
+            self.native.destroy()
+        else:  # pragma: no-cover-if-gtk3
+            # Gtk.FileDialog closes its chooser before invoking the callback.
+            pass
 
 
 class SaveFileDialog(FileDialog):
