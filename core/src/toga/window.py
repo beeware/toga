@@ -254,7 +254,7 @@ class Window:
 
         # Set up the scaffold layer to facilitate setting content later.
         self._wrapper_scaffold = Scaffold()
-        self._wrapper_scaffold.app = self.app
+        self._wrapper_scaffold.app = App.app
         self._wrapper_scaffold.window = self
         self._scaffold: BaseScaffold | None = self._wrapper_scaffold
 
