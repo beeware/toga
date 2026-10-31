@@ -164,7 +164,7 @@ async def test_image_data(canvas, probe):
 
     image = canvas.as_image()
     imageview = toga.ImageView(image)
-    canvas.window.content.add(imageview)
+    canvas.root.add(imageview)
 
     await probe.redraw("Cloned image should be visible")
 
