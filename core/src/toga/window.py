@@ -240,8 +240,6 @@ class Window:
         self._id = str(id if id else identifier(self))
         self._impl: Any = None
         self._content: Widget | BaseScaffold | None = None
-        self._wrapper_scaffold = Scaffold()
-        self._scaffold: BaseScaffold | None = self._wrapper_scaffold
         self._closed = False
 
         self._resizable = resizable
@@ -253,6 +251,12 @@ class Window:
         self._app: App = None
         if App.app is None:
             raise RuntimeError("Cannot create a Window before creating an App")
+
+        # Set up the scaffold layer to facilitate setting content later.
+        self._wrapper_scaffold = Scaffold()
+        self._wrapper_scaffold.app = self.app
+        self._wrapper_scaffold.window = self
+        self._scaffold: BaseScaffold | None = self._wrapper_scaffold
 
         # Initialize event handlers to no-op defaults BEFORE creating the
         # implementation. Some platforms (Cocoa, .NET Framework 4.x WinForms) fire
@@ -280,8 +284,6 @@ class Window:
         # Add the window to the app
         App.app.windows.add(self)
 
-        self._wrapper_scaffold.app = self.app
-        self._wrapper_scaffold.window = self
         self.content = content
 
         # Set up the event handlers on the interface (overrides the no-op defaults
