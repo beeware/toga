@@ -46,6 +46,7 @@ In this example, when `my_sync_handler` is triggered, a dialog will be created, 
 
 - On macOS, app-modal dialogs will *not* prevent the user from interacting with the rest of the app.
 - On Linux (Qt), the `SelectFolderDialog` does not support multiple selection.
+- On Linux, dialogs are supported with GTK3, GTK4, and libadwaita. GTK 4.10 and newer use asynchronous native alert and file dialogs. Stack trace dialogs use a native window with a scrolling, read-only text view.
 
 ## Reference
 
