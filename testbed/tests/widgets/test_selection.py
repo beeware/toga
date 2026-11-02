@@ -306,9 +306,9 @@ async def test_source_changes(widget, probe):
 
 
 async def test_source_change_while_open(widget, probe):
-    """On iOS, an open picker is closed when the source changes."""
-    if toga.platform.current_platform != "iOS":
-        pytest.skip("Only iOS closes the picker on a source change")
+    """An open selection is closed when the source changes, if the backend does so."""
+    if not probe.closes_on_source_change:
+        pytest.skip("This backend doesn't close the selection on a source change")
 
     widget._accessor = "name"
     source = ListSource(
