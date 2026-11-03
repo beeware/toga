@@ -149,7 +149,7 @@ async def test_mouse_scrolling(widget, probe, other, other_probe):
     assert probe.vertical_scroll_position == pytest.approx(0, abs=1)
 
     # simulate down scrolling with focused widget
-    assert probe.ensure_focus()
+    await probe.ensure_focus()
     probe.simulate_mouse_wheel(-120)
     await probe.wait_for_scroll_completion()
     await asyncio.sleep(1)
@@ -157,7 +157,7 @@ async def test_mouse_scrolling(widget, probe, other, other_probe):
 
     # simulate down scrolling with unfocused widget
     # the widget should still scroll because it is not inside a ScrollBar
-    other_probe.ensure_focus("Other widget has been given focus")
+    await other_probe.ensure_focus("Other widget has been given focus")
 
     probe.simulate_mouse_wheel(-120)
     await probe.wait_for_scroll_completion()
