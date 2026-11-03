@@ -7,6 +7,7 @@ from .base import SimpleProbe
 
 class SelectionProbe(SimpleProbe):
     native_class = QComboBox
+    closes_on_source_change = False
 
     def assert_resizes_on_content_change(self):
         pass

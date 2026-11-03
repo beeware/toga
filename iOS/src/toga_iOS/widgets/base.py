@@ -1,7 +1,10 @@
 from abc import abstractmethod
 
+from rubicon.objc import SEL, objc_method, objc_property
+
 from toga_iOS.colors import native_color
 from toga_iOS.constraints import Constraints
+from toga_iOS.libs import UITapGestureRecognizer
 
 
 class Widget:
@@ -118,3 +121,43 @@ class Widget:
 
     @abstractmethod
     def rehint(self): ...
+
+
+class TogaDismissRecognizer(UITapGestureRecognizer):
+    responder = objc_property(object, weak=True)
+
+    @objc_method
+    def onTap_(self, recognizer) -> None:  # pragma: no cover
+        # To keep consistency with non-mobile platforms, resign first responder
+        # status (dismissing the keyboard or picker) when the user taps outside
+        # the responder. This can't be emulated in CI because it requires an
+        # actual touch event; however, it's entirely cosmetic, so we can live
+        # with the missing coverage.
+        point = recognizer.locationInView(self.responder)
+        if not self.responder.pointInside(point, withEvent=None):
+            self.responder.resignFirstResponder()
+
+
+class DismissableWidget(Widget):
+    _dismiss_recognizer = None
+
+    def _start_dismiss_on_tap_outside(self):
+        # Called when editing begins. The recognizer is only attached to the
+        # window while editing, so it can't interfere with touches the rest of
+        # the time. A tap recognizer won't fire for scrolls or drags, and doesn't
+        # cancel the tap's delivery to whatever view was actually tapped.
+        self._dismiss_recognizer = TogaDismissRecognizer.alloc().init()
+        self._dismiss_recognizer.responder = self.native
+        self._dismiss_recognizer.addTarget(
+            self._dismiss_recognizer, action=SEL("onTap:")
+        )
+        self._dismiss_recognizer.cancelsTouchesInView = False
+        self.interface.window._impl.native.addGestureRecognizer(
+            self._dismiss_recognizer
+        )
+
+    def _stop_dismiss_on_tap_outside(self):
+        # Called when editing ends.
+        assert self._dismiss_recognizer is not None, "Editing ended without beginning"
+        self._dismiss_recognizer.view.removeGestureRecognizer(self._dismiss_recognizer)
+        self._dismiss_recognizer = None

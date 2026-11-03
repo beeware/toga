@@ -63,14 +63,10 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         widget.on_gain_focus = on_gain_handler
         widget.on_lose_focus = on_lose_handler
 
-    other.focus()
-    await probe.redraw("A separate widget should be given focus")
+    await other_probe.ensure_focus("Other widget has been given focus")
     assert not probe.has_focus
-    assert other_probe.has_focus
 
-    widget.focus()
-    await probe.redraw("Widget should be given focus")
-    assert probe.has_focus
+    await probe.ensure_focus()
     assert not other_probe.has_focus
 
     if verify_focus_handlers:
@@ -79,9 +75,7 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         # Reset the mock so it can be tested again
         on_gain_handler.reset_mock()
 
-    widget.focus()
-    await probe.redraw("Widget already has focus")
-    assert probe.has_focus
+    await probe.ensure_focus("Widget already has focus")
     assert not other_probe.has_focus
 
     if verify_focus_handlers:
@@ -90,10 +84,8 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         # Reset the mock so it can be tested again
         on_lose_handler.reset_mock()
 
-    other.focus()
-    await probe.redraw("Focus has been lost")
+    await other_probe.ensure_focus("Widget has lost focus")
     assert not probe.has_focus
-    assert other_probe.has_focus
 
     if verify_focus_handlers:
         on_lose_handler.assert_called_once_with(widget)
@@ -101,10 +93,8 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
 
 async def test_focus_noop(widget, probe, other, other_probe):
     "The widget cannot be given focus"
-    other.focus()
-    await probe.redraw("A separate widget should be given focus")
+    await other_probe.ensure_focus("Other widget has been given focus")
     assert not probe.has_focus
-    assert other_probe.has_focus
 
     # Widget has *not* taken focus
     widget.focus()
@@ -172,31 +162,28 @@ async def test_placeholder(widget, probe):
     assert probe.placeholder_visible
 
 
-async def test_placeholder_focus(widget, probe, other):
+async def test_placeholder_focus(widget, probe, other, other_probe):
     "Placeholders interact correctly with focus changes"
     widget.value = ""
     widget.placeholder = "placeholder"
     hides_on_focus = probe.placeholder_hides_on_focus
 
     # Give the widget focus; this will hide the placeholder on some platforms.
-    widget.focus()
-    await probe.redraw("Widget has focus")
+    await probe.ensure_focus()
     assert widget.value == ""
     assert widget.placeholder == "placeholder"
     assert probe.value == "" if hides_on_focus else "placeholder"
     assert probe.placeholder_visible == (not hides_on_focus)
 
     # Give a different widget focus; this will show the placeholder
-    other.focus()
-    await probe.redraw("Widget has lost focus")
+    await other_probe.ensure_focus("Widget has lost focus")
     assert widget.value == ""
     assert widget.placeholder == "placeholder"
     assert probe.value == "placeholder"
     assert probe.placeholder_visible
 
     # Give the widget focus, again
-    widget.focus()
-    await probe.redraw("Widget has focus; placeholder may not be visible")
+    await probe.ensure_focus("Widget has focus; placeholder may not be visible")
     assert widget.value == ""
     assert widget.placeholder == "placeholder"
     assert probe.value == "" if hides_on_focus else "placeholder"
@@ -211,8 +198,9 @@ async def test_placeholder_focus(widget, probe, other):
     assert probe.placeholder_visible == (not hides_on_focus)
 
     # Give a different widget focus; this will show the placeholder
-    other.focus()
-    await probe.redraw("Widget has lost focus; placeholder should be visible")
+    await other_probe.ensure_focus(
+        "Widget has lost focus; placeholder should be visible"
+    )
     assert widget.value == ""
     assert widget.placeholder == "replacement"
     assert probe.value == "replacement"
@@ -220,23 +208,20 @@ async def test_placeholder_focus(widget, probe, other):
 
     # Focus in and out while a value is set.
     widget.value = "example"
-    widget.focus()
-    await probe.redraw("Widget has focus; value is set")
+    await probe.ensure_focus("Widget has focus; value is set")
     assert widget.value == "example"
     assert widget.placeholder == "replacement"
     assert probe.value == "example"
     assert not probe.placeholder_visible
 
-    other.focus()
-    await probe.redraw("Widget has lost focus, value is set")
+    await other_probe.ensure_focus("Widget has lost focus, value is set")
     assert widget.value == "example"
     assert widget.placeholder == "replacement"
     assert probe.value == "example"
     assert not probe.placeholder_visible
 
     # Value cleared while focus is set
-    widget.focus()
-    await probe.redraw("Widget has focus; value is set")
+    await probe.ensure_focus("Widget has focus; value is set")
     assert widget.value == "example"
     assert widget.placeholder == "replacement"
     assert probe.value == "example"
@@ -427,7 +412,7 @@ async def test_text_align(
     """Widget honors alignment settings."""
     if verify_focus_align:
         # Clear widget focus.
-        other.focus()
+        await other_probe.ensure_focus("Other widget has focus")
 
     # Use column direction to ensure widget uses all available width
     widget.parent.style.direction = COLUMN
@@ -465,8 +450,7 @@ async def test_text_align(
 
     if verify_focus_align:
         # If the widget has focus, the text alignment can be changed.
-        widget.focus()
-        await probe.redraw("Widget has focus")
+        await probe.ensure_focus()
 
         for text_align in [RIGHT, CENTER, JUSTIFY]:
             widget.style.text_align = text_align
