@@ -322,19 +322,29 @@ async def test_source_change_while_open(widget, probe):
     widget.items = source
     await probe.redraw("Item list has been updated to use a source")
 
-    for description, change in [
-        ("inserted", lambda: source.append({"name": "new", "value": 999})),
-        ("changed", lambda: setattr(source[0], "name", "updated")),
-        ("removed", lambda: source.remove(source[1])),
-        ("cleared", source.clear),
-    ]:
-        widget.focus()
-        await probe.redraw("Selection has been given focus")
-        assert probe.has_focus
+    # Claim focus; inserting an item loses focus
+    await probe.ensure_focus()
+    source.append({"name": "new", "value": 999})
+    await probe.redraw("Item has been inserted into selection")
+    assert not probe.has_focus
 
-        change()
-        await probe.redraw(f"Item has been {description}")
-        assert not probe.has_focus
+    # Regain focus; updating an item loses focus
+    await probe.ensure_focus()
+    source[0].name = "updated"
+    await probe.redraw("Item in selection has been changed")
+    assert not probe.has_focus
+
+    # Regain focus; removing an item loses focus
+    await probe.ensure_focus()
+    source.remove(source[1])
+    await probe.redraw("Item has been removed from selection")
+    assert not probe.has_focus
+
+    # Regain focus; clearing the selection loses focus
+    await probe.ensure_focus()
+    source.clear()
+    await probe.redraw("Selection has been cleared")
+    assert not probe.has_focus
 
 
 async def test_resize_on_content_change(widget, probe):

@@ -111,6 +111,11 @@ class SimpleProbe(BaseProbe, FontMixin):
     def is_hidden(self):
         return self.native.isHidden()
 
+    async def ensure_focus(self, message=None):
+        self.widget.focus()
+        await self.redraw("Widget has been given focus" if message is None else message)
+        assert self.has_focus
+
     @property
     def has_focus(self):
         return self.native.window.firstResponder == self.native
