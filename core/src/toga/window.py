@@ -278,7 +278,7 @@ class Window:
             position=None if position is None else Position(*position),
             size=Size(*size),
         )
-        self._impl.set_scaffold(self._wrapper_scaffold._impl)
+        self._impl.set_scaffold(_wrapper_scaffold._impl)
         self.title = title
 
         # Add the window to the app
