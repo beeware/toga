@@ -162,7 +162,7 @@ async def test_scroll(widget, probe):
     # or the bottom of the screen; we don't really care which - as long as it's
     # roughly in the middle of the scroll range, call it a win.
     assert probe.scroll_position == pytest.approx(
-        probe.max_scroll_position / 2, abs=max(400, probe.height)
+        probe.max_scroll_position / 2, abs=probe.height
     )
 
     # Scroll to the top of the table
