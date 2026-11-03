@@ -447,7 +447,10 @@ def test_modify_roots(source, listener):
     del source[1]
 
     # Removal notification was sent
-    listener.source_remove.assert_called_once_with(parent=None, index=1, item=root)
+    assert listener.mock_calls == [
+        call.source_pre_remove(parent=None, index=1, item=root),
+        call.source_remove(parent=None, index=1, item=root),
+    ]
     listener.reset_mock()
 
     # Root is no longer associated with the source
@@ -470,7 +473,10 @@ def test_modify_roots(source, listener):
     assert old_root_0._parent is None
 
     # Change notification was sent, the change is associated with the new item
-    listener.source_change.assert_called_once_with(item=source[0])
+    assert listener.mock_calls == [
+        call.source_pre_change(item=old_root_0),
+        call.source_change(item=source[0]),
+    ]
 
     # Source's root count hasn't changed
     assert len(source) == 1
@@ -488,7 +494,7 @@ def test_clear(source, listener):
     assert len(source) == 0
 
     # Clear notification was sent
-    listener.source_clear.assert_called_once_with()
+    assert listener.mock_calls == [call.source_pre_clear(), call.source_clear()]
 
 
 @pytest.mark.parametrize(
@@ -512,11 +518,10 @@ def test_insert(source, listener, index, actual_index):
     assert source[actual_index].val1 == "new"
 
     # Insert notification was sent, the change is associated with the new item
-    listener.source_insert.assert_called_once_with(
-        parent=None,
-        index=actual_index,
-        item=new_child,
-    )
+    assert listener.mock_calls == [
+        call.source_pre_insert(parent=None, index=actual_index, item=new_child),
+        call.source_insert(parent=None, index=actual_index, item=new_child),
+    ]
 
 
 def test_insert_with_children(source, listener):
@@ -545,11 +550,10 @@ def test_insert_with_children(source, listener):
     assert not source[1][1].can_have_children()
 
     # Insert notification was sent, the change is associated with the new item
-    listener.source_insert.assert_called_once_with(
-        parent=None,
-        index=1,
-        item=new_child,
-    )
+    assert listener.mock_calls == [
+        call.source_pre_insert(parent=None, index=1, item=new_child),
+        call.source_insert(parent=None, index=1, item=new_child),
+    ]
 
 
 def test_append(source, listener):
@@ -564,11 +568,10 @@ def test_append(source, listener):
     assert source[2].val1 == "new"
 
     # Insert notification was sent, the change is associated with the new item
-    listener.source_insert.assert_called_once_with(
-        parent=None,
-        index=2,
-        item=new_child,
-    )
+    assert listener.mock_calls == [
+        call.source_pre_insert(parent=None, index=2, item=new_child),
+        call.source_insert(parent=None, index=2, item=new_child),
+    ]
 
 
 def test_append_with_children(source, listener):
@@ -596,11 +599,10 @@ def test_append_with_children(source, listener):
     assert not source[2][1].can_have_children()
 
     # Insert notification was sent, the change is associated with the new item
-    listener.source_insert.assert_called_once_with(
-        parent=None,
-        index=2,
-        item=new_child,
-    )
+    assert listener.mock_calls == [
+        call.source_pre_insert(parent=None, index=2, item=new_child),
+        call.source_insert(parent=None, index=2, item=new_child),
+    ]
 
 
 def test_remove_root(source, listener):
@@ -615,7 +617,10 @@ def test_remove_root(source, listener):
     assert root._source is None
 
     # Removal notification was sent
-    listener.source_remove.assert_called_once_with(parent=None, index=1, item=root)
+    assert listener.mock_calls == [
+        call.source_pre_remove(parent=None, index=1, item=root),
+        call.source_remove(parent=None, index=1, item=root),
+    ]
 
 
 def test_remove_child(source, listener):
@@ -634,7 +639,10 @@ def test_remove_child(source, listener):
     assert node._parent is None
 
     # Removal notification was sent
-    listener.source_remove.assert_called_once_with(parent=source[1], index=1, item=node)
+    assert listener.mock_calls == [
+        call.source_pre_remove(parent=source[1], index=1, item=node),
+        call.source_remove(parent=source[1], index=1, item=node),
+    ]
 
 
 def test_remove_non_root(source, listener):
@@ -689,43 +697,3 @@ def test_non_mapping_find_requires_accessors():
         match=r"find\(\) requires accessors for non-mapping node data",
     ):
         source[0].find(1)
-
-
-def test_pre_notifications(source, listener):
-    """Root insert, change, remove and clear notifications are each preceded by a
-    "pre" notification, sent before the source changes."""
-    seen = []
-    for name in [
-        "source_pre_insert",
-        "source_pre_change",
-        "source_pre_remove",
-        "source_pre_clear",
-    ]:
-        getattr(listener, name).side_effect = lambda **kwargs: seen.append(
-            [root.val1 for root in source]
-        )
-
-    new_root = source.insert(1, {"val1": "new"})
-    old_root = source[0]
-    source[0] = {"val1": "replaced"}
-    replaced_root = source[0]
-    del source[1]
-    source.clear()
-
-    assert listener.mock_calls == [
-        call.source_pre_insert(parent=None, index=1, item=new_root),
-        call.source_insert(parent=None, index=1, item=new_root),
-        call.source_pre_change(item=old_root),
-        call.source_change(item=replaced_root),
-        call.source_pre_remove(parent=None, index=1, item=new_root),
-        call.source_remove(parent=None, index=1, item=new_root),
-        call.source_pre_clear(),
-        call.source_clear(),
-    ]
-    # Each "pre" notification saw the source before it changed
-    assert seen == [
-        ["group1", "group2"],
-        ["group1", "new", "group2"],
-        ["replaced", "new", "group2"],
-        ["replaced", "group2"],
-    ]

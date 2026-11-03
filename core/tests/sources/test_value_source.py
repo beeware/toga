@@ -39,34 +39,22 @@ def test_listener():
 
     source.value = 37
 
-    listener.source_change.assert_called_once_with(item=37)
+    assert listener.mock_calls == [
+        call.source_pre_change(item=42),
+        call.source_change(item=37),
+    ]
 
     # Reset the mock; clear the value
     listener.reset_mock()
     source.value = None
 
-    listener.source_change.assert_called_once_with(item=None)
+    assert listener.mock_calls == [
+        call.source_pre_change(item=37),
+        call.source_change(item=None),
+    ]
 
     # Reset the mock; set a *different* attribute on the source
     listener.reset_mock()
     source.something = 1234
 
-    listener.source_change.assert_not_called()
-
-
-def test_pre_change():
-    """A change notification is preceded by a pre-change notification with the value
-    before the change."""
-    source = ValueSource(42)
-    listener = Mock()
-    source.add_listener(listener)
-
-    source.value = 37
-    source.value = None
-
-    assert listener.mock_calls == [
-        call.source_pre_change(item=42),
-        call.source_change(item=37),
-        call.source_pre_change(item=37),
-        call.source_change(item=None),
-    ]
+    assert listener.mock_calls == []

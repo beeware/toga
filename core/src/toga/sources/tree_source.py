@@ -108,8 +108,8 @@ class Node(Row[T]):
             raise ValueError(f"{self} is a leaf node")
 
         old_node = self._children[index]
-        node = self._source._create_node(parent=self, data=data)
         self._source.notify("pre_change", item=old_node)
+        node = self._source._create_node(parent=self, data=data)
 
         old_node._parent = None
         old_node._source = None
@@ -309,8 +309,8 @@ class TreeSource(Source):
             into a Node object.
         """
         old_root = self._roots[index]
-        root = self._create_node(parent=None, data=data)
         self.notify("pre_change", item=old_root)
+        root = self._create_node(parent=None, data=data)
 
         old_root._parent = None
         old_root._source = None

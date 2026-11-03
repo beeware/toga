@@ -64,7 +64,7 @@ class ListListener(ValueListener[ItemT], Protocol, Generic[ItemT]):
         """An item has been removed from the data source.
 
         :param index: The 0-index position in the data.
-        :param item: The data object that was added.
+        :param item: The data object that was removed.
         """
 
     def source_pre_clear(self) -> None:
@@ -137,7 +137,7 @@ class TreeListener(ListListener[ItemT], Protocol, Generic[ItemT]):
         """An item has been removed from the data source.
 
         :param index: The 0-index position in the data.
-        :param item: The data object that was added.
+        :param item: The data object that was removed.
         :param parent: The parent of the data object that was removed, or `None`
             if it is a root item.
         """
