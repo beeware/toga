@@ -27,6 +27,10 @@ class NumberInput(Widget):
 
     def set_readonly(self, value):
         self.native.set_property("editable", not value)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.set_can_focus(not value)
+        else:  # pragma: no-cover-if-gtk3
+            self.native.set_focusable(not value)
 
     def set_step(self, step):
         self.adjustment.set_step_increment(float(self.interface.step))
