@@ -1,5 +1,3 @@
-import pytest
-
 from toga_gtk.libs import GTK_VERSION, Gdk, Gtk
 
 from .base import SimpleProbe
@@ -7,9 +5,6 @@ from .base import SimpleProbe
 
 class SliderProbe(SimpleProbe):
     native_class = Gtk.Scale
-
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't support sliders yet")
 
     @property
     def position(self):
@@ -38,7 +33,13 @@ class SliderProbe(SimpleProbe):
         return self.impl.adj.get_upper()
 
     async def press(self):
-        self.native.emit("button-press-event", Gdk.Event())
+        if GTK_VERSION < (4, 0, 0):
+            self.native.emit("button-press-event", Gdk.Event())
+        else:
+            self.impl.click_controller.emit("pressed", 1, 0.0, 0.0)
 
     async def release(self):
-        self.native.emit("button-release-event", Gdk.Event())
+        if GTK_VERSION < (4, 0, 0):
+            self.native.emit("button-release-event", Gdk.Event())
+        else:
+            self.impl.click_controller.emit("released", 1, 0.0, 0.0)
