@@ -3,16 +3,13 @@ import pytest
 from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
-from .properties import toga_color, toga_text_align_from_justification
+from .properties import toga_color, toga_font, toga_text_align_from_justification
 
 
 class MultilineTextInputProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
     redo_available = True
     supports_simulate_mouse_wheel = False
-
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't support multiline text input yet")
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -57,13 +54,18 @@ class MultilineTextInputProbe(SimpleProbe):
             ]
         except KeyError:
             # No style provider exists yet, so defaults will be in effect
-            pass
+            css_provider = None
         else:
-            assert ".toga {\n" in css_provider.to_string()
-            assert ".toga text {\n" in css_provider.to_string()
+            name = self.native_textview.get_name()
+            assert f"#{name}.toga {{\n" in css_provider.to_string()
+            assert f"#{name}.toga text {{\n" in css_provider.to_string()
 
-        sc = self.native_textview.get_style_context()
-        return toga_color(sc.get_property("color", sc.get_state()))
+        if GTK_VERSION < (4, 0, 0):
+            sc = self.native_textview.get_style_context()
+            return toga_color(sc.get_property("color", sc.get_state()))
+        elif css_provider:
+            return toga_color(css_provider.to_string().split(": ")[1].split(";")[0])
+        return None
 
     @property
     def background_color(self):
@@ -79,18 +81,27 @@ class MultilineTextInputProbe(SimpleProbe):
             ]
         except KeyError:
             # No style provider exists yet, so defaults will be in effect
-            pass
+            css_provider = None
         else:
-            assert ".toga {\n" in css_provider.to_string()
-            assert ".toga text {\n" in css_provider.to_string()
+            name = self.native_textview.get_name()
+            assert f"#{name}.toga {{\n" in css_provider.to_string()
+            assert f"#{name}.toga text {{\n" in css_provider.to_string()
 
-        sc = self.native_textview.get_style_context()
-        return toga_color(sc.get_property("background-color", sc.get_state()))
+        if GTK_VERSION < (4, 0, 0):
+            sc = self.native_textview.get_style_context()
+            return toga_color(sc.get_property("background-color", sc.get_state()))
+        elif css_provider:
+            return toga_color(css_provider.to_string().split(": ")[1].split(";")[0])
+        return None
 
     @property
     def font(self):
-        sc = self.native_textview.get_style_context()
-        return sc.get_property("font", sc.get_state())
+        if GTK_VERSION < (4, 0, 0):
+            sc = self.native_textview.get_style_context()
+            return sc.get_property("font", sc.get_state())
+        else:
+            provider = self.impl.style_providers.get(("font", id(self.native_textview)))
+            return toga_font(provider.to_string()) if provider else None
 
     @property
     def text_align(self):
