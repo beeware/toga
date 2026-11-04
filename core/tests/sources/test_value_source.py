@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 from toga.sources.value_source import ValueSource
 
@@ -39,16 +39,22 @@ def test_listener():
 
     source.value = 37
 
-    listener.source_change.assert_called_once_with(item=37)
+    assert listener.mock_calls == [
+        call.source_pre_change(item=42),
+        call.source_change(item=37),
+    ]
 
     # Reset the mock; clear the value
     listener.reset_mock()
     source.value = None
 
-    listener.source_change.assert_called_once_with(item=None)
+    assert listener.mock_calls == [
+        call.source_pre_change(item=37),
+        call.source_change(item=None),
+    ]
 
     # Reset the mock; set a *different* attribute on the source
     listener.reset_mock()
     source.something = 1234
 
-    listener.source_change.assert_not_called()
+    assert listener.mock_calls == []
