@@ -260,6 +260,7 @@ class Window:
             self.native.set_icon(app.interface.icon._impl.native(72))
         else:  # pragma: no-cover-if-gtk3
             self.interface.factory.not_implemented("Window.set_app() icon")
+            app.set_window_menu(self)
 
     def show(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4

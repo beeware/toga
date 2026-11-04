@@ -1,6 +1,6 @@
 from toga.keys import Key
 
-from .libs import Gdk
+from .libs import GTK_VERSION, Gdk
 
 GDK_KEYS = {
     Gdk.KEY_Escape: Key.ESCAPE,
@@ -204,7 +204,12 @@ def toga_key(keyval: int, state: Gdk.ModifierType):
         modifiers.add(Key.SHIFT)
     if state & Gdk.ModifierType.CONTROL_MASK:
         modifiers.add(Key.MOD_1)
-    if state & Gdk.ModifierType.META_MASK:
+    alt_mask = (
+        Gdk.ModifierType.MOD1_MASK
+        if GTK_VERSION < (4, 0, 0)
+        else Gdk.ModifierType.ALT_MASK
+    )
+    if state & (alt_mask | Gdk.ModifierType.META_MASK):
         modifiers.add(Key.MOD_2)
     if state & Gdk.ModifierType.HYPER_MASK:
         modifiers.add(Key.MOD_3)

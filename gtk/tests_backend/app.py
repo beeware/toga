@@ -6,7 +6,7 @@ import pytest
 
 import toga
 from toga_gtk.keys import gtk_accel, toga_key
-from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -157,8 +157,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         return item, action
 
     def _activate_menu_item(self, path):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support system menus")
         _, action = self._menu_item(path)
         action.emit("activate", None)
 
@@ -166,19 +164,16 @@ class AppProbe(BaseProbe, DialogsMixin):
         pytest.xfail("This platform doesn't present a app level hide option in menu.")
 
     def activate_menu_exit(self):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support system menus")
         self._activate_menu_item(["*", "Quit"])
 
     def activate_menu_about(self):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support system menus")
         self._activate_menu_item(["Help", "About Toga Testbed"])
 
     async def close_about_dialog(self):
         if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support system menus")
-        self.app._impl._close_about(self.app._impl.native_about_dialog)
+            self.app._impl.native_about_dialog.close()
+        else:
+            self.app._impl._close_about(self.app._impl.native_about_dialog)
 
     def activate_menu_visit_homepage(self):
         # Homepage is a link on the GTK about page.
@@ -186,7 +181,11 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def assert_system_menus(self):
         if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support system menus")
+            window = self.app.main_window._impl
+            if Adw is not None:
+                assert window.menu_button.get_menu_model() is not None
+            else:
+                assert window.native.get_show_menubar()
         self.assert_menu_item(["*", "Preferences"], enabled=False)
         self.assert_menu_item(["*", "Quit"], enabled=True)
 
@@ -210,14 +209,10 @@ class AppProbe(BaseProbe, DialogsMixin):
         pytest.xfail("GTK doesn't have a window management menu items")
 
     def assert_menu_item(self, path, enabled):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support menu items")
         _, action = self._menu_item(path)
         assert action.get_enabled() == enabled
 
     def assert_menu_order(self, path, expected):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support menu items")
         item, _action = self._menu_item(path)
         menu = item[0].get_item_link(item[1], "submenu")
 
@@ -243,41 +238,13 @@ class AppProbe(BaseProbe, DialogsMixin):
         assert actual == expected
 
     def keystroke(self, combination):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support keystroke")
         accel = gtk_accel(combination)
-        state = 0
-
-        if "<Primary>" in accel:
-            state |= Gdk.ModifierType.CONTROL_MASK
-            accel = accel.replace("<Primary>", "")
-        if "<Alt>" in accel:
-            state |= Gdk.ModifierType.META_MASK
-            accel = accel.replace("<Alt>", "")
-        if "<Hyper>" in accel:
-            state |= Gdk.ModifierType.HYPER_MASK
-            accel = accel.replace("<Hyper>", "")
-        if "<Shift>" in accel:
-            state |= Gdk.ModifierType.SHIFT_MASK
-            accel = accel.replace("<Shift>", "")
-
-        keyval = getattr(
-            Gdk,
-            f"KEY_{accel}",
-            {
-                "!": Gdk.KEY_exclam,
-                "<home>": Gdk.KEY_Home,
-                "F5": Gdk.KEY_F5,
-            }.get(accel),
-        )
-
-        event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)
-        event.keyval = keyval
-        event.length = 1
-        event.is_modifier = state != 0
-        event.state = state
-
-        return toga_key(event.keyval, event.state)
+        if GTK_VERSION >= (4, 0, 0):
+            valid, keyval, state = Gtk.accelerator_parse(accel)
+            assert valid
+            return toga_key(keyval, state)
+        keyval, state = Gtk.accelerator_parse(accel)
+        return toga_key(keyval, state)
 
     async def restore_standard_app(self):
         # No special handling needed to restore standard app.
