@@ -15,7 +15,6 @@ requires-python = ">= 3.11"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE",
-    "LICENSE.WebView2",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
