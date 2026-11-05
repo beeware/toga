@@ -199,7 +199,7 @@ def test_change_content(window, app):
     """The content of a window can be changed."""
     assert window.content is None
     assert window.app == app
-    wrapper_scaffold = window.scaffold
+    initial_wrapper_scaffold = window.scaffold
 
     # Set the content of the window
     content1 = toga.Box()
@@ -207,13 +207,13 @@ def test_change_content(window, app):
 
     # The content has been assigned and refreshed; scaffold is still the same
     assert window.content == content1
-    assert window.scaffold is wrapper_scaffold
+    assert window.scaffold is initial_wrapper_scaffold
     assert content1.app == app
     assert content1.window == window
-    assert content1.scaffold == wrapper_scaffold
-    assert wrapper_scaffold.content == content1
-    assert wrapper_scaffold.app == app
-    assert wrapper_scaffold.window == window
+    assert content1.scaffold == initial_wrapper_scaffold
+    assert initial_wrapper_scaffold.content == content1
+    assert initial_wrapper_scaffold.app == app
+    assert initial_wrapper_scaffold.window == window
     assert_action_performed(content1, "refresh")
 
     # Set the content of the window to something new
@@ -221,16 +221,16 @@ def test_change_content(window, app):
     window.content = content2
 
     # The same wrapper scaffold is reused.
-    assert window.scaffold is wrapper_scaffold
+    assert window.scaffold is initial_wrapper_scaffold
 
     # The content has been assigned and refreshed
     assert window.content == content2
     assert content2.app == app
     assert content2.window == window
-    assert content2.scaffold == wrapper_scaffold
-    assert wrapper_scaffold.content == content2
-    assert wrapper_scaffold.app == app
-    assert wrapper_scaffold.window == window
+    assert content2.scaffold == initial_wrapper_scaffold
+    assert initial_wrapper_scaffold.content == content2
+    assert initial_wrapper_scaffold.app == app
+    assert initial_wrapper_scaffold.window == window
     assert_action_performed(content2, "refresh")
 
     # The original content has been removed
@@ -241,14 +241,14 @@ def test_change_content(window, app):
     # Removing content retains the same wrapper scaffold.
     window.content = None
     assert window.content is None
-    assert window.scaffold is wrapper_scaffold
-    assert wrapper_scaffold.content is None
-    assert wrapper_scaffold.window == window
-    assert wrapper_scaffold.app == app
+    assert window.scaffold is initial_wrapper_scaffold
+    assert initial_wrapper_scaffold.content is None
+    assert initial_wrapper_scaffold.window == window
+    assert initial_wrapper_scaffold.app == app
     assert content2.window is None
     assert content2.app is None
     assert content2.scaffold is None
-    assert_action_performed_with(wrapper_scaffold, "set content", widget=None)
+    assert_action_performed_with(initial_wrapper_scaffold, "set content", widget=None)
 
     # Explicit scaffolds can replace the wrapper; assigning bare content restores it.
     explicit_scaffold = toga.Scaffold(toga.Box())
@@ -262,11 +262,14 @@ def test_change_content(window, app):
 
     content3 = toga.Box()
     window.content = content3
+    new_wrapper_scaffold = window.scaffold
+    assert new_wrapper_scaffold is not initial_wrapper_scaffold
+    assert new_wrapper_scaffold is not explicit_scaffold
     assert window.content is content3
-    assert window.scaffold is wrapper_scaffold
-    assert wrapper_scaffold.content is content3
-    assert wrapper_scaffold.window == window
-    assert wrapper_scaffold.app == app
+    assert window.scaffold is new_wrapper_scaffold
+    assert new_wrapper_scaffold.content is content3
+    assert new_wrapper_scaffold.window == window
+    assert new_wrapper_scaffold.app == app
     assert explicit_scaffold.window is None
     assert explicit_scaffold.app is None
 
