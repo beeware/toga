@@ -10,7 +10,7 @@ from System.Drawing import ColorTranslator, SystemColors
 from toga.handlers import WeakrefCallable
 from toga.sources.tree_source import Node, TreeSourceT
 
-from .. import _use_dotnet_core
+from ..app import in_dark_mode
 from ..libs import win32constants as wc, win32structures as ws
 from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass
 from ..libs.gdi32 import SetBkMode, SetTextColor
@@ -457,12 +457,6 @@ class Tree(Table):
     # The following methods override/extend methods from Table.
     #################################################################################
 
-    @property
-    def _is_dark_mode(self) -> bool:
-        return _use_dotnet_core and getattr(
-            WinForms.Application, "IsDarkModeEnabled", False
-        )
-
     def create(self):
         super().create()
         self._state_tree: StateTree
@@ -838,7 +832,7 @@ class Tree(Table):
         # In dark mode, the selection highlight is not drawn, so the arrow keeps the
         # normal text colour.
         highlighted = (
-            not self._is_dark_mode
+            not in_dark_mode()
             and self.native.SelectedIndices.Contains(index)
             and self.native.Focused
         )

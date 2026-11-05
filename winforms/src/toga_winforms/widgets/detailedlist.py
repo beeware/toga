@@ -7,7 +7,7 @@ from System.Drawing import ColorTranslator, Font as WinFont, Size, SystemColors
 
 from toga.handlers import WeakrefCallable
 
-from .. import _use_dotnet_core
+from ..app import in_dark_mode
 from ..libs import gdi32, user32 as u32, win32constants as wc, win32structures as ws
 from ..libs.comctl32 import (
     DefSubclassProc,
@@ -64,12 +64,6 @@ class DetailedList(Widget):
     def _missing_value(self):
         return self.interface.missing_value
 
-    @property
-    def _is_dark_mode(self) -> bool:
-        return _use_dotnet_core and getattr(
-            WinForms.Application, "IsDarkModeEnabled", False
-        )
-
     def create(self):
         self.native = WinForms.Panel()
 
@@ -124,7 +118,7 @@ class DetailedList(Widget):
             None,
         )
 
-        theme = "DarkMode_Explorer" if self._is_dark_mode else "Explorer"
+        theme = "DarkMode_Explorer" if in_dark_mode() else "Explorer"
         SetWindowTheme(HWND(self._hwnd), theme, None)
 
         # Change the view style to tile.
@@ -248,7 +242,7 @@ class DetailedList(Widget):
         return (x + self._icon_padding_x, y + self._icon_padding_y)
 
     def _drawing_select_rect(self, x: int, y: int) -> RECT:
-        if self._is_dark_mode:  # pragma: no-cover-if-light-mode
+        if in_dark_mode():  # pragma: no-cover-if-light-mode
             return RECT(
                 x,
                 y,
@@ -287,7 +281,7 @@ class DetailedList(Widget):
         """Matches the back color of the Win32 List-View UI to the WinForms Panel."""
         color = ColorTranslator.ToWin32(self.native.BackColor)
         u32.SendMessageW(self._hwnd, wc.LVM_SETBKCOLOR, 0, color)
-        theme = "DarkMode_Explorer" if self._is_dark_mode else "Explorer"
+        theme = "DarkMode_Explorer" if in_dark_mode() else "Explorer"
         SetWindowTheme(HWND(self._hwnd), theme, None)
 
         # Invalidate the whole client area.
@@ -476,7 +470,7 @@ class DetailedList(Widget):
             y = rect.top + divmod(self._tile_height - rect.bottom + rect.top, 2)[0]
 
             if is_selected:
-                if self._is_dark_mode:  # pragma: no-cover-if-light-mode
+                if in_dark_mode():  # pragma: no-cover-if-light-mode
                     back_color = SystemColors.Highlight
                     text_color = self.native.ForeColor
                 else:  # pragma: no-cover-if-dark-mode
@@ -487,7 +481,8 @@ class DetailedList(Widget):
                         back_color = SystemColors.Control
                         text_color = SystemColors.ControlText
                 prev_color = gdi32.SetTextColor(
-                    hdc, ColorTranslator.ToWin32(text_color)
+                    hdc,
+                    ColorTranslator.ToWin32(text_color),
                 )
 
                 brush = gdi32.CreateSolidBrush(ColorTranslator.ToWin32(back_color))
@@ -511,7 +506,7 @@ class DetailedList(Widget):
                 gdi32.SetTextColor(hdc, prev_color)
 
             icon_flag = wc.ILD_NORMAL
-            if is_selected and not self._is_dark_mode:  # pragma: no-cover-if-dark-mode
+            if is_selected and not in_dark_mode():  # pragma: no-cover-if-dark-mode
                 icon_flag = wc.ILD_SELECTED if has_focus else wc.ILD_FOCUS
 
             icon_xy = self._drawing_icon_xy(x=0, y=y)

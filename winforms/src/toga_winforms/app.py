@@ -51,6 +51,11 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
     print(py_exc.Message)
 
 
+def in_dark_mode() -> bool:
+    """Is the app being drawn in dark mode?"""
+    return _use_dotnet_core and WinForms.Application.IsDarkModeEnabled
+
+
 class App:
     # Winforms apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
@@ -191,8 +196,11 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
+        # This returns the dark mode state of the environment, which is not
+        # necessarily the state of the app. For example, on .NET Framework 4.x the app
+        # is always drawn in light mode.
         if _use_dotnet_core:  # pragma: no-cover-if-netfx
-            return bool(WinForms.Application.IsDarkModeEnabled)
+            return in_dark_mode()
         else:  # pragma: no-cover-if-netcore
             from Microsoft.Win32 import Registry
 
