@@ -2,7 +2,7 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "Document"
+project_name = "DocumentApp"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
@@ -13,29 +13,29 @@ license-files = [
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.document]
-formal_name = "Document"
+[tool.briefcase.app.documentapp]
+formal_name = "DocumentApp"
 description = "Document test app"
-sources = ["document"]
+sources = ["documentapp"]
 requires = [
     "../../travertino",
     "../../core",
 ]
 
 
-[tool.briefcase.app.document.macOS]
+[tool.briefcase.app.documentapp.macOS]
 universal_build = true
 requires = [
     "../../cocoa",
     "std-nslog~=2.0.0",
 ]
 
-[tool.briefcase.app.document.linux]
+[tool.briefcase.app.documentapp.linux]
 requires = [
     "../../gtk",
 ]
 
-[tool.briefcase.app.document.linux.system.debian]
+[tool.briefcase.app.documentapp.linux.system.debian]
 system_requires = [
     # Needed to compile pycairo wheel
     "libcairo2-dev",
@@ -48,11 +48,9 @@ system_runtime_requires = [
     "libgirepository-2.0-0",
     # Dependencies that GTK looks for at runtime
     "libcanberra-gtk3-module",
-    # Needed to provide WebKit2 at runtime
-    # "gir1.2-webkit2-4.1",
 ]
 
-[tool.briefcase.app.document.linux.system.rhel]
+[tool.briefcase.app.documentapp.linux.system.rhel]
 system_requires = [
     # Needed to compile pycairo wheel
     "cairo-gobject-devel",
@@ -71,7 +69,7 @@ system_runtime_requires = [
     # "webkit2gtk4.1",
 ]
 
-[tool.briefcase.app.document.linux.system.suse]
+[tool.briefcase.app.documentapp.linux.system.suse]
 system_requires = [
     # Needed to compile pycairo wheel
     "cairo-devel",
@@ -86,11 +84,9 @@ system_runtime_requires = [
     "gobject-introspection", "typelib(Gtk) = 3.0",
     # Dependencies that GTK looks for at runtime
     "libcanberra-gtk3-module",
-    # Needed to provide WebKit2 at runtime
-    # "libwebkit2gtk3", "typelib(WebKit2)",
 ]
 
-[tool.briefcase.app.document.linux.system.arch]
+[tool.briefcase.app.documentapp.linux.system.arch]
 system_requires = [
     # Needed to compile pycairo wheel
     "cairo",
@@ -102,8 +98,6 @@ system_requires = [
     "gtk3",
     # Dependencies that GTK looks for at runtime
     "libcanberra",
-    # Needed to provide WebKit2
-    # "webkit2gtk",
 ]
 
 system_runtime_requires = [
@@ -113,11 +107,9 @@ system_runtime_requires = [
     "gobject-introspection-runtime",
     # Dependencies that GTK looks for at runtime
     "libcanberra",
-    # Needed to provide WebKit2 at runtime
-    # "webkit2gtk",
 ]
 
-[tool.briefcase.app.document.linux.appimage]
+[tool.briefcase.app.documentapp.linux.appimage]
 manylinux = "manylinux_2_28"
 
 system_requires = [
@@ -143,18 +135,18 @@ flatpak_runtime = "org.gnome.Platform"
 flatpak_runtime_version = "48"
 flatpak_sdk = "org.gnome.Sdk"
 
-[tool.briefcase.app.document.windows]
+[tool.briefcase.app.documentapp.windows]
 requires = [
     "../../winforms",
 ]
 
 # Mobile deployments
-[tool.briefcase.app.document.iOS]
+[tool.briefcase.app.documentapp.iOS]
 requires = [
     "../../iOS",
 ]
 
-[tool.briefcase.app.document.android]
+[tool.briefcase.app.documentapp.android]
 requires = [
     "../../android",
 ]
@@ -163,21 +155,10 @@ base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
     "com.google.android.material:material:1.13.0",
-    # Needed for DetailedList
-    # "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
-    # Needed for MapView
-    # "org.osmdroid:osmdroid-android:6.1.20",
-    # Needed for WebView
-    # "androidx.webkit:webkit:1.15.0",
 ]
 
-# Needed for WebView
-# build_gradle_extra_content="""
-# chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
-# """
-
 # Web deployment
-[tool.briefcase.app.document.web]
+[tool.briefcase.app.documentapp.web]
 requires = [
     "../../web",
 ]

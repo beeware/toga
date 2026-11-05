@@ -48,8 +48,6 @@ system_runtime_requires = [
     "libgirepository-2.0-0",
     # Dependencies that GTK looks for at runtime
     "libcanberra-gtk3-module",
-    # Needed to provide WebKit2 at runtime
-    # "gir1.2-webkit2-4.1",
 ]
 
 [tool.briefcase.app.window.linux.system.rhel]
@@ -67,8 +65,6 @@ system_runtime_requires = [
     "gtk3",
     # Dependencies that GTK looks for at runtime
     "libcanberra-gtk3",
-    # Needed to provide WebKit2 at runtime
-    # "webkit2gtk4.1",
 ]
 
 [tool.briefcase.app.window.linux.system.suse]
@@ -86,8 +82,6 @@ system_runtime_requires = [
     "gobject-introspection", "typelib(Gtk) = 3.0",
     # Dependencies that GTK looks for at runtime
     "libcanberra-gtk3-module",
-    # Needed to provide WebKit2 at runtime
-    # "libwebkit2gtk3", "typelib(WebKit2)",
 ]
 
 [tool.briefcase.app.window.linux.system.arch]
@@ -102,8 +96,6 @@ system_requires = [
     "gtk3",
     # Dependencies that GTK looks for at runtime
     "libcanberra",
-    # Needed to provide WebKit2
-    # "webkit2gtk",
 ]
 
 system_runtime_requires = [
@@ -113,8 +105,6 @@ system_runtime_requires = [
     "gobject-introspection-runtime",
     # Dependencies that GTK looks for at runtime
     "libcanberra",
-    # Needed to provide WebKit2 at runtime
-    # "webkit2gtk",
 ]
 
 [tool.briefcase.app.window.linux.appimage]
@@ -163,18 +153,7 @@ base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
     "com.google.android.material:material:1.13.0",
-    # Needed for DetailedList
-    # "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
-    # Needed for MapView
-    # "org.osmdroid:osmdroid-android:6.1.20",
-    # Needed for WebView
-    # "androidx.webkit:webkit:1.15.0",
 ]
-
-# Needed for WebView
-# build_gradle_extra_content="""
-# chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
-# """
 
 # Web deployment
 [tool.briefcase.app.window.web]
