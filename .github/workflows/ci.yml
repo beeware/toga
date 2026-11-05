@@ -520,6 +520,7 @@ jobs:
           platform: "windows"
           runs-on: "windows-11-arm"
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
+          briefcase-run-prefix: TOGA_WINFORMS_COLOR_MODE=Dark
 
         - backend: "iOS"
           platform: "iOS"

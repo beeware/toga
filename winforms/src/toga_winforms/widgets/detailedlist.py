@@ -242,14 +242,14 @@ class DetailedList(Widget):
         return (x + self._icon_padding_x, y + self._icon_padding_y)
 
     def _drawing_select_rect(self, x: int, y: int) -> RECT:
-        if in_dark_mode():  # pragma: no-cover-if-light-mode
+        if in_dark_mode():  # pragma: no-cover-if-netfx
             return RECT(
                 x,
                 y,
                 x + self._tile_width(),
                 y + self._tile_height,
             )
-        else:  # pragma: no-cover-if-dark-mode
+        else:  # pragma: no-cover-if-netcore
             return RECT(
                 x + self._icon_padding_x + self._icon + self._text_padding_x,
                 y + self._text_padding_y,
@@ -470,10 +470,10 @@ class DetailedList(Widget):
             y = rect.top + divmod(self._tile_height - rect.bottom + rect.top, 2)[0]
 
             if is_selected:
-                if in_dark_mode():  # pragma: no-cover-if-light-mode
+                if in_dark_mode():  # pragma: no-cover-if-netfx
                     back_color = SystemColors.Highlight
                     text_color = self.native.ForeColor
-                else:  # pragma: no-cover-if-dark-mode
+                else:  # pragma: no-cover-if-netcore
                     if has_focus:
                         back_color = SystemColors.Highlight
                         text_color = SystemColors.HighlightText
@@ -506,7 +506,7 @@ class DetailedList(Widget):
                 gdi32.SetTextColor(hdc, prev_color)
 
             icon_flag = wc.ILD_NORMAL
-            if is_selected and not in_dark_mode():  # pragma: no-cover-if-dark-mode
+            if is_selected and not in_dark_mode():  # pragma: no-cover-if-netcore
                 icon_flag = wc.ILD_SELECTED if has_focus else wc.ILD_FOCUS
 
             icon_xy = self._drawing_icon_xy(x=0, y=y)
