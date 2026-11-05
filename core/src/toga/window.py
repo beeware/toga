@@ -452,9 +452,10 @@ class Window:
     def content(self, content: Widget | BaseScaffold) -> None:
         if not isinstance(content, BaseScaffold):
             if not isinstance(self._content, BaseScaffold):
-                self.scaffold.content = content
-                return
-            scaffold = Scaffold(content=content)
+                scaffold = self.scaffold
+                scaffold.content = content
+            else:
+                scaffold = Scaffold(content=content)
         else:
             scaffold = content
 
