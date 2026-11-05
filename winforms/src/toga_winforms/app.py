@@ -12,6 +12,7 @@ from System.Windows.Threading import Dispatcher
 from toga.dialogs import InfoDialog
 from toga.handlers import WeakrefCallable
 
+from . import _use_dotnet_core
 from .libs.proactor import WinformsProactorEventLoop
 from .screens import Screen as ScreenImpl
 
@@ -48,6 +49,11 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
                 print_stack_trace(line)
 
     print(py_exc.Message)
+
+
+def in_dark_mode() -> bool:
+    """Is the app being drawn in dark mode?"""
+    return _use_dotnet_core and WinForms.Application.IsDarkModeEnabled
 
 
 class App:
@@ -190,17 +196,23 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        from Microsoft.Win32 import Registry
+        # This returns the dark mode state of the environment, which is not
+        # necessarily the state of the app. For example, on .NET Framework 4.x the app
+        # is always drawn in light mode.
+        if _use_dotnet_core:  # pragma: no-cover-if-netfx
+            return in_dark_mode()
+        else:  # pragma: no-cover-if-netcore
+            from Microsoft.Win32 import Registry
 
-        key = Registry.CurrentUser.OpenSubKey(
-            "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
-        )
-        if key is None:  # pragma: no cover
-            return False
-        try:
-            return key.GetValue("AppsUseLightTheme", 1) == 0
-        finally:
-            key.Close()
+            key = Registry.CurrentUser.OpenSubKey(
+                "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+            )
+            if key is None:  # pragma: no cover
+                return False
+            try:
+                return key.GetValue("AppsUseLightTheme", 1) == 0
+            finally:
+                key.Close()
 
     ######################################################################
     # App capabilities
