@@ -2,11 +2,19 @@
 
 This directory contains example code demonstrating each widget defined by [Toga](https://toga.beeware.org).
 
-It also contains working copies of the tutorial code.
+It also contains working copies of the tutorial code (5 variants numbered 0-4).
+
+There are also a couple of tools used for:
+
+- the documentation, a `screenshot` generator (with a Qt variant)
+- demonstrating _Positron_, in its `positron-django` and `positron-static` variants
+- running the examples collectively, via `examples_overview`.
+
+All other examples are focused on an individual widget.
 
 ## Running the examples
 
-Each of the examples can run by copying the example code to your computer (either by cloning this repository, or by manually duplicating the specific files), installing Toga, and running the application as a Python module:
+Most of the examples can run by copying the example code to your computer (either by cloning this repository, or by manually duplicating the specific files), installing Toga, and running the application as a Python module:
 
 ```console
 $ cd <example name>
@@ -21,58 +29,6 @@ Not all examples are compatible with all Toga backends. This is due to the missi
 
 To run with the default backend of your environment run as described above. To run with an alternative backend such as _Qt_ or _Textual_, ensure the appropriate `toga` package and its dependencies (such as `PySide6`) are installed and use the `TOGA_BACKEND` environment variable if needed.
 
-While _Briefcase_ configurations **are** provided, these are not intended as _Briefcase_ examples (see the _Briefcase_ documentation instead), they exist only to allow the testing on other platforms (iOS, Android, Web). You can then use `briefcase run ios` or `android` or `web`.
+While _Briefcase_ configurations **are** provided, with limited exception these are not intended as _Briefcase_ examples (see the _Briefcase_ documentation instead), they exist only to allow the testing on other platforms (iOS, Android, Web). You can then use `briefcase run ios` or `android` or `web`.
 
-| _Example_ (Folder) | macOS | Linux (GTK) | Linux (Qt) | Windows | iOS | Android | Web | Terminal |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `activityindicator` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `beeliza` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `box` | ✔️ | ❌ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `button` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `canvas` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `colors` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ✔️ | ❌ | ❓ |
-| `command` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `customwidget` | ✔️ | ✔️ | ✔️ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `date_and_time` | ✔️ | ❌ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `detailedlist` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `dialogs` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `divider` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `document` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ❌ | ❌ | ❓ |
-| `examples_overview` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ❌ | ❌ | ❓ |
-| `focus` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `font` | ✔️ | ✔️ | ❓ | ❓ | ❓ | ✔️ | ❌ | ❓ |
-| `font_size` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `handlers` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `hardware` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `imageview` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `layout` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `mapview` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `multilinetextinput` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `numberinput` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `optioncontainer` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `passwordinput` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `positron-django` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ❓ | ❌ | ❓ |
-| `positron-static` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `progressbar` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `resize` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `screenshot` | ✔️ | ✔️ | ✔️ | ❓ | ✔️ | ❓ | ❌ | ❓ |
-| `scrollcontainer` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `selection` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `simpleapp` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `slider` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `splitcontainer` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ❌ | ❌ | ❓ |
-| `statusiconapp` | ✔️ | ❓ | ❓ | ❓ | ❌ | ❌ | ❌ | ❓ |
-| `switches` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `table` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ✔️ | ❌ | ❓ |
-| `table_columns` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ✔️ | ❌ | ❓ |
-| `table_source` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ✔️ | ❌ | ❓ |
-| `textinput` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `tree` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ❌ | ❌ | ❓ |
-| `tree_source` | ✔️ | ❓ | ❓ | ❓ | ❌ | ❌ | ❌ | ❓ |
-| `tutorial0` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `tutorial1` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ✔️ | ❓ |
-| `tutorial2` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ❌ | ❌ | ❓ |
-| `tutorial3` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `tutorial4` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `webview` | ✔️ | ✔️ | ❓ | ❓ | ✔️ | ✔️ | ❌ | ❓ |
-| `window` | ✔️ | ✔️ | ❓ | ❓ | ❌ | ❌ | ❌ | ❓ |
+Some examples _do_ use Briefcase so please review the individual `README.md` that is included.
