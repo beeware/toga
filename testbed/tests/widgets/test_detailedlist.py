@@ -185,7 +185,7 @@ async def test_scroll(widget, probe):
     assert probe.scroll_position <= 0
 
 
-async def test_select(widget, probe, source, on_select_handler):
+async def test_select(widget, probe, source, on_select_handler, other_probe):
     """Rows can be selected"""
     # Initial selection is empty
     assert widget.selection is None
@@ -209,12 +209,14 @@ async def test_select(widget, probe, source, on_select_handler):
     on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
 
-    # Test drawing when row is selected and unfocused
-    if hasattr(probe, "lose_focus"):
-        await probe.lose_focus()
-        await probe.redraw("Row is selected but DetailedList is not focused")
-        await probe.select_row(2)
-        await probe.redraw("Row is selected and DetailedList regained focus")
+    # The selected row is still drawn when the DetailedList loses focus
+    await other_probe.ensure_focus()
+    await probe.redraw("Row is selected but DetailedList is not focused", delay=0.1)
+    assert widget.selection == source[2]
+
+    await probe.select_row(2)
+    await probe.redraw("Row is selected and DetailedList regained focus")
+    assert widget.selection == source[2]
 
 
 async def test_deselect(widget, probe):
