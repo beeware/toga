@@ -11,7 +11,7 @@ from ..app import in_dark_mode
 from ..libs import gdi32, user32 as u32, win32constants as wc, win32structures as ws
 from ..libs.comctl32 import (
     DefSubclassProc,
-    ImageList_Draw,
+    ImageList_DrawEx,
     InitCommonControlsEx,
     RemoveWindowSubclass,
     SetWindowSubclass,
@@ -104,7 +104,7 @@ class DetailedList(Widget):
         # learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw
         lvs = wc.LVS_OWNERDATA | wc.LVS_SINGLESEL | wc.LVS_SHOWSELALWAYS | wc.LVS_REPORT
         self._hwnd = u32.CreateWindowExW(
-            wc.LVS_EX_DOUBLEBUFFER,
+            0,
             wc.WC_LISTVIEW,
             None,
             wc.WS_CHILD | wc.WS_VISIBLE | lvs,
@@ -118,8 +118,23 @@ class DetailedList(Widget):
             None,
         )
 
-        theme = "DarkMode_Explorer" if in_dark_mode() else "Explorer"
-        SetWindowTheme(HWND(self._hwnd), theme, None)
+        # Double buffering prevents flicker when tiles are redrawn. Note that this is an
+        # extended List-View style, not an extended window style.
+        u32.SendMessageW(
+            self._hwnd,
+            wc.LVM_SETEXTENDEDLISTVIEWSTYLE,
+            wc.LVS_EX_DOUBLEBUFFER,
+            wc.LVS_EX_DOUBLEBUFFER,
+        )
+
+        # The List-View isn't a WinForms control, so WinForms dark mode doesn't theme
+        # it. Use the theme of the WinForms ListView in dark mode, which gives the
+        # scrollbar dark colors.
+        if in_dark_mode():  # pragma: no-cover-if-netfx
+            SetWindowTheme(HWND(self._hwnd), "DarkMode_Explorer", None)
+        else:  # pragma: no-cover-if-netcore
+            # We can't do conditional branch coverage, so we need a no-op else
+            pass
 
         # Change the view style to tile.
         # learn.microsoft.com/en-us/windows/win32/controls/use-tile-views
@@ -281,8 +296,6 @@ class DetailedList(Widget):
         """Matches the back color of the Win32 List-View UI to the WinForms Panel."""
         color = ColorTranslator.ToWin32(self.native.BackColor)
         u32.SendMessageW(self._hwnd, wc.LVM_SETBKCOLOR, 0, color)
-        theme = "DarkMode_Explorer" if in_dark_mode() else "Explorer"
-        SetWindowTheme(HWND(self._hwnd), theme, None)
 
         # Invalidate the whole client area.
         u32.InvalidateRect(self._hwnd, None, True)
@@ -473,13 +486,16 @@ class DetailedList(Widget):
                 if in_dark_mode():  # pragma: no-cover-if-netfx
                     back_color = SystemColors.Highlight
                     text_color = self.native.ForeColor
+                    icon_flag = wc.ILD_NORMAL
                 else:  # pragma: no-cover-if-netcore
                     if has_focus:
                         back_color = SystemColors.Highlight
                         text_color = SystemColors.HighlightText
+                        icon_flag = wc.ILD_SELECTED
                     else:
                         back_color = SystemColors.Control
                         text_color = SystemColors.ControlText
+                        icon_flag = wc.ILD_FOCUS
                 prev_color = gdi32.SetTextColor(
                     hdc,
                     ColorTranslator.ToWin32(text_color),
@@ -487,12 +503,17 @@ class DetailedList(Widget):
 
                 brush = gdi32.CreateSolidBrush(ColorTranslator.ToWin32(back_color))
                 try:
-                    rect = self._drawing_select_rect(x=0, y=y)
-                    u32.FillRect(hdc, byref(rect), brush)
+                    # Keep the selection inside the item bounds, since those are the
+                    # bounds that are redrawn when the selection changes.
+                    select_rect = self._drawing_select_rect(x=0, y=y)
+                    select_rect.top = max(select_rect.top, rect.top)
+                    select_rect.bottom = min(select_rect.bottom, rect.bottom)
+                    u32.FillRect(hdc, byref(select_rect), brush)
                 finally:
                     gdi32.DeleteObject(brush)
             else:
                 prev_color = gdi32.SetTextColor(hdc, self._fore_color)
+                icon_flag = wc.ILD_NORMAL
 
             try:
                 with FontDeviceContext(hdc, hfont_title):
@@ -505,17 +526,20 @@ class DetailedList(Widget):
             finally:
                 gdi32.SetTextColor(hdc, prev_color)
 
-            icon_flag = wc.ILD_NORMAL
-            if is_selected and not in_dark_mode():  # pragma: no-cover-if-netcore
-                icon_flag = wc.ILD_SELECTED if has_focus else wc.ILD_FOCUS
-
+            # The List-View sets the background color of the image list to its own
+            # background color, so draw the icon transparently (CLR_NONE) to keep the
+            # selection color behind it.
             icon_xy = self._drawing_icon_xy(x=0, y=y)
-            ImageList_Draw(
+            ImageList_DrawEx(
                 HWND(int(self._image_list.Handle.ToString())),
                 item[2],
                 hdc,
                 icon_xy[0],
                 icon_xy[1],
+                0,
+                0,
+                wc.CLR_NONE,
+                wc.CLR_DEFAULT,
                 icon_flag,
             )
 
