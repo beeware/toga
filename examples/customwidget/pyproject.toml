@@ -29,10 +29,9 @@ requires = [
 ]
 
 [tool.briefcase.app.customwidget.macOS]
-universal_build = true
 requires = [
     "../../cocoa",
-    "std-nslog~=2.0.0",
+    "std-nslog~=2.0.0; python_version < '3.14'",
 ]
 
 [tool.briefcase.app.customwidget.linux]
