@@ -76,19 +76,6 @@ def test_init_with_content(window, app):
     assert content2.window is None
     assert content2.app is None
 
-    # Attach content, detach scaffold; scaffold should preserve
-    # content
-    scaffold.content = content1
-    assert content1.scaffold is scaffold
-    window.content = None
-    assert window.content is None
-    assert scaffold.content == content1
-    assert content1.scaffold is scaffold
-    assert scaffold.window is None
-    assert scaffold.app is None
-    assert content1.window is None
-    assert content1.app is None
-
 
 def test_content_movement(window, app):
     """Content may be moved from one scaffold to another scaffold."""

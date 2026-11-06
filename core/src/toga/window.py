@@ -252,11 +252,10 @@ class Window:
         if App.app is None:
             raise RuntimeError("Cannot create a Window before creating an App")
 
-        # Set up the scaffold layer to facilitate setting content later.
-        _wrapper_scaffold = Scaffold()
-        _wrapper_scaffold.app = App.app
-        _wrapper_scaffold.window = self
-        self._scaffold: BaseScaffold | None = _wrapper_scaffold
+        # Set up the initial scaffold layer.
+        self._scaffold: BaseScaffold | None = Scaffold()
+        self._scaffold.app = App.app
+        self._scaffold.window = self
 
         # Initialize event handlers to no-op defaults BEFORE creating the
         # implementation. Some platforms (Cocoa, .NET Framework 4.x WinForms) fire
@@ -278,7 +277,7 @@ class Window:
             position=None if position is None else Position(*position),
             size=Size(*size),
         )
-        self._impl.set_scaffold(_wrapper_scaffold._impl)
+        self._impl.set_scaffold(self._scaffold._impl)
         self.title = title
 
         # Add the window to the app
@@ -451,11 +450,8 @@ class Window:
     @content.setter
     def content(self, content: Widget | BaseScaffold) -> None:
         if not isinstance(content, BaseScaffold):
-            if not isinstance(self._content, BaseScaffold):
-                scaffold = self.scaffold
-                scaffold.content = content
-            else:
-                scaffold = Scaffold(content=content)
+            scaffold = self.scaffold
+            scaffold.content = content
         else:
             scaffold = content
 

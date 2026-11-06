@@ -250,7 +250,7 @@ def test_change_content(window, app):
     assert content2.scaffold is None
     assert_action_performed_with(initial_wrapper_scaffold, "set content", widget=None)
 
-    # Explicit scaffolds can replace the wrapper; assigning bare content restores it.
+    # Explicit scaffolds can replace the wrapper
     explicit_scaffold = toga.Scaffold(toga.Box())
     window.content = explicit_scaffold
     assert window.scaffold is explicit_scaffold
@@ -259,19 +259,6 @@ def test_change_content(window, app):
     # Explicit scaffold shows/hides toolbar properly
     assert_action_performed(explicit_scaffold, "hide toolbar")
     assert_action_not_performed(explicit_scaffold, "show toolbar")
-
-    content3 = toga.Box()
-    window.content = content3
-    new_wrapper_scaffold = window.scaffold
-    assert new_wrapper_scaffold is not initial_wrapper_scaffold
-    assert new_wrapper_scaffold is not explicit_scaffold
-    assert window.content is content3
-    assert window.scaffold is new_wrapper_scaffold
-    assert new_wrapper_scaffold.content is content3
-    assert new_wrapper_scaffold.window == window
-    assert new_wrapper_scaffold.app == app
-    assert explicit_scaffold.window is None
-    assert explicit_scaffold.app is None
 
 
 def test_change_content_in_presentation_mode(window):
@@ -296,19 +283,6 @@ def test_change_content_in_presentation_mode(window):
         window.content = toga.Scaffold(toga.Box())
 
     assert window.scaffold is implicit_scaffold
-
-    window.state = WindowState.NORMAL
-    explicit_scaffold = toga.Scaffold(original_content)
-    window.content = explicit_scaffold
-    window.state = WindowState.PRESENTATION
-
-    with pytest.raises(
-        ValueError,
-        match="Window scaffold cannot be changed in presentation mode",
-    ):
-        window.content = toga.Box()
-
-    assert window.scaffold is explicit_scaffold
 
 
 def test_set_position(window):
