@@ -1,0 +1,9 @@
+[project]
+site_name = "Toga"
+docs_dir = "en"
+
+[project.theme]
+language = "en"
+
+[project.extra]
+header = {}
