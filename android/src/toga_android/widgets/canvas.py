@@ -22,6 +22,7 @@ from toga.constants import Baseline, FillRule
 from toga.widgets.canvas.geometry import arc_to_bezier, round_rect, sweepangle
 
 from ..colors import native_color
+from ..libs.events import PythonRunnable
 from .base import Widget, suppress_reference_error
 
 BLACK = jint(native_color(rgb(0, 0, 0)))
@@ -334,15 +335,37 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
         return True
 
 
+class LayoutChangeListener(dynamic_proxy(View.OnLayoutChangeListener)):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = weakref.proxy(impl)
+        self.interface = weakref.proxy(impl.interface)
+
+    def onLayoutChange(
+        self, view, left, top, right, bottom, old_left, old_top, old_right, old_bottom
+    ):
+        # The resize handler may alter the layout, and changing the layout
+        # during a layout pass raises warnings; defer the notification until the
+        # current pass is complete.
+        width = right - left
+        height = bottom - top
+        view.post(PythonRunnable(lambda: self.notify_resize(width, height)))
+
+    def notify_resize(self, width, height):
+        with suppress_reference_error():
+            self.interface.on_resize(
+                width=self.impl.scale_out(width),
+                height=self.impl.scale_out(height),
+            )
+
+
 class Canvas(Widget):
     def create(self):
         self.native = DrawHandlerView(self._native_activity)
         self.native.setDrawHandler(DrawHandler(self))
         self.native.setOnTouchListener(TouchListener(self))
-
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        self.interface.on_resize(width=width, height=height)
+        self.layout_change_listener = LayoutChangeListener(self)
+        self.native.addOnLayoutChangeListener(self.layout_change_listener)
 
     def redraw(self):
         self.native.invalidate()

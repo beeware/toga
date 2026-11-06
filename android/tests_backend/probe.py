@@ -102,7 +102,7 @@ class BaseProbe:
             event = self.layout_listener.event
             event.clear()
             await asyncio.wait_for(event.wait(), 5)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             print("Redraw timed out")
 
         # If we're running slow, or we have a wait condition,

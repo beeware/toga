@@ -1,6 +1,6 @@
 import asyncio
 import gc
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -27,6 +27,22 @@ def test_noop_handler():
 
     # This does nothing, but doesn't raise an error, and returns None
     assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
+
+
+def test_noop_handler_with_process_args():
+    """Argument processing can be provided, but won't be evaluated on a no-op."""
+    obj = Mock()
+    process_args = Mock()
+
+    wrapped = wrapped_handler(obj, None, process_args=process_args)
+
+    assert wrapped._raw is None
+
+    # This does nothing, but doesn't raise an error, and returns None
+    assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
+
+    # Cleanup method was invoked
+    process_args.assert_not_called()
 
 
 def test_noop_handler_with_cleanup():
@@ -120,6 +136,46 @@ def test_function_handler_error(capsys):
         "Error in handler: Problem in handler\nTraceback (most recent call last):\n"
         in capsys.readouterr().err
     )
+
+
+def test_function_handler_with_process_args():
+    """A function handler can process arguments on activation."""
+    obj = Mock()
+    process_args = Mock(
+        side_effect=[
+            None,
+            (("arg1", "arg2"), {"kwarg1": 3, "kwarg2": 4}),
+        ]
+    )
+    handler_call = {"count": 0}
+
+    def handler(*args, **kwargs):
+        handler_call["count"] += 1
+        handler_call["args"] = args
+        handler_call["kwargs"] = kwargs
+        return 42
+
+    wrapped = wrapped_handler(obj, handler, process_args=process_args)
+
+    # Raw handler is the original function
+    assert wrapped._raw == handler
+
+    # Invoke handler twice.
+    assert wrapped("arg1a", "arg2a", kwarg1=5, kwarg2=6) is None
+    assert wrapped("arg1b", "arg2b", kwarg1=7, kwarg2=8) == 42
+
+    # Handler arguments are as expected.
+    assert handler_call == {
+        "count": 1,
+        "args": (obj, "arg1", "arg2"),
+        "kwargs": {"kwarg1": 3, "kwarg2": 4},
+    }
+
+    # Condition method was invoked twice
+    assert process_args.mock_calls == [
+        call(obj, "arg1a", "arg2a", kwarg1=5, kwarg2=6),
+        call(obj, "arg1b", "arg2b", kwarg1=7, kwarg2=8),
+    ]
 
 
 def test_function_handler_with_cleanup():

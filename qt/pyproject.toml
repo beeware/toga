@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==84.0.0",
+    "setuptools==84.2.1",
     "setuptools_scm==10.3.4",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -112,10 +112,10 @@ dependencies = [
 
 [project.optional-dependencies]
 pyside6-essentials = [
-    "PySide6-Essentials == 6.11.2",
+    "PySide6-Essentials == 6.12.0",
 ]
 pyside6 = [
-    "PySide6 == 6.11.2",
+    "PySide6 == 6.12.0",
 ]
 system = [
     "system-pyside6 == 0.1.1",

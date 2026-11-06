@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from math import ceil
 
-from rubicon.objc import CGSize, objc_method, objc_property
+from rubicon.objc import CGSize, objc_method, objc_property, send_super
 from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, Color
@@ -325,6 +325,11 @@ class TogaCanvas(NSView):
         self.interface.root_state._draw(Context(self.impl))
 
     @objc_method
+    def setFrameSize_(self, new_size: NSSize) -> None:
+        send_super(__class__, self, "setFrameSize:", new_size, argtypes=[NSSize])
+        self.interface.on_resize(width=new_size.width, height=new_size.height)
+
+    @objc_method
     def isFlipped(self) -> bool:
         # Default Cocoa coordinate frame is around the wrong way.
         return True
@@ -374,10 +379,6 @@ class Canvas(Widget):
 
     def redraw(self):
         self.native.needsDisplay = True
-
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        self.interface.on_resize(width=width, height=height)
 
     def set_background_color(self, color):
         if color is TRANSPARENT or color is None:

@@ -129,30 +129,51 @@ def simple_handler(fn: T, *args: object, **kwargs: object) -> T:
 def wrapped_handler(
     interface: object,
     handler: HandlerT | NativeHandler | None,
+    process_args: HandlerSyncT | None = None,
     cleanup: HandlerSyncT | None = None,
 ) -> WrappedHandlerT:
     """Wrap a handler provided by the user, so it can be invoked.
 
-    If the handler is a NativeHandler, return the handler object contained in the
-    NativeHandler.
+    If the handler is a NativeHandler, return the handler object contained in
+    the NativeHandler.
 
-    If the handler is a bound method, or function, invoke it as it, and return the
-    result.
+    If the handler is a bound method, or function, invoke it as it, and return
+    the result.
 
-    If the handler is a generator, invoke it asynchronously, with the yield values from
-    the generator representing the duration to sleep between iterations.
+    If the handler is a generator, invoke it asynchronously, with the yield
+    values from the generator representing the duration to sleep between
+    iterations.
 
     If the handler is a coroutine, install it on the asynchronous event loop.
 
-    Returns either the native handler, or a wrapped function that will invoke the
-    handler, using the interface as context. If a non-native handler, the wrapper
-    function is annotated with the original handler function on the `_raw` attribute.
+    Returns either the native handler, or a wrapped function that will invoke
+    the handler, using the interface as context. If a non-native handler, the
+    wrapper function is annotated with the original handler function on the
+    `_raw` attribute.
+
+    :param interface: The interface object on which the handler will operate.
+    :param handler: The handler method/generator/coroutine.
+    :param process_args: Optional; a synchronous handler-like object that will
+        be invoked to pre-process arguments passed to the handler. If defined,
+        it will be invoked prior to attempting to call/schedule the handler,
+        with the same arguments as the handler. It should return either an
+        (args, kwargs) tuple of transformed arguments, or `None`, indicating
+        that the handler should not be invoked.
+    :param cleanup: Optional; A synchronous handler-like object that will be
+        invoked when the handler completes.
     """
     if handler:
         if isinstance(handler, NativeHandler):
             return handler.native
 
         def _handler(*args: object, **kwargs: object) -> object:
+            if process_args:
+                processed = process_args(interface, *args, **kwargs)
+                if processed:
+                    args, kwargs = processed
+                else:
+                    return
+
             if inspect.iscoroutinefunction(handler):
                 return asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)

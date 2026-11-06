@@ -101,6 +101,11 @@ class SimpleProbe(BaseProbe):
 
         return False
 
+    async def ensure_focus(self, message=None):
+        self.widget.focus()
+        await self.redraw("Widget has been given focus" if message is None else message)
+        assert self.has_focus
+
     @property
     def has_focus(self):
         return self.native.has_focus

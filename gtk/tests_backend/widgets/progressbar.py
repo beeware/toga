@@ -33,7 +33,7 @@ class ProgressBarProbe(SimpleProbe):
         if self.impl._task:
             try:
                 await asyncio.wait_for(self.impl._task, 0.2)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 # Timeout is the expected outcome, as the task will run until it is
                 # cancelled.
                 pass

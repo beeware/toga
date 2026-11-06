@@ -99,12 +99,6 @@ class SplitContainer(Widget):
 
     @content.setter
     def content(self, content: Sequence[SplitContainerContentT]) -> None:
-        for old_content in self._content:
-            if old_content is not None:
-                old_content.app = None
-                old_content.window = None
-                old_content.scaffold = None
-
         try:
             if len(content) != 2:
                 raise TypeError()
@@ -134,6 +128,15 @@ class SplitContainer(Widget):
             _content.append(widget)
             flex.append(flex_value)
 
+        # Only detach the old content once the new content is fully validated,
+        # so a failed assignment doesn't orphan the widgets currently shown.
+        for old_content in self._content:
+            if old_content is not None:
+                old_content.app = None
+                old_content.window = None
+                old_content.scaffold = None
+
+        for widget in _content:
             if widget:
                 widget.app = self.app
                 widget.window = self.window

@@ -21,9 +21,9 @@ from toga.colors import (
     rgb,
 )
 from toga.constants import Baseline, FillRule
-from toga.fonts import BOLD
+from toga.fonts import BOLD, ITALIC
 from toga.images import Image as TogaImage
-from toga.style.pack import SYSTEM
+from toga.style.pack import COLUMN, SYSTEM
 
 from ...conftest import skip_on_backends
 from ..conftest import build_cleanup_test
@@ -57,7 +57,7 @@ async def test_resize(widget, probe, on_resize_handler):
     assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] > 300
     assert on_resize_handler.call_args.kwargs["height"] > 300
-    on_resize_handler.reset()
+    on_resize_handler.reset_mock()
 
     widget.style.width = 100
     await probe.redraw("Canvas should be tall and narrow")
@@ -65,7 +65,7 @@ async def test_resize(widget, probe, on_resize_handler):
     assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] == 100
     assert on_resize_handler.call_args.kwargs["height"] > 300
-    on_resize_handler.reset()
+    on_resize_handler.reset_mock()
 
     widget.style.height = 100
     await probe.redraw("Canvas should be small")
@@ -73,7 +73,7 @@ async def test_resize(widget, probe, on_resize_handler):
     assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] == 100
     assert on_resize_handler.call_args.kwargs["height"] == 100
-    on_resize_handler.reset()
+    on_resize_handler.reset_mock()
 
     del widget.style.width
     await probe.redraw("Canvas should be width of the screen")
@@ -81,7 +81,51 @@ async def test_resize(widget, probe, on_resize_handler):
     assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] > 300
     assert on_resize_handler.call_args.kwargs["height"] == 100
-    on_resize_handler.reset()
+    on_resize_handler.reset_mock()
+
+
+async def test_resize_handler_modifies_layout(widget, probe):
+    """A resize handler can modify the layout without recursing (#4842)."""
+    label = toga.Label("Elsa")
+    calls = []
+
+    def on_resize(canvas, width, height, **kwargs):
+        calls.append((width, height))
+        label.text = "Kristoff"
+
+    widget.on_resize = on_resize
+    # Adding the label alters the size of the (flexible) canvas.
+    widget.parent.insert(0, label)
+
+    await probe.redraw(
+        "Label should read 'Kristoff'",
+        wait_for=lambda: label.text == "Kristoff",
+    )
+    assert label.text == "Kristoff"
+    # Changing the label's text may alter the size of the canvas, so the handler
+    # may be invoked more than once - but it must not recurse.
+    assert 1 <= len(calls) <= 3
+
+
+async def test_resize_not_fired_without_size_change(canvas, probe, on_resize_handler):
+    """The resize handler isn't invoked when the canvas size doesn't change."""
+    label = toga.Label("Elsa")
+    canvas.parent.style.direction = COLUMN
+    canvas.parent.insert(0, label)
+    await probe.redraw("Canvas should be 200x200, below a label")
+    assert on_resize_handler.call_args.kwargs["width"] == 200
+    assert on_resize_handler.call_args.kwargs["height"] == 200
+    on_resize_handler.reset_mock()
+
+    # Changing the label's text alters the layout, but not the canvas size.
+    label.text = "Kristoff"
+    await probe.redraw("Label should read 'Kristoff'")
+
+    # Adding a margin to the label moves the canvas without resizing it.
+    label.style.margin_top = 20
+    await probe.redraw("Canvas should have moved down")
+
+    on_resize_handler.assert_not_called()
 
 
 async def test_press(canvas, probe, on_press_handler, on_release_handler):
@@ -1114,6 +1158,82 @@ async def test_write_text_and_path(canvas, probe):
 
     await probe.redraw("Text and path should be drawn independently")
     assert_reference(probe, "write_text_and_path", 0.04)
+
+
+def _draw_font_variants(canvas, family):
+    variants = [
+        (f"{family}", {}),
+        (f"{family} bold", {"weight": BOLD}),
+        (f"{family} italic", {"style": ITALIC}),
+        (f"{family} bold italic", {"weight": BOLD, "style": ITALIC}),
+    ]
+    canvas.fill_style = REBECCAPURPLE
+    y = 10
+    for text, kwargs in variants:
+        font = Font(family, 14, **kwargs)
+        canvas.fill_text(text, 10, y, font=font, baseline=Baseline.TOP)
+        y += 45
+
+
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
+)
+async def test_endor_font_variants(canvas, probe):
+    """Endor font can be rendered in normal, bold, italic, and bold-italic."""
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf")
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf", weight=BOLD)
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf", style=ITALIC)
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf", weight=BOLD, style=ITALIC)
+
+    _draw_font_variants(canvas, "Endor")
+
+    await probe.redraw("Endor font variants should be rendered")
+    assert_reference(probe, "endor_font_variants", threshold=0.04)
+
+
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
+)
+async def test_roboto_font_variants(canvas, probe):
+    """Roboto font can be rendered in normal, bold, italic, and bold-italic."""
+    Font.register("Roboto", "resources/fonts/Roboto-Regular.ttf")
+    Font.register("Roboto", "resources/fonts/Roboto-Bold.ttf", weight=BOLD)
+    Font.register("Roboto", "resources/fonts/Roboto-Italic.ttf", style=ITALIC)
+    Font.register(
+        "Roboto",
+        "resources/fonts/Roboto-BoldItalic.ttf",
+        weight=BOLD,
+        style=ITALIC,
+    )
+
+    _draw_font_variants(canvas, "Roboto")
+
+    await probe.redraw("Roboto font variants should be rendered")
+    assert_reference(probe, "roboto_font_variants", threshold=0.04)
+
+
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
+)
+async def test_recursive_font_variants(canvas, probe):
+    """Recursive font can be rendered in normal, bold, italic, and bold-italic."""
+    Font.register("Recursive", "resources/fonts/Recursive-VF.ttf")
+    Font.register("Recursive", "resources/fonts/Recursive-VF.ttf", weight=BOLD)
+    Font.register("Recursive", "resources/fonts/Recursive-VF.ttf", style=ITALIC)
+    Font.register(
+        "Recursive",
+        "resources/fonts/Recursive-VF.ttf",
+        weight=BOLD,
+        style=ITALIC,
+    )
+
+    _draw_font_variants(canvas, "Recursive")
+
+    await probe.redraw("Recursive font variants should be rendered")
+    assert_reference(probe, "recursive_font_variants", threshold=0.04)
 
 
 async def test_draw_image_at_point(canvas, probe):

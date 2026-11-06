@@ -29,6 +29,8 @@ When any significant event occurs to the data source, all listeners will be noti
 
 If any attribute of a [`ValueSource`][toga.sources.ValueSource], [`Row`][toga.sources.Row] or [`Node`][toga.sources.Node] is modified, the source will generate a change event.
 
+Each of these notifications is preceded by a "pre" notification, sent just before the change is made, so that a listener can prepare for it. The method for a "pre" notification has a `source_pre_` prefix, and takes the same arguments: for example, `source_pre_insert` is called with the same `index` and `item` as `source_insert`, while the source still holds the data it had before the insertion. When an item is replaced, `source_pre_change` is passed the item that is about to be modified, and `source_change` is passed the updated item.
+
 When you create a widget like Selection or Table, and provide a data source for that widget, the widget is automatically added as a listener on that source.
 
 Although widgets are the obvious listeners for a data source, *any* object can register as a listener. For example, a second data source might register as a listener to an initial source to implement a filtered source. When an item is added to the first data source, the second data source will be notified, and can choose whether to include the new item in its own data representation. Listeners only have to implement the methods that they need for their functionality. Missing methods will be ignored.

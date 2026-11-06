@@ -416,7 +416,7 @@ def _create_java_fd(int_fd):
     # On Android, the class exposes hidden (non-private) methods `getInt$()` and
     # `setInt$()`. Because they aren't valid Python identifier names, we need to use
     # `getattr()` to grab them. See e.g.
-    #     https://android.googlesource.com/platform/prebuilts/fullsdk/sources/android-28/+/refs/heads/master/java/io/FileDescriptor.java#149  # noqa: E501
+    #     https://android.googlesource.com/platform/prebuilts/fullsdk/sources/android-28/+/refs/heads/master/java/io/FileDescriptor.java#149
     java_fd = FileDescriptor()
     getattr(java_fd, "setInt$")(int_fd)
     return java_fd

@@ -1,5 +1,5 @@
 import re
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -104,13 +104,19 @@ def test_modify_attributes(source, node):
     """If node attributes are modified, a change notification is sent."""
     node.val1 = "new value"
     assert node.val1 == "new value"
-    source.notify.assert_called_once_with("change", item=node)
+    assert source.notify.mock_calls == [
+        call("pre_change", item=node),
+        call("change", item=node),
+    ]
     source.notify.reset_mock()
 
     # Deleting an attribute causes a change notification
     del node.val1
     assert not hasattr(node, "val1")
-    source.notify.assert_called_once_with("change", item=node)
+    assert source.notify.mock_calls == [
+        call("pre_change", item=node),
+        call("change", item=node),
+    ]
     source.notify.reset_mock()
 
     # Setting an attribute starting with with an underscore isn't a notifiable event
@@ -127,14 +133,20 @@ def test_modify_attributes(source, node):
     # still causes a change notification
     node.val3 = "other value"
     assert node.val3 == "other value"
-    source.notify.assert_called_once_with("change", item=node)
+    assert source.notify.mock_calls == [
+        call("pre_change", item=node),
+        call("change", item=node),
+    ]
     source.notify.reset_mock()
 
     # Deleting an attribute that wasn't in the original attribute set
     # still causes a change notification
     del node.val3
     assert not hasattr(node, "val3")
-    source.notify.assert_called_once_with("change", item=node)
+    assert source.notify.mock_calls == [
+        call("pre_change", item=node),
+        call("change", item=node),
+    ]
     source.notify.reset_mock()
 
 
@@ -177,7 +189,10 @@ def test_modify_children(source, node):
     del node[1]
 
     # Removal notification was sent
-    source.notify.assert_called_once_with("remove", parent=node, index=1, item=child)
+    assert source.notify.mock_calls == [
+        call("pre_remove", parent=node, index=1, item=child),
+        call("remove", parent=node, index=1, item=child),
+    ]
     source.notify.reset_mock()
 
     # Child is no longer associated with the source
@@ -202,8 +217,12 @@ def test_modify_children(source, node):
     # A child node was created using the source's factory
     source._create_node.assert_called_with(parent=node, data={"val1": "new"})
 
-    # Change notification was sent, the change is associated with the new item
-    source.notify.assert_called_once_with("change", item=node[0])
+    # Pre-change notification was sent for the old item, and the change
+    # notification is associated with the new item
+    assert source.notify.mock_calls == [
+        call("pre_change", item=old_child_0),
+        call("change", item=node[0]),
+    ]
 
     # Node child count hasn't changed
     assert len(node) == 1
@@ -263,12 +282,10 @@ def test_insert(source, node, index, actual_index):
     )
 
     # insert notification was sent, the change is associated with the new item
-    source.notify.assert_called_once_with(
-        "insert",
-        parent=node,
-        index=actual_index,
-        item=new_child,
-    )
+    assert source.notify.mock_calls == [
+        call("pre_insert", parent=node, index=actual_index, item=new_child),
+        call("insert", parent=node, index=actual_index, item=new_child),
+    ]
 
 
 def test_insert_with_children(source, node):
@@ -303,12 +320,10 @@ def test_insert_with_children(source, node):
     assert not new_child[0].can_have_children()
 
     # insert notification was sent, the change is associated with the new item
-    source.notify.assert_called_once_with(
-        "insert",
-        parent=node,
-        index=1,
-        item=new_child,
-    )
+    assert source.notify.mock_calls == [
+        call("pre_insert", parent=node, index=1, item=new_child),
+        call("insert", parent=node, index=1, item=new_child),
+    ]
 
 
 def test_insert_leaf(leaf_node, source):
@@ -326,9 +341,10 @@ def test_insert_leaf(leaf_node, source):
     )
 
     # insert notification was sent, the change is associated with the new item
-    source.notify.assert_called_once_with(
-        "insert", parent=leaf_node, index=0, item=leaf_node[0]
-    )
+    assert source.notify.mock_calls == [
+        call("pre_insert", parent=leaf_node, index=0, item=leaf_node[0]),
+        call("insert", parent=leaf_node, index=0, item=leaf_node[0]),
+    ]
 
 
 def test_append(source, node):
@@ -345,12 +361,10 @@ def test_append(source, node):
     )
 
     # insert notification was sent, the change is associated with the new item
-    source.notify.assert_called_once_with(
-        "insert",
-        parent=node,
-        index=2,
-        item=new_child,
-    )
+    assert source.notify.mock_calls == [
+        call("pre_insert", parent=node, index=2, item=new_child),
+        call("insert", parent=node, index=2, item=new_child),
+    ]
 
 
 def test_append_with_children(source, node):
@@ -379,12 +393,10 @@ def test_append_with_children(source, node):
     )
 
     # insert notification was sent, the change is associated with the new item
-    source.notify.assert_called_once_with(
-        "insert",
-        parent=node,
-        index=2,
-        item=new_child,
-    )
+    assert source.notify.mock_calls == [
+        call("pre_insert", parent=node, index=2, item=new_child),
+        call("insert", parent=node, index=2, item=new_child),
+    ]
 
 
 def test_append_leaf(leaf_node, source):
@@ -402,9 +414,10 @@ def test_append_leaf(leaf_node, source):
     )
 
     # insert notification was sent, the change is associated with the new item
-    source.notify.assert_called_once_with(
-        "insert", parent=leaf_node, index=0, item=leaf_node[0]
-    )
+    assert source.notify.mock_calls == [
+        call("pre_insert", parent=leaf_node, index=0, item=leaf_node[0]),
+        call("insert", parent=leaf_node, index=0, item=leaf_node[0]),
+    ]
 
 
 def test_index(node, child_b):
@@ -446,7 +459,10 @@ def test_remove(source, node, child_b):
     assert len(node) == 1
 
     # The source was notified
-    source.notify.assert_called_once_with("remove", parent=node, index=1, item=child_b)
+    assert source.notify.mock_calls == [
+        call("pre_remove", parent=node, index=1, item=child_b),
+        call("remove", parent=node, index=1, item=child_b),
+    ]
 
 
 def test_remove_leaf(leaf_node, child_b):

@@ -41,6 +41,9 @@ class CanvasProbe(SimpleProbe):
             "write_text_and_path",
             "deprecated_tutorial",
             "reset_transform",
+            "endor_font_variants",
+            "roboto_font_variants",
+            "recursive_font_variants",
         }:
             return f"{reference}-iOS"
         else:

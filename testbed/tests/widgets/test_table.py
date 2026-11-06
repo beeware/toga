@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.sources import AccessorColumn, ListListener, ListSource
+from toga.sources import AccessorColumn, ListSource
 from toga.style.pack import Pack
 
 from ..conftest import skip_on_backends, skip_on_platforms
@@ -53,7 +53,7 @@ def source():
         accessors=["a", "b", "c", "d", "e"],
         data=[
             {"a": f"A{i}", "b": f"B{i}", "c": f"C{i}", "d": f"D{i}", "e": f"E{i}"}
-            for i in range(100)
+            for i in range(200)
         ],
     )
 
@@ -154,15 +154,15 @@ async def test_scroll(widget, probe):
     assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=15)
 
     # Scroll to the middle of the table
-    widget.scroll_to_row(50)
+    widget.scroll_to_row(len(widget.data) // 2)
     await probe.wait_for_scroll_completion()
     await probe.redraw("Table scrolled to mid row")
 
-    # Row 50 should be visible. It could be at the top of the screen, or the bottom of
-    # the screen; we don't really care which - as long as we're roughly in the middle of
-    # the scroll range, call it a win.
+    # The middle row should be visible. It could be at the top of the screen,
+    # or the bottom of the screen; we don't really care which - as long as it's
+    # roughly in the middle of the scroll range, call it a win.
     assert probe.scroll_position == pytest.approx(
-        probe.max_scroll_position / 2, abs=400
+        probe.max_scroll_position / 2, abs=probe.height
     )
 
     # Scroll to the top of the table
@@ -350,9 +350,9 @@ async def test_multiselect(
         await multiselect_probe.select_all()
         await multiselect_probe.redraw(
             "All rows selected by keyboard",
-            wait_for=lambda: len(multiselect_widget.selection) == 100,
+            wait_for=lambda: len(multiselect_widget.selection) == len(source),
         )
-        assert len(multiselect_widget.selection) == 100
+        assert len(multiselect_widget.selection) == len(source)
 
 
 async def test_multiselect_keyboard_control(
@@ -727,11 +727,6 @@ async def test_cell_widget(widget, probe):
         # we just won't have widgets in the cells.
         probe.assert_cell_content(0, 2, "MISSING!")
         probe.assert_cell_content(1, 2, "MISSING!")
-
-
-async def test_list_listener(widget):
-    """Does the widget implement the ListListener API"""
-    assert isinstance(widget._impl, ListListener)
 
 
 @pytest.mark.parametrize(
