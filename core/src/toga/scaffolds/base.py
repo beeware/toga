@@ -62,6 +62,17 @@ class Scaffold(BaseScaffold):
 
     @content.setter
     def content(self, value: Widget | None):
+        # Detach the widget from any parent it is on.  This also has the
+        # effect of removing it from any scaffolds it's indirectly part of.
+        if value and value.parent:
+            value.parent.remove(value)
+        # Now detach from scaffold.  This removes the widget from scaffolds
+        # we're directly part of (since the indirect case would've had a parent)
+        # which is handled in the previous if which removes the parent, so directly
+        # setting the root scaffold's content to None is safe here.
+        if value and value.scaffold:
+            value.scaffold.content = None
+
         if self._content is not None:
             # Clear the old content's window, app, and scaffold
             self._content.window = None

@@ -39,8 +39,8 @@ def test_create(app):
     assert len(window.toolbar) == 0
     assert window.toolbar.on_change is not None
 
-    # Resetting content shows toolbar on new scaffold.
-    window.content = toga.Box()
+    # Resetting scaffold shows toolbar on new scaffold.
+    window.content = toga.Scaffold()
     assert_action_performed(window.scaffold, "show toolbar")
 
 
