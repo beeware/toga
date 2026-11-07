@@ -1,7 +1,7 @@
 import pytest
 
 import toga
-from toga.constants import FlashMode
+from toga.constants import BarcodeFormat, FlashMode
 from toga.hardware.camera import CameraDevice
 from toga.platform import get_factory
 from toga_dummy.hardware.camera import (
@@ -33,6 +33,18 @@ def test_no_camera(monkeypatch, app):
     # Accessing the camera object should raise NotImplementedError
     with pytest.raises(NotImplementedError):
         _ = app.camera
+
+
+def test_barcode_format_all_values():
+    """All expected BarcodeFormat members can be enumerated and cross-referenced.
+
+    A common real-world use case is building a selection list for users to choose
+    which barcode types to scan for.
+    """
+    all_types = list(BarcodeFormat)
+    assert len(all_types) == 7
+    names = {str(t) for t in all_types}
+    assert names == {"Qr", "Code128", "Ean13", "Ean8", "Pdf417", "Aztec", "Data_Matrix"}
 
 
 @pytest.mark.parametrize(
@@ -191,3 +203,233 @@ def test_take_photo_no_permission(app, photo):
 
     assert_action_performed(app.camera, "has permission")
     assert_action_not_performed(app.camera, "take photo")
+
+
+##########################################################################
+# Scanning API
+##########################################################################
+
+
+def test_is_scanning_initial(app):
+    """is_scanning is False before any scan starts."""
+    assert app.camera.is_scanning is False
+    assert_action_performed(app.camera, "is scanning")
+
+
+def test_on_detection_default_none(app):
+    """on_detection is a no-op by default."""
+    assert app.camera.on_detection._raw is None
+
+
+def test_on_detection_set_and_get(app):
+    """on_detection can be set and retrieved."""
+
+    def handler(camera, **kwargs):
+        pass
+
+    app.camera.on_detection = handler
+    assert app.camera.on_detection._raw is handler
+
+
+def test_start_scanning_with_permission(app):
+    """Start scanning with default mode (auto-stop on first detection)."""
+    app.camera._impl._has_permission = -1
+    app.camera._impl.simulate_scan("QR_CODE_CONTENT")
+
+    result = app.loop.run_until_complete(app.camera.start_scanning())
+
+    assert result == "QR_CODE_CONTENT"
+    assert_action_performed(app.camera, "has permission")
+    assert_action_performed_with(
+        app.camera,
+        "start scanning",
+        permission_requested=True,
+        device=None,
+        code_types=list(BarcodeFormat),
+        continuous=False,
+    )
+
+
+def test_start_scanning_with_device(app):
+    """Start scanning with a specific device."""
+    app.camera._impl._has_permission = 1
+    app.camera._impl.simulate_scan("content")
+
+    device = CameraDevice(DummyCamera.CAMERA_2)
+    result = app.loop.run_until_complete(app.camera.start_scanning(device=device))
+
+    assert result == "content"
+    assert_action_performed_with(
+        app.camera,
+        "start scanning",
+        device=device,
+    )
+
+
+@pytest.mark.parametrize("code_type", list(BarcodeFormat))
+def test_start_scanning_with_code_type(app, code_type):
+    """Each BarcodeFormat value can be used as a scan code type."""
+    app.camera._impl._has_permission = 1
+    app.camera._impl.simulate_scan(f"found_{code_type.name}")
+
+    result = app.loop.run_until_complete(
+        app.camera.start_scanning(code_types=[code_type])
+    )
+
+    assert result == f"found_{code_type.name}"
+    assert_action_performed_with(
+        app.camera,
+        "start scanning",
+        code_types=[code_type],
+    )
+
+
+def test_start_scanning_with_single_code_type(app):
+    """A single BarcodeFormat value (not wrapped in a list) is accepted."""
+    app.camera._impl._has_permission = 1
+    app.camera._impl.simulate_scan("single_qr")
+
+    result = app.loop.run_until_complete(
+        app.camera.start_scanning(code_types=BarcodeFormat.QR)
+    )
+
+    assert result == "single_qr"
+    assert_action_performed_with(
+        app.camera,
+        "start scanning",
+        code_types=[BarcodeFormat.QR],
+    )
+
+
+def test_start_scanning_with_all_code_types(app):
+    """All BarcodeFormat values combined work for scanning."""
+    all_types = list(BarcodeFormat)
+    assert len(all_types) == 7
+
+    app.camera._impl._has_permission = 1
+    app.camera._impl.simulate_scan("multi_type_scan")
+
+    result = app.loop.run_until_complete(
+        app.camera.start_scanning(code_types=all_types)
+    )
+
+    assert result == "multi_type_scan"
+    assert_action_performed_with(
+        app.camera,
+        "start scanning",
+        code_types=all_types,
+    )
+
+
+def test_start_scanning_prior_permission(app):
+    """If permission was already granted, scan starts without requesting."""
+    app.camera._impl._has_permission = 1
+    app.camera._impl.simulate_scan("scanned data")
+
+    result = app.loop.run_until_complete(app.camera.start_scanning())
+
+    assert result == "scanned data"
+    assert_action_performed_with(
+        app.camera,
+        "start scanning",
+        permission_requested=False,
+    )
+
+
+def test_start_scanning_no_permission(app):
+    """If permission has been denied, start_scanning raises PermissionError."""
+    app.camera._impl._has_permission = 0
+
+    with pytest.raises(
+        PermissionError,
+        match=r"App does not have permission to take photos",
+    ):
+        app.loop.run_until_complete(app.camera.start_scanning())
+
+    assert_action_performed(app.camera, "has permission")
+    assert_action_not_performed(app.camera, "start scanning")
+
+
+def test_start_scanning_continuous(app):
+    """In continuous mode, scanning continues until stop_scanning is called."""
+    app.camera._impl._has_permission = 1
+
+    detected = []
+
+    def on_detected(camera, content, **kwargs):
+        detected.append(content)
+
+    app.camera._impl.simulate_scan("first")
+    result = app.camera.start_scanning(continuous=True, on_detection=on_detected)
+    assert_action_performed_with(
+        app.camera,
+        "start scanning",
+        continuous=True,
+    )
+
+    assert detected == ["first"]
+
+    app.camera._impl.simulate_scan("second")
+    assert detected == ["first", "second"]
+
+    app.camera.stop_scanning()
+    assert_action_performed(app.camera, "stop scanning")
+
+    assert app.loop.run_until_complete(result) is None
+
+
+def test_stop_scanning(app):
+    """stop_scanning ends scanning and resolves the scan result with None."""
+    app.camera._impl._has_permission = 1
+
+    result = app.camera.start_scanning()
+
+    app.camera.stop_scanning()
+    assert_action_performed(app.camera, "stop scanning")
+
+    assert app.loop.run_until_complete(result) is None
+
+
+def test_is_scanning_during_scan(app):
+    """is_scanning reflects the active scanning state."""
+    app.camera._impl._has_permission = 1
+
+    _ = app.camera.start_scanning()
+
+    assert app.camera.is_scanning is True
+    assert_action_performed(app.camera, "is scanning")
+
+    app.camera.stop_scanning()
+
+    assert app.camera.is_scanning is False
+    assert_action_performed(app.camera, "is scanning")
+
+
+def test_on_detection_callback_invoked(app):
+    """The on_detection callback is invoked when a barcode is detected."""
+    app.camera._impl._has_permission = 1
+
+    detected = []
+
+    def handler(camera, content, **kwargs):
+        detected.append((camera, content))
+
+    app.camera._impl.simulate_scan("callback_content")
+    app.loop.run_until_complete(app.camera.start_scanning(on_detection=handler))
+
+    assert len(detected) == 1
+    assert detected[0][0] is app.camera
+    assert detected[0][1] == "callback_content"
+
+
+def test_scan_result_direct_comparison_error(app):
+    """ScanResult raises RuntimeError if compared directly."""
+    result = app.camera.start_scanning()
+    with pytest.raises(RuntimeError):
+        _ = result == "anything"
+
+
+def test_scan_result_repr(app):
+    """ScanResult repr is meaningful."""
+    result = app.camera.start_scanning()
+    assert "scan" in repr(result).lower()
