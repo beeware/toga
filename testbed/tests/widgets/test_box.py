@@ -27,12 +27,12 @@ test_cleanup = build_cleanup_test(toga.Box)
 @pytest.mark.parametrize(
     "direction, alignment, child_size, position",
     [
-        (COLUMN, START, (100, 20), (0, 0)),
-        (COLUMN, CENTER, (100, 20), (100, 0)),
-        (COLUMN, END, (100, 20), (200, 0)),
-        (ROW, START, (20, 100), (0, 0)),
-        (ROW, CENTER, (20, 100), (0, 100)),
-        (ROW, END, (20, 100), (0, 200)),
+        (COLUMN, START, (120, 48), (0, 0)),
+        (COLUMN, CENTER, (120, 48), (120, 0)),
+        (COLUMN, END, (120, 48), (240, 0)),
+        (ROW, START, (40, 120), (0, 0)),
+        (ROW, CENTER, (40, 120), (0, 120)),
+        (ROW, END, (40, 120), (0, 240)),
     ],
 )
 async def test_explicit_cross_axis_alignment(
@@ -47,8 +47,8 @@ async def test_explicit_cross_axis_alignment(
     widget.parent.style.direction = ROW if direction == COLUMN else COLUMN
     widget.style.update(
         direction=direction,
-        width=300,
-        height=300,
+        width=360,
+        height=360,
         align_items=alignment,
     )
     child = toga.Box(width=child_size[0], height=child_size[1])
@@ -57,5 +57,5 @@ async def test_explicit_cross_axis_alignment(
 
     await probe.redraw("Child aligned within the explicitly sized box")
 
-    probe.assert_layout(position=(0, 0), size=(300, 300))
+    probe.assert_layout(position=(0, 0), size=(360, 360))
     child_probe.assert_layout(position=position, size=child_size)
