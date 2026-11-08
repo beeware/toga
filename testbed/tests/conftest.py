@@ -272,6 +272,9 @@ class ProxyTask:
 # pytest.approx doesn't support <= / >=
 # See https://github.com/pytest-dev/pytest/issues/2003
 class approx(ApproxScalar):
+    def __init__(self, expected, rel=None, abs=None, nan_ok: bool = False) -> None:
+        super().__init__(expected, rel=rel, abs=abs, nan_ok=nan_ok)
+
     def __ge__(self, other):
         return self.expected > other or self == other
 
