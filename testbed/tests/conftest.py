@@ -4,7 +4,7 @@ import inspect
 from dataclasses import dataclass
 from importlib import import_module
 
-from _pytest.python_api import ApproxScalar
+from _pytest.approx import ApproxScalar
 from pytest import fixture, register_assert_rewrite, skip, xfail
 
 import toga
