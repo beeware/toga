@@ -15,7 +15,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.button]
-formal_name = "Button"
+formal_name = "Button Demo"
 description = "Button test app"
 sources = ["button"]
 requires = [

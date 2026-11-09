@@ -15,7 +15,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.canvas]
-formal_name = "Canvas"
+formal_name = "Canvas Demo"
 description = "Canvas test app"
 sources = ["canvas"]
 requires = [

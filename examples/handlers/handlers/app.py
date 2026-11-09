@@ -107,7 +107,7 @@ class HandlerApp(toga.App):
 
 
 def main():
-    return HandlerApp("Handlers", "org.beeware.toga.examples.handlers")
+    return HandlerApp("Handlers Demo", "org.beeware.toga.examples.handlers")
 
 
 if __name__ == "__main__":

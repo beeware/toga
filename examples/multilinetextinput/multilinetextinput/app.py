@@ -99,7 +99,7 @@ class MultilineTextInputApp(toga.App):
 
 def main():
     return MultilineTextInputApp(
-        "Multiline Text Input", "org.beeware.toga.examples.multilinetextinput"
+        "Multiline Text Input Demo", "org.beeware.toga.examples.multilinetextinput"
     )
 
 

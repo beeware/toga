@@ -3,7 +3,7 @@ requires = ["briefcase"]
 
 # This project was generated with 0.4.6 using template: https://github.com/beeware/briefcase-template @ v0.4.6
 [tool.briefcase]
-project_name = "Resize"
+project_name = "resize"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
@@ -15,7 +15,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.resize]
-formal_name = "Resize"
+formal_name = "Resize Demo"
 description = "Resize test app"
 sources = ["resize"]
 requires = [

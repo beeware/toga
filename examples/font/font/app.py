@@ -207,7 +207,7 @@ class FontApp(toga.App):
 
 
 def main():
-    return FontApp("Font Example", "org.beeware.toga.examples.font")
+    return FontApp("Font Demo", "org.beeware.toga.examples.font")
 
 
 if __name__ == "__main__":

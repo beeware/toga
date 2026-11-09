@@ -19,7 +19,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.customwidget]
-formal_name = "Custom Widget"
+formal_name = "Custom Widget Demo"
 description = "Custom Widget test app"
 sources = ["customwidget"]
 requires = [

@@ -15,7 +15,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.box]
-formal_name = "Box"
+formal_name = "Box Demo"
 description = "Box test app"
 sources = ["box"]
 requires = [

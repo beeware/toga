@@ -15,7 +15,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.focus]
-formal_name = "Focus"
+formal_name = "Focus Demo"
 description = "Focus test app"
 sources = ["focus"]
 requires = [

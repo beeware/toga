@@ -72,7 +72,9 @@ class PasswordInputApp(toga.App):
 
 
 def main():
-    return PasswordInputApp("PasswordInput", "org.beeware.toga.examples.passwordinput")
+    return PasswordInputApp(
+        "PasswordInput Demo", "org.beeware.toga.examples.passwordinput"
+    )
 
 
 if __name__ == "__main__":

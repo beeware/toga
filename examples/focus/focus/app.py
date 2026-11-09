@@ -143,7 +143,7 @@ class FocusApp(toga.App):
 
 
 def main():
-    return FocusApp("Focus", "org.beeware.toga.examples.focus")
+    return FocusApp("Focus Demo", "org.beeware.toga.examples.focus")
 
 
 if __name__ == "__main__":

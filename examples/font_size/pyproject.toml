@@ -15,7 +15,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.font_size]
-formal_name = "Font Size"
+formal_name = "Font Size Demo"
 description = "Font Size test app"
 sources = ["font_size"]
 requires = [

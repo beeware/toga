@@ -15,7 +15,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.colors]
-formal_name = "Colors"
+formal_name = "Colors Demo"
 description = "Colors test app"
 sources = ["colors"]
 requires = [

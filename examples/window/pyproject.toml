@@ -2,7 +2,7 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "Window"
+project_name = "window"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
@@ -14,7 +14,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.window]
-formal_name = "Window"
+formal_name = "Window Demo"
 description = "Window test app"
 sources = ["window"]
 requires = [

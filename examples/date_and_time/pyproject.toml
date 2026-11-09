@@ -15,8 +15,8 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.date_and_time]
-formal_name = "Date and Time"
-description = "Date and Time testing app"
+formal_name = "Date and Time Demo"
+description = "Date and Time test app"
 sources = ["date_and_time"]
 requires = [
     "../../travertino",

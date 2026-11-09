@@ -15,7 +15,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.activityindicator]
-formal_name = "Activity Indicator"
+formal_name = "Activity Indicator Demo"
 description = "Activity Indicator test app"
 sources = ["activityindicator"]
 requires = [

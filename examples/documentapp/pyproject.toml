@@ -2,7 +2,7 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "DocumentApp"
+project_name = "documentapp"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
@@ -14,8 +14,8 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.documentapp]
-formal_name = "DocumentApp"
-description = "Document test app"
+formal_name = "Document-based App Demo"
+description = "Document-based test app"
 sources = ["documentapp"]
 requires = [
     "../../travertino",
@@ -141,23 +141,11 @@ requires = [
 
 # Mobile deployments
 [tool.briefcase.app.documentapp.iOS]
-requires = [
-    "../../iOS",
-]
+supported = false
 
 [tool.briefcase.app.documentapp.android]
-requires = [
-    "../../android",
-]
-
-base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
-
-build_gradle_dependencies = [
-    "com.google.android.material:material:1.13.0",
-]
+supported = false
 
 # Web deployment
 [tool.briefcase.app.documentapp.web]
-requires = [
-    "../../web",
-]
+supported = false

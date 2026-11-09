@@ -109,4 +109,4 @@ def setattr_if_changed(obj, name, value):
 
 
 def main():
-    return Resize("Resize", "org.beeware.toga.examples.resize")
+    return Resize("Resize Demo", "org.beeware.toga.examples.resize")

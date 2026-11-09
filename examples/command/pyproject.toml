@@ -15,7 +15,7 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.command]
-formal_name = "Command"
+formal_name = "Command Demo"
 description = "Command test app"
 sources = ["command"]
 requires = [

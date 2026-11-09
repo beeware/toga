@@ -203,7 +203,7 @@ class TableSourceApp(toga.App):
 
 
 def main():
-    return TableSourceApp("Table Source", "org.beeware.toga.examples.table_source")
+    return TableSourceApp("Table Source Demo", "org.beeware.toga.examples.table_source")
 
 
 if __name__ == "__main__":

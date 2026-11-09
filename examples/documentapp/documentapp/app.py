@@ -36,7 +36,7 @@ class DocumentApp(toga.App):
 
 def main():
     return DocumentApp(
-        "Document App",
+        "Document-based App Demo",
         "org.beeware.toga.examples.document",
         document_types=[ExampleDocument],
     )

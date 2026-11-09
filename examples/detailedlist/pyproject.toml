@@ -3,7 +3,7 @@ requires = ["briefcase"]
 
 # This project was generated with 0.4.6 using template: https://github.com/beeware/briefcase-template @ v0.4.6
 [tool.briefcase]
-project_name = "DetailedList"
+project_name = "detailedlist"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
@@ -15,8 +15,8 @@ author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.detailedlist]
-formal_name = "DetailedList"
-description = "DetailedList testapp"
+formal_name = "DetailedList Demo"
+description = "DetailedList test app"
 sources = ["detailedlist"]
 requires = [
     "../../travertino",

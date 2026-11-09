@@ -16,7 +16,7 @@ author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.examples_overview]
 formal_name = "Examples Overview"
-description = "Examples Overview test app"
+description = "A launcher for other example apps"
 sources = ["examples_overview"]
 requires = [
     "../../travertino",
@@ -118,27 +118,6 @@ system_runtime_requires = [
     "webkit2gtk",
 ]
 
-[tool.briefcase.app.examples_overview.linux.appimage]
-manylinux = "manylinux_2_28"
-
-system_requires = [
-    # Needed to compile pycairo wheel
-    "cairo-gobject-devel",
-    # Needed to compile PyGObject wheel
-    "gobject-introspection-devel",
-    # Needed to provide GTK
-    "gtk3-devel",
-    # Dependencies that GTK looks for at runtime, that need to be
-    # in the build environment to be picked up by linuxdeploy
-    "libcanberra-gtk3",
-    "PackageKit-gtk3-module",
-    "gvfs-client",
-]
-
-linuxdeploy_plugins = [
-    "DEPLOY_GTK_VERSION=3 gtk",
-]
-
 [tool.briefcase.app.examples_overview.linux.flatpak]
 flatpak_runtime = "org.gnome.Platform"
 flatpak_runtime_version = "48"
@@ -151,30 +130,11 @@ requires = [
 
 # Mobile deployments
 [tool.briefcase.app.examples_overview.iOS]
-requires = [
-    "../../iOS",
-]
+supported = false
 
 [tool.briefcase.app.examples_overview.android]
-requires = [
-    "../../android",
-]
-
-base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
-
-build_gradle_dependencies = [
-    "com.google.android.material:material:1.13.0",
-    # Needed for WebView
-    "androidx.webkit:webkit:1.15.0",
-]
-
-# Needed for WebView
-build_gradle_extra_content="""
-chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
-"""
+supported = false
 
 # Web deployment
 [tool.briefcase.app.examples_overview.web]
-requires = [
-    "../../web",
-]
+supported = false
