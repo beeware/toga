@@ -248,9 +248,15 @@ def assert_reference(probe, reference, threshold=0.01, *, image=None):
         difference = ImageChops.difference(
             scaled_image.convert("RGBa"),
             reference_image.convert("RGBa"),
-        ).getdata()
+        )
+        # The Chaquopy repo only has Pillow 11, which doesn't have the non-deprecated
+        # get_flattened_data() API.
+        if toga.platform.current_platform == "android":
+            diff_data = difference.getdata()
+        else:
+            diff_data = difference.get_flattened_data()
 
-        total_error = sum((diff / 255) ** 2 for diff in chain.from_iterable(difference))
+        total_error = sum((diff / 255) ** 2 for diff in chain.from_iterable(diff_data))
         rmse = math.sqrt(total_error / 160_000)  # 200w * 200h * 4 bands
         # If the delta exceeds threshold, save the test image and fail the test.
         if rmse > threshold:
