@@ -496,6 +496,37 @@ async def test_readonly(widget, probe):
     assert not probe.readonly
 
 
+async def test_readonly_focus(widget, probe, other, other_probe):
+    "A readonly widget handles focus appropriately"
+    other.focus()
+    await probe.redraw("A separate widget should be given focus")
+    assert not probe.has_focus
+    assert other_probe.has_focus
+
+    widget.readonly = True
+    await probe.redraw("Widget is readonly")
+
+    widget.focus()
+    await probe.redraw("Focus requested on readonly widget")
+
+    if probe.allows_readonly_focus:
+        assert probe.has_focus
+        assert not other_probe.has_focus
+    else:
+        assert not probe.has_focus
+        assert other_probe.has_focus
+
+    # Make the widget writable again
+    widget.readonly = False
+    await probe.redraw("Widget is writable")
+
+    # Widget can now be given focus
+    widget.focus()
+    await probe.redraw("Widget has been given focus")
+    assert probe.has_focus
+    assert not other_probe.has_focus
+
+
 async def test_flex_widget_size(widget, probe):
     "The widget can expand in either axis."
     # Container is initially a non-flex row widget of fixed size.
