@@ -13,7 +13,7 @@ test = [
     "fonttools==4.68.0 ; python_version >= '3.13' and sys_platform == 'android'",
     "psutil==7.2.2 ; python_version >= '3.13' and (sys_platform == 'linux' or sys_platform == 'darwin' or sys_platform == 'win32')",
     "pillow>=11.0.0,<12.1.0",
-    "pytest==9.1.1",
+    "pytest==9.2.0",
     "pytest-asyncio==1.4.1.post1",
     "pytest-retry==1.7.0",
     # platformdirs 4.12.0 breaks pytest; see tox-dev/platformdirs#601
@@ -22,6 +22,7 @@ test = [
 
 [tool.briefcase]
 project_name = "Toga Testbed"
+default_app = "testbed"
 bundle = "org.beeware.toga"
 url = "https://beeware.org"
 license = "BSD-3-Clause"
