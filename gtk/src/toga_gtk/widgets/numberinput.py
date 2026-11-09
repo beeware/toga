@@ -31,6 +31,10 @@ class NumberInput(Widget):
             self.native.set_can_focus(not value)
         else:  # pragma: no-cover-if-gtk3
             self.native.set_focusable(not value)
+            if hasattr(self.native, "get_delegate") and (
+                delegate := self.native.get_delegate()
+            ):
+                delegate.set_focusable(not value)
 
     def set_step(self, step):
         self.adjustment.set_step_increment(float(self.interface.step))

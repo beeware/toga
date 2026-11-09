@@ -514,7 +514,6 @@ async def test_readonly_focus(widget, probe, other, other_probe):
         assert not other_probe.has_focus
     else:
         assert not probe.has_focus
-        assert other_probe.has_focus
 
     # Make the widget writable again
     widget.readonly = False

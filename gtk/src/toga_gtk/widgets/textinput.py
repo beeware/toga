@@ -71,6 +71,10 @@ class TextInput(Widget):
             self.native.set_can_focus(not value)
         else:  # pragma: no-cover-if-gtk3
             self.native.set_focusable(not value)
+            if hasattr(self.native, "get_delegate") and (
+                delegate := self.native.get_delegate()
+            ):
+                delegate.set_focusable(not value)
 
     def get_placeholder(self):
         return self.native.get_placeholder_text()
