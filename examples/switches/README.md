@@ -8,5 +8,5 @@ To run this example:
 
 ```console
 $ python -m pip install toga
-$ python -m switch_demo
+$ python -m switches
 ```

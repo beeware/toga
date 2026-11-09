@@ -234,7 +234,7 @@ class HardwareApp(toga.App):
 
 
 def main():
-    return HardwareApp("Hardware", "org.beeware.toga.examples.hardware")
+    return HardwareApp("Hardware Demo", "org.beeware.toga.examples.hardware")
 
 
 if __name__ == "__main__":

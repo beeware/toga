@@ -225,4 +225,6 @@ class TableColumnApp(toga.App):
 
 
 def main():
-    return TableColumnApp("Table Columns", "org.beeware.toga.examples.table_columns")
+    return TableColumnApp(
+        "Table Columns Demo", "org.beeware.toga.examples.table_columns"
+    )

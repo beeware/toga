@@ -38,7 +38,7 @@ class ActivityIndicatorApp(toga.App):
 
 def main():
     return ActivityIndicatorApp(
-        "Activity Indicator", "org.beeware.toga.examples.activityindicator"
+        "Activity Indicator Demo", "org.beeware.toga.examples.activityindicator"
     )
 
 

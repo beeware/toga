@@ -21,7 +21,7 @@ test = [
 ]
 
 [tool.briefcase]
-project_name = "Toga Testbed"
+project_name = "testbed"
 default_app = "testbed"
 bundle = "org.beeware.toga"
 url = "https://beeware.org"

@@ -178,7 +178,7 @@ class TableApp(toga.App):
 
 
 def main():
-    return TableApp("Table", "org.beeware.toga.examples.table")
+    return TableApp("Table Demo", "org.beeware.toga.examples.table")
 
 
 if __name__ == "__main__":

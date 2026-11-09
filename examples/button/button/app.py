@@ -112,7 +112,7 @@ class ButtonApp(toga.App):
 
 
 def main():
-    return ButtonApp("Button", "org.beeware.toga.examples.buttons")
+    return ButtonApp("Button Demo", "org.beeware.toga.examples.buttons")
 
 
 if __name__ == "__main__":
