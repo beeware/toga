@@ -67,7 +67,7 @@ test = [
     "Pillow == 13.0.0",
     "platformdirs == 4.14.3",
     "pytest == 9.1.1",
-    "pytest-asyncio == 1.4.0",
+    "pytest-asyncio == 1.4.1.post1",
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
     "setuptools_scm==10.3.4",
