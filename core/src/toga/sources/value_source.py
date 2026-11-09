@@ -18,6 +18,9 @@ class ValueSource(Source):
         return str(getattr(self, self.accessor, None))
 
     def __setattr__(self, attr: str, value: object) -> None:
+        notify = attr == getattr(self, "accessor", None)
+        if notify:
+            self.notify("pre_change", item=getattr(self, attr, None))
         super().__setattr__(attr, value)
-        if attr == getattr(self, "accessor", None):
+        if notify:
             self.notify("change", item=value)

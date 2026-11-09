@@ -9,6 +9,7 @@ from PySide6.QtGui import (
     QPainterPath,
     QPaintEvent,
     QPen,
+    QResizeEvent,
     QTransform,
 )
 from PySide6.QtWidgets import QWidget
@@ -274,6 +275,7 @@ class Context:
 
         self.native.setFont(font.native)
         path = QPainterPath()
+        path.setFillRule(Qt.FillRule.WindingFill)
         for line_num, line in enumerate(text.splitlines()):
             line_offset = scaled_line_height * line_num
             path.addText(left, top + line_offset, font.native, line)
@@ -290,6 +292,11 @@ class TogaCanvas(QWidget):
         super().__init__()
         self.interface = interface
         self.impl = impl
+
+    def resizeEvent(self, event: QResizeEvent):
+        super().resizeEvent(event)
+        size = event.size()
+        self.interface.on_resize(width=size.width(), height=size.height())
 
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
@@ -368,10 +375,6 @@ class Canvas(Widget):
 
     def redraw(self):
         self.native.update()
-
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        self.interface.on_resize(width=width, height=height)
 
     # Text
     def _text_offsets(self, text, font, line_height):

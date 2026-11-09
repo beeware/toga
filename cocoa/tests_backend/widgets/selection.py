@@ -8,6 +8,7 @@ from .base import SimpleProbe
 
 class SelectionProbe(SimpleProbe):
     native_class = NSPopUpButton
+    closes_on_source_change = False
 
     def assert_resizes_on_content_change(self):
         pass

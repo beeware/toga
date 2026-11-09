@@ -172,9 +172,10 @@ class DetailedListDelegate(QStyledItemDelegate):
         )
 
         # Draw title and subtitle
-        title_metrics = QFontMetrics(options.font)
-        subtitle_font = QFont(options.font)
-        subtitle_font.setPointSizeF(subtitle_font.pointSizeF() * 0.89)
+        title_font = QFont(options.font)
+        title_font.setPointSizeF(title_font.pointSizeF() * 1.20)
+        title_metrics = QFontMetrics(title_font)
+        subtitle_font = options.font
         subtitle_metrics = QFontMetrics(subtitle_font)
 
         text_rect = style.subElementRect(
@@ -183,6 +184,7 @@ class DetailedListDelegate(QStyledItemDelegate):
 
         x_offset = text_rect.x()
         y = options.rect.top()
+        painter.setFont(title_font)
         painter.drawText(x_offset, y + title_metrics.ascent(), title)
         y += title_metrics.lineSpacing()
         painter.setFont(subtitle_font)
@@ -293,9 +295,10 @@ class DetailedListDelegate(QStyledItemDelegate):
             index.data(Qt.ItemDataRole.UserRole)
         )
 
-        title_metrics = QFontMetrics(options.font)
-        subtitle_font = QFont(options.font)
-        subtitle_font.setPointSizeF(subtitle_font.pointSizeF() * 0.89)
+        title_font = QFont(options.font)
+        title_font.setPointSizeF(title_font.pointSizeF() * 1.20)
+        title_metrics = QFontMetrics(title_font)
+        subtitle_font = options.font
         subtitle_metrics = QFontMetrics(subtitle_font)
 
         min_height = max(

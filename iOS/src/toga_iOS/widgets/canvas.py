@@ -16,6 +16,7 @@ from rubicon.objc import (
     objc_id,
     objc_method,
     objc_property,
+    send_super,
 )
 from travertino.size import at_least
 
@@ -343,6 +344,12 @@ class TogaCanvas(UIView):
         self.interface.root_state._draw(Context(self.impl))
 
     @objc_method
+    def layoutSubviews(self) -> None:
+        send_super(__class__, self, "layoutSubviews")
+        size = self.bounds.size
+        self.interface.on_resize(width=size.width, height=size.height)
+
+    @objc_method
     def touchesBegan_withEvent_(self, touches, event) -> None:
         position = touches.allObjects()[0].locationInView(self)
         self.interface.on_press(position.x, position.y)
@@ -366,10 +373,6 @@ class Canvas(Widget):
 
         # Add the layout constraints
         self.add_constraints()
-
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        self.interface.on_resize(width=width, height=height)
 
     def redraw(self):
         self.native.setNeedsDisplay()

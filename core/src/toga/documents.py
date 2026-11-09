@@ -239,13 +239,13 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         # No match found
         raise KeyError(path_or_index)
 
-    def _add(self, document: Path):
+    def _add(self, document: Document):
         if document in self:
             raise ValueError("Document is already being managed.")
 
         self.elements.append(document)
 
-    def _remove(self, document: Path):
+    def _remove(self, document: Document):
         if document not in self:
             raise ValueError("Document is not being managed.")
 

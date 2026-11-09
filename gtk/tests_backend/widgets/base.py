@@ -157,6 +157,11 @@ class SimpleProbe(BaseProbe, FontMixin):
     def is_hidden(self):
         return not self.native.get_visible()
 
+    async def ensure_focus(self, message=None):
+        self.widget.focus()
+        await self.redraw("Widget has been given focus" if message is None else message)
+        assert self.has_focus
+
     @property
     def has_focus(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
