@@ -251,6 +251,9 @@ class AppProbe(BaseProbe, DialogsMixin):
         if "<Primary>" in accel:
             state |= Gdk.ModifierType.CONTROL_MASK
             accel = accel.replace("<Primary>", "")
+        if "<Control>" in accel:
+            state |= Gdk.ModifierType.CONTROL_MASK
+            accel = accel.replace("<Control>", "")
         if "<Alt>" in accel:
             state |= Gdk.ModifierType.META_MASK
             accel = accel.replace("<Alt>", "")
