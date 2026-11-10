@@ -1,7 +1,7 @@
 import pytest
 
 from toga.constants import JUSTIFY, LEFT
-from toga_gtk.libs import GTK_VERSION, Gtk
+from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
 from .properties import toga_x_text_align
@@ -13,9 +13,6 @@ class NumberInputProbe(SimpleProbe):
     allows_empty_value = False
     allows_extra_digits = False
     allows_unchanged_updates = True
-
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't support number input yet")
 
     def clear_input(self):
         self.native.set_text("")
