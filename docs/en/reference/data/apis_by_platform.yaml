@@ -179,8 +179,6 @@ Widgets:
     description: For selecting a clock time.
     beta:
       - web
-    unsupported:
-      - gtk
 
   Tree:
     description: A hierarchical tree of tabular data.
