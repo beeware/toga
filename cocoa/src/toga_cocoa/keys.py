@@ -162,6 +162,7 @@ COCOA_MODIFIERS = {
     Key.MOD_1: NSEventModifierFlagCommand,
     Key.MOD_2: NSEventModifierFlagOption,
     Key.MOD_3: NSEventModifierFlagControl,
+    Key.CONTROL: NSEventModifierFlagControl,
 }
 
 

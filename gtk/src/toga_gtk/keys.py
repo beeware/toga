@@ -184,6 +184,7 @@ GTK_MODIFIER_CODES = {
     Key.MOD_1: "<Primary>",
     Key.MOD_2: "<Alt>",
     Key.MOD_3: "<Hyper>",
+    Key.CONTROL: "<Control>",
 }
 
 
