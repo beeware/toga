@@ -240,8 +240,9 @@ def assert_reference(probe, reference, threshold=0.01, *, image=None):
         scaled_image.save(save_dir / f"{reference_variant}.png")
         image.save(save_dir / f"{reference_variant}-full.png")
 
-    # If a reference image exists, scale the image to the same size as the reference,
-    # and do an MSE comparison on every pixel in 0-1 RGBa (premultiplied) colorspace.
+    # If a reference image exists, scale the image to the same size as the
+    # reference, and do an MSE comparison on every pixel in 0-1 RGBa
+    # (premultiplied) colorspace.
     if path.exists():
         reference_image = Image.open(path)
 
@@ -249,9 +250,10 @@ def assert_reference(probe, reference, threshold=0.01, *, image=None):
             scaled_image.convert("RGBa"),
             reference_image.convert("RGBa"),
         )
-        # The Chaquopy repo only has Pillow 11, which doesn't have the non-deprecated
-        # get_flattened_data() API.
-        if toga.platform.current_platform == "android":
+        # We're using Python 3.12 for testbed, which means we're using
+        # unofficial Pillow 11.0 binaries that don't have the non-deprecated
+        # API.
+        if toga.platform.current_platform in {"android", "iOS"}:
             diff_data = difference.getdata()
         else:
             diff_data = difference.get_flattened_data()
