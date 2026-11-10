@@ -20,7 +20,14 @@ class Divider(Widget):
                 self.interface.intrinsic.width = at_least(width[0])
                 self.interface.intrinsic.height = height[1]
         else:  # pragma: no-cover-if-gtk3
-            pass
+            min_size, size = self.native.get_preferred_size()
+
+            if self.get_direction() == self.interface.VERTICAL:
+                self.interface.intrinsic.width = min_size.width
+                self.interface.intrinsic.height = at_least(size.height)
+            else:
+                self.interface.intrinsic.width = at_least(min_size.width)
+                self.interface.intrinsic.height = size.height
 
     def get_direction(self):
         return (
