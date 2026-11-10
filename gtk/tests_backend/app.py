@@ -25,6 +25,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     edit_menu_noop_enabled = False
     supports_psutil = True
     beep_delay = 0.1
+    control_key = toga.Key.MOD_1
 
     def __init__(self, app):
         super().__init__()
