@@ -1,6 +1,4 @@
-import pytest
-
-from toga_gtk.libs import GTK_VERSION, Gtk
+from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
 
@@ -10,9 +8,6 @@ class OptionContainerProbe(SimpleProbe):
     max_tabs = None
     disabled_tab_selectable = False
     uses_more = False
-
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't support option containers yet")
 
     def assert_supports_content_based_rehint(self):
         pass

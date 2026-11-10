@@ -88,6 +88,7 @@ When retrieving or deleting items, or when specifying the currently selected ite
 
 ## Notes
 
+- OptionContainer is supported on GTK3 and GTK4, including GTK4 with libadwaita. Disabled tabs are hidden, and tab icons are not displayed.
 - The use of icons on tabs varies between platforms. If the platform requires icons, and no icon is provided, a default icon will be used. If the platform does not support icons, any icon provided will be ignored, and requests to retrieve the icon will return `None`.
 - The behavior of disabled tabs varies between platforms. Some platforms will display the tab, but put it in an unselectable state; some will hide the tab. A hidden tab can still be referenced by index - the tab index refers to the logical order, not the visible order.
 - On iOS and Android, OptionContainer should only be used as the root content of a Window. Toga's API will allow the creation of an OptionContainer anywhere in a layout; but the behavior of the OptionContainer in those layouts is undefined. This includes adding an OptionContainer as a child of a Box, and nesting an OptionContainer inside another OptionContainer.
