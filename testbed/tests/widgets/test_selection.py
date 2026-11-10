@@ -4,8 +4,9 @@ import pytest
 
 import toga
 from toga.constants import CENTER
-from toga.sources import ListListener, ListSource
+from toga.sources import ListSource
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -18,6 +19,12 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_text_align,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="Selection is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 # FIXME: 2023-05-31 GTK's focus APIs are completely broken for GTK.ComboBox. The
@@ -298,6 +305,48 @@ async def test_source_changes(widget, probe):
     on_change_handler.reset_mock()
 
 
+async def test_source_change_while_open(widget, probe):
+    """An open selection is closed when the source changes, if the backend does so."""
+    if not probe.closes_on_source_change:
+        pytest.skip("This backend doesn't close the selection on a source change")
+
+    widget._accessor = "name"
+    source = ListSource(
+        accessors=["name", "value"],
+        data=[
+            {"name": "first", "value": 111},
+            {"name": "second", "value": 222},
+            {"name": "third", "value": 333},
+        ],
+    )
+    widget.items = source
+    await probe.redraw("Item list has been updated to use a source")
+
+    # Claim focus; inserting an item loses focus
+    await probe.ensure_focus()
+    source.append({"name": "new", "value": 999})
+    await probe.redraw("Item has been inserted into selection")
+    assert not probe.has_focus
+
+    # Regain focus; updating an item loses focus
+    await probe.ensure_focus()
+    source[0].name = "updated"
+    await probe.redraw("Item in selection has been changed")
+    assert not probe.has_focus
+
+    # Regain focus; removing an item loses focus
+    await probe.ensure_focus()
+    source.remove(source[1])
+    await probe.redraw("Item has been removed from selection")
+    assert not probe.has_focus
+
+    # Regain focus; clearing the selection loses focus
+    await probe.ensure_focus()
+    source.clear()
+    await probe.redraw("Selection has been cleared")
+    assert not probe.has_focus
+
+
 async def test_resize_on_content_change(widget, probe):
     """The size of the widget adapts to the longest element."""
     # This test will be an xfail on some platforms.
@@ -329,9 +378,14 @@ async def test_resize_on_content_change(widget, probe):
         assert probe.width == original_width
 
 
-async def test_list_listener(widget):
-    """Does the widget implement the ListListener API"""
-    assert isinstance(widget._impl, ListListener)
+async def test_flex_width_after_items_change(widget, probe):
+    """A flexible widget keeps its layout width after its items are replaced."""
+    widget.style.flex = 1
+    widget.items = ["first", "second", "third"]
+
+    # Allow any deferred native size adjustment to run.
+    await probe.redraw("Items have been replaced", delay=0.1)
+    assert probe.width > 350
 
 
 @pytest.mark.parametrize(

@@ -69,10 +69,17 @@ class Widget(Node, PackMixin, ABC):
 
         This is an abstract base class; it cannot be instantiated.
 
+        Properties provided by the widget's style can also be passed as constructor
+        keyword arguments, or read and written directly on the widget. For example,
+        `widget.margin = 10` is equivalent to `widget.style.margin = 10`.
+        By default, the widget will use [Pack](/reference/api/style/pack.md),
+        style attributes, but Toga allows for other style representations.
+
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial style properties. These override any matching
+            properties on the `style` argument.
         """
         if style is None:
             style = Pack(**kwargs)
@@ -186,6 +193,7 @@ class Widget(Node, PackMixin, ABC):
         :raises ValueError: If this widget cannot have children.
         """
         self._assert_can_have_children()
+        added = False
         for child in children:
             if child.parent is not self:
                 # remove from old parent
@@ -203,9 +211,11 @@ class Widget(Node, PackMixin, ABC):
                 super().add(child)
 
                 self._impl.add_child(child._impl)
+                added = True
 
         # Whatever layout we're a part of needs to be refreshed
-        self.refresh()
+        if added:
+            self.refresh()
 
     def insert(self, index: int, child: Widget) -> None:
         """Insert a widget as a child of this widget.
@@ -237,8 +247,8 @@ class Widget(Node, PackMixin, ABC):
 
             self._impl.insert_child(index, child._impl)
 
-        # Whatever layout we're a part of needs to be refreshed
-        self.refresh()
+            # Whatever layout we're a part of needs to be refreshed
+            self.refresh()
 
     def index(self, child: Widget) -> int:
         """Get the index of a widget in the list of children of this widget.

@@ -15,7 +15,7 @@ table = toga.Table(
         ("Arthur Dent", 42),
         ("Ford Prefect", 37),
         ("Tricia McMillan", 38),
-    ]
+    ],
 )
 
 # Get the details of the first item in the data:
@@ -36,7 +36,7 @@ table = toga.Table(
         {"name": "Arthur Dent", "age": 42, "planet": "Earth"},
         {"name": "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
         {"name": "Tricia McMillan", "age": 38, "planet": "Earth"},
-    ]
+    ],
 )
 
 # Get the details of the first item in the data:
@@ -62,7 +62,7 @@ table = toga.Table(
         {"character": "Arthur Dent", "age": 42, "planet": "Earth"},
         {"character": "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
         {"name": "Tricia McMillan", "age": 38, "planet": "Earth"},
-    ]
+    ],
 )
 
 # Get the details of the first item in the data:
@@ -85,7 +85,7 @@ table = toga.Table(
         ((green_icon, "Arthur Dent"), 42),
         ((None, "Ford Prefect"), 37),
         ("Tricia McMillan", 38),
-    ]
+    ],
 )
 ```
 

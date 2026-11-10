@@ -36,6 +36,12 @@ class BaseProbe:
         self.dpi = activity.getResources().getDisplayMetrics().densityDpi
         self.scale_factor = self.dpi / 160
 
+    def approx_width(self, width):
+        return approx(width, rel=0.01)
+
+    def approx_height(self, height):
+        return approx(height, rel=0.01)
+
     def __del__(self):
         # Save `self` attributes in local variables, because they may be cleared after
         # __del__ returns.
@@ -96,7 +102,7 @@ class BaseProbe:
             event = self.layout_listener.event
             event.clear()
             await asyncio.wait_for(event.wait(), 5)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             print("Redraw timed out")
 
         # If we're running slow, or we have a wait condition,

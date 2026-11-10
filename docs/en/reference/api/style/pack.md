@@ -12,6 +12,20 @@ Some properties, despite always storing their value in a consistent form, are mo
 
 Toga has a [layout debug mode][debug-layout] to aid in visually debugging or exploring Pack layouts.
 
+## Using Pack properties on widgets
+
+Pack is the default style representation for Toga widgets. You can provide Pack properties as keyword arguments when constructing a widget, or read and write them directly on the widget. For example, these statements set the same margin:
+
+```python
+import toga
+
+widget = toga.Label("Hello", margin=10)
+widget.margin = 10
+widget.style.margin = 10
+```
+
+When a widget is constructed with both a `style` object and Pack keyword arguments, the keyword arguments override matching properties on the style object. See the [`kwargs` parameter of `Widget`](/reference/api/widgets/widget.md#toga.Widget) for the common widget constructor arguments. Toga also allows widgets to use other style representations.
+
 ## Reference
 
 ::: toga.style.pack.Pack

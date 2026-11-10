@@ -8,6 +8,7 @@ class OptionContainerProbe(SimpleProbe):
     native_class = TabControl
     max_tabs = None
     disabled_tab_selectable = True
+    uses_more = False
 
     def assert_supports_content_based_rehint(self):
         pytest.skip("Content-based rehinting not yet supported on this platform")

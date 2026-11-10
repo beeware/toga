@@ -75,7 +75,7 @@ class TextInput(Widget):
         self.native.set_placeholder_text(value)
 
     def set_text_align(self, value):
-        xalign, justify = gtk_text_align(value)
+        xalign, _justify = gtk_text_align(value)
         self.native.set_alignment(
             xalign
         )  # Aligns the whole text block within the widget.
@@ -110,7 +110,7 @@ class TextInput(Widget):
             #     self.native.get_preferred_size()[0].width,
             #     self.native.get_preferred_size()[0].height,
             # )
-            min_size, size = self.native.get_preferred_size()
+            min_size, _size = self.native.get_preferred_size()
 
             self.interface.intrinsic.width = at_least(
                 max(min_size.width, self.interface._MIN_WIDTH)

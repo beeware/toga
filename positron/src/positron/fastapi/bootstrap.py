@@ -1,13 +1,8 @@
 from __future__ import annotations
 
-import sys
+import tomllib
 from pathlib import Path
 from typing import Any
-
-if sys.version_info >= (3, 11):  # pragma: no-cover-if-lt-py311
-    import tomllib
-else:  # pragma: no-cover-if-gte-py311
-    import tomli as tomllib
 
 from ..base import BasePositronBootstrap
 

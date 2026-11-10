@@ -66,9 +66,11 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def max_scroll_position(self):
-        return (
-            self.linear_layout.getHeight() - self.scroll_view.getHeight()
-        ) / self.scale_factor
+        return self.scroll_limit - self.scroll_view.getHeight() / self.scale_factor
+
+    @property
+    def scroll_limit(self):
+        return self.linear_layout.getHeight() / self.scale_factor
 
     @property
     def scroll_position(self):

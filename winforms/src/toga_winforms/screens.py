@@ -1,4 +1,5 @@
 from ctypes import wintypes
+from typing import ClassVar
 
 from System.Drawing import (
     Bitmap,
@@ -19,7 +20,7 @@ from .widgets.base import Scalable
 
 
 class Screen(Scalable):
-    _instances = {}
+    _instances: ClassVar[dict] = {}
 
     def __new__(cls, native):
         if native in cls._instances:

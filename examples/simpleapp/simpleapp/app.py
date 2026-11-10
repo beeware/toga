@@ -23,7 +23,7 @@ class SimpleApp(toga.App):
 
 
 def main():
-    return SimpleApp("Simple App", "org.beeware.toga.examples.simpleapp")
+    return SimpleApp("Simple App Demo", "org.beeware.toga.examples.simpleapp")
 
 
 if __name__ == "__main__":

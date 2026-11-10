@@ -5,6 +5,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -34,6 +35,12 @@ from .test_textinput import (  # noqa: F401
     test_quote_dash_substitution_disabled,
     test_undo_redo,
     test_value_not_hidden,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="MultilineTextInput is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 
@@ -142,9 +149,7 @@ async def test_mouse_scrolling(widget, probe, other, other_probe):
     assert probe.vertical_scroll_position == pytest.approx(0, abs=1)
 
     # simulate down scrolling with focused widget
-    widget.focus()
-    await probe.redraw("The widget should be given focus")
-    assert probe.has_focus
+    await probe.ensure_focus()
     probe.simulate_mouse_wheel(-120)
     await probe.wait_for_scroll_completion()
     await asyncio.sleep(1)
@@ -152,10 +157,26 @@ async def test_mouse_scrolling(widget, probe, other, other_probe):
 
     # simulate down scrolling with unfocused widget
     # the widget should still scroll because it is not inside a ScrollBar
-    other.focus()
-    await other_probe.redraw("A separate widget should be given focus")
-    assert other_probe.has_focus
+    await other_probe.ensure_focus("Other widget has been given focus")
+
     probe.simulate_mouse_wheel(-120)
     await probe.wait_for_scroll_completion()
     await asyncio.sleep(1)
     assert probe.vertical_scroll_position == pytest.approx(88, abs=5)
+
+
+async def test_paste_rich_text(widget, probe):
+    "Pasted text keeps the widget's font, whatever formatting it was copied with."
+    widget.value = ""
+    widget.focus()
+    await probe.redraw("The widget is empty and has focus")
+    font = probe.typing_font
+
+    probe.paste_rich_text("Pasted")
+    await probe.redraw("Bold, large text has been pasted")
+    assert widget.value == "Pasted"
+    assert probe.text_fonts == [font] * len("Pasted")
+
+    widget.value = ""
+    await probe.redraw("The pasted text has been cleared")
+    assert probe.typing_font == font

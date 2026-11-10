@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from pytest import approx
+from pytest import skip
 
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, Color
 from toga.fonts import (
@@ -63,14 +63,10 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         widget.on_gain_focus = on_gain_handler
         widget.on_lose_focus = on_lose_handler
 
-    other.focus()
-    await probe.redraw("A separate widget should be given focus")
+    await other_probe.ensure_focus("Other widget has been given focus")
     assert not probe.has_focus
-    assert other_probe.has_focus
 
-    widget.focus()
-    await probe.redraw("Widget should be given focus")
-    assert probe.has_focus
+    await probe.ensure_focus()
     assert not other_probe.has_focus
 
     if verify_focus_handlers:
@@ -79,9 +75,7 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         # Reset the mock so it can be tested again
         on_gain_handler.reset_mock()
 
-    widget.focus()
-    await probe.redraw("Widget already has focus")
-    assert probe.has_focus
+    await probe.ensure_focus("Widget already has focus")
     assert not other_probe.has_focus
 
     if verify_focus_handlers:
@@ -90,10 +84,8 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         # Reset the mock so it can be tested again
         on_lose_handler.reset_mock()
 
-    other.focus()
-    await probe.redraw("Focus has been lost")
+    await other_probe.ensure_focus("Widget has lost focus")
     assert not probe.has_focus
-    assert other_probe.has_focus
 
     if verify_focus_handlers:
         on_lose_handler.assert_called_once_with(widget)
@@ -101,10 +93,8 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
 
 async def test_focus_noop(widget, probe, other, other_probe):
     "The widget cannot be given focus"
-    other.focus()
-    await probe.redraw("A separate widget should be given focus")
+    await other_probe.ensure_focus("Other widget has been given focus")
     assert not probe.has_focus
-    assert other_probe.has_focus
 
     # Widget has *not* taken focus
     widget.focus()
@@ -172,31 +162,28 @@ async def test_placeholder(widget, probe):
     assert probe.placeholder_visible
 
 
-async def test_placeholder_focus(widget, probe, other):
+async def test_placeholder_focus(widget, probe, other, other_probe):
     "Placeholders interact correctly with focus changes"
     widget.value = ""
     widget.placeholder = "placeholder"
     hides_on_focus = probe.placeholder_hides_on_focus
 
     # Give the widget focus; this will hide the placeholder on some platforms.
-    widget.focus()
-    await probe.redraw("Widget has focus")
+    await probe.ensure_focus()
     assert widget.value == ""
     assert widget.placeholder == "placeholder"
     assert probe.value == "" if hides_on_focus else "placeholder"
     assert probe.placeholder_visible == (not hides_on_focus)
 
     # Give a different widget focus; this will show the placeholder
-    other.focus()
-    await probe.redraw("Widget has lost focus")
+    await other_probe.ensure_focus("Widget has lost focus")
     assert widget.value == ""
     assert widget.placeholder == "placeholder"
     assert probe.value == "placeholder"
     assert probe.placeholder_visible
 
     # Give the widget focus, again
-    widget.focus()
-    await probe.redraw("Widget has focus; placeholder may not be visible")
+    await probe.ensure_focus("Widget has focus; placeholder may not be visible")
     assert widget.value == ""
     assert widget.placeholder == "placeholder"
     assert probe.value == "" if hides_on_focus else "placeholder"
@@ -211,8 +198,9 @@ async def test_placeholder_focus(widget, probe, other):
     assert probe.placeholder_visible == (not hides_on_focus)
 
     # Give a different widget focus; this will show the placeholder
-    other.focus()
-    await probe.redraw("Widget has lost focus; placeholder should be visible")
+    await other_probe.ensure_focus(
+        "Widget has lost focus; placeholder should be visible"
+    )
     assert widget.value == ""
     assert widget.placeholder == "replacement"
     assert probe.value == "replacement"
@@ -220,23 +208,20 @@ async def test_placeholder_focus(widget, probe, other):
 
     # Focus in and out while a value is set.
     widget.value = "example"
-    widget.focus()
-    await probe.redraw("Widget has focus; value is set")
+    await probe.ensure_focus("Widget has focus; value is set")
     assert widget.value == "example"
     assert widget.placeholder == "replacement"
     assert probe.value == "example"
     assert not probe.placeholder_visible
 
-    other.focus()
-    await probe.redraw("Widget has lost focus, value is set")
+    await other_probe.ensure_focus("Widget has lost focus, value is set")
     assert widget.value == "example"
     assert widget.placeholder == "replacement"
     assert probe.value == "example"
     assert not probe.placeholder_visible
 
     # Value cleared while focus is set
-    widget.focus()
-    await probe.redraw("Widget has focus; value is set")
+    await probe.ensure_focus("Widget has focus; value is set")
     assert widget.value == "example"
     assert widget.placeholder == "replacement"
     assert probe.value == "example"
@@ -275,6 +260,9 @@ async def test_placeholder_color(widget, probe):
 
 async def test_text_width_change(widget, probe):
     "If the widget text is changed, the width of the widget changes"
+    if not getattr(probe, "supports_text_width_change", True):
+        skip("The backend renders these text samples at the same width.")
+
     orig_width = probe.width
 
     # Change the text to something long
@@ -418,13 +406,19 @@ async def test_background_color_transparent(widget, probe):
     assert_background_color(probe.background_color, original)
 
 
-async def test_text_align(widget, probe, verify_vertical_text_align):
+async def test_text_align(
+    widget, probe, verify_vertical_text_align, verify_focus_align, other, other_probe
+):
     """Widget honors alignment settings."""
+    if verify_focus_align:
+        # Clear widget focus.
+        await other_probe.ensure_focus("Other widget has focus")
+
     # Use column direction to ensure widget uses all available width
     widget.parent.style.direction = COLUMN
 
     # Initial text alignment is LEFT, initial direction is LTR
-    await probe.redraw("Text direction should be LTR")
+    await probe.redraw("Initial setup; unfocussed, text direction should be LTR")
     probe.assert_text_align(LEFT)
 
     for text_align in [RIGHT, CENTER, JUSTIFY]:
@@ -453,6 +447,16 @@ async def test_text_align(widget, probe, verify_vertical_text_align):
     widget.style.height = 200
     await probe.redraw(f"Text should be at the {verify_vertical_text_align}")
     probe.assert_vertical_text_align(verify_vertical_text_align)
+
+    if verify_focus_align:
+        # If the widget has focus, the text alignment can be changed.
+        await probe.ensure_focus()
+
+        for text_align in [RIGHT, CENTER, JUSTIFY]:
+            widget.style.text_align = text_align
+            await probe.redraw(f"Text alignment should be {text_align}")
+            probe.assert_text_align(text_align)
+            probe.assert_vertical_text_align(verify_vertical_text_align)
 
 
 async def test_readonly(widget, probe):
@@ -488,8 +492,8 @@ async def test_flex_widget_size(widget, probe):
 
     # Check the initial widget size
     # Match isn't exact because of pixel scaling on some platforms
-    assert probe.width == approx(300, rel=0.01)
-    assert probe.height == approx(200, rel=0.01)
+    assert probe.width == probe.approx_width(300)
+    assert probe.height == probe.approx_height(200)
 
     # Drop the fixed height, and make the widget flexible
     widget.style.flex = 1
@@ -497,7 +501,7 @@ async def test_flex_widget_size(widget, probe):
 
     # Widget should now be 300 pixels wide, but as tall as the container.
     await probe.redraw("Widget should be 300px wide, full height")
-    assert probe.width == approx(300, rel=0.01)
+    assert probe.width == probe.approx_width(300)
     assert probe.height > 350
 
     # Make the parent a COLUMN box
@@ -514,14 +518,14 @@ async def test_flex_widget_size(widget, probe):
 
     await probe.redraw("Widget should be full width, 150px high")
     assert probe.width > 350
-    assert probe.height == approx(150, rel=0.01)
+    assert probe.height == probe.approx_height(150)
 
     # Revert to fixed width
     widget.style.width = 250
 
     await probe.redraw("Widget should be reverted to fixed width")
-    assert probe.width == approx(250, rel=0.01)
-    assert probe.height == approx(150, rel=0.01)
+    assert probe.width == probe.approx_width(250)
+    assert probe.height == probe.approx_height(150)
 
 
 async def test_flex_horizontal_widget_size(widget, probe):

@@ -1,3 +1,4 @@
+from typing import ClassVar
 from unittest.mock import Mock
 
 import pytest
@@ -12,7 +13,7 @@ class EventLog:
     GET_VALUE = "get attribute"
     ACTION = "action"
 
-    _log = []
+    _log: ClassVar[list] = []
     _next_sequence = 0
 
     @classmethod
@@ -365,7 +366,7 @@ def assert_action_performed_with(_widget, _action, **test_data):
                         raw = data[key]._raw
                         # If the _raw attribute is a mock, it doesn't actually exist
                         if isinstance(data[key]._raw, Mock):
-                            raise AttributeError()
+                            raise AttributeError()  # noqa: TRY004
 
                         if raw != value:
                             found = False

@@ -23,6 +23,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     default_font_family = "sans-serif"
     default_font_size = 14
     invalid_size_while_hidden = False
+    supports_tab_index = False
 
     def __init__(self, widget):
         # Don't use widget.app, because the widget may not be connected to an app yet.
@@ -180,6 +181,11 @@ class SimpleProbe(BaseProbe, FontMixin):
     @property
     def is_hidden(self):
         return self.native.getVisibility() == View.INVISIBLE
+
+    async def ensure_focus(self, message=None):
+        self.widget.focus()
+        await self.redraw("Widget has been given focus" if message is None else message)
+        assert self.has_focus
 
     @property
     def has_focus(self):

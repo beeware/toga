@@ -48,9 +48,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         if Adw is None:
             assert isinstance(self.native, Gtk.Window)
         else:
-            assert isinstance(self.native, Adw.Window) or isinstance(
-                self.native, Adw.ApplicationWindow
-            )
+            assert isinstance(self.native, (Adw.Window, Adw.ApplicationWindow))
 
     async def wait_for_window(
         self,
@@ -69,9 +67,16 @@ class WindowProbe(BaseProbe, DialogsMixin):
                     assert self.instantaneous_state == state
                     assert self.window._impl._pending_state_transition is None
                     if GTK_VERSION < (4, 0, 0) and IS_WAYLAND:
-                        if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+                        if state in {
+                            WindowState.MAXIMIZED,
+                            WindowState.FULLSCREEN,
+                            WindowState.PRESENTATION,
+                        }:
                             # Add a slight delay to ensure window properties like
-                            # `size` are updated according to the new state.
+                            # `size` are updated according to the new state. The
+                            # state flags change before GTK has re-laid out the
+                            # window; until that happens, the size of a maximized
+                            # window still includes the client-side shadow margins.
                             await self.redraw(delay=0.2)
                     return
                 except AssertionError as e:
@@ -151,7 +156,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         assert isinstance(item, Gtk.SeparatorToolItem)
         assert item.get_draw() == (not section)
 
-    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+    def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
         item = self.impl.native_toolbar.get_nth_item(index)
         assert item.get_label() == label
         # FIXME: get_tooltip_text() doesn't work. The tooltip can be set, but the

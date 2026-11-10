@@ -1,133 +1,136 @@
-
 version: 2
+
+multi-ecosystem-groups:
+  dependencies:
+    schedule:
+      # Check for updates on Sunday, 8PM UTC
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/toga"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/core"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/android"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/cocoa"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/dummy"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/gtk"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/iOS"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/positron"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/qt"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/testbed"
-    ignore:
-      # pin PIL for Android and iOS
-      - dependency-name: "pillow"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/travertino"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/web"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
-
-  - package-ecosystem: "pip"
-    directory: "/winforms"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: "pre-commit"
     directory: "/"
-    schedule:
-      # Check for updates on Sunday, 8PM UTC
-      interval: "weekly"
-      day: "sunday"
-      time: "20:00"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/toga"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/demo"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/core"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/android"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/cocoa"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/dummy"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/gtk"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/iOS"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/positron"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/qt"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/testbed"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/textual"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/travertino"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/web"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pip"
+    directory: "/winforms"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    cooldown:
+      default-days: 7

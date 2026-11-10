@@ -1,0 +1,9 @@
+rules:
+  unpinned-uses:
+    config:
+      # Allow BeeWare-provided actions to be unpinned. If an attacker is in a
+      # position to exploit those action, they're probably able to exploit
+      # repositories directly; and it's significantly easier for our internal
+      # actions to automatically be the most recent versions.
+      policies:
+        beeware/*: ref-pin

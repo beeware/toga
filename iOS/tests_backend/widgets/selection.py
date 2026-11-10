@@ -10,6 +10,7 @@ from .properties import toga_color, toga_text_align
 
 class SelectionProbe(SimpleProbe):
     native_class = UITextField
+    closes_on_source_change = True
 
     def __init__(self, widget):
         super().__init__(widget)

@@ -13,6 +13,7 @@ from .properties import toga_color
 
 class CanvasProbe(SimpleProbe):
     native_class = NSView
+    screenshot_reset_transform = True
 
     @property
     def background_color(self):
@@ -27,6 +28,9 @@ class CanvasProbe(SimpleProbe):
             "write_text",
             "write_text_and_path",
             "deprecated_tutorial",
+            "endor_font_variants",
+            "roboto_font_variants",
+            "recursive_font_variants",
         }:
             # System font and default size is platform dependent.
             return f"{reference}-macOS"

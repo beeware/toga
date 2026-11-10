@@ -153,7 +153,8 @@ class MapView(Widget):
         :param pins: The initial pins to display on the map.
         :param on_select: A handler that will be invoked when the user selects a map
             pin.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         super().__init__(id, style, **kwargs)
 

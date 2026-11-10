@@ -24,6 +24,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_dark_mode = True
     edit_menu_noop_enabled = False
     supports_psutil = True
+    beep_delay = 0.1
 
     def __init__(self, app):
         super().__init__()
@@ -36,19 +37,48 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed"
+        return (
+            Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+            / "testbed"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed"
+        return (
+            Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
+            / "testbed"
+        )
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed"
+        return (
+            Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
+            / "testbed"
+        )
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed/log"
+        return (
+            Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
+            / "testbed/log"
+        )
+
+    # The CI environment resolves user-space folders to the default names.
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def downloads_path(self):
+        return Path.home() / "Downloads"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
 
     @property
     def is_cursor_visible(self):
@@ -188,7 +218,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     def assert_menu_order(self, path, expected):
         if GTK_VERSION >= (4, 0, 0):
             pytest.skip("GTK4 doesn't support menu items")
-        item, action = self._menu_item(path)
+        item, _action = self._menu_item(path)
         menu = item[0].get_item_link(item[1], "submenu")
 
         # Loop over the sections
@@ -293,3 +323,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         item = {child.get_label(): child for child in menu.get_children()}[title]
 
         item.emit("activate")
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

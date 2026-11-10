@@ -33,7 +33,14 @@ def _find_item(
     if accessors is None and not isinstance(data, Mapping):
         raise ValueError(f"find() requires accessors for non-mapping {value_type} data")
 
-    for item in candidates[start_index:]:
+    if start_index:
+        search_candidates: Iterable[T] = (
+            candidates[index] for index in range(start_index, len(candidates))
+        )
+    else:
+        search_candidates = candidates
+
+    for item in search_candidates:
         try:
             match data:
                 case Mapping():
@@ -90,20 +97,24 @@ class Row(Generic[T]):
         :param attr: The attribute to change.
         :param value: The new attribute value.
         """
+        notify = not attr.startswith("_") and self._source is not None
+        if notify:
+            self._source.notify("pre_change", item=self)
         super().__setattr__(attr, value)
-        if not attr.startswith("_"):
-            if self._source is not None:
-                self._source.notify("change", item=self)
+        if notify:
+            self._source.notify("change", item=self)
 
     def __delattr__(self, attr: str) -> None:
         """Remove an attribute from the Row object, notifying the source of the change.
 
         :param attr: The attribute to change.
         """
+        notify = not attr.startswith("_") and self._source is not None
+        if notify:
+            self._source.notify("pre_change", item=self)
         super().__delattr__(attr)
-        if not attr.startswith("_"):
-            if self._source is not None:
-                self._source.notify("change", item=self)
+        if notify:
+            self._source.notify("change", item=self)
 
 
 class ListSource(Source):
@@ -160,6 +171,7 @@ class ListSource(Source):
     def __delitem__(self, index: int) -> None:
         """Deletes the item at position `index` of the list."""
         row = self._data[index]
+        self.notify("pre_remove", index=index, item=row)
         del self._data[index]
         self.notify("remove", index=index, item=row)
 
@@ -193,11 +205,13 @@ class ListSource(Source):
             into a Row object.
         """
         row = self._create_row(value)
+        self.notify("pre_change", item=self._data[index])
         self._data[index] = row
         self.notify("change", item=row)
 
     def clear(self) -> None:
         """Clear all data from the data source."""
+        self.notify("pre_clear")
         self._data = []
         self.notify("clear")
 
@@ -210,6 +224,7 @@ class ListSource(Source):
         :returns: The newly constructed Row object.
         """
         row = self._create_row(data)
+        self.notify("pre_insert", index=index, item=row)
         self._data.insert(index, row)
         self.notify("insert", index=index, item=row)
         return row

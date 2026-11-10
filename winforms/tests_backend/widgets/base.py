@@ -12,6 +12,7 @@ from .properties import toga_color
 
 class SimpleProbe(BaseProbe):
     invalid_size_while_hidden = False
+    supports_tab_index = True
 
     def __init__(self, widget):
         self.app = widget.app
@@ -93,6 +94,11 @@ class SimpleProbe(BaseProbe):
     @property
     def is_hidden(self):
         return not self.native.Visible
+
+    async def ensure_focus(self, message=None):
+        self.widget.focus()
+        await self.redraw("Widget has been given focus" if message is None else message)
+        assert self.has_focus
 
     @property
     def has_focus(self):

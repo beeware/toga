@@ -1,11 +1,12 @@
 import sys
+from typing import ClassVar
 
 from System import ArgumentException
 from System.Drawing import Bitmap, Icon as WinIcon
 
 
 class Icon:
-    EXTENSIONS = [".ico", ".png", ".bmp"]
+    EXTENSIONS: ClassVar[list[str]] = [".ico", ".png", ".bmp"]
     SIZES = None
 
     def __init__(self, interface, path):
@@ -14,7 +15,7 @@ class Icon:
 
         try:
             if path is None:
-                self.native = WinIcon.ExtractAssociatedIcon(sys.executable)
+                self.native = WinIcon.ExtractAssociatedIcon(sys.orig_argv[0])
                 self.bitmap = Bitmap.FromHicon(self.native.Handle)
             elif path.suffix == ".ico":
                 self.native = WinIcon(str(path))

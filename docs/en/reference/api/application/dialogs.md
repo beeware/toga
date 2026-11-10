@@ -32,6 +32,7 @@ def my_sync_handler(self, widget, **kwargs):
     task.add_done_callback(self.dialog_dismissed)
     print("Dialog has been created")
 
+
 def dialog_dismissed(self, task):
     if task.result():
         print("The user said yes!")

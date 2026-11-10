@@ -1,6 +1,6 @@
 from enum import Enum, auto
 
-from travertino.constants import *  # noqa: F401, F403  pragma: no cover
+from travertino.constants import *  # noqa: F403  pragma: no cover
 
 
 class Direction(Enum):

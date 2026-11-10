@@ -4,10 +4,10 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.sources import AccessorColumn, ListListener, TreeListener, TreeSource
+from toga.sources import AccessorColumn, TreeSource
 from toga.style.pack import Pack
 
-from ..conftest import skip_on_platforms
+from ..conftest import skip_on_backends, skip_on_platforms
 from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
@@ -17,6 +17,12 @@ from .properties import (  # noqa: F401
     test_flex_widget_size,
     test_focus,
     test_font,
+)
+
+skip_on_backends(
+    "toga_textual",
+    reason="Tree is not implemented on Textual.",
+    allow_module_level=True,
 )
 
 # flag for collapse/expand preservation when changing tree structure
@@ -543,6 +549,12 @@ async def test_activate(
     on_activate_handler.assert_called_once_with(widget, node=source[0][0])
     on_activate_handler.reset_mock()
 
+    # Some platforms can emit invalid row numbers when header pressed.
+    # Make sure those don't trigger anything.
+    await probe.activate_header()
+    on_activate_handler.assert_not_called()
+    on_activate_handler.reset_mock()
+
 
 async def test_multiselect(
     multiselect_widget,
@@ -1000,13 +1012,6 @@ async def test_cell_widget(widget, probe):
         probe.assert_cell_content((0, 1), 2, "MISSING!")
 
 
-async def test_tree_listener(widget):
-    """Does the widget Implementation satisfy the ListListener and
-    TreeListener APIs"""
-    assert isinstance(widget._impl, ListListener)
-    assert isinstance(widget._impl, TreeListener)
-
-
 @pytest.mark.parametrize(
     "method_name,args,expected_args",
     [
@@ -1074,7 +1079,11 @@ async def test_peripheral_events(widget, probe, on_activate_handler):
     ########################################################
 
     widget.collapse()
-    await probe.redraw("Tree is collapsed and awaiting hover of state-change arrow")
+    # A delay to ensure that the widget has been drawn before calculating coordinates.
+    await probe.redraw(
+        "Tree is collapsed and awaiting hover of state-change arrow",
+        delay=0.2,
+    )
     assert not probe.is_expanded(widget.data[0])
     await probe.assert_item_mouse_hover((0,))
 

@@ -1,4 +1,5 @@
 import sys
+from typing import ClassVar
 
 from rubicon.objc import SEL
 
@@ -43,7 +44,7 @@ def submenu_for_group(group, group_cache):
 
 
 class Command:
-    menu_items = {}
+    menu_items: ClassVar[dict] = {}
 
     def __init__(self, interface):
         self.interface = interface

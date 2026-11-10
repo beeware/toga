@@ -9,6 +9,7 @@ class OptionContainerProbe(SimpleProbe):
     native_class = LinearLayout
     disabled_tab_selectable = False
     max_tabs = 5
+    uses_more = False
 
     def __init__(self, widget):
         super().__init__(widget)

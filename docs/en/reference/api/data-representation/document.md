@@ -49,15 +49,17 @@ In the following example, the app will be able to manage documents of type `Exam
 ```python
 import toga
 
+
 class ExampleApp(toga.App):
     def startup(self):
         # The app does not have a single main window
         self.main_window = None
 
+
 app = ExampleApp(
     "Document App",
     "com.example.documentapp",
-    document_types=[ExampleDocument, OtherDocument]
+    document_types=[ExampleDocument, OtherDocument],
 )
 
 app.main_loop()

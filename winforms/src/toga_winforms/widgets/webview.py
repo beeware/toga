@@ -5,24 +5,27 @@ import webbrowser
 from http.cookiejar import Cookie, CookieJar
 
 import System.Windows.Forms as WinForms
+import WebView2 as WebView2Runtime  # noqa: F401
+from Microsoft.Web.WebView2.Core import (
+    CoreWebView2Cookie,
+    WebView2RuntimeNotFoundException,
+)
+from Microsoft.Web.WebView2.WinForms import (
+    CoreWebView2CreationProperties,
+    WebView2,
+)
 from System import (
     Action,
     String,
     Uri,
 )
 from System.Collections.Generic import List  # Import List for generics
+from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
 
 import toga
-from toga.colors import TRANSPARENT
 from toga.handlers import WeakrefCallable
 from toga.widgets.webview import CookiesResult, JavaScriptResult
-from toga_winforms.libs.extensions import (
-    CoreWebView2Cookie,
-    CoreWebView2CreationProperties,
-    WebView2,
-    WebView2RuntimeNotFoundException,
-)
 
 from .base import Widget
 
@@ -108,7 +111,7 @@ class WebView(Widget):
             toga.App.app.paths.cache / f"toga/webview-{self.interface.id}"
         )
 
-        self._default_background_color = TRANSPARENT
+        self._default_background_color = Color.Transparent
 
     def __del__(self):  # pragma: nocover
         """Cleaning up the cached files for large content"""
@@ -178,7 +181,7 @@ class WebView(Widget):
                     WinForms.MessageBoxIcon.Error,
                 )
                 webbrowser.open(
-                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download"  # noqa: E501
+                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download"
                 )
 
         else:  # pragma: nocover

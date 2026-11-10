@@ -6,37 +6,41 @@ Toga is available on macOS, Windows, Linux (GTK or Qt), Android, iOS, for single
 
 /// tab | macOS
 
-![/images/toga-demo-cocoa.png](/images/toga-demo-cocoa.png){ width="450" }
+![Toga Demo running on macOS.](/images/toga-demo-cocoa.png){ width="450" }
 
 /// caption
 
 ///
-
-<!-- TODO: Update alt text -->
 
 ///
 
 /// tab | Linux (GTK)
 
-![/images/toga-demo-gtk.png](/images/toga-demo-gtk.png){ width="450" }
+![Toga Demo running on Linux using GTK.](/images/toga-demo-gtk.png){ width="450" }
 
 /// caption
 
 ///
 
-<!-- TODO: Update alt text -->
+///
+
+/// tab | Linux (Qt)
+
+![Toga Demo running on Linux using Qt.](/images/toga-demo-qt.png){ width="450" }
+
+/// caption
+
+///
 
 ///
 
 /// tab | Windows
 
-![/images/toga-demo-winforms.png](/images/toga-demo-winforms.png){ width="450" }
+![Toga Demo running on Windows.](/images/toga-demo-winforms.png){ width="450" }
 
 /// caption
 
 ///
-
-<!-- TODO: Update alt text -->
 
 ///
 

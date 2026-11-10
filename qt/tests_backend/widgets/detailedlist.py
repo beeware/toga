@@ -39,6 +39,10 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def max_scroll_position(self):
+        return self.scroll_limit
+
+    @property
+    def scroll_limit(self):
         return self.native.verticalScrollBar().maximum()
 
     @property

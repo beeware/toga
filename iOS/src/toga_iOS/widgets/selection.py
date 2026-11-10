@@ -1,20 +1,30 @@
-from rubicon.objc import CGSize, objc_method, objc_property
+from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSTextAlignment,
     UIColor,
+    UIControlEventEditingDidBegin,
+    UIControlEventEditingDidEnd,
     UIPickerView,
     UITextBorderStyle,
     UITextField,
 )
-from toga_iOS.widgets.base import Widget
+from toga_iOS.widgets.base import DismissableWidget
 
 
 class TogaBaseTextField(UITextField):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
+
+    @objc_method
+    def onEditingBegin_(self, sender) -> None:
+        self.impl._start_dismiss_on_tap_outside()
+
+    @objc_method
+    def onEditingEnd_(self, sender) -> None:
+        self.impl._stop_dismiss_on_tap_outside()
 
 
 class TogaPickerView(UIPickerView):
@@ -57,13 +67,23 @@ class TogaPickerView(UIPickerView):
         self.interface.on_change()
 
 
-class Selection(Widget):
+class Selection(DismissableWidget):
     def create(self):
         self.native = TogaBaseTextField.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
         self.native.tintColor = UIColor.clearColor
         self.native.borderStyle = UITextBorderStyle.RoundedRect
+        self.native.addTarget(
+            self.native,
+            action=SEL("onEditingBegin:"),
+            forControlEvents=UIControlEventEditingDidBegin,
+        )
+        self.native.addTarget(
+            self.native,
+            action=SEL("onEditingEnd:"),
+            forControlEvents=UIControlEventEditingDidEnd,
+        )
 
         self.native_picker = TogaPickerView.alloc().init()
         self.native_picker.interface = self.interface
@@ -138,7 +158,7 @@ class Selection(Widget):
                 )
 
         # Get rid of focus to force the user to re-open the selection
-        self.native_picker.resignFirstResponder()
+        self.native.resignFirstResponder()
 
     # Alias for backwards compatibility:
     # March 2026: In 0.5.3 and earlier, notification methods
@@ -159,7 +179,7 @@ class Selection(Widget):
             self.native.text = self.interface._title_for_item(item)
 
         # Get rid of focus to force the user to re-open the selection
-        self.native_picker.resignFirstResponder()
+        self.native.resignFirstResponder()
 
         # Changing the item text can change the layout size
         self.interface.refresh()
@@ -181,7 +201,7 @@ class Selection(Widget):
         selection_change = self.native_picker.selectedRowInComponent(0) == index
 
         # Get rid of focus to force the user to re-open the selection
-        self.native_picker.resignFirstResponder()
+        self.native.resignFirstResponder()
 
         if selection_change:
             self._reset_selection()
@@ -202,7 +222,7 @@ class Selection(Widget):
     def source_clear(self):
         self._empty = True
         # Get rid of focus to force the user to re-open the selection
-        self.native_picker.resignFirstResponder()
+        self.native.resignFirstResponder()
         self._reset_selection()
 
     def select_item(self, index, item):

@@ -28,12 +28,15 @@ class Font(LoggedObject):
         raise UnknownFontError("Arbitrary system fonts not yet supported on dummy")
 
     def __eq__(self, other):
-        return all(
-            [
-                self.interface.family == other.interface.family,
-                self.interface.size == other.interface.size,
-                self.interface.weight == other.interface.weight,
-                self.interface.variant == other.interface.variant,
-                self.interface.style == other.interface.style,
-            ]
-        )
+        try:
+            return all(
+                [
+                    self.interface.family == other.interface.family,
+                    self.interface.size == other.interface.size,
+                    self.interface.weight == other.interface.weight,
+                    self.interface.variant == other.interface.variant,
+                    self.interface.style == other.interface.style,
+                ]
+            )
+        except AttributeError:
+            return False

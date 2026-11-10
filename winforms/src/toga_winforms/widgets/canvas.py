@@ -4,6 +4,7 @@ import System.Windows.Forms as WinForms
 from System import Array
 from System.Drawing import (
     Bitmap,
+    Color,
     Graphics,
     Pen,
     PointF,
@@ -23,7 +24,7 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
-from toga.colors import TRANSPARENT, rgb
+from toga.colors import rgb
 from toga.constants import Baseline, FillRule
 from toga.handlers import WeakrefCallable
 from toga.widgets.canvas.geometry import arc_to_bezier, round_rect, sweepangle
@@ -56,7 +57,7 @@ class State:
         return cls(
             previous_state=None,
             brush=SolidBrush(BLACK),
-            pen=Pen(BLACK, impl.scale_in(2.0, rounding=None)),
+            pen=Pen(BLACK, impl.scale_in(1.0, rounding=None)),
         )
 
     def new_state(self, previous_state):
@@ -305,8 +306,9 @@ class Context:
         self.transform_path(inverse)
 
     def reset_transform(self):
-        matrix = self.native.Transform
+        matrix = self.state.transform.Clone()
         self.native.ResetTransform()
+        self.native.ScaleTransform(self.impl.dpi_scale, self.impl.dpi_scale)
 
         # Transform active path to current coordinates
         self.transform_path(matrix)
@@ -316,20 +318,26 @@ class Context:
         self.state.transform.Multiply(matrix)
 
         self.state.singular = False
-        self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
 
-    def write_text(self, text, x, y, font, baseline, line_height):
+    def fill_text(self, text, x, y, font, baseline, line_height):
         # Writing text should not affect current path, so save current paths
         current_paths = self.paths
         # new path for text
         self.begin_path()
         self._text_path(text, x, y, font, baseline, line_height)
-        if self.in_fill:
-            self.fill(FillRule.NONZERO)
-        if self.in_stroke:
-            self.stroke()
+        self.fill(FillRule.NONZERO)
+        # restore previous current paths - this is a bit hacky
+        self.paths = current_paths
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        # Writing text should not affect current path, so save current paths
+        current_paths = self.paths
+        # new path for text
+        self.begin_path()
+        self._text_path(text, x, y, font, baseline, line_height)
+        self.stroke()
         # restore previous current paths - this is a bit hacky
         self.paths = current_paths
 
@@ -338,15 +346,16 @@ class Context:
         scaled_line_height = self.impl._line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
 
-        if baseline == Baseline.TOP:
-            top = y
-        elif baseline == Baseline.MIDDLE:
-            top = y - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y - font.metric("CellAscent")
+        match baseline:
+            case Baseline.TOP:
+                top = y
+            case Baseline.MIDDLE:
+                top = y - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y - total_height
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y - font.metric("CellAscent")
 
         for line_num, line in enumerate(lines):
             self.current_path.AddString(
@@ -365,7 +374,7 @@ class Context:
 class Canvas(Box):
     def create(self):
         super().create()
-        self._default_background_color = TRANSPARENT
+        self._default_background_color = Color.Transparent
         self.native.DoubleBuffered = True
         self.native.Paint += WeakrefCallable(self.winforms_paint)
         self.native.Resize += WeakrefCallable(self.winforms_resize)
@@ -379,8 +388,14 @@ class Canvas(Box):
     # would give incorrect results if it was semi-transparent. But we do paint it in
     # get_image_data.
     def winforms_paint(self, panel, event, *args):
-        context = Context(self, event.Graphics)
+        graphics = event.Graphics
+        before_state = graphics.Save()
+        graphics.ScaleTransform(self.dpi_scale, self.dpi_scale)
+
+        context = Context(self, graphics)
         self.interface.root_state._draw(context)
+
+        graphics.Restore(before_state)
 
     def winforms_resize(self, *args):
         self.interface.on_resize(
@@ -432,7 +447,7 @@ class Canvas(Box):
             return font.metric("LineSpacing")
         else:
             # Get size in CSS pixels
-            return (font.native.SizeInPoints * 96 / 72) * line_height
+            return font.native.Size * line_height
 
     def measure_text(self, text, font, line_height):
         graphics = self.native.CreateGraphics()
@@ -441,7 +456,7 @@ class Canvas(Box):
             for line in text.splitlines()
         ]
         return (
-            self.scale_out(max(size.Width for size in sizes)),
+            max(size.Width for size in sizes),
             self._line_height(font, line_height) * len(sizes),
         )
 

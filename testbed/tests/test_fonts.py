@@ -18,6 +18,14 @@ from toga.fonts import (
     Font,
 )
 
+from .conftest import skip_on_backends
+
+skip_on_backends(
+    "toga_textual",
+    reason="Font assertions are not implemented on Textual.",
+    allow_module_level=True,
+)
+
 
 # Fully testing fonts requires a manifested widget.
 @pytest.fixture

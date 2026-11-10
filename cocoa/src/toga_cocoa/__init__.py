@@ -1,3 +1,3 @@
-import travertino
+from importlib.metadata import version
 
-__version__ = travertino._package_version(__file__, __name__)
+__version__ = version("toga-cocoa")

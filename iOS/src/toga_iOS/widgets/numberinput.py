@@ -1,7 +1,14 @@
 from ctypes import c_int
 from decimal import InvalidOperation
 
-from rubicon.objc import SEL, CGSize, NSRange, objc_method, objc_property, send_message
+from rubicon.objc import (
+    SEL,
+    CGSize,
+    NSRange,
+    objc_method,
+    objc_property,
+    send_message,
+)
 from travertino.size import at_least
 
 from toga.widgets.numberinput import _clean_decimal
@@ -13,12 +20,16 @@ from toga_iOS.libs import (
     UITextBorderStyle,
     UITextField,
 )
-from toga_iOS.widgets.base import Widget
+from toga_iOS.widgets.base import DismissableWidget
 
 
 class TogaNumericTextField(UITextField):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
+
+    @objc_method
+    def textFieldDidBeginEditing_(self, textField) -> None:
+        self.impl._start_dismiss_on_tap_outside()
 
     @objc_method
     def textFieldDidChange_(self, notification) -> None:
@@ -43,10 +54,11 @@ class TogaNumericTextField(UITextField):
 
     @objc_method
     def textFieldDidEndEditing_(self, textField) -> None:
+        self.impl._stop_dismiss_on_tap_outside()
         self.impl.set_value(self.interface.value)
 
 
-class NumberInput(Widget):
+class NumberInput(DismissableWidget):
     def create(self):
         self.native = TogaNumericTextField.alloc().init()
         self.native.interface = self.interface

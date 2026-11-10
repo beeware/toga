@@ -68,9 +68,11 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def max_scroll_position(self):
-        return int(self.native.documentView.bounds.size.height) - int(
-            self.native.contentView.bounds.size.height
-        )
+        return self.scroll_limit - int(self.native.contentView.bounds.size.height)
+
+    @property
+    def scroll_limit(self):
+        return int(self.native.documentView.bounds.size.height)
 
     @property
     def scroll_position(self):

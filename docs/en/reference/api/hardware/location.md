@@ -9,8 +9,10 @@ The Location API is *asynchronous*. This means the methods that have long-runnin
 ```python
 import toga
 
+
 class MyApp(toga.App):
     ...
+
     async def determine_location(self, widget, **kwargs):
         location = await self.location.current_location()
 ```
@@ -26,6 +28,7 @@ To continuously track location, add an `on_change` handler to the location servi
 ```python
 class MyApp(toga.App):
     ...
+
     async def location_update(self, location, altitude, **kwargs):
         print(f"You are now at {location}, with altitude {altitude} meters")
 

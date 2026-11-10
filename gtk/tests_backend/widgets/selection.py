@@ -13,6 +13,8 @@ class SelectionProbe(SimpleProbe):
         native_class = Gtk.DropDown
         pytest.skip("GTK4 doesn't support selection probes yet")
 
+    closes_on_source_change = False
+
     def assert_resizes_on_content_change(self):
         pass
 

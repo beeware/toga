@@ -18,7 +18,7 @@ class DialogsMixin:
 
             # Inject a small pause without blocking the event loop
             NSRunLoop.currentRunLoop.runUntilDate(
-                NSDate.dateWithTimeIntervalSinceNow(1.0 if self.app.run_slow else 0.2)
+                NSDate.dateWithTimeIntervalSinceNow(1.0 if self.app.run_slow else 0.4)
             )
             try:
                 if pre_close_test_method:

@@ -2,12 +2,7 @@ from __future__ import annotations
 
 import warnings
 from itertools import chain
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Literal,
-    Protocol,
-)
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Protocol
 from weakref import WeakSet
 
 import toga
@@ -99,6 +94,10 @@ class drawing_context_property:
                     restores += 1
                 case Save():
                     restores -= 1
+                case State() if getattr(action, "_is_open", False):
+                    if (value := getattr(action, self.name)) is not None:
+                        # This is a state we're currently in, and it sets the attribute.
+                        return value
                 case self.ActionClass() if restores <= 0:
                     return getattr(action, self.name)
 
@@ -126,7 +125,7 @@ class Canvas(Widget, DrawingActionDispatch):
     _MIN_HEIGHT = 0
 
     # 2026-02: Backwards compatibility for <= 0.5.3
-    _instances: WeakSet = WeakSet()
+    _instances: ClassVar[WeakSet] = WeakSet()
 
     def __init__(
         self,
@@ -158,9 +157,12 @@ class Canvas(Widget, DrawingActionDispatch):
         :param on_alt_release: Initial [`on_alt_release`][toga.Canvas.on_alt_release]
             handler.
         :param on_alt_drag: Initial [`on_alt_drag`][toga.Canvas.on_alt_drag] handler.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         self._root_state = State()
+        # The most recent size reported to the on_resize handler.
+        self._last_size = None
 
         super().__init__(id, style, **kwargs)
 
@@ -194,7 +196,6 @@ class Canvas(Widget, DrawingActionDispatch):
 
     def focus(self) -> None:
         """No-op; Canvas cannot accept input focus."""
-        pass
 
     @property
     def root_state(self) -> State:
@@ -233,7 +234,7 @@ class Canvas(Widget, DrawingActionDispatch):
     """The current fill color."""
     stroke_style: ColorT = drawing_context_property(SetStrokeStyle, BLACK_COLOR)
     """The current stroke color."""
-    line_width: float = drawing_context_property(SetLineWidth, 2.0)
+    line_width: float = drawing_context_property(SetLineWidth, 1.0)
     """The current width of the stroke."""
     line_dash: list[float] = drawing_context_property(SetLineDash, [])
     """The current dash pattern to follow when drawing the line, expressed as
@@ -274,12 +275,26 @@ class Canvas(Widget, DrawingActionDispatch):
 
     @property
     def on_resize(self) -> OnResizeHandler:
-        """The handler to invoke when the canvas is resized."""
+        """The handler to invoke when the canvas is resized.
+
+        The handler is only invoked when the size of the canvas changes. It is not
+        invoked if the canvas is laid out again at the same size.
+        """
         return self._on_resize
 
     @on_resize.setter
     def on_resize(self, handler: OnResizeHandler) -> None:
-        self._on_resize = wrapped_handler(self, handler)
+        def idempotent_ints(widget, width, height):
+            """Wrap the handler so that it only fires if the size changes, and
+            the values are always rounded ints."""
+            size = (round(width), round(height))
+            if size != widget._last_size:
+                widget._last_size = size
+                return ((), {"width": size[0], "height": size[1]})
+            else:
+                return None
+
+        self._on_resize = wrapped_handler(self, handler, process_args=idempotent_ints)
 
     @property
     def on_press(self) -> OnTouchHandler:
@@ -367,8 +382,8 @@ class Canvas(Widget, DrawingActionDispatch):
         line_height: float | None = None,
     ) -> tuple[float, float]:
         """Measure the size at which
-        [`Canvas.write_text`][toga.Canvas.write_text]
-        would render some text.
+        [`Canvas.fill_text`][toga.Canvas.fill_text] or
+        [`Canvas.stroke_text`][toga.Canvas.stroke_text] would render some text.
 
         :param text: The text to measure. Newlines will cause line breaks, but long
             lines will not be wrapped.

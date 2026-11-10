@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==82.0.1",
-    "setuptools_scm==10.0.5",
+    "setuptools==84.2.1",
+    "setuptools_scm==10.3.4",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -11,11 +11,10 @@ dynamic = ["version", "dependencies"]
 name = "toga-winforms"
 description = "A Windows backend for the Toga widget toolkit using the WinForms API."
 readme = "README.md"
-requires-python = ">= 3.10"
+requires-python = ">= 3.11"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE",
-    "LICENSE.WebView2",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -38,11 +37,11 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development",
     "Topic :: Software Development :: User Interfaces",
@@ -115,9 +114,11 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    "platformdirs >= 4.1",
     "pythonnet >= 3.0.0",
     "toga-core == {version}",
     "pillow >= 10.0.0",
+    "dotnet-WebView2.WinForms >= 1.0.4078.44",
 ]
 
 [tool.coverage.run]

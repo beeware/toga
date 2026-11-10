@@ -223,7 +223,6 @@ def test_parent_loops():
     group_b = toga.Group("B", parent=group_a)
     group_c = toga.Group("C", parent=group_b)
 
-    #
     with pytest.raises(
         ValueError,
         match=r"A group cannot be it's own parent",

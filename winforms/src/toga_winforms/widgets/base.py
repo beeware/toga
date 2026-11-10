@@ -8,7 +8,7 @@ from System.Drawing import (
 )
 from travertino.size import at_least
 
-import toga.colors as colors
+from toga import colors
 from toga.colors import rgb
 from toga_winforms.colors import (
     native_color,
@@ -50,16 +50,11 @@ class Widget(Scalable, ABC):
 
         # Widgets that need to set a different default background_color should override
         # the _default_background_color attribute.
-        #
-        # Note: On Winforms, _default_background_color is set in the form of toga color,
-        #       instead of the native Color. This is because we need to manually do the
-        #       alpha blending, and the native Color class does not directly handle the
-        #       alpha transparency in the same way.
         if not hasattr(self, "_default_background_color"):
             # If a widget hasn't specifically defined a default background color then
             # set the system assigned background color as the default background color
             # of the widget.
-            self._default_background_color = toga_color(self.native.BackColor)
+            self._default_background_color = self.native.BackColor
 
         # Obtain a Graphics object and immediately dispose of it. This is
         # done to trigger the control's Paint event and force it to redraw.
@@ -76,7 +71,7 @@ class Widget(Scalable, ABC):
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):  # noqa B027
+    def set_app(self, app):
         # No special handling required
         pass
 
@@ -136,7 +131,7 @@ class Widget(Scalable, ABC):
         self.native.Size = Size(*map(self.scale_in, (width, height)))
         self.native.Location = Point(*map(self.scale_in, (x, y)))
 
-    def set_text_align(self, alignment):  # noqa B027
+    def set_text_align(self, alignment):
         # By default, text alignment can't be changed
         pass
 
@@ -161,21 +156,33 @@ class Widget(Scalable, ABC):
             self.native.ForeColor = native_color(color)
 
     def set_background_color(self, color):
-        if self.interface.parent:
-            parent_color = toga_color(self.interface.parent._impl.native.BackColor)
+        # If a system color is being reset to, then use it directly,
+        # and set the appropriate semantics for Button-like widgets
+        # to work properly.  System colors are opaque.
+        if self._default_background_color.IsSystemColor and color is None:
+            self.native.BackColor = self._default_background_color
+            if hasattr(self.native, "UseVisualStyleBackColor"):
+                self.native.UseVisualStyleBackColor = True
         else:
-            parent_color = toga_color(SystemColors.Control)
+            # Either not resetting, or the default color is not a system color
+            # (i.e. default color may be modified by us; in this case, there may
+            # be alpha, so we must blend manually).
+            if self.interface.parent:
+                parent_color = toga_color(self.interface.parent._impl.native.BackColor)
+            else:
+                parent_color = toga_color(SystemColors.Control)
 
-        match color, self._default_background_color:
-            case (colors.TRANSPARENT, _) | (None, colors.TRANSPARENT):
-                requested_color = rgb(0, 0, 0, 0)
-            case None, _:
-                requested_color = self._default_background_color.rgb
-            case _:
-                requested_color = color.rgb
+            toga_default_background_color = toga_color(self._default_background_color)
+            match color, toga_default_background_color:
+                case (colors.TRANSPARENT, _) | (None, colors.TRANSPARENT):
+                    requested_color = rgb(0, 0, 0, 0)
+                case None, _:
+                    requested_color = toga_default_background_color
+                case _:
+                    requested_color = color.rgb
 
-        blended_color = requested_color.blend_over(parent_color)
-        self.native.BackColor = native_color(blended_color)
+            blended_color = requested_color.blend_over(parent_color)
+            self.native.BackColor = native_color(blended_color)
 
         for child in self.interface.children:
             child._impl.set_background_color(child.style.background_color)
@@ -197,5 +204,5 @@ class Widget(Scalable, ABC):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
 
-    def rehint(self):  # noqa B027
+    def rehint(self):
         pass

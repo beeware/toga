@@ -359,6 +359,10 @@ UIRefreshControl = ObjCClass("UIRefreshControl")
 UIResponder = ObjCClass("UIResponder")
 
 ######################################################################
+# UISceneConfiguration.h
+UISceneConfiguration = ObjCClass("UISceneConfiguration")
+
+######################################################################
 # UIScreen.h
 UIScreen = ObjCClass("UIScreen")
 UIScreen.declare_class_property("mainScreen")
@@ -379,11 +383,11 @@ UIStackView = ObjCClass("UIStackView")
 class UIStackViewAlignment(Enum):
     Fill = 0
     Leading = 1
-    Top = 1
+    Top = Leading
     FirstBaseline = 2
     Center = 3
     Trailing = 4
-    Bottom = 4
+    Bottom = Trailing
     LastBaseline = 5
 
 
@@ -438,6 +442,10 @@ UITabBarController = ObjCClass("UITabBarController")
 ######################################################################
 # UITabBarItem.h
 UITabBarItem = ObjCClass("UITabBarItem")
+
+######################################################################
+# UITapGestureRecognizer.h
+UITapGestureRecognizer = ObjCClass("UITapGestureRecognizer")
 
 ######################################################################
 # UITextField.h
@@ -530,6 +538,16 @@ UIKeyboardWillChangeFrameNotification = objc_const(
 )
 UIKeyboardDidChangeFrameNotification = objc_const(
     uikit, "UIKeyboardDidChangeFrameNotification"
+)
+
+######################################################################
+# UIWindowScene.h
+UIWindowScene = ObjCClass("UIWindowScene")
+
+UIWindowSceneDelegate = ObjCProtocol("UIWindowSceneDelegate")
+
+UIWindowSceneSessionRoleApplication = objc_const(
+    uikit, "UIWindowSceneSessionRoleApplication"
 )
 
 ######################################################################

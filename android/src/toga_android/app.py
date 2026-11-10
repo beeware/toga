@@ -1,5 +1,6 @@
 import asyncio
 import warnings
+from typing import ClassVar
 
 from android.content import Context
 from android.graphics.drawable import BitmapDrawable
@@ -21,9 +22,9 @@ from .screens import Screen as ScreenImpl
 
 class TogaApp(dynamic_proxy(IPythonApp)):
     last_requestcode = -1  # A unique ID for native background requests
-    running_intents = {}  # dictionary for currently running Intents
-    permission_requests = {}  # dictionary for outstanding permission requests
-    menuitem_mapping = {}  # dictionary for mapping menuitems to commands
+    running_intents: ClassVar[dict] = {}  # currently running Intents
+    permission_requests: ClassVar[dict] = {}  # outstanding permission requests
+    menuitem_mapping: ClassVar[dict] = {}  # maps menuitems to commands
 
     def __init__(self, app):
         super().__init__()

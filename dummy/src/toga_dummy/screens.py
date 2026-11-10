@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from PIL import Image, ImageDraw
 
 from toga.screens import Screen as ScreenInterface
@@ -7,7 +9,7 @@ from .utils import LoggedObject
 
 
 class Screen(LoggedObject):
-    _instances = {}
+    _instances: ClassVar[dict] = {}
 
     # native: tuple = (
     #   name: str,

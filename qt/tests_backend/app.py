@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import PIL.Image
@@ -21,6 +22,8 @@ class AppProbe(BaseProbe):
     supports_dark_mode = True
     edit_menu_noop_enabled = True
     supports_psutil = True
+    # Qt doesn't always beep immediately.
+    beep_delay = 5
 
     def __init__(self, app):
         super().__init__()
@@ -35,19 +38,48 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed-qt"
+        return (
+            Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+            / "testbed-qt"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed-qt"
+        return (
+            Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local/share"))
+            / "testbed-qt"
+        )
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed-qt"
+        return (
+            Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
+            / "testbed-qt"
+        )
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed-qt/log"
+        return (
+            Path(os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local/state"))
+            / "testbed-qt/log"
+        )
+
+    # The CI environment resolves user-space folders to the default names.
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def downloads_path(self):
+        return Path.home() / "Downloads"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
 
     @property
     def is_cursor_visible(self):
@@ -180,3 +212,6 @@ class AppProbe(BaseProbe):
 
     def perform_edit_action(self, action):
         self._activate_menu_item(["Edit", action])
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")

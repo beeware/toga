@@ -1,4 +1,9 @@
-from rubicon.objc import SEL, CGSize, objc_method, objc_property
+from rubicon.objc import (
+    SEL,
+    CGSize,
+    objc_method,
+    objc_property,
+)
 from travertino.size import at_least
 
 from toga.constants import LEFT, RIGHT
@@ -16,7 +21,7 @@ from toga_iOS.libs import (
     UITextBorderStyle,
     UITextField,
 )
-from toga_iOS.widgets.base import Widget
+from toga_iOS.widgets.base import DismissableWidget
 
 
 class TogaTextField(UITextField):
@@ -25,6 +30,7 @@ class TogaTextField(UITextField):
 
     @objc_method
     def textFieldDidBeginEditing_(self, textField) -> None:
+        self.impl._start_dismiss_on_tap_outside()
         self.interface.on_gain_focus()
 
     @objc_method
@@ -33,6 +39,7 @@ class TogaTextField(UITextField):
 
     @objc_method
     def textFieldDidEndEditing_(self, textField) -> None:
+        self.impl._stop_dismiss_on_tap_outside()
         self.interface.on_lose_focus()
 
     @objc_method
@@ -41,7 +48,7 @@ class TogaTextField(UITextField):
         return True
 
 
-class TextInput(Widget):
+class TextInput(DismissableWidget):
     def create(self):
         self.native = TogaTextField.new()
         self.native.interface = self.interface

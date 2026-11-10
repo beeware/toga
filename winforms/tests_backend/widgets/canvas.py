@@ -8,6 +8,7 @@ from .base import SimpleProbe
 
 class CanvasProbe(SimpleProbe):
     native_class = Panel
+    screenshot_reset_transform = False
 
     def reference_variant(self, reference):
         if reference in {
@@ -17,6 +18,10 @@ class CanvasProbe(SimpleProbe):
             "deprecated_tutorial",
             "miter_join",
             "attributes",
+            "reset_transform",
+            "endor_font_variants",
+            "roboto_font_variants",
+            "recursive_font_variants",
         }:
             return f"{reference}-winforms"
         return reference

@@ -113,7 +113,7 @@ def test_deprecate_listener():
         ImportError,
         match=r"cannot import name 'NonExistent' from 'toga.sources.base'",
     ):
-        from toga.sources.base import NonExistent  # noqa: F401
+        from toga.sources.base import NonExistent
 
     # "unimport" Listener
     del toga.sources.base.Listener

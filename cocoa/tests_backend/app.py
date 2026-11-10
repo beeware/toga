@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import PIL.Image
+import pytest
 from rubicon.objc import SEL, ObjCClass, objc_id, send_message
 
 import toga
@@ -25,6 +26,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_dark_mode = True
     edit_menu_noop_enabled = False
     supports_psutil = True
+    beep_delay = 0.1
 
     def __init__(self, app):
         super().__init__()
@@ -36,11 +38,13 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return Path.home() / "Library/Preferences/org.beeware.toga.testbed"
+        return (
+            Path.home() / "Library/Application Support/org.beeware.toga.testbed/Config"
+        )
 
     @property
     def data_path(self):
-        return Path.home() / "Library/Application Support/org.beeware.toga.testbed"
+        return Path.home() / "Library/Application Support/org.beeware.toga.testbed/Data"
 
     @property
     def cache_path(self):
@@ -49,6 +53,22 @@ class AppProbe(BaseProbe, DialogsMixin):
     @property
     def logs_path(self):
         return Path.home() / "Library/Logs/org.beeware.toga.testbed"
+
+    @property
+    def desktop_path(self):
+        return Path.home() / "Desktop"
+
+    @property
+    def documents_path(self):
+        return Path.home() / "Documents"
+
+    @property
+    def downloads_path(self):
+        return Path.home() / "Downloads"
+
+    @property
+    def pictures_path(self):
+        return Path.home() / "Pictures"
 
     @property
     def is_cursor_visible(self):
@@ -118,7 +138,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 if menu is None:
                     raise AssertionError(
                         f"Menu {' > '.join(orig_path)} not found; "
-                        f"{str(item.title)} does not have a submenu"
+                        f"{item.title!s} does not have a submenu"
                     )
             else:
                 # No more path segments; we've found the full path.
@@ -343,3 +363,11 @@ class AppProbe(BaseProbe, DialogsMixin):
             restype=None,
             argtypes=[objc_id],
         )
+
+    async def assert_event_loop(self):
+        pytest.skip("Test not implemented for this platform")
+
+    def trigger_lifecycle_notification(self, selector, *args):
+        """Directly invoke a method on the app's native delegate, simulating the
+        native lifecycle notification that would normally trigger it."""
+        return getattr(self.app._impl.native.delegate, selector)(*args)

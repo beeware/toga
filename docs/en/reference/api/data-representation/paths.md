@@ -10,6 +10,14 @@ To assist with finding an appropriate location to store application files, every
 
 Each location provided by the [`Paths`][toga.paths.Paths] object is a [`pathlib.Path`][] that can be used to construct a full file path. If required, additional subdirectories can be created under these locations. Toga will guarantee that the path provided *by Toga* will exist, but it is up you to create any desired subdirectory - if you want to create a `credentials/user.toml` configuration file, Toga will guarantee that the `apps.path.config` will exist, but you must take responsibility for creating the `credentials` subdirectory before saving `user.toml`.
 
+In addition to these app-specific locations, the [`Paths`][toga.paths.Paths] object provides anchors for common user-space folders - the user's Desktop, Documents, Downloads and Pictures folders. These folders belong to the user, not the app, so Toga will *not* create them. If a folder doesn't exist, or the platform doesn't provide it (as on mobile and web), accessing the path raises a `RuntimeError`.
+
+## Notes
+
+- On macOS, the operating system may show a permission dialog the first time the app accesses a user-space folder. This happens automatically on first file access; there is no API to request the permission in advance. If the user denies access, the path can still be obtained, but file operations in the folder will fail.
+- On Linux, the user-space folder locations honor the [freedesktop.org XDG Base Directory Specification](https://specifications.freedesktop.org/basedir/latest/). If there is no configuration, the location will fall back to the default English folder name in the user's home folder.
+- On Windows, the user-space folder locations are obtained from the operating system, so folder redirection (e.g., by OneDrive) is honored.
+
 ## Reference
 
 ::: toga.paths.Paths

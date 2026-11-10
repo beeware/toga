@@ -21,6 +21,7 @@ Previously, the drawing methods ([`line_to()`][toga.Canvas.fill], [`rect()`][tog
 
 ```python
 import toga
+
 canvas = toga.Canvas()
 context = canvas.context
 
@@ -31,13 +32,13 @@ context.stroke()
 
 with context.Context() as subcontext:
     subcontext.line_to(160, 20)
-
 ```
 
 would now be written like this:
 
 ```python
 import toga
+
 canvas = toga.Canvas()
 
 canvas.begin_path()
@@ -47,7 +48,6 @@ canvas.stroke()
 
 with canvas.context.state():
     canvas.line_to(160, 20)
-
 ```
 
 Context managers (like [`state`][toga.Canvas.state] in the above example) still [return the state object in case you need it][accessing-specific-drawing-actions], but for most usage you don't have to pay attention to that. The canvas will automatically apply the drawing action to the appropriate state, handling what to do when in or out of a context manager.
@@ -83,7 +83,7 @@ One optional parameter shared between [`fill`][toga.Canvas.fill] and [`stroke`][
 
 ## No list-like methods or automatic redrawing
 
-`Context` objects (now [`State`][toga.widgets.canvas.State] or other subclasses of [`BaseState`][toga.widgets.canvas.BaseState]) previously had list-like methods for [manipulating their stored lists of drawing actions][creating-and-adding-new-drawing-actions]. These methods handled redrawing the canvas when changes were made. These methods are now deprecated; the standard approach is now to manipulate the state's [`drawing_actions`][toga.widgets.canvas.BaseState.drawing_actions] list directly. You'll need to manually call the canva's [`redraw()`][toga.Canvas.redraw] method afterward; this is now consistent with the behavior when [modifying attributes][modifying-attributes-of-drawing-actions] of a [`DrawingAction`][toga.widgets.canvas.DrawingAction].
+While calling drawing methods (including context managers) on the canvas itself is the primary API for drawing, the lower-level lists that record drawing commands are still available. However, there's been a change in how they can be modified. `Context` objects (now [`State`][toga.widgets.canvas.State] or other subclasses of [`BaseState`][toga.widgets.canvas.BaseState]) previously had list-like methods for [manipulating their stored lists of drawing actions][creating-and-adding-new-drawing-actions]. These methods handled redrawing the canvas when changes were made. These methods are now deprecated; if you want to alter a state's [`drawing_actions`][toga.widgets.canvas.BaseState.drawing_actions] list, the way to do so is now to manipulate it directly. You'll need to manually call the canvas's [`redraw()`][toga.Canvas.redraw] method afterward; this is now consistent with the behavior when [modifying attributes][modifying-attributes-of-drawing-actions] of a [`DrawingAction`][toga.widgets.canvas.DrawingAction].
 
 Existing code might look something like this:
 

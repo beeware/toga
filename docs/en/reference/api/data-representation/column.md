@@ -42,13 +42,13 @@ For example, we could subclass `AccessorColumn` to make column that takes a valu
 
 ```python
 class ListStrColumn(AccessorColumn):
-
     def text(self, row, default=None):
         value = self.value(row)
         if value is None:
             return default
         else:
             return ", ".join(value)
+
 
 table = Table(
     columns=[
@@ -64,13 +64,13 @@ Custom columns can even override the default way of looking up values to allow s
 
 ```python
 class TotalCostColumn(Column):
-
     def value(self, row):
         return row.item_cost * row.quantity
 
     def text(self, row, default=None):
         value = self.value(row)
         return f"${value:.2d}"
+
 
 table = Table(
     columns=[

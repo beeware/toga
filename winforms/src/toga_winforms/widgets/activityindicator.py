@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import io
 from pathlib import Path
+from typing import ClassVar
 
 import System.Windows.Forms as WinForms
 from PIL import Image, ImageSequence
-from System.Drawing import Image as WinImage
+from System.Drawing import Color, Image as WinImage
 from System.IO import MemoryStream
-
-from toga.colors import TRANSPARENT
 
 from .base import Widget
 
@@ -53,13 +52,13 @@ def composite_gif_on_color(
 
 class ActivityIndicator(Widget):
     SPINNER_SIZE = 32
-    SPINNER_CACHE: dict[tuple[tuple[int, int, int], int], WinImage] = {}
+    SPINNER_CACHE: ClassVar[dict[tuple[tuple[int, int, int], int], WinImage]] = {}
 
     def create(self):
         self.native = WinForms.PictureBox()
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         self._spinner_cache_key = None
-        self._default_background_color = TRANSPARENT
+        self._default_background_color = Color.Transparent
         self.set_spinner_image()
         self.running = False
 

@@ -106,7 +106,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def assert_is_toolbar_separator(self, index, section=False):
         assert self._toolbar_items()[index] is None
 
-    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+    def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
         item = self._toolbar_items()[index]
         assert item.getTitle() == label
         # Tooltips are not implemented

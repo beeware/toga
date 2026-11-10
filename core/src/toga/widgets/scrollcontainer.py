@@ -42,7 +42,8 @@ class ScrollContainer(Widget):
         :param vertical: Should vertical scrolling be permitted?
         :param on_scroll: Initial [`on_scroll`][toga.ScrollContainer.on_scroll] handler.
         :param content: The content to display in the scroll window.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
 
         self._content: Widget | None = None
@@ -92,7 +93,6 @@ class ScrollContainer(Widget):
 
     def focus(self) -> None:
         """No-op; ScrollContainer cannot accept input focus."""
-        pass
 
     @property
     def content(self) -> Widget | None:
@@ -232,8 +232,7 @@ class ScrollContainer(Widget):
                 horizontal_position = 0
             else:
                 max_value = self.max_horizontal_position
-                if horizontal_position > max_value:
-                    horizontal_position = max_value
+                horizontal_position = min(horizontal_position, max_value)
         else:
             horizontal_position = self.horizontal_position
 
@@ -242,8 +241,7 @@ class ScrollContainer(Widget):
                 vertical_position = 0
             else:
                 max_value = self.max_vertical_position
-                if vertical_position > max_value:
-                    vertical_position = max_value
+                vertical_position = min(vertical_position, max_value)
         else:
             vertical_position = self.vertical_position
 

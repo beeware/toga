@@ -7,6 +7,7 @@ from ..probe import BaseProbe
 
 class SimpleProbe(BaseProbe, FontMixin):
     invalid_size_while_hidden = False
+    supports_tab_index = False
 
     async def redraw(self, message=None, delay=0, wait_for=None):
         self.native.repaint()
@@ -79,6 +80,11 @@ class SimpleProbe(BaseProbe, FontMixin):
     @property
     def is_hidden(self):
         return not self.native.isVisible()
+
+    async def ensure_focus(self, message=None):
+        self.widget.focus()
+        await self.redraw("Widget has been given focus" if message is None else message)
+        assert self.has_focus
 
     @property
     def has_focus(self):

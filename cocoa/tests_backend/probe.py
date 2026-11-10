@@ -1,6 +1,7 @@
 import asyncio
 from ctypes import c_void_p
 
+from pytest import approx
 from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
 from rubicon.objc.api import NSString
 
@@ -27,6 +28,12 @@ class EventListener(NSObject):
 class BaseProbe:
     def __init__(self):
         self.event_listener = EventListener.alloc().init()
+
+    def approx_width(self, width):
+        return approx(width, rel=0.01)
+
+    def approx_height(self, height):
+        return approx(height, rel=0.01)
 
     async def post_event(self, event, delay=None):
         self.window._impl.native.postEvent(event, atStart=False)

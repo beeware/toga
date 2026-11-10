@@ -234,8 +234,27 @@ def test_create_app_icon_unloadable(monkeypatch, app, capsys):
 
 def test_create_app_icon_non_script(monkeypatch, app, capsys):
     """The icon from the binary is used when running as a packaged binary"""
-    # Patch sys.executable so the test looks like it's running as a packaged binary
-    monkeypatch.setattr(sys, "executable", "/path/to/App")
+    # Patch sys.orig_argv so the test looks like it's running as a packaged binary
+    patched = sys.orig_argv.copy()
+    patched[0] = "/path/to/App"
+    monkeypatch.setattr(sys, "orig_argv", patched)
+
+    # Load the app default icon
+    icon = toga.Icon(_APP_ICON)
+
+    assert isinstance(icon, toga.Icon)
+    # App icon path reports as `resources/<app_name>`; impl is the app icon
+    assert icon.path == Path("resources/icons")
+    assert icon._impl.path == "<APP ICON>"
+
+    # No warning was printed, as we're running as a script.
+    assert capsys.readouterr().out == ""
+
+
+def test_create_app_icon_empty_orig_argv(monkeypatch, app, capsys):
+    """If orig_argv is empty, assume we're bundled."""
+    # Patch sys.orig_argv so that it is empty - this is the behavior on Android.
+    monkeypatch.setattr(sys, "orig_argv", [])
 
     # Load the app default icon
     icon = toga.Icon(_APP_ICON)
@@ -259,8 +278,10 @@ def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):
         FileNotFoundError(),
     )
 
-    # Patch sys.executable so the test looks like it's running as a packaged binary
-    monkeypatch.setattr(sys, "executable", "/path/to/App")
+    # Patch sys.orig_argv so the test looks like it's running as a packaged binary
+    patched = sys.orig_argv.copy()
+    patched[0] = "/path/to/App"
+    monkeypatch.setattr(sys, "orig_argv", patched)
 
     # Load the app default icon
     icon = toga.Icon(_APP_ICON)

@@ -38,7 +38,7 @@ else:  # pragma: no-cover-if-gtk4
 
 if gtklib == "Adw":  # pragma: no-cover-unless-libadwaita
     gi.require_version("Adw", "1")
-    from gi.repository import Adw  # noqa: E402, F401
+    from gi.repository import Adw
 # elif is used here, because explicit is better than implicit as a defensive
 # practice.
 elif gtklib is None:  # pragma: no-cover-unless-plain-gtk  # pragma: no branch
@@ -89,7 +89,7 @@ else:  # pragma: no-cover-if-gtk3
             "Did you install `toga-gtk[gtk4]`?"
         )
 
-    from gi._gi import hook_up_vfunc_implementation  # noqa: E402, F401
+    from gi._gi import hook_up_vfunc_implementation  # noqa: F401
 
     default_display = Gdk.Display.get_default()
 if default_display is None:  # pragma: no cover
@@ -109,24 +109,24 @@ if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             gi.require_version("WebKit2", "4.1")
         except ValueError:  # pragma: no cover
             gi.require_version("WebKit2", "4.0")
-        from gi.repository import WebKit2  # noqa: F401
+        from gi.repository import WebKit2
     except (ImportError, ValueError):  # pragma: no cover
         WebKit2 = None
 else:  # pragma: no-cover-if-gtk3
     try:
         gi.require_version("WebKit", "6.0")
-        from gi.repository import WebKit as WebKit2  # noqa: F401
+        from gi.repository import WebKit as WebKit2
     except (ImportError, ValueError):  # pragma: no cover
         WebKit2 = None
 
 try:
     gi.require_version("Pango", "1.0")
-    from gi.repository import Pango  # noqa: F401
+    from gi.repository import Pango
 except (ImportError, ValueError):  # pragma: no cover
     Pango = None
 
 try:
-    import cairo  # noqa: F401
+    import cairo
 
     gi.require_foreign("cairo")
 except ImportError:  # pragma: no cover
@@ -134,30 +134,30 @@ except ImportError:  # pragma: no cover
 
 try:
     gi.require_version("PangoCairo", "1.0")
-    from gi.repository import PangoCairo  # noqa: F401
+    from gi.repository import PangoCairo
 except (ImportError, ValueError):  # pragma: no cover
     PangoCairo = None
 
 try:
     gi.require_version("PangoFc", "1.0")
-    from gi.repository import PangoFc  # noqa: F401
+    from gi.repository import PangoFc
 except (ImportError, ValueError):  # pragma: no cover
     PangoFc = None
 
 try:
     gi.require_version("XApp", "1.0")
-    from gi.repository import XApp  # noqa: F401
+    from gi.repository import XApp
 except (ImportError, ValueError):  # pragma: no cover
     XApp = None
 
 try:
     gi.require_version("Geoclue", "2.0")
-    from gi.repository import Geoclue  # noqa: F401
+    from gi.repository import Geoclue
 except (ImportError, ValueError):  # pragma: no cover
     Geoclue = None
 
 try:
     gi.require_version("Flatpak", "1.0")
-    from gi.repository import Flatpak  # noqa: F401
+    from gi.repository import Flatpak
 except (ImportError, ValueError):  # pragma: no cover
     Flatpak = None

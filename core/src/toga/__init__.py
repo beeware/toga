@@ -1,8 +1,7 @@
 import importlib
 import warnings
+from importlib.metadata import version
 from pathlib import Path
-
-from travertino import _package_version
 
 
 def lazy_load():
@@ -46,5 +45,4 @@ class NotImplementedWarning(RuntimeWarning):
         )
 
 
-# __name__ is "toga" in this file, but the distribution name is "toga-core".
-__version__ = _package_version(__file__, "toga-core")
+__version__ = version("toga-core")

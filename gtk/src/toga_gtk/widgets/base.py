@@ -199,6 +199,12 @@ class Widget(ABC):
         pass
 
     def set_hidden(self, hidden):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # show_all() is used when a widget is added to a container, and when a
+            # window is shown; it would otherwise make a hidden widget visible again.
+            self.native.set_no_show_all(hidden)
+        else:  # pragma: no-cover-if-gtk3
+            pass
         self.native.set_visible(not hidden)
         if self.container:
             self.container.make_dirty()
@@ -253,9 +259,19 @@ class Widget(ABC):
             self.interface.intrinsic.height = at_least(min_size.height)
 
     def flush_gtk_events(self):
+        flushed = False
+
+        # Queue a no-op sentinel event at low priority
+        def _sentinel():
+            nonlocal flushed
+            flushed = True
+            return GLib.SOURCE_REMOVE
+
+        GLib.idle_add(_sentinel, priority=GLib.PRIORITY_DEFAULT_IDLE)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            while Gtk.events_pending():
+            while not flushed:
                 Gtk.main_iteration_do(blocking=False)
         else:  # pragma: no-cover-if-gtk3
-            while GLib.main_context_default().pending():
-                GLib.main_context_default().iteration(may_block=False)
+            context = GLib.main_context_default()
+            while not flushed:
+                context.iteration(may_block=False)

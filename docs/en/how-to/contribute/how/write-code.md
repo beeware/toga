@@ -156,7 +156,13 @@ Details on how the testbed works can be found in the [Testbed topic guide][testb
 
 #### Running the testbed app
 
-To run the testbed app, install [Briefcase](https://briefcase.readthedocs.io/en/latest/), and run the app in developer test mode as described below. Note that you should have only 1 backend -- the backend that you're planning to test -- installed in your virtual environment when running the test suite in developer mode.
+To run the testbed app, create a Python 3.12 virtual environment, install [Briefcase](https://briefcase.readthedocs.io/en/latest/), and run the app in developer test mode as described below. Note that you should have only 1 backend -- the backend that you're planning to test -- installed in your virtual environment when running the test suite in developer mode.
+
+/// note | Python 3.12 is required
+
+Although Toga supports any Python version from {{ min_python_version }} onwards, the testbed only supports Python 3.12. This is to simplify the testing process - the behavior of Toga across Python versions is established in the core tests; the testbed exists to verify that the core API works across platforms.
+
+///
 
 /// tab | macOS
 
@@ -266,7 +272,7 @@ This test will take a lot longer to run, but you'll see the widget (Button, in t
 
 #### Running the testbed for mobile platforms
 
-Developer mode is useful for testing desktop platforms (Cocoa, Winforms and GTK); but if you want to test a mobile backend, you'll need to use `briefcase run`.
+Developer mode is useful for testing desktop platforms (Cocoa, WinForms and GTK); but if you want to test a mobile backend, you'll need to use `briefcase run`.
 
 /// tab | macOS
 

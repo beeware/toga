@@ -139,7 +139,7 @@ class MultilineTextInput(TextInput):
         if self.native.Focused:
             return
         # Find the parent container and forward the event
-        parent = self.container.native
+        parent = self.container.native_parent
         if (
             isinstance(parent, WinForms.ScrollableControl) and parent.AutoScroll
         ):  # pragma: nocover

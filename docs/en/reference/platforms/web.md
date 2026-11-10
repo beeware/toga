@@ -10,7 +10,7 @@ The Web backend is currently proof-of-concept only. Most widgets have not been i
 
 ## Prerequisites
 
-`toga-web` will run in any modern browser. It requires [PyScript](https://pyscript.net) 2023.05.01 or newer, and [WebAwesome v3.3](https://www.webawesome.com).
+`toga-web` will run in any modern browser. It requires [PyScript](https://pyscript.net) 2024.11.1 or newer, and [WebAwesome v3.3](https://www.webawesome.com).
 
 ## Installation
 

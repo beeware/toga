@@ -3,11 +3,10 @@ from ctypes import POINTER, byref, cast, sizeof
 from ctypes.wintypes import HDC, HFONT, HWND, LPARAM, POINT, RECT, SIZE, UINT, WPARAM
 
 import System.Windows.Forms as WinForms
-from System.Drawing import ColorTranslator, Size, SystemColors
+from System.Drawing import ColorTranslator, Font as WinFont, Size, SystemColors
 
 from toga.handlers import WeakrefCallable
 
-from ..colors import toga_color
 from ..libs import gdi32, user32 as u32, win32constants as wc, win32structures as ws
 from ..libs.comctl32 import (
     DefSubclassProc,
@@ -74,7 +73,7 @@ class DetailedList(Widget):
         self.native.HandleCreated += WeakrefCallable(self.winforms_handle_created)
         self.native.HandleDestroyed += WeakrefCallable(self.winforms_handle_destroyed)
 
-        self._default_background_color = toga_color(SystemColors.Window)
+        self._default_background_color = SystemColors.Window
         self._first_item = 0
         self._cache = []
 
@@ -128,12 +127,19 @@ class DetailedList(Widget):
         self.pfn_subclass_list = ws.SUBCLASSPROC(self._subclass_proc_list)
         SetWindowSubclass(self._hwnd, self.pfn_subclass_list, 0, 0)
 
-        # Update the image list if the font changes, and back color of the List-View UI
-        # when the back color of the Panel changes.
+        # Update the image list if the font changes, and colors of the List-View UI when
+        # the colors of the Panel changes.
         self.native.FontChanged += WeakrefCallable(self.winforms_font_changed)
         self.native.BackColorChanged += WeakrefCallable(
             self.winforms_back_color_changed
         )
+        self.native.ForeColorChanged += WeakrefCallable(
+            self.winforms_fore_color_changed
+        )
+
+        # Initialize the colors.
+        self.winforms_back_color_changed(None, None)
+        self.winforms_fore_color_changed(None, None)
 
     ####################################################################################
     # Methods dealing with the geometry of the DetailedList.
@@ -158,19 +164,31 @@ class DetailedList(Widget):
 
     @property
     def _tile_height(self) -> int:
-        return (self._font_height + self._tile_padding) * 2
+        return self._font_height + self._title_font_height + 2 * self._text_padding_y
 
     @property
-    def _tile_padding(self) -> int:
-        return sum(divmod(self._font_height, 2))
+    def _text_padding_x(self) -> int:
+        return round(self._font_height / 4)
 
     @property
-    def _tile_padding_small(self) -> int:
-        return sum(divmod(self._font_height, 4))
+    def _text_padding_y(self) -> int:
+        return round(self._font_height / 10)
+
+    @property
+    def _icon_padding_x(self) -> int:
+        return round(self._font_height / 2)
+
+    @property
+    def _icon_padding_y(self) -> int:
+        return round(self._font_height / 5)
 
     @property
     def _font_height(self) -> int:
         return self.native.FontHeight
+
+    @property
+    def _title_font_height(self) -> int:
+        return self._title_font.Height
 
     @property
     def _icon(self) -> int:
@@ -203,9 +221,9 @@ class DetailedList(Widget):
             self._tile_height,
         )
         lvtileviewinfo.rcLabelMargin = RECT(
-            self._tile_padding,
+            self._text_padding_x,
             0,
-            self._tile_padding,
+            self._text_padding_x,
             0,
         )
 
@@ -213,33 +231,33 @@ class DetailedList(Widget):
 
     @property
     def _mouse_down_x(self) -> int:
-        return self._tile_padding + self._font_height
+        return self._icon_padding_x + self._font_height
 
     def _drawing_icon_xy(self, x: int, y: int) -> tuple[int, int]:
-        return (x + self._tile_padding_small, y + self._tile_padding)
+        return (x + self._icon_padding_x, y + self._icon_padding_y)
 
     def _drawing_select_rect(self, x: int, y: int) -> RECT:
         return RECT(
-            x + self._tile_padding_small + self._icon + self._tile_padding,
-            y + self._tile_padding,
-            x + self._tile_width() - self._tile_padding_small,
-            y + self._tile_padding + 2 * self._font_height,
+            x + self._icon_padding_x + self._icon + self._text_padding_x,
+            y + self._text_padding_y,
+            x + self._tile_width() - self._text_padding_x,
+            y + self._text_padding_y + self._title_font_height + self._font_height,
         )
 
     def _drawing_title_rect(self, x: int, y: int) -> RECT:
         return RECT(
-            x + self._tile_padding_small + self._icon + self._tile_padding,
-            y + self._tile_padding,
-            x + self._tile_width() - self._tile_padding_small,
-            y + self._tile_padding + self._font_height,
+            x + self._icon_padding_x + self._icon + self._text_padding_x,
+            y + self._text_padding_y,
+            x + self._tile_width() - self._text_padding_x,
+            y + self._text_padding_y + self._title_font_height,
         )
 
     def _drawing_subtitle_rect(self, x: int, y: int) -> RECT:
         return RECT(
-            x + self._tile_padding_small + self._icon + self._tile_padding,
-            y + self._tile_padding + self._font_height,
-            x + self._tile_width() - self._tile_padding_small,
-            y + self._tile_padding + 2 * self._font_height,
+            x + self._icon_padding_x + self._icon + self._text_padding_x,
+            y + self._text_padding_y + self._title_font_height,
+            x + self._tile_width() - self._text_padding_x,
+            y + self._text_padding_y + self._title_font_height + self._font_height,
         )
 
     ####################################################################################
@@ -251,8 +269,17 @@ class DetailedList(Widget):
         color = ColorTranslator.ToWin32(self.native.BackColor)
         u32.SendMessageW(self._hwnd, wc.LVM_SETBKCOLOR, 0, color)
 
+        # Invalidate the whole client area.
+        u32.InvalidateRect(self._hwnd, None, True)
+
     def winforms_font_changed(self, sender, e):
         """Matches the font of the Win32 List-View UI to the WinForms Panel."""
+        # Create a title font that is 20% larger than the default font
+        font = self.native.Font
+        self._title_font = WinFont(
+            font.FontFamily, font.Size * 1.2, font.Style, font.Unit
+        )
+
         # Update the tile size.
         tile_view_info = self._tile_view_info(self._width, self._height)
         u32.SendMessageW(self._hwnd, wc.LVM_SETTILEVIEWINFO, 0, byref(tile_view_info))
@@ -261,6 +288,15 @@ class DetailedList(Widget):
         # size seems to reduce selection flicker.
         self._set_image_list()
         self._update_data()
+
+    def winforms_fore_color_changed(self, sender, e):
+        """Stores the fore color of the WinForms Panel."""
+        self._fore_color = ColorTranslator.ToWin32(self.native.ForeColor)
+
+        # Only invalidate the text region to reduce icon flicker.
+        left = self._drawing_title_rect(x=0, y=0).left
+        rect = RECT(left, 0, self._width, self._height)
+        u32.InvalidateRect(self._hwnd, byref(rect), True)
 
     def winforms_handle_created(self, sender, e):
         """Sets the Panel subclass process when a handle is created for the Panel."""
@@ -408,6 +444,7 @@ class DetailedList(Widget):
 
             hdc = HDC(nmlvcd.nmcd.hdc)
             hfont = HFONT(int(self.native.Font.ToHfont().ToString()))
+            hfont_title = HFONT(int(self._title_font.ToHfont().ToString()))
             rect = RECT.from_buffer_copy(nmlvcd.nmcd.rc)
             item = self._retrieve_virtual_item(index)
 
@@ -426,11 +463,14 @@ class DetailedList(Widget):
                 # See documentation for "+1".
                 rect = self._drawing_select_rect(x=0, y=y)
                 u32.FillRect(hdc, byref(rect), select_back + 1)
+            else:
+                gdi32.SetTextColor(hdc, self._fore_color)
 
-            with FontDeviceContext(hdc, hfont):
+            with FontDeviceContext(hdc, hfont_title):
                 rect = self._drawing_title_rect(x=0, y=y)
                 u32.DrawTextW(hdc, item[0], -1, byref(rect), text_format)
 
+            with FontDeviceContext(hdc, hfont):
                 rect = self._drawing_subtitle_rect(x=0, y=y)
                 u32.DrawTextW(hdc, item[1], -1, byref(rect), text_format)
 

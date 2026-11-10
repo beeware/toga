@@ -9,6 +9,8 @@ from .base import Widget
 class Context:
     def __init__(self, impl):
         self.impl = impl
+        self.in_fill = False
+        self.in_stroke = False
 
     # Context management
     def save(self):
@@ -148,10 +150,25 @@ class Context:
 
     # Text
 
-    def write_text(self, text, x, y, font, baseline, line_height):
+    def fill_text(self, text, x, y, font, baseline, line_height):
         self.impl.draw_instructions.append(
             (
-                "write text",
+                "fill text",
+                {
+                    "text": text,
+                    "x": x,
+                    "y": y,
+                    "font": font,
+                    "baseline": baseline,
+                    "line_height": line_height,
+                },
+            )
+        )
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        self.impl.draw_instructions.append(
+            (
+                "stroke text",
                 {
                     "text": text,
                     "x": x,
@@ -220,8 +237,8 @@ class Canvas(Widget):
 
     # Resize handlers
 
-    def simulate_resize(self):
-        self.interface.on_resize(None)
+    def simulate_resize(self, width, height):
+        self.interface.on_resize(width=width, height=height)
 
     # 'Mouse' button handlers
 

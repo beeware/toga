@@ -261,7 +261,7 @@ class Command:
         section: int = 0,
         order: int = 0,
         enabled: bool = True,
-        id: str = None,
+        id: str | None = None,
     ):
         """
         Create a new Command.

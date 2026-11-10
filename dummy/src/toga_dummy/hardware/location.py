@@ -43,7 +43,7 @@ class Location(LoggedObject):
         future.set_result(self._has_background_permission > 0)
 
     def current_location(self, result):
-        location, altitude = self._next_location()
+        location, _altitude = self._next_location()
         result.set_result(location)
 
     def start_tracking(self):

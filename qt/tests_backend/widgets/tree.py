@@ -43,8 +43,8 @@ class TreeProbe(SimpleProbe):
         if row_path:
             columns = [0] * len(row_path)
             columns[-1] = col
-            for row, col in zip(row_path, columns, strict=True):
-                index = self.native_model.index(row, col, index)
+            for r, c in zip(row_path, columns, strict=True):
+                index = self.native_model.index(r, c, index)
         return index
 
     def child_count(self, row_path=None):
@@ -125,6 +125,11 @@ class TreeProbe(SimpleProbe):
         await self.select_row(row_path)
         index = self._get_index_from_path(row_path)
         self.native.activated.emit(index)
+
+    async def activate_header(self):
+        # No action needed; header activation is unrelated to
+        # and does not contain a bug for regular selection
+        pass
 
     async def select_first_row_keyboard(self):
         pytest.skip("Test not implemented for this platform")

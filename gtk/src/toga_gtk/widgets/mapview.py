@@ -43,7 +43,7 @@ MAPVIEW_HTML_CONTENT = """<!DOCTYPE html>
     </script>
 </body>
 </html>
-"""  # noqa: E501
+"""
 
 
 def pin_id(pin):

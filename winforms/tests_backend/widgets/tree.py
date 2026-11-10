@@ -1,13 +1,20 @@
 import asyncio
+from ctypes.wintypes import HWND, POINT
 
 import pytest
+from System.Drawing import Point
 from System.Windows.Forms import (
+    Cursor,
     MouseButtons,
     MouseEventArgs,
 )
 
 from toga_winforms.libs import win32constants as wc
-from toga_winforms.libs.user32 import SendMessageW
+from toga_winforms.libs.user32 import (
+    ClientToScreen,
+    SendMessageW,
+    SetForegroundWindow,
+)
 
 from .table import TableProbe
 
@@ -53,6 +60,11 @@ class TreeProbe(TableProbe):
             x=int((bounds.Left + bounds.Right) / 2),
             y=int((bounds.Top + bounds.Bottom) / 2),
         )
+
+    async def activate_header(self):
+        # No action needed; header activation is unrelated to
+        # and does not contain a bug for regular selection
+        pass
 
     def assert_cell_content(self, row_path, col, value=None, icon=None, widget=None):
         if widget:
@@ -110,15 +122,14 @@ class TreeProbe(TableProbe):
     ####################################################################################
 
     def mouse_move_event(self, x: int, y: int):
-        self.native.OnMouseMove(
-            MouseEventArgs(
-                getattr(MouseButtons, "None"),
-                clicks=0,
-                x=x,
-                y=y,
-                delta=0,
-            )
-        )
+        hwnd = self.impl._hwnd
+        window_hwnd = HWND(int(self.widget.window._impl.native.Handle.ToString()))
+
+        SetForegroundWindow(window_hwnd)
+
+        point = POINT(x, y)
+        ClientToScreen(hwnd, point)
+        Cursor.Position = Point(point.x, point.y)
 
     def mouse_double_click_event(self, x: int, y: int):
         self.native.OnMouseDoubleClick(

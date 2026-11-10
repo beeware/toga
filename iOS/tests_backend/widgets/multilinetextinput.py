@@ -1,5 +1,7 @@
 import asyncio
 
+import pytest
+
 from toga_iOS.libs import UITextView
 
 from .textinput import TextInputProbe
@@ -31,11 +33,16 @@ class MultilineTextInputProbe(TextInputProbe):
 
     @property
     def document_height(self):
-        return max(self.native.contentSize.height, self.native.frame.size.height)
+        # When scrolling there's an extra bit of height that is
+        # added to avoid having the scrolled-to text obscured
+        return max(
+            self.native.contentSize.height + self.native.safeAreaInsets.bottom,
+            self.native.bounds.size.height,
+        )
 
     @property
     def document_width(self):
-        return max(self.native.contentSize.width, self.native.frame.size.width)
+        return max(self.native.contentSize.width, self.native.bounds.size.width)
 
     @property
     def vertical_scroll_position(self):
@@ -50,3 +57,10 @@ class MultilineTextInputProbe(TextInputProbe):
             position = current
             await asyncio.sleep(0.05)
             current = self.vertical_scroll_position
+
+    def paste_rich_text(self, text):
+        pytest.skip("Pasting rich text not supported on this platform")
+
+    @property
+    def typing_font(self):
+        pytest.skip("Pasting rich text not supported on this platform")

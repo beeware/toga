@@ -13,13 +13,13 @@ tree = toga.Tree(
     columns=["Name", "Age"],
     data={
         "Earth": {
-           ("Arthur Dent", 42): None,
+            ("Arthur Dent", 42): None,
         },
         "Betelgeuse Five": {
-           ("Ford Prefect", 37): None,
-           ("Zaphod Beeblebrox", 47): None,
+            ("Ford Prefect", 37): None,
+            ("Zaphod Beeblebrox", 47): None,
         },
-    }
+    },
 )
 
 # Get the details of the first child of the second root node:
@@ -39,16 +39,16 @@ tree = toga.Tree(
     data=[
         (
             {"name": "Earth"},
-            [({"name": "Arthur Dent", "age": 42, "status": "Anxious"}, None)]
+            [({"name": "Arthur Dent", "age": 42, "status": "Anxious"}, None)],
         ),
         (
             {"name": "Betelgeuse Five"},
             [
                 ({"name": "Ford Prefect", "age": 37, "status": "Hoopy"}, None),
                 ({"name": "Zaphod Beeblebrox", "age": 47, "status": "Oblivious"}, None),
-            ]
+            ],
         ),
-    ]
+    ],
 )
 
 # Get the details of the first child of the second root node:
@@ -66,20 +66,27 @@ If you want to use attributes which don't match the headings, you can override t
 import toga
 
 tree = toga.Tree(
-    columns=[AccessorColumn("Name", 'character'), "Age"],
+    columns=[AccessorColumn("Name", "character"), "Age"],
     data=[
         (
             {"character": "Earth"},
-            [({"character": "Arthur Dent", "age": 42, "status": "Anxious"}, None)]
+            [({"character": "Arthur Dent", "age": 42, "status": "Anxious"}, None)],
         ),
         (
             {"character": "Betelgeuse Five"},
             [
                 ({"character": "Ford Prefect", "age": 37, "status": "Hoopy"}, None),
-                ({"character": "Zaphod Beeblebrox", "age": 47, "status": "Oblivious"}, None),
-            ]
+                (
+                    {
+                        "character": "Zaphod Beeblebrox",
+                        "age": 47,
+                        "status": "Oblivious",
+                    },
+                    None,
+                ),
+            ],
         ),
-    ]
+    ],
 )
 
 # Get the details of the first child of the second root node:
@@ -101,16 +108,16 @@ tree = toga.Tree(
     data=[
         (
             {"name": (green_icon, "Earth")},
-            [({"name": "Arthur Dent", "age": 42, "status": "Anxious"}, None)]
+            [({"name": "Arthur Dent", "age": 42, "status": "Anxious"}, None)],
         ),
         (
             {"name": (None, "Betelgeuse Five")},
             [
                 ({"name": "Ford Prefect", "age": 37, "status": "Hoopy"}, None),
                 ({"name": "Zaphod Beeblebrox", "age": 47, "status": "Oblivious"}, None),
-            ]
+            ],
         ),
-    ]
+    ],
 )
 ```
 

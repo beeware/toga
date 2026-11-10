@@ -1,5 +1,8 @@
+from typing import ClassVar
+
+
 class Icon:
-    EXTENSIONS = [".png"]
+    EXTENSIONS: ClassVar[list[str]] = [".png"]
     SIZES = None
 
     def __init__(self, interface, path):

@@ -49,7 +49,8 @@ class SplitContainer(Widget):
         :param content: Initial
             [SplitContainer content][toga.widgets.splitcontainer.SplitContainerContentT]
             of the container. Defaults to both panels being empty.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         self._content: list[SplitContainerContentT] = [None, None]
         super().__init__(id, style, **kwargs)
@@ -76,7 +77,6 @@ class SplitContainer(Widget):
 
     def focus(self) -> None:
         """No-op; SplitContainer cannot accept input focus."""
-        pass
 
     @property
     def content(self) -> list[SplitContainerContentT]:
@@ -98,11 +98,6 @@ class SplitContainer(Widget):
 
     @content.setter
     def content(self, content: Sequence[SplitContainerContentT]) -> None:
-        for old_content in self._content:
-            if old_content is not None:
-                old_content.app = None
-                old_content.window = None
-
         try:
             if len(content) != 2:
                 raise TypeError()
@@ -118,7 +113,7 @@ class SplitContainer(Widget):
                 case toga.Widget() | None as widget:
                     flex_value = 1
                 case toga.Widget() | None as widget, int() as flex_value:
-                    if flex_value <= 0:  # no-cover-if-lt-py311
+                    if flex_value <= 0:
                         raise ValueError(
                             "The flex value for an item in a SplitContainer must be >0"
                         )
@@ -132,6 +127,14 @@ class SplitContainer(Widget):
             _content.append(widget)
             flex.append(flex_value)
 
+        # Only detach the old content once the new content is fully validated,
+        # so a failed assignment doesn't orphan the widgets currently shown.
+        for old_content in self._content:
+            if old_content is not None:
+                old_content.app = None
+                old_content.window = None
+
+        for widget in _content:
             if widget:
                 widget.app = self.app
                 widget.window = self.window

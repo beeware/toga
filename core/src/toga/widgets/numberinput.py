@@ -105,7 +105,8 @@ class NumberInput(Widget):
         :param readonly: Can the value of the widget be modified by the user?
         :param on_change: A handler that will be invoked when the value of the widget
             changes.
-        :param kwargs: Initial style properties.
+        :param kwargs: Initial [Pack](/reference/api/style/pack.md) style properties.
+            These override matching properties on the `style` argument.
         """
         # The initial setting of min requires calling get_value(),
         # which in turn interrogates min. Prime those values with

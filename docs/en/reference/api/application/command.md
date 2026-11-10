@@ -17,23 +17,23 @@ For example:
 ```python
 import toga
 
+
 def callback(sender, **kwargs):
     print("Command activated")
 
-stuff_group = toga.Group('Stuff', order=40)
+
+stuff_group = toga.Group("Stuff", order=40)
 
 cmd1 = toga.Command(
     callback,
-    text='Example command',
-    tooltip='Tells you when it has been activated',
-    shortcut=toga.Key.MOD_1 + 'k',
-    icon='icons/pretty.png',
+    text="Example command",
+    tooltip="Tells you when it has been activated",
+    shortcut=toga.Key.MOD_1 + "k",
+    icon="icons/pretty.png",
     group=stuff_group,
-    section=0
+    section=0,
 )
-cmd2 = toga.Command(
-    ...
-)
+cmd2 = toga.Command(...)
 ...
 
 app.commands.add(cmd1, cmd4, cmd3)
@@ -75,6 +75,7 @@ Any automatically added standard commands will be installed *before* your app's 
 ```python
 import toga
 
+
 class MyApp(toga.app):
     def startup(self):
         ...
@@ -86,9 +87,7 @@ class MyApp(toga.app):
 
         # Add an Open command
         custom_open = toga.Command.standard(
-            self,
-            toga.Command.OPEN,
-            action=self.custom_open
+            self, toga.Command.OPEN, action=self.custom_open
         )
 
         self.commands.add(custom_open)

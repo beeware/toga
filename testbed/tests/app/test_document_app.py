@@ -5,6 +5,8 @@ import pytest
 import toga
 from testbed.app import ExampleDoc
 
+from ..conftest import skip_on_backends
+
 ####################################################################################
 # Document API tests
 ####################################################################################
@@ -12,6 +14,11 @@ if toga.platform.current_platform not in {"macOS", "windows", "linux"}:
     pytest.skip(
         "Document API is specific to desktop platforms", allow_module_level=True
     )
+skip_on_backends(
+    "toga_textual",
+    reason="Document apps are not implemented on Textual.",
+    allow_module_level=True,
+)
 
 
 async def test_new_document(app, app_probe):

@@ -18,7 +18,7 @@ box = toga.Box(
     ],
     direction=COLUMN,
     flex=1,
-    margin=10
+    margin=10,
 )
 ```
 

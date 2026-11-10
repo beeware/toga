@@ -11,7 +11,6 @@ try:
     from .icons import Icon
     from .images import Image
     from .libs import get_testing
-    from .paths import Paths
     from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
     from .widgets.activityindicator import ActivityIndicator
     from .widgets.box import Box
@@ -55,45 +54,44 @@ warnings.warn(
 
 
 __all__ = [
-    "not_implemented",
     "ActivityIndicator",
     "App",
-    "Paths",
-    "Icon",
-    "Image",
-    "MenuStatusIcon",
-    "SimpleStatusIcon",
-    "StatusIconSet",
-    "Window",
-    "MainWindow",
-    "Command",
+    "Box",
     "Button",
     "Canvas",
+    "Command",
+    "Container",
     "DateInput",
     "DetailedList",
     "Divider",
     "Font",
-    "Container",
-    "Box",
+    "Icon",
+    "Image",
+    "ImageView",
     "Label",
+    "MainWindow",
     "MapView",
+    "MenuStatusIcon",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
     "PasswordInput",
     "ProgressBar",
-    "SplitContainer",
-    "Selection",
     "ScrollContainer",
-    "Switch",
+    "Selection",
+    "SimpleStatusIcon",
     "Slider",
+    "SplitContainer",
+    "StatusIconSet",
+    "Switch",
     "Table",
     "TextInput",
     "TimeInput",
     "Tree",
     "WebView",
-    "ImageView",
+    "Window",
     "dialogs",
+    "not_implemented",
 ]
 
 

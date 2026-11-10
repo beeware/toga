@@ -1,12 +1,13 @@
 import asyncio
+from typing import ClassVar
 from unittest.mock import Mock
 
 import toga
 
 
 class ExampleDoc(toga.Document):
-    description = "Example Document"
-    extensions = ["testbed", "tbed"]
+    description: str = "Example Document"
+    extensions: ClassVar[list[str]] = ["testbed", "tbed"]
 
     def create(self):
         # Create the main window for the document.
@@ -27,8 +28,8 @@ class ExampleDoc(toga.Document):
 
 
 class ReadonlyDoc(toga.Document):
-    description = "Read-only Document"
-    extensions = ["other"]
+    description: str = "Read-only Document"
+    extensions: ClassVar[list[str]] = ["other"]
 
     def create(self):
         # Create the main window for the document.
@@ -45,7 +46,7 @@ class ReadonlyDoc(toga.Document):
 class Testbed(toga.App):
     # Objects can be added to this list to avoid them being garbage collected in the
     # middle of the tests running. This is problematic, at least, for WebView (#2648).
-    _gc_protector = []
+    _gc_protector: ClassVar[list] = []
 
     def startup(self):
         # Toga installs a custom task factory to ensure that a strong reference to

@@ -11,8 +11,8 @@ import toga
 
 box = toga.Box()
 
-label1 = toga.Label('Hello')
-label2 = toga.Label('World')
+label1 = toga.Label("Hello")
+label2 = toga.Label("World")
 
 box.add(label1)
 box.add(label2)
@@ -23,8 +23,8 @@ Alternatively, children can be specified at the time the box is constructed:
 ```python
 import toga
 
-label1 = toga.Label('Hello')
-label2 = toga.Label('World')
+label1 = toga.Label("Hello")
+label2 = toga.Label("World")
 
 box = toga.Box(children=[label1, label2])
 ```

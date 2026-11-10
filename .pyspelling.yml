@@ -62,3 +62,7 @@ matrix:
         - open: '-8<\-\n'
           content: '[\d\D]*'
           close: '-8<-\n'
+        # Ignore Ruff fmt:off/fmt:on directives
+        - open: 'fmt:(?:off|on)'
+          content: ''
+          close: ''

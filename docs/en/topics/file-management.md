@@ -62,7 +62,7 @@ class ConfigFileCreator(toga.App):
                 self.text_input,
                 self.config_path_output,
                 load_button,
-                save_button
+                save_button,
             ],
         )
         self.main_window = toga.MainWindow(content=main_box)
@@ -97,8 +97,8 @@ Update the `load_button_pressed` handler to the following:
 
 ```python
 def load_button_pressed(self, button, **kwargs):
-  path = Path("initial_config.toml")
-  self.text_input.value = path.read_text(encoding="utf-8")
+    path = Path("initial_config.toml")
+    self.text_input.value = path.read_text(encoding="utf-8")
 ```
 
 If we run `briefcase dev` again, we get the same `FileNotFoundError` when we press the button. As this is a relative path, it is turned into an absolute path using the current working directory. You might think this would be the directory where Briefcase was executed - but clearly, it isn't.
@@ -119,8 +119,8 @@ Move the `initial_config.toml` file into the `src/configfilecreator/resources` f
 
 ```python
 def load_button_pressed(self, button, **kwargs):
-  path = Path("resources/initial_config.toml")
-  self.text_input.value = path.read_text(encoding="utf-8")
+    path = Path("resources/initial_config.toml")
+    self.text_input.value = path.read_text(encoding="utf-8")
 ```
 
 Run the app, and press the button to load the file contents. Once again, the app will fail in the same way - a `FileNotFoundError`. The current working directory isn't the location of the app, either. We know using a path relative to the app file won't work, even when the file content is packaged with the app.
@@ -151,7 +151,7 @@ Update `load_button_pressed` handler to the following:
 
 ```python
 def load_button_pressed(self, button, **kwargs):
-    path = self.paths.app /  "resources/initial_config.toml"
+    path = self.paths.app / "resources/initial_config.toml"
     self.text_input.value = path.read_text(encoding="utf-8")
 ```
 
@@ -187,9 +187,9 @@ Update the `save_button_pressed` handler in `app.py` to the following:
 
 ```python
 def save_button_pressed(self, button, **kwargs):
-   path = self.paths.config / "config.toml"
-   path.write_text(self.text_input.value, encoding="utf-8")
-   self.config_path_output.value = path
+    path = self.paths.config / "config.toml"
+    path.write_text(self.text_input.value, encoding="utf-8")
+    self.config_path_output.value = path
 ```
 
 This change implements the save button, that when pressed, saves the current content of the text input to a `config.toml` file in an app-specific subdirectory of the operating-system appropriate configuration directory, and displays the path to the file below the input.

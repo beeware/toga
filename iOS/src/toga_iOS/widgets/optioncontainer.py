@@ -1,3 +1,5 @@
+import platform
+
 from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
@@ -50,6 +52,7 @@ class TogaTabBarController(UITabBarController):
 
 class OptionContainer(Widget):
     uses_icons = True
+    uses_more = platform.system() not in ["iPadOS"]
 
     def create(self):
         self.native_controller = TogaTabBarController.alloc().init()
@@ -166,7 +169,7 @@ class OptionContainer(Widget):
                 self.native_controller.selectedViewController = controller
                 # Setting the view controller doesn't trigger the didSelect event
                 # for regular (non-"more") tabs.
-                if self.native_controller.selectedIndex <= 4:
+                if (not self.uses_more) or (self.native_controller.selectedIndex <= 4):
                     self.native_controller.tabBar_didSelectItem_(
                         self.native_controller.tabBar,
                         current_tab_index,

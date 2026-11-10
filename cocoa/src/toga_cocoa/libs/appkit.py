@@ -574,6 +574,11 @@ NSApplicationActivationPolicyRegular = 0
 NSApplicationActivationPolicyAccessory = 1
 NSApplicationActivationPolicyProhibited = 2
 
+# NSApplicationTerminateReply
+NSTerminateCancel = 0
+NSTerminateNow = 1
+NSTerminateLater = 2
+
 ######################################################################
 # NSSavePanel.h
 NSSavePanel = ObjCClass("NSSavePanel")

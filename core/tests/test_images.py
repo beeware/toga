@@ -82,8 +82,8 @@ MISSING_RELATIVE_PATH = Path("does/not/exist/image.jpg")
         ((), {"path": f"{MISSING_ABSOLUTE_PATH}"}),
         # Relative path
         ((MISSING_RELATIVE_PATH,), {}),
-        ((), {"src": f"{MISSING_RELATIVE_PATH}"}),
-        ((), {"path": f"{MISSING_RELATIVE_PATH}"}),
+        ((), {"src": MISSING_RELATIVE_PATH}),
+        ((), {"path": MISSING_RELATIVE_PATH}),
         # Relative string
         ((f"{MISSING_RELATIVE_PATH}",), {}),
         ((), {"src": f"{MISSING_RELATIVE_PATH}"}),

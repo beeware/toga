@@ -369,7 +369,7 @@ class DialogsApp(toga.App):
 
 
 def main():
-    return DialogsApp("Dialogs", "org.beeware.toga.examples.dialogs")
+    return DialogsApp("Dialogs Demo", "org.beeware.toga.examples.dialogs")
 
 
 if __name__ == "__main__":

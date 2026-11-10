@@ -118,6 +118,17 @@ class MOUSEINPUT(c_Structure):
     ]
 
 
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-minmaxinfo
+class MINMAXINFO(c_Structure):
+    _fields_ = [
+        ("ptReserved", wt.POINT),
+        ("ptMaxSize", wt.POINT),
+        ("ptMaxPosition", wt.POINT),
+        ("ptMinTrackSize", wt.POINT),
+        ("ptMaxTrackSize", wt.POINT),
+    ]
+
+
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-nmhdr
 class NMHDR(c_Structure):
     _fields_ = [

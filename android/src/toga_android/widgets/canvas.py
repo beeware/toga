@@ -22,6 +22,7 @@ from toga.constants import Baseline, FillRule
 from toga.widgets.canvas.geometry import arc_to_bezier, round_rect, sweepangle
 
 from ..colors import native_color
+from ..libs.events import PythonRunnable
 from .base import Widget, suppress_reference_error
 
 BLACK = jint(native_color(rgb(0, 0, 0)))
@@ -54,7 +55,7 @@ class Context:
         stroke = Paint()
         stroke.setAntiAlias(True)
         stroke.setStyle(Paint.Style.STROKE)
-        stroke.setStrokeWidth(2.0)
+        stroke.setStrokeWidth(1.0)
         stroke.setColor(BLACK)
         stroke.setStrokeMiter(10.0)
 
@@ -239,42 +240,53 @@ class Context:
         self.scale(self.impl.dpi_scale, self.impl.dpi_scale)
 
     # Text
-    def write_text(self, text, x, y, font, baseline, line_height):
+    def fill_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            self.state.fill,
+        )
+
+    def stroke_text(self, text, x, y, font, baseline, line_height):
+        self._fill_or_stroke_text(
+            text,
+            x,
+            y,
+            font,
+            baseline,
+            line_height,
+            self.state.stroke,
+        )
+
+    def _fill_or_stroke_text(self, text, x, y, font, baseline, line_height, paint):
         lines = text.splitlines()
-        paint = self.impl._text_paint(font)
-        scaled_line_height = self.impl._line_height(paint, line_height)
+        text_paint = self.impl._text_paint(font)
+        scaled_line_height = self.impl._line_height(text_paint, line_height)
         total_height = scaled_line_height * len(lines)
 
         # paint.ascent returns a negative number.
-        if baseline == Baseline.TOP:
-            top = y - paint.ascent()
-        elif baseline == Baseline.MIDDLE:
-            top = y - paint.ascent() - (total_height / 2)
-        elif baseline == Baseline.BOTTOM:
-            top = y - paint.ascent() - total_height
-        else:
-            # Default to Baseline.ALPHABETIC
-            top = y
+        match baseline:
+            case Baseline.TOP:
+                top = y - text_paint.ascent()
+            case Baseline.MIDDLE:
+                top = y - text_paint.ascent() - (total_height / 2)
+            case Baseline.BOTTOM:
+                top = y - text_paint.ascent() - total_height
+            case _:
+                # Default to Baseline.ALPHABETIC
+                top = y
 
-        # Avoid mutating state
-        if self.in_fill:
-            fill = Paint(self.state.fill)
-            fill.setTypeface(font.typeface())
-            fill.setTextSize(self.impl.scale_out(font.size()))
+        # Avoid mutating state.
+        paint = Paint(paint)
+        paint.setTypeface(font.typeface())
+        paint.setTextSize(self.impl.scale_out(font.size()))
 
-        if self.in_stroke:
-            stroke = Paint(self.state.stroke)
-            stroke.setTypeface(font.typeface())
-            stroke.setTextSize(self.impl.scale_out(font.size()))
-
-        for line_num, line in enumerate(text.splitlines()):
-            # FILL_AND_STROKE doesn't allow separate colors, so we have to draw twice.
-            draw_args = (line, x, top + (scaled_line_height * line_num))
-
-            if self.in_fill:
-                self.native.drawText(*draw_args, fill)
-            if self.in_stroke:
-                self.native.drawText(*draw_args, stroke)
+        for line_num, line in enumerate(lines):
+            self.native.drawText(line, x, top + (scaled_line_height * line_num), paint)
 
     # Bitmaps
     def draw_image(self, image, x, y, width, height):
@@ -323,15 +335,37 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
         return True
 
 
+class LayoutChangeListener(dynamic_proxy(View.OnLayoutChangeListener)):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = weakref.proxy(impl)
+        self.interface = weakref.proxy(impl.interface)
+
+    def onLayoutChange(
+        self, view, left, top, right, bottom, old_left, old_top, old_right, old_bottom
+    ):
+        # The resize handler may alter the layout, and changing the layout
+        # during a layout pass raises warnings; defer the notification until the
+        # current pass is complete.
+        width = right - left
+        height = bottom - top
+        view.post(PythonRunnable(lambda: self.notify_resize(width, height)))
+
+    def notify_resize(self, width, height):
+        with suppress_reference_error():
+            self.interface.on_resize(
+                width=self.impl.scale_out(width),
+                height=self.impl.scale_out(height),
+            )
+
+
 class Canvas(Widget):
     def create(self):
         self.native = DrawHandlerView(self._native_activity)
         self.native.setDrawHandler(DrawHandler(self))
         self.native.setOnTouchListener(TouchListener(self))
-
-    def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
-        self.interface.on_resize(width=width, height=height)
+        self.layout_change_listener = LayoutChangeListener(self)
+        self.native.addOnLayoutChangeListener(self.layout_change_listener)
 
     def redraw(self):
         self.native.invalidate()

@@ -24,6 +24,12 @@ from .test_dateinput import (  # noqa: F401
     test_value,
 )
 
+skip_on_backends(
+    "toga_textual",
+    reason="TimeInput is not implemented on Textual.",
+    allow_module_level=True,
+)
+
 
 @fixture
 async def initial_value(widget):

@@ -12,6 +12,7 @@ from .properties import toga_color, toga_font
 
 class SimpleProbe(BaseProbe, FontMixin):
     invalid_size_while_hidden = GTK_VERSION >= (4, 0, 0)
+    supports_tab_index = False
 
     def __init__(self, widget):
         super().__init__()
@@ -155,6 +156,11 @@ class SimpleProbe(BaseProbe, FontMixin):
     @property
     def is_hidden(self):
         return not self.native.get_visible()
+
+    async def ensure_focus(self, message=None):
+        self.widget.focus()
+        await self.redraw("Widget has been given focus" if message is None else message)
+        assert self.has_focus
 
     @property
     def has_focus(self):

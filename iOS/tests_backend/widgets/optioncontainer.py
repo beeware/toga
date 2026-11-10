@@ -1,3 +1,5 @@
+import platform
+
 import pytest
 
 from toga_iOS.libs import UITabBarController
@@ -10,15 +12,16 @@ class OptionContainerProbe(SimpleProbe):
     native_class = UITabBarController
     disabled_tab_selectable = False
     max_tabs = None
+    uses_more = platform.system() not in ["iPadOS"]
     more_option_is_stateful = True
 
     @property
     def width(self):
-        return self.native.frame.size.width
+        return self.native.bounds.size.width
 
     @property
     def height(self):
-        return self.native.frame.size.height
+        return self.native.bounds.size.height
 
     def assert_supports_content_based_rehint(self):
         pytest.skip("Content-based rehinting not yet supported on this platform")
@@ -33,7 +36,7 @@ class OptionContainerProbe(SimpleProbe):
             )
 
             self.impl.native_controller.selectedIndex = index - n_disabled
-            if self.impl.native_controller.selectedIndex <= 4:
+            if (not self.uses_more) or (self.impl.native_controller.selectedIndex <= 4):
                 # Programmatically selecting a tab doesn't trigger the didSelectItem
                 # event.
                 self.impl.native_controller.tabBar_didSelectItem_(
@@ -42,15 +45,19 @@ class OptionContainerProbe(SimpleProbe):
                 )
 
     def select_more(self):
-        more = self.impl.native_controller.moreNavigationController
-        self.impl.native_controller.selectedViewController = more
+        # iPhones use the More mechanism, iPads scroll
+        if self.uses_more:
+            more = self.impl.native_controller.moreNavigationController
+            self.impl.native_controller.selectedViewController = more
 
     async def wait_for_tab(self, message):
         await self.redraw(message, delay=0.1)
 
     def reset_more(self):
-        more = self.impl.native_controller.moreNavigationController
-        more.popToRootViewControllerAnimated(False)
+        # iPhones use the More mechanism, iPads scroll
+        if self.uses_more:
+            more = self.impl.native_controller.moreNavigationController
+            more.popToRootViewControllerAnimated(False)
 
     def tab_enabled(self, index):
         return self.impl.sub_containers[index].enabled

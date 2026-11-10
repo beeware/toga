@@ -20,7 +20,7 @@ class Command:
             StandardCommand.VISIT_HOMEPAGE,
         }:
             # These are valid commands, but they're not defined on iOS.
-            return None
+            return
 
         raise ValueError(f"Unknown standard command {id!r}")
 

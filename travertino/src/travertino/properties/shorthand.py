@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from typing import ClassVar
 
 from ..constants import BOTTOM, LEFT, RIGHT, TOP
 
@@ -43,7 +44,7 @@ class shorthand_property(ABC):
 
 
 class directional_property(shorthand_property):
-    ASSIGNMENT_SCHEMES = {
+    ASSIGNMENT_SCHEMES: ClassVar[dict[int, list[int]]] = {
         #   T  R  B  L
         1: [0, 0, 0, 0],
         2: [0, 1, 0, 1],

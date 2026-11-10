@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import ClassVar
 
 from PySide6.QtGui import QIcon
 
@@ -11,7 +12,7 @@ IMPL_DICT = {}
 
 
 class Icon:
-    EXTENSIONS = [".png", ".jpeg", ".jpg", ".gif", ".bmp", ".ico"]
+    EXTENSIONS: ClassVar[list[str]] = [".png", ".jpeg", ".jpg", ".gif", ".bmp", ".ico"]
     SIZES = None
 
     def __init__(self, interface, path):
@@ -24,7 +25,7 @@ class Icon:
             # look for the highest size, since Qt icon sizing is handled by the
             # theme, and from Toga's perspective, they're unsized.
             SIZES = [512, 256, 128, 72, 64, 32, 16]
-            hicolor = Path(sys.executable).parent.parent / "share/icons/hicolor"
+            hicolor = Path(sys.orig_argv[0]).parent.parent / "share/icons/hicolor"
             sizes = {
                 size: hicolor / f"{size}x{size}/apps/{toga.App.app.app_id}.png"
                 for size in SIZES

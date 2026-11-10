@@ -1,3 +1,4 @@
+import asyncio
 from abc import ABC, abstractmethod
 
 from travertino.size import at_least
@@ -35,19 +36,37 @@ class Widget(Scalable, ABC):
     def __init__(self, interface):
         self.interface = interface
         self.container = None
+        self._pending_removal = None
         self.create()
 
-    def install(self, parent):
+    def _mount(self, parent, before):
+        """Perform the mounting of the widget and its children"""
+        parent.native.mount(self.native, before=before)
+
+        for child in self.interface.children:
+            child._impl.install(parent=self)
+
+    async def _deferred_mount(self, parent, before):
+        """Perform a mount that is deferred until any pending removal is complete."""
+        # Ensure there are no pending actions.
+        await self._pending_removal
+        self._pending_removal = None
+        self._mount(parent, before)
+
+    def install(self, parent, before=None):
         """Add widget and its children to the native DOM for the app.
 
         Textual does not allow widgets to be added to the DOM until their parent is
         added. Therefore, when children are added to an unmounted widget, their
         mounting is deferred until their parent is mounted.
         """
-        parent.native.mount(self.native)
-
-        for child in self.interface.children:
-            child._impl.install(parent=self)
+        self.container = parent
+        # If the widget is being reparented, the removal from the old parent
+        # may not have been processed yet.
+        if self._pending_removal:
+            asyncio.create_task(self._deferred_mount(parent, before))
+        else:
+            self._mount(parent, before)
 
     def get_size(self) -> Size:
         return Size(0, 0)
@@ -55,10 +74,10 @@ class Widget(Scalable, ABC):
     @abstractmethod
     def create(self): ...
 
-    def set_app(self, app):  # noqa B027
+    def set_app(self, app):
         pass
 
-    def set_window(self, window):  # noqa B027
+    def set_window(self, window):
         pass
 
     def get_enabled(self):
@@ -67,13 +86,13 @@ class Widget(Scalable, ABC):
     def set_enabled(self, value):
         self.native.disabled = not value
 
-    def focus(self):  # noqa B027
-        pass
+    def focus(self):
+        self.native.app.set_focus(self.native)
 
     def get_tab_index(self):
         return None
 
-    def set_tab_index(self, tab_index):  # noqa B027
+    def set_tab_index(self, tab_index):
         pass
 
     ######################################################################
@@ -145,19 +164,19 @@ class Widget(Scalable, ABC):
             self.scale_in_horizontal(margin_left),
         )
 
-    def set_text_align(self, alignment):  # noqa B027
+    def set_text_align(self, alignment):
         pass
 
-    def set_hidden(self, hidden):  # noqa B027
+    def set_hidden(self, hidden):
+        self.native.visible = not hidden
+
+    def set_font(self, font):
         pass
 
-    def set_font(self, font):  # noqa B027
+    def set_color(self, color):
         pass
 
-    def set_color(self, color):  # noqa B027
-        pass
-
-    def set_background_color(self, color):  # noqa B027
+    def set_background_color(self, color):
         pass
 
     ######################################################################
@@ -168,13 +187,20 @@ class Widget(Scalable, ABC):
         # A child can only be added to a widget that is already mounted on the app.
         # So, mounting the child is deferred if the parent is not mounted yet.
         if self.native.is_attached:
-            self.native.mount(child.native)
+            child.install(parent=self)
+        else:
+            child.container = self
 
-    def insert_child(self, index, child):  # noqa B027
-        pass
+    def insert_child(self, index, child):
+        if self.native.is_attached:
+            child.install(parent=self, before=index)
+        else:
+            child.container = self
 
     def remove_child(self, child):
-        self.native.remove_children([child.native])
+        child.container = None
+        if child.native.is_attached:
+            child._pending_removal = self.native.remove_children([child.native])
 
     def refresh(self):
         intrinsic = self.interface.intrinsic

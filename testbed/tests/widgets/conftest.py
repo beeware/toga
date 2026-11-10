@@ -90,6 +90,14 @@ def verify_vertical_text_align():
     return TOP
 
 
+@pytest.fixture
+def verify_focus_align():
+    """Whether to verify text alignment change under focus; used for widgets
+    with problematic behavior under that case.  False by default since it's heavy
+    and only some widgets truly need it to prevent regression."""
+    return False
+
+
 @contextmanager
 def safe_create():
     """A context manager to protect against widgets that can't be instantiated.

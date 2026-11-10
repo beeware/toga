@@ -183,7 +183,6 @@ KEYEVENT_KEY_CODES = {
     Key.NUMPAD_MULTIPLY: "*",
     Key.NUMPAD_PLUS: "+",
 }
-#
 KEYEVENT_MODIFIER_CODES = {
     Key.CAPSLOCK: "<CapsLock>",
     Key.SHIFT: "<Shift>",

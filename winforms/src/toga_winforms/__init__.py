@@ -1,5 +1,6 @@
 import os
 import platform
+from importlib.metadata import version
 from pathlib import Path
 
 import clr_loader
@@ -62,17 +63,26 @@ and install the .NET Desktop Runtime.""") from None
 
 
 import clr
-import travertino
 
 from .libs.user32 import SetProcessDpiAwarenessContext
-from .libs.win32constants import DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+from .libs.win32constants import (
+    DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,
+)
+
+# Enable DPI awareness. This must be done before calling any other UI-related code
+# (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/high-dpi-support-in-windows-forms).
+if not SetProcessDpiAwarenessContext(
+    DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+):  # pragma: no cover
+    print("WARNING: Failed to set the DPI Awareness mode for the app.")
+    print("WARNING: Toga requires Windows 10, version 1703 (build 15063),")
+    print("WARNING: or Windows Server 2016.")
 
 # Add a reference to the Winforms assembly
 clr.AddReference("System.Windows.Forms")
 
 # .NET Core requires some other explicit assemblies
 if _use_dotnet_core:  # pragma: no-cover-if-netfx
-    clr.AddReference("Microsoft.Win32.SystemEvents")
     clr.AddReference("System.Windows.Extensions")
 else:  # pragma: no-cover-if-netcore
     # We can't do conditional branch coverage, so we need a no-op else
@@ -90,17 +100,9 @@ clr.AddReference(
 )
 
 
-# Enable DPI awareness. This must be done before calling any other UI-related code
-# (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/high-dpi-support-in-windows-forms).
 import System.Windows.Forms as WinForms  # noqa: E402
 
 WinForms.Application.EnableVisualStyles()
 WinForms.Application.SetCompatibleTextRenderingDefault(False)
 
-if SetProcessDpiAwarenessContext is not None:
-    if not SetProcessDpiAwarenessContext(
-        DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
-    ):  # pragma: no cover
-        print("WARNING: Failed to set the DPI Awareness mode for the app.")
-
-__version__ = travertino._package_version(__file__, __name__)
+__version__ = version("toga-winforms")
