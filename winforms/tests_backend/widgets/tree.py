@@ -202,7 +202,7 @@ class TreeProbe(TableProbe):
         )
         await asyncio.sleep(0.1)
         assert state_node.mouse_hover
-        assert self.impl._mouse_move_hit == 0
+        assert self.impl._mouse_move_hit == display_index
 
         # Move mouse away from state-change arrow, but still on the item.
         self.mouse_move_event(
