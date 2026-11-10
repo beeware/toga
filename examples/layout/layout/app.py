@@ -1,5 +1,5 @@
 import toga
-from toga.constants import CENTER, HIDDEN, VISIBLE
+from toga.constants import CENTER, HIDDEN, ROW, VISIBLE
 
 
 class LayoutApp(toga.App):
@@ -24,7 +24,13 @@ class LayoutApp(toga.App):
         image = toga.Image("resources/tiberius.png")
         self.image_view = toga.ImageView(image, width=60, height=60)
 
-        self.label_clipped = toga.Label("Truncated text", width=80)
+        self.label_clipped = toga.Box(
+            children=[
+                toga.Label("Truncated text", width=80),
+                toga.Label("Next text", width=80),
+            ],
+            direction=ROW,
+        )
 
         # this tests adding children during init, before we have an implementation
         self.button_box = toga.Column(
