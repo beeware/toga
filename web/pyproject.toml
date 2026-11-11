@@ -106,6 +106,9 @@ TimeInput = "toga_web.widgets.timeinput:TimeInput"
 # Tree = "toga_web.widgets.tree:Tree"
 # WebView = "toga_web.widgets.webview:WebView"
 
+# Scaffolds
+Scaffold = "toga_web.scaffolds.base:Scaffold"
+
 # Windows
 MainWindow = "toga_web.window:MainWindow"
 Window = "toga_web.window:Window"
