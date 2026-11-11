@@ -75,7 +75,9 @@ class Scaffold(Scalable):
 
     def _unmount_content(self):
         if self._window is not None and self._content.native.is_attached:
-            self._window.native.remove_children([self._content.native])
+            self._content._pending_removal = self._window.native.remove_children(
+                [self._content.native]
+            )
 
     def attach(self, window):
         self._window = window
