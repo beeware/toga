@@ -24,11 +24,14 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
         If any view's size or position has changed, the new values will be visible here.
         """
-        self.window.interface.on_resize()
+        # Resize the current scaffold's container first, so that window.size is
+        # correct when the on_resize handler is invoked (e.g., immediately after a
+        # new scaffold has been attached).
         native_parent = self.window.native_parent
         self.window.scaffold.container.resize_content(
             native_parent.getWidth(), native_parent.getHeight()
         )
+        self.window.interface.on_resize()
 
 
 class Window:
@@ -91,9 +94,11 @@ class Window:
         scaffold.title = self.get_title()
         scaffold.navigation_bar_hidden = self._navigation_bar_hidden
 
-        # The first scaffold is set before the window has an app; it will be
-        # attached when set_app() is invoked. Core only invokes set_scaffold
-        # with a *different* scaffold once the window has an app.
+        # The first scaffold is set during window construction, before the window
+        # has an app; it will be attached when set_app() is invoked. After
+        # construction, core's Window.content setter only calls set_scaffold() when
+        # the new scaffold differs from the current one; by then set_app() has run,
+        # so there is always a previously attached scaffold to detach.
         if self.app is not None:
             self.scaffold.detach()
             scaffold.attach(self.app.native, self.native_parent)

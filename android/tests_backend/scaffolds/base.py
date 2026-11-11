@@ -13,8 +13,8 @@ class ScaffoldProbe(BaseProbe):
         self.container = self.impl.container
 
     async def _wait_for_assertion(self, assertion):
-        # Loop for up to `timeout` seconds, until assertion() passes without
-        # raising an AssertionError
+        # Loop for up to 5 seconds, polling every 0.1s, until assertion() passes
+        # without raising an AssertionError.
         timeout = 5
         polling_interval = 0.1
         loop = asyncio.get_running_loop()
