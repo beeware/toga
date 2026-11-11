@@ -256,6 +256,7 @@ jobs:
     name: Testbed (${{ matrix.backend }})
     needs: [ core-and-travertino ]
     runs-on: ${{ matrix.runs-on }}
+    env: ${{ matrix.env || fromJSON('{}') }}
     strategy:
       fail-fast: false
       matrix:
@@ -360,6 +361,9 @@ jobs:
           runs-on: "ubuntu-24.04"
           env:
             XDG_RUNTIME_DIR: "/tmp"
+            # Hosted runners have no GPU for WebKit's accelerated surfaces.
+            LIBGL_ALWAYS_SOFTWARE: "true"
+            WEBKIT_DMABUF_RENDERER_DISABLE_GBM: "1"
           # The package list should be build on the same base as unix-prerequisites.md,
           # and the BeeWare tutorial. Additional packages will be added for window
           # management, and features such as web views and geolocation that aren't part
@@ -369,7 +373,7 @@ jobs:
             sudo apt install -y --no-install-recommends \
               mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
-              gir1.2-gtk-4.0
+              gir1.2-gtk-4.0 libgl1-mesa-dri
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -392,6 +396,8 @@ jobs:
           runs-on: "ubuntu-24.04"
           env:
             XDG_RUNTIME_DIR: "/tmp"
+            LIBGL_ALWAYS_SOFTWARE: "true"
+            WEBKIT_DMABUF_RENDERER_DISABLE_GBM: "1"
           # The package list should be build on the same base as unix-prerequisites.md,
           # and the BeeWare tutorial. Additional packages will be added for window
           # management, and features such as web views and geolocation that aren't part
@@ -401,7 +407,7 @@ jobs:
             sudo apt install -y --no-install-recommends \
               mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
-              gir1.2-gtk-4.0 gir1.2-adw-1
+              gir1.2-gtk-4.0 gir1.2-adw-1 libgl1-mesa-dri
 
             # Start Virtual X Server
             echo "Start X server..."
