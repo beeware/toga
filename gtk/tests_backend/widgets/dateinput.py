@@ -50,7 +50,11 @@ class DateInputProbe(DateTimeInputProbe):
 
     async def change(self, delta):
         if GTK_VERSION >= (4, 0, 0):
-            self.native.select_day(self.native.get_date().add_days(delta))
+            value = self.native.get_date().add_days(delta)
+            if GTK_VERSION >= (4, 20, 0):
+                self.native.set_date(value)
+            else:
+                self.native.select_day(value)
 
             await self.redraw(f"Change value by {delta} days")
         else:
