@@ -105,6 +105,9 @@ TimeInput = "toga_winforms.widgets.timeinput:TimeInput"
 Tree = "toga_winforms.widgets.tree:Tree"
 WebView = "toga_winforms.widgets.webview:WebView"
 
+# Scaffolds
+Scaffold = "toga_winforms.scaffolds.base:Scaffold"
+
 # Windows
 MainWindow = "toga_winforms.window:MainWindow"
 Window = "toga_winforms.window:Window"
