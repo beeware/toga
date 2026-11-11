@@ -20,7 +20,7 @@ The native APIs are accessed using [Rubicon Objective-C](https://rubicon-objc.re
 
 ### App lifecycle hooks
 
-iOS notifies an app of lifecycle events by calling methods on two delegates: a `UIApplicationDelegate` for app-level events (launch, memory warnings, termination, etc.), and a `UIWindowSceneDelegate` for scene-level events (activation, moving to the background or foreground, etc.). Toga's implementation of these delegates hands off every lifecycle method it receives to a same-named method on the iOS `App` implementation class, prefixed with `uikit_`. For example, the `sceneDidBecomeActive:` notification is handled by `uikit_sceneDidBecomeActive()` on the iOS App class.
+iOS notifies an app of app-level lifecycle events (launch, memory warnings, termination, etc.) by calling methods on a `UIApplicationDelegate`. Toga's implementation of this delegate hands off each lifecycle method it receives to a same-named method on the iOS `App` implementation class, prefixed with `uikit_`. For example, the `applicationDidReceiveMemoryWarning:` notification is handled by `uikit_applicationDidReceiveMemoryWarning()` on the iOS App class.
 
 An app can hook into a lifecycle event by defining a custom subclass of a platform's App implementation class:
 
@@ -31,10 +31,15 @@ if sys.platform == "ios":
     from toga_iOS.app import App as iOSApp
 
     class MyiOSApp(iOSApp):
-        def uikit_sceneDidEnterBackground(self, scene):
+        def uikit_application_didFinishLaunchingWithOptions(
+            self, application, launchOptions
+        ):
             # ... custom logic before default Toga implementation ...
-            super().uikit_sceneDidEnterBackground(scene)
+            result = super().uikit_application_didFinishLaunchingWithOptions(
+                application, launchOptions
+            )
             # ... custom logic after default Toga implementation ...
+            return result
 ```
 
 You can then direct your app to use this custom class by overriding the [`create()`][toga.App.create] method on your app to construct and return an instance of your custom App class when running on iOS:
@@ -50,9 +55,9 @@ class MyApp(toga.App):
     def startup(self): ...
 ```
 
-Each hook receives the same arguments as the underlying delegate method (the `UIApplication` or `UIScene` instance, plus any additional arguments). `uikit_application_didFinishLaunchingWithOptions()`, `uikit_scene_willConnectToSession_options()`, `uikit_sceneDidBecomeActive()`, `uikit_sceneWillResignActive()`, `uikit_sceneDidEnterBackground()` and `uikit_sceneWillEnterForeground()` already implement behavior required by Toga's cross-platform API (e.g. creating the app, or triggering `on_hide`/`on_show` on the window); if you override one of these, call the base implementation to preserve that behavior, as shown in the example above.
+Each hook receives the same arguments as the underlying delegate method (the `UIApplication` instance, plus any additional arguments). `uikit_application_didFinishLaunchingWithOptions()` already implements behavior required by Toga's cross-platform API (creating the app and showing the main window); if you override it, call the base implementation and return its result, as shown in the example above.
 
-Toga uses the scene-based lifecycle, so iOS does not deliver the app-level activation and background notifications (such as `applicationDidBecomeActive:` or `applicationDidEnterBackground:`). Use the equivalent scene hooks instead.
+Toga uses the scene-based lifecycle, so iOS does not deliver the deprecated app-level activation and background notifications (such as `applicationDidBecomeActive:` or `applicationDidEnterBackground:`); no hooks are provided for them.
 
 The following lifecycle hooks are available:
 
@@ -69,9 +74,3 @@ The following lifecycle hooks are available:
             - uikit_applicationProtectedDataWillBecomeUnavailable
             - uikit_applicationProtectedDataDidBecomeAvailable
             - uikit_applicationWillTerminate
-            - uikit_scene_willConnectToSession_options
-            - uikit_sceneDidDisconnect
-            - uikit_sceneDidBecomeActive
-            - uikit_sceneWillResignActive
-            - uikit_sceneDidEnterBackground
-            - uikit_sceneWillEnterForeground

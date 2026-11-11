@@ -91,15 +91,6 @@ class AppProbe(BaseProbe, DialogsMixin):
     def terminate(self):
         self.native.delegate.applicationWillTerminate(self.native)
 
-    def trigger_lifecycle_notification(self, selector, *args):
-        """Directly invoke a method on the app's or scene's native delegate,
-        simulating the native lifecycle notification that would normally trigger it."""
-        app_delegate = self.native.delegate
-        if hasattr(app_delegate, selector):
-            return getattr(app_delegate, selector)(*args)
-        scene = self.app.current_window._impl.native.windowScene
-        return getattr(scene.delegate, selector)(*args)
-
     def rotate(self):
         raise pytest.xfail("Impossible to simulate device rotation on iOS")
 

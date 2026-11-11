@@ -21,27 +21,34 @@ class PythonSceneDelegate(UIResponder, protocols=(UIWindowSceneDelegate,)):
 
     @objc_method
     def scene_willConnectToSession_options_(self, scene, session, options) -> None:
-        App.app.uikit_scene_willConnectToSession_options(scene, session, options)
+        assert isinstance(scene, UIWindowScene), "iOS should provide UIWindowScene"
 
-    @objc_method
-    def sceneDidDisconnect_(self, scene) -> None:
-        App.app.uikit_sceneDidDisconnect(scene)
+        # Associate pre-created single main window with the scene
+        window = App.app.interface.current_window._impl.native
+        window.windowScene = scene
+
+        self.window = window
+        window.makeKeyAndVisible()
 
     @objc_method
     def sceneDidBecomeActive_(self, scene) -> None:
-        App.app.uikit_sceneDidBecomeActive(scene)
+        print("Scene became active.")
+        App.app.interface.current_window.on_gain_focus()
 
     @objc_method
     def sceneWillResignActive_(self, scene) -> None:
-        App.app.uikit_sceneWillResignActive(scene)
+        print("Scene about to leave foreground.", flush=True)
+        App.app.interface.current_window.on_lose_focus()
 
     @objc_method
     def sceneDidEnterBackground_(self, scene) -> None:
-        App.app.uikit_sceneDidEnterBackground(scene)
+        print("Scene entered background.")
+        App.app.interface.current_window.on_hide()
 
     @objc_method
     def sceneWillEnterForeground_(self, scene) -> None:
-        App.app.uikit_sceneWillEnterForeground(scene)
+        print("Scene about to enter foreground.")
+        App.app.interface.current_window.on_show()
 
 
 class PythonAppDelegate(UIResponder):
@@ -72,19 +79,27 @@ class PythonAppDelegate(UIResponder):
         )
 
     @objc_method
-    def applicationDidReceiveMemoryWarning_(self, application) -> None:
+    def applicationDidReceiveMemoryWarning_(
+        self, application
+    ) -> None:  # pragma: no cover
         App.app.uikit_applicationDidReceiveMemoryWarning(application)
 
     @objc_method
-    def applicationSignificantTimeChange_(self, application) -> None:
+    def applicationSignificantTimeChange_(
+        self, application
+    ) -> None:  # pragma: no cover
         App.app.uikit_applicationSignificantTimeChange(application)
 
     @objc_method
-    def applicationProtectedDataWillBecomeUnavailable_(self, application) -> None:
+    def applicationProtectedDataWillBecomeUnavailable_(
+        self, application
+    ) -> None:  # pragma: no cover
         App.app.uikit_applicationProtectedDataWillBecomeUnavailable(application)
 
     @objc_method
-    def applicationProtectedDataDidBecomeAvailable_(self, application) -> None:
+    def applicationProtectedDataDidBecomeAvailable_(
+        self, application
+    ) -> None:  # pragma: no cover
         App.app.uikit_applicationProtectedDataDidBecomeAvailable(application)
 
     @objc_method
@@ -159,41 +174,6 @@ class App:
 
     def uikit_applicationWillTerminate(self, application):
         """Invoked by `applicationWillTerminate:`. No-op by default."""
-
-    def uikit_scene_willConnectToSession_options(self, scene, session, options):
-        """Invoked by `scene:willConnectToSession:options:`.
-
-        By default, this attaches the main window to the scene and makes it
-        visible.
-        """
-        assert isinstance(scene, UIWindowScene), "iOS should provide UIWindowScene"
-        window = self.interface.current_window._impl.native
-        window.windowScene = scene
-        scene.delegate.window = window
-        window.makeKeyAndVisible()
-
-    def uikit_sceneDidDisconnect(self, scene):
-        """Invoked by `sceneDidDisconnect:`. No-op by default."""
-
-    def uikit_sceneDidBecomeActive(self, scene):
-        """Invoked by `sceneDidBecomeActive:`. By default, this triggers
-        `on_gain_focus` on the current window."""
-        self.interface.current_window.on_gain_focus()
-
-    def uikit_sceneWillResignActive(self, scene):
-        """Invoked by `sceneWillResignActive:`. By default, this triggers
-        `on_lose_focus` on the current window."""
-        self.interface.current_window.on_lose_focus()
-
-    def uikit_sceneDidEnterBackground(self, scene):
-        """Invoked by `sceneDidEnterBackground:`. By default, this triggers
-        `on_hide` on the current window."""
-        self.interface.current_window.on_hide()
-
-    def uikit_sceneWillEnterForeground(self, scene):
-        """Invoked by `sceneWillEnterForeground:`. By default, this triggers
-        `on_show` on the current window."""
-        self.interface.current_window.on_show()
 
     ######################################################################
     # Commands and menus

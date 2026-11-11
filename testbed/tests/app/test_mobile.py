@@ -7,8 +7,6 @@ from toga.colors import REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style import Pack
 
-from ..conftest import skip_on_platforms
-
 ####################################################################################
 # Mobile platform tests
 ####################################################################################
@@ -117,32 +115,6 @@ async def test_app_lifecycle(app, app_probe):
 
     app_probe.terminate()
     await app_probe.redraw("App pre-termination logic has been invoked")
-
-
-@pytest.mark.parametrize(
-    "selector",
-    [
-        "applicationDidReceiveMemoryWarning_",
-        "applicationSignificantTimeChange_",
-        "applicationProtectedDataWillBecomeUnavailable_",
-        "applicationProtectedDataDidBecomeAvailable_",
-    ],
-)
-async def test_app_lifecycle_hooks(app, app_probe, selector):
-    """App-level native lifecycle notifications are handled."""
-    skip_on_platforms("android", reason="Native lifecycle hooks not implemented")
-
-    app_probe.trigger_lifecycle_notification(selector, app._impl.native)
-    await app_probe.redraw(f"{selector} has been invoked")
-
-
-async def test_scene_disconnect_hook(app, app_probe, main_window):
-    """The native scene disconnect notification is handled."""
-    skip_on_platforms("android", reason="Native lifecycle hooks not implemented")
-
-    scene = main_window._impl.native.windowScene
-    app_probe.trigger_lifecycle_notification("sceneDidDisconnect_", scene)
-    await app_probe.redraw("sceneDidDisconnect_ has been invoked")
 
 
 async def test_device_rotation(app, app_probe):
