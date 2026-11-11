@@ -105,7 +105,7 @@ class SliderApp(toga.App):
 
 
 def main():
-    return SliderApp("Slider", "org.beeware.toga.examples.slider")
+    return SliderApp("Slider Demo", "org.beeware.toga.examples.slider")
 
 
 if __name__ == "__main__":

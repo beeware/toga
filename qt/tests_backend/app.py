@@ -24,6 +24,7 @@ class AppProbe(BaseProbe):
     supports_psutil = True
     # Qt doesn't always beep immediately.
     beep_delay = 5
+    control_key = toga.Key.MOD_1
 
     def __init__(self, app):
         super().__init__()

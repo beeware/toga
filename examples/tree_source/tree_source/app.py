@@ -169,7 +169,7 @@ class TreeSourceApp(toga.App):
 
 
 def main():
-    return TreeSourceApp("Tree Source", "org.beeware.toga.examples.tree_source")
+    return TreeSourceApp("Tree Source Demo", "org.beeware.toga.examples.tree_source")
 
 
 if __name__ == "__main__":

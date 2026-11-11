@@ -167,7 +167,7 @@ class TreeApp(toga.App):
 
 
 def main():
-    return TreeApp("Tree", "org.beeware.toga.examples.tree")
+    return TreeApp("Tree Demo", "org.beeware.toga.examples.tree")
 
 
 if __name__ == "__main__":

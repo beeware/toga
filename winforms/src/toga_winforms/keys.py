@@ -13,6 +13,13 @@ WINFORMS_MODIFIERS = {
     Key.SHIFT: WinForms.Keys.Shift,
 }
 
+# Modifiers that can be used in a shortcut definition. The physical Control key
+# is the same key as MOD_1, so key events report it as MOD_1.
+WINFORMS_SHORTCUT_MODIFIERS = {
+    **WINFORMS_MODIFIERS,
+    Key.CONTROL: WinForms.Keys.Control,
+}
+
 WINFORMS_KEYS = {
     Key.ESCAPE.value: WinForms.Keys.Escape,
     # Key.BACK_QUOTE.value: WinForms.Keys.Oemtilde,  # No idea what the code should be
@@ -83,7 +90,7 @@ def toga_to_winforms_key(key):
         pass
 
     codes = []
-    for modifier, modifier_code in WINFORMS_MODIFIERS.items():
+    for modifier, modifier_code in WINFORMS_SHORTCUT_MODIFIERS.items():
         if modifier.value in key:
             codes.append(modifier_code)
             key = key.replace(modifier.value, "")
@@ -120,12 +127,15 @@ def toga_to_winforms_shortcut(key):
     display = []
     for toga_keyval, winforms_keyval in [
         (Key.MOD_1.value, "Ctrl"),
+        (Key.CONTROL.value, "Ctrl"),
         (Key.MOD_2.value, "Alt"),
         (Key.SHIFT.value, "Shift"),
     ]:
         if toga_keyval in key:
             display.append(winforms_keyval)
             key = key.replace(toga_keyval, "")
+    # MOD_1 and CONTROL are the same key; only show it once.
+    display = list(dict.fromkeys(display))
 
     if key == " ":
         display.append("Space")

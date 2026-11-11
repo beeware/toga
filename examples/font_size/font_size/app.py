@@ -31,4 +31,4 @@ class FontSize(toga.App):
 
 
 def main():
-    return FontSize("Font size", "org.beeware.toga.examples.font_size")
+    return FontSize("Font size Demo", "org.beeware.toga.examples.font_size")
