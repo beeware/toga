@@ -8,7 +8,6 @@ from textual.widgets import Button as TextualButton
 from toga import Position, Size
 from toga.constants import WindowState
 
-from .container import Container
 from .screens import Screen as ScreenImpl
 
 
@@ -110,16 +109,16 @@ class TogaWindow(TextualScreen):
 
     def on_resize(self, event) -> None:
         self.interface.on_resize()
-        if self.interface.content is not None:
-            self.interface.content.refresh()
+        self.impl.scaffold.refresh()
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, position, size):
         self.interface = interface
+        # An actual set_scaffold call will come later, but we already have a
+        # placeholder scaffold we can use; this simplifies edge cases.
+        self.scaffold = self.interface._scaffold._impl
         self.create()
-        self.container = Container(self.native)
-        self.set_title(title)
 
     def create(self):
         self.native = TogaWindow(self)
@@ -136,10 +135,10 @@ class Window:
     ######################################################################
 
     def get_title(self):
-        return self.title
+        return self.scaffold.title
 
     def set_title(self, title):
-        self.title = title
+        self.scaffold.title = title
 
     ######################################################################
     # Window lifecycle
@@ -159,23 +158,13 @@ class Window:
     # Window content and resources
     ######################################################################
 
-    def set_content(self, widget):
-        if self.container.content:
-            if self.container.content.native.is_attached:
-                self.native.remove_children([self.container.content.native])
-        self.container.content = widget
-        widget.install(parent=self)
-
-    @property
-    def width(self):
-        return self.container.width
-
-    @property
-    def height(self):
-        return self.container.height
-
-    def refreshed(self):
-        pass
+    def set_scaffold(self, scaffold):
+        # Sync the current title onto the new scaffold.
+        scaffold.title = self.get_title()
+        # Detaching an unattached (placeholder) scaffold is a no-op.
+        self.scaffold.detach()
+        self.scaffold = scaffold
+        scaffold.attach(self)
 
     ######################################################################
     # Window size
@@ -252,8 +241,6 @@ class MainWindow(Window):
     # Window properties
     ######################################################################
 
-    def get_title(self):
-        return self.native.titlebar.text
-
     def set_title(self, title):
+        super().set_title(title)
         self.native.titlebar.text = title
