@@ -12,6 +12,9 @@ class CanvasProbe(SimpleProbe):
     screenshot_reset_transform = False
 
     def reference_variant(self, reference):
+        if reference == "deprecated_tutorial" and GTK_VERSION >= (4, 0, 0):
+            # GTK4 uses fractional font metrics; GTK3 rounds them to pixels.
+            return f"{reference}-gtk4"
         if reference in {"multiline_text", "reset_transform"}:
             if IS_WAYLAND:
                 return f"{reference}-gtk-wayland"
