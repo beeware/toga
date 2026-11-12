@@ -44,12 +44,12 @@ class BaseProbe:
             approx(size[1] * scale, abs=2),
         )
 
-    async def _wait_for_assertion(self, assertion, timeout=5, polling_interval=0.1):
-        # Loop for up to `timeout` seconds, until assertion() passes without
+    async def _wait_for_assertion(self, assertion, polling_interval=0.1):
+        # Loop for up to 2 seconds, until assertion() passes without
         # raising an AssertionError
         loop = asyncio.get_running_loop()
         start_time = loop.time()
-        while (loop.time() - start_time) < timeout:
+        while (loop.time() - start_time) < 2:
             try:
                 assertion()
                 return
