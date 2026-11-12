@@ -8,7 +8,6 @@ from toga.command import Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
 
-from .container import Container
 from .libs import IS_WAYLAND
 from .screens import Screen as ScreenImpl
 
@@ -64,11 +63,12 @@ class Window:
             self._apply_state(state)
         self._state_lock = False
 
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, position, size):
         self.interface = interface
         self.interface._impl = self
-        self.container = Container(on_refresh=self.content_refreshed)
-        self.container.native.show()
+        # An actual set_scaffold call will come later, but we already have a
+        # placeholder scaffold we can use; this simplifies edge cases.
+        self.scaffold = self.interface._scaffold._impl
         self._changeeventid = 0
 
         self.create()
@@ -84,7 +84,6 @@ class Window:
 
         self._in_presentation_mode = False
 
-        self.native.setWindowTitle(title)
         self.native.resize(size[0], size[1])
         if not self.interface.resizable:
             self.native.setFixedSize(size[0], size[1])
@@ -94,7 +93,6 @@ class Window:
         # Note:  KDE's default theme does not respond to minimize button
         # window hints, so minimizable cannot be implemented.
 
-        self.container.native.resizeEvent = self.qt_container_resize
         self.native.resizeEvent = self.qt_resize
         self.toolbar_native = None
 
@@ -125,7 +123,6 @@ class Window:
         # This also allows us to simplify menubar hiding logic
         # by not requiring us to check hasattr.
         self.native = TogaMainWindow(self)
-        self.native.setCentralWidget(self.container.native)
 
     def hide(self):
         # https://forum.qt.io/topic/163064/delayed-window-state-read-after-hide-gives-wrong-results-even-in-x11/
@@ -160,9 +157,10 @@ class Window:
         self.native.close()
 
     def get_title(self):
-        return self.native.windowTitle()
+        return self.scaffold.title
 
     def set_title(self, title):
+        self.scaffold.title = title
         self.native.setWindowTitle(title)
 
     def get_size(self):
@@ -176,17 +174,6 @@ class Window:
 
     def qt_resize(self, event):
         self.interface.on_resize()
-
-    def qt_container_resize(self, event):
-        if self.interface.content:
-            self.interface.content.refresh()
-
-    def content_refreshed(self, container):
-        min_width = self.interface.content.layout.min_width
-        min_height = self.interface.content.layout.min_height
-        self.container.native.setMinimumSize(min_width, min_height)
-        self.container.min_width = min_width
-        self.container.min_height = min_height
 
     def get_current_screen(self):
         return ScreenImpl(self.native.screen())
@@ -341,7 +328,7 @@ class Window:
         QApplication.processEvents()
 
     def get_image_data(self):
-        pixmap = self.container.native.grab()
+        pixmap = self.scaffold.current_container.native.grab()
         buffer = QBuffer()
         buffer.open(QIODevice.WriteOnly)
         pixmap.save(buffer, "PNG")
@@ -349,8 +336,20 @@ class Window:
         buffer.close()
         return img_bytes
 
-    def set_content(self, widget):
-        self.container.content = widget
+    def set_scaffold(self, scaffold):
+        # Sync the current title onto the new scaffold.
+        scaffold.title = self.get_title()
+
+        # setCentralWidget() deletes any existing central widget. Take back the
+        # previous scaffold's widget first, so that scaffold can be reused.
+        old_native = self.native.takeCentralWidget()
+        if old_native is not None:
+            old_native.hide()
+            old_native.setParent(None)
+
+        self.scaffold = scaffold
+        self.native.setCentralWidget(scaffold.container.native)
+        scaffold.container.native.show()
 
 
 class MainWindow(Window):
