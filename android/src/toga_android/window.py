@@ -1,5 +1,3 @@
-from decimal import ROUND_UP
-
 from android import R
 from android.content import Context
 from android.graphics import (
@@ -13,7 +11,6 @@ from java.io import ByteArrayOutputStream
 from toga.constants import WindowState
 from toga.types import Position, Size
 
-from .container import Container
 from .screens import Screen as ScreenImpl
 
 
@@ -27,19 +24,27 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
         If any view's size or position has changed, the new values will be visible here.
         """
-        self.window.interface.on_resize()
-        native_parent = self.window.container.native_content.getParent()
-        self.window.container.resize_content(
+        # Resize the current scaffold's container first, so that window.size is
+        # correct when the on_resize handler is invoked (e.g., immediately after a
+        # new scaffold has been attached).
+        native_parent = self.window.native_parent
+        self.window.scaffold.container.resize_content(
             native_parent.getWidth(), native_parent.getHeight()
         )
+        self.window.interface.on_resize()
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
-        self.container = Container()
+    def __init__(self, interface, position, size):
         self.interface = interface
         self.interface._impl = self
-        self._initial_title = title
+        self.app = None
+        self.native_parent = None
+        # An actual set_scaffold call will come later, but we already have a
+        # placeholder scaffold we can use; this simplifies edge cases.
+        self.scaffold = self.interface._scaffold._impl
+        # A plain Window doesn't display a navigation bar; MainWindow does.
+        self._navigation_bar_hidden = True
         # Use a shadow variable since the presence of ActionBar is not
         # a reliable indicator for confirmation of presentation mode.
         self._in_presentation_mode = False
@@ -49,15 +54,10 @@ class Window:
     ######################################################################
 
     def get_title(self):
-        return str(self.app.native.getTitle())
+        return str(self.scaffold.title)
 
     def set_title(self, title):
-        self.app.native.setTitle(title)
-
-    def show_actionbar(self, show):  # pragma: no cover
-        # The testbed can't create a simple window, so we can't test this.
-        # ActionBar is always hidden on Window.
-        pass
+        self.scaffold.title = title
 
     ######################################################################
     # Window lifecycle
@@ -68,24 +68,16 @@ class Window:
         # closed, so the platform-specific close handling is never triggered.
         pass
 
-    def configure_titlebar(self):  # pragma: no cover
-        # Hide the titlebar on a simple window. The testbed can't create a simple
-        # window, so we can't test this.
-        self.app.native.getSupportActionBar().hide()
-
     def set_app(self, app):
         if len(app.interface.windows) > 1:
             raise RuntimeError("Secondary windows cannot be created on Android")
 
         self.app = app
-        native_parent = self.app.native.findViewById(R.id.content)
-        self.container.init_container(
-            native_parent, pre_refresh=self.container_pre_refresh
-        )
-        native_parent.getViewTreeObserver().addOnGlobalLayoutListener(
+        self.native_parent = self.app.native.findViewById(R.id.content)
+        self.scaffold.attach(self.app.native, self.native_parent)
+        self.native_parent.getViewTreeObserver().addOnGlobalLayoutListener(
             LayoutListener(self)
         )
-        self.set_title(self._initial_title)
 
     def show(self):  # pragma: no cover
         # The Window on Android is shown by default when the app starts.
@@ -97,24 +89,28 @@ class Window:
     # Window content and resources
     ######################################################################
 
-    def container_pre_refresh(self, container):
-        if container.native_width and container.native_height:
-            layout = self.interface.content.layout
-            available_width = container.scale_out(container.native_width, ROUND_UP)
-            available_height = container.scale_out(container.native_height, ROUND_UP)
-            if (layout.width > available_width) or (layout.height > available_height):
-                # Show the sizes in terms of CSS pixels.
-                print(
-                    f"Warning: Window content {(layout.width, layout.height)} "
-                    f"exceeds available space {(available_width, available_height)}"
-                )
+    def set_scaffold(self, scaffold):
+        # Sync the current title and navigation bar state onto the new scaffold.
+        scaffold.title = self.get_title()
+        scaffold.navigation_bar_hidden = self._navigation_bar_hidden
+
+        # The first scaffold is set during window construction, before the window
+        # has an app; it will be attached when set_app() is invoked. After
+        # construction, core's Window.content setter only calls set_scaffold() when
+        # the new scaffold differs from the current one; by then set_app() has run,
+        # so there is always a previously attached scaffold to detach.
+        if self.app is not None:
+            self.scaffold.detach()
+            scaffold.attach(self.app.native, self.native_parent)
+
+        self.scaffold = scaffold
 
     ######################################################################
     # Window size
     ######################################################################
 
     def get_size(self) -> Size:
-        return Size(self.container.width, self.container.height)
+        return Size(self.scaffold.container.width, self.scaffold.container.height)
 
     def set_size(self, size):
         # Does nothing on mobile
@@ -191,7 +187,7 @@ class Window:
                     | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
                 )
-                self.show_actionbar(False)
+                self.scaffold.apply_navigation_bar(force_hidden=True)
                 self._in_presentation_mode = True
 
             case WindowState.FULLSCREEN, _:
@@ -200,7 +196,7 @@ class Window:
 
             case _:  # current_state == WindowState.PRESENTATION:
                 decor_view.setSystemUiVisibility(0)
-                self.show_actionbar(True)
+                self.scaffold.apply_navigation_bar()
                 self._in_presentation_mode = False
                 self.set_window_state(state)
 
@@ -209,36 +205,27 @@ class Window:
     ######################################################################
 
     def get_image_data(self):
+        native_content = self.scaffold.current_container.native_content
         bitmap = Bitmap.createBitmap(
-            self.container.native_content.getWidth(),
-            self.container.native_content.getHeight(),
+            native_content.getWidth(),
+            native_content.getHeight(),
             Bitmap.Config.ARGB_8888,
         )
         canvas = A_Canvas(bitmap)
         # TODO: Need to draw window background as well as the content.
-        self.container.native_content.draw(canvas)
+        native_content.draw(canvas)
 
         stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         return bytes(stream.toByteArray())
 
-    def set_content(self, content):
-        self.container.set_content(content)
-
 
 class MainWindow(Window):
-    def configure_titlebar(self):
-        # Display the titlebar on a MainWindow.
-        pass
+    def __init__(self, interface, position, size):
+        super().__init__(interface, position, size)
+        self._navigation_bar_hidden = False
 
     def create_toolbar(self):
         # Toolbar items are configured as part of onPrepareOptionsMenu; trigger that
         # handler.
         self.app.native.invalidateOptionsMenu()
-
-    def show_actionbar(self, show):
-        actionbar = self.app.native.getSupportActionBar()
-        if show:
-            actionbar.show()
-        else:
-            actionbar.hide()

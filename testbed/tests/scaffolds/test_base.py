@@ -1,4 +1,8 @@
 import toga
+from toga.colors import CORNFLOWERBLUE, REBECCAPURPLE
+from toga.style import Pack
+
+from ..widgets.probe import get_probe
 
 
 async def test_no_content(main_window, main_window_probe):
@@ -39,3 +43,35 @@ async def test_no_change_in_title(app, main_window, main_window_probe):
     # Should be preserved.
     # Still has toolbar
     assert main_window_probe.has_toolbar()
+
+
+async def test_scaffold_reinstated(main_window, main_window_probe):
+    """A scaffold that has been replaced can be reinstated, with its content intact."""
+    box1 = toga.Box(style=Pack(background_color=REBECCAPURPLE))
+    scaffold1 = toga.Scaffold(content=box1)
+    main_window.content = scaffold1
+    await main_window_probe.wait_for_window("First scaffold installed")
+    assert main_window.scaffold is scaffold1
+    assert box1.window is main_window
+
+    box2 = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+    scaffold2 = toga.Scaffold(content=box2)
+    main_window.content = scaffold2
+    await main_window_probe.wait_for_window("Second scaffold installed")
+    assert main_window.scaffold is scaffold2
+    assert box1.window is None
+    assert box2.window is main_window
+
+    main_window.content = scaffold1
+    await main_window_probe.wait_for_window("First scaffold reinstated")
+    assert main_window.scaffold is scaffold1
+    assert box1.window is main_window
+    assert box2.window is None
+
+    # The reinstated content has been laid out and is visible at a real size.
+    box_probe = get_probe(box1)
+    await box_probe.redraw("Reinstated content is visible")
+    assert box1.layout.content_width > 0
+    assert box1.layout.content_height > 0
+    assert box_probe.width > 0
+    assert box_probe.height > 0

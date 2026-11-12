@@ -267,11 +267,7 @@ class App:
     def set_main_window(self, window):
         if window is None or window == toga.App.BACKGROUND:
             raise ValueError("Apps without main windows are not supported on Android")
-        else:
-            # The default layout of an Android app includes a titlebar; a simple App
-            # then hides that titlebar. We know what type of app we have when the main
-            # window is set.
-            self.interface.main_window._impl.configure_titlebar()
+        # The main window's scaffold controls the visibility of the titlebar.
 
     ######################################################################
     # App resources
