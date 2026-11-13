@@ -260,7 +260,6 @@ jobs:
       fail-fast: false
       matrix:
         backend:
-        - "macOS-x86_64"
         - "macOS-arm64"
         - "windows-netfx-x86_64"
         - "windows-netcore-x86_64"
@@ -285,11 +284,6 @@ jobs:
           setup-python: true
           testbed-app: "testbed"
           copy-command: "cp -r"
-
-        - backend: "macOS-x86_64"
-          platform: "macOS"
-          runs-on: "macos-15-intel"
-          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "macOS-arm64"
           platform: "macOS"
