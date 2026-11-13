@@ -1,5 +1,6 @@
-# MkDocs
+# Docs (Zensical via beeware-docs-tools)
 _build
+docs/_build.*.toml
 comment.md
 
 *.pyc
