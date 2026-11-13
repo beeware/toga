@@ -2,6 +2,11 @@ import pytest
 
 from toga.keys import Key
 
+# The generic modifier that the backend's physical Control key is reported as.
+# Needs to be a generic symbol so we can replace it with the probe's
+# representation
+CONTROL = object()
+
 
 @pytest.mark.parametrize(
     "key_combo, key_data",
@@ -14,6 +19,7 @@ from toga.keys import Key
         (Key.MOD_1 + "a", {"key": Key.A, "modifiers": {Key.MOD_1}}),
         (Key.MOD_2 + "a", {"key": Key.A, "modifiers": {Key.MOD_2}}),
         (Key.MOD_3 + "a", {"key": Key.A, "modifiers": {Key.MOD_3}}),
+        (Key.CONTROL + "a", {"key": Key.A, "modifiers": {CONTROL}}),
         # modifier combinations
         (
             Key.MOD_1 + Key.MOD_2 + "a",
@@ -65,6 +71,13 @@ async def test_key_combinations(app_probe, key_combo, key_data):
     if not app_probe.supports_key:
         pytest.xfail("This backend doesn't use keyboard shortcuts")
 
+    # Replace the generic CONTROL modifier with the one defined by the probe.
+    if CONTROL in key_data["modifiers"]:
+        key_data["modifiers"].remove(CONTROL)
+        key_data["modifiers"].add(app_probe.control_key)
+
+    # If MOD_3 isn't supported, an error should be raised;
+    # otherwise, check the key combination.
     if (Key.MOD_3 in key_data["modifiers"]) and not app_probe.supports_key_mod3:
         with pytest.raises(ValueError):
             app_probe.keystroke(key_combo)

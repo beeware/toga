@@ -147,7 +147,7 @@ class SelectionApp(toga.App):
 
 
 def main():
-    return SelectionApp("Selection", "org.beeware.toga.examples.selection")
+    return SelectionApp("Selection Demo", "org.beeware.toga.examples.selection")
 
 
 if __name__ == "__main__":

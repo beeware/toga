@@ -97,6 +97,11 @@ class Key(Enum):
     MOD_2 = "<mod 2>"  # OPT on macOS, ALT on Linux/Windows
     MOD_3 = "<mod 3>"  # CTRL on macOS, Flag on Windows, Tux on Linux
 
+    # The physical Control key. Each backend maps this to its native Control
+    # modifier, so it may duplicate one of the generic modifiers above
+    # (MOD_3 on macOS, MOD_1 on Linux/Windows).
+    CONTROL = "<ctrl>"
+
     F1 = "<f1>"
     F2 = "<f2>"
     F3 = "<f3>"

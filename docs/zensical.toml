@@ -312,7 +312,7 @@ enable_inventory = true
 default_handler = "python"
 
 [project.plugins.mkdocstrings.handlers.python]
-paths = ["android/src", "cocoa/src", "core/src"]
+paths = ["android/src", "cocoa/src", "core/src", "iOS/src"]
 inventories = [
     "https://docs.python.org/3/objects.inv",
     "https://pillow.readthedocs.io/en/stable/objects.inv",

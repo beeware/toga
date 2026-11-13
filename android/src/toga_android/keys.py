@@ -189,6 +189,7 @@ KEYEVENT_MODIFIER_CODES = {
     # TODO: Confirm the mapping of Control, Meta and Hyper are correct.
     Key.MOD_1: "<Ctrl>",
     Key.MOD_2: "<Alt>",
+    Key.CONTROL: "<Ctrl>",
 }
 
 

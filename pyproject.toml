@@ -195,7 +195,7 @@ towncrier = [
 ]
 
 tox-uv = [
-    "tox-uv == 1.37.0",
+    "tox-uv == 1.37.3",
 ]
 
 dev = [

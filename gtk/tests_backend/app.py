@@ -25,6 +25,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     edit_menu_noop_enabled = False
     supports_psutil = True
     beep_delay = 0.1
+    control_key = toga.Key.MOD_1
 
     def __init__(self, app):
         super().__init__()
@@ -251,6 +252,9 @@ class AppProbe(BaseProbe, DialogsMixin):
         if "<Primary>" in accel:
             state |= Gdk.ModifierType.CONTROL_MASK
             accel = accel.replace("<Primary>", "")
+        if "<Control>" in accel:
+            state |= Gdk.ModifierType.CONTROL_MASK
+            accel = accel.replace("<Control>", "")
         if "<Alt>" in accel:
             state |= Gdk.ModifierType.META_MASK
             accel = accel.replace("<Alt>", "")

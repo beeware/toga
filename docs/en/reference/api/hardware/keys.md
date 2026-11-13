@@ -12,6 +12,8 @@ However, due to differences between platforms, there's no representation of "mod
 | macOS    | Command (⌘)             | Option                  | Control (^)             |
 | Windows  | Control                 | Alt                     | Not supported           |
 
+If you need the Control key specifically, regardless of platform, use [`CONTROL`][toga.Key.CONTROL]. Each platform maps it to its own Control key, so on macOS it is the same key as `MOD_3`, and on Linux and Windows it is the same key as `MOD_1`.
+
 Key combinations can be expressed by combining multiple `Key` values with the `+` operator.
 
 ```python

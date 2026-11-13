@@ -80,7 +80,7 @@ class BoxApp(toga.App):
 
 
 def main():
-    return BoxApp("Box", "org.beeware.toga.examples.boxes")
+    return BoxApp("Box Demo", "org.beeware.toga.examples.boxes")
 
 
 if __name__ == "__main__":
