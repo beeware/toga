@@ -39,7 +39,7 @@ class DividerApp(toga.App):
 
 
 def main():
-    return DividerApp("Dividers", "org.beeware.toga.examples.divider")
+    return DividerApp("Dividers Demo", "org.beeware.toga.examples.divider")
 
 
 if __name__ == "__main__":

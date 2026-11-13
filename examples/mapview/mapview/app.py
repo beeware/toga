@@ -116,7 +116,7 @@ class MapViewApp(toga.App):
 
 
 def main():
-    return MapViewApp("Map View", "org.beeware.toga.examples.mapview")
+    return MapViewApp("Map View Demo", "org.beeware.toga.examples.mapview")
 
 
 if __name__ == "__main__":

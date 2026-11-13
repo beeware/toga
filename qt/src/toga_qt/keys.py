@@ -12,6 +12,13 @@ QT_MODIFIERS = {
     Key.SHIFT: Qt.KeyboardModifier.ShiftModifier,
 }
 
+# Modifiers that can be used in a shortcut definition. The physical Control key
+# is the same key as MOD_1, so key events report it as MOD_1.
+QT_SHORTCUT_MODIFIERS = {
+    **QT_MODIFIERS,
+    Key.CONTROL: Qt.KeyboardModifier.ControlModifier,
+}
+
 # Note: In Qt's key combos there's certain ones like Key_Copy or Key_BackTab.
 # Empirical evidence shows that they exists to abstracts the shortcuts in a
 # cross-platform way; they are not needed since the Qt backend is for Linux
@@ -135,7 +142,7 @@ def toga_to_qt_key(key):
         pass
 
     codes = Qt.KeyboardModifier.NoModifier
-    for modifier, modifier_code in QT_MODIFIERS.items():
+    for modifier, modifier_code in QT_SHORTCUT_MODIFIERS.items():
         if modifier.value in key:
             codes |= modifier_code
             key = key.replace(modifier.value, "")

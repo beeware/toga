@@ -180,7 +180,7 @@ class OptionContainerApp(toga.App):
 
 def main():
     return OptionContainerApp(
-        "Option Container Example", "org.beeware.toga.examples.optioncontainer"
+        "Option Container Demo", "org.beeware.toga.examples.optioncontainer"
     )
 
 

@@ -165,7 +165,7 @@ class ScrollContainerApp(toga.App):
 
 def main():
     return ScrollContainerApp(
-        "ScrollContainer", "org.beeware.toga.examples.scrollcontainer"
+        "ScrollContainer Demo", "org.beeware.toga.examples.scrollcontainer"
     )
 
 

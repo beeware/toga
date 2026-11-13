@@ -240,17 +240,25 @@ def assert_reference(probe, reference, threshold=0.01, *, image=None):
         scaled_image.save(save_dir / f"{reference_variant}.png")
         image.save(save_dir / f"{reference_variant}-full.png")
 
-    # If a reference image exists, scale the image to the same size as the reference,
-    # and do an MSE comparison on every pixel in 0-1 RGBa (premultiplied) colorspace.
+    # If a reference image exists, scale the image to the same size as the
+    # reference, and do an MSE comparison on every pixel in 0-1 RGBa
+    # (premultiplied) colorspace.
     if path.exists():
         reference_image = Image.open(path)
 
         difference = ImageChops.difference(
             scaled_image.convert("RGBa"),
             reference_image.convert("RGBa"),
-        ).getdata()
+        )
+        # We're using Python 3.12 for testbed, which means we're using
+        # unofficial Pillow 11.0 binaries that don't have the non-deprecated
+        # API.
+        if toga.platform.current_platform in {"android", "iOS"}:
+            diff_data = difference.getdata()
+        else:
+            diff_data = difference.get_flattened_data()
 
-        total_error = sum((diff / 255) ** 2 for diff in chain.from_iterable(difference))
+        total_error = sum((diff / 255) ** 2 for diff in chain.from_iterable(diff_data))
         rmse = math.sqrt(total_error / 160_000)  # 200w * 200h * 4 bands
         # If the delta exceeds threshold, save the test image and fail the test.
         if rmse > threshold:

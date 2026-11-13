@@ -63,18 +63,48 @@ class PythonAppDelegate(UIResponder):
         return configuration
 
     @objc_method
+    def application_willFinishLaunchingWithOptions_(
+        self, application, launchOptions
+    ) -> bool:
+        return App.app.uikit_application_willFinishLaunchingWithOptions(
+            application, launchOptions
+        )
+
+    @objc_method
     def application_didFinishLaunchingWithOptions_(
         self, application, launchOptions
     ) -> bool:
-        print("App finished launching.")
-        App.app.native = application
-        App.app.create()
-        App.app.interface.current_window.on_show()
-        return True
+        return App.app.uikit_application_didFinishLaunchingWithOptions(
+            application, launchOptions
+        )
+
+    @objc_method
+    def applicationDidReceiveMemoryWarning_(
+        self, application
+    ) -> None:  # pragma: no cover
+        App.app.uikit_applicationDidReceiveMemoryWarning(application)
+
+    @objc_method
+    def applicationSignificantTimeChange_(
+        self, application
+    ) -> None:  # pragma: no cover
+        App.app.uikit_applicationSignificantTimeChange(application)
+
+    @objc_method
+    def applicationProtectedDataWillBecomeUnavailable_(
+        self, application
+    ) -> None:  # pragma: no cover
+        App.app.uikit_applicationProtectedDataWillBecomeUnavailable(application)
+
+    @objc_method
+    def applicationProtectedDataDidBecomeAvailable_(
+        self, application
+    ) -> None:  # pragma: no cover
+        App.app.uikit_applicationProtectedDataDidBecomeAvailable(application)
 
     @objc_method
     def applicationWillTerminate_(self, application) -> None:
-        print("App about to Terminate.")
+        App.app.uikit_applicationWillTerminate(application)
 
 
 class App:
@@ -101,6 +131,49 @@ class App:
     def create(self):
         """Calls the startup method on the interface."""
         self.interface._startup()
+
+    ######################################################################
+    # Platform-specific app lifecycle hooks
+    ######################################################################
+
+    def uikit_application_willFinishLaunchingWithOptions(
+        self, application, launchOptions
+    ) -> bool:
+        """Invoked by `application:willFinishLaunchingWithOptions:`.
+
+        Returns `True` by default. The return value is passed back to iOS.
+        """
+        return True
+
+    def uikit_application_didFinishLaunchingWithOptions(
+        self, application, launchOptions
+    ) -> bool:
+        """Invoked by `application:didFinishLaunchingWithOptions:`.
+
+        By default, this creates the app and shows the main window. An override
+        must call the base implementation and return its result.
+        """
+        self.native = application
+        self.create()
+        self.interface.current_window.on_show()
+        return True
+
+    def uikit_applicationDidReceiveMemoryWarning(self, application):
+        """Invoked by `applicationDidReceiveMemoryWarning:`. No-op by default."""
+
+    def uikit_applicationSignificantTimeChange(self, application):
+        """Invoked by `applicationSignificantTimeChange:`. No-op by default."""
+
+    def uikit_applicationProtectedDataWillBecomeUnavailable(self, application):
+        """Invoked by `applicationProtectedDataWillBecomeUnavailable:`. No-op by
+        default."""
+
+    def uikit_applicationProtectedDataDidBecomeAvailable(self, application):
+        """Invoked by `applicationProtectedDataDidBecomeAvailable:`. No-op by
+        default."""
+
+    def uikit_applicationWillTerminate(self, application):
+        """Invoked by `applicationWillTerminate:`. No-op by default."""
 
     ######################################################################
     # Commands and menus

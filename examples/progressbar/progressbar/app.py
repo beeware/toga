@@ -154,7 +154,7 @@ class ProgressBarApp(toga.App):
 
 
 def main():
-    return ProgressBarApp("ProgressBar", "org.beeware.toga.examples.progressbar")
+    return ProgressBarApp("ProgressBar Demo", "org.beeware.toga.examples.progressbar")
 
 
 if __name__ == "__main__":
