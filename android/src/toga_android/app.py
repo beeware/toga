@@ -34,43 +34,28 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         print("Python app launched & stored in Android Activity class")
 
     def onCreate(self):
-        print("Toga app: onCreate")
+        self._impl.android_onCreate()
 
     def onStart(self):
-        print("Toga app: onStart")
-        self._impl.interface.current_window.on_show()
+        self._impl.android_onStart()
 
     def onResume(self):  # pragma: no cover
-        print("Toga app: onResume")
-        # onTopResumedActivityChanged is not available on android versions less than Q
-        # (API level 29). onResume is the best indicator for the gain input focus event.
-        # https://developer.android.com/reference/android/app/Activity#onWindowFocusChanged(boolean):~:text=If%20the%20intent,the%20best%20indicator.
-        if Build.VERSION.SDK_INT < 29:
-            self._impl.interface.current_window.on_gain_focus()
+        self._impl.android_onResume()
 
     def onPause(self):  # pragma: no cover
-        print("Toga app: onPause")
-        # onTopResumedActivityChanged is not available on android versions less than Q
-        # (API level 29). onPause is the best indicator for the lost input focus event.
-        if Build.VERSION.SDK_INT < 29:
-            self._impl.interface.current_window.on_lose_focus()
+        self._impl.android_onPause()
 
     def onStop(self):  # pragma: no cover
-        print("Toga app: onStop")
-        self._impl.interface.current_window.on_hide()
+        self._impl.android_onStop()
 
-    def onDestroy(self):
-        print("Toga app: onDestroy")  # pragma: no cover
+    def onDestroy(self):  # pragma: no cover
+        self._impl.android_onDestroy()
 
-    def onRestart(self):
-        print("Toga app: onRestart")  # pragma: no cover
+    def onRestart(self):  # pragma: no cover
+        self._impl.android_onRestart()
 
     def onTopResumedActivityChanged(self, isTopResumedActivity):  # pragma: no cover
-        print("Toga app: onTopResumedActivityChanged")
-        if isTopResumedActivity:
-            self._impl.interface.current_window.on_gain_focus()
-        else:
-            self._impl.interface.current_window.on_lose_focus()
+        self._impl.android_onTopResumedActivityChanged(isTopResumedActivity)
 
     def onActivityResult(self, requestCode, resultCode, resultData):
         print(f"Toga app: onActivityResult {requestCode=} {resultCode=} {resultData=}")
@@ -101,8 +86,8 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             # permission that we didn't request.
             print(f"No permission request matching request code {requestCode}")
 
-    def onConfigurationChanged(self, new_config):
-        pass  # pragma: no cover
+    def onConfigurationChanged(self, new_config):  # pragma: no cover
+        self._impl.android_onConfigurationChanged(new_config)
 
     def onOptionsItemSelected(self, menuitem):
         itemid = menuitem.getItemId()
@@ -231,6 +216,59 @@ class App:
 
         # Call user code to populate the main window
         self.interface._startup()
+
+    ######################################################################
+    # Platform-specific app lifecycle hooks
+    ######################################################################
+
+    def android_onCreate(self):
+        """Invoked by `onCreate()`. No-op by default."""
+
+    def android_onStart(self):
+        """Invoked by `onStart()`. By default, this triggers `on_show` on the
+        current window."""
+        self.interface.current_window.on_show()
+
+    def android_onRestart(self):
+        """Invoked by `onRestart()`. No-op by default."""
+
+    def android_onResume(self):  # pragma: no cover
+        """Invoked by `onResume()`. On Android versions before 10 (API level 29),
+        this triggers `on_gain_focus` on the current window by default."""
+        # onTopResumedActivityChanged is not available on android versions less than Q
+        # (API level 29). onResume is the best indicator for the gain input focus event.
+        # https://developer.android.com/reference/android/app/Activity#onWindowFocusChanged(boolean):~:text=If%20the%20intent,the%20best%20indicator.
+        if Build.VERSION.SDK_INT < 29:
+            self.interface.current_window.on_gain_focus()
+
+    def android_onPause(self):  # pragma: no cover
+        """Invoked by `onPause()`. On Android versions before 10 (API level 29),
+        this triggers `on_lose_focus` on the current window by default."""
+        # onTopResumedActivityChanged is not available on android versions less than Q
+        # (API level 29). onPause is the best indicator for the lost input focus event.
+        if Build.VERSION.SDK_INT < 29:
+            self.interface.current_window.on_lose_focus()
+
+    def android_onStop(self):  # pragma: no cover
+        """Invoked by `onStop()`. By default, this triggers `on_hide` on the
+        current window."""
+        self.interface.current_window.on_hide()
+
+    def android_onDestroy(self):
+        """Invoked by `onDestroy()`. No-op by default."""
+
+    def android_onTopResumedActivityChanged(
+        self, isTopResumedActivity
+    ):  # pragma: no cover
+        """Invoked by `onTopResumedActivityChanged()`. By default, this triggers
+        `on_gain_focus` or `on_lose_focus` on the current window."""
+        if isTopResumedActivity:
+            self.interface.current_window.on_gain_focus()
+        else:
+            self.interface.current_window.on_lose_focus()
+
+    def android_onConfigurationChanged(self, new_config):
+        """Invoked by `onConfigurationChanged()`. No-op by default."""
 
     ######################################################################
     # Commands and menus
