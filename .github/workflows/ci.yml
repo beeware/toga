@@ -287,7 +287,7 @@ jobs:
 
         - backend: "macOS-arm64"
           platform: "macOS"
-          runs-on: "macos-26"
+          runs-on: "macos-15"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
@@ -488,7 +488,7 @@ jobs:
 
         - backend: "textual-macOS"
           platform: "macOS"
-          runs-on: "macos-26"
+          runs-on: "macos-15"
           testbed-app: "testbed-textual"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed-textual"
 
