@@ -1,6 +1,41 @@
+import pytest
+
 from toga.style.pack import CENTER, COLUMN, END, ROW, START, Pack
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
+
+
+@pytest.mark.parametrize("parent_direction", [ROW, COLUMN])
+@pytest.mark.parametrize(
+    "alignment, positions",
+    [(START, (10, 5)), (CENTER, (95, 115)), (END, (180, 225))],
+)
+def test_explicit_height(parent_direction, alignment, positions):
+    container = ExampleNode(
+        "container",
+        style=Pack(direction=ROW, width=80, height=300, align_items=alignment),
+        children=[
+            ExampleNode(
+                "widget_a",
+                style=Pack(width=20, height=100, margin_top=10, margin_bottom=20),
+            ),
+            ExampleNode(
+                "widget_b",
+                style=Pack(width=20, height=60, margin_top=5, margin_bottom=15),
+            ),
+        ],
+    )
+    root = ExampleNode(
+        "root",
+        style=Pack(direction=parent_direction),
+        children=[container],
+    )
+
+    root.style.layout(ExampleViewport(640, 480))
+
+    assert container.layout.content_height == 300
+    assert [child.layout.content_height for child in container.children] == [100, 60]
+    assert tuple(child.layout.content_top for child in container.children) == positions
 
 
 def test_top():
