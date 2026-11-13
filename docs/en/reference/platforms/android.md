@@ -50,7 +50,7 @@ app._impl.start_activity(intent, on_complete=number_dialed)
 
 ### App lifecycle hooks
 
-Android notifies an app of lifecycle events (such as the app becoming visible, moving to the background, or gaining input focus) by calling methods on the app's `Activity`. In an app packaged with Briefcase, this is the `MainActivity` class, which forwards a fixed set of these callbacks to Toga. Toga hands off each activity lifecycle callback it receives to a same-named method on the Android `App` implementation class, prefixed with `android_`. For example, the `onStop()` callback is handled by `android_onStop()` on the Android App class.
+Android notifies an app of lifecycle events (such as the app becoming visible, moving to the background, or gaining input focus) by calling methods on a Java `Activity` class. Toga forwards these lifecycle events to methods on the Android `App` implementation class that are prefixed with `android_`. For example, the `onStop()` callback is handled by `android_onStop()` on the Android App class.
 
 An app can hook into a lifecycle event by defining a custom subclass of a platform's App implementation class:
 
@@ -80,7 +80,7 @@ class MyApp(toga.App):
     def startup(self): ...
 ```
 
-Each hook receives the same arguments as the underlying `Activity` callback. `android_onStart()`, `android_onResume()`, `android_onPause()`, `android_onStop()` and `android_onTopResumedActivityChanged()` already implement behavior required by Toga's cross-platform API (e.g., triggering `on_show`/`on_hide` or `on_gain_focus`/`on_lose_focus` on the window); if you override one of these, call the base implementation to preserve that behavior, as shown in the example above.
+Each hook receives the same arguments as the underlying `Activity` class. `android_onStart()`, `android_onResume()`, `android_onPause()`, `android_onStop()` and `android_onTopResumedActivityChanged()` already implement behavior required by Toga's cross-platform API (e.g., triggering `on_show`/`on_hide` or `on_gain_focus`/`on_lose_focus` on the window); if you override one of these, call the base implementation to preserve that behavior, as shown in the example above.
 
 The following lifecycle hooks are available:
 
