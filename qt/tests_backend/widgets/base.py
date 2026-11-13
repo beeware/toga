@@ -8,6 +8,7 @@ from ..probe import BaseProbe
 class SimpleProbe(BaseProbe, FontMixin):
     invalid_size_while_hidden = False
     supports_tab_index = False
+    allows_readonly_focus = True
 
     async def redraw(self, message=None, delay=0, wait_for=None):
         self.native.repaint()
