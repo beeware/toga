@@ -23,6 +23,11 @@ def content():
 
 
 @pytest.fixture
+def scaffold():
+    return toga.Scaffold()
+
+
+@pytest.fixture
 def on_scroll_handler():
     return Mock()
 
@@ -137,6 +142,35 @@ def test_assign_to_window_no_content(window):
     assert scroll_container.window == window
 
 
+def test_assign_to_scaffold(scaffold, scroll_container, content):
+    """If the widget is assigned to a scaffold, the content is also assigned."""
+    # Scroll container is initially unassigned
+    assert scroll_container.scaffold is None
+
+    # Assign the scroll container to the scaffold
+    scroll_container.scaffold = scaffold
+
+    # Scroll container is on the scaffold
+    assert scroll_container.scaffold == scaffold
+    # Content is also on the scaffold
+    assert content.scaffold == scaffold
+
+
+def test_assign_to_scaffold_no_content(scaffold):
+    """If the widget is assigned to a scaffold, and there is no content, there's no
+    error."""
+    scroll_container = toga.ScrollContainer()
+
+    # Scroll container is initially unassigned
+    assert scroll_container.scaffold is None
+
+    # Assign the scroll container to the scaffold
+    scroll_container.scaffold = scaffold
+
+    # Scroll container is on the scaffold
+    assert scroll_container.scaffold == scaffold
+
+
 def test_disable_no_op(scroll_container):
     """ScrollContainer doesn't have a disabled state."""
     # Enabled by default
@@ -156,15 +190,18 @@ def test_focus_noop(scroll_container):
     assert_action_not_performed(scroll_container, "focus")
 
 
-def test_set_content(app, window, scroll_container, content):
+def test_set_content(app, window, scaffold, scroll_container, content):
     """The content of the scroll container can be changed."""
     # Assign the scroll container to an app and window
     scroll_container.app = app
     scroll_container.window = window
+    scroll_container.scaffold = scaffold
+    scroll_container.content = content
 
     # The content is also assigned
     assert content.app == app
     assert content.window == window
+    assert content.scaffold == scaffold
 
     # Reset the event log
     EventLog.reset()
@@ -189,10 +226,12 @@ def test_set_content(app, window, scroll_container, content):
     # The new content is assigned to
     assert new_content.app == app
     assert new_content.window == window
+    assert new_content.scaffold == scaffold
 
     # The old content isn't
     assert content.app is None
     assert content.window is None
+    assert content.scaffold is None
 
 
 def test_clear_content(app, window, scroll_container, content):

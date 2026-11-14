@@ -24,9 +24,13 @@ from ..utils import (
 def test_window_created(app):
     """A Window can be created with minimal arguments."""
     window = toga.Window()
+    assert_action_performed(window.scaffold, "hide toolbar")
+    assert_action_not_performed(window.scaffold, "show toolbar")
 
     assert window.app == app
     assert window.content is None
+    assert window.scaffold.window == window
+    assert window.scaffold.app == app
 
     assert window._impl.interface == window
     assert_action_performed(window, "create Window")
@@ -69,13 +73,13 @@ def test_window_handler_attrs_initialized_before_impl(app, event_name, monkeypat
     # none of them raise.
     real_init = dummy_window.Window.__init__
 
-    def fire_callbacks_during_init(self, interface, title, position, size):
+    def fire_callbacks_during_init(self, interface, position, size):
         # Mimic Cocoa / .NET Framework: dispatch every relevant handler
         # before the platform constructor returns. With the fix in place,
         # each call invokes a wrapped no-op; without it, AttributeError
         # bubbles out and __init__ aborts.
         getattr(interface, event_name)()
-        real_init(self, interface, title, position, size)
+        real_init(self, interface, position, size)
 
     monkeypatch.setattr(dummy_window.Window, "__init__", fire_callbacks_during_init)
 
@@ -111,6 +115,7 @@ def test_window_created_explicit(app):
 
     assert window.app == app
     assert window.content == window_content
+    assert window.scaffold.content == window_content
 
     assert window_content.window == window
     assert window_content.app == app
@@ -155,17 +160,6 @@ async def test_set_app(window, app):
         window.app = app2
 
 
-def test_set_app_with_content(window, app):
-    """If a window has content, the content is assigned to the app."""
-    assert window.app == app
-
-    content = toga.Box()
-    assert content.app is None
-
-    window.content = content
-    assert content.app == app
-
-
 def test_set_app_with_content_at_instantiation(app):
     """A window can be created with initial content"""
     # Set up some initial content box with something inside it:
@@ -205,29 +199,90 @@ def test_change_content(window, app):
     """The content of a window can be changed."""
     assert window.content is None
     assert window.app == app
+    initial_wrapper_scaffold = window.scaffold
 
     # Set the content of the window
     content1 = toga.Box()
     window.content = content1
 
-    # The content has been assigned and refreshed
+    # The content has been assigned and refreshed; scaffold is still the same
+    assert window.content == content1
+    assert window.scaffold is initial_wrapper_scaffold
     assert content1.app == app
     assert content1.window == window
-    assert_action_performed_with(window, "set content", widget=content1._impl)
+    assert content1.scaffold == initial_wrapper_scaffold
+    assert initial_wrapper_scaffold.content == content1
+    assert initial_wrapper_scaffold.app == app
+    assert initial_wrapper_scaffold.window == window
     assert_action_performed(content1, "refresh")
 
     # Set the content of the window to something new
     content2 = toga.Box()
     window.content = content2
 
+    # The same wrapper scaffold is reused.
+    assert window.scaffold is initial_wrapper_scaffold
+
     # The content has been assigned and refreshed
+    assert window.content == content2
     assert content2.app == app
     assert content2.window == window
-    assert_action_performed_with(window, "set content", widget=content2._impl)
+    assert content2.scaffold == initial_wrapper_scaffold
+    assert initial_wrapper_scaffold.content == content2
+    assert initial_wrapper_scaffold.app == app
+    assert initial_wrapper_scaffold.window == window
     assert_action_performed(content2, "refresh")
 
     # The original content has been removed
     assert content1.window is None
+    assert content1.app is None
+    assert content1.scaffold is None
+
+    # Removing content retains the same wrapper scaffold.
+    window.content = None
+    assert window.content is None
+    assert window.scaffold is initial_wrapper_scaffold
+    assert initial_wrapper_scaffold.content is None
+    assert initial_wrapper_scaffold.window == window
+    assert initial_wrapper_scaffold.app == app
+    assert content2.window is None
+    assert content2.app is None
+    assert content2.scaffold is None
+    assert_action_performed_with(initial_wrapper_scaffold, "set content", widget=None)
+
+    # Explicit scaffolds can replace the wrapper
+    explicit_scaffold = toga.Scaffold(toga.Box())
+    window.content = explicit_scaffold
+    assert window.scaffold is explicit_scaffold
+    assert explicit_scaffold.window == window
+    assert explicit_scaffold.app == app
+    # Explicit scaffold shows/hides toolbar properly
+    assert_action_performed(explicit_scaffold, "hide toolbar")
+    assert_action_not_performed(explicit_scaffold, "show toolbar")
+
+
+def test_change_content_in_presentation_mode(window):
+    """A window's scaffold cannot be changed in presentation mode."""
+    original_content = toga.Box()
+    window.content = original_content
+    implicit_scaffold = window.scaffold
+    window.show()
+    window.state = WindowState.PRESENTATION
+
+    replacement_content = toga.Box()
+    window.content = replacement_content
+
+    assert window.content is replacement_content
+    assert window.scaffold is implicit_scaffold
+    assert implicit_scaffold.content is replacement_content
+
+    with pytest.raises(
+        ValueError,
+        match="Window scaffold cannot be changed in presentation mode",
+    ):
+        window.content = toga.Scaffold(toga.Box())
+
+    assert window.scaffold is implicit_scaffold
 
 
 def test_set_position(window):
@@ -305,6 +360,7 @@ def test_set_size_with_content(window):
 
     assert window.size == toga.Size(123, 456)
     assert_action_performed(window, "set size")
+    assert_action_performed(window.scaffold, "refresh")
     assert_action_performed(content, "refresh")
     EventLog.reset()
 
@@ -313,6 +369,7 @@ def test_set_size_with_content(window):
 
     assert window.size == toga.Size(123, 456)
     assert_action_not_performed(window, "set size")
+    assert_action_not_performed(window.scaffold, "refresh")
     assert_action_not_performed(content, "refresh")
 
 
