@@ -728,7 +728,7 @@ class PackLogic(BaseStyle):
             min_cross = max(min_cross, min_child_cross)
 
         # self._debug(f"{self.direction.upper()} {min_cross=} {cross=}")
-        if use_all_cross:
+        if use_all_cross or self[cross_name] != NONE:
             cross = max(cross, available_cross)
         # self._debug(f"FINAL {self.direction.upper()} {min_cross=} {cross=}")
 

@@ -12,6 +12,8 @@ Some properties, despite always storing their value in a consistent form, are mo
 
 Toga has a [layout debug mode][debug-layout] to aid in visually debugging or exploring Pack layouts.
 
+When a column has an explicit width, `align_items` aligns its children within that width. For a row, an explicit height defines the alignment space. This applies regardless of the parent box's direction, and each child's margins are included when positioning it.
+
 ## Using Pack properties on widgets
 
 Pack is the default style representation for Toga widgets. You can provide Pack properties as keyword arguments when constructing a widget, or read and write them directly on the widget. For example, these statements set the same margin:
