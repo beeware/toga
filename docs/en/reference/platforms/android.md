@@ -47,3 +47,55 @@ def number_dialed(result, data):
 # Assuming your toga.App app instance is called `app`
 app._impl.start_activity(intent, on_complete=number_dialed)
 ```
+
+### App lifecycle hooks
+
+Android notifies an app of lifecycle events (such as the app becoming visible, moving to the background, or gaining input focus) by calling methods on a Java `Activity` class. Toga forwards these lifecycle events to methods on the Android `App` implementation class that are prefixed with `android_`. For example, the `onStop()` callback is handled by `android_onStop()` on the Android App class.
+
+An app can hook into a lifecycle event by defining a custom subclass of a platform's App implementation class:
+
+```python
+import sys
+
+if sys.platform == "android":
+    from toga_android.app import App as AndroidApp
+
+    class MyAndroidApp(AndroidApp):
+        def android_onStop(self):
+            # ... custom logic before default Toga implementation ...
+            super().android_onStop()
+            # ... custom logic after default Toga implementation ...
+```
+
+You can then direct your app to use this custom class by overriding the [`create()`][toga.App.create] method on your app to construct and return an instance of your custom App class when running on Android:
+
+```python
+class MyApp(toga.App):
+    def create(self):
+        if sys.platform == "android":
+            return MyAndroidApp(interface=self)
+        else:
+            return super().create()
+
+    def startup(self): ...
+```
+
+Each hook receives the same arguments as the underlying `Activity` class. `android_onStart()`, `android_onResume()`, `android_onPause()`, `android_onStop()` and `android_onTopResumedActivityChanged()` already implement behavior required by Toga's cross-platform API (e.g., triggering `on_show`/`on_hide` or `on_gain_focus`/`on_lose_focus` on the window); if you override one of these, call the base implementation to preserve that behavior, as shown in the example above.
+
+The following lifecycle hooks are available:
+
+<!-- rumdl-disable MD013 MD022 MD023 -->
+::: toga_android.app.App
+    options:
+        show_root_heading: false
+        show_root_toc_entry: false
+        members:
+            - android_onCreate
+            - android_onStart
+            - android_onRestart
+            - android_onResume
+            - android_onPause
+            - android_onStop
+            - android_onDestroy
+            - android_onTopResumedActivityChanged
+            - android_onConfigurationChanged

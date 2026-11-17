@@ -1,4 +1,5 @@
 import os
+import warnings
 
 import gi
 
@@ -44,7 +45,14 @@ if gtklib == "Adw":  # pragma: no-cover-unless-libadwaita
 elif gtklib is None:  # pragma: no-cover-unless-plain-gtk  # pragma: no branch
     Adw = None
 
-from gi.events import GLibEventLoop  # noqa: E402, F401
+with warnings.catch_warnings():
+    # PyGObject includes legacy references to AbstractEventLoopPolicy. It also
+    # has a warning catch, but Toga promotes all DeprecationWarnings to be
+    # visible, so we need to explicitly silence them.
+    warnings.simplefilter("ignore")
+    from gi.events import GLibEventLoop  # noqa: F401
+
+
 from gi.repository import (  # noqa: E402, F401
     Gdk,
     GdkPixbuf,
