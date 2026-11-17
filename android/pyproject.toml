@@ -104,6 +104,9 @@ TimeInput = "toga_android.widgets.timeinput:TimeInput"
 # Tree = "toga_android.widgets.tree:Tree"
 WebView = "toga_android.widgets.webview:WebView"
 
+# Scaffolds
+Scaffold = "toga_android.scaffolds.base:Scaffold"
+
 # Windows
 MainWindow = "toga_android.window:MainWindow"
 Window = "toga_android.window:Window"

@@ -5,15 +5,25 @@ from .widgets.base import Scalable
 
 class Container(Scalable):
     def init_container(self, native_parent, pre_refresh=None):
-        context = native_parent.getContext()
-        self.native_parent = native_parent
+        self.create_container(native_parent.getContext(), pre_refresh=pre_refresh)
+        self.attach_container(native_parent)
+
+    def create_container(self, context, pre_refresh=None):
+        self.native_parent = None
         self.init_scale(context)
         self.native_width = self.native_height = 0
         self.content = None
         self.pre_refresh = pre_refresh
 
         self.native_content = RelativeLayout(context)
+
+    def attach_container(self, native_parent):
+        self.native_parent = native_parent
         native_parent.addView(self.native_content)
+
+    def detach_container(self):
+        self.native_parent.removeView(self.native_content)
+        self.native_parent = None
 
     @property
     def width(self):
