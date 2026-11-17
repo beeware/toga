@@ -1,4 +1,4 @@
-from ..window import Container
+from ..container import Container
 from .base import Widget
 
 
