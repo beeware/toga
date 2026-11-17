@@ -305,7 +305,6 @@ class App:
     def set_main_window(self, window):
         if window is None or window == toga.App.BACKGROUND:
             raise ValueError("Apps without main windows are not supported on Android")
-        # The main window's scaffold controls the visibility of the titlebar.
 
     ######################################################################
     # App resources
