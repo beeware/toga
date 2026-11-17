@@ -51,4 +51,15 @@ class Image:
                 f"Don't know how to save image of type {path.suffix!r}"
             ) from exc
 
-        self.native.savev(str_path, filetype)
+        native = self.native
+        if filetype == "jpeg" and native.get_has_alpha():
+            # JPEG can't store alpha, and glycin-based encoders reject RGBA input.
+            width, height = native.get_width(), native.get_height()
+            rgb = GdkPixbuf.Pixbuf.new(
+                GdkPixbuf.Colorspace.RGB, False, 8, width, height
+            )
+            native.composite(
+                rgb, 0, 0, width, height, 0, 0, 1, 1, GdkPixbuf.InterpType.NEAREST, 255
+            )
+            native = rgb
+        native.savev(str_path, filetype)

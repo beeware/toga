@@ -42,6 +42,9 @@ mprofile_*.dat
 # Briefcase
 .briefcase
 
+# Git worktrees
+.worktrees
+
 # AI tooling (SpecKit v0.8.0)
 .github/agents/
 .github/copilot-instructions.md
@@ -57,4 +60,5 @@ mprofile_*.dat
 .specify/templates
 .specify/workflow.yml
 .specify/workflows
+.superpowers/
 specs/
