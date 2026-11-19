@@ -10,6 +10,7 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
+    supports_command_items = True
     supports_closable = True
     supports_minimizable = True
     supports_move_while_hidden = True
@@ -125,6 +126,13 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     def has_toolbar(self):
         return self.native.toolbar is not None
+
+    def command_items(self, command):
+        return {
+            item
+            for item, item_command in self.impl.toolbar_items.items()
+            if item_command is command
+        }
 
     def assert_is_toolbar_separator(self, index, section=False):
         # macOS doesn't display separators, so there's nothing to assert.

@@ -514,6 +514,23 @@ class MainWindow(Window):
     def create(self):
         super().create()
         self.toolbar_native = None
+        self.menu_items = {}
+        self.toolbar_items = {}
+
+    def purge_menu_items(self):
+        for item, cmd in self.menu_items.items():
+            cmd._impl.native.remove(item)
+        self.menu_items = {}
+
+    def purge_toolbar_items(self):
+        for item, cmd in self.toolbar_items.items():
+            cmd._impl.native.remove(item)
+        self.toolbar_items = {}
+
+    def close(self):
+        self.purge_menu_items()
+        self.purge_toolbar_items()
+        super().close()
 
     def update_fonts(self):
         # Update all the native fonts and determine the new preferred sizes.
@@ -549,6 +566,8 @@ class MainWindow(Window):
         return submenu
 
     def create_menus(self):
+        self.purge_menu_items()
+
         menubar = self.native.MainMenuStrip
         if menubar:
             menubar.Items.Clear()
@@ -570,12 +589,15 @@ class MainWindow(Window):
                 item = "-"
             else:
                 item = cmd._impl.create_menu_item(WinForms.ToolStripMenuItem)
+                self.menu_items[item] = cmd
 
             submenu.DropDownItems.Add(item)
 
         self.resize_content()
 
     def create_toolbar(self):
+        self.purge_toolbar_items()
+
         if self.interface.toolbar:
             if self.toolbar_native:
                 self.toolbar_native.Items.Clear()
@@ -608,11 +630,13 @@ class MainWindow(Window):
                         item.Image = cmd.icon._impl.native.ToBitmap()
                     item.Enabled = cmd.enabled
                     item.Click += WeakrefCallable(cmd._impl.winforms_Click)
-                    cmd._impl.native.append(item)
+                    cmd._impl.native.add(item)
+                    self.toolbar_items[item] = cmd
                 self.toolbar_native.Items.Add(item)
 
         elif self.toolbar_native:
             self.native.Controls.Remove(self.toolbar_native)
             self.toolbar_native = None
+            self.toolbar_items = {}
 
         self.resize_content()
