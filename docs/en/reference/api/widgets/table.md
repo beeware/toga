@@ -115,6 +115,7 @@ For more complex data you can define your own [custom data sources](/topics/data
 
 ## Notes
 
+- Table is supported on GTK3 and GTK4, including GTK4 with libadwaita. GTK4 uses native column views with selectable rows and resizable columns.
 - Widgets in cells is a beta API which may change in future, and is currently only supported on macOS.
 - macOS does not support changing the font used to render table content.
 - Icons in tables are not supported on Android, and the implementation is [not scalable](https://github.com/beeware/toga/issues/1392) beyond about 1,000 cells.

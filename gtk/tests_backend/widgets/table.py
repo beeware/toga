@@ -11,13 +11,13 @@ class TableProbe(SimpleProbe):
     supports_keyboard_shortcuts = False
     supports_widgets = False
 
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't support tables yet")
-
     def __init__(self, widget):
         super().__init__(widget)
         self.native_table = widget._impl.native_table
-        assert isinstance(self.native_table, Gtk.TreeView)
+        assert isinstance(
+            self.native_table,
+            Gtk.TreeView if GTK_VERSION < (4, 0, 0) else Gtk.ColumnView,
+        )
 
     @property
     def background_color(self):
@@ -25,7 +25,13 @@ class TableProbe(SimpleProbe):
 
     @property
     def has_focus(self):
-        return self.native_table.has_focus()
+        if GTK_VERSION < (4, 0, 0):
+            return self.native_table.has_focus()
+        root = self.native_table.get_root()
+        focused = root.get_focus()
+        return focused is not None and (
+            focused == self.native_table or focused.is_ancestor(self.native_table)
+        )
 
     @property
     def row_count(self):
@@ -33,25 +39,51 @@ class TableProbe(SimpleProbe):
 
     @property
     def column_count(self):
-        return self.native_table.get_n_columns()
+        return len(self.native_table.get_columns())
 
     @property
     def header_visible(self):
-        return self.native_table.get_headers_visible()
+        if GTK_VERSION < (4, 0, 0):
+            return self.native_table.get_headers_visible()
+        return self.native_table.get_first_child().get_visible()
 
     @property
     def header_titles(self):
         return [col.get_title() for col in self.native_table.get_columns()]
 
     def column_width(self, col):
-        return self.native_table.get_column(col).get_width()
+        if GTK_VERSION < (4, 0, 0):
+            return self.native_table.get_column(col).get_width()
+        header = self.native_table.get_first_child().get_first_child()
+        for _ in range(col):
+            header = header.get_next_sibling()
+        return header.get_width()
 
     async def resize_column(self, index, width):
-        self.native_table.get_column(index).set_fixed_width(round(width))
+        self.native_table.get_columns()[index].set_fixed_width(round(width))
 
     def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
         if widget:
             pytest.skip("GTK doesn't support widgets in Tables")
+        elif GTK_VERSION >= (4, 0, 0):
+
+            def cells(parent):
+                child = parent.get_first_child()
+                while child is not None:
+                    if (
+                        getattr(child, "row", None) == self.impl.store[row]
+                        and getattr(child, "column", None) == self.widget.columns[col]
+                    ):
+                        yield child
+                    yield from cells(child)
+                    child = child.get_next_sibling()
+
+            cell = next(cells(self.native_table))
+            assert cell.text.get_text() == value
+            if icon:
+                assert cell.icon.get_paintable() == icon._impl.native().get_paintable()
+            else:
+                assert cell.icon.get_paintable() is None
         else:
             gtk_row = self.native_table.get_model()[row]
             assert gtk_row[col * 2 + 2]
@@ -77,6 +109,12 @@ class TableProbe(SimpleProbe):
         pass
 
     async def select_row(self, row, add=False):
+        if GTK_VERSION >= (4, 0, 0):
+            if add and self.impl.selection.is_selected(row):
+                self.impl.selection.unselect_item(row)
+            else:
+                self.impl.selection.select_item(row, not add)
+            return
         path = Gtk.TreePath(row)
 
         if add:
@@ -89,11 +127,12 @@ class TableProbe(SimpleProbe):
 
     async def activate_row(self, row):
         await self.select_row(row)
-        self.native_table.emit(
-            "row-activated",
-            Gtk.TreePath(row),
-            self.native_table.get_columns()[0],
-        )
+        if GTK_VERSION < (4, 0, 0):
+            self.native_table.emit(
+                "row-activated", Gtk.TreePath(row), self.native_table.get_columns()[0]
+            )
+        else:
+            self.native_table.emit("activate", row)
 
     async def select_first_row_keyboard(self):
         pytest.skip("test not implemented for this platform")
