@@ -108,6 +108,9 @@ TextInput = "toga_textual.widgets.textinput:TextInput"
 # Tree = "toga_textual.widgets.tree:Tree"
 # WebView = "toga_textual.widgets.webview:WebView"
 
+# Scaffolds
+Scaffold = "toga_textual.scaffolds.base:Scaffold"
+
 # Windows
 MainWindow = "toga_textual.window:MainWindow"
 Window = "toga_textual.window:Window"
