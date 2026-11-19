@@ -5,17 +5,26 @@ from .widgets.base import Scalable
 
 
 class Container(Scalable):
-    def __init__(self, native_parent, on_refresh=None):
-        self.native_parent = native_parent
+    def __init__(self, native_parent=None, on_refresh=None):
+        self.native_parent = None
         self.native_width = self.native_height = 0
         self.content = None
         self.on_refresh = on_refresh
 
         self.native_content = WinForms.Panel()
-        native_parent.Controls.Add(self.native_content)
-
         # See comment in Widget.__init__.
         self.native_content.CreateGraphics().Dispose()
+
+        if native_parent is not None:
+            self.attach_container(native_parent)
+
+    def attach_container(self, native_parent):
+        self.native_parent = native_parent
+        native_parent.Controls.Add(self.native_content)
+
+    def detach_container(self):
+        self.native_parent.Controls.Remove(self.native_content)
+        self.native_parent = None
 
     @property
     def dpi_scale(self):

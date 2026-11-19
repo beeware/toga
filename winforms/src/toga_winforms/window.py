@@ -23,7 +23,6 @@ from toga.constants import WindowState
 from toga.handlers import WeakrefCallable
 from toga.types import Position, Size
 
-from .container import Container
 from .fonts import DEFAULT_FONT
 from .libs import win32constants as wc, win32structures as ws
 from .libs.comctl32 import DefSubclassProc, RemoveWindowSubclass, SetWindowSubclass
@@ -41,14 +40,17 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Window(Scalable):
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, position, size):
         self.interface = interface
+        # An actual set_scaffold call will come later, but we already have a
+        # placeholder scaffold we can use; this simplifies edge cases (e.g., Resize
+        # events fired during construction).
+        self.scaffold = self.interface._scaffold._impl
 
         self.create()
 
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
         self.native.FormClosing += self._FormClosing_handler
-        self.container = Container(self.native, self.on_refresh)
         self._dpi_scale = GetDpiForWindow(int(self.native.Handle.ToString())) / 96
 
         self.native.MinimizeBox = self.interface.minimizable
@@ -68,7 +70,6 @@ class Window(Scalable):
         # variable stores the window size so it can be returned/restored as required.
         self._cached_window_size = None
 
-        self.set_title(title)
         self.set_size(size)
         # Winforms does window cascading by default; use that behavior, rather than
         # Toga's re-implementation.
@@ -246,9 +247,10 @@ class Window(Scalable):
     ######################################################################
 
     def get_title(self):
-        return self.native.Text
+        return self.scaffold.title
 
     def set_title(self, title):
+        self.scaffold.title = title
         self.native.Text = title
 
     ######################################################################
@@ -266,8 +268,7 @@ class Window(Scalable):
     def show(self):
         self._dpi_scale = GetDpiForWindow(int(self.native.Handle.ToString())) / 96
         self.update_fonts()
-        if self.interface.content is not None:
-            self.interface.content.refresh()
+        self.scaffold.refresh()
         self.resize_content()
         self.native.Show()
 
@@ -310,8 +311,8 @@ class Window(Scalable):
     def _top_bars_height(self):
         return 0
 
-    def on_refresh(self, container):
-        layout = self.interface.content.layout
+    def scaffold_refreshed(self, scaffold):
+        layout = scaffold.interface.content.layout
         self.native.MinimumSize = WinSize(
             self.scale_in(layout.min_width) + self._decor_width(),
             self.scale_in(layout.min_height)
@@ -321,8 +322,9 @@ class Window(Scalable):
 
     def resize_content(self, force_refresh=False):
         vertical_shift = self._top_bars_height()
-        self.container.native_content.Location = Point(0, vertical_shift)
-        self.container.resize_content(
+        container = self.scaffold.container
+        container.native_content.Location = Point(0, vertical_shift)
+        container.resize_content(
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
             force_refresh=force_refresh,
@@ -334,8 +336,17 @@ class Window(Scalable):
             widget._impl.scale_font()
             widget._impl.refresh()
 
-    def set_content(self, widget):
-        self.container.set_content(widget)
+    def set_scaffold(self, scaffold):
+        # Sync the current title onto the new scaffold.
+        scaffold.title = self.get_title()
+
+        # The initial (placeholder) scaffold isn't attached yet.
+        if self.scaffold.container.native_parent is not None:
+            self.scaffold.container.detach_container()
+
+        self.scaffold = scaffold
+        scaffold.container.attach_container(self.native)
+        self.resize_content()
 
     ######################################################################
     # Window size
@@ -492,15 +503,13 @@ class Window(Scalable):
     ######################################################################
 
     def get_image_data(self):
-        size = WinSize(
-            self.container.native_content.Size.Width,
-            self.container.native_content.Size.Height,
-        )
+        native_content = self.scaffold.current_container.native_content
+        size = WinSize(native_content.Size.Width, native_content.Size.Height)
         bitmap = Bitmap(size.Width, size.Height)
         graphics = Graphics.FromImage(bitmap)
 
         graphics.CopyFromScreen(
-            self.container.native_content.PointToScreen(Point.Empty),
+            native_content.PointToScreen(Point.Empty),
             Point(0, 0),
             size,
         )
