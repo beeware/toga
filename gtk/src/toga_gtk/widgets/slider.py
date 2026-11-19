@@ -1,5 +1,6 @@
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
 from toga.widgets.slider import SliderImpl
 
 from ..libs import GTK_VERSION, Gtk
@@ -21,33 +22,44 @@ class Slider(Widget, SliderImpl):
         self.adj = Gtk.Adjustment()
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
 
+        self.native.connect("value-changed", WeakrefCallable(self.gtk_on_change))
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect(
-                "value-changed",
-                lambda native: self.interface.on_change(),
-            )
-            self.native.connect(
                 "button-press-event",
-                lambda native, event: self.interface.on_press(),
+                WeakrefCallable(self.gtk_on_press),
             )
             self.native.connect(
                 "button-release-event",
-                lambda native, event: self.interface.on_release(),
+                WeakrefCallable(self.gtk_on_release),
             )
-
-            # Despite what the set_digits documentation says, set_round_digits has no
-            # effect when set_draw_value is False, so we have to round the value
-            # manually. Disable automatic rounding anyway, in case this changes in the
-            # future.
-            self.native.set_round_digits(-1)
-            self.native.set_draw_value(False)
-            self.native.connect("change-value", self.gtk_change_value)
-
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.click_controller = Gtk.GestureClick()
+            self.click_controller.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+            self.click_controller.connect("pressed", WeakrefCallable(self.gtk_on_press))
+            self.click_controller.connect(
+                "released", WeakrefCallable(self.gtk_on_release)
+            )
+            self.native.add_controller(self.click_controller)
+
+        # Despite what the set_digits documentation says, set_round_digits has no
+        # effect when set_draw_value is False, so we have to round the value
+        # manually. Disable automatic rounding anyway, in case this changes in the
+        # future.
+        self.native.set_round_digits(-1)
+        self.native.set_draw_value(False)
+        self.native.connect("change-value", WeakrefCallable(self.gtk_change_value))
 
         # Dummy values used during initialization.
         self.tick_count = None
+
+    def gtk_on_change(self, *_args):
+        self.interface.on_change()
+
+    def gtk_on_press(self, *_args):
+        self.interface.on_press()
+
+    def gtk_on_release(self, *_args):
+        self.interface.on_release()
 
     def gtk_change_value(self, native, scroll_type, value):
         self.adj.set_value(self.interface._round_value(value))
@@ -101,4 +113,7 @@ class Slider(Widget, SliderImpl):
             # Set intrinsic height to the natural height
             self.interface.intrinsic.height = height[1]
         else:  # pragma: no-cover-if-gtk3
-            pass
+            _, size = self.native.get_preferred_size()
+
+            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+            self.interface.intrinsic.height = size.height
