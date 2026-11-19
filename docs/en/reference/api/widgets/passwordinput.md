@@ -14,6 +14,7 @@ password = toga.PasswordInput()
 
 ## Notes
 
+- GTK supports PasswordInput on GTK 3 and GTK 4, with or without libadwaita.
 - WinForms does not support the use of partially or fully transparent colors for the PasswordInput background. If a color with an alpha value is provided (including `TRANSPARENT`), the alpha channel will be ignored. A `TRANSPARENT` background will be rendered as white.
 - On WinForms, if a PasswordInput is given an explicit height, the rendered widget will not expand to fill that space. The widget will have the fixed height determined by the font used on the widget. In general, you should avoid setting a `height` style property on PasswordInput widgets.
 
