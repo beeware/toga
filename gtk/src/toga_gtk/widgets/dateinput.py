@@ -69,7 +69,10 @@ class DateInput(Widget):
             # we connect to emits on user action only.
             self._suppress_signals = True
             try:
-                self.native.select_day(native_date(value))
+                if GTK_VERSION >= (4, 20, 0):
+                    self.native.set_date(native_date(value))
+                else:
+                    self.native.select_day(native_date(value))
             finally:
                 self._suppress_signals = False
             self.gtk_on_change()
