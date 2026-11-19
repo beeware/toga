@@ -8,7 +8,6 @@ from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
 
-from .container import TogaContainer
 from .libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, GLib, Gtk
 
 if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
@@ -24,9 +23,14 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, position, size):
         self.interface = interface
         self.interface._impl = self
+
+        # An actual set_scaffold call will come later, but we already have a
+        # placeholder scaffold we can use; this simplifies edge cases.
+        self.scaffold = self.interface._scaffold._impl
+        self._installed_container = None
 
         self.layout = None
 
@@ -71,7 +75,6 @@ class Window:
 
         self.native.set_default_size(size[0], size[1])
 
-        self.set_title(title)
         self.set_position(position if position is not None else _initial_position())
 
         # Set the window deletable/closable.
@@ -81,34 +84,25 @@ class Window:
         # Decorator when resizable == False
         self.native.set_resizable(self.interface.resizable)
 
-        # Because expand and fill are later set to True, the container will fill the
-        # available space, and will get a size_allocate callback if the window is
-        # resized.
-        self.container = TogaContainer()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            # The GTK window's content is the layout; any user content is placed into
-            # the container, which is the bottom widget in the layout. The toolbar (if
-            # required) will be added at the top of the layout.
+            # The GTK window's content is the layout; the scaffold's container is
+            # placed at the bottom of the layout. The toolbar (if required) will be
+            # added at the top of the layout.
             self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-            self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
             self.native.add(self.layout)
         else:  # pragma: no-cover-if-gtk3
-            self.container.set_valign(Gtk.Align.FILL)
-            self.container.set_vexpand(True)
             if Adw is not None:  # pragma: no-cover-unless-libadwaita
                 # libadwaita requires the use of a "toolbar view" for adding top and
                 # bottom bars, including any top bars and toolbars.
                 self.toolbar_view = Adw.ToolbarView()
                 self.headerbar = Adw.HeaderBar()
                 self.toolbar_view.add_top_bar(self.headerbar)
-                self.toolbar_view.set_content(self.container)
                 self.native.set_content(self.toolbar_view)
             else:  # pragma: no-cover-unless-plain-gtk4
-                # The GTK window's content is the layout; any user content is placed
-                # into the container, which is the bottom widget in the layout. The
-                # toolbar (if required) will be added at the top of the layout.
+                # The GTK window's content is the layout; the scaffold's container
+                # is placed at the bottom of the layout. The toolbar (if required)
+                # will be added at the top of the layout.
                 self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-                self.layout.append(self.container)
                 self.native.set_child(self.layout)
 
     def create(self):
@@ -240,9 +234,10 @@ class Window:
     ######################################################################
 
     def get_title(self):
-        return self.native.get_title()
+        return self.scaffold.title
 
     def set_title(self, title):
+        self.scaffold.title = title
         self.native.set_title(title)
 
     ######################################################################
@@ -271,9 +266,31 @@ class Window:
     # Window content and resources
     ######################################################################
 
-    def set_content(self, widget):
-        # Set the new widget to be the container's content
-        self.container.content = widget
+    def set_scaffold(self, scaffold):
+        # Sync the current title onto the new scaffold.
+        scaffold.title = self.get_title()
+        self.scaffold = scaffold
+
+        # Because expand and fill are set to True, the container will fill the
+        # available space, and will get a size_allocate callback if the window is
+        # resized.
+        container = scaffold.container
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            if self._installed_container is not None:
+                self.layout.remove(self._installed_container)
+            self.layout.pack_end(container, expand=True, fill=True, padding=0)
+            container.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            container.set_valign(Gtk.Align.FILL)
+            container.set_vexpand(True)
+            if Adw is not None:  # pragma: no-cover-unless-libadwaita
+                # set_content() replaces any existing content.
+                self.toolbar_view.set_content(container)
+            else:  # pragma: no-cover-unless-plain-gtk4
+                if self._installed_container is not None:
+                    self.layout.remove(self._installed_container)
+                self.layout.append(container)
+        self._installed_container = container
 
     ######################################################################
     # Window size
@@ -473,7 +490,7 @@ class Window:
             # that window, and capture that rectangle.
             window = self.native.get_window()
             origin = window.get_origin()
-            allocation = self.container.get_allocation()
+            allocation = self.scaffold.current_container.get_allocation()
 
             screen = display.get_default_screen()
             root_window = screen.get_root_window()

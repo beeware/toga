@@ -8,6 +8,7 @@ from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Adw, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
+from .scaffolds.base import ScaffoldProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
@@ -109,14 +110,12 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 self.native.emit("close-request")
 
     @property
+    def scaffold_probe(self):
+        return ScaffoldProbe(self.window.scaffold)
+
+    @property
     def content_size(self):
-        if GTK_VERSION < (4, 0, 0):
-            content_allocation = self.impl.container.get_allocation()
-            return content_allocation.width, content_allocation.height
-        else:
-            pytest.skip("Content size in GTK4 is not implemented")
-            content = self.impl.container
-            return content.width, content.height
+        return self.scaffold_probe.content_size
 
     @property
     def is_resizable(self):

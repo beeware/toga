@@ -105,6 +105,9 @@ TextInput = "toga_gtk.widgets.textinput:TextInput"
 Tree = "toga_gtk.widgets.tree:Tree"
 WebView = "toga_gtk.widgets.webview:WebView"
 
+# Scaffolds
+Scaffold = "toga_gtk.scaffolds.base:Scaffold"
+
 # Windows
 MainWindow = "toga_gtk.window:MainWindow"
 Window = "toga_gtk.window:Window"
