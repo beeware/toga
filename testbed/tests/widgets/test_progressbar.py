@@ -37,6 +37,9 @@ async def test_start_stop_determinate(widget, probe):
     assert widget.max == pytest.approx(100.0)
     assert widget.value == pytest.approx(5.0)
 
+    # A progress bar must have a visible track without an explicit height.
+    assert probe.height > 0
+
     # Start the progress bar
     widget.start()
     await probe.redraw("Determinate progress bar should be started")
