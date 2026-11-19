@@ -4,7 +4,7 @@ from travertino.size import at_least
 
 from toga.types import LatLng
 
-from ..libs import GTK_VERSION, Gtk, WebKit2
+from ..libs import GLib, WebKit2
 from .base import Widget
 
 MAPVIEW_HTML_CONTENT = """<!DOCTYPE html>
@@ -68,14 +68,12 @@ class MapView(Widget):
     SUPPORTS_ON_SELECT = False
 
     def create(self):
-        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
-            raise RuntimeError("MapView isn't supported on GTK4 (yet!)")
-
         if WebKit2 is None:  # pragma: no cover
             raise RuntimeError(
-                "Unable to import WebKit2. Ensure that the system package providing "
-                "WebKit2 and its GTK bindings have been installed. See "
-                "https://toga.beeware.org/en/stable/reference/api/widgets/mapview#system-requirements "  # noqa: E501
+                "Unable to import WebKitGTK. Ensure that the system package providing "
+                "WebKitGTK and its GObject Introspection bindings has been installed. "
+                "See https://toga.beeware.org/en/stable/reference/api/widgets/"
+                "mapview/#mapview-system-requires "
                 "for details."
             )
 
@@ -164,8 +162,9 @@ class MapView(Widget):
             # tick the GTK event loop until the Javascript result is returned.
             self.native.evaluate_javascript(**kwargs)
 
+            context = GLib.main_context_default()
             while not future.done():
-                Gtk.main_iteration_do(blocking=False)
+                context.iteration(may_block=False)
 
             return future.result()
 
