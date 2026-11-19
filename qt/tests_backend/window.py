@@ -6,6 +6,7 @@ from toga_qt.libs import IS_WAYLAND
 from toga.constants import WindowState
 
 from .probe import BaseProbe
+from .scaffolds.base import ScaffoldProbe
 
 
 class WindowProbe(BaseProbe):
@@ -28,7 +29,6 @@ class WindowProbe(BaseProbe):
         self.app = app
         self.window = window
         self.native = window._impl.native
-        self.container = window._impl.container
         assert self.native.isWindow()
         if IS_WAYLAND:
             self.supports_placement = (
@@ -72,9 +72,12 @@ class WindowProbe(BaseProbe):
             self.native.close()
 
     @property
+    def scaffold_probe(self):
+        return ScaffoldProbe(self.window.scaffold)
+
+    @property
     def content_size(self):
-        size = self.container.native.size()
-        return (size.width(), size.height())
+        return self.scaffold_probe.content_size
 
     @property
     def is_resizable(self):

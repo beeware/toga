@@ -96,6 +96,9 @@ TimeInput = "toga_qt.widgets.timeinput:TimeInput"
 Tree = "toga_qt.widgets.tree:Tree"
 WebView = "toga_qt.widgets.webview:WebView"
 
+# Scaffolds
+Scaffold = "toga_qt.scaffolds.base:Scaffold"
+
 # Windows
 MainWindow = "toga_qt.window:MainWindow"
 Window = "toga_qt.window:Window"
