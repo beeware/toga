@@ -23,14 +23,47 @@ if TYPE_CHECKING:
     """
 
 
-class LatLng(NamedTuple):
-    """A geographic coordinate."""
+class LatLng(tuple):
+    """A geographic coordinate, with optional altitude and accuracy attributes.
 
-    lat: float
-    """Latitude"""
+    A LatLng compares equal to a 2-tuple (lat, lng). The optional
+    altitude, horizontal_accuracy, and vertical_accuracy attributes
+    are not considered for equality or hashing.
+    """
 
-    lng: float
-    """Longitude"""
+    altitude: float | None = None
+    """Altitude in meters, or None if not available."""
+
+    horizontal_accuracy: float | None = None
+    """Horizontal accuracy in meters, or None if not available."""
+
+    vertical_accuracy: float | None = None
+    """Vertical accuracy in meters, or None if not available."""
+
+    def __new__(
+        cls,
+        lat: float,
+        lng: float,
+        *,
+        altitude: float | None = None,
+        horizontal_accuracy: float | None = None,
+        vertical_accuracy: float | None = None,
+    ) -> LatLng:
+        self = super().__new__(cls, (lat, lng))
+        self.altitude = altitude
+        self.horizontal_accuracy = horizontal_accuracy
+        self.vertical_accuracy = vertical_accuracy
+        return self
+
+    @property
+    def lat(self) -> float:
+        """Latitude"""
+        return self[0]
+
+    @property
+    def lng(self) -> float:
+        """Longitude"""
+        return self[1]
 
     def __str__(self) -> str:
         return f"({self.lat:6f}, {self.lng:6f})"
