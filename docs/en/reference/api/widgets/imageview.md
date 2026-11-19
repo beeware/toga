@@ -13,6 +13,7 @@ view = toga.ImageView(my_image)
 
 ## Notes
 
+- ImageView is supported on GTK3 and GTK4, including GTK4 with libadwaita.
 - An ImageView **is not** an interactive element - there is no `on_press` handler for ImageView. If you want a graphical element that can be clicked or pressed, try using a [`toga.Button`][] that uses an [`toga.Icon`][].
 - The default size of the view is the size of the image, or 0x0 if `image` is `None`.
 - If an explicit width *or* height is specified, the size of the image will be fixed in that axis, and the size in the other axis will be determined by the image's aspect ratio.
