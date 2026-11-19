@@ -21,14 +21,14 @@ webview.set_content("https://example.com", "<html>...</html>")
 
 - Using WebView on Windows 10 requires that your users have installed the [Edge WebView2 Evergreen Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download). This is installed by default on Windows 11.
 
-- Using WebView on Linux requires that the user has installed the system packages for WebKit2, plus the GObject Introspection bindings for WebKit2. The name of the system package required is distribution dependent:
+- Using WebView on Linux requires that the user has installed the system packages for WebKitGTK, plus its GObject Introspection bindings. For GTK 3, the name of the system package required is distribution dependent:
     - Ubuntu, Debian: `gir1.2-webkit2-4.1`
     - Fedora: `webkit2gtk4.1`
     - Arch/Manjaro: `webkit2gtk-4.1`
     - OpenSUSE Tumbleweed: `libwebkit2gtk3 typelib(WebKit2)`
     - FreeBSD: `webkit2-gtk3`
 
-    WebView is not fully supported on GTK4. If you want to contribute to the GTK4 WebView implementation, you will require v6.0 of the WebKit2 libraries. This is provided by `gir1.2-webkit-6.0` on Ubuntu/Debian, and `webkitgtk6.0` on Fedora; for other distributions, consult your distribution's platform documentation.
+    For GTK 4, with or without libadwaita, WebView requires WebKitGTK's 6.0 API. This is provided by `gir1.2-webkit-6.0` on Ubuntu/Debian, and `webkitgtk6.0` on Fedora; for other distributions, consult your distribution's platform documentation.
 
 ## Notes
 

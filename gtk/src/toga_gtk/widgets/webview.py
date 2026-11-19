@@ -5,7 +5,7 @@ from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
-from ..libs import GTK_VERSION, GLib, WebKit2
+from ..libs import GLib, WebKit2
 from .base import Widget
 
 
@@ -15,15 +15,12 @@ class WebView(Widget):
     SUPPORTS_ON_NAVIGATION_STARTING = False
 
     def create(self):
-        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
-            raise RuntimeError("WebView isn't supported on GTK4 (yet!)")
-
         if WebKit2 is None:  # pragma: no cover
             raise RuntimeError(
-                "Unable to import WebKit2. Ensure that the system package providing "
-                "WebKit2 and its GTK bindings have been installed. See "
-                "https://toga.beeware.org/en/stable/reference/api/widgets/mapview#system-requirements "  # noqa: E501
-                "for details."
+                "Unable to import WebKitGTK. Ensure that the system package providing "
+                "WebKitGTK and its GTK bindings have been installed. See "
+                "https://toga.beeware.org/en/stable/reference/api/widgets/webview/"
+                "#webview-system-requires for details."
             )
 
         # Access to SharedArrayBuffer is restricted by WebKit for security
@@ -138,8 +135,5 @@ class WebView(Widget):
         return result
 
     def rehint(self):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-        else:  # pragma: no-cover-if-gtk3
-            pass
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
