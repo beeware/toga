@@ -7,9 +7,10 @@ from .screens import Screen as ScreenImpl
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, position, size):
         self.interface = interface
         self.interface._impl = self
+        self.scaffold = self.interface._scaffold._impl
 
         self.native = create_element(
             "main",
@@ -31,8 +32,6 @@ class Window:
             "visibilitychange", create_proxy(self.dom_on_visibility_change)
         )
         js.document.addEventListener("resize", self.window_on_resize)
-
-        self.set_title(title)
 
     ######################################################################
     # Native event handlers
@@ -64,9 +63,10 @@ class Window:
     ######################################################################
 
     def get_title(self):
-        return js.document.title
+        return self.scaffold.title
 
     def set_title(self, title):
+        self.scaffold.title = title
         js.document.title = title
 
     ######################################################################
@@ -86,22 +86,13 @@ class Window:
     # Window content and resources
     ######################################################################
 
-    def clear_content(self):
-        if self.interface.content:
-            for child in self.interface.content.children:
-                child._impl.container = None
-
-    def set_content(self, widget):
-        # Remove existing content of the window.
-        for child in self.native.childNodes:
-            self.native.removeChild(child)
-
-        # widget.native is a NativeProxy (a Python wrapper, not a JsProxy).
-        # NativeProxy.__getattr__ auto-unwraps NativeProxy arguments when you
-        # call a JS method on a NativeProxy — but self.native here is a plain
-        # JsProxy (Window doesn't use _create_native_widget), so auto-unwrap
-        # doesn't apply. We must manually unwrap to give JS a real Node.
-        self.native.appendChild(widget.native.unwrap())
+    def set_scaffold(self, scaffold):
+        # Sync the current title onto the new scaffold.
+        scaffold.title = self.get_title()
+        # Detaching an unattached (placeholder) scaffold is a no-op.
+        self.scaffold.detach()
+        self.scaffold = scaffold
+        scaffold.attach(self)
 
     ######################################################################
     # Window size
