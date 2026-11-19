@@ -13,10 +13,7 @@ class OptionContainer(Widget):
 
     def create(self):
         self.native = Gtk.Notebook()
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.native.connect("switch-page", WeakrefCallable(self.gtk_on_switch_page))
-        else:  # pragma: no-cover-if-gtk3
-            pass
+        self.native.connect("switch-page", WeakrefCallable(self.gtk_on_switch_page))
         self.sub_containers = []
 
     def gtk_on_switch_page(self, widget, page, page_num):
@@ -30,17 +27,18 @@ class OptionContainer(Widget):
         asyncio.get_event_loop().call_soon(WeakrefCallable(self.interface.on_select))
 
     def add_option(self, index, text, widget, icon):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            sub_container = TogaContainer()
-            sub_container.content = widget
-            sub_container.on_recompute = WeakrefCallable(self.on_recompute)
+        sub_container = TogaContainer()
+        sub_container.content = widget
+        sub_container.on_recompute = WeakrefCallable(self.on_recompute)
 
-            self.sub_containers.insert(index, sub_container)
-            self.native.insert_page(sub_container, Gtk.Label(label=text), index)
+        self.sub_containers.insert(index, sub_container)
+        self.native.insert_page(sub_container, Gtk.Label(label=text), index)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # Tabs aren't visible by default;
             # tell the notebook to show all content.
             self.native.show_all()
         else:  # pragma: no-cover-if-gtk3
+            # GTK4 children are visible by default.
             pass
 
     def on_recompute(self, container):
@@ -54,10 +52,7 @@ class OptionContainer(Widget):
         del self.sub_containers[index]
 
     def set_option_enabled(self, index, enabled):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.sub_containers[index].set_visible(enabled)
-        else:  # pragma: no-cover-if-gtk3
-            pass
+        self.sub_containers[index].set_visible(enabled)
 
     def is_option_enabled(self, index):
         return self.sub_containers[index].get_visible()
