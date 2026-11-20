@@ -104,5 +104,16 @@ import System.Windows.Forms as WinForms  # noqa: E402
 
 WinForms.Application.EnableVisualStyles()
 WinForms.Application.SetCompatibleTextRenderingDefault(False)
+# Set dark mode where needed. Note that dark/light mode will be set for the entirety of
+# the application's runtime.
+if _use_dotnet_core:  # pragma: no-cover-if-netfx
+    color_mode = os.environ.get("TOGA_WINFORMS_COLOR_MODE", "System").strip().title()
+    system_color_mode = {
+        "Dark": WinForms.SystemColorMode.Dark,
+        "Light": WinForms.SystemColorMode.Classic,
+    }.get(color_mode, WinForms.SystemColorMode.System)
+    WinForms.Application.SetColorMode(system_color_mode)
+else:  # pragma: no-cover-if-netcore
+    pass
 
 __version__ = version("toga-winforms")

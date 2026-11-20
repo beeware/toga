@@ -1056,7 +1056,7 @@ async def test_deprecated_methods(widget, method_name, args, expected_args):
     mock_method.assert_called_once_with(**expected_args)
 
 
-async def test_peripheral_events(widget, probe, on_activate_handler):
+async def test_peripheral_events(widget, probe, on_activate_handler, other_probe):
     """Does the widget implement mouse and keyboard events correctly?"""
     # These tests are needed on the Windows platform and are implemented as
     # pytest.skip() on the platforms macOS, GTK and QT.
@@ -1103,6 +1103,15 @@ async def test_peripheral_events(widget, probe, on_activate_handler):
     # Simulate a normal item selection click.
     await probe.redraw("Tree is collapsed and awaiting an item selection mouse click")
     await probe.single_click((0,), toggle=False, on_item=True)
+    assert widget.selection == widget.data[0]
+
+    # Test hover on state-change arrow while row is selected and focused
+    await probe.redraw("Row 0 is selected and awaiting hover of state-change arrow")
+    await probe.assert_item_mouse_hover((0,))
+
+    # Test drawing when row is selected and unfocused
+    await other_probe.ensure_focus()
+    await probe.redraw("Row 0 is selected but Tree is not focused", delay=0.1)
     assert widget.selection == widget.data[0]
 
     # Simulate a normal item selection click on a different item.

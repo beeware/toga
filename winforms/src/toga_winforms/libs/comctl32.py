@@ -1,5 +1,5 @@
 from ctypes import POINTER, windll
-from ctypes.wintypes import BOOL, HDC, HWND, INT, LPARAM, UINT, WPARAM
+from ctypes.wintypes import BOOL, COLORREF, HDC, HWND, INT, LPARAM, UINT, WPARAM
 
 from .win32misc import activation_context
 from .win32structures import (
@@ -21,10 +21,21 @@ InitCommonControlsEx.restype = BOOL
 InitCommonControlsEx.argtypes = [POINTER(INITCOMMONCONTROLSEX)]
 
 
-# https://learn.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-imagelist_draw
-ImageList_Draw = comctl32.ImageList_Draw
-ImageList_Draw.restype = BOOL
-ImageList_Draw.argtypes = [HIMAGELIST, INT, HDC, INT, INT, UINT]
+# https://learn.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-imagelist_drawex
+ImageList_DrawEx = comctl32.ImageList_DrawEx
+ImageList_DrawEx.restype = BOOL
+ImageList_DrawEx.argtypes = [
+    HIMAGELIST,
+    INT,
+    HDC,
+    INT,
+    INT,
+    INT,
+    INT,
+    COLORREF,
+    COLORREF,
+    UINT,
+]
 
 
 # https://learn.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-defsubclassproc

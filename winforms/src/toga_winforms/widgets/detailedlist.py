@@ -7,15 +7,17 @@ from System.Drawing import ColorTranslator, Font as WinFont, Size, SystemColors
 
 from toga.handlers import WeakrefCallable
 
+from ..app import in_dark_mode
 from ..libs import gdi32, user32 as u32, win32constants as wc, win32structures as ws
 from ..libs.comctl32 import (
     DefSubclassProc,
-    ImageList_Draw,
+    ImageList_DrawEx,
     InitCommonControlsEx,
     RemoveWindowSubclass,
     SetWindowSubclass,
 )
 from ..libs.fonts import FontDeviceContext
+from ..libs.uxtheme import SetWindowTheme
 from ..libs.win32misc import hiword, is_submessage, loword
 from ..menus import ContextMenu
 from .base import Widget
@@ -102,7 +104,7 @@ class DetailedList(Widget):
         # learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowexw
         lvs = wc.LVS_OWNERDATA | wc.LVS_SINGLESEL | wc.LVS_SHOWSELALWAYS | wc.LVS_REPORT
         self._hwnd = u32.CreateWindowExW(
-            wc.LVS_EX_DOUBLEBUFFER,
+            0,
             wc.WC_LISTVIEW,
             None,
             wc.WS_CHILD | wc.WS_VISIBLE | lvs,
@@ -115,6 +117,24 @@ class DetailedList(Widget):
             None,
             None,
         )
+
+        # Double buffering prevents flicker when tiles are redrawn. Note that this is an
+        # extended List-View style, not an extended window style.
+        u32.SendMessageW(
+            self._hwnd,
+            wc.LVM_SETEXTENDEDLISTVIEWSTYLE,
+            wc.LVS_EX_DOUBLEBUFFER,
+            wc.LVS_EX_DOUBLEBUFFER,
+        )
+
+        # The List-View isn't a WinForms control, so WinForms dark mode doesn't theme
+        # it. Use the theme of the WinForms ListView in dark mode, which gives the
+        # scrollbar dark colors.
+        if in_dark_mode():  # pragma: no-cover-if-netfx
+            SetWindowTheme(HWND(self._hwnd), "DarkMode_Explorer", None)
+        else:  # pragma: no-cover-if-netcore
+            # We can't do conditional branch coverage, so we need a no-op else
+            pass
 
         # Change the view style to tile.
         # learn.microsoft.com/en-us/windows/win32/controls/use-tile-views
@@ -237,12 +257,20 @@ class DetailedList(Widget):
         return (x + self._icon_padding_x, y + self._icon_padding_y)
 
     def _drawing_select_rect(self, x: int, y: int) -> RECT:
-        return RECT(
-            x + self._icon_padding_x + self._icon + self._text_padding_x,
-            y + self._text_padding_y,
-            x + self._tile_width() - self._text_padding_x,
-            y + self._text_padding_y + self._title_font_height + self._font_height,
-        )
+        if in_dark_mode():  # pragma: no-cover-if-netfx
+            return RECT(
+                x,
+                y,
+                x + self._tile_width(),
+                y + self._tile_height,
+            )
+        else:  # pragma: no-cover-if-netcore
+            return RECT(
+                x + self._icon_padding_x + self._icon + self._text_padding_x,
+                y + self._text_padding_y,
+                x + self._tile_width() - self._text_padding_x,
+                y + self._text_padding_y + self._title_font_height + self._font_height,
+            )
 
     def _drawing_title_rect(self, x: int, y: int) -> RECT:
         return RECT(
@@ -455,33 +483,64 @@ class DetailedList(Widget):
             y = rect.top + divmod(self._tile_height - rect.bottom + rect.top, 2)[0]
 
             if is_selected:
-                # Unfocused colors are undocumented.
-                select_back = wc.COLOR_HIGHLIGHT if has_focus else wc.COLOR_BTNFACE
-                select_text = wc.COLOR_HIGHLIGHTTEXT if has_focus else wc.COLOR_BTNTEXT
-                gdi32.SetTextColor(hdc, u32.GetSysColor(select_text))
+                if in_dark_mode():  # pragma: no-cover-if-netfx
+                    back_color = SystemColors.Highlight
+                    text_color = self.native.ForeColor
+                    icon_flag = wc.ILD_NORMAL
+                else:  # pragma: no-cover-if-netcore
+                    if has_focus:
+                        back_color = SystemColors.Highlight
+                        text_color = SystemColors.HighlightText
+                        icon_flag = wc.ILD_SELECTED
+                    else:
+                        back_color = SystemColors.Control
+                        text_color = SystemColors.ControlText
+                        icon_flag = wc.ILD_FOCUS
+                prev_color = gdi32.SetTextColor(
+                    hdc,
+                    ColorTranslator.ToWin32(text_color),
+                )
 
-                # See documentation for "+1".
-                rect = self._drawing_select_rect(x=0, y=y)
-                u32.FillRect(hdc, byref(rect), select_back + 1)
+                brush = gdi32.CreateSolidBrush(ColorTranslator.ToWin32(back_color))
+                try:
+                    # Keep the selection inside the item bounds, since those are the
+                    # bounds that are redrawn when the selection changes.
+                    select_rect = self._drawing_select_rect(x=0, y=y)
+                    select_rect.top = max(select_rect.top, rect.top)
+                    select_rect.bottom = min(select_rect.bottom, rect.bottom)
+                    u32.FillRect(hdc, byref(select_rect), brush)
+                finally:
+                    gdi32.DeleteObject(brush)
             else:
-                gdi32.SetTextColor(hdc, self._fore_color)
+                prev_color = gdi32.SetTextColor(hdc, self._fore_color)
+                icon_flag = wc.ILD_NORMAL
 
-            with FontDeviceContext(hdc, hfont_title):
-                rect = self._drawing_title_rect(x=0, y=y)
-                u32.DrawTextW(hdc, item[0], -1, byref(rect), text_format)
+            try:
+                with FontDeviceContext(hdc, hfont_title):
+                    rect = self._drawing_title_rect(x=0, y=y)
+                    u32.DrawTextW(hdc, item[0], -1, byref(rect), text_format)
 
-            with FontDeviceContext(hdc, hfont):
-                rect = self._drawing_subtitle_rect(x=0, y=y)
-                u32.DrawTextW(hdc, item[1], -1, byref(rect), text_format)
+                with FontDeviceContext(hdc, hfont):
+                    rect = self._drawing_subtitle_rect(x=0, y=y)
+                    u32.DrawTextW(hdc, item[1], -1, byref(rect), text_format)
+            finally:
+                gdi32.SetTextColor(hdc, prev_color)
 
+            # The List-View sets the background color of the image list to its own
+            # background color, so draw the icon transparently (CLR_NONE) to keep the
+            # selection color behind it.
             icon_xy = self._drawing_icon_xy(x=0, y=y)
-            ImageList_Draw(
+            ImageList_DrawEx(
                 HWND(int(self._image_list.Handle.ToString())),
                 item[2],
                 hdc,
                 icon_xy[0],
                 icon_xy[1],
-                wc.ILD_SELECTED if is_selected else wc.ILD_NORMAL,
+                0,
+                0,
+                wc.CLR_NONE,
+                wc.CLR_DEFAULT,
+                icon_flag,
             )
 
             # Returning CDRF_SKIPDEFAULT means that the control will not draw the item.
