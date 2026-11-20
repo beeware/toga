@@ -627,6 +627,9 @@ jobs:
         - bootstrap: "Positron (FastAPI)"
           new-options: '-Q "bootstrap=Toga Positron (FastAPI server)"'
 
+        - bootstrap: "Positron (Panel)"
+          new-options: '-Q "bootstrap=Toga Positron (Panel server)"'
+
         - bootstrap: "Positron (Static)"
           new-options: '-Q "bootstrap=Toga Positron (Static server)"'
 
