@@ -618,6 +618,7 @@ jobs:
         bootstrap:
         - "Positron (Django)"
         - "Positron (FastAPI)"
+        - "Positron (Panel)"
         - "Positron (Static)"
         - "Positron (Site-specific)"
         include:
