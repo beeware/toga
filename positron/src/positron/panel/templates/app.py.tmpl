@@ -1,0 +1,41 @@
+import panel as pn
+import toga
+from tornado.ioloop import IOLoop
+
+from {{{{ cookiecutter.module_name }}}}.panel import app
+
+
+class {{{{ cookiecutter.class_name }}}}(toga.App):
+    def cleanup(self, app, **kwargs):
+        self._server.stop()
+        return True
+
+    def startup(self):
+        print("Starting server...")
+        self._server = pn.serve(
+            app,
+            port=0,
+            address="127.0.0.1",
+            start=False,
+            show=False,
+            autoreload=False,
+            loop=IOLoop.current(),
+        )
+        self._server.start()
+
+        self.web_view = toga.WebView()
+
+        self.on_exit = self.cleanup
+
+        self.main_window = toga.MainWindow()
+        self.main_window.content = self.web_view
+
+    async def on_running(self):
+        host, port = self._server.address, self._server.port
+        self.web_view.url = f"http://{{host}}:{{port}}/"
+
+        self.main_window.show()
+
+
+def main():
+    return {{{{ cookiecutter.class_name }}}}()
