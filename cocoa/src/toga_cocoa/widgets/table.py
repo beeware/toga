@@ -168,11 +168,14 @@ class Table(Widget):
         self.source_insert(index=index, item=item)
 
     def source_insert(self, *, index, item):
-        # set parent = None if inserting to the root item
-        index_set = NSIndexSet.indexSetWithIndex(index)
+        # AppKit may have already queried the updated source after a style change.
+        if self.native_table.numberOfRows != len(self.interface.data) - 1:
+            self.native_table.reloadData()
+            return
 
         self.native_table.insertRowsAtIndexes(
-            index_set, withAnimation=NSTableViewAnimation.EffectNone
+            NSIndexSet.indexSetWithIndex(index),
+            withAnimation=NSTableViewAnimation.EffectNone,
         )
 
     # Alias for backwards compatibility:
