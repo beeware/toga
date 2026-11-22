@@ -5,12 +5,11 @@ from functools import partial
 from warnings import warn
 
 import System.Windows.Forms as WinForms
-from System.Drawing import ColorTranslator, SystemColors
+from System.Drawing import ColorTranslator
 
 from toga.handlers import WeakrefCallable
 from toga.sources.tree_source import Node, TreeSourceT
 
-from ..app import in_dark_mode
 from ..libs import win32constants as wc, win32structures as ws
 from ..libs.comctl32 import DefSubclassProc, RemoveWindowSubclass
 from ..libs.gdi32 import SetBkMode, SetTextColor
@@ -829,14 +828,7 @@ class Tree(Table):
         text_format = (
             wc.DT_SINGLELINE | wc.DT_VCENTER | wc.DT_WORD_ELLIPSIS | wc.DT_HCENTER
         )
-        # In dark mode, the selection highlight is not drawn, so the arrow keeps the
-        # normal text colour.
-        highlighted = (
-            not in_dark_mode()
-            and self.native.SelectedIndices.Contains(index)
-            and self.native.Focused
-        )
-        color = SystemColors.HighlightText if highlighted else self.native.ForeColor
+        color = self.native.ForeColor
         prev_color = SetTextColor(hdc, ColorTranslator.ToWin32(color))
         prev_bk_mode = SetBkMode(hdc, wc.TRANSPARENT)
         try:

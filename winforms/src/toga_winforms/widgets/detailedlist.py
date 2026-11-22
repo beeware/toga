@@ -132,6 +132,9 @@ class DetailedList(Widget):
         # scrollbar dark colors.
         if in_dark_mode():  # pragma: no-cover-if-netfx
             SetWindowTheme(HWND(self._hwnd), "DarkMode_Explorer", None)
+            SetWindowTheme(
+                HWND(int(self.native.Handle.ToString())), "DarkMode_Explorer", None
+            )
         else:  # pragma: no-cover-if-netcore
             # We can't do conditional branch coverage, so we need a no-op else
             pass
@@ -483,17 +486,17 @@ class DetailedList(Widget):
             y = rect.top + divmod(self._tile_height - rect.bottom + rect.top, 2)[0]
 
             if is_selected:
+                back_color = (
+                    SystemColors.Highlight if has_focus else SystemColors.Control
+                )
                 if in_dark_mode():  # pragma: no-cover-if-netfx
-                    back_color = SystemColors.Highlight
                     text_color = self.native.ForeColor
                     icon_flag = wc.ILD_NORMAL
                 else:  # pragma: no-cover-if-netcore
                     if has_focus:
-                        back_color = SystemColors.Highlight
                         text_color = SystemColors.HighlightText
                         icon_flag = wc.ILD_SELECTED
                     else:
-                        back_color = SystemColors.Control
                         text_color = SystemColors.ControlText
                         icon_flag = wc.ILD_FOCUS
                 prev_color = gdi32.SetTextColor(

@@ -6,7 +6,9 @@ import System.Windows.Forms as WinForms
 
 from toga.handlers import WeakrefCallable
 
+from .app import in_dark_mode
 from .libs import user32 as u32, win32constants as wc
+from .libs.uxtheme import FlushMenuThemes, SetPreferredAppMode, SetWindowTheme
 
 
 class ContextMenu:
@@ -35,6 +37,10 @@ class ContextMenu:
     def winforms_handle_created(self, sender, e):
         """Create the menu when a the widget's handle is created."""
         self._native_hwnd = HWND(int(self.widget.native.Handle.ToString()))
+        if in_dark_mode():  # pragma: no-cover-if-netfx
+            SetWindowTheme(self._native_hwnd, "DarkMode_Explorer", None)
+        else:  # pragma: no-cover-if-netcore
+            pass
 
     def winforms_mouse_click(self, sender, e):
         if e.Button != WinForms.MouseButtons.Right or e.Clicks != 1:
@@ -48,6 +54,15 @@ class ContextMenu:
         asyncio.get_event_loop().start_inner_loop(self._show, pt.x, pt.y, actions_list)
 
     def _show(self, x: int, y: int, actions_list):
+        if in_dark_mode():  # pragma: no-cover-if-netfx
+            SetPreferredAppMode(2)
+            FlushMenuThemes()
+            SetWindowTheme(self._native_hwnd, "DarkMode_Explorer", None)
+        else:  # pragma: no-cover-if-netcore
+            SetPreferredAppMode(0)
+            FlushMenuThemes()
+            SetWindowTheme(self._native_hwnd, None, None)
+
         hmenu = u32.CreatePopupMenu()
         for index, action_pair in enumerate(actions_list, start=1):
             if action_pair is None:
