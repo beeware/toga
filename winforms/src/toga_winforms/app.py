@@ -75,6 +75,17 @@ class App:
 
     def create(self):
         self.native = WinForms.Application
+
+        # Register handlers for application lifecycle events.
+        self.native.ApplicationExit += WeakrefCallable(self.winforms_application_exit)
+        self.native.ThreadExit += WeakrefCallable(self.winforms_thread_exit)
+        self.native.EnterThreadModal += WeakrefCallable(
+            self.winforms_enter_thread_modal
+        )
+        self.native.LeaveThreadModal += WeakrefCallable(
+            self.winforms_leave_thread_modal
+        )
+        self.native.Idle += WeakrefCallable(self.winforms_idle)
         self.app_context = WinForms.ApplicationContext()
         self.app_dispatcher = Dispatcher.CurrentDispatcher
 
@@ -121,6 +132,21 @@ class App:
     ######################################################################
     # App lifecycle
     ######################################################################
+
+    def winforms_application_exit(self, sender, event):
+        """Handle the application exit event."""
+
+    def winforms_thread_exit(self, sender, event):
+        """Handle the thread exit event."""
+
+    def winforms_enter_thread_modal(self, sender, event):
+        """Handle entering a modal state."""
+
+    def winforms_leave_thread_modal(self, sender, event):
+        """Handle leaving a modal state."""
+
+    def winforms_idle(self, sender, event):
+        """Handle the application idle event."""
 
     def exit(self):  # pragma: no cover
         self._is_exiting = True
