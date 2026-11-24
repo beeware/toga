@@ -133,7 +133,7 @@ force-exclude = true
 # Disable rules:
 # MD014: Forces commands in codeblocks to show output
 # MD042: Empty link - buggy, still flagging on valid MkDocs formatting
-# MD052: Reference link not found - buggy, flagging on valis MkDocs links
+# MD052: Reference link not found - buggy, flagging on valid MkDocs links
 disable = ["MD014", "MD042", "MD052"]
 
 [tool.rumdl.per-file-ignores]
