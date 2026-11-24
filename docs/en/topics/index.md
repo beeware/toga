@@ -9,6 +9,7 @@ Topic guides are deeper explorations of concepts and issues related to usage of 
 * [Debugging your app](debugging.md) - Learn how to debug issues in Toga.
 * [File management](file-management.md) - Learn how to managing files in Toga using app paths.
 * [Widget layout](layout.md) - Details about widget layout in Toga.
+* [Event handlers](event-handlers.md) - Learn how to pass additional arguments to event handlers.
 
 ## Internal guides
 
