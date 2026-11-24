@@ -1,10 +1,12 @@
 import sys
 import warnings
 from importlib.metadata import EntryPoint
+from types import ModuleType
 from unittest.mock import Mock
 
 import pytest
 
+import toga
 import toga.platform
 from toga.platform import (
     Factory,
@@ -483,3 +485,137 @@ def test_get_platform_factory_deprecated():
     ):
         factory = _get_platform_factory()
         assert factory.__name__ == "toga_dummy.factory"
+
+
+@pytest.fixture
+def clean_factory():
+    """Ensure that registrations made by a test don't leak into other tests."""
+    get_factory.cache_clear()
+    yield
+    get_factory.cache_clear()
+
+
+async def test_register_impl_app(clean_factory, monkeypatch, tmp_path):
+    """A registered App implementation is used without overriding create()."""
+    monkeypatch.setenv("TOGA_DUMMY_HOME", str(tmp_path / "toga-dummy"))
+
+    @toga.register_impl("App")
+    class CustomApp(App):
+        def beep(self):
+            self.custom_beep = True
+
+    class MyApp(toga.App):
+        def startup(self):
+            self.main_window = toga.MainWindow()
+
+    app = MyApp(formal_name="Test App", app_id="org.beeware.toga.test-app")
+
+    assert type(app._impl) is CustomApp
+
+    app.beep()
+    assert app._impl.custom_beep
+
+
+def test_register_impl_returns_class(clean_factory):
+    """The decorator returns the class unmodified."""
+
+    class Custom:
+        pass
+
+    assert toga.register_impl("App")(Custom) is Custom
+
+
+def test_register_impl_unimplemented(clean_factory):
+    """A class can be registered for a name the backend doesn't implement."""
+    factory = get_factory()
+    with pytest.raises(NotImplementedError):
+        _ = factory.NotAWidget
+
+    @toga.register_impl("NotAWidget")
+    class NotAWidget:
+        pass
+
+    assert factory.NotAWidget is NotAWidget
+
+
+def test_register_impl_twice(clean_factory):
+    """If a name is registered twice, the last registration is used."""
+
+    @toga.register_impl("App")
+    class First(App):
+        pass
+
+    with pytest.warns(
+        RuntimeWarning,
+        match=(
+            r"'App' has already been registered for the toga_core interface as "
+            r".*First\. .*Second will be used instead\."
+        ),
+    ):
+
+        @toga.register_impl("App")
+        class Second(App):
+            pass
+
+    assert get_factory().App is Second
+
+
+def test_register_impl_after_load(clean_factory):
+    """Registering a name that has already been loaded warns, but is used."""
+    factory = get_factory()
+    assert factory.App is App
+
+    with pytest.warns(
+        RuntimeWarning,
+        match=(
+            r".*Late was registered for 'App' after the original implementation "
+            r"\(App\) had already been loaded\. Objects that have already been "
+            r"created will continue to use App; only new objects will use .*Late\."
+        ),
+    ):
+
+        @toga.register_impl("App")
+        class Late(App):
+            pass
+
+    assert factory.App is Late
+
+
+def test_register_impl_explicit_core_interface(clean_factory):
+    """Naming the toga_core interface explicitly registers with the default factory."""
+
+    @toga.register_impl("NotAWidget", interface="toga_core")
+    class NotAWidget:
+        pass
+
+    assert get_factory().NotAWidget is NotAWidget
+
+
+def test_register_impl_interface(clean_factory):
+    """A registration only affects the factory for its interface."""
+
+    @toga.register_impl("CustomThing", interface="togax_dummy")
+    class CustomThing:
+        pass
+
+    assert get_factory("togax_dummy").CustomThing is CustomThing
+    with pytest.raises(NotImplementedError):
+        _ = get_factory().CustomThing
+
+
+def test_register_impl_legacy_factory(monkeypatch):
+    """Registration isn't possible with a legacy factory module."""
+    legacy = ModuleType("legacy_backend.factory")
+    monkeypatch.setattr(toga.platform, "get_factory", lambda interface=None: legacy)
+
+    with pytest.raises(
+        RuntimeError,
+        match=(
+            r"Implementations can't be registered with the legacy_backend\.factory "
+            r"module\."
+        ),
+    ):
+
+        @toga.register_impl("App")
+        class Custom:
+            pass

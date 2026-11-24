@@ -25,6 +25,7 @@ from toga.icons import Icon as Icon
 from toga.images import Image as Image
 from toga.keys import Key as Key
 from toga.platform import backend as backend
+from toga.platform import register_impl as register_impl
 from toga.statusicons import MenuStatusIcon as MenuStatusIcon
 from toga.statusicons import SimpleStatusIcon as SimpleStatusIcon
 from toga.types import LatLng as LatLng

@@ -196,6 +196,7 @@ class Factory:
                 )
             self.interface = interface
         self._entrypoints = None
+        self._overrides = {}
 
     @cached_property
     def backend(self) -> str:
@@ -223,6 +224,29 @@ class Factory:
                 )
             else:
                 self._entrypoints[entrypoint.name] = entrypoint
+
+    def register(self, name: str, impl: type) -> None:
+        """Use `impl` instead of the entry point for `name`."""
+        if name in self._overrides:
+            warnings.warn(
+                f"{name!r} has already been registered for the {self.interface} "
+                f"interface as {self._overrides[name].__qualname__}. "
+                f"{impl.__qualname__} will be used instead.",
+                RuntimeWarning,
+                stacklevel=3,
+            )
+        elif name in self.__dict__:
+            old = self.__dict__[name]
+            warnings.warn(
+                f"{impl.__qualname__} was registered for {name!r} after the original "
+                f"implementation ({old.__qualname__}) had already been loaded. "
+                f"Objects that have already been created will continue to use "
+                f"{old.__qualname__}; only new objects will use {impl.__qualname__}.",
+                RuntimeWarning,
+                stacklevel=3,
+            )
+        self._overrides[name] = impl
+        setattr(self, name, impl)
 
     def __getattr__(self, name):
         if self._entrypoints is None:
@@ -275,6 +299,34 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
     # End backwards compatibility
     # -------------------------------------------------------------------------
     return factory
+
+
+def register_impl(name: str, interface: str | None = None):
+    """Class decorator that replaces the backend's implementation of `name`.
+
+    Register the class before any object that uses `name` is created.
+
+    :param name: The implementation to replace (e.g., `"App"`).
+    :param interface: The interface group, or None for `"toga_core"`.
+    """
+
+    def decorator(cls):
+        if interface in {None, "toga_core"}:
+            factory = get_factory()
+        else:
+            factory = get_factory(interface)
+        try:
+            register = factory.register
+        except AttributeError:
+            raise RuntimeError(
+                f"Implementations can't be registered with the {factory.__name__} "
+                "module. The backend must define its implementations using entry "
+                "points."
+            ) from None
+        register(name, cls)
+        return cls
+
+    return decorator
 
 
 backend: str
