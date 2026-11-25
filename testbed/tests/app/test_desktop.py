@@ -263,6 +263,8 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         window_widget = toga.Box(style=Pack(flex=1, background_color=next(color_cycle)))
         window.content = window_widget
         window.show()
+        # Record the original dimensions after the native window has been laid out.
+        await main_window_probe.wait_for_window(f"Test Window {i} is visible")
 
         window_information = {}
         window_information["window"] = window
@@ -281,9 +283,6 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         screen_window_dict[window_information["paired_screen"]] = window_information[
             "window"
         ]
-    # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window("All Test Windows are visible")
-
     # Enter presentation mode with a screen-window dict via the app
     app.enter_presentation_mode(screen_window_dict)
     # Add delay to ensure windows are visible after animation.
