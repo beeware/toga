@@ -1,16 +1,16 @@
 from toga.widgets.imageview import rehint_imageview
 
-from ..libs import GTK_VERSION, GdkPixbuf, Gtk
+from ..libs import GTK_VERSION, Gdk, GdkPixbuf, GLib, Gtk
 from .base import Widget
 
 
 class ImageView(Widget):
     def create(self):
-        self.native = Gtk.Image()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native = Gtk.Image()
             self.native.connect("size-allocate", self.gtk_size_allocate)
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.native = Gtk.Picture(can_shrink=True)
         self._aspect_ratio = None
 
     def set_image(self, image):
@@ -20,7 +20,21 @@ class ImageView(Widget):
             else:
                 self.native.set_from_pixbuf(None)
         else:  # pragma: no-cover-if-gtk3
-            self.native.set_from_paintable()
+            if image:
+                pixbuf = image._impl.native
+                self.native.set_paintable(
+                    Gdk.MemoryTexture.new(
+                        pixbuf.get_width(),
+                        pixbuf.get_height(),
+                        Gdk.MemoryFormat.R8G8B8A8
+                        if pixbuf.get_has_alpha()
+                        else Gdk.MemoryFormat.R8G8B8,
+                        GLib.Bytes.new(pixbuf.get_pixels()),
+                        pixbuf.get_rowstride(),
+                    )
+                )
+            else:
+                self.native.set_paintable(None)
 
     def gtk_size_allocate(self, widget, allocation):
         # GTK doesn't have any native image resizing; so, when the Gtk.Image
@@ -60,12 +74,17 @@ class ImageView(Widget):
         self.native.set_from_pixbuf(scaled)
 
     def rehint(self):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            width, height, self._aspect_ratio = rehint_imageview(
-                image=self.interface.image,
-                style=self.interface.style,
+        width, height, self._aspect_ratio = rehint_imageview(
+            image=self.interface.image,
+            style=self.interface.style,
+        )
+        self.interface.intrinsic.width = width
+        self.interface.intrinsic.height = height
+        if GTK_VERSION >= (4, 8, 0):  # pragma: no-cover-if-gtk3
+            self.native.set_content_fit(
+                Gtk.ContentFit.CONTAIN
+                if self._aspect_ratio is not None
+                else Gtk.ContentFit.FILL
             )
-            self.interface.intrinsic.width = width
-            self.interface.intrinsic.height = height
-        else:  # pragma: no-cover-if-gtk3
-            pass
+        elif GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+            self.native.set_keep_aspect_ratio(self._aspect_ratio is not None)
