@@ -33,3 +33,17 @@ $ python -m pip install toga-winforms
 The `toga-winforms` backend uses the [Windows Forms API](https://learn.microsoft.com/en-us/dotnet/desktop/winforms/?view=netdesktop-8.0).
 
 The native .NET APIs are accessed using [Python.NET](http://pythonnet.github.io).
+
+## Platform-specific app lifecycle hooks
+
+The Windows backend exposes hooks for native Windows Forms application lifecycle events. These methods are defined on the `App` implementation and can be overridden by custom backend implementations.
+
+The available hooks are:
+
+- `winforms_application_exit(sender, event)`: Called when the application is about to exit.
+- `winforms_thread_exit(sender, event)`: Called when the thread is about to exit.
+- `winforms_enter_thread_modal(sender, event)`: Called when the application enters a modal state.
+- `winforms_leave_thread_modal(sender, event)`: Called when the application leaves a modal state.
+- `winforms_idle(sender, event)`: Called when the application becomes idle.
+
+These methods have no default behavior. Override them to respond to the corresponding native Windows Forms events.
