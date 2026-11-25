@@ -30,7 +30,7 @@ class ScrollContainer(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.add(self.document_container)
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.native.set_child(self.document_container)
 
     def gtk_on_changed(self, *args):
         self.interface.on_scroll()
@@ -51,11 +51,8 @@ class ScrollContainer(Widget):
         self.interface.content.window = window
 
     def rehint(self):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-        else:  # pragma: no-cover-if-gtk3
-            pass
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def get_horizontal(self):
         return self.native.get_policy()[0] == Gtk.PolicyType.AUTOMATIC
@@ -92,24 +89,20 @@ class ScrollContainer(Widget):
             self.interface.on_scroll()
 
     def get_max_vertical_position(self):
+        adjustment = self.native.get_vadjustment()
         return max(
             0,
-            int(
-                self.native.get_vadjustment().get_upper()
-                - self.native.get_allocation().height
-            ),
+            int(adjustment.get_upper() - adjustment.get_page_size()),
         )
 
     def get_vertical_position(self):
         return int(self.native.get_vadjustment().get_value())
 
     def get_max_horizontal_position(self):
+        adjustment = self.native.get_hadjustment()
         return max(
             0,
-            int(
-                self.native.get_hadjustment().get_upper()
-                - self.native.get_allocation().width
-            ),
+            int(adjustment.get_upper() - adjustment.get_page_size()),
         )
 
     def get_horizontal_position(self):
