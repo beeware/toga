@@ -1,8 +1,6 @@
 import asyncio
 import html
 
-import pytest
-
 from toga_gtk.libs import GTK_VERSION, GLib, Gtk
 
 from .base import SimpleProbe
@@ -19,9 +17,6 @@ class DetailedListProbe(SimpleProbe):
         self.native_vadj = widget._impl.native_vadj
         assert isinstance(self.native_detailedlist, Gtk.ListBox)
 
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 doesn't support a detailed list yet")
-
     @property
     def row_count(self):
         return len(self.impl.store)
@@ -35,7 +30,11 @@ class DetailedListProbe(SimpleProbe):
         )
 
         if icon:
-            assert row.icon.get_pixbuf() == icon._impl.native(32)
+            if GTK_VERSION < (4, 0, 0):
+                assert row.icon.get_pixbuf() == icon._impl.native(32)
+            else:
+                assert row.icon.get_paintable() == icon._impl.native().get_paintable()
+                assert row.icon.get_pixel_size() == 32
         else:
             assert row.icon is None
 
@@ -65,8 +64,9 @@ class DetailedListProbe(SimpleProbe):
         return self.impl.native_revealer.get_child_revealed()
 
     async def non_refresh_action(self):
-        # Non-refresh is ... don't press the button, so it's a no op.
-        pass
+        # A secondary click outside the rows must not refresh or open actions.
+        self.impl.gesture.emit("pressed", 1, -1, -1)
+        assert self.impl._active_row is None
 
     async def refresh_action(self, active=True):
         if active:
@@ -78,7 +78,7 @@ class DetailedListProbe(SimpleProbe):
             # handler. To avoid this, defer the click event to the run loop, so the
             # event handler isn't inside an async context.
             def click_refresh(data):
-                self.impl.native_refresh_button.clicked()
+                self.impl.native_refresh_button.emit("clicked")
 
             GLib.idle_add(click_refresh, None)
 
@@ -101,7 +101,7 @@ class DetailedListProbe(SimpleProbe):
             # Confirm primary action is visible, and click it.
             assert item.stack.get_visible_child_name() == "actions"
             assert self.impl.native_primary_action_button.get_visible()
-            self.impl.native_primary_action_button.clicked()
+            self.impl.native_primary_action_button.emit("clicked")
 
             await self.redraw("Primary action button clicked")
         else:
@@ -140,7 +140,7 @@ class DetailedListProbe(SimpleProbe):
             # Confirm Secondary action is visible, and click it.
             assert item.stack.get_visible_child_name() == "actions"
             assert self.impl.native_secondary_action_button.get_visible()
-            self.impl.native_secondary_action_button.clicked()
+            self.impl.native_secondary_action_button.emit("clicked")
 
             await self.redraw("Secondary action button clicked")
         else:
