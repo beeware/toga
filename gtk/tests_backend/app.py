@@ -13,6 +13,8 @@ from .probe import BaseProbe
 
 
 class AppProbe(BaseProbe, DialogsMixin):
+    supports_application_menu_command_native_items = True
+    supports_status_icon_command_native_items = False
     supports_key = True
     supports_key_mod3 = True
     # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
