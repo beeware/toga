@@ -7,6 +7,7 @@ from toga_cocoa.libs import NSWindow, NSWindowStyleMask
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
+from .scaffolds.base import ScaffoldProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
@@ -91,11 +92,12 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.native.performClose(None)
 
     @property
+    def scaffold_probe(self):
+        return ScaffoldProbe(self.window.scaffold)
+
+    @property
     def content_size(self):
-        return (
-            self.impl.container.native.frame.size.width,
-            self.impl.container.native.frame.size.height,
-        )
+        return self.scaffold_probe.content_size
 
     @property
     def is_resizable(self):

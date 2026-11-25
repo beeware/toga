@@ -215,10 +215,12 @@ class Testbed(toga.App):
         )
 
         self.main_window = toga.MainWindow(title=self.formal_name)
-        self.main_window.content = toga.Box(
-            children=[
-                toga.Label("Did you forget to use --test?"),
-            ]
+        self.main_window.content = toga.Scaffold(
+            toga.Box(
+                children=[
+                    toga.Label("Did you forget to use --test?"),
+                ]
+            )
         )
         self.main_window.show()
 
