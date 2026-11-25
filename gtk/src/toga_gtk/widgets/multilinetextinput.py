@@ -37,11 +37,10 @@ class MultilineTextInput(Widget):
 
         self.native_textview = Gtk.TextView()
         self.native_textview.set_name(f"toga-{self.interface.id}-textview")
+        self.native_textview.set_buffer(self.placeholder)
+        self.native_textview.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_textview.get_style_context().add_class("toga")
-
-            self.native_textview.set_buffer(self.placeholder)
-            self.native_textview.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
             self.native_textview.connect(
                 "focus-in-event", WeakrefCallable(self.gtk_on_focus_in)
             )
@@ -54,14 +53,24 @@ class MultilineTextInput(Widget):
 
             self.native.add(self.native_textview)
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.native_textview.add_css_class("toga")
+            focus = Gtk.EventControllerFocus()
+            focus.connect("enter", WeakrefCallable(self.gtk_on_focus_in))
+            focus.connect("leave", WeakrefCallable(self.gtk_on_focus_out))
+            self.native_textview.add_controller(focus)
+
+            keys = Gtk.EventControllerKey()
+            keys.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+            keys.connect("key-pressed", WeakrefCallable(self.gtk_on_key_press))
+            self.native_textview.add_controller(keys)
+            self.native.set_child(self.native_textview)
 
     def set_color(self, color):
         self.apply_css(
             "color",
             get_color_css(color),
             native=self.native_textview,
-            selector=".toga, .toga text",
+            selector=f".toga, #{self.native_textview.get_name()}.toga text",
         )
 
     def set_background_color(self, color):
@@ -69,7 +78,7 @@ class MultilineTextInput(Widget):
             "background_color",
             get_background_color_css(color),
             native=self.native_textview,
-            selector=".toga, .toga text",
+            selector=f".toga, #{self.native_textview.get_name()}.toga text",
         )
 
     def set_font(self, font):
@@ -161,11 +170,8 @@ class MultilineTextInput(Widget):
         return False
 
     def rehint(self):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-        else:  # pragma: no-cover-if-gtk3
-            pass
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def scroll_to_bottom(self):
         self.buffer.place_cursor(self.buffer.get_end_iter())
