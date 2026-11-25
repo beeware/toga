@@ -1,11 +1,11 @@
 import asyncio
+import warnings
 from datetime import datetime, timedelta
+from inspect import isawaitable
 from pathlib import Path
 from unittest.mock import Mock
 
-import pytest
-
-from toga_gtk.libs import GTK_VERSION, Gtk
+from toga_gtk.libs import GTK_VERSION, Gio, GLib, Gtk
 
 
 class DialogsMixin:
@@ -17,44 +17,77 @@ class DialogsMixin:
         print("Waiting for dialog" if message is None else message)
         delay_end = datetime.now() + timedelta(seconds=1 if self.app.run_slow else 0.1)
         while datetime.now() < delay_end:
-            Gtk.main_iteration_do(blocking=False)
+            GLib.main_context_default().iteration(may_block=False)
 
     def _default_close_handler(self, dialog, gtk_result):
-        self._wait_for_dialog("Wait for dialog to appear")
-        dialog._impl.native.response(gtk_result)
-        self._wait_for_dialog("Wait for dialog to disappear")
+        if GTK_VERSION >= (4, 10, 0):
+            if isinstance(dialog._impl.native, Gtk.Window):
+                dialog._impl.response_buttons[gtk_result].emit("clicked")
+            else:
+                windows = [
+                    window
+                    for window in Gtk.Window.get_toplevels()
+                    if window.get_visible() and window not in dialog._test_windows
+                ]
+                assert len(windows) == 1
+                if isinstance(dialog._impl.native, Gtk.AlertDialog):
+                    response = dialog._impl.response_types.index(gtk_result)
+                else:
+                    response = (
+                        Gtk.ResponseType.ACCEPT
+                        if gtk_result == Gtk.ResponseType.OK
+                        else Gtk.ResponseType.CANCEL
+                    )
+                windows[0].emit("response", response)
+        else:
+            self._wait_for_dialog("Wait for dialog to appear")
+            dialog._impl.native.emit("response", gtk_result)
+            self._wait_for_dialog("Wait for dialog to disappear")
 
     def _setup_dialog_result(
         self, dialog, gtk_result, close_handler=None, pre_close_test_method=None
     ):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.xfail("Setting up Dialogs not yet supported on GTK4")
-
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
         orig_show = dialog._impl.show
 
         def automated_show(host_window, future):
-            orig_show(host_window, future)
+            if GTK_VERSION >= (4, 10, 0):
+                dialog._test_windows = list(Gtk.Window.get_toplevels())
+            native_future = asyncio.get_running_loop().create_future()
+            orig_show(host_window, native_future)
 
             async def _close_dialog():
                 # Add a slight delay for the dialog to show up
-                await asyncio.sleep(0.05)
+                # GTK's file chooser loads its initial selection asynchronously.
+                await asyncio.sleep(
+                    0.5
+                    if GTK_VERSION >= (4, 10, 0)
+                    and isinstance(dialog._impl.native, Gtk.FileDialog)
+                    else 0.05
+                )
                 try:
-                    if pre_close_test_method:
-                        pre_close_test_method(dialog)
-                finally:
                     try:
+                        if pre_close_test_method:
+                            pre_close_test_method(dialog)
+                    finally:
                         if close_handler:
-                            close_handler(dialog, gtk_result)
+                            result = close_handler(dialog, gtk_result)
+                            if isawaitable(result):
+                                await result
                         else:
                             self._default_close_handler(dialog, gtk_result)
-                    except Exception as e:
-                        # An error occurred closing the dialog; that means the dialog
-                        # isn't what as expected, so record that in the future.
-                        future.set_exception(e)
+                    # Wait for native completion before returning the result to the
+                    # test, so this helper cannot outlive the test that opened it.
+                    result = await asyncio.wait_for(native_future, timeout=1)
+                except Exception as e:
+                    future.set_exception(e)
+                else:
+                    future.set_result(result)
 
-            asyncio.create_task(_close_dialog(), name="close-dialog")
+            dialog._test_close_task = asyncio.create_task(
+                _close_dialog(), name="close-dialog"
+            )
 
         dialog._impl.show = automated_show
 
@@ -88,7 +121,10 @@ class DialogsMixin:
             )
 
     def setup_save_file_dialog_result(self, dialog, result):
-        assert isinstance(dialog._impl.native, Gtk.FileChooserDialog)
+        assert isinstance(
+            dialog._impl.native,
+            Gtk.FileDialog if GTK_VERSION >= (4, 10, 0) else Gtk.FileChooserDialog,
+        )
 
         self._setup_dialog_result(
             dialog,
@@ -96,7 +132,14 @@ class DialogsMixin:
         )
 
     def setup_open_file_dialog_result(self, dialog, result, multiple_select):
-        assert isinstance(dialog._impl.native, Gtk.FileChooserDialog)
+        if GTK_VERSION >= (4, 10, 0):
+            dialog._impl.native.set_initial_file(Gio.File.new_for_path(__file__))
+            self._setup_gtk4_file_result(dialog, result, multiple_select)
+            return
+        assert isinstance(
+            dialog._impl.native,
+            Gtk.FileChooserDialog,
+        )
 
         # GTK's file dialog shows folders first; but if a folder is selected when the
         # "open" button is pressed, it opens that folder. To prevent this, if we're
@@ -120,11 +163,17 @@ class DialogsMixin:
 
             self._wait_for_dialog("Wait for dialog to appear")
             if result:
-                dialog._impl.native.select_filename(__file__)
+                if GTK_VERSION < (4, 0, 0):
+                    dialog._impl.native.select_filename(__file__)
+                else:
+                    dialog._impl.native.set_file(Gio.File.new_for_path(__file__))
                 self._wait_for_dialog("Wait for file to be selected")
-                assert dialog._impl.native.get_filename() == __file__, (
-                    "Dialog didn't select dummy file"
+                selected = (
+                    dialog._impl.native.get_filename()
+                    if GTK_VERSION < (4, 0, 0)
+                    else dialog._impl.native.get_file().get_path()
                 )
+                assert selected == __file__, "Dialog didn't select dummy file"
             else:
                 self._wait_for_dialog("Wait for dialog to be dismissed")
 
@@ -143,7 +192,16 @@ class DialogsMixin:
             )
 
     def setup_select_folder_dialog_result(self, dialog, result, multiple_select):
-        assert isinstance(dialog._impl.native, Gtk.FileChooserDialog)
+        if GTK_VERSION >= (4, 10, 0):
+            dialog._impl.native.set_initial_folder(
+                Gio.File.new_for_path(str(Path(__file__).parent.parent))
+            )
+            self._setup_gtk4_file_result(dialog, result, multiple_select)
+            return
+        assert isinstance(
+            dialog._impl.native,
+            Gtk.FileChooserDialog,
+        )
 
         def close_handler(dialog, gtk_result):
             if result is not None:
@@ -168,14 +226,17 @@ class DialogsMixin:
             self._wait_for_dialog("Wait for dialog to appear")
             if result:
                 folder = str(Path(__file__).parent.parent)
-                dialog._impl.native.set_current_folder(folder)
+                dialog._impl.native.set_current_folder(
+                    folder if GTK_VERSION < (4, 0, 0) else Gio.File.new_for_path(folder)
+                )
 
                 self._wait_for_dialog("Wait for folder to be selected")
                 # We don't know how long it will take for the GUI to update, so iterate
                 # for a while until the change has been applied.
-                assert dialog._impl.native.get_current_folder() == folder, (
-                    "Dialog didn't select dummy folder"
-                )
+                selected = dialog._impl.native.get_current_folder()
+                if GTK_VERSION >= (4, 0, 0):
+                    selected = selected.get_path()
+                assert selected == folder, "Dialog didn't select dummy folder"
             else:
                 self._wait_for_dialog("Wait for folder to be dismissed")
 
@@ -195,7 +256,46 @@ class DialogsMixin:
                 close_handler=close_handler,
             )
 
+    def _setup_gtk4_file_result(self, dialog, result, multiple_select):
+        async def close_handler(dialog, gtk_result):
+            if result:
+                if dialog._impl.operation in {"open", "open_multiple"}:
+                    chooser = next(
+                        window
+                        for window in Gtk.Window.get_toplevels()
+                        if window.get_visible() and window not in dialog._test_windows
+                    )
+                    # The local GTK chooser does not reliably preselect the
+                    # initial file. Drive its deprecated selection API only in
+                    # the probe; applications still use Gtk.FileDialog.
+                    with warnings.catch_warnings():
+                        warnings.filterwarnings(
+                            "ignore",
+                            message="Gtk.FileChooser.set_file is deprecated",
+                            category=DeprecationWarning,
+                        )
+                        chooser.set_file(Gio.File.new_for_path(__file__))
+                    await asyncio.sleep(0.1)
+                    with warnings.catch_warnings():
+                        warnings.filterwarnings(
+                            "ignore",
+                            message="Gtk.FileChooser.get_file is deprecated",
+                            category=DeprecationWarning,
+                        )
+                        assert chooser.get_file().get_path() == __file__
+                if multiple_select:
+                    dialog._impl.selected_paths = Mock(
+                        return_value=[str(path) for path in result]
+                    )
+                else:
+                    dialog._impl.selected_path = Mock(return_value=str(result))
+            self._default_close_handler(dialog, gtk_result)
+
+        self._setup_dialog_result(
+            dialog,
+            Gtk.ResponseType.OK if result else Gtk.ResponseType.CANCEL,
+            close_handler=close_handler,
+        )
+
     def is_modal_dialog(self, dialog):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.xfail("Getting the modal of a dialog is not yet supported on GTK4")
         return dialog._impl.native.get_modal()
