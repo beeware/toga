@@ -99,3 +99,51 @@ The following lifecycle hooks are available:
             - android_onDestroy
             - android_onTopResumedActivityChanged
             - android_onConfigurationChanged
+<!-- rumdl-enable MD013 MD022 MD023 -->
+
+### Back navigation
+
+By default, Android handles the Back button itself; at the root of an app, pressing Back sends the app to the background. If your app has its own idea of going "back" (for example, returning to a previous screen of content), you can handle Back yourself.
+
+Android's implementation of the [`toga.App`][] class registers an AndroidX [`OnBackPressedCallback`](https://developer.android.com/reference/androidx/activity/OnBackPressedCallback) as `back_callback`. This callback is disabled by default. While it is enabled, pressing Back invokes [`android_handleOnBackPressed()`][toga_android.app.App.android_handleOnBackPressed] instead of Android's default behavior. Android needs to know whether your app will handle Back *before* the user presses it, so that it can show the right predictive back animation. Enable the callback when your app has somewhere to go back to, and disable it when it doesn't:
+
+```python
+import sys
+
+import toga
+
+if sys.platform == "android":
+    from toga_android.app import App as AndroidApp
+
+    class MyAndroidApp(AndroidApp):
+        def android_handleOnBackPressed(self):
+            self.interface.show_main_screen()
+
+
+class MyApp(toga.App):
+    def create(self):
+        if sys.platform == "android":
+            return MyAndroidApp(interface=self)
+        else:
+            return super().create()
+
+    def startup(self): ...
+
+    def show_detail_screen(self):
+        self.main_window.content = self.detail_box
+        if sys.platform == "android":
+            self._impl.back_callback.setEnabled(True)
+
+    def show_main_screen(self):
+        self.main_window.content = self.main_box
+        if sys.platform == "android":
+            self._impl.back_callback.setEnabled(False)
+```
+
+<!-- rumdl-disable MD013 MD022 MD023 -->
+::: toga_android.app.App
+    options:
+        show_root_heading: false
+        show_root_toc_entry: false
+        members:
+            - android_handleOnBackPressed

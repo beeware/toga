@@ -7,8 +7,11 @@ from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
 from android.os import Build
 from android.view import Menu, MenuItem
+from androidx.activity import OnBackPressedDispatcherKt
 from androidx.core.content import ContextCompat
 from java import dynamic_proxy
+from kotlin import Unit
+from kotlin.jvm.functions import Function1
 from org.beeware.android import IPythonApp, MainActivity
 
 import toga
@@ -188,6 +191,19 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         return True
 
 
+class BackPressedHandler(dynamic_proxy(Function1)):
+    # OnBackPressedCallback is an abstract class, which can't be subclassed with
+    # dynamic_proxy; AndroidX's Kotlin addCallback() helper wraps a Function1
+    # (an interface) in a concrete OnBackPressedCallback instead.
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+
+    def invoke(self, callback):
+        self.impl.android_handleOnBackPressed()
+        return Unit.INSTANCE
+
+
 class App:
     # Android apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
@@ -213,6 +229,15 @@ class App:
         # The `_listener` listens for activity event callbacks. For simplicity,
         # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
+
+        # Register a back callback, disabled by default, so the system's default
+        # Back behavior is unchanged until the app enables it.
+        self.back_callback = OnBackPressedDispatcherKt.addCallback(
+            self.native.getOnBackPressedDispatcher(),
+            self.native,
+            False,
+            BackPressedHandler(self),
+        )
 
         # Call user code to populate the main window
         self.interface._startup()
@@ -269,6 +294,10 @@ class App:
 
     def android_onConfigurationChanged(self, new_config):
         """Invoked by `onConfigurationChanged()`. No-op by default."""
+
+    def android_handleOnBackPressed(self):
+        """Invoked by `handleOnBackPressed()` on `back_callback`, when the user
+        presses Back while that callback is enabled. No-op by default."""
 
     ######################################################################
     # Commands and menus
