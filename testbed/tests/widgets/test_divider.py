@@ -28,54 +28,64 @@ test_cleanup = build_cleanup_test(toga.Divider)
 
 async def test_directions(widget, probe):
     "The divider has the right size as direction is changed"
+    # Native separators can use a zero-size frame and still draw a hairline.
+    minimum_thickness = getattr(probe, "minimum_thickness", 0)
     # Widget should be initially horizontal.
     # Container is initially a row box, so the divider will be
     # both narrow and short
     assert widget.direction == Direction.HORIZONTAL
-    assert probe.height < 10
-    assert probe.width < 10
+    assert minimum_thickness <= probe.height < 10
+    assert 0 <= probe.width < 10
 
     # Make the container a column box so the divider will become wide.
     widget.parent.style.direction = COLUMN
-    await probe.redraw("Divider should become wide")
+    await probe.redraw("Divider should become wide", wait_for=lambda: probe.width > 100)
 
     # The divider will now be wide, but short.
     assert widget.direction == Direction.HORIZONTAL
-    assert probe.height < 10
+    assert minimum_thickness <= probe.height < 10
     assert probe.width > 100
 
     # Make the divider vertical
     widget.direction = Direction.VERTICAL
-    await probe.redraw("Divider should be VERTICAL")
+    await probe.redraw(
+        "Divider should be VERTICAL",
+        wait_for=lambda: probe.width < 10 and probe.height < 10,
+    )
 
     # In a column box, a vertical divider will be narrow and short.
     assert widget.direction == Direction.VERTICAL
-    assert probe.height < 10
-    assert probe.width < 10
+    assert 0 <= probe.height < 10
+    assert minimum_thickness <= probe.width < 10
 
     # Make the container a row box again so the divider will become tall.
     widget.parent.style.direction = ROW
-    await probe.redraw("Divider should become tall")
+    await probe.redraw(
+        "Divider should become tall", wait_for=lambda: probe.height > 100
+    )
 
     # In a row box, a vertical divider will be narrow and tall.
     assert widget.direction == Direction.VERTICAL
     assert probe.height > 100
-    assert probe.width < 10
+    assert minimum_thickness <= probe.width < 10
 
     # Make the divider horizontal
     widget.direction = Direction.HORIZONTAL
-    await probe.redraw("Divider should be HORIZONTAL")
+    await probe.redraw(
+        "Divider should be HORIZONTAL",
+        wait_for=lambda: probe.width < 10 and probe.height < 10,
+    )
 
     # In a row box, a horizontal divider will be narrow and short.
     assert widget.direction == Direction.HORIZONTAL
-    assert probe.height < 10
-    assert probe.width < 10
+    assert minimum_thickness <= probe.height < 10
+    assert 0 <= probe.width < 10
 
     # Make the container a COLUMN box again
     widget.parent.style.direction = COLUMN
-    await probe.redraw("Divider should become wide")
+    await probe.redraw("Divider should become wide", wait_for=lambda: probe.width > 100)
 
-    # In a column box, a horizontal divider will be narrow and short.
+    # In a column box, a horizontal divider will be wide and short.
     assert widget.direction == Direction.HORIZONTAL
-    assert probe.height < 10
+    assert minimum_thickness <= probe.height < 10
     assert probe.width > 100
