@@ -37,6 +37,8 @@ progress.stop()
 
 ## Notes
 
+- On Linux, ProgressBar is supported with both GTK 3 and GTK 4, including GTK 4 with libadwaita.
+
 - The visual appearance of progress bars varies from platform to platform. Toga will try to provide a visual distinction between running and not-running determinate progress bars, but this cannot be guaranteed.
 
 ## Reference
