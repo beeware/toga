@@ -728,7 +728,7 @@ class PackLogic(BaseStyle):
             min_cross = max(min_cross, min_child_cross)
 
         # self._debug(f"{self.direction.upper()} {min_cross=} {cross=}")
-        if use_all_cross:
+        if use_all_cross or self[cross_name] != NONE:
             cross = max(cross, available_cross)
         # self._debug(f"FINAL {self.direction.upper()} {min_cross=} {cross=}")
 
@@ -763,17 +763,19 @@ class PackLogic(BaseStyle):
             # self._debug(f"-  {self.direction} extra {cross_name} {extra}")
 
             if effective_align_items == END:
-                cross_start_value = extra + child.style[f"margin_{cross_start}"]
+                cross_start_value = (
+                    extra + child.style[f"margin_{effective_cross_start}"]
+                )
                 # self._debug(f"  align {child} to {cross_end}")
 
             elif effective_align_items == CENTER:
                 cross_start_value = (
-                    int(extra / 2) + child.style[f"margin_{cross_start}"]
+                    int(extra / 2) + child.style[f"margin_{effective_cross_start}"]
                 )
                 # self._debug(f"  align {child} to center")
 
             else:
-                cross_start_value = child.style[f"margin_{cross_start}"]
+                cross_start_value = child.style[f"margin_{effective_cross_start}"]
                 # self._debug(f"  align {child} to {cross_start} ")
 
             setattr(child.layout, f"content_{effective_cross_start}", cross_start_value)

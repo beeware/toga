@@ -111,6 +111,11 @@ class Pack(PackLogic):
 
     **Aliases:** `vertical_align_items` in a row, `horizontal_align_items` in a column
 
+    When a column has an explicit width, `align_items` aligns its children within that
+    width. For a row, an explicit height defines the alignment space. This applies
+    regardless of the parent box's direction, and each child's margins are included
+    when positioning it.
+
     A row's cross axis is vertical, so `"start"` aligns children to the top, while
     `"end"` aligns them to the bottom. For columns, `"start"` is on the left if
     `text_direction` is `"ltr"`, and the right if `rtl`.
