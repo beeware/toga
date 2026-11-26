@@ -22,12 +22,6 @@ On Android, some interactions are managed using Activities, which are started us
 
 Android's implementation of the [`toga.App`][] class includes the method [`start_activity()`][toga_android.app.App.start_activity], which can be used to start an activity.
 
-### `toga_android.App.start_activity()`
-
-::: toga_android.app.App.start_activity
-    options:
-        show_root_heading: false
-
 To use this method, instantiate an instance of `android.content.Intent`; optionally, provide additional arguments, and a callback that will be invoked when the activity completes. For example, to dial a phone number with the `Intent.ACTION_DIAL` intent:
 
 ```python
@@ -52,14 +46,15 @@ app._impl.start_activity(intent, on_complete=number_dialed)
 
 Android notifies an app of lifecycle events (such as the app becoming visible, moving to the background, or gaining input focus) by calling methods on a Java `Activity` class. Toga forwards these lifecycle events to methods on the Android `App` implementation class that are prefixed with `android_`. For example, the `onStop()` callback is handled by `android_onStop()` on the Android App class.
 
-An app can hook into a lifecycle event by defining a custom subclass of a platform's App implementation class:
+An app can hook into a lifecycle event by defining a custom subclass of the Android App implementation class, and registering it with [`toga.register_impl()`][toga.platform.register_impl]:
 
 ```python
-import sys
+import toga
 
-if sys.platform == "android":
+if toga.backend == "toga_android":
     from toga_android.app import App as AndroidApp
 
+    @toga.register_impl("App")
     class MyAndroidApp(AndroidApp):
         def android_onStop(self):
             # ... custom logic before default Toga implementation ...
@@ -67,39 +62,11 @@ if sys.platform == "android":
             # ... custom logic after default Toga implementation ...
 ```
 
-You can then direct your app to use this custom class by overriding the [`create()`][toga.App.create] method on your app to construct and return an instance of your custom App class when running on Android:
-
-```python
-class MyApp(toga.App):
-    def create(self):
-        if sys.platform == "android":
-            return MyAndroidApp(interface=self)
-        else:
-            return super().create()
-
-    def startup(self): ...
-```
+See [Registering implementations at runtime][register-impl-at-runtime] for more details.
 
 Each hook receives the same arguments as the underlying `Activity` class. `android_onStart()`, `android_onResume()`, `android_onPause()`, `android_onStop()` and `android_onTopResumedActivityChanged()` already implement behavior required by Toga's cross-platform API (e.g., triggering `on_show`/`on_hide` or `on_gain_focus`/`on_lose_focus` on the window); if you override one of these, call the base implementation to preserve that behavior, as shown in the example above.
 
 The following lifecycle hooks are available:
-
-<!-- rumdl-disable MD013 MD022 MD023 -->
-::: toga_android.app.App
-    options:
-        show_root_heading: false
-        show_root_toc_entry: false
-        members:
-            - android_onCreate
-            - android_onStart
-            - android_onRestart
-            - android_onResume
-            - android_onPause
-            - android_onStop
-            - android_onDestroy
-            - android_onTopResumedActivityChanged
-            - android_onConfigurationChanged
-<!-- rumdl-enable MD013 MD022 MD023 -->
 
 ### Back navigation
 
@@ -115,18 +82,13 @@ import toga
 if sys.platform == "android":
     from toga_android.app import App as AndroidApp
 
+    @toga.register_impl("App")
     class MyAndroidApp(AndroidApp):
         def android_handleOnBackPressed(self):
             self.interface.show_main_screen()
 
 
 class MyApp(toga.App):
-    def create(self):
-        if sys.platform == "android":
-            return MyAndroidApp(interface=self)
-        else:
-            return super().create()
-
     def startup(self): ...
 
     def show_detail_screen(self):
@@ -140,10 +102,21 @@ class MyApp(toga.App):
             self._impl.back_callback.setEnabled(False)
 ```
 
+## Reference
+
 <!-- rumdl-disable MD013 MD022 MD023 -->
 ::: toga_android.app.App
     options:
-        show_root_heading: false
-        show_root_toc_entry: false
         members:
             - android_handleOnBackPressed
+            - android_onCreate
+            - android_onStart
+            - android_onRestart
+            - android_onResume
+            - android_onPause
+            - android_onStop
+            - android_onDestroy
+            - android_onTopResumedActivityChanged
+            - android_onConfigurationChanged
+            - start_activity
+<!-- rumdl-enable MD013 MD022 MD023 -->

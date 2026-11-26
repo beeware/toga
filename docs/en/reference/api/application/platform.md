@@ -24,6 +24,8 @@ In general, a Python environment should only have a single Toga backend installe
 
 Developers who want to implement new platform-dependent functionality, or produce a new backend, need a way to access the implementation classes for the current backend. The [`get_factory`][toga.platform.get_factory] function provides a standard way to do this, returning an object whose attributes are lazily-loaded implementation classes.
 
+An application can also replace the implementation class that the factory provides for a given name by using [`toga.register_impl()`][toga.platform.register_impl].
+
 See the topic guide on [Extending Toga](../../../topics/extending-toga.md) for more information.
 
 ## Reference
@@ -33,3 +35,5 @@ See the topic guide on [Extending Toga](../../../topics/extending-toga.md) for m
 ::: toga.platform.current_platform
 
 ::: toga.platform.get_factory
+
+::: toga.platform.register_impl

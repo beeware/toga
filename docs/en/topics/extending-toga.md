@@ -268,3 +268,32 @@ and entry points like:
 [project.entry-points."togax_sensors.backend.toga_qt"]
 Accelerometer = "togax_sensors.qt.accelerometer:Accelerometer"
 ```
+
+## Registering implementations at runtime { #register-impl-at-runtime }
+
+As an alternative to entry points, an application can register an implementation class directly with [`toga.register_impl()`][toga.platform.register_impl]. The registered class is used in place of any implementation provided by the backend's entry points, and can be used to provide implementations that the backend doesn't provide at all. As it doesn't require entry points, this also works in Briefcase applications.
+
+A common use is to customize an existing implementation by subclassing it. For example, to hook into a platform-specific app lifecycle event on macOS:
+
+```python
+import toga
+
+if toga.backend == "toga_cocoa":
+    from toga_cocoa.app import App as CocoaApp
+
+    @toga.register_impl("App")
+    class MyCocoaApp(CocoaApp):
+        def cocoa_applicationDidBecomeActive(self, notification):
+            super().cocoa_applicationDidBecomeActive(notification)
+            # ... custom logic ...
+
+
+class MyApp(toga.App):
+    def startup(self): ...
+```
+
+The registration applies to the current backend only, so it should be guarded with a check of [`toga.backend`][], which also ensures that backend-specific modules are only imported on the backend that provides them.
+
+The registration must occur before any object that uses the implementation is created; for the `App` implementation, that means before your [`toga.App`][] instance is created. Objects that were created before the registration continue to use the original implementation, and a warning is raised. If the same name is registered more than once, the most recent registration is used, and a warning is raised.
+
+To register an implementation for a third-party interface, pass the name of the interface with the `interface` argument (e.g., `toga.register_impl("Toggle", interface="togax_extra_switches")`).

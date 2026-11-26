@@ -196,6 +196,7 @@ class Factory:
                 )
             self.interface = interface
         self._entrypoints = None
+        self._overrides = {}
 
     @cached_property
     def backend(self) -> str:
@@ -224,6 +225,29 @@ class Factory:
             else:
                 self._entrypoints[entrypoint.name] = entrypoint
 
+    def register(self, name: str, impl: type) -> None:
+        """Use `impl` instead of the entry point for `name`."""
+        if name in self._overrides:
+            warnings.warn(
+                f"{name!r} has already been registered for the {self.interface} "
+                f"interface as {self._overrides[name].__qualname__}. "
+                f"{impl.__qualname__} will be used instead.",
+                RuntimeWarning,
+                stacklevel=3,
+            )
+        elif name in self.__dict__:
+            old = self.__dict__[name]
+            warnings.warn(
+                f"{impl.__qualname__} was registered for {name!r} after the original "
+                f"implementation ({old.__qualname__}) had already been loaded. "
+                f"Objects that have already been created will continue to use "
+                f"{old.__qualname__}; only new objects will use {impl.__qualname__}.",
+                RuntimeWarning,
+                stacklevel=3,
+            )
+        self._overrides[name] = impl
+        setattr(self, name, impl)
+
     def __getattr__(self, name):
         if self._entrypoints is None:
             self._load_entrypoints()
@@ -238,7 +262,6 @@ class Factory:
             )
 
 
-@cache
 def get_factory(interface: str | None = None) -> Factory | ModuleType:
     """Return the implementation factory for an interface group.
 
@@ -251,14 +274,25 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
         packages maintained by the BeeWare project.
     :returns: The factory namespace object.
     """
+    if interface is None:
+        interface = "toga_core"
+    return _get_factory(interface, get_backend())
+
+
+@cache
+def _get_factory(interface: str, backend: str) -> Factory | ModuleType:
+    # This is the internal implementation of get_factory(). It is split into two
+    # parts because the @cache decorator keys on the full parameter list, but we
+    # need `get_factory()`, `get_factory(None)`, and `get_factory('toga_core')`
+    # to all return the same cache entry.
     factory = Factory(interface)
+
     # -------------------------------------------------------------------------
     # 2026-02: Backwards compatibility for version <= 0.5.3
     # -------------------------------------------------------------------------
     # If we can't find the entrypoint group we expect, drop back to the old system using
     # a factory module
-    if interface is None and len(entry_points(group=factory.group)) == 0:
-        backend = get_backend()
+    if interface == "toga_core" and len(entry_points(group=factory.group)) == 0:
         try:
             factory = importlib.import_module(f"{backend}.factory")
         except ModuleNotFoundError as exc:
@@ -275,6 +309,35 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
     # End backwards compatibility
     # -------------------------------------------------------------------------
     return factory
+
+
+# Expose the cache from the internal implementation to the public API
+get_factory.cache_clear = _get_factory.cache_clear
+
+
+def register_impl(name: str, interface: str | None = None):
+    """Class decorator that replaces the backend's implementation of `name`.
+
+    Register the class before any object that uses `name` is created.
+
+    :param name: The implementation to replace (e.g., `"App"`).
+    :param interface: The interface group, or None for `"toga_core"`.
+    """
+
+    def decorator(cls):
+        factory = get_factory(interface)
+        try:
+            factory.register(name, cls)
+        except AttributeError:
+            raise RuntimeError(
+                f"Implementations can't be registered with the {factory.__name__} "
+                "module. The backend must define its implementations using entry "
+                "points."
+            ) from None
+
+        return cls
+
+    return decorator
 
 
 backend: str
