@@ -262,7 +262,6 @@ class Factory:
             )
 
 
-@cache
 def get_factory(interface: str | None = None) -> Factory | ModuleType:
     """Return the implementation factory for an interface group.
 
@@ -275,14 +274,20 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
         packages maintained by the BeeWare project.
     :returns: The factory namespace object.
     """
+    if interface is None:
+        interface = "toga_core"
+    return _get_factory(interface, get_backend())
+
+
+@cache
+def _get_factory(interface: str, backend: str) -> Factory | ModuleType:
     factory = Factory(interface)
     # -------------------------------------------------------------------------
     # 2026-02: Backwards compatibility for version <= 0.5.3
     # -------------------------------------------------------------------------
     # If we can't find the entrypoint group we expect, drop back to the old system using
     # a factory module
-    if interface is None and len(entry_points(group=factory.group)) == 0:
-        backend = get_backend()
+    if interface == "toga_core" and len(entry_points(group=factory.group)) == 0:
         try:
             factory = importlib.import_module(f"{backend}.factory")
         except ModuleNotFoundError as exc:
@@ -301,6 +306,9 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
     return factory
 
 
+get_factory.cache_clear = _get_factory.cache_clear
+
+
 def register_impl(name: str, interface: str | None = None):
     """Class decorator that replaces the backend's implementation of `name`.
 
@@ -311,10 +319,7 @@ def register_impl(name: str, interface: str | None = None):
     """
 
     def decorator(cls):
-        if interface in {None, "toga_core"}:
-            factory = get_factory()
-        else:
-            factory = get_factory(interface)
+        factory = get_factory(interface)
         try:
             register = factory.register
         except AttributeError:

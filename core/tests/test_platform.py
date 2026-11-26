@@ -495,6 +495,16 @@ def clean_factory():
     get_factory.cache_clear()
 
 
+def test_get_factory_same_instance(clean_factory):
+    """Every way of requesting the core interface returns the same factory."""
+    factory = get_factory()
+
+    assert get_factory(None) is factory
+    assert get_factory(interface=None) is factory
+    assert get_factory("toga_core") is factory
+    assert get_factory("togax_dummy") is not factory
+
+
 async def test_register_impl_app(clean_factory, monkeypatch, tmp_path):
     """A registered App implementation is used without overriding create()."""
     monkeypatch.setenv("TOGA_DUMMY_HOME", str(tmp_path / "toga-dummy"))
