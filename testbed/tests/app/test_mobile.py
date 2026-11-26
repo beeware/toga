@@ -117,6 +117,26 @@ async def test_app_lifecycle(app, app_probe):
     await app_probe.redraw("App pre-termination logic has been invoked")
 
 
+async def test_back_callback(app, monkeypatch):
+    """On Android, Back can be routed to an overridable hook"""
+    if toga.platform.current_platform != "android":
+        pytest.skip("Back callback is specific to Android")
+
+    hook = Mock()
+    monkeypatch.setattr(app._impl, "android_handleOnBackPressed", hook)
+
+    # The callback is disabled by default, so Back keeps its default behavior.
+    assert not app._impl.back_callback.isEnabled()
+
+    app._impl.back_callback.setEnabled(True)
+    try:
+        app._impl.native.getOnBackPressedDispatcher().onBackPressed()
+    finally:
+        app._impl.back_callback.setEnabled(False)
+
+    hook.assert_called_once_with()
+
+
 async def test_device_rotation(app, app_probe):
     """App responds to device rotation"""
     app_probe.rotate()
