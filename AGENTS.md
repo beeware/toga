@@ -27,7 +27,7 @@ Toga is a Python-native, OS-native GUI toolkit published under BSD-3-Clause as p
 | `qt/` | Linux/Qt backend. |
 | `positron/` | Briefcase plugin for generating apps where the UI has been defined with web tools. Similar to Electron, but using Python for the web server |
 | `testbed/` | Briefcase app used to validate backend behaviour on a real platform. |
-| `docs/en/` | User and contributor documentation (MkDocs, `mkdocs.en.yml`). |
+| `docs/en/` | User and contributor documentation (Zensical; configured by `docs/zensical.toml` and `docs/zensical.en.toml`). |
 | `changes/` | Towncrier fragments (`<issue>.<kind>.md`) — one per user-visible change. |
 | `examples/`, `demo/` | Standalone sample apps. |
 | `.specify/` | SpecKit workflow assets (constitution, templates, extensions). |
@@ -52,7 +52,7 @@ Any PR failing one of these is rejected, not waived.
 - **Pre-commit**: `pre-commit run --all-files` — MUST pass before PR.
 - **Packaging / testbed driver**: `briefcase`.
 - **Release notes**: `towncrier` (config in root `pyproject.toml`).
-- **Docs**: MkDocs; built with the `docs` dependency group.
+- **Docs**: Zensical, via `beeware-docs-tools`; built with the `docs` dependency group.
 
 Do not replace or bypass these tools. Add new dependencies only with a clear need and a compatible license (BSD-3-Clause friendly).
 
