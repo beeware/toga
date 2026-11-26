@@ -22,12 +22,6 @@ On Android, some interactions are managed using Activities, which are started us
 
 Android's implementation of the [`toga.App`][] class includes the method [`start_activity()`][toga_android.app.App.start_activity], which can be used to start an activity.
 
-### `toga_android.App.start_activity()`
-
-::: toga_android.app.App.start_activity
-    options:
-        show_root_heading: false
-
 To use this method, instantiate an instance of `android.content.Intent`; optionally, provide additional arguments, and a callback that will be invoked when the activity completes. For example, to dial a phone number with the `Intent.ACTION_DIAL` intent:
 
 ```python
@@ -74,23 +68,6 @@ Each hook receives the same arguments as the underlying `Activity` class. `andro
 
 The following lifecycle hooks are available:
 
-<!-- rumdl-disable MD013 MD022 MD023 -->
-::: toga_android.app.App
-    options:
-        show_root_heading: false
-        show_root_toc_entry: false
-        members:
-            - android_onCreate
-            - android_onStart
-            - android_onRestart
-            - android_onResume
-            - android_onPause
-            - android_onStop
-            - android_onDestroy
-            - android_onTopResumedActivityChanged
-            - android_onConfigurationChanged
-<!-- rumdl-enable MD013 MD022 MD023 -->
-
 ### Back navigation
 
 By default, Android handles the Back button itself; at the root of an app, pressing Back sends the app to the background. If your app has its own idea of going "back" (for example, returning to a previous screen of content), you can handle Back yourself.
@@ -105,18 +82,13 @@ import toga
 if sys.platform == "android":
     from toga_android.app import App as AndroidApp
 
+    @toga.register_impl("App")
     class MyAndroidApp(AndroidApp):
         def android_handleOnBackPressed(self):
             self.interface.show_main_screen()
 
 
 class MyApp(toga.App):
-    def create(self):
-        if sys.platform == "android":
-            return MyAndroidApp(interface=self)
-        else:
-            return super().create()
-
     def startup(self): ...
 
     def show_detail_screen(self):
@@ -130,10 +102,21 @@ class MyApp(toga.App):
             self._impl.back_callback.setEnabled(False)
 ```
 
+## Reference
+
 <!-- rumdl-disable MD013 MD022 MD023 -->
 ::: toga_android.app.App
     options:
-        show_root_heading: false
-        show_root_toc_entry: false
         members:
             - android_handleOnBackPressed
+            - android_onCreate
+            - android_onStart
+            - android_onRestart
+            - android_onResume
+            - android_onPause
+            - android_onStop
+            - android_onDestroy
+            - android_onTopResumedActivityChanged
+            - android_onConfigurationChanged
+            - start_activity
+<!-- rumdl-enable MD013 MD022 MD023 -->

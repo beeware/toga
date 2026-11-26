@@ -52,7 +52,7 @@ See [Registering implementations at runtime][register-impl-at-runtime] for more 
 
 Each hook receives the same arguments as the underlying `NSApplicationDelegate` method (usually an `NSNotification` instance). `cocoa_applicationWillHide()`, `cocoa_applicationDidUnhide()` and `cocoa_applicationDidFinishLaunching()` already implement behavior required by Toga's cross-platform API (e.g. triggering `on_hide`/`on_show` on windows); if you override one of these, call the base implementation to preserve that behavior, as shown in the example above.
 
-The following lifecycle hooks are available:
+## Reference
 
 <!-- rumdl-disable MD013 MD022 MD023 -->
 ::: toga_cocoa.app.App

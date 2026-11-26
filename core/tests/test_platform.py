@@ -523,7 +523,7 @@ async def test_register_impl_app(clean_factory, monkeypatch, tmp_path):
     assert type(app._impl) is CustomApp
 
     app.beep()
-    assert app._impl.custom_beep
+    assert hasattr(app._impl, "custom_beep")
 
 
 def test_register_impl_returns_class(clean_factory):

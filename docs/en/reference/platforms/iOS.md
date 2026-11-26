@@ -49,7 +49,7 @@ Each hook receives the same arguments as the underlying delegate method (the `UI
 
 Toga uses the scene-based lifecycle, so iOS does not deliver the deprecated app-level activation and background notifications (such as `applicationDidBecomeActive:` or `applicationDidEnterBackground:`); no hooks are provided for them.
 
-The following lifecycle hooks are available:
+## Reference
 
 <!-- rumdl-disable MD013 MD022 MD023 -->
 ::: toga_iOS.app.App

@@ -281,7 +281,12 @@ def get_factory(interface: str | None = None) -> Factory | ModuleType:
 
 @cache
 def _get_factory(interface: str, backend: str) -> Factory | ModuleType:
+    # This is the internal implementation of get_factory(). It is split into two
+    # parts because the @cache decorator keys on the full parameter list, but we
+    # need `get_factory()`, `get_factory(None)`, and `get_factory('toga_core')`
+    # to all return the same cache entry.
     factory = Factory(interface)
+
     # -------------------------------------------------------------------------
     # 2026-02: Backwards compatibility for version <= 0.5.3
     # -------------------------------------------------------------------------
@@ -306,6 +311,7 @@ def _get_factory(interface: str, backend: str) -> Factory | ModuleType:
     return factory
 
 
+# Expose the cache from the internal implementation to the public API
 get_factory.cache_clear = _get_factory.cache_clear
 
 
@@ -321,14 +327,14 @@ def register_impl(name: str, interface: str | None = None):
     def decorator(cls):
         factory = get_factory(interface)
         try:
-            register = factory.register
+            factory.register(name, cls)
         except AttributeError:
             raise RuntimeError(
                 f"Implementations can't be registered with the {factory.__name__} "
                 "module. The backend must define its implementations using entry "
                 "points."
             ) from None
-        register(name, cls)
+
         return cls
 
     return decorator
