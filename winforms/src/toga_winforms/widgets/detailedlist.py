@@ -133,7 +133,9 @@ class DetailedList(Widget):
         if in_dark_mode():  # pragma: no-cover-if-netfx
             SetWindowTheme(HWND(self._hwnd), "DarkMode_Explorer", None)
             SetWindowTheme(
-                HWND(int(self.native.Handle.ToString())), "DarkMode_Explorer", None
+                HWND(int(self.native.Handle.ToString())),
+                "DarkMode_Explorer",
+                None,
             )
         else:  # pragma: no-cover-if-netcore
             # We can't do conditional branch coverage, so we need a no-op else
@@ -486,9 +488,10 @@ class DetailedList(Widget):
             y = rect.top + divmod(self._tile_height - rect.bottom + rect.top, 2)[0]
 
             if is_selected:
-                back_color = (
-                    SystemColors.Highlight if has_focus else SystemColors.Control
-                )
+                if has_focus:
+                    back_color = SystemColors.Highlight
+                else:
+                    back_color = SystemColors.Control
                 if in_dark_mode():  # pragma: no-cover-if-netfx
                     text_color = self.native.ForeColor
                     icon_flag = wc.ILD_NORMAL

@@ -65,7 +65,10 @@ and install the .NET Desktop Runtime.""") from None
 import clr
 
 from .libs.user32 import SetProcessDpiAwarenessContext
+from .libs.uxtheme import FlushMenuThemes, SetPreferredAppMode
 from .libs.win32constants import (
+    APPMODE_DEFAULT,
+    APPMODE_FORCEDARK,
     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,
 )
 
@@ -113,6 +116,13 @@ if _use_dotnet_core:  # pragma: no-cover-if-netfx
         "Light": WinForms.SystemColorMode.Classic,
     }.get(color_mode, WinForms.SystemColorMode.System)
     WinForms.Application.SetColorMode(system_color_mode)
+    if SetPreferredAppMode is not None:  # pragma: no branch
+        if WinForms.Application.IsDarkModeEnabled:
+            SetPreferredAppMode(APPMODE_FORCEDARK)
+            FlushMenuThemes()
+        else:  # pragma: no-cover-if-netcore
+            SetPreferredAppMode(APPMODE_DEFAULT)
+            FlushMenuThemes()
 else:  # pragma: no-cover-if-netcore
     pass
 

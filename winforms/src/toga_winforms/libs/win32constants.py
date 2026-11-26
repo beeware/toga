@@ -3,6 +3,14 @@
 # Activation Context
 INVALID_HANDLE_VALUE = -1
 
+# App Mode (undocumented SetPreferredAppMode)
+# https://github.com/ysc3839/win32-darkmode
+APPMODE_DEFAULT = 0
+APPMODE_ALLOWDARK = 1
+APPMODE_FORCEDARK = 2
+APPMODE_FORCELIGHT = 3
+APPMODE_MAX = 4
+
 # Background Mode
 TRANSPARENT = 1
 OPAQUE = 2
