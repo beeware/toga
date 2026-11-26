@@ -65,7 +65,10 @@ and install the .NET Desktop Runtime.""") from None
 import clr
 
 from .libs.user32 import SetProcessDpiAwarenessContext
+from .libs.uxtheme import FlushMenuThemes, SetPreferredAppMode
 from .libs.win32constants import (
+    APPMODE_DEFAULT,
+    APPMODE_FORCEDARK,
     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,
 )
 
@@ -104,5 +107,23 @@ import System.Windows.Forms as WinForms  # noqa: E402
 
 WinForms.Application.EnableVisualStyles()
 WinForms.Application.SetCompatibleTextRenderingDefault(False)
+# Set dark mode where needed. Note that dark/light mode will be set for the entirety of
+# the application's runtime.
+if _use_dotnet_core:  # pragma: no-cover-if-netfx
+    color_mode = os.environ.get("TOGA_WINFORMS_COLOR_MODE", "System").strip().title()
+    system_color_mode = {
+        "Dark": WinForms.SystemColorMode.Dark,
+        "Light": WinForms.SystemColorMode.Classic,
+    }.get(color_mode, WinForms.SystemColorMode.System)
+    WinForms.Application.SetColorMode(system_color_mode)
+    if SetPreferredAppMode is not None:  # pragma: no branch
+        if WinForms.Application.IsDarkModeEnabled:
+            SetPreferredAppMode(APPMODE_FORCEDARK)
+            FlushMenuThemes()
+        else:  # pragma: no-cover-if-netcore
+            SetPreferredAppMode(APPMODE_DEFAULT)
+            FlushMenuThemes()
+else:  # pragma: no-cover-if-netcore
+    pass
 
 __version__ = version("toga-winforms")
