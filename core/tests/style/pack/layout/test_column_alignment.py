@@ -1,41 +1,8 @@
 import pytest
 
-from toga.style.pack import CENTER, COLUMN, END, ROW, START, Pack
+from toga.style.pack import CENTER, COLUMN, END, LTR, ROW, RTL, START, Pack
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
-
-
-@pytest.mark.parametrize("parent_direction", [ROW, COLUMN])
-@pytest.mark.parametrize(
-    "alignment, positions",
-    [(START, (10, 5)), (CENTER, (95, 115)), (END, (180, 225))],
-)
-def test_explicit_width(parent_direction, alignment, positions):
-    container = ExampleNode(
-        "container",
-        style=Pack(direction=COLUMN, width=300, height=80, align_items=alignment),
-        children=[
-            ExampleNode(
-                "widget_a",
-                style=Pack(width=100, height=20, margin_left=10, margin_right=20),
-            ),
-            ExampleNode(
-                "widget_b",
-                style=Pack(width=60, height=20, margin_left=5, margin_right=15),
-            ),
-        ],
-    )
-    root = ExampleNode(
-        "root",
-        style=Pack(direction=parent_direction),
-        children=[container],
-    )
-
-    root.style.layout(ExampleViewport(640, 480))
-
-    assert container.layout.content_width == 300
-    assert [child.layout.content_width for child in container.children] == [100, 60]
-    assert tuple(child.layout.content_left for child in container.children) == positions
 
 
 def test_left():
@@ -250,3 +217,49 @@ def test_column_box():
             ],
         },
     )
+
+
+@pytest.mark.parametrize("parent_direction", [ROW, COLUMN])
+@pytest.mark.parametrize(
+    ("alignment", "text_direction", "positions"),
+    [
+        pytest.param(START, LTR, (10, 5), id="start-ltr"),
+        pytest.param(CENTER, LTR, (95, 115), id="center-ltr"),
+        pytest.param(END, LTR, (180, 225), id="right-ltr"),
+        pytest.param(START, RTL, (180, 225), id="start-rtl"),
+        pytest.param(CENTER, RTL, (95, 115), id="center-rtl"),
+        pytest.param(END, RTL, (10, 5), id="end-rtl"),
+    ],
+)
+def test_explicit_width(parent_direction, alignment, text_direction, positions):
+    container = ExampleNode(
+        "container",
+        style=Pack(
+            direction=COLUMN,
+            width=300,
+            height=80,
+            align_items=alignment,
+            text_direction=text_direction,
+        ),
+        children=[
+            ExampleNode(
+                "widget_a",
+                style=Pack(width=100, height=20, margin_left=10, margin_right=20),
+            ),
+            ExampleNode(
+                "widget_b",
+                style=Pack(width=60, height=20, margin_left=5, margin_right=15),
+            ),
+        ],
+    )
+    root = ExampleNode(
+        "root",
+        style=Pack(direction=parent_direction),
+        children=[container],
+    )
+
+    root.style.layout(ExampleViewport(640, 480))
+
+    assert container.layout.content_width == 300
+    assert [child.layout.content_width for child in container.children] == [100, 60]
+    assert tuple(child.layout.content_left for child in container.children) == positions
