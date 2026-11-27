@@ -21,7 +21,7 @@ table = toga.Table(
 # Get the details of the first item in the data:
 print(f"{table.data[0].name} is age {table.data[0].age}")
 
-# Append new data to the table
+# Append a row before or after adding the table to a window
 table.data.append(("Zaphod Beeblebrox", 47))
 ```
 

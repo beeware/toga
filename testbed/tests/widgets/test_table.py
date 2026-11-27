@@ -453,10 +453,16 @@ async def _row_change_test(widget, probe):
 
     # Insert a row into the middle of the table;
     # Row is missing a B accessor
+    if toga.backend == "toga_cocoa":
+        selected = widget.data[3]
+        await probe.select_row(3)
     widget.data.insert(2, {"a": "AY", "c": "CY"})
     await probe.redraw("Partial row has been appended")
 
     assert probe.row_count == 7
+    if toga.backend == "toga_cocoa":
+        assert probe.native_table.numberOfRows == 7
+        assert widget.selection is selected
     probe.assert_cell_content(1, 0, "A1")
     probe.assert_cell_content(2, 0, "AY")
     probe.assert_cell_content(2, 1, "MISSING!")
@@ -488,6 +494,27 @@ async def _row_change_test(widget, probe):
     widget.data.clear()
     await probe.redraw("Data has been cleared")
     assert probe.row_count == 0
+
+
+@pytest.mark.skipif(toga.backend != "toga_cocoa", reason="Requires AppKit table style")
+@pytest.mark.parametrize("columns", [["A", "B"], ["A"]])
+async def test_append_before_display(main_window, columns):
+    table = toga.Table(columns=columns)
+    native = table._impl.native_table
+    native.style = 3  # NSTableViewStyleSourceList
+    for i in range(3):
+        table.data.append([f"{column}{i}" for column in columns])
+
+    assert native.numberOfRows == 3
+    old_content = main_window.content
+    try:
+        main_window.content = table
+        probe = get_probe(table)
+        await probe.redraw("Table with appended rows is visible")
+        for index, column in enumerate(columns):
+            probe.assert_cell_content(2, index, f"{column}2")
+    finally:
+        main_window.content = old_content
 
 
 async def test_row_changes(widget, probe):
