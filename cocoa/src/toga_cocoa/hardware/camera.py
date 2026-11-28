@@ -3,11 +3,11 @@ from __future__ import annotations
 import warnings
 from threading import Thread
 
-from rubicon.objc import Block, objc_method
+from rubicon.objc import Block, NSObject, objc_method
 
 import toga
 from toga.colors import BLACK, RED
-from toga.constants import FlashMode
+from toga.constants import BarcodeFormat, FlashMode
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
@@ -17,14 +17,33 @@ from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     AVAuthorizationStatus,
     AVCaptureFlashMode,
+    AVCaptureMetadataOutput,
     AVCapturePhotoOutput,
     AVCaptureSession,
     AVCaptureSessionPresetPhoto,
     AVCaptureVideoPreviewLayer,
     AVLayerVideoGravityResizeAspectFill,
     AVMediaTypeVideo,
+    AVMetadataMachineReadableCodeObject,
+    AVMetadataObjectTypeAztecCode,
+    AVMetadataObjectTypeCode128Code,
+    AVMetadataObjectTypeDataMatrixCode,
+    AVMetadataObjectTypeEAN8Code,
+    AVMetadataObjectTypeEAN13Code,
+    AVMetadataObjectTypePDF417Code,
+    AVMetadataObjectTypeQRCode,
     NSBundle,
 )
+
+BARCODE_FORMAT_MAP = {
+    BarcodeFormat.QR: AVMetadataObjectTypeQRCode,
+    BarcodeFormat.CODE128: AVMetadataObjectTypeCode128Code,
+    BarcodeFormat.EAN13: AVMetadataObjectTypeEAN13Code,
+    BarcodeFormat.EAN8: AVMetadataObjectTypeEAN8Code,
+    BarcodeFormat.PDF417: AVMetadataObjectTypePDF417Code,
+    BarcodeFormat.AZTEC: AVMetadataObjectTypeAztecCode,
+    BarcodeFormat.DATA_MATRIX: AVMetadataObjectTypeDataMatrixCode,
+}
 
 
 def native_flash_mode(flash):
@@ -249,6 +268,145 @@ class TogaCameraWindow(toga.Window):
         self.camera.preview_windows.remove(self)
 
 
+class TogaCameraScannerDelegate(NSObject):  # pragma: no cover
+    @objc_method
+    def metadataOutput_didOutputMetadataObjects_fromConnection_(
+        self, output, metadata_objects, connection
+    ) -> None:
+        count = metadata_objects.count()
+        if count > 0:
+            metadata_object = metadata_objects.objectAtIndex(0)
+            if metadata_object.isKindOfClass_(AVMetadataMachineReadableCodeObject):
+                content = str(metadata_object.stringValue())
+                if content:
+                    self.camera._handle_scan(content)
+
+
+class TogaCameraScannerWindow(toga.Window):  # pragma: no cover
+    def __init__(self, camera, device, code_types, future, continuous):
+        super().__init__(
+            title="Scan Barcode",
+            on_close=self.close_window,
+            resizable=False,
+            size=(640, 360),
+        )
+        self.camera = camera
+        self.future = future
+        self.continuous = continuous
+        self.code_types = code_types
+
+        self.create_preview_window()
+        self.create_scan_session(device)
+
+    def create_preview_window(self):
+        self.preview = toga.Box(style=Pack(width=640, height=360))
+
+        self.device_select = toga.Selection(
+            items=[],
+            on_change=self.change_camera,
+            style=Pack(width=200),
+        )
+
+        self.close_button = toga.Button(
+            text="Cancel",
+            on_press=self.close_window,
+            style=Pack(width=100),
+        )
+
+        self.content = toga.Box(
+            children=[
+                toga.Box(
+                    children=[self.preview],
+                    style=Pack(background_color=BLACK),
+                ),
+                toga.Box(
+                    children=[
+                        toga.Box(children=[self.device_select], style=Pack(flex=1)),
+                        self.close_button,
+                        toga.Box(style=Pack(flex=1)),
+                    ],
+                    style=Pack(margin=10),
+                ),
+            ],
+            style=Pack(direction=COLUMN),
+        )
+
+    def create_scan_session(self, device):
+        self.camera_session = AVCaptureSession.alloc().init()
+        self.camera_session.beginConfiguration()
+
+        preview_layer = AVCaptureVideoPreviewLayer.layerWithSession(self.camera_session)
+        preview_layer.setVideoGravity(AVLayerVideoGravityResizeAspectFill)
+        preview_layer.frame = self.preview._impl.native.bounds
+        self.preview._impl.native.setLayer(preview_layer)
+
+        metadata_output = AVCaptureMetadataOutput.alloc().init()
+        self.camera_session.addOutput(metadata_output)
+
+        objc_types = [
+            BARCODE_FORMAT_MAP[ct] for ct in self.code_types if ct in BARCODE_FORMAT_MAP
+        ]
+        if objc_types:
+            metadata_output.setMetadataObjectTypes_(objc_types)
+
+        delegate = TogaCameraScannerDelegate.alloc().init()
+        delegate.camera = self
+        metadata_output.setMetadataObjectsDelegate_queue_(delegate, None)
+
+        self.camera_session.commitConfiguration()
+
+        self.camera_input = None
+        self.scan_delegate = delegate
+
+        Thread(
+            target=self._enable_camera,
+            kwargs={"device": device},
+        ).start()
+
+    def _enable_camera(self, device):
+        self.camera_session.startRunning()
+        self.camera.interface.app.loop.create_task(
+            self._update_camera_list(toga.App.app.camera.devices, device)
+        )
+
+    async def _update_camera_list(self, devices, device):
+        self.device_select.items = devices
+        if device:
+            self.device_select.value = device
+
+    def change_camera(self, widget=None, **kwargs):
+        for input in self.camera_session.inputs:
+            self.camera_session.removeInput(input)
+
+        if device := self.device_select.value:
+            input = cocoa.AVCaptureDeviceInput.deviceInputWithDevice(
+                device._impl.native, error=None
+            )
+            self.camera_session.addInput(input)
+
+    def close_window(self, widget, **kwargs):
+        self.camera_session.stopRunning()
+        if self.future is not None:
+            self.future.set_result(None)
+            self.future = None
+        self._cleanup()
+        return True
+
+    def _handle_scan(self, content):
+        self.camera.interface.on_detection(content=content)
+        if not self.continuous:
+            future = self.future
+            self.future = None
+            self.camera_session.stopRunning()
+            self._cleanup()
+            future.set_result(content)
+            self.close()
+
+    def _cleanup(self):
+        self.camera.preview_windows.remove(self)
+        self.future = None
+
+
 class Camera:
     def __init__(self, interface):
         self.interface = interface
@@ -269,6 +427,7 @@ class Camera:
             else:
                 warnings.warn(msg, stacklevel=2)
         self.preview_windows = []
+        self._scan_future = None
 
     def has_permission(self, allow_unknown=False):
         # To reset permissions to "factory" status, run:
@@ -322,3 +481,23 @@ class Camera:
             window.show()
         else:
             raise PermissionError("App does not have permission to take photos")
+
+    def is_scanning(self):
+        return self._scan_future is not None
+
+    def start_scanning(self, future, device, code_types, continuous):
+        if self.has_permission(allow_unknown=True):
+            self._scan_future = future
+            window = TogaCameraScannerWindow(
+                self, device, code_types, future, continuous
+            )
+            self.preview_windows.append(window)
+            window.show()
+        else:
+            raise PermissionError("App does not have permission to scan barcodes")
+
+    def stop_scanning(self):
+        self._scan_future = None
+        for window in list(self.preview_windows):
+            if isinstance(window, TogaCameraScannerWindow):
+                window.close()
